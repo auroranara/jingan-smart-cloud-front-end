@@ -26,6 +26,8 @@ const GET_LIST = 'accidentReport/getList';
       type: GET_LIST,
       payload: {
         type: '0',
+        pageNum: 1,
+        pageSize: getPageSize(),
         ...payload,
       },
       callback,
@@ -38,48 +40,27 @@ export default class AccidentInfo extends Component {
     selectedRowKeys: undefined,
   }
 
+  prevValues = {}
+
   setFormReference = form => {
     this.form = form;
   }
 
-  getList = (payload) => {
+  handleButtonClick = () => {
     const {
-      accidentReport: {
-        list: {
-          pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
-      },
       getList,
     } = this.props;
-    const { current=1, pageSize=getPageSize() } = payload || {};
-    const values = this.form && this.form.getFieldsValue();
-    const happenTime = payload && payload.happenTime || values && values.happenTime;
-    getList({
-      ...values,
-      ...payload,
-      happenTime: happenTime && happenTime.format(DEFAULT_FORMAT),
-      pageNum: prevPageSize !== pageSize ? 1 : current,
-      pageSize,
-    });
-    prevPageSize !== pageSize && setPageSize(pageSize);
-    this.setState({
-      selectedRowKeys: undefined,
-    });
-  }
-
-  handleButtonClick = () => {
-    this.getList();
+    getList();
+    this.prevValues = {};
     this.setState({
       visible: true,
+      selectedRowKeys: undefined,
     });
   }
 
   handleModalCancel = () => {
     this.setState({
       visible: false,
-      selectedRowKeys: undefined,
     });
     this.form && this.form.resetFields();
   }
@@ -90,7 +71,6 @@ export default class AccidentInfo extends Component {
     onChange && onChange(selectedRowKeys[0]);
     this.setState({
       visible: false,
-      selectedRowKeys: undefined,
     });
     this.form && this.form.resetFields();
   }
@@ -99,6 +79,51 @@ export default class AccidentInfo extends Component {
     this.setState({
       selectedRowKeys,
     });
+  }
+
+  // 查询
+  handleSearch = (values) => {
+    const {
+      accidentReport: {
+        list: {
+          pagination: {
+            pageSize=getPageSize(),
+          }={},
+        }={},
+      },
+      getList,
+    } = this.props;
+    this.prevValues = values;
+    getList({
+      ...values,
+      pageSize,
+    });
+  }
+
+  // 重置
+  handleReset = (values) => {
+    this.handleSearch(values);
+  }
+
+  // 表格change
+  handleTableChange = ({ current, pageSize }) => {
+    const {
+      accidentReport: {
+        list: {
+          pagination: {
+            pageSize: prevPageSize=getPageSize(),
+          }={},
+        }={},
+      },
+      getList,
+    } = this.props;
+    getList({
+      ...this.prevValues,
+      pageNum: prevPageSize !== pageSize ? 1 : current,
+      pageSize,
+    });
+    this.form && this.form.setFieldsValue(this.prevValues);
+    prevPageSize !== pageSize && setPageSize(pageSize);
   }
 
   render() {
@@ -196,8 +221,8 @@ export default class AccidentInfo extends Component {
           <CustomForm
             className={styles.form}
             fields={fields}
-            onSearch={this.getList}
-            onReset={this.getList}
+            onSearch={this.handleSearch}
+            onReset={this.handleReset}
             action={<Button type="primary" onClick={this.handleSelectButtonClick} disabled={!selectedRowKeys || !selectedRowKeys.length}>选择</Button>}
             ref={this.setFormReference}
           />
@@ -206,7 +231,7 @@ export default class AccidentInfo extends Component {
             columns={columns}
             rowKey="id"
             loading={loading}
-            onChange={this.getList}
+            onChange={this.handleTableChange}
             pagination={{
               current: pageNum,
               pageSize,

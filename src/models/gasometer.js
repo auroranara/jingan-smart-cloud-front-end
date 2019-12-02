@@ -1,25 +1,11 @@
 import {
+  getStorageMediumList,
   getList,
   getDetail,
   add,
   edit,
   remove,
 } from '@/services/gasometer';
-import { message } from 'antd';
-const generateList = ({ pageNum, pageSize }) => {
-  const start = (pageNum - 1) * pageSize;
-  return Array.from({ length: pageSize }).map((_, index) => ({
-    id: `${start + index + 1}`,
-    companyName: '利民化工股份有限公司',
-    name: `气柜${start + index + 1}`,
-    code: `${start + index + 1}`,
-    storageMedium: '未知',
-    casNumber: `${start + index + 1}`,
-    isMajorHazard: '0',
-    araa: '这是区域',
-    location: '这是位置',
-  }));
-};
 
 export default {
   namespace: 'gasometer',
@@ -27,23 +13,31 @@ export default {
   state: {
     list: {},
     detail: {},
+    storageMediumList: {},
   },
 
   effects: {
+    // 获取存储介质列表
+    *getStorageMediumList({ payload, callback }, { call, put }) {
+      const response = yield call(getStorageMediumList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const storageMediumList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            storageMediumList,
+          },
+        });
+        callback && callback(true, storageMediumList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
     // 获取列表
     *getList({ payload, callback }, { call, put }) {
-      // const response = yield call(getList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: generateList(payload),
-          pagination: {
-            total: 100,
-            ...payload,
-          },
-        },
-      };
-      const { code, data } = response || {};
+      const response = yield call(getList, payload);
+      const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         const list = data;
         yield put({
@@ -52,54 +46,47 @@ export default {
             list,
           },
         });
-        callback && callback(list);
+        callback && callback(true, list);
       } else {
-        message.error('获取列表失败，请稍后重试！');
+        callback && callback(false, msg);
       }
     },
     // 获取详情
     *getDetail({ payload, callback }, { call, put }) {
-      // const response = yield call(getDetail, payload);
-      const response = {
-        code: 200,
-        data: {
-          id: 1,
-          isMajorHazard: '1',
-          hasCofferdam: '1',
-        },
-      };
-      const { code, data } = response || {};
+      const response = yield call(getDetail, payload);
+      const { code, data, msg } = response || {};
       if (code === 200 && data) {
-        const detail = data;
+        const { scenePhotoList } = data;
+        const detail = {
+          ...data,
+          scenePhoto: scenePhotoList && scenePhotoList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+        };
         yield put({
           type: 'save',
           payload: {
             detail,
           },
         });
-        callback && callback(detail);
+        callback && callback(true, detail);
       } else {
-        message.error('获取详情失败，请稍后重试！');
+        callback && callback(false, msg);
       }
     },
     // 新增
     *add({ payload, callback }, { call }) {
-      // const response = yield call(add, payload);
-      const response = { code: 200 };
+      const response = yield call(add, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     // 编辑
     *edit({ payload, callback }, { call }) {
-      // const response = yield call(edit, payload);
-      const response = { code: 200 };
+      const response = yield call(edit, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     // 删除
     *remove({ payload, callback }, { call }) {
-      // const response = yield call(remove, payload);
-      const response = { code: 200 };
+      const response = yield call(remove, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },

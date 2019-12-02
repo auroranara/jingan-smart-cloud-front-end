@@ -11,7 +11,8 @@ import Medium from './Medium';
 import MajorHazard from './MajorHazard';
 import router from 'umi/router';
 import { connect } from 'dva';
-import debounce from 'lodash/debounce';
+import { bind, debounce } from 'lodash-decorators';
+import { isNumber } from '@/utils/utils';
 import {
   TITLE,
   LIST_PATH,
@@ -24,23 +25,23 @@ import styles from './index.less';
 
 export const LEVELS = [
   {
-    key: '0',
+    key: '1',
     value: '甲',
   },
   {
-    key: '1',
+    key: '2',
     value: '乙',
   },
   {
-    key: '2',
+    key: '3',
     value: '丙',
   },
   {
-    key: '3',
+    key: '4',
     value: '丁',
   },
   {
-    key: '4',
+    key: '5',
     value: '戊',
   },
 ];
@@ -60,8 +61,6 @@ const LABEL_COL = { span: 6 };
   user,
   detail,
   loading: loading.effects[GET_DETAIL],
-  adding: loading.effects[ADD],
-  editing: loading.effects[EDIT],
 }), (dispatch) => ({
   getDetail(payload, callback) {
     dispatch({
@@ -94,9 +93,8 @@ const LABEL_COL = { span: 6 };
   },
 }))
 export default class GasometerOther extends Component {
-  constructor(props) {
-    super(props);
-    this.debouncedRefresh = debounce(this.refresh, 300);
+  state = {
+    submitting: false,
   }
 
   componentDidMount() {
@@ -105,8 +103,67 @@ export default class GasometerOther extends Component {
     if (id) {
       getDetail({
         id,
-      }, this.refresh);
+      }, (success, data) => {
+        if (success) {
+          const {
+            companyId,
+            companyName,
+            gasholderType,
+            unifiedCode,
+            gasholderName,
+            designCapacity,
+            designCapacityUnit,
+            designKpa,
+            chineName,
+            storageMedium,
+            // majorHazard,
+            regionalLocation,
+            safeSpace,
+            deviceSpace,
+            cofferdam,
+            cofferdamArea,
+            fireHazardRate,
+            torch,
+            warmCool,
+            autoSpray,
+            fireWaterFoam,
+            scenePhoto,
+          } = data;
+          this.form && this.form.setFieldsValue({
+            company: companyId ? { key: companyId, label: companyName } : undefined,
+            gasholderType: isNumber(gasholderType) ? gasholderType : undefined,
+            unifiedCode: unifiedCode || undefined,
+            gasholderName: gasholderName || undefined,
+            capacity: [designCapacity || undefined, designCapacityUnit || undefined],
+            designKpa: isNumber(designKpa) ? designKpa : undefined,
+            storageMedium: storageMedium ? { id: storageMedium, chineName } : undefined,
+            // majorHazard: isNumber(majorHazard) ? majorHazard : undefined,
+            regionalLocation: regionalLocation || undefined,
+            safeSpace: isNumber(safeSpace) ? safeSpace : undefined,
+            deviceSpace: isNumber(deviceSpace) ? deviceSpace : undefined,
+            cofferdam: isNumber(cofferdam) ? cofferdam : undefined,
+            fireHazardRate: isNumber(fireHazardRate) ? fireHazardRate : undefined,
+            torch: isNumber(torch) ? torch : undefined,
+            warmCool: isNumber(warmCool) ? warmCool : undefined,
+            autoSpray: isNumber(autoSpray) ? autoSpray : undefined,
+            fireWaterFoam: isNumber(fireWaterFoam) ? fireWaterFoam : undefined,
+            scenePhoto: scenePhoto || [],
+          });
+          setTimeout(() => {
+            this.form && this.form.setFieldsValue({
+              cofferdamArea: isNumber(cofferdamArea) ? cofferdamArea : undefined,
+            });
+          });
+        } else {
+          message.error('获取详情失败，请稍后重试或联系管理人员！');
+        }
+      });
     }
+  }
+
+  componentWillUnmount() {
+    const { setDetail } = this.props;
+    setDetail();
   }
 
   getNavigation = () => {
@@ -153,9 +210,10 @@ export default class GasometerOther extends Component {
     this.form = form;
   }
 
-  refresh = () => {
-    setTimeout(() => this.forceUpdate(), 0)
-    // this.forceUpdate();
+  @bind()
+  @debounce(300)
+  refresh() {
+    this.forceUpdate();
   }
 
   // 返回按钮点击事件
@@ -180,20 +238,29 @@ export default class GasometerOther extends Component {
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
-      console.log(values);
       if (!errors) {
-        const { company, ...rest } = values;
+        const { company, capacity: [designCapacity, designCapacityUnit]=[], storageMedium: { id: storageMedium }={}, scenePhoto, ...rest } = values;
         const payload = {
           id,
           companyId: +unitType !== 4 ? company.key : unitId,
+          designCapacity,
+          designCapacityUnit,
+          storageMedium,
+          scenePhoto: scenePhoto && scenePhoto.length > 0 ? JSON.stringify(scenePhoto) : undefined,
           ...rest,
         };
+        this.setState({
+          submitting: true,
+        });
         (id ? edit : add)(payload, (isSuccess) => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
             router.push(LIST_PATH);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
+            this.setState({
+              submitting: false,
+            });
           }
         });
       }
@@ -229,35 +296,13 @@ export default class GasometerOther extends Component {
         },
       },
       detail: {
-        companyId,
-        companyName,
-        type,
-        code,
-        name,
-        capacity,
-        capacityUnit,
-        pressure,
-        medium,
-        isMajorHazard,
-        majorHazard,
-        address,
-        gap,
-        distance,
-        hasCofferdam,
-        area,
-        level,
-        hasFireTank,
-        hasInsulation,
-        hasSprinkler,
-        hasFireControl,
-        fileList,
+        scenePhoto,
       }={},
-      loading,
-      adding,
-      editing,
+      loading=false,
     } = this.props;
-    const values = this.form && this.form.getFieldsValue() || {};
+    const { submitting } = this.state;
     const isNotCompany = unitType !== 4;
+    const values = this.form && this.form.getFieldsValue() || {};
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const navigation = this.getNavigation();
     const title = this.getTitle(navigation);
@@ -275,7 +320,6 @@ export default class GasometerOther extends Component {
             labelCol: LABEL_COL,
             render: () => <CompanySelect className={styles.item} disabled={isEdit} type={isNotDetail || 'span'} />,
             options: {
-              initialValue: companyId && { key: companyId, label: companyName },
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -286,13 +330,12 @@ export default class GasometerOther extends Component {
             },
           }] : []),
           {
-            id: 'type',
+            id: 'gasholderType',
             label: '气柜类型',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择气柜类型" list={TYPES} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
-              initialValue: type,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -302,32 +345,32 @@ export default class GasometerOther extends Component {
             },
           },
           {
-            id: 'code',
+            id: 'unifiedCode',
             label: '统一编码',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入统一编码" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: code,
               rules: isNotDetail ? [
                 {
                   required: true,
+                  whitespace: true,
                   message: '统一编码不能为空',
                 },
               ] : undefined,
             },
           },
           {
-            id: 'name',
+            id: 'gasholderName',
             label: '气柜名称',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入气柜名称" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: name,
               rules: isNotDetail ? [
                 {
                   required: true,
+                  whitespace: true,
                   message: '气柜名称不能为空',
                 },
               ] : undefined,
@@ -340,40 +383,40 @@ export default class GasometerOther extends Component {
             labelCol: LABEL_COL,
             render: () => <Capacity className={styles.item} placeholder="请输入设计柜容" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: [capacity, capacityUnit || 'L'],
               rules: isNotDetail ? [
                 {
                   required: true,
-                  transform: value => value && value[0],
+                  whitespace: true,
+                  transform: value => value && value[0] && value[1],
                   message: '设计柜容不能为空',
                 },
               ] : undefined,
             },
           },
           {
-            id: 'pressure',
-            label: '设计压力',
+            id: 'designKpa',
+            label: '设计压力（KPa）',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入设计压力" addonAfter="KPa" type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => <InputOrSpan className={styles.item} placeholder="请输入设计压力" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: pressure,
+              getValueFromEvent: (e) => e.target.value && e.target.value.replace(/\D*(\d*).*/, '$1'),
               rules: isNotDetail ? [
                 {
                   required: true,
+                  whitespace: true,
                   message: '设计压力不能为空',
                 },
               ] : undefined,
             },
           },
           {
-            id: 'medium',
+            id: 'storageMedium',
             label: '存储介质',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <Medium className={styles.item} placeholder="请选择存储介质" type={isNotDetail || 'span'} />,
             options: {
-              initialValue: medium,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -382,96 +425,78 @@ export default class GasometerOther extends Component {
               ] : undefined,
             },
           },
+          // {
+          //   id: 'majorHazard',
+          //   label: '是否构成重大危险源',
+          //   span: SPAN,
+          //   labelCol: LABEL_COL,
+          //   render: () => <SelectOrSpan className={styles.item} placeholder="请选择是否构成重大危险源" list={MAJOR_HAZARD_STATUSES} type={isNotDetail ? 'Select' : 'span'} />,
+          //   options: {
+          //     rules: isNotDetail ? [
+          //       {
+          //         required: true,
+          //         message: '是否构成重大危险源不能为空',
+          //       },
+          //     ] : undefined,
+          //   },
+          // },
           {
-            id: 'isMajorHazard',
-            label: '是否构成重大危险源',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => <SelectOrSpan className={styles.item} placeholder="请选择是否构成重大危险源" list={MAJOR_HAZARD_STATUSES} type={isNotDetail ? 'Select' : 'span'} />,
-            options: {
-              initialValue: isMajorHazard,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '是否构成重大危险源不能为空',
-                },
-              ] : undefined,
-            },
-          },
-          ...(+values.isMajorHazard ? [
-            {
-              id: 'majorHazard',
-              label: '所属危险化学品重大危险源单元',
-              span: SPAN,
-              labelCol: LABEL_COL,
-              render: () => <MajorHazard className={styles.item} placeholder="请选择所属危险化学品重大危险源单元" type={isNotDetail || 'span'} />,
-              options: {
-                initialValue: majorHazard,
-                rules: isNotDetail ? [
-                  {
-                    required: true,
-                    message: '所属危险化学品重大危险源单元不能为空',
-                  },
-                ] : undefined,
-              },
-            },
-          ] : []),
-          {
-            id: 'address',
+            id: 'regionalLocation',
             label: '区域位置',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入区域位置" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: address,
               rules: isNotDetail ? [
                 {
                   required: true,
+                  whitespace: true,
                   message: '区域位置不能为空',
                 },
               ] : undefined,
             },
           },
           {
-            id: 'gap',
-            label: '周边安全防护间距',
+            id: 'safeSpace',
+            label: '周边安全防护间距（m）',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入周边安全防护间距" addonAfter="m" type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => <InputOrSpan className={styles.item} placeholder="请输入周边安全防护间距" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: gap,
+              getValueFromEvent: (e) => e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
               rules: isNotDetail ? [
                 {
                   required: true,
+                  whitespace: true,
                   message: '周边安全防护间距不能为空',
                 },
               ] : undefined,
             },
           },
           {
-            id: 'distance',
-            label: '与周边装置的距离',
+            id: 'deviceSpace',
+            label: '与周边装置的距离（m）',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入与周边装置的距离" addonAfter="m" type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => <InputOrSpan className={styles.item} placeholder="请输入与周边装置的距离" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: distance,
+              getValueFromEvent: (e) => e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
               rules: isNotDetail ? [
                 {
                   required: true,
+                  whitespace: true,
                   message: '与周边装置的距离不能为空',
                 },
               ] : undefined,
             },
           },
           {
-            id: 'hasCofferdam',
+            id: 'cofferdam',
             label: '是否有围堰',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择是否有围堰" list={MAJOR_HAZARD_STATUSES} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
-              initialValue: hasCofferdam,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -480,18 +505,19 @@ export default class GasometerOther extends Component {
               ] : undefined,
             },
           },
-          ...(+values.hasCofferdam ? [
+          ...(+values.cofferdam ? [
             {
-              id: 'area',
-              label: '围堰所围面积',
+              id: 'cofferdamArea',
+              label: '围堰所围面积（m²）',
               span: SPAN,
               labelCol: LABEL_COL,
-              render: () => <InputOrSpan className={styles.item} placeholder="请输入围堰所围面积" addonAfter="m²" type={isNotDetail ? 'Input' : 'span'} />,
+              render: () => <InputOrSpan className={styles.item} placeholder="请输入围堰所围面积" type={isNotDetail ? 'Input' : 'span'} />,
               options: {
-                initialValue: area,
+                getValueFromEvent: (e) => e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
                 rules: isNotDetail ? [
                   {
                     required: true,
+                    whitespace: true,
                     message: '围堰所围面积不能为空',
                   },
                 ] : undefined,
@@ -499,13 +525,12 @@ export default class GasometerOther extends Component {
             },
           ] : []),
           {
-            id: 'level',
+            id: 'fireHazardRate',
             label: '火灾危险性等级',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择火灾危险性等级" list={LEVELS} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
-              initialValue: level,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -515,13 +540,12 @@ export default class GasometerOther extends Component {
             },
           },
           {
-            id: 'hasFireTank',
+            id: 'torch',
             label: '是否配套火柜',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择是否配套火柜" list={MAJOR_HAZARD_STATUSES} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
-              initialValue: hasFireTank,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -531,13 +555,12 @@ export default class GasometerOther extends Component {
             },
           },
           {
-            id: 'hasInsulation',
+            id: 'warmCool',
             label: '是否设置保温/保冷',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择是否设置保温/保冷" list={MAJOR_HAZARD_STATUSES} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
-              initialValue: hasInsulation,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -547,13 +570,12 @@ export default class GasometerOther extends Component {
             },
           },
           {
-            id: 'hasSprinkler',
+            id: 'autoSpray',
             label: '是否设置自动喷淋',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择是否设置自动喷淋" list={MAJOR_HAZARD_STATUSES} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
-              initialValue: hasSprinkler,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -563,13 +585,12 @@ export default class GasometerOther extends Component {
             },
           },
           {
-            id: 'hasFireControl',
+            id: 'fireWaterFoam',
             label: '是否设置消防水炮/泡沫炮',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择是否设置消防水炮/泡沫炮" list={MAJOR_HAZARD_STATUSES} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
-              initialValue: hasFireControl,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -579,22 +600,19 @@ export default class GasometerOther extends Component {
             },
           },
           {
-            id: 'fileList',
+            id: 'scenePhoto',
             label: '现场照片',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => isNotDetail ? <CustomUpload folder="gasometer" beforeUpload={this.handleBeforeUpload} /> : (
-              <div>
-                {fileList && fileList.map(({ webUrl, name }, index) => (
+              <div className={styles.fileList}>
+                {scenePhoto && scenePhoto.map(({ webUrl, name }, index) => (
                   <div key={index}>
                     <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
                   </div>
                 ))}
               </div>
             ),
-            options: {
-              initialValue: fileList || [],
-            },
           },
         ],
       },
@@ -606,18 +624,18 @@ export default class GasometerOther extends Component {
         title={title}
         breadcrumbList={breadcrumbList}
       >
-        <Spin spinning={loading || false}>
+        <Spin spinning={loading}>
           <CustomForm
             mode="multiple"
             fields={fields}
             searchable={false}
             resetable={false}
-            refresh={this.debouncedRefresh}
+            refresh={this.refresh}
             action={(
               <Fragment>
                 <Button onClick={this.handleBackButtonClick}>返回</Button>
                 {isNotDetail ? (
-                  <Button type="primary" onClick={this.handleSubmitButtonClick} loading={adding || editing || false}>提交</Button>
+                  <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
                 ) : (
                   <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
                 )}

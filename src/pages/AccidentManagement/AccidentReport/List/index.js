@@ -65,6 +65,8 @@ export const REPORT_STATUSES = [
       type: GET_LIST,
       payload: {
         type: '1',
+        pageNum: 1,
+        pageSize: getPageSize(),
         ...payload,
       },
       callback,
@@ -86,38 +88,19 @@ export const REPORT_STATUSES = [
   },
 }))
 export default class ReportList extends PureComponent {
+  prevValues = {}
+
   componentDidMount() {
     const {
+      getList,
       getCompanyTypeList,
     } = this.props;
-    this.getList();
+    getList();
     getCompanyTypeList();
   }
 
   setFormReference = form => {
     this.form = form;
-  }
-
-  getList = (payload) => {
-    const {
-      accidentReport: {
-        list: {
-          pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
-      },
-      getList,
-    } = this.props;
-    const { current=1, pageSize=getPageSize() } = payload || {};
-    const values = this.form && this.form.getFieldsValue();
-    getList({
-      ...values,
-      ...payload,
-      pageNum: prevPageSize !== pageSize ? 1 : current,
-      pageSize,
-    });
-    prevPageSize !== pageSize && setPageSize(pageSize);
   }
 
   reload = () => {
@@ -126,13 +109,18 @@ export default class ReportList extends PureComponent {
         list: {
           pagination: {
             pageNum=1,
+            pageSize=getPageSize(),
           }={},
         }={},
       },
+      getList,
     } = this.props;
-    this.getList({
-      current: pageNum,
+    getList({
+      ...this.prevValues,
+      pageNum,
+      pageSize,
     });
+    this.form && this.form.setFieldsValue(this.prevValues);
   }
 
   // 新增按钮点击事件
@@ -163,6 +151,51 @@ export default class ReportList extends PureComponent {
         message.error(msg || '删除失败，请稍后重试！');
       }
     });
+  }
+
+  // 查询
+  handleSearch = (values) => {
+    const {
+      accidentReport: {
+        list: {
+          pagination: {
+            pageSize=getPageSize(),
+          }={},
+        }={},
+      },
+      getList,
+    } = this.props;
+    this.prevValues = values;
+    getList({
+      ...values,
+      pageSize,
+    });
+  }
+
+  // 重置
+  handleReset = (values) => {
+    this.handleSearch(values);
+  }
+
+  // 表格change
+  handleTableChange = ({ current, pageSize }) => {
+    const {
+      accidentReport: {
+        list: {
+          pagination: {
+            pageSize: prevPageSize=getPageSize(),
+          }={},
+        }={},
+      },
+      getList,
+    } = this.props;
+    getList({
+      ...this.prevValues,
+      pageNum: prevPageSize !== pageSize ? 1 : current,
+      pageSize,
+    });
+    this.form && this.form.setFieldsValue(this.prevValues);
+    prevPageSize !== pageSize && setPageSize(pageSize);
   }
 
   renderForm() {
@@ -248,8 +281,8 @@ export default class ReportList extends PureComponent {
       <Card className={styles.card} bordered={false}>
         <CustomForm
           fields={FIELDS}
-          onSearch={this.getList}
-          onReset={this.getList}
+          onSearch={this.handleSearch}
+          onReset={this.handleReset}
           action={<Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>新增</Button>}
           ref={this.setFormReference}
         />
@@ -276,7 +309,7 @@ export default class ReportList extends PureComponent {
           unitType,
         },
       },
-      loading,
+      loading=false,
     } = this.props;
     // const isNotCompany = unitType !== 4;
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
@@ -366,31 +399,30 @@ export default class ReportList extends PureComponent {
 
     return (
       <Card className={styles.card} bordered={false}>
-        <Spin spinning={loading || false}>
-          {list && list.length > 0 ? (
-            <Table
-              className={styles.table}
-              dataSource={list}
-              columns={COLUMNS}
-              rowKey="id"
-              scroll={{
-                x: true,
-              }}
-              onChange={this.getList}
-              pagination={{
-                current: pageNum,
-                pageSize,
-                total,
-                pageSizeOptions: ['5', '10', '15', '20'],
-                // showTotal: total => `共 ${total} 条`,
-                showQuickJumper: true,
-                showSizeChanger: true,
-              }}
-            />
-          ) : (
-            <Empty />
-          )}
-        </Spin>
+        {list && list.length > 0 ? (
+          <Table
+            className={styles.table}
+            dataSource={list}
+            columns={COLUMNS}
+            rowKey="id"
+            loading={loading}
+            scroll={{
+              x: true,
+            }}
+            onChange={this.handleTableChange}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              // showTotal: total => `共 ${total} 条`,
+              showQuickJumper: true,
+              showSizeChanger: true,
+            }}
+          />
+        ) : (
+          <Empty />
+        )}
       </Card>
     );
   }
