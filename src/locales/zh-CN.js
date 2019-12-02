@@ -75,7 +75,7 @@ export default {
   'menu.baseInfoManagement.company.divisionAdd': '增加单位分部',
   'menu.baseInfoManagement.company.divisionDetail': '查看单位分部',
   'menu.baseInfoManagement.company.divisionEdit': '编辑单位分部',
-  'menu.baseInfoManagement.buildingsInfo': '建筑物信息',
+  'menu.baseInfoManagement.buildingsInfo': '建筑物管理',
   'menu.baseInfoManagement.buildingsInfo.list': '建筑物信息列表',
   'menu.baseInfoManagement.buildingsInfo.view': '企业建筑物信息列表',
   'menu.baseInfoManagement.buildingsInfo.add': '新增建筑物',

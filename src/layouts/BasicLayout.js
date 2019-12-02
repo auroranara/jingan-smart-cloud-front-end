@@ -117,7 +117,7 @@ class BasicLayout extends React.PureComponent {
         // const grid = gridList && gridList[0] ? gridList[0].value : 'index';
         // const path = code ? getRedirectPath(code, unitType, unitId, grid) : INIT_ROUTE;
         const path = INIT_ROUTE;
-        console.log(logined, path);
+        // console.log(logined, path);
         if (logined && path) {
           router.push(path);
           dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转

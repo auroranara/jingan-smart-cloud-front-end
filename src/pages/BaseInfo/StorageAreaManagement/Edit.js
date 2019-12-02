@@ -331,7 +331,7 @@ export default class Edit extends PureComponent {
 
   goBack = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/base-info/storage-area-management/list`));
+    dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
   };
 
   handleClickValidate = () => {
@@ -351,7 +351,7 @@ export default class Edit extends PureComponent {
         const payload = { ...formData, companyId: unitType === 4 ? companyId : formData.companyId };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          dispatch(routerRedux.push(`/base-info/storage-area-management/list`));
+          dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -776,13 +776,13 @@ export default class Edit extends PureComponent {
         href: '/',
       },
       {
-        title: '一企一档',
-        name: '一企一档',
+        title: '重大危险源基本信息',
+        name: '重大危险源基本信息',
       },
       {
         title: '储罐区管理',
         name: '储罐区管理',
-        href: '/base-info/storage-area-management/list',
+        href: '/major-hazard-info/storage-area-management/list',
       },
       {
         title,

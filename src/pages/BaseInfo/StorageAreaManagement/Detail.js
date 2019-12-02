@@ -6,7 +6,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 
-const listUrl = '/base-info/storage-area-management/list';
+const listUrl = '/major-hazard-info/storage-area-management/list';
 const HEADER = '储罐区管理';
 const TITLE = HEADER + '详情';
 const BREADCRUMB = [
@@ -16,8 +16,8 @@ const BREADCRUMB = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title: HEADER,

@@ -30,7 +30,7 @@ const {
     materials: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
   },
 } = codes;
-const addUrl = '/base-info/materials/add';
+const addUrl = '/major-hazard-info/materials/add';
 
 const { Option } = Select;
 const title = '物料信息';
@@ -41,8 +41,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title,
@@ -305,7 +305,7 @@ export default class MaterialsList extends PureComponent {
   };
 
   goEdit = id => {
-    router.push(`/base-info/materials/edit/${id}`);
+    router.push(`/major-hazard-info/materials/edit/${id}`);
   };
 
   // 表格改变触发，包含分页变动

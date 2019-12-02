@@ -27,8 +27,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title,
@@ -386,7 +386,7 @@ export default class ReservoirRegionList extends PureComponent {
             </AuthA>
             <Divider type="vertical" />
             {editCode ? (
-              <Link to={`/base-info/reservoir-region-management/edit/${row.id}`}>编辑</Link>
+              <Link to={`/major-hazard-info/reservoir-region-management/edit/${row.id}`}>编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -555,7 +555,7 @@ export default class ReservoirRegionList extends PureComponent {
             action={
               <Button
                 type="primary"
-                href={`#/base-info/reservoir-region-management/add`}
+                href={`#/major-hazard-info/reservoir-region-management/add`}
                 disabled={!addCode}
               >
                 新增库区

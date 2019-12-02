@@ -30,7 +30,7 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-const listUrl = '/base-info/materials/list';
+const listUrl = '/major-hazard-info/materials/list';
 
 const itemStyles = { style: { width: '70%', marginRight: '10px' } };
 const unitLayout = {
@@ -775,7 +775,7 @@ export default class MaterialsHandler extends PureComponent {
     const title = id ? '编辑物料' : '新增物料';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '应急管理', name: '应急管理' },
+      { title: '重大危险源基本信息', name: '重大危险源基本信息' },
       { title: '物料信息', name: '物料信息', href: listUrl },
       { title, name: title },
     ];

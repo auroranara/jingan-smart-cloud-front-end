@@ -15,7 +15,7 @@ const {
     highRiskProcess: { detail: detailCode, edit: editCode, add: addCode },
   },
 } = codes;
-const addUrl = '/base-info/high-risk-process/add';
+const addUrl = '/major-hazard-info/high-risk-process/add';
 
 const { Option } = Select;
 const title = '高危工艺流程';
@@ -26,8 +26,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title,

@@ -1,7 +1,7 @@
 export default {
   home: '首页',
   company: {
-    menu: '一企一档',
+    menu: '基本信息管理',
     list: '单位管理',
     add: '新增单位',
     edit: '编辑单位',

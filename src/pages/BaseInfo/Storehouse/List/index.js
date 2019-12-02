@@ -36,7 +36,7 @@ const {
     },
   },
 } = codes;
-const addUrl = '/base-info/storehouse/add';
+const addUrl = '/major-hazard-info/storehouse/add';
 const defaultPageSize = 10;
 
 const { Option } = Select;
@@ -48,8 +48,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title,
@@ -211,7 +211,7 @@ export default class StorehouseList extends PureComponent {
   };
 
   goEdit = id => {
-    router.push(`/base-info/storehouse/edit/${id}`);
+    router.push(`/major-hazard-info/storehouse/edit/${id}`);
   };
 
   // 表格改变触发，包含分页变动

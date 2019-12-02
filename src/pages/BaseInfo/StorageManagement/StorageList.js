@@ -34,8 +34,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源管理',
+    name: '重大危险源管理',
   },
   {
     title,
@@ -56,7 +56,7 @@ export default class StorageList extends PureComponent {
     super(props);
     this.state = {};
     this.exportButton = (
-      <AuthButton code={addCode} type="primary" href={`#/base-info/storage-management/add`}>
+      <AuthButton code={addCode} type="primary" href={`#/major-hazard-info/storage-management/add`}>
         新增储罐
       </AuthButton>
     );
@@ -174,7 +174,7 @@ export default class StorageList extends PureComponent {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={editCode} onClick={() => router.push(`/base-info/storage-management/edit/${row.id}`)}>编辑</AuthA>
+            <AuthA code={editCode} onClick={() => router.push(`/major-hazard-info/storage-management/edit/${row.id}`)}>编辑</AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
