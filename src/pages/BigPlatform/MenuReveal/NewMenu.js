@@ -6,7 +6,7 @@ import router from 'umi/router';
 import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
-import { filterBigPlatform } from '@/utils/customAuth';
+// import { filterBigPlatform } from '@/utils/customAuth';
 import { SRC_MAP, setBlocks } from './utils';
 import classNames from 'classnames';
 import styles from './NewMenu.less';
@@ -110,11 +110,11 @@ export default class NewMenuReveal extends Component {
  * @param {String} parentLocale 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
  **/
   filterSysMenu = (array, depth = 0, parentLocale) => {
-    const {
-      user: {
-        currentUser: { permissionCodes },
-      },
-    } = this.props;
+    // const {
+    //   user: {
+    //     currentUser: { permissionCodes },
+    //   },
+    // } = this.props;
     return array.reduce((arr, item) => {
       let locale = 'menu';
       if (parentLocale && item.name) {
@@ -191,7 +191,7 @@ export default class NewMenuReveal extends Component {
 
   generateMenuItemClass = index => {
     const { currentBlockClassification } = this.state;
-    return classNames(styles.menyItem, {
+    return classNames(styles.menuItem, {
       [styles.selectedItem]: currentBlockClassification === index,
     })
   }
@@ -262,8 +262,9 @@ export default class NewMenuReveal extends Component {
           userName,
         },
       },
-    } = this.props
-    const { currentBlockClassification } = this.state
+    } = this.props;
+    // 当前选择的分类下标
+    const { currentBlockClassification } = this.state;
     return (
       <div className={styles.newMenuRevealContainer}>
         {/* 头部 */}

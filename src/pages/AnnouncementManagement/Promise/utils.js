@@ -3,7 +3,7 @@ import moment from 'moment';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
 export const PAGE_SIZE = 20;
-export const ROUTER = '/announcement-management/promise'; // modify
+export const ROUTER = '/safety-risk-control/promise'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 export const LIST = [
   // modify
@@ -30,7 +30,7 @@ export const LIST = [
 export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '公告管理', name: '公告管理' },
+  { title: '安全风险管控', name: '安全风险管控' },
   { title: '安全承诺公告', name: '安全承诺公告', href: LIST_URL },
 ];
 

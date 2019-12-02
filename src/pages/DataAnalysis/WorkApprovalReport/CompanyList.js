@@ -9,10 +9,10 @@ import { hasAuthority, AuthLink, ERROR_MSG } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import styles from './CompanyList.less';
 
-const title = '危险作业管理';
+const title = '作业许可管理';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '数据分析', name: '数据分析' },
+  { title: '作业安全管理', name: '作业安全管理' },
   { title, name: title },
 ];
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
@@ -42,7 +42,7 @@ export default class CompanyList extends PureComponent {
     // 判断是否是企事业用户，是则直接进入作业列表
     if (unitType === 4) {
       router.push(
-        `/data-analysis/work-approval-report/company/${companyId}/0?companyName=${companyName}`
+        `/operation-safety/work-approval-report/company/${companyId}/0?companyName=${companyName}`
       );
       return;
     }
@@ -125,7 +125,7 @@ export default class CompanyList extends PureComponent {
    * 点击卡片
    */
   handleCardClick = (companyId, name) => {
-    router.push(`/data-analysis/work-approval-report/company/${companyId}/0?companyName=${name}`);
+    router.push(`/operation-safety/work-approval-report/company/${companyId}/0?companyName=${name}`);
   };
 
   /**
@@ -202,7 +202,7 @@ export default class CompanyList extends PureComponent {
               <List.Item key={id}>
                 <AuthLink
                   code={workApprovalListCode}
-                  to={`/data-analysis/work-approval-report/company/${id}/0?companyName=${name}`}
+                  to={`/operation-safety/work-approval-report/company/${id}/0?companyName=${name}`}
                   errMsg={ERROR_MSG}
                   target="_blank"
                 >

@@ -24,8 +24,8 @@ const {
 const TITLE = '危险作业列表'
 const BREADCRUMBLIST = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '数据分析', name: '数据分析' },
-  { title: '危险作业管理', name: '危险作业管理', href: '/data-analysis/work-approval-report/list' },
+  { title: '作业安全管理', name: '作业安全管理' },
+  { title: '作业许可管理', name: '作业许可管理', href: '/operation-safety/work-approval-report/list' },
   { title: TITLE, name: TITLE },
 ]
 // 审批状态颜色
@@ -149,7 +149,7 @@ export default class WorkApprovalList extends PureComponent {
   }
 
   /**
-   * 获取危险作业管理列表
+   * 获取作业许可管理列表
    */
   fetchWorkApprovalList = actions => {
     const { dispatch } = this.props
@@ -197,7 +197,7 @@ export default class WorkApprovalList extends PureComponent {
       match: { params: { companyId } },
       location: { query: { companyName } },
     } = this.props
-    await router.push(`/data-analysis/work-approval-report/company/${companyId}/${type}?companyName=${companyName}`)
+    await router.push(`/operation-safety/work-approval-report/company/${companyId}/${type}?companyName=${companyName}`)
     // 清空筛选数据
     this.setState({ filterValues: {} })
     this.filterForm.resetFields()
@@ -250,7 +250,7 @@ export default class WorkApprovalList extends PureComponent {
       match: { params: { companyId, type } },
       location: { query: { companyName } },
     } = this.props
-    router.push(`/data-analysis/work-approval-report/company/${companyId}/${type}/detail/${id}?companyName=${companyName}`)
+    router.push(`/operation-safety/work-approval-report/company/${companyId}/${type}/detail/${id}?companyName=${companyName}`)
   }
 
   /**

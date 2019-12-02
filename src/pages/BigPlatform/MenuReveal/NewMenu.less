@@ -1,3 +1,5 @@
+@import '~antd/lib/style/themes/default.less';
+
 .newMenuRevealContainer {
   box-sizing: border-box;
   width: 100%;
@@ -68,9 +70,11 @@
       align-items: center;
       position: relative;
 
-      .menyItem {
+      .menuItem {
         padding: 0 3.5em;
         color: #447DB2;
+        white-space: nowrap;
+        transition: padding 0.3s;
 
         &>span {
           font-size: 17px;
@@ -306,4 +310,44 @@
   position: absolute;
   right: 5px;
   bottom: 5px;
+}
+
+// @media screen and (max-width: @screen-xl) {
+
+// }
+
+@media screen and (max-width: 1600px) {
+  .newMenuRevealContainer {
+    .header {
+      .menuContainer {
+        .menuItem {
+          padding: 0 4em;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1600px) {
+  .newMenuRevealContainer {
+    .header {
+      .menuContainer {
+        .menuItem {
+          padding: 0 2em;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1400px) {
+  .newMenuRevealContainer {
+    .header {
+      .menuContainer {
+        .menuItem {
+          padding: 0 1em;
+        }
+      }
+    }
+  }
 }
