@@ -17,7 +17,7 @@ export default {
   },
   baseInfo: {
     specialoPerationPermit: {
-      list: '/base-info/specialo-peration-permit/list',
+      list: '/base-info/special-operation-permit/list',
       add: '/base-info/specialo-peration-permit/add',
       edit: '/base-info/specialo-peration-permit/edit/',
     },

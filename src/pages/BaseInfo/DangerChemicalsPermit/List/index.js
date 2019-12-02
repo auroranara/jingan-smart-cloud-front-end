@@ -275,7 +275,7 @@ export default class DangerChemicalList extends PureComponent {
       form: { getFieldDecorator },
       reservoirRegion: { issuingTypeList, certificateStateList, expirationStatusList },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -329,11 +329,14 @@ export default class DangerChemicalList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('companyName')(<Input placeholder="单位名称" />)}
-              </FormItem>
-            </Col>
+            {unitType !== 4 && (
+              <Col {...colWrapper}>
+                <FormItem {...formItemStyle}>
+                  {getFieldDecorator('companyName')(<Input placeholder="单位名称" />)}
+                </FormItem>
+              </Col>
+            )}
+
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleSearch}>
@@ -366,7 +369,7 @@ export default class DangerChemicalList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -489,7 +492,7 @@ export default class DangerChemicalList extends PureComponent {
         <Table
           rowKey="id"
           loading={loading}
-          columns={columns}
+          columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
           dataSource={list}
           bordered
           scroll={{ x: 'max-content' }}

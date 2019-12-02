@@ -40,9 +40,10 @@ const folder = 'dangerChemicalsInfo';
 const uploadAction = '/acloud_new/v2/uploadFile';
 
 @Form.create()
-@connect(({ reservoirRegion, videoMonitor, loading }) => ({
+@connect(({ reservoirRegion, videoMonitor, user, loading }) => ({
   reservoirRegion,
   videoMonitor,
+  user,
   loading: loading.models.reservoirRegion,
 }))
 export default class DangerChemicalsHandle extends PureComponent {
@@ -106,6 +107,9 @@ export default class DangerChemicalsHandle extends PureComponent {
       },
       dispatch,
       form: { validateFieldsAndScroll },
+      user: {
+        currentUser: { companyId: unitId },
+      },
     } = this.props;
     const { photoUrl } = this.state;
     if (photoUrl.length === 0) {
@@ -124,7 +128,7 @@ export default class DangerChemicalsHandle extends PureComponent {
         } = values;
         const payload = {
           id,
-          companyId: this.companyId,
+          companyId: this.companyId || unitId,
           issuingType,
           certificateState,
           issuingOrgan,
@@ -271,6 +275,9 @@ export default class DangerChemicalsHandle extends PureComponent {
     const {
       form: { getFieldDecorator },
       reservoirRegion: { issuingTypeList, certificateStateList },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const { uploading, photoUrl, detailList } = this.state;
 
@@ -289,24 +296,27 @@ export default class DangerChemicalsHandle extends PureComponent {
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              initialValue: companyName,
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Input
-                {...itemStyles}
-                ref={input => {
-                  this.CompanyIdInput = input;
-                }}
-                disabled
-                placeholder="请选择"
-              />
-            )}
-            <Button type="primary" onClick={this.handleCompanyModal}>
-              选择单位
-            </Button>
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                initialValue: companyName,
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Input
+                  {...itemStyles}
+                  ref={input => {
+                    this.CompanyIdInput = input;
+                  }}
+                  disabled
+                  placeholder="请选择"
+                />
+              )}
+              <Button type="primary" onClick={this.handleCompanyModal}>
+                选择单位
+              </Button>
+            </FormItem>
+          )}
+
           <FormItem label="证书种类" {...formItemLayout}>
             {getFieldDecorator('issuingType', {
               initialValue: issuingType,

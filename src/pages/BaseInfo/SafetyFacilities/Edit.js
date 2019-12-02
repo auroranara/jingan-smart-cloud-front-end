@@ -431,12 +431,12 @@ export default class Edit extends PureComponent {
           </FormItem>
           <FormItem label="使用年限" {...formItemLayout}>
             {getFieldDecorator('useYear', {
-              initialValue: useYear,
+              initialValue: useYear === 0 ? '' : useYear,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   message: '请输入使用年限，只能输入正整数',
-                  pattern: new RegExp(/^[1-9]\d*$/, 'g'),
+                  pattern: /^[1-9]\d*$/,
                 },
               ],
             })(<Input placeholder="请输入" {...itemStyles} />)}

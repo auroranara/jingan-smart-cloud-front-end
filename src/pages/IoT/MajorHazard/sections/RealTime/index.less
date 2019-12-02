@@ -1,0 +1,126 @@
+.container {
+  :global {
+    .ant-card-head-title {
+      padding: 12px 0 !important;
+    }
+    .ant-card-actions {
+      padding: 0 12px !important;
+
+      li {
+        text-align: left;
+
+        & > span {
+          display: block;
+          line-height: 24px;
+
+          &:hover {
+            color: rgba(0, 0, 0, 0.65) !important;
+          }
+        }
+      }
+    }
+  }
+}
+/* 标题 */
+.titleContainer {
+  display: flex;
+
+  .titleIcon {
+    flex: none;
+    margin-right: 12px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .titleWrapper {
+    flex: 1;
+    padding: 2px 0;
+
+    .title {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .subTitle {
+      display: flex;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.45);
+
+      .subTitleLabel {
+        flex: none;
+      }
+
+      .subTitleValue {
+        flex: 1;
+        width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+/* 内容 */
+.content {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+
+  .item {
+    flex: none;
+    padding: 20px 0;
+
+    .itemValue {
+      margin-bottom: 8px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.45);
+
+      .alarm {
+        margin-right: 6px;
+        font-size: 20px;
+        color: red;
+      }
+
+      .slash {
+        margin-right: 4px;
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.85);
+      }
+
+      .total {
+        margin-right: 2px;
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.85);
+      }
+    }
+
+    .itemLabel {
+      text-align: center;
+      color: rgba(0, 0, 0, 0.45);
+    }
+  }
+}
+/* 底部 */
+.footer {
+  display: flex;
+
+  .footerIcon {
+    flex: none;
+    margin-right: 12px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .footerLabel {
+    flex: 1;
+    position: relative;
+    left: 0;
+    width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.normalFooterLabel {
+      color: rgba(0, 0, 0, 0.45);
+    }
+  }
+}

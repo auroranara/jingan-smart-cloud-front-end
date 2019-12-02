@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Select } from 'antd';
+import { Select, Input } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import DeviceCard from '@/jingan-components/DeviceCard';
@@ -54,6 +54,14 @@ export default class DeviceCountDrawer extends PureComponent {
   }
 
   /**
+   * 区域位置变化
+   */
+  handleAddressChange = ({ target: { value: address } }) => {
+    const { onAddressChange } = this.props;
+    onAddressChange(address);
+  }
+
+  /**
    * 状态变化
    */
   handleStatusChange = (deviceCountSelectedStatus) => {
@@ -67,6 +75,22 @@ export default class DeviceCountDrawer extends PureComponent {
   handleMonitoringTypeChange = (deviceCountSelectedMonitoringType) => {
     const { onMonitoringTypeChange } = this.props;
     onMonitoringTypeChange(deviceCountSelectedMonitoringType);
+  }
+
+  /**
+   * 区域位置输入框
+   */
+  renderAddressInput() {
+    const { address } = this.props;
+
+    return (
+      <Input
+        className={styles.input}
+        placeholder="搜索 区域位置"
+        value={address}
+        onChange={this.handleAddressChange}
+      />
+    );
   }
 
   /**
@@ -199,6 +223,7 @@ export default class DeviceCountDrawer extends PureComponent {
           spinProps: { loading },
           fixedContent: (
             <div className={styles.toolbar}>
+              <div className={styles.tool}>{this.renderAddressInput()}</div>
               <div className={styles.tool}>{this.renderStatusSelect()}</div>
               <div className={styles.tool}>{this.renderMonitoringTypeSelect()}</div>
             </div>

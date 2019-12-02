@@ -269,14 +269,17 @@ export default class StorageList extends PureComponent {
           pagination: { total, pageNum, pageSize },
         },
       },
+      user: { currentUser: { unitType } },
     } = this.props
     const columns = [
-      {
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
-        width: 300,
-      },
+      ...unitType === 4 ? [] : [
+        {
+          title: '单位名称',
+          dataIndex: 'companyName',
+          align: 'center',
+          width: 300,
+        },
+      ],
       {
         title: '基本信息',
         key: 'info',
@@ -317,7 +320,7 @@ export default class StorageList extends PureComponent {
         title: '区域位置',
         dataIndex: 'area',
         align: 'center',
-        width: 150,
+        width: 200,
         render: (val, { area, location }) => `${area || ''}${location || ''}`,
       },
       {

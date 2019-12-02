@@ -10,15 +10,21 @@ import {
   Divider,
   Row,
   Col,
+  Cascader,
+  message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
 import router from 'umi/router';
+import { AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
+import moment from 'moment';
+import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
 
-const title = '特种设备作业人员'
+const title = '特种设备作业人员';
+const defaultPageSize = 10;
 const {
   home: homeUrl,
   baseInfo: {
@@ -30,6 +36,15 @@ const {
   home: homeTitle,
   specialEquipmentOperators: { menu: menuTitle },
 } = titles;
+const {
+  baseInfo: {
+    specialEquipmentOperators: {
+      add: addCode,
+      edit: editCode,
+      delete: deleteCode,
+    },
+  },
+} = codes;
 const breadcrumbList = [
   {
     title: homeTitle,
@@ -48,22 +63,92 @@ const breadcrumbList = [
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 const expirationStatusList = [
-  { key: '1', label: '未到期' },
-  { key: '2', label: '即将到期' },
-  { key: '3', label: '已过期' },
+  { key: '0', label: '未到期' },
+  { key: '1', label: '即将到期' },
+  { key: '2', label: '已过期' },
 ]
 
 @Form.create()
-@connect(({ baseInfo }) => ({
+@connect(({ baseInfo, loading }) => ({
   baseInfo,
+  tableLoading: loading.effects['baseInfo/fetchSpecialEquipPerson'],
 }))
 export default class SpecialEquipmentOperatorsList extends PureComponent {
 
+  state = {
+    workProjectOptions: [], // 作业项目选项
+    workTypeOptions: [], // 作业种类
+  }
 
-  handleQuery = (pageNum = 1, pageSize = 10) => { }
+  componentDidMount () {
+    this.handleQuery()
+    // 获取作业项目
+    this.fetchDict({
+      payload: { type: 'workProject', parentId: 0 },
+      callback: list => { this.setState({ workTypeOptions: list }) },
+    })
+  }
 
+  // 获取字典
+  fetchDict = actions => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'baseInfo/fetchDict',
+      ...actions,
+    })
+  }
+
+  // 查询列表数据
+  handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const values = getFieldsValue();
+    dispatch({
+      type: 'baseInfo/fetchSpecialEquipPerson',
+      payload: { ...values, pageNum, pageSize },
+    })
+  }
+
+  // 点击重置
+  handleReset = () => {
+    const { form: { resetFields } } = this.props;
+    resetFields();
+    this.handleQuery()
+  }
+
+  // 点击新增
   handleToAdd = () => {
     router.push(addUrl)
+  }
+
+  formateTime = timestramp => timestramp ? moment(timestramp).format('YYYY-MM-DD') : '暂无数据'
+
+  // 点击删除
+  handleDelete = (id) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'baseInfo/deleteSpecialEquipPerson',
+      payload: { id },
+      success: () => {
+        message.success('删除成功');
+        this.handleQuery()
+      },
+      error: res => { message.error(res ? res.msg : '删除失败') },
+    })
+  }
+
+  // 作业种类改变
+  handleWorkTypeChange = (workType) => {
+    const { form: { setFieldsValue } } = this.props;
+    if (workType) {
+      this.fetchDict({
+        payload: { type: 'workProject', parentId: workType },
+        callback: list => { this.setState({ workProjectOptions: list }) },
+      })
+    } else this.setState({ workProjectOptions: [] });
+    setFieldsValue({ workProject: undefined })
   }
 
   /**
@@ -72,7 +157,8 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
-    } = this.props
+    } = this.props;
+    const { workTypeOptions, workProjectOptions } = this.state;
     return (
       <Card>
         <Form>
@@ -86,14 +172,14 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('num')(
+                {getFieldDecorator('operapersonNumber')(
                   <Input placeholder="证号" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('expirationStatus')(
+                {getFieldDecorator('paststatus')(
                   <Select placeholder="到期状态">
                     {expirationStatusList.map(({ key, label }) => (
                       <Select.Option key={key} value={key}>{label}</Select.Option>
@@ -104,10 +190,10 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('type')(
-                  <Select placeholder="作业种类">
-                    {[].map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                {getFieldDecorator('workType')(
+                  <Select placeholder="作业种类" allowClear onChange={this.handleWorkTypeChange}>
+                    {workTypeOptions.map(({ id, label }) => (
+                      <Select.Option key={id} value={id}>{label}</Select.Option>
                     ))}
                   </Select>
                 )}
@@ -115,10 +201,10 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('project')(
-                  <Select placeholder="作业项目">
-                    {[].map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                {getFieldDecorator('workProject')(
+                  <Select placeholder="作业项目" allowClear>
+                    {workProjectOptions.map(({ id, label }) => (
+                      <Select.Option key={id} value={id}>{label}</Select.Option>
                     ))}
                   </Select>
                 )}
@@ -133,9 +219,9 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary">查询</Button>
-                <Button style={{ marginRight: '10px' }}>重置</Button>
-                <Button type="primary" onClick={this.handleToAdd}>新增</Button>
+                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
+                <AuthButton code={addCode} type="primary" onClick={this.handleToAdd}>新增</AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -149,6 +235,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
    */
   renderTable = () => {
     const {
+      tableLoading,
       baseInfo: {
         specialEquipmentOperators: {
           list = [],
@@ -164,45 +251,99 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
         width: 300,
       },
       {
-        title: '姓名',
-        dataIndex: 'name',
+        title: '基本信息',
+        key: '基本信息',
         align: 'center',
         width: 300,
+        render: (val, { name, sex, birthday, telephone }) => (
+          <div style={{ textAlign: 'left' }}>
+            <div>姓名：{name}</div>
+            <div>性别：{(sex === '1' && '男') || (sex === '2' && '女')}</div>
+            <div>出生年月：{this.formateTime(birthday)}</div>
+            <div>联系电话：{telephone}</div>
+          </div>
+        ),
       },
       {
         title: '作业种类',
-        dataIndex: 'type',
+        dataIndex: 'workTypeName',
         align: 'center',
         width: 250,
+        render: (val, { workProjectName }) => workProjectName ? workProjectName.split('-')[0] : '暂无数据',
       },
       {
         title: '作业项目',
-        dataIndex: 'project',
+        dataIndex: 'workProjectName',
         align: 'center',
         width: 250,
+        render: (val, { workProjectName }) => workProjectName ? workProjectName.split('-')[1] : '暂无数据',
       },
       {
         title: '作业人员证',
         dataIndex: 'permit',
         align: 'center',
-        width: 250,
+        width: 300,
+        render: (val, { paststatus, operapersonNumber, firstDate, startDate, endDate, reviewDate }) => (
+          <div style={{ textAlign: 'left' }}>
+            {!isNaN(paststatus) && [1, 2].includes(+paststatus) && (<div style={{ color: 'red' }}>{expirationStatusList[+paststatus].label}</div>)}
+            <div>证号：{operapersonNumber}</div>
+            <div>初领日期：{this.formateTime(firstDate)}</div>
+            <div>有效日期：{`${this.formateTime(startDate)}~${this.formateTime(endDate)}`}</div>
+            <div>复审日期：{this.formateTime(reviewDate)}</div>
+          </div>
+        ),
       },
       {
         title: '附件',
-        dataIndex: 'dannex',
+        key: '附件',
         align: 'center',
         width: 250,
+        render: (val, { certificatePositiveFileList, certificateReverseFileList }) => (
+          <div style={{ textAlign: 'left' }}>
+            <Row style={{ marginBottom: '10px' }}>
+              正面附件：
+              {certificatePositiveFileList.map(({ fileName, webUrl, id }) => (
+                <div
+                  style={{ color: '#1890ff', cursor: 'pointer' }}
+                  key={id}
+                  onClick={() => { window.open(webUrl, '_blank') }}
+                >
+                  {fileName}
+                </div>
+              ))}
+            </Row>
+            <Row>
+              反面附件：
+              {certificateReverseFileList.map(({ fileName, webUrl, id }) => (
+                <div
+                  style={{ color: '#1890ff', cursor: 'pointer' }}
+                  key={id}
+                  onClick={() => { window.open(webUrl, '_blank') }}
+                >
+                  {fileName}
+                </div>
+              ))}
+            </Row>
+          </div>
+        ),
       },
       {
         title: '操作',
         key: '操作',
         align: 'center',
         width: 250,
+        fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <a>编辑</a>
+            <AuthA code={editCode} onClick={() => { router.push(`/base-info/special-equipment-operators/edit/${row.id}`) }}>编辑</AuthA>
             <Divider type="vertical" />
-            <a>删除</a>
+            <AuthPopConfirm
+              code={deleteCode}
+              title="确认要删除该数据吗？"
+              onConfirm={() => this.handleDelete(row.id)}
+            >
+              删除
+            </AuthPopConfirm>
           </Fragment>
         ),
       },
@@ -211,7 +352,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
-          // loading={loading}
+          loading={tableLoading}
           columns={columns}
           dataSource={list}
           bordered
@@ -233,12 +374,20 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
     ) : (<div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>)
   }
 
-  render() {
+  render () {
+    const {
+      baseInfo: {
+        specialEquipmentOperators: {
+          a = 0,
+          pagination: { total = 0 },
+        },
+      },
+    } = this.props;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位数量：1 人员数量：1`}
+        content={`单位数量：${a} 人员数量：${total}`}
       >
         {this.renderFilter()}
         {this.renderTable()}

@@ -292,7 +292,7 @@ export default class ReservoirRegionList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -330,7 +330,7 @@ export default class ReservoirRegionList extends PureComponent {
       },
       {
         title: '库房个数',
-        dataIndex: 'count',
+        dataIndex: 'warehouseNum',
         align: 'center',
         width: 200,
       },
@@ -340,7 +340,8 @@ export default class ReservoirRegionList extends PureComponent {
         align: 'center',
         width: 200,
         render: val => {
-          return +val === 2 ? '否' : '是';
+          // return +val === 2 ? '否' : '是';
+          return <span>---</span>;
         },
       },
       {
@@ -405,7 +406,7 @@ export default class ReservoirRegionList extends PureComponent {
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
-          columns={columns}
+          columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
           dataSource={list}
           bordered
           scroll={{ x: 'max-content' }}
@@ -438,7 +439,7 @@ export default class ReservoirRegionList extends PureComponent {
         envirTypeList,
         areaCount: { companyNum = 0, sensorNum = 0 },
       },
-      user: { currentUser: { permissionCodes } },
+      user: { currentUser: { permissionCodes, unitType } },
       device: { monitoringDevice },
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
@@ -542,7 +543,7 @@ export default class ReservoirRegionList extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={fields}
+            fields={unitType === 4 ? fields.slice(0, 4) : fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={

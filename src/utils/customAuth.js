@@ -145,14 +145,15 @@ export const filterBigPlatform = (array, model) => {
 export function filterMenus(MenuData, codes = [], codeMap, sysType) {
   const menuData = [];
   for (let m of MenuData) {
-    const { path, children, systemType } = m;
+    const { path, children, systemType, developing } = m;
     // console.log('m', m, 'code', codeMap[path], menus.includes(codeMap[path]));
     const menu = { ...m };
     // if (path !== '/' && !codes.includes(codeMap[path])) continue;
     // if (children) menu.children = filterMenus(children, codes, codeMap);
     // menuData.push(menu);
 
-    if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (!Array.isArray(systemType) || Array.isArray(systemType) && systemType.includes(sysType))) {
+    // if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (sysType === -1 || systemType === undefined || systemType !== undefined && systemType === sysType)) {
+    if (path === '/' || path !== '/' && !developing && codes.includes(codeMap[path]) && (systemType === undefined || systemType !== undefined && systemType === sysType)) {
       if (children) menu.children = filterMenus(children, codes, codeMap, sysType);
       menuData.push(menu);
     }
@@ -191,7 +192,7 @@ export function generateAuthFn(codes, codeMap, pathArray, rootPaths=[]) {
   // console.log('codes', codes);
   // console.log('codeMap', codeMap);
   // console.log('pathArray', pathArray);
-  rootPaths.unshift('exception');
+  rootPaths.unshift('exception'); // rootPaths表示可以绕过权限验证的路径
   return pathname => () => {
     // exception页面无需拦截
     // if (pathname.toLowerCase().includes('exception')) return true;
@@ -352,10 +353,10 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
 
 export function getSystemType(pathname, route) {
   if (pathname.includes('/company-workbench'))
-    return 0;
+    return -1;
 
   const name = pathname.match(/^\/[^/]*/)[0];
   const { routes } = route;
   const target = routes.find(({ path }) => path === name);
-  return target ? target.systemType[0] : 0;
+  return target && target.systemType ? target.systemType : 0;
 }

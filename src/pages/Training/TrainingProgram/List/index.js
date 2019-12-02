@@ -1,12 +1,14 @@
 import React, { Component, Fragment } from 'react';
-import { Input, Select, Spin, Card, Button, Table, Modal, Popconfirm, message } from 'antd'
+import { Input, Select, Spin, Card, Button, Table, Modal, Popconfirm, message, Empty } from 'antd'
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CustomUpload from '@/jingan-components/CustomUpload';
+import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import classNames from 'classnames';
+import { getPageSize, setPageSize } from '@/utils/utils';
 import {
   TITLE,
   BREADCRUMB_LIST,
@@ -17,6 +19,7 @@ import {
   ADD_CODE,
   EDIT_CODE,
   DELETE_CODE,
+  FORMS,
   STATUSES,
   LEVELS,
   SPAN,
@@ -42,11 +45,7 @@ const { Option } = Select;
   getList(payload, callback) {
     dispatch({
       type: 'trainingProgram/fetchList',
-      payload: {
-        pageNum: DEFAULT_PAGE_NUM,
-        pageSize: DEFAULT_PAGE_SIZE,
-        ...payload,
-      },
+      payload,
       callback,
     });
   },
@@ -72,8 +71,7 @@ export default class TrainingProgramList extends Component {
   }
 
   componentDidMount() {
-    const { getList } = this.props;
-    // getList();
+    this.getList();
   }
 
   setFormReference = form => {
@@ -84,25 +82,40 @@ export default class TrainingProgramList extends Component {
     this.form2 = form2;
   }
 
-  // 查询按钮点击事件
-  handleSearch = (values) => {
-    const { getList } = this.props;
-    getList(values);
-  }
-
-  // 重置按钮点击事件
-  handleReset = (values) => {
-    this.handleSearch(values);
-  }
-
-  // 列表change事件
-  handleListChange = (pageNum, pageSize) => {
-    const { getFieldsValue } = this.form;
-    const values = getFieldsValue();
-    this.getList({
-      ...values,
-      pageNum,
+  getList = (payload) => {
+    const {
+      trainingProgram: {
+        list: {
+          pagination: {
+            pageSize: prevPageSize=getPageSize(),
+          }={},
+        }={},
+      },
+      getList,
+    } = this.props;
+    const { current=1, pageSize=getPageSize() } = payload || {};
+    const values = this.form && this.form.getFieldsValue();
+    getList({
+      pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
+      ...values,
+      ...payload,
+    });
+    setPageSize(pageSize);
+  }
+
+  reload = () => {
+    const {
+      trainingProgram: {
+        list: {
+          pagination: {
+            pageNum=1,
+          }={},
+        }={},
+      },
+    } = this.props;
+    this.getList({
+      current: pageNum,
     });
   }
 
@@ -128,9 +141,8 @@ export default class TrainingProgramList extends Component {
     const { remove } = this.props;
     remove({ id }, (isSuccess, msg) => {
       if (isSuccess) {
-        const { trainingProgram: { list: { pagination: { pageNum, pageSize } } } } = this.props;
         message.success('删除成功');
-        this.handleListChange(pageNum, pageSize);
+        this.reload();
       } else {
         message.error(msg || '删除失败，请稍后重试！');
       }
@@ -150,6 +162,7 @@ export default class TrainingProgramList extends Component {
     this.setState({
       visible: false,
     });
+    this.form2 && this.form2.resetFields();
   }
 
   // 模态框确定事件
@@ -165,12 +178,14 @@ export default class TrainingProgramList extends Component {
         }, (isSuccess) => {
           if (isSuccess) {
             message.success(`关联成功！`);
+            this.reload();
           } else {
             message.error(`关联失败，请稍后重试！`);
           }
           this.setState({
             visible: false,
           });
+          this.form2 && this.form2.resetFields();
         });
       }
     });
@@ -196,18 +211,18 @@ export default class TrainingProgramList extends Component {
         render: _this => <Input placeholder="请输入单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
       }] : []),
       {
-        id: 'name',
+        id: 'trainingPlanName',
         label: '培训计划名称',
         transform: value => value.trim(),
         render: _this => <Input placeholder="请输入培训计划名称" onPressEnter={_this.handleSearch} maxLength={50} />,
       },
       {
-        id: 'type',
+        id: 'trainingType',
         label: '培训类型',
         render: _this => <Input placeholder="请输入培训类型" onPressEnter={_this.handleSearch} maxLength={50} />,
       },
       {
-        id: 'level',
+        id: 'trainingLevel',
         label: '培训分级',
         render: () => (
           <Select placeholder="请选择培训分级" allowClear>
@@ -216,7 +231,7 @@ export default class TrainingProgramList extends Component {
         ),
       },
       {
-        id: 'status',
+        id: 'planStatus',
         label: '计划状态',
         render: () => (
           <Select placeholder="请选择计划状态" allowClear>
@@ -230,8 +245,8 @@ export default class TrainingProgramList extends Component {
       <Card className={styles.card} bordered={false}>
         <CustomForm
           fields={FIELDS}
-          onSearch={this.handleSearch}
-          onReset={this.handleReset}
+          onSearch={this.getList}
+          onReset={this.getList}
           action={<Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>新增</Button>}
           ref={this.setFormReference}
         />
@@ -243,7 +258,7 @@ export default class TrainingProgramList extends Component {
     const {
       trainingProgram: {
         list: {
-          // list=[],
+          list=[],
           pagination: {
             pageSize=DEFAULT_PAGE_SIZE,
             pageNum=DEFAULT_PAGE_NUM,
@@ -263,11 +278,6 @@ export default class TrainingProgramList extends Component {
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasDeleteAuthority = permissionCodes.includes(DELETE_CODE);
-    const list = [{
-      id: 1,
-      name: '213',
-      status: '0',
-    }];
 
     const COLUMNS = (isNotCompany ? [
       {
@@ -278,53 +288,52 @@ export default class TrainingProgramList extends Component {
     ] : []).concat([
       {
         title: '培训计划名称',
-        dataIndex: 'name',
+        dataIndex: 'trainingPlanName',
         align: 'center',
       },
       {
         title: '培训类型',
-        dataIndex: 'type',
+        dataIndex: 'trainingType',
         align: 'center',
       },
       {
         title: '培训形式',
-        dataIndex: 'form',
+        dataIndex: 'trainingWay',
+        render: (value) => <SelectOrSpan list={FORMS} value={`${value}`} type="span" />,
         align: 'center',
       },
       {
         title: '培训分级',
-        dataIndex: 'level',
+        dataIndex: 'trainingLevel',
+        render: (value) => <SelectOrSpan list={LEVELS} value={`${value}`} type="span" />,
         align: 'center',
       },
       {
         title: '计划状态',
-        dataIndex: 'status',
-        render: (status) => {
-          status = STATUSES.filter(({ key }) => key === status)[0];
-          return status && status.value;
-        },
+        dataIndex: 'planStatus',
+        render: (value) => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
         align: 'center',
       },
       {
         title: '培训学时（h）',
-        dataIndex: 'period',
+        dataIndex: 'trainingDuration',
         align: 'center',
       },
       {
         title: '开始时间',
-        dataIndex: 'startDate',
+        dataIndex: 'trainingStartTime',
         render: (time) => time && moment(time).format(DEFAULT_FORMAT),
         align: 'center',
       },
       {
         title: '结束时间',
-        dataIndex: 'endDate',
+        dataIndex: 'trainingEndTime',
         render: (time) => time && moment(time).format(DEFAULT_FORMAT),
         align: 'center',
       },
       {
         title: '计划扫描件',
-        dataIndex: 'fileList',
+        dataIndex: 'planFileList',
         render: (fileList) => (
           <Fragment>
             {fileList && fileList.map(({ webUrl, fileName }, index) => (
@@ -338,10 +347,10 @@ export default class TrainingProgramList extends Component {
       },
       {
         title: '培训结果',
-        dataIndex: 'result',
-        render: (result) => (
+        dataIndex: 'resultFileList',
+        render: (result, { planStatus }) => (
           <Fragment>
-            {result && result.map(({ webUrl, fileName }, index) => (
+            {+planStatus === 1 && result && result.map(({ webUrl, fileName }, index) => (
               <div key={index}>
                 <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
               </div>
@@ -355,7 +364,7 @@ export default class TrainingProgramList extends Component {
         dataIndex: 'operation',
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, data) => {
-          const { id, status } = data;
+          const { id, planStatus: status } = data;
           return (
             <Fragment>
               {+status === 0 && <span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? () => this.handleExecuteClick(data) : undefined}>执行</span>}
@@ -378,28 +387,29 @@ export default class TrainingProgramList extends Component {
     return (
       <Card className={styles.card} bordered={false}>
         <Spin spinning={loading || false}>
-          <Table
-            className={styles.table}
-            dataSource={list}
-            columns={COLUMNS}
-            rowKey="id"
-            scroll={{
-              x: true,
-            }}
-            pagination={{
-              current: pageNum,
-              pageSize,
-              total,
-              pageSizeOptions: ['5', '10', '15', '20'],
-              // showTotal: total => `共 ${total} 条`,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              onChange: this.handleListChange,
-              onShowSizeChange: (num, size) => {
-                this.handleListChange(1, size);
-              },
-            }}
-          />
+          {list && list.length > 0 ? (
+            <Table
+              className={styles.table}
+              dataSource={list}
+              columns={COLUMNS}
+              rowKey="id"
+              scroll={{
+                x: true,
+              }}
+              onChange={this.getList}
+              pagination={{
+                current: pageNum,
+                pageSize,
+                total,
+                pageSizeOptions: ['5', '10', '15', '20'],
+                // showTotal: total => `共 ${total} 条`,
+                showQuickJumper: true,
+                showSizeChanger: true,
+              }}
+            />
+          ) : (
+            <Empty />
+          )}
         </Spin>
       </Card>
     );
@@ -407,17 +417,17 @@ export default class TrainingProgramList extends Component {
 
   renderModal() {
     const { visible, data } = this.state;
-    const { name } = data || {};
+    const { trainingPlanName } = data || {};
     const fields = [
       {
-        id: 'name',
+        id: 'trainingPlanName',
         label: '培训计划名称',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{name}</span>,
+        render: () => <span>{trainingPlanName}</span>,
       },
       {
-        id: 'result',
+        id: 'resultFileList',
         label: '关联培训结果',
         span: SPAN,
         labelCol: LABEL_COL,
@@ -476,7 +486,7 @@ export default class TrainingProgramList extends Component {
         breadcrumbList={BREADCRUMB_LIST}
         content={
           <Fragment>
-            {isNotCompany && <span className={styles.companyNumber}>{`单位数量：${0}`}</span>}
+            {/* {isNotCompany && <span className={styles.companyNumber}>{`单位数量：${0}`}</span>} */}
             <span>{`计划总数：${total}`}</span>
           </Fragment>
         }

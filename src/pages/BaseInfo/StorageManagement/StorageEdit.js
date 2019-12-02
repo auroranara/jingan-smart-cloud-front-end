@@ -87,7 +87,7 @@ const pressureList = [
   { key: '3', value: '高压' },
   { key: '4', value: '超高压' },
 ];
-const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
+const selectTypeList = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
 
 // 表单标签
 const fieldLabels = {};
@@ -95,7 +95,7 @@ const fieldLabels = {};
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 
-@connect(({ loading, baseInfo, personnelPosition, riskPointManage, device, sensor, materials, reservoirRegion }) => ({
+@connect(({ loading, baseInfo, personnelPosition, riskPointManage, device, sensor, materials, reservoirRegion, user }) => ({
   baseInfo,
   personnelPosition,
   riskPointManage,
@@ -103,6 +103,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
   sensor,
   materials,
   reservoirRegion,
+  user,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 @Form.create()
@@ -119,8 +120,8 @@ export default class StorageEdit extends PureComponent {
     storageTankAreaModalVisible: false, // 选择储罐区弹窗是否可见
     selectedMedium: [], // 存储介质
     storageMediumModalVisible: false, // 选择存储介质弹窗是否可见
-    selectedMajorHazard: [], // 所属危险化学品重大危险源单元
-    majorHazardModalVisible: false, // 选择重大危险源弹窗可见
+    // selectedMajorHazard: [], // 所属危险化学品重大危险源单元
+    // majorHazardModalVisible: false, // 选择重大危险源弹窗可见
     selectedTemp: [], // 弹窗选择对象暂存,取消后清空
     selectedTempKeys: [],
     uploadPics: [], // 上传照片列表
@@ -135,6 +136,7 @@ export default class StorageEdit extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: { currentUser },
     } = this.props
     if (id) {
       // 如果编辑
@@ -150,19 +152,24 @@ export default class StorageEdit extends PureComponent {
           tankArea,
           chineName,
           storageMedium,
-          chemicalsMajorHazard,
+          // chemicalsMajorHazard,
           areaName,
-          chemicalName,
+          // chemicalName,
           locationType,
           scenePhotoList,
           otherFileList,
+          pressureVessel, // 是否压力容器
+          pressureRate,   // 压力等级
+          designPressure, // 设计压力
+          cofferdam,      // 有无围堰
+          cofferdamArea,  // 围堰所围面积
         }) => {
-          setFieldsValue({ companyId, locationType })
+          setFieldsValue({ companyId, locationType, pressureVessel, cofferdam })
           this.setState({
             selectedCompany: { id: companyId, name: companyName }, // 所属单位
             selectedArea: [{ id: tankArea, areaName }], // 所属储罐区
             selectedMedium: [{ id: storageMedium, chineName }], // 存储介质
-            selectedMajorHazard: [{ id: chemicalsMajorHazard, name: chemicalName }],
+            // selectedMajorHazard: [{ id: chemicalsMajorHazard, name: chemicalName }],
             pointFixInfoList: pointFixInfoList || [],
             uploadPics: scenePhotoList ? scenePhotoList.map(item => ({
               ...item,
@@ -177,11 +184,17 @@ export default class StorageEdit extends PureComponent {
               name: item.fileName,
             })) : [],
           })
-          setFieldsValue({ buildingId, floorId })
+          setFieldsValue({ buildingId, floorId, pressureRate, designPressure, cofferdamArea })
           companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
         },
       })
+    } else if (currentUser && currentUser.unitType === 4) {
+      // 如果是企业用户
+      const { companyId, companyName } = currentUser;
+      setFieldsValue({ companyId, locationType: 0 });
+      this.setState({ selectedCompany: { id: companyId, name: companyName } });
+      companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     } else {
       setFieldsValue({ locationType: 0 })
     }
@@ -212,35 +225,46 @@ export default class StorageEdit extends PureComponent {
   /**
   * 获取储罐区列表
   */
-  fetchStorageTankAreaForPage = (actions) => {
+  fetchStorageTankAreaForPage = ({ payload, ...resProps }) => {
     const { dispatch } = this.props
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany.id;
     dispatch({
       type: 'baseInfo/fetchStorageTankAreaForPage',
-      ...actions,
+      payload: { companyId, ...payload },
+      ...resProps,
     })
   }
 
   /**
-  * 获取储罐区列表
+  * 获取存储介质列表
   */
-  fetchStorageMedium = (actions) => {
-    const { dispatch } = this.props
+  fetchStorageMedium = ({ payload, ...resProps }) => {
+    const { dispatch } = this.props;
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany.id;
     dispatch({
       type: 'materials/fetchMaterialsList',
-      ...actions,
+      payload: { companyId, ...payload },
+      ...resProps,
     })
   }
 
   /**
   * 获取重大危险源列表
   */
-  fetchMajorHazard = actions => {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'reservoirRegion/fetchSourceList',
-      ...actions,
-    })
-  }
+  // fetchMajorHazard = ({ payload, ...resProps }) => {
+  //   const {
+  //     form: { getFieldValue },
+  //     dispatch,
+  //   } = this.props;
+  //   const companyId = getFieldValue('companyId')
+  //   dispatch({
+  //     type: 'reservoirRegion/fetchSourceList',
+  //     payload: { companyId, ...payload },
+  //     ...resProps,
+  //   })
+  // }
 
   /**
    * 清空楼层列表
@@ -301,71 +325,17 @@ export default class StorageEdit extends PureComponent {
   /**
   * 选择重大危险源
   */
-  handleSelectMajorHazard = () => {
-    const { form: { setFieldsValue } } = this.props
-    const { selectedTempKeys, selectedTemp } = this.state
-    if (selectedTempKeys && selectedTempKeys.length) {
-      setFieldsValue({ chemicalsMajorHazard: selectedTempKeys.join(',') })
-      this.setState({
-        majorHazardModalVisible: false,
-        selectedMajorHazard: selectedTemp,
-      })
-    } else message.warning('请选择重大危险源')
-  }
-
-  /**
-   * 点击提交
-   */
-  handleSubmit = () => {
-    const {
-      dispatch,
-      match: { params: { id } },
-      form: { validateFields },
-    } = this.props;
-    const {
-      editingIndex,
-      pointFixInfoList,
-      uploadPics,
-      uploadFiles,
-    } = this.state;
-    if (!isNaN(editingIndex)) {
-      message.warning('请先保存平面图信息')
-      return
-    }
-    validateFields((err, values) => {
-      console.log('uploadPics', uploadPics)
-      if (err) return
-      const payload = {
-        ...values,
-        pointFixInfoList, // 平面图标注列表
-        scenePhoto: uploadPics && uploadPics.length ? JSON.stringify(uploadPics) : null,
-        otherFile: uploadFiles && uploadFiles.length ? JSON.stringify(uploadFiles) : null,
-      }
-      const tag = id ? '编辑' : '新增';
-      const success = () => {
-        message.success(`${tag}成功`)
-        router.push('/base-info/storage-management/list')
-      }
-      const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
-      if (id) {
-        // 如果编辑
-        dispatch({
-          type: 'baseInfo/editStorageTank',
-          payload: { ...payload, id },
-          success,
-          error,
-        })
-      } else {
-        // 如果新增
-        dispatch({
-          type: 'baseInfo/addStorageTank',
-          payload,
-          success,
-          error,
-        })
-      }
-    })
-  };
+  // handleSelectMajorHazard = () => {
+  //   const { form: { setFieldsValue } } = this.props
+  //   const { selectedTempKeys, selectedTemp } = this.state
+  //   if (selectedTempKeys && selectedTempKeys.length) {
+  //     setFieldsValue({ chemicalsMajorHazard: selectedTempKeys.join(',') })
+  //     this.setState({
+  //       majorHazardModalVisible: false,
+  //       selectedMajorHazard: selectedTemp,
+  //     })
+  //   } else message.warning('请选择重大危险源')
+  // }
 
   /**
    * 打开选择单位弹窗
@@ -399,9 +369,10 @@ export default class StorageEdit extends PureComponent {
   */
   handleRefreshBuilding = (weatherFetch = false) => {
     const {
-      form: { setFieldsValue, getFieldValue },
+      form: { setFieldsValue },
     } = this.props
-    const companyId = getFieldValue('companyId');
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany.id;
     // 清空选择建筑物和楼层
     setFieldsValue({ buildingId: undefined, floorId: undefined });
     // 获取建筑物下拉 清空楼层下拉
@@ -513,7 +484,13 @@ export default class StorageEdit extends PureComponent {
   // 点击打开选择存储介质弹窗
   handleToSelectStorageMedium = () => {
     const { form: { getFieldValue } } = this.props
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany.id;
     const storageMedium = getFieldValue('storageMedium')
+    if (!companyId) {
+      message.warning('请先选择单位')
+      return;
+    }
     this.fetchStorageMedium({ payload: { pageNum: 1, pageSize: 10 } })
     this.setState({
       storageMediumModalVisible: true,
@@ -522,15 +499,19 @@ export default class StorageEdit extends PureComponent {
   }
 
   // 点击打开选择重大危险源弹窗
-  handleToSelectMajorHazard = () => {
-    const { form: { getFieldValue } } = this.props
-    const chemicalsMajorHazard = getFieldValue('chemicalsMajorHazard')
-    this.fetchMajorHazard({ payload: { pageNum: 1, pageSize: 10 } })
-    this.setState({
-      majorHazardModalVisible: true,
-      selectedTempKeys: chemicalsMajorHazard ? chemicalsMajorHazard.split(',') : [],
-    })
-  }
+  // handleToSelectMajorHazard = () => {
+  //   const { form: { getFieldsValue } } = this.props
+  //   const { chemicalsMajorHazard, companyId } = getFieldsValue()
+  //   if (!companyId) {
+  //     message.warning('请先选择单位')
+  //     return;
+  //   }
+  //   this.fetchMajorHazard({ payload: { pageNum: 1, pageSize: 10 } })
+  //   this.setState({
+  //     majorHazardModalVisible: true,
+  //     selectedTempKeys: chemicalsMajorHazard ? chemicalsMajorHazard.split(',') : [],
+  //   })
+  // }
 
   // 监听上传照片改变
   handleUploadPicChange = ({ file, fileList }) => {
@@ -624,11 +605,89 @@ export default class StorageEdit extends PureComponent {
     }
   }
 
+  validateDesignReservesAndUnit = (rule, value, callback) => {
+    if (value && value.length === 2) {
+      const [designReserves, unit] = value
+      if (isNaN(designReserves)) {
+        callback('请输入设计储量，且为数字')
+        return;
+      }
+      if (!unit) {
+        callback('请输入单位')
+        return;
+      }
+      callback()
+    } else callback('请输入设计储量与单位')
+  }
+
+  /**
+   * 点击提交
+   */
+  handleSubmit = () => {
+    const {
+      dispatch,
+      match: { params: { id } },
+      form: { validateFields },
+    } = this.props;
+    const {
+      editingIndex,
+      pointFixInfoList,
+      uploadPics,
+      uploadFiles,
+      selectedCompany,
+    } = this.state;
+    if (!isNaN(editingIndex)) {
+      message.warning('请先保存平面图信息')
+      return
+    }
+    validateFields((err, values) => {
+      if (err) return
+      const { designReservesAndUnit, area, pressureRate, designPressure, cofferdamArea, ...resValues } = values;
+      const [designReserves, designReservesUnit] = designReservesAndUnit;
+      const payload = {
+        ...resValues,
+        companyId: selectedCompany.id,
+        designReserves,
+        designReservesUnit,
+        pointFixInfoList, // 平面图标注列表
+        scenePhoto: uploadPics && uploadPics.length ? JSON.stringify(uploadPics) : '',
+        otherFile: uploadFiles && uploadFiles.length ? JSON.stringify(uploadFiles) : '',
+        area: +values.locationType === 1 ? area : '',
+        pressureRate: values.pressureVessel === '1' ? pressureRate : '',
+        designPressure: values.pressureVessel === '1' ? designPressure : '',
+        cofferdamArea: values.cofferdam === '2' ? cofferdamArea : '',
+      }
+      const tag = id ? '编辑' : '新增';
+      const success = () => {
+        message.success(`${tag}成功`)
+        router.push('/base-info/storage-management/list')
+      }
+      const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
+      if (id) {
+        // 如果编辑
+        dispatch({
+          type: 'baseInfo/editStorageTank',
+          payload: { ...payload, id },
+          success,
+          error,
+        })
+      } else {
+        // 如果新增
+        dispatch({
+          type: 'baseInfo/addStorageTank',
+          payload,
+          success,
+          error,
+        })
+      }
+    })
+  };
+
   renderInfo () {
     const {
       dispatch,
       form,
-      form: { getFieldDecorator, getFieldsValue },
+      form: { getFieldDecorator, getFieldsValue, setFieldsValue },
       match: { params: { id } },
       baseInfo: {
         // 储罐详情
@@ -646,6 +705,7 @@ export default class StorageEdit extends PureComponent {
       device: {
         flatGraphic, // 平面图类型选项
       },
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const {
@@ -657,14 +717,15 @@ export default class StorageEdit extends PureComponent {
       imgIdCurrent,
       selectedArea,
       selectedMedium,
-      selectedMajorHazard,
+      // selectedMajorHazard,
       uploadPics,
       uploadFiles,
       picUploading,
       fileUploading,
     } = this.state
 
-    const { locationType, companyId } = getFieldsValue();
+    const { locationType, designReservesAndUnit, pressureVessel, cofferdam } = getFieldsValue();
+    const companyId = selectedCompany.id;
     const FlatPicProps = {
       visible: picModalVisible,
       onCancel: () => { this.setState({ picModalVisible: false }) },
@@ -686,23 +747,25 @@ export default class StorageEdit extends PureComponent {
     return (
       <Card bordered={false}>
         <Form style={{ marginTop: 8 }}>
-          <FormItem {...formItemLayout} label="单位名称">
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请输入单位' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
+          {unitType !== 4 && (
+            <FormItem {...formItemLayout} label="单位名称">
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请输入单位' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
               </Button>
-              </Fragment>
-            )}
-          </FormItem>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem {...formItemLayout} label="统一编码">
             {getFieldDecorator('unifiedCode', {
               initialValue: id ? detail.unifiedCode : undefined,
@@ -738,9 +801,7 @@ export default class StorageEdit extends PureComponent {
           <FormItem {...formItemLayout} label="储罐位置分类">
             {getFieldDecorator('tankLocationCate', {
               initialValue: id ? detail.tankLocationCate : undefined,
-              rules: [
-                { required: true, message: '请选择储罐位置分类' },
-              ],
+              rules: [{ required: true, message: '请选择储罐位置分类' }],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {storageAreaList.map(({ key, value }) => (
@@ -779,6 +840,24 @@ export default class StorageEdit extends PureComponent {
                 { required: true, message: '请输入储罐容积（m³）' },
               ],
             })(<Input {...itemStyles} placeholder="请输入" />)}
+          </FormItem>
+          <FormItem {...formItemLayout} label="储罐半径（m）">
+            {getFieldDecorator('tankRadius', {
+              initialValue: id ? detail.tankRadius : undefined,
+              getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, message: '请输入储罐半径' }],
+            })(
+              <Input {...itemStyles} placeholder="请输入" />
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="储罐高度（m）">
+            {getFieldDecorator('tankHeight', {
+              initialValue: id ? detail.tankHeight : undefined,
+              getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, message: '请输入储罐高度' }],
+            })(
+              <Input {...itemStyles} placeholder="请输入" />
+            )}
           </FormItem>
           <FormItem {...formItemLayout} label="储罐形式">
             {getFieldDecorator('tankType', {
@@ -831,12 +910,7 @@ export default class StorageEdit extends PureComponent {
           <FormItem {...formItemLayout} label="是否压力容器">
             {getFieldDecorator('pressureVessel', {
               initialValue: id ? detail.pressureVessel : undefined,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择是否压力容器',
-                },
-              ],
+              rules: [{ required: true, message: '请选择是否压力容器' }],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {selectTypeList.map(({ key, value }) => (
@@ -847,48 +921,50 @@ export default class StorageEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="压力等级">
-            {getFieldDecorator('pressureRate', {
-              initialValue: id ? detail.pressureRate : undefined,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择压力等级',
-                },
-              ],
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
-                {pressureList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="设计压力（KPa）">
-            {getFieldDecorator('designPressure', {
-              initialValue: id ? detail.designPressure : undefined,
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入设计压力（KPa）',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入" />)}
-          </FormItem>
+          {pressureVessel === '1' && (
+            <Fragment>
+              <FormItem {...formItemLayout} label="压力等级">
+                {getFieldDecorator('pressureRate', {
+                  // initialValue: id ? detail.pressureRate : undefined,
+                  rules: [{ required: true, message: '请选择压力等级' }],
+                })(
+                  <Select {...itemStyles} allowClear placeholder="请选择">
+                    {pressureList.map(({ key, value }) => (
+                      <Option key={key} value={key}>
+                        {value}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout} label="设计压力（KPa）">
+                {getFieldDecorator('designPressure', {
+                  // initialValue: id ? detail.designPressure : undefined,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入设计压力（KPa）' }],
+                })(<Input {...itemStyles} placeholder="请输入" />)}
+              </FormItem>
+            </Fragment>
+          )}
           <FormItem {...formItemLayout} label="设计储量">
-            {getFieldDecorator('designReserves', {
-              initialValue: id ? detail.designReserves : undefined,
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入设计压力（KPa）',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入" />)}
+            {getFieldDecorator('designReservesAndUnit', {
+              initialValue: id ? [detail.designReserves, detail.designReservesUnit || null] : [],
+              // getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, validator: this.validateDesignReservesAndUnit }],
+            })(
+              <Fragment>
+                <Input
+                  value={designReservesAndUnit ? designReservesAndUnit[0] : undefined}
+                  onChange={e => { setFieldsValue({ designReservesAndUnit: [e.target.value.trim(), designReservesAndUnit[1]] }) }}
+                  {...itemStyles}
+                  placeholder="请输入" />
+                <Input
+                  value={designReservesAndUnit ? designReservesAndUnit[1] : undefined}
+                  onChange={e => { setFieldsValue({ designReservesAndUnit: [designReservesAndUnit[0], e.target.value.trim()] }) }}
+                  style={{ width: '100px' }}
+                  placeholder="单位" />
+              </Fragment>
+            )}
           </FormItem>
           <FormItem {...formItemLayout} label="进出料方式">
             {getFieldDecorator('feedDischargMode', {
@@ -937,7 +1013,7 @@ export default class StorageEdit extends PureComponent {
             )}
             <Button type="primary" onClick={this.handleToSelectStorageMedium}> 选择</Button>
           </FormItem>
-          <FormItem {...formItemLayout} label="是否构成重大危险源">
+          {/* <FormItem {...formItemLayout} label="是否构成重大危险源">
             {getFieldDecorator('majorHazard', {
               initialValue: id ? detail.majorHazard : undefined,
               rules: [
@@ -966,7 +1042,7 @@ export default class StorageEdit extends PureComponent {
               </Fragment>
             )}
             <Button onClick={this.handleToSelectMajorHazard} type="primary"> 选择</Button>
-          </FormItem>
+          </FormItem> */}
           <FormItem {...formItemLayout} label="是否高危储罐">
             {getFieldDecorator('highRiskTank', {
               initialValue: id ? detail.highRiskTank : undefined,
@@ -986,7 +1062,7 @@ export default class StorageEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="高危储罐自控系">
+          <FormItem {...formItemLayout} label="高危储罐自控系统">
             {getFieldDecorator('highRiskTankSystem', {
               initialValue: id ? detail.highRiskTankSystem : undefined,
               getValueFromEvent: this.handleTrim,
@@ -1020,18 +1096,15 @@ export default class StorageEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="围堰所围面积">
-            {getFieldDecorator('cofferdamArea', {
-              initialValue: id ? detail.cofferdamArea : undefined,
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入围堰所围面积',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入" />)}
-          </FormItem>
+          {cofferdam === '2' && (
+            <FormItem {...formItemLayout} label="围堰所围面积">
+              {getFieldDecorator('cofferdamArea', {
+                // initialValue: id ? detail.cofferdamArea : undefined,
+                getValueFromEvent: this.handleTrim,
+                rules: [{ required: true, message: '请输入围堰所围面积' }],
+              })(<Input {...itemStyles} placeholder="请输入" />)}
+            </FormItem>
+          )}
           <FormItem {...formItemLayout} label="火灾危险性等级">
             {getFieldDecorator('fireHazardRate', {
               initialValue: id ? detail.fireHazardRate : undefined,
@@ -1170,7 +1243,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem label="区域位置录入方式" {...formItemLayout}>
             {getFieldDecorator('locationType', {
-              // initialValue: id ? detail.locationType : 0,
+              rules: [{ required: true, message: '请选择区域位置录入方式' }],
             })(
               <Radio.Group onChange={(e) => this.handleRefreshBuilding()}>
                 <Radio value={0}>选择建筑物-楼层</Radio>
@@ -1334,15 +1407,15 @@ export default class StorageEdit extends PureComponent {
         storageTankArea, // 储罐区
       },
       materials,
-      reservoirRegion: {
-        sourceData, // 重大危险源
-      },
+      // reservoirRegion: {
+      //   sourceData, // 重大危险源
+      // },
     } = this.props;
     const {
       companyModalVisible,
       storageTankAreaModalVisible,
       storageMediumModalVisible,
-      majorHazardModalVisible,
+      // majorHazardModalVisible,
       selectedTempKeys,
     } = this.state
 
@@ -1378,18 +1451,18 @@ export default class StorageEdit extends PureComponent {
       },
       handleSelect: this.handleSelectMedium,
     };
-    const majorHazardProps = {
-      visible: majorHazardModalVisible,
-      fetch: this.fetchMajorHazard,
-      model: sourceData,
-      onCancel: () => { this.setState({ majorHazardModalVisible: false }) },
-      rowSelection: {
-        selectedRowKeys: selectedTempKeys,
-        onChange: (keys, rows) => { this.setState({ selectedTempKeys: keys, selectedTemp: rows }) },
-        type: 'radio',
-      },
-      handleSelect: this.handleSelectMajorHazard,
-    }
+    // const majorHazardProps = {
+    //   visible: majorHazardModalVisible,
+    //   fetch: this.fetchMajorHazard,
+    //   model: sourceData,
+    //   onCancel: () => { this.setState({ majorHazardModalVisible: false }) },
+    //   rowSelection: {
+    //     selectedRowKeys: selectedTempKeys,
+    //     onChange: (keys, rows) => { this.setState({ selectedTempKeys: keys, selectedTemp: rows }) },
+    //     type: 'radio',
+    //   },
+    //   handleSelect: this.handleSelectMajorHazard,
+    // }
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
@@ -1411,7 +1484,7 @@ export default class StorageEdit extends PureComponent {
         {/* 选择存储介质弹窗--单选 */}
         <StorageMediumModal {...mediumProps} />
         {/* 选择重大危险源弹窗 */}
-        <MajorHazardListModal {...majorHazardProps} />
+        {/* <MajorHazardListModal {...majorHazardProps} /> */}
       </PageHeaderLayout>
     );
   }

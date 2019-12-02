@@ -213,17 +213,17 @@ export default {
     },
     // 建筑物信息
     buildingsInfo: {
-      list: 'baseInfo.buildingsInfo.listView',
-      view: 'baseInfo.buildingsInfo.view',
-      add: 'baseInfo.buildingsInfo.add',
-      edit: 'baseInfo.buildingsInfo.edit',
-      delete: 'baseInfo.buildingsInfo.delete',
+      list: 'baseInfoManagement.buildingsInfo.listView',
+      view: 'baseInfoManagement.buildingsInfo.view',
+      add: 'baseInfoManagement.buildingsInfo.add',
+      edit: 'baseInfoManagement.buildingsInfo.edit',
+      delete: 'baseInfoManagement.buildingsInfo.delete',
       // 楼层
-      floorListView: 'baseInfo.buildingsInfo.floorListView',
-      floorAdd: 'baseInfo.buildingsInfo.floorAdd',
-      floorEdit: 'baseInfo.buildingsInfo.floorEdit',
-      floorView: 'baseInfo.buildingsInfo.floorView',
-      floorDelete: 'baseInfo.buildingsInfo.floorDelete',
+      floorListView: 'baseInfoManagement.buildingsInfo.floorListView',
+      floorAdd: 'baseInfoManagement.buildingsInfo.floorAdd',
+      floorEdit: 'baseInfoManagement.buildingsInfo.floorEdit',
+      floorView: 'baseInfoManagement.buildingsInfo.floorView',
+      floorDelete: 'baseInfoManagement.buildingsInfo.floorDelete',
     },
   },
   // 个人备案
@@ -470,6 +470,13 @@ export default {
       detail: 'emergencyManagement.emergencyEstimate.detail',
       delete: 'emergencyManagement.emergencyEstimate.delete',
     },
+    emergencyProcess: {
+      listView: 'emergencyManagement.emergencyProcess.list',
+      add: 'emergencyManagement.emergencyProcess.add',
+      edit: 'emergencyManagement.emergencyProcess.edit',
+      detail: 'emergencyManagement.emergencyProcess.view',
+      delete: 'emergencyManagement.emergencyProcess.delete',
+    },
   },
 
   baseInfo: {
@@ -497,13 +504,15 @@ export default {
       add: 'baseInfo.highRiskProcess.add',
       edit: 'baseInfo.highRiskProcess.edit',
       detail: 'baseInfo.highRiskProcess.detail',
+      delete: 'baseInfo.highRiskProcess.delete',
     },
     // 特种设备管理
     specialEquipment: {
-      listView: 'baseInfo.specialEquipment.listView',
-      add: 'baseInfo.specialEquipment.add',
-      edit: 'baseInfo.specialEquipment.edit',
-      detail: 'baseInfo.specialEquipment.detail',
+      listView: 'facilityManagement.specialEquipment.listView',
+      add: 'facilityManagement.specialEquipment.add',
+      edit: 'facilityManagement.specialEquipment.edit',
+      detail: 'facilityManagement.specialEquipment.detail',
+      delete: 'facilityManagement.specialEquipment.delete',
     },
 
     // 库区管理
@@ -571,6 +580,20 @@ export default {
       bind: 'baseInfo.storageManagement.bind',
       unbind: 'baseInfo.storageManagement.unbind',
     },
+    // 特种作业操作证人员
+    specialoPerationPermit: {
+      list: 'baseInfo.specialoPerationPermit.listView',
+      add: 'baseInfo.specialoPerationPermit.add',
+      edit: 'baseInfo.specialoPerationPermit.edit',
+      delete: 'baseInfo.specialoPerationPermit.delete',
+    },
+    // 特种设备作业人员
+    specialEquipmentOperators: {
+      list: 'baseInfo.specialEquipmentOperators.listView',
+      add: 'baseInfo.specialEquipmentOperators.add',
+      edit: 'baseInfo.specialEquipmentOperators.edit',
+      delete: 'baseInfo.specialEquipmentOperators.delete',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例
@@ -579,6 +602,34 @@ export default {
       add: 'safetyKnowledgeBase.typicalAccidentCase.add',
       edit: 'safetyKnowledgeBase.typicalAccidentCase.edit',
       delete: 'safetyKnowledgeBase.typicalAccidentCase.delete',
+    },
+  },
+
+  // 两单信息管理
+  twoInformManagement: {
+    dangerFactorsList: {
+      list: 'twoInformationManagement.dangerFactorsList.list',
+      view: 'twoInformationManagement.dangerFactorsList.view',
+      delete: 'twoInformationManagement.dangerFactorsList.delete',
+      sync: 'twoInformationManagement.dangerFactorsList.sync',
+    },
+    safetyRiskList: {
+      list: 'twoInformationManagement.safetyRiskList.list',
+      view: 'twoInformationManagement.safetyRiskList.view',
+      delete: 'twoInformationManagement.safetyRiskList.delete',
+      sync: 'twoInformationManagement.safetyRiskList.sync',
+    },
+  },
+
+  // 公告管理
+  announcementManagement: {
+    // 安全承诺公告
+    promise: {
+      add: 'announcementManagement.promise.add',
+      list: 'announcementManagement.promise.list',
+      view: 'announcementManagement.promise.view',
+      delete: 'announcementManagement.promise.delete',
+      edit: 'announcementManagement.promise.edit',
     },
   },
 };
