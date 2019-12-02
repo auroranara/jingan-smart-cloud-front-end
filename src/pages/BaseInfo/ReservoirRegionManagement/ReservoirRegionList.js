@@ -71,7 +71,7 @@ export default class ReservoirRegionList extends PureComponent {
   };
 
   // 挂载后
-  componentDidMount () {
+  componentDidMount() {
     const {
       user: {
         currentUser: { id },
@@ -171,7 +171,10 @@ export default class ReservoirRegionList extends PureComponent {
   /**
    * 获取可绑定监测设备列表
    */
-  fetchMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+  fetchMonitoringDevice = ({
+    payload = { pageNum: 1, pageSize: defaultPageSize },
+    ...res
+  } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
@@ -189,7 +192,10 @@ export default class ReservoirRegionList extends PureComponent {
   /**
    * 获取已绑定监测设备列表
    */
-  fetchBindedMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+  fetchBindedMonitoringDevice = ({
+    payload = { pageNum: 1, pageSize: defaultPageSize },
+    ...res
+  } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
@@ -268,7 +274,7 @@ export default class ReservoirRegionList extends PureComponent {
       type: 'device/bindMonitoringDevice',
       payload: {
         targetId: detail.id, // 监测对象id（库房id）
-        bindStatus: 0,// 0 解绑
+        bindStatus: 0, // 0 解绑
         equipmentIdList: [id],
       },
       success: () => {
@@ -340,8 +346,8 @@ export default class ReservoirRegionList extends PureComponent {
         align: 'center',
         width: 200,
         render: val => {
-          // return +val === 2 ? '否' : '是';
-          return <span>---</span>;
+          return +val === 0 ? '否' : '是';
+          // return <span>---</span>;
         },
       },
       {
@@ -386,9 +392,12 @@ export default class ReservoirRegionList extends PureComponent {
               绑定监测设备
             </AuthA>
             <Divider type="vertical" />
-            <AuthLink to={`/major-hazard-info/reservoir-region-management/edit/${row.id}`} code={editCode}>
+            <AuthLink
+              to={`/major-hazard-info/reservoir-region-management/edit/${row.id}`}
+              code={editCode}
+            >
               编辑
-               </AuthLink>
+            </AuthLink>
             <Divider type="vertical" />
             <AuthPopConfirm
               title="确认要删除数据吗？"
@@ -396,7 +405,7 @@ export default class ReservoirRegionList extends PureComponent {
               onConfirm={() => this.handleDelete(row.id)}
             >
               删除
-              </AuthPopConfirm>
+            </AuthPopConfirm>
           </Fragment>
         ),
       },
@@ -425,11 +434,11 @@ export default class ReservoirRegionList extends PureComponent {
         />
       </Card>
     ) : (
-        <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
-      );
+      <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+    );
   };
 
-  render () {
+  render() {
     const {
       modalLoading,
       reservoirRegion: {
@@ -439,13 +448,15 @@ export default class ReservoirRegionList extends PureComponent {
         envirTypeList,
         areaCount: { companyNum = 0, sensorNum = 0 },
       },
-      user: { currentUser: { permissionCodes, unitType } },
+      user: {
+        currentUser: { permissionCodes, unitType },
+      },
       device: { monitoringDevice },
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
     const addAuth = hasAuthority(addCode, permissionCodes);
     // 解绑权限
-    const unbindAuthority = hasAuthority(unbindCode, permissionCodes)
+    const unbindAuthority = hasAuthority(unbindCode, permissionCodes);
     const fields = [
       {
         id: 'name',
