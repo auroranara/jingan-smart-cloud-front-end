@@ -44,7 +44,7 @@ export default class Chemical extends PureComponent {
       riskPointDrawerVisible: false,
       riskPointType: {},
       dangerAreaDrawerVisible: false,
-      storageAreaVisible: false,
+      storageAreaDrawerVisible: false,
     };
   }
 
@@ -85,7 +85,7 @@ export default class Chemical extends PureComponent {
       riskPointDrawerVisible,
       riskPointType,
       dangerAreaDrawerVisible,
-      storageAreaVisible,
+      storageAreaDrawerVisible,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -154,7 +154,7 @@ export default class Chemical extends PureComponent {
         />
 
         <StorageAreaDrawer
-          visible={storageAreaVisible}
+          visible={storageAreaDrawerVisible}
           onClose={() => {
             this.setDrawerVisible('storageArea');
           }}
