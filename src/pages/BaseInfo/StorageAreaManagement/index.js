@@ -524,10 +524,6 @@ export default class StorageAreaManagement extends PureComponent {
               储罐区总数：
               {total}
             </span>
-            <span style={{ paddingLeft: 20 }}>
-              已绑传感器数：
-              {0}
-            </span>
           </div>
         }
       >
