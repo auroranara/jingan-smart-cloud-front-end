@@ -149,9 +149,9 @@ export default class TabTransfer extends PureComponent {
   filterOption = (inputValue, option) => {
     const { dangerType } = this.props;
     if (+dangerType === 1) {
-      return option.areaName.indexOf(inputValue) > -1 || option.code.indexOf(inputValue) > -1;
+      return option.areaName.indexOf(inputValue) > -1;
     } else if (+dangerType === 2) {
-      return option.name.indexOf(inputValue) > -1 || option.unitCode.indexOf(inputValue) > -1;
+      return option.name.indexOf(inputValue) > -1;
     } else if (+dangerType === 3) {
       return option.indexOf(inputValue) > -1;
     } else {

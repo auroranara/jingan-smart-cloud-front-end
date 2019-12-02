@@ -341,7 +341,6 @@ export default class MajorHazardEdit extends PureComponent {
   };
 
   handleDangerOk = () => {
-    this.setState({ dangerModalVisible: false });
     const {
       form: { setFieldsValue },
       storageAreaManagement: { list: storageList = [] },
@@ -360,13 +359,17 @@ export default class MajorHazardEdit extends PureComponent {
 
     const storageName = storageNameArray.map(item => item.areaName).join(',');
     const reserviorName = reserviorNameArrray.map(item => item.name).join(',');
-    const unitChemicla = storageName + ',' + reserviorName;
+    const unitChemicla = storageName ? storageName + ',' + reserviorName : reserviorName;
 
     const storageId = storageNameArray.map(item => item.id).join(',');
     const reserviorId = reserviorNameArrray.map(item => item.id).join(',');
 
     setFieldsValue({ unitChemicla: unitChemicla.substr(0, unitChemicla.length - 1) });
-    this.setState({ tankIds: storageId, areaIds: reserviorId });
+    this.setState({
+      dangerModalVisible: false,
+      tankIds: storageId,
+      areaIds: reserviorId,
+    });
   };
 
   renderInfo() {
@@ -755,6 +758,7 @@ export default class MajorHazardEdit extends PureComponent {
     } = this.props;
 
     const { dangerType, targetKeys } = this.state;
+
     const title = id ? editTitle : addTitle;
 
     // 面包屑
@@ -765,8 +769,8 @@ export default class MajorHazardEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '一企一档',
-        name: '一企一档',
+        title: '重大危险源基本信息',
+        name: '重大危险源基本信息',
       },
       {
         title: '重大危险源',

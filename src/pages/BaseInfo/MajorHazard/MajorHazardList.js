@@ -20,8 +20,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title,
