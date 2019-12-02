@@ -343,6 +343,7 @@ export default class ReportList extends PureComponent {
       {
         title: '操作',
         dataIndex: 'operation',
+        width: 164,
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id }) => {
           return (

@@ -251,6 +251,7 @@ export default class ReportList extends PureComponent {
         title: '操作',
         dataIndex: 'operation',
         fixed: list && list.length > 0 ? 'right' : false,
+        width: 164,
         render: (_, { id }) => {
           return (
             <Fragment>
