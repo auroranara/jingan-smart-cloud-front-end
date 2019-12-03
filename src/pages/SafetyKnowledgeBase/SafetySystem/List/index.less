@@ -4,9 +4,7 @@
 .table {
   :global {
     .ant-table {
-
-      td,
-      th {
+      td, th {
         white-space: nowrap;
       }
     }
@@ -20,35 +18,42 @@
     }
   }
 }
-.multi {
-  text-align: left;
-}
 .operation {
   display: inline-block;
   padding: 0 8px;
-  color: #1890ff !important;
+  color: #1890ff;
   cursor: pointer;
 
   &:hover {
-    color: #40a9ff !important;
+    color: #40a9ff;
   }
+
   &:active {
-    color: #096dd9 !important;
+    color: #096dd9;
   }
 
   &.disabled {
-    color: rgba(0,0,0,0.25) !important;
+    color: rgba(0, 0, 0, 0.25);
     cursor: not-allowed;
   }
 }
+.multi {
+  text-align: left;
 
+  // .label {
+  //   color: rgba(0, 0, 0, 0.25);
+  // }
+}
+.count {
+  margin-right: 24px;
+}
+.fileList {
+  padding: 0 !important;
+}
 .modal {
   :global {
     .ant-modal-body {
       padding: 0;
     }
   }
-}
-.red {
-  color: #ff4848;
 }

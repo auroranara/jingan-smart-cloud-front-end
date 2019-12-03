@@ -210,16 +210,18 @@ export default class ReportList extends PureComponent {
         companyTypeList=[],
       },
     } = this.props;
-    // const isNotCompany = +unitType !== 4;
+    const isNotCompany = +unitType !== 4;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const FIELDS = [
-      {
-        id: 'companyName',
-        label: '事故单位名称',
-        transform: value => value.trim(),
-        render: _this => <Input placeholder="请输入事故单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
-      },
+      ...(isNotCompany ? [
+        {
+          id: 'companyName',
+          label: '事故单位名称',
+          transform: value => value.trim(),
+          render: _this => <Input placeholder="请输入事故单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
+        },
+      ] : []),
       {
         id: 'regulatoryClassification',
         label: '事故单位类型',
@@ -311,17 +313,19 @@ export default class ReportList extends PureComponent {
       },
       loading=false,
     } = this.props;
-    // const isNotCompany = unitType !== 4;
+    const isNotCompany = unitType !== 4;
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasDeleteAuthority = permissionCodes.includes(DELETE_CODE);
 
     const COLUMNS = [
-      {
-        title: '事故单位',
-        dataIndex: 'companyName',
-        align: 'center',
-      },
+      ...(isNotCompany ? [
+        {
+          title: '事故单位',
+          dataIndex: 'companyName',
+          align: 'center',
+        },
+      ] : []),
       {
         title: '事故企业类型',
         dataIndex: 'regulatoryClassification',
@@ -415,7 +419,7 @@ export default class ReportList extends PureComponent {
               pageSize,
               total,
               pageSizeOptions: ['5', '10', '15', '20'],
-              // showTotal: total => `共 ${total} 条`,
+              showTotal: total => `共 ${total} 条`,
               showQuickJumper: true,
               showSizeChanger: true,
             }}
