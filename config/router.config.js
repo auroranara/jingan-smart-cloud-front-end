@@ -212,8 +212,17 @@ module.exports = env => {
     // 菜单展示
     {
       path: '/menu-reveal',
-      code: 'dashboard.menuReveal',
-      component: './BigPlatform/MenuReveal/NewMenu',
+      name: 'menuReveal',
+      // code: 'dashboard.menuReveal',
+      // component: './BigPlatform/MenuReveal/NewMenu',
+      routes: [
+        {
+          path: '/menu-reveal',
+          redirect: '/menu-reveal/system',
+        },
+        { path: '/menu-reveal/system', name: 'system', component: './BigPlatform/MenuReveal/System' },
+        { path: '/menu-reveal/menus', name: 'menus', component: './BigPlatform/MenuReveal/Menus' },
+      ],
     },
     //404
     {
