@@ -109,6 +109,8 @@ export default class ReportOther extends Component {
       },
       user: {
         currentUser: {
+          unitType,
+          unitId,
           permissionCodes,
         },
       },
@@ -203,6 +205,8 @@ export default class ReportOther extends Component {
             message.error('获取详情失败，请稍后重试或联系管理人员');
           }
         });
+      } else if (+unitType === 4) {
+        this.handleCompanyChange({ key: unitId });
       }
     } else {
       router.replace('/404');
@@ -292,7 +296,7 @@ export default class ReportOther extends Component {
         (id ? edit : add)(payload, (success) => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.goBack();
+            router.push(LIST_PATH);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
@@ -419,6 +423,7 @@ export default class ReportOther extends Component {
       },
       accidentReport: {
         detail: {
+          companyId,
           companyName,
           reportType,
           provinceName,
@@ -431,34 +436,36 @@ export default class ReportOther extends Component {
       },
     } = this.props;
     const type = this.getType();
-    // const isNotCompany = +unitType !== 4;
+    const isNotCompany = +unitType !== 4;
     const isEdit = type === 'edit';
     const isNotDetail = type !== 'detail';
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const values = this.form && this.form.getFieldsValue() || {};
-    // const realCompanyId = isNotCompany ? (values.company && values.company.key !== values.company.label ? values.company.key : companyId) : unitId;
+    const realCompanyId = isNotCompany ? (values.company && values.company.key !== values.company.label ? values.company.key : companyId) : unitId;
     const realReportType = values.reportType || reportType;
 
     const fields = [
       {
         key: 1,
         fields: [
-          {
-            id: 'company',
-            label: '事故单位',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} onChange={this.handleCompanyChange} /> : <span>{companyName}</span>,
-            options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '事故单位不能为空',
-                  transform: value => value && value.label,
-                },
-              ] : undefined,
+          ...(isNotCompany ? [
+            {
+              id: 'company',
+              label: '事故单位',
+              span: SPAN,
+              labelCol: LABEL_COL,
+              render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} onChange={this.handleCompanyChange} /> : <span>{companyName}</span>,
+              options: {
+                rules: isNotDetail ? [
+                  {
+                    required: true,
+                    message: '事故单位不能为空',
+                    transform: value => value && value.label,
+                  },
+                ] : undefined,
+              },
             },
-          },
+          ] : []),
           {
             id: 'regulatoryClassification',
             label: '事故企业类型',
@@ -535,7 +542,7 @@ export default class ReportOther extends Component {
               label: '事故信息',
               span: SPAN,
               labelCol: LABEL_COL,
-              render: () => <AccidentInfo onChange={this.handleQuickReportSelect} />,
+              render: () => <AccidentInfo companyId={realCompanyId} onChange={this.handleQuickReportSelect} />,
             },
           ] : []),
           {

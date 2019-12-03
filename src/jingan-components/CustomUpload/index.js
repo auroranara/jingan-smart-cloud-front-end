@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Upload, Button, Icon, message } from 'antd';
+import classNames from 'classnames';
 import { getToken } from '@/utils/authority';
+import styles from './index.less';
 
 export default class CustomUpload extends Component {
   handleChange = ({ fileList }) => {
@@ -38,14 +40,19 @@ export default class CustomUpload extends Component {
 
   render() {
     const {
+      className,
+      style,
       value,
       folder='file',
       onChange,
+      type,
       ...restProps
     } = this.props;
 
-    return (
+    return type !== 'span' ? (
       <Upload
+        className={className}
+        style={style}
         name="files"
         data={{
           folder,
@@ -61,6 +68,14 @@ export default class CustomUpload extends Component {
           <Icon type="upload" /> 点击上传
         </Button>
       </Upload>
+    ) : (
+      <div className={classNames(styles.fileList, className)} style={style}>
+        {value && value.map(({ webUrl, fileName }, index) => (
+          <div key={index}>
+            <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
+          </div>
+        ))}
+      </div>
     );
   }
 }

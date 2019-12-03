@@ -547,7 +547,7 @@ export default {
   'menu.safetyProductionRegulation': '安全生产制度法规',
   'menu.safetyProductionRegulation.safetySystem': '安全制度管理',
   'menu.safetyProductionRegulation.safetySystem.list': '安全制度管理列表',
-  'menu.safetyProductionRegulation.safetySystem.view': '安全制度管理查看',
+  'menu.safetyProductionRegulation.safetySystem.detail': '安全制度管理查看',
   'menu.safetyProductionRegulation.safetySystem.add': '安全制度管理新增',
   'menu.safetyProductionRegulation.safetySystem.edit': '安全制度管理编辑',
   'menu.safetyProductionRegulation.safetySystem.history': '安全制度管理历史版本',

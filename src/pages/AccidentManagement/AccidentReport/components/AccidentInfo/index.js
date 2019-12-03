@@ -48,9 +48,10 @@ export default class AccidentInfo extends Component {
 
   handleButtonClick = () => {
     const {
+      companyId,
       getList,
     } = this.props;
-    getList();
+    getList({ accidentCompanyId: companyId });
     this.prevValues = {};
     this.setState({
       visible: true,
@@ -84,6 +85,7 @@ export default class AccidentInfo extends Component {
   // 查询
   handleSearch = (values) => {
     const {
+      companyId,
       accidentReport: {
         list: {
           pagination: {
@@ -97,6 +99,7 @@ export default class AccidentInfo extends Component {
     getList({
       ...values,
       pageSize,
+      accidentCompanyId: companyId,
     });
   }
 
@@ -108,6 +111,7 @@ export default class AccidentInfo extends Component {
   // 表格change
   handleTableChange = ({ current, pageSize }) => {
     const {
+      companyId,
       accidentReport: {
         list: {
           pagination: {
@@ -121,6 +125,7 @@ export default class AccidentInfo extends Component {
       ...this.prevValues,
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
+      accidentCompanyId: companyId,
     });
     this.form && this.form.setFieldsValue(this.prevValues);
     prevPageSize !== pageSize && setPageSize(pageSize);
@@ -128,6 +133,7 @@ export default class AccidentInfo extends Component {
 
   render() {
     const {
+      companyId,
       accidentReport: {
         list: {
           list=[],
@@ -209,7 +215,7 @@ export default class AccidentInfo extends Component {
 
     return (
       <div>
-        <Button type="primary" onClick={this.handleButtonClick}>选择</Button>
+        <Button type="primary" onClick={this.handleButtonClick} disabled={!companyId}>选择</Button>
         <Modal
           title="选择事故信息"
           width="80%"

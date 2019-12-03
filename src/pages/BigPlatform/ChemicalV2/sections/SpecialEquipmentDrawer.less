@@ -1,0 +1,49 @@
+.scrollContainer {
+  height: calc(~'100% - 3.5em') !important;
+}
+
+.container {
+  padding: 0 1em;
+}
+
+.statusList {
+  display: flex;
+  padding-bottom: 1em;
+
+  .statusItemWrapper {
+    flex: 1;
+    padding: 0 1em;
+
+    .statusItem {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 2.5em;
+      background-color: #043873;
+      border-radius: 3em;
+      cursor: pointer;
+
+      &:hover,
+      &.selectedStatusItem {
+        background-color: #054795;
+      }
+
+      .statusItemLabel {
+        margin-right: 0.5em;
+      }
+
+      .expiredStatusItemValue {
+        color: #f83329;
+      }
+    }
+  }
+}
+
+.card {
+  margin-bottom: 1em;
+
+  &:last-of-type {
+    margin-bottom: 1px;
+  }
+}
