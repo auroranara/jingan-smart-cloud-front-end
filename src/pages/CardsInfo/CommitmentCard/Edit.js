@@ -25,17 +25,27 @@ export default class Edit extends PureComponent {
 
   handleSubmit = e => {
     const {
+      dispatch,
       form: { validateFields },
+      match: { params: { id } },
     } = this.props;
 
     e.preventDefault();
     validateFields((errors, values) => {
-      if (!errors) {
-        message.success('操作成功');
-        router.push(LIST_URL);
-      } else {
-        message.error('操作失败');
-      }
+      if (errors)
+        return;
+
+      dispatch({
+        type: `cardsInfo/${id ? 'edit' : 'add'}CommitCard`,
+        payload: id ? { id, ...values } : values,
+        callback: (code, msg) => {
+          if (code === 200) {
+            message.success('操作成功');
+            router.push(LIST_URL);
+          } else
+            message.error(msg);
+        },
+      });
     });
   };
 

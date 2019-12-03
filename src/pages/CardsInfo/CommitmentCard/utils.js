@@ -59,13 +59,13 @@ export const TABLE_COLUMNS = [ // modify
   },
   {
     title: '单位名称',
-    dataIndex: 'name',
-    key: 'name',
+    dataIndex: 'companyId',
+    key: 'companyId',
   },
   {
     title: '承诺卡名称',
-    dataIndex: 'cardName',
-    key: 'cardName',
+    dataIndex: 'name',
+    key: 'name',
   },
   {
     title: '承诺卡内容',
@@ -74,8 +74,8 @@ export const TABLE_COLUMNS = [ // modify
   },
   {
     title: '承诺人',
-    dataIndex: 'man',
-    key: 'man',
+    dataIndex: 'acceptor',
+    key: 'acceptor',
   },
   {
     title: '时间',
@@ -111,9 +111,9 @@ export const TABLE_COLUMNS = [ // modify
 ];
 
 export const EDIT_FORMITEMS = [ // modify
-    { name: 'name', label: '单位名称' },
-    { name: 'cardName', label: '承诺卡名称' },
+    { name: 'companyId', label: '单位名称', type: 'companyselect' },
+    { name: 'name', label: '承诺卡名称' },
     { name: 'content', label: '承诺卡内容', type: 'text' },
-    { name: 'man', label: '承诺人' },
+    { name: 'acceptor', label: '承诺人' },
     { name: 'time', label: '时间', type: 'datepicker' },
 ];

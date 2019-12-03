@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-// import { connect } from 'dva';
+import { connect } from 'dva';
 import router from 'umi/router';
 import { Button, Card, Table } from 'antd';
 
@@ -8,13 +8,34 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, LIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, TABLE_COLUMNS as COLUMNS } from './utils';
 
+@connect(({ cardsInfo, loading }) => ({
+  cardsInfo,
+  loading: loading.models.cardsInfo,
+}))
 export default class TableList extends PureComponent {
+  state = { current: 1 };
+  values = {};
+
+  componentDidMount() {
+    this.getList();
+  }
+
+  getList = (pageNum=1) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'cardsInfo/fetchCommitList',
+      payload: { pageNum, pageSize: PAGE_SIZE, ...this.values },
+    });
+  };
+
   handleSearch = values => {
-    return;
+    this.values = values;
+    this.getList();
   };
 
   handleReset = () => {
-    return;
+    this.values = {};
+    this.getList();
   };
 
   handleAdd = () => {
@@ -22,13 +43,19 @@ export default class TableList extends PureComponent {
   };
 
   onTableChange = (pagination, filters, sorter) => {
-    return;
+    const { current } = pagination;
+    this.setState({ current });
+    this.getList(current);
   };
 
   render() {
-    const { loading=false } = this.props;
+    const {
+      loading,
+      cardsInfo: { commitList, commitTotal },
+    } = this.props;
+    const { current } = this.state;
 
-    const list = LIST;
+    const list = commitList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
@@ -65,7 +92,7 @@ export default class TableList extends PureComponent {
             dataSource={list}
             onChange={this.onTableChange}
             scroll={{ x: 1500 }} // 项目不多时注掉
-            pagination={{ pageSize: PAGE_SIZE, total: PAGE_SIZE, current: 1 }}
+            pagination={{ pageSize: PAGE_SIZE, total: commitTotal, current }}
           />
         </div>
       </PageHeaderLayout>

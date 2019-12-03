@@ -2,6 +2,8 @@ import { Fragment } from 'react';
 import router from 'umi/router';
 import { Button, Cascader, DatePicker, Form, Input, Radio, Select } from 'antd';
 
+import CompanySelect from '@/jingan-components/CompanySelect';
+
 const { Item: FormItem } = Form;
 const { TextArea } = Input;
 const { Option } = Select;
@@ -115,6 +117,10 @@ function genFormItem(field, getFieldDecorator) {
       case 'cascader':
         placeholder = placeholder || `请选择${label}`;
         component = <Cascader placeholder={placeholder} options={options} allowClear />;
+        break;
+      case 'companyselect':
+        placeholder = placeholder || `请选择${label}`;
+        component = <CompanySelect />;
         break;
       default:
         placeholder = placeholder || `请输入${label}`;
