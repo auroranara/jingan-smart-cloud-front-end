@@ -316,6 +316,23 @@ module.exports = env => {
             },
           ],
         },
+        {
+          name: 'exception',
+          icon: 'warning',
+          path: '/exception',
+          hideInMenu: true,
+          routes: [
+            { path: '/exception/403', name: 'not-permission', component: './Exception/403' },
+            { path: '/exception/404', name: 'not-find', component: './Exception/404' },
+            { path: '/exception/500', name: 'server-error', component: './Exception/500' },
+            {
+              path: '/exception/trigger',
+              name: 'trigger',
+              hideInMenu: true,
+              component: './Exception/triggerException',
+            },
+          ],
+        },
 
         {
           path: '/system-management', // 系统管理
@@ -1238,6 +1255,44 @@ module.exports = env => {
               ],
             },
             {
+              path: '/device-management/monitoring-type', // 监测类型管理
+              code: 'deviceManagement.monitoringType',
+              name: 'monitoringType',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/monitoring-type',
+                  name: 'monitoringType',
+                  redirect: '/device-management/monitoring-type/list',
+                },
+                {
+                  path: '/device-management/monitoring-type/list',
+                  name: 'listView',
+                  code: 'deviceManagement.monitoringType.listView',
+                  component: './DeviceManagement/MonitoringType',
+                },
+              ],
+            },
+            {
+              path: '/device-management/device-type', // 设备类型管理
+              code: 'deviceManagement.deviceType',
+              name: 'deviceType',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/device-type',
+                  name: 'deviceType',
+                  redirect: '/device-management/device-type/list',
+                },
+                {
+                  path: '/device-management/device-type/list',
+                  code: 'deviceManagement.deviceType.listView',
+                  name: 'listView',
+                  component: './DeviceManagement/DeviceType',
+                },
+              ],
+            },
+            {
               path: '/device-management/monitoring-device', // 监测设备管理
               name: 'monitoringDevice',
               code: 'deviceManagement.monitoringDevice',
@@ -1578,43 +1633,6 @@ module.exports = env => {
               ],
             },
             {
-              path: '/emergency-resource-management/emergency-estimate', // 应急演练评估
-              code: 'emergencyResourceManagement.emergencyEstimate',
-              name: 'emergencyEstimate',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/emergency-resource-management/emergency-estimate',
-                  name: 'emergencyEstimate',
-                  redirect: '/emergency-resource-management/emergency-estimate/list',
-                },
-                {
-                  path: '/emergency-resource-management/emergency-estimate/list',
-                  code: 'emergencyResourceManagement.emergencyEstimate.listView',
-                  name: 'list',
-                  component: './EmergencyManagement/EmergencyEstimate/List/index',
-                },
-                {
-                  path: '/emergency-resource-management/emergency-estimate/add',
-                  code: 'emergencyResourceManagement.emergencyEstimate.add',
-                  name: 'add',
-                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
-                },
-                {
-                  path: '/emergency-resource-management/emergency-estimate/edit/:id',
-                  code: 'emergencyResourceManagement.emergencyEstimate.edit',
-                  name: 'edit',
-                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
-                },
-                {
-                  path: '/emergency-resource-management/emergency-estimate/detail/:id',
-                  code: 'emergencyResourceManagement.emergencyEstimate.detail',
-                  name: 'detail',
-                  component: './EmergencyManagement/EmergencyEstimate/Detail/index',
-                },
-              ],
-            },
-            {
               name: 'emergencyProcess', // 应急演练过程
               code: 'emergencyResourceManagement.emergencyProcess',
               path: '/emergency-resource-management/emergency-process',
@@ -1648,6 +1666,43 @@ module.exports = env => {
                   code: 'emergencyResourceManagement.emergencyProcess.edit',
                   path: '/emergency-resource-management/emergency-process/edit/:id',
                   component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+              ],
+            },
+            {
+              path: '/emergency-resource-management/emergency-estimate', // 应急演练评估
+              code: 'emergencyResourceManagement.emergencyEstimate',
+              name: 'emergencyEstimate',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-resource-management/emergency-estimate',
+                  name: 'emergencyEstimate',
+                  redirect: '/emergency-resource-management/emergency-estimate/list',
+                },
+                {
+                  path: '/emergency-resource-management/emergency-estimate/list',
+                  code: 'emergencyResourceManagement.emergencyEstimate.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyEstimate/List/index',
+                },
+                {
+                  path: '/emergency-resource-management/emergency-estimate/add',
+                  code: 'emergencyResourceManagement.emergencyEstimate.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
+                },
+                {
+                  path: '/emergency-resource-management/emergency-estimate/edit/:id',
+                  code: 'emergencyResourceManagement.emergencyEstimate.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
+                },
+                {
+                  path: '/emergency-resource-management/emergency-estimate/detail/:id',
+                  code: 'emergencyResourceManagement.emergencyEstimate.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/EmergencyEstimate/Detail/index',
                 },
               ],
             },
@@ -4717,43 +4772,6 @@ module.exports = env => {
               ],
             },
             {
-              path: '/emergency-management/emergency-estimate', // 应急演练评估
-              code: 'emergencyManagement.emergencyEstimate',
-              name: 'emergencyEstimate',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/emergency-management/emergency-estimate',
-                  name: 'emergencyEstimate',
-                  redirect: '/emergency-management/emergency-estimate/list',
-                },
-                {
-                  path: '/emergency-management/emergency-estimate/list',
-                  code: 'emergencyManagement.emergencyEstimate.listView',
-                  name: 'list',
-                  component: './EmergencyManagement/EmergencyEstimate/List/index',
-                },
-                {
-                  path: '/emergency-management/emergency-estimate/add',
-                  code: 'emergencyManagement.emergencyEstimate.add',
-                  name: 'add',
-                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
-                },
-                {
-                  path: '/emergency-management/emergency-estimate/edit/:id',
-                  code: 'emergencyManagement.emergencyEstimate.edit',
-                  name: 'edit',
-                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
-                },
-                {
-                  path: '/emergency-management/emergency-estimate/detail/:id',
-                  code: 'emergencyManagement.emergencyEstimate.detail',
-                  name: 'detail',
-                  component: './EmergencyManagement/EmergencyEstimate/Detail/index',
-                },
-              ],
-            },
-            {
               name: 'emergencyProcess', // 应急演练过程
               code: 'emergencyManagement.emergencyProcess',
               path: '/emergency-management/emergency-process',
@@ -4787,6 +4805,43 @@ module.exports = env => {
                   code: 'emergencyManagement.emergencyProcess.edit',
                   path: '/emergency-management/emergency-process/edit/:id',
                   component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+              ],
+            },
+            {
+              path: '/emergency-management/emergency-estimate', // 应急演练评估
+              code: 'emergencyManagement.emergencyEstimate',
+              name: 'emergencyEstimate',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-estimate',
+                  name: 'emergencyEstimate',
+                  redirect: '/emergency-management/emergency-estimate/list',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/list',
+                  code: 'emergencyManagement.emergencyEstimate.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyEstimate/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/add',
+                  code: 'emergencyManagement.emergencyEstimate.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/edit/:id',
+                  code: 'emergencyManagement.emergencyEstimate.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/detail/:id',
+                  code: 'emergencyManagement.emergencyEstimate.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/EmergencyEstimate/Detail/index',
                 },
               ],
             },

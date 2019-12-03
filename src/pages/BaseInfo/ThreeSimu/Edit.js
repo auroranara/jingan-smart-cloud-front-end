@@ -14,28 +14,26 @@ const PROGRAM_OPTION = flatOption(PROGRAM);
 const TYPE_OPTION = flatOption(TYPE);
 
 @Form.create()
-@connect(({ baseInfo }) => ({
+@connect(({ baseInfo, user }) => ({
   baseInfo,
+  user,
 }))
 export default class Edit extends PureComponent {
 
   state = {
     detail: {},
+    selectedCompany: {},// 选中的企业
   };
 
   componentDidMount () {
     const {
-      match: { params: { id } },
-    } = this.props;
-    id && this.getDetail();
-  }
-
-  getDetail = () => {
-    const {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: { currentUser: { unitType } },
     } = this.props;
+    // 是否企业登录
+    const isUnit = +unitType === 4;
     if (id) {
       dispatch({
         type: 'baseInfo/fetchThreeSimultaneity',
@@ -61,6 +59,7 @@ export default class Edit extends PureComponent {
             safeFacilitiesCompleteType,
             safeFacilitiesCompleteResult,
           } = list[0];
+          this.setState({ detail: list[0] || {}, selectedCompany: { key: companyId, label: companyName } })
           setFieldsValue({
             safeDate: moment(safeDate),
             safeFacilitiesDesignDate: moment(safeFacilitiesDesignDate),
@@ -81,8 +80,11 @@ export default class Edit extends PureComponent {
           })
         },
       })
+    } else if (isUnit) {
+      const { companyId, companyName } = this.props.user.currentUser;
+      this.setState({ selectedCompany: { key: companyId, label: companyName } })
     }
-  };
+  }
 
   getStartTime = obj => obj ? obj.startOf('day').unix() * 1000 : obj;
 
@@ -94,6 +96,7 @@ export default class Edit extends PureComponent {
       form: { validateFields },
       match: { params: { id } },
     } = this.props;
+    const { selectedCompany } = this.state;
     e.preventDefault();
     validateFields((err, values) => {
       if (err) return;
@@ -115,7 +118,7 @@ export default class Edit extends PureComponent {
         safeFacilitiesCompleteDate: this.getStartTime(safeFacilitiesCompleteDate),
         tryProductStartdate: this.getStartTime(startDate),
         tryProductEnddate: this.getEndTime(endDate),
-        companyId: company.key,
+        companyId: company ? company.key : selectedCompany.key,
       };
       const tag = id ? '编辑' : '新增';
       const success = () => {
@@ -158,8 +161,10 @@ export default class Edit extends PureComponent {
     const {
       match: { params: { id } },
       form: { getFieldDecorator },
+      user: { currentUser: { unitType } },
     } = this.props;
-
+    // 是否企业登录
+    const isUnit = +unitType === 4;
     const isDet = this.isDetail();
     const title = isDet ? '详情' : id ? '编辑' : '新增';
     const breadcrumbList = Array.from(BREADCRUMBLIST);
@@ -169,7 +174,7 @@ export default class Edit extends PureComponent {
       {
         title: '项目信息',
         fields: [
-          {
+          ...isUnit ? [] : [{
             name: 'company',
             label: '单位名称',
             type: 'component',
@@ -178,7 +183,7 @@ export default class Edit extends PureComponent {
             })(
               <CompanySelect type={!isDet || 'span'} />
             ),
-          },
+          }],
           { name: 'projectName', label: '项目名称' },
           { name: 'projectType', label: '项目类型', type: 'radio', options: PROJECT_OPTION },
           { name: 'program', label: '程序', type: 'radio', options: PROGRAM_OPTION },
