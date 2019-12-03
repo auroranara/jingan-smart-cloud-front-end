@@ -8,10 +8,10 @@ import codes from '@/utils/codes';
 const FormItem = Form.Item;
 const { TreeNode, SHOW_PARENT } = TreeSelect;
 
-const title = '设备类型';
+const title = '设备类型管理';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理' },
+  { title: '物联设备管理', name: '物联设备管理' },
   { title, name: title },
 ];
 const tabList = [
