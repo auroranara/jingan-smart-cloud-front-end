@@ -56,43 +56,6 @@ const BREADCRUMB_LIST = [
 ];
 const GET_LIST = 'gasometer/getList';
 const REMOVE = 'gasometer/remove';
-const FIELDS = [
-  {
-    id: 'gasholderName',
-    label: '气柜名称',
-    transform: value => value.trim(),
-    render: ({ handleSearch }) => <Input placeholder="请输入气柜名称" onPressEnter={handleSearch} maxLength={50} />,
-  },
-  {
-    id: 'unifiedCode',
-    label: '统一编码',
-    transform: value => value.trim(),
-    render: ({ handleSearch }) => <Input placeholder="请输入统一编码" onPressEnter={handleSearch} maxLength={50} />,
-  },
-  {
-    id: 'gasholderType',
-    label: '气柜类型',
-    render: () => <SelectOrSpan placeholder="请选择气柜类型" list={TYPES} allowClear />,
-  },
-  {
-    id: 'chineName',
-    label: '存储介质',
-    transform: value => value.trim(),
-    render: ({ handleSearch }) => <Input placeholder="请输入存储介质" onPressEnter={handleSearch} maxLength={50} />,
-  },
-  {
-    id: 'casNo',
-    label: 'CAS号',
-    transform: value => value.trim(),
-    render: ({ handleSearch }) => <Input placeholder="请输入CAS号" onPressEnter={handleSearch} maxLength={50} />,
-  },
-  {
-    id: 'companyName',
-    label: '单位名称',
-    transform: value => value.trim(),
-    render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
-  },
-];
 
 @connect(({
   gasometer,
@@ -241,16 +204,58 @@ export default class GasometerList extends Component {
     const {
       user: {
         currentUser: {
+          unitType,
           permissionCodes,
         },
       },
     } = this.props;
+    const isNotCompany = unitType !== 4;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
+
+    const fields = [
+      {
+        id: 'gasholderName',
+        label: '气柜名称',
+        transform: value => value.trim(),
+        render: ({ handleSearch }) => <Input placeholder="请输入气柜名称" onPressEnter={handleSearch} maxLength={50} />,
+      },
+      {
+        id: 'unifiedCode',
+        label: '统一编码',
+        transform: value => value.trim(),
+        render: ({ handleSearch }) => <Input placeholder="请输入统一编码" onPressEnter={handleSearch} maxLength={50} />,
+      },
+      {
+        id: 'gasholderType',
+        label: '气柜类型',
+        render: () => <SelectOrSpan placeholder="请选择气柜类型" list={TYPES} allowClear />,
+      },
+      {
+        id: 'chineName',
+        label: '存储介质',
+        transform: value => value.trim(),
+        render: ({ handleSearch }) => <Input placeholder="请输入存储介质" onPressEnter={handleSearch} maxLength={50} />,
+      },
+      {
+        id: 'casNo',
+        label: 'CAS号',
+        transform: value => value.trim(),
+        render: ({ handleSearch }) => <Input placeholder="请输入CAS号" onPressEnter={handleSearch} maxLength={50} />,
+      },
+      ...(isNotCompany ? [
+        {
+          id: 'companyName',
+          label: '单位名称',
+          transform: value => value.trim(),
+          render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
+        },
+      ] : []),
+    ];
 
     return (
       <Card className={styles.card} bordered={false}>
         <CustomForm
-          fields={FIELDS}
+          fields={fields}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
           action={(
@@ -344,9 +349,9 @@ export default class GasometerList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: id => (
           <Fragment>
-            {/* {<span className={classNames(styles.operation, !hasBindAuthority && styles.disabled)} onClick={this.handleBindButtonClick} data-id={id}>绑定传感器</span>} */}
-            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={this.handleDetailButtonClick} data-id={id}>查看</span>}
-            {<span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={this.handleEditButtonClick} data-id={id}>编辑</span>}
+            {/* {<span className={classNames(styles.operation, !hasBindAuthority && styles.disabled)} onClick={hasBindAuthority ? this.handleBindButtonClick : undefined} data-id={id}>绑定传感器</span>} */}
+            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleDetailButtonClick : undefined} data-id={id}>查看</span>}
+            {<span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditButtonClick : undefined} data-id={id}>编辑</span>}
             {hasDeleteAuthority ? (
               <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteButtonClick(id)}>
                 <span className={styles.operation}>删除</span>

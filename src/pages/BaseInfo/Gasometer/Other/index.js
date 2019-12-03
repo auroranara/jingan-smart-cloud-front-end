@@ -71,7 +71,7 @@ const LABEL_COL = { span: 6 };
   },
   setDetail() {
     dispatch({
-      type: 'save',
+      type: 'gasometer/save',
       payload: {
         detail: {},
       },
@@ -252,8 +252,8 @@ export default class GasometerOther extends Component {
         this.setState({
           submitting: true,
         });
-        (id ? edit : add)(payload, (isSuccess) => {
-          if (isSuccess) {
+        (id ? edit : add)(payload, (success) => {
+          if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
             router.push(LIST_PATH);
           } else {
@@ -293,10 +293,11 @@ export default class GasometerOther extends Component {
         currentUser: {
           permissionCodes,
           unitType,
+          unitId,
         },
       },
       detail: {
-        scenePhoto,
+        companyId,
       }={},
       loading=false,
     } = this.props;
@@ -309,6 +310,7 @@ export default class GasometerOther extends Component {
     const breadcrumbList = this.getBreadcrumbList(title);
     const isNotDetail = navigation !== 'detail';
     const isEdit = navigation === 'edit';
+    const realCompanyId = isNotCompany ? (values.company && values.company.key !== values.company.label ? values.company.key : companyId) : unitId;
     const fields = [
       {
         key: '1',
@@ -415,7 +417,7 @@ export default class GasometerOther extends Component {
             label: '存储介质',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <Medium className={styles.item} placeholder="请选择存储介质" type={isNotDetail || 'span'} />,
+            render: () => <Medium className={styles.item} companyId={realCompanyId} placeholder="请选择存储介质" type={isNotDetail || 'span'} />,
             options: {
               rules: isNotDetail ? [
                 {
@@ -604,15 +606,7 @@ export default class GasometerOther extends Component {
             label: '现场照片',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CustomUpload folder="gasometer" beforeUpload={this.handleBeforeUpload} /> : (
-              <div className={styles.fileList}>
-                {scenePhoto && scenePhoto.map(({ webUrl, name }, index) => (
-                  <div key={index}>
-                    <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
-                  </div>
-                ))}
-              </div>
-            ),
+            render: () => <CustomUpload folder="gasometer" beforeUpload={this.handleBeforeUpload} type={isNotDetail || 'span'} />,
           },
         ],
       },

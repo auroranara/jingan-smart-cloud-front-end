@@ -96,6 +96,8 @@ export default class ReportOther extends Component {
       },
       user: {
         currentUser: {
+          unitType,
+          unitId,
           permissionCodes,
         },
       },
@@ -154,13 +156,13 @@ export default class ReportOther extends Component {
               coordinate: [longitude, latitude].filter(v => isNumber(v)).join(','),
               accidentType: accidentType || undefined,
               accidentLevel: isNumber(accidentLevel) ? `${accidentLevel}` : undefined,
-              economicLoss: economicLoss || undefined,
-              involvedDangerNum: involvedDangerNum || undefined,
-              deathNum: deathNum || undefined,
-              severeWoundNum: severeWoundNum || undefined,
-              minorWoundNum: minorWoundNum || undefined,
-              trappedNum: trappedNum || undefined,
-              missingNum: missingNum || undefined,
+              economicLoss: isNumber(economicLoss) ? `${economicLoss}` : undefined,
+              involvedDangerNum: isNumber(involvedDangerNum) ? `${involvedDangerNum}` : undefined,
+              deathNum: isNumber(deathNum) ? `${deathNum}` : undefined,
+              severeWoundNum: isNumber(severeWoundNum) ? `${severeWoundNum}` : undefined,
+              minorWoundNum: isNumber(minorWoundNum) ? `${minorWoundNum}` : undefined,
+              trappedNum: isNumber(trappedNum) ? `${trappedNum}` : undefined,
+              missingNum: isNumber(missingNum) ? `${missingNum}` : undefined,
               accidentReason: accidentReason || undefined,
               siteConditions: siteConditions || undefined,
               accidentDescription: accidentDescription || undefined,
@@ -178,6 +180,8 @@ export default class ReportOther extends Component {
             message.error('获取详情失败，请稍后重试或联系管理人员');
           }
         });
+      } else if (+unitType === 4) {
+        this.handleCompanyChange({ key: unitId });
       }
     } else {
       router.replace('/404');
@@ -267,7 +271,7 @@ export default class ReportOther extends Component {
         (id ? edit : add)(payload, (success) => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.goBack();
+            router.push(LIST_PATH);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
@@ -335,7 +339,7 @@ export default class ReportOther extends Component {
       },
     } = this.props;
     const type = this.getType();
-    // const isNotCompany = +unitType !== 4;
+    const isNotCompany = +unitType !== 4;
     const isEdit = type === 'edit';
     const isNotDetail = type !== 'detail';
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
@@ -346,22 +350,24 @@ export default class ReportOther extends Component {
       {
         key: 1,
         fields: [
-          {
-            id: 'company',
-            label: '事故单位',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} onChange={this.handleCompanyChange} /> : <span>{companyName}</span>,
-            options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '事故单位不能为空',
-                  transform: value => value && value.label,
-                },
-              ] : undefined,
+          ...(isNotCompany ? [
+            {
+              id: 'company',
+              label: '事故单位',
+              span: SPAN,
+              labelCol: LABEL_COL,
+              render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} onChange={this.handleCompanyChange} /> : <span>{companyName}</span>,
+              options: {
+                rules: isNotDetail ? [
+                  {
+                    required: true,
+                    message: '事故单位不能为空',
+                    transform: value => value && value.label,
+                  },
+                ] : undefined,
+              },
             },
-          },
+          ] : []),
           {
             id: 'area',
             label: '所在区域',

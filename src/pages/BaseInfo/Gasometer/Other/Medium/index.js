@@ -53,8 +53,9 @@ export default class Medium extends Component {
   handleButtonClick = () => {
     const {
       getStorageMediumList,
+      companyId,
     } = this.props;
-    getStorageMediumList();
+    getStorageMediumList({ companyId });
     this.prevValues = {};
     this.setState({
       visible: true,
@@ -95,6 +96,7 @@ export default class Medium extends Component {
   // 查询
   handleSearch = (values) => {
     const {
+      companyId,
       gasometer: {
         storageMediumList: {
           pagination: {
@@ -108,6 +110,7 @@ export default class Medium extends Component {
     getStorageMediumList({
       ...values,
       pageSize,
+      companyId,
     });
   }
 
@@ -119,6 +122,7 @@ export default class Medium extends Component {
   // 表格change
   handleTableChange = ({ current, pageSize }) => {
     const {
+      companyId,
       gasometer: {
         storageMediumList: {
           pagination: {
@@ -132,6 +136,7 @@ export default class Medium extends Component {
       ...this.prevValues,
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
+      companyId,
     });
     this.form && this.form.setFieldsValue(this.prevValues);
     prevPageSize !== pageSize && setPageSize(pageSize);
@@ -245,6 +250,7 @@ export default class Medium extends Component {
   render() {
     const {
       className,
+      companyId,
       value,
       allowClear=false,
       type,
@@ -260,6 +266,7 @@ export default class Medium extends Component {
             <Button
               type="primary"
               onClick={this.handleButtonClick}
+              disabled={!companyId}
             >
               选择
             </Button>
