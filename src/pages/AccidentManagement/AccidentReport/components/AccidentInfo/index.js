@@ -51,7 +51,7 @@ export default class AccidentInfo extends Component {
       companyId,
       getList,
     } = this.props;
-    getList({ companyId });
+    getList({ accidentCompanyId: companyId });
     this.prevValues = {};
     this.setState({
       visible: true,
@@ -99,7 +99,7 @@ export default class AccidentInfo extends Component {
     getList({
       ...values,
       pageSize,
-      companyId,
+      accidentCompanyId: companyId,
     });
   }
 
@@ -125,7 +125,7 @@ export default class AccidentInfo extends Component {
       ...this.prevValues,
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
-      companyId,
+      accidentCompanyId: companyId,
     });
     this.form && this.form.setFieldsValue(this.prevValues);
     prevPageSize !== pageSize && setPageSize(pageSize);
