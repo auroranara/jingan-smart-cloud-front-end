@@ -58,6 +58,7 @@ export default class MajorHazardEdit extends PureComponent {
       match: {
         params: { id },
       },
+      form: { setFieldsValue },
     } = this.props;
 
     if (id) {
@@ -91,6 +92,7 @@ export default class MajorHazardEdit extends PureComponent {
             wareHouseAreaList: wareHouseArea,
             gasHolderManageList: gasHolderManage,
           });
+          setFieldsValue({ dangerSourceList: tankArea || wareHouseArea || gasHolderManage });
         },
       });
     }

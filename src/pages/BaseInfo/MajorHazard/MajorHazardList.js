@@ -143,7 +143,7 @@ export default class MajorHazardList extends PureComponent {
       pageSize: 10,
     };
     dispatch({
-      type: 'reservoirRegion/fetchCertificateList',
+      type: 'reservoirRegion/fetchSourceList',
       payload: {
         ...payload,
         pageSize,
