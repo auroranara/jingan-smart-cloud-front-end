@@ -194,8 +194,8 @@ export default class SafetySystemOther extends Component {
         const payload = {
           id,
           companyId: +unitType !== 4 ? company.key : unitId,
-          startDate: +startDate,
-          endDate: +endDate,
+          startDate: startDate && +startDate.startOf('day'),
+          endDate: endDate && +endDate.endOf('day'),
           otherFile: otherFile && otherFile.length > 0 ? JSON.stringify(otherFile) : undefined,
           status,
           historyType,
@@ -356,7 +356,7 @@ export default class SafetySystemOther extends Component {
             label: '有效期',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <DatePickerOrSpan className={styles.item} placeholder={['开始时间', '结束时间']} format={DEFAULT_FORMAT} showTime separator=" 至 " unknown="?" type={isNotDetail ? 'RangePicker' : 'span'} />,
+            render: () => <DatePickerOrSpan className={styles.item} placeholder={['开始日期', '结束日期']} format={DEFAULT_FORMAT} separator=" 至 " unknown="?" type={isNotDetail ? 'RangePicker' : 'span'} />,
             options: {
               rules: isNotDetail ? [
                 {

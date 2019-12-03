@@ -33,7 +33,8 @@ export const STATUSES = [
   { key: '3', value: '审核不通过' },
   { key: '4', value: '审核通过已发布' },
 ];
-export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+export const DEFAULT_FORMAT = 'YYYY-MM-DD';
+export const DEFAULT_FORMAT2 = 'YYYY-MM-DD HH:mm:ss';
 const STATUSES_MAPPER = {
   1: '待审核',
   2: '待发布',
@@ -354,7 +355,7 @@ export default class SafetySystemList extends Component {
       {
         title: '创建时间',
         dataIndex: 'createTime',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+        render: (time) => time && moment(time).format(DEFAULT_FORMAT2),
         align: 'center',
       },
       {
@@ -365,7 +366,7 @@ export default class SafetySystemList extends Component {
       {
         title: '审核通过时间',
         dataIndex: 'approveDate',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+        render: (time) => time && moment(time).format(DEFAULT_FORMAT2),
         align: 'center',
       },
       {
@@ -376,7 +377,7 @@ export default class SafetySystemList extends Component {
       {
         title: '发布时间',
         dataIndex: 'publishDate',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+        render: (time) => time && moment(time).format(DEFAULT_FORMAT2),
         align: 'center',
       },
     ];
@@ -528,8 +529,8 @@ export default class SafetySystemList extends Component {
         dataIndex: 'time',
         render: (_, { startDate, endDate }) => (
           <div className={styles.multi}>
-            <div><span className={styles.label}>开始时间：</span>{startDate && moment(startDate).format(DEFAULT_FORMAT)}</div>
-            <div><span className={styles.label}>结束时间：</span>{endDate && moment(endDate).format(DEFAULT_FORMAT)}</div>
+            <div><span className={styles.label}>开始日期：</span>{startDate && moment(startDate).format(DEFAULT_FORMAT)}</div>
+            <div><span className={styles.label}>结束日期：</span>{endDate && moment(endDate).format(DEFAULT_FORMAT)}</div>
           </div>
         ),
         align: 'center',
