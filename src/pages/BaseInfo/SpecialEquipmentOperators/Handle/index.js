@@ -421,7 +421,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
           <FormItem label="作业人员证证号" {...formItemLayout}>
             {getFieldDecorator('operapersonNumber', {
               initialValue: id ? detail.mustholdProject : undefined,
-              rules: [{ required: true, message: '请输入操作证证号' }],
+              rules: [{ required: true, message: '请输入作业人员证证号' }],
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}

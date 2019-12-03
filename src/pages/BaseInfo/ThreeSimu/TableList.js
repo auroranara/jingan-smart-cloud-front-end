@@ -2,7 +2,17 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
-import { Button, Card, Table, Form, message, Popconfirm } from 'antd';
+import {
+  Button,
+  Card,
+  Table,
+  Form,
+  message,
+  Popconfirm,
+  Input,
+  Select,
+  DatePicker,
+} from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
@@ -10,7 +20,6 @@ import moment from 'moment';
 import {
   BREADCRUMBLIST,
   PAGE_SIZE, ROUTER,
-  SEARCH_FIELDS as FIELDS,
   formatTime,
   PROJECT,
   PROGRAM,
@@ -18,9 +27,13 @@ import {
   CONCLUSION,
 } from './utils';
 
+const { RangePicker } = DatePicker;
+const { Option } = Select;
+
 @Form.create()
-@connect(({ baseInfo, loading }) => ({
+@connect(({ baseInfo, user, loading }) => ({
   baseInfo,
+  user,
   tableLoading: loading.effects['baseInfo/fetchThreeSimultaneity'],
 }))
 export default class TableList extends PureComponent {
@@ -44,8 +57,8 @@ export default class TableList extends PureComponent {
       const [start, end] = registrationDate;
       payload = {
         ...payload,
-        registrationStartDate: start ? moment(start).format('YYYY/MM/DD HH:mm:ss') : undefined,
-        registrationEndDate: end ? moment(end).format('YYYY/MM/DD HH:mm:ss') : undefined,
+        registrationStartDate: start ? moment(start).startOf('day').format('YYYY/MM/DD HH:mm:ss') : undefined,
+        registrationEndDate: end ? moment(end).endOf('day').format('YYYY/MM/DD HH:mm:ss') : undefined,
       }
     }
     dispatch({
@@ -91,8 +104,10 @@ export default class TableList extends PureComponent {
           },
         },
       },
+      user: { currentUser: { unitType } },
     } = this.props;
-
+    // 是否企业登录
+    const isUnit = +unitType === 4;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
@@ -100,14 +115,52 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
-    const columns = [ // modify
+    const fields = [ // modify
+      ...isUnit ? [] : [{
+        id: 'companyName',
+        label: '单位名称',
+        render: () => <Input placeholder="请输入" allowClear />,
+        transform: v => v.trim(),
+      }],
       {
+        id: 'projectName',
+        label: '项目名称',
+        render: () => <Input placeholder="请输入" allowClear />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'projectType',
+        label: '项目类型',
+        render: () => <Select placeholder="请选择" allowClear>{PROJECT.map((r, i) => <Option key={i + 1}>{r}</Option>)}</Select>,
+      },
+      {
+        id: 'program',
+        label: '程序',
+        render: () => <Select placeholder="请选择" allowClear>{PROGRAM.map((r, i) => <Option key={i + 1}>{r}</Option>)}</Select>,
+      },
+      {
+        id: 'registrationDate',
+        label: '登记时间',
+        render: () => (
+          <RangePicker
+            // format="YYYY-MM-DD HH:mm:ss"
+            // showTime={{
+            //   defaultValue: [moment().startOf('day'), moment().endOf('day')],
+            // }}
+            style={{ width: '100%' }}
+            allowClear
+          />
+        ),
+      },
+    ];
+    const columns = [ // modify
+      ...isUnit ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         key: 'companyName',
         align: 'center',
         width: 300,
-      },
+      }],
       {
         title: '项目信息',
         dataIndex: 'info',
@@ -172,7 +225,7 @@ export default class TableList extends PureComponent {
         title: '登记时间',
         dataIndex: 'registrationDate',
         align: 'center',
-        render: val => formatTime(val, 'YYYY-MM-DD HH:mm:ss'),
+        render: val => formatTime(val, 'YYYY-MM-DD'),
       },
       {
         title: '操作',
@@ -204,7 +257,7 @@ export default class TableList extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={FIELDS}
+            fields={fields}
             action={toolBarAction}
             onSearch={(payload) => this.handleQuery()}
             onReset={this.handleReset}
