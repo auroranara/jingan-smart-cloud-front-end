@@ -92,7 +92,7 @@ export default class MajorHazardEdit extends PureComponent {
             wareHouseAreaList: wareHouseArea,
             gasHolderManageList: gasHolderManage,
           });
-          setFieldsValue({ dangerSourceList: tankArea || wareHouseArea || gasHolderManage });
+          setFieldsValue({ dangerSourceList: allSelectedKeys });
         },
       });
     }
@@ -114,6 +114,9 @@ export default class MajorHazardEdit extends PureComponent {
         params: { id },
       },
       dispatch,
+      user: {
+        currentUser: { companyId },
+      },
     } = this.props;
 
     validateFieldsAndScroll((error, values) => {
@@ -122,7 +125,7 @@ export default class MajorHazardEdit extends PureComponent {
           submitting: true,
         });
 
-        const { tankIds, areaIds, gasometerIds } = this.state;
+        const { tankIds, areaIds, gasometerIds, editCompanyId } = this.state;
 
         const {
           companyName,
@@ -149,7 +152,7 @@ export default class MajorHazardEdit extends PureComponent {
         } = values;
 
         const payload = {
-          companyId: this.companyId,
+          companyId: this.companyId || companyId || editCompanyId,
           companyName,
           code,
           name,
@@ -239,6 +242,7 @@ export default class MajorHazardEdit extends PureComponent {
     const { id, name } = item;
     setFieldsValue({
       companyId: name,
+      dangerSourceList: [],
     });
     this.companyId = id;
     this.handleClose();
@@ -323,11 +327,17 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 显示危险源弹框
   handleDangerModal = () => {
+    const {
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+
     const { editCompanyId } = this.state;
-    if (this.companyId || editCompanyId) {
-      this.fetchStorageAreaList({ companyId: this.companyId || editCompanyId });
-      this.fetchReservoirAreaList({ companyId: this.companyId || editCompanyId });
-      this.fetchGasList({ companyId: this.companyId || editCompanyId });
+    if (this.companyId || editCompanyId || companyId) {
+      this.fetchStorageAreaList({ companyId: this.companyId || editCompanyId || companyId });
+      this.fetchReservoirAreaList({ companyId: this.companyId || editCompanyId || companyId });
+      this.fetchGasList({ companyId: this.companyId || editCompanyId || companyId });
       this.setState({ dangerModalVisible: true });
     } else {
       message.warning('请先选择单位！');
@@ -368,7 +378,9 @@ export default class MajorHazardEdit extends PureComponent {
     const reserviorId = reserviorNameArrray.map(item => item.id).join(',');
     const gasId = gasNameArrray.map(item => item.id).join(',');
 
-    setFieldsValue({ dangerSourceList: storageNameArray || reserviorNameArrray || gasNameArrray });
+    const allSelectedKeys = storageId.concat(reserviorId, gasId);
+
+    setFieldsValue({ dangerSourceList: allSelectedKeys });
 
     this.setState({
       dangerModalVisible: false,
@@ -390,6 +402,9 @@ export default class MajorHazardEdit extends PureComponent {
         dangerChemicalsList,
         memoryPlaceList,
         antiStaticList,
+      },
+      user: {
+        currentUser: { unitType },
       },
     } = this.props;
 
@@ -428,30 +443,32 @@ export default class MajorHazardEdit extends PureComponent {
     return (
       <Card className={styles.card} bordered={false}>
         <Form style={{ marginTop: 8 }}>
-          <FormItem {...formItemLayout} label="单位名称">
-            {getFieldDecorator('companyId', {
-              initialValue: companyName,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择单位',
-                },
-              ],
-            })(
-              <Input
-                {...itemStyles}
-                ref={input => {
-                  this.CompanyIdInput = input;
-                }}
-                disabled
-                placeholder="请选择单位"
-              />
-            )}
-            <Button type="primary" onClick={this.handleCompanyModal}>
-              {' '}
-              选择单位
-            </Button>
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem {...formItemLayout} label="单位名称">
+              {getFieldDecorator('companyId', {
+                initialValue: companyName,
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择单位',
+                  },
+                ],
+              })(
+                <Input
+                  {...itemStyles}
+                  ref={input => {
+                    this.CompanyIdInput = input;
+                  }}
+                  disabled
+                  placeholder="请选择单位"
+                />
+              )}
+              <Button type="primary" onClick={this.handleCompanyModal}>
+                {' '}
+                选择单位
+              </Button>
+            </FormItem>
+          )}
           <FormItem {...formItemLayout} label="统一编码">
             {getFieldDecorator('code', {
               initialValue: code,

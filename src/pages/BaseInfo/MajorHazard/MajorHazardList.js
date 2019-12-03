@@ -162,7 +162,7 @@ export default class MajorHazardList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -171,12 +171,15 @@ export default class MajorHazardList extends PureComponent {
     // const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
     const columns = [
-      {
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
-        width: 200,
-      },
+      ...(unitType !== 4
+        ? [
+            {
+              title: '单位名称',
+              dataIndex: 'companyName',
+              align: 'center',
+            },
+          ]
+        : []),
       {
         title: '基本信息',
         dataIndex: 'info',
@@ -281,7 +284,7 @@ export default class MajorHazardList extends PureComponent {
         dangerTypeList,
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -323,13 +326,17 @@ export default class MajorHazardList extends PureComponent {
           </Select>
         ),
       },
-      {
-        id: 'companyName',
-        label: '单位名称',
-        span: spanStyle,
-        render: () => <Input placeholder="请输入单位名称" />,
-        transform: v => v.trim(),
-      },
+      ...(unitType !== 4
+        ? [
+            {
+              id: 'companyName',
+              label: '单位名称',
+              span: spanStyle,
+              render: () => <Input placeholder="请输入单位名称" />,
+              transform: v => v.trim(),
+            },
+          ]
+        : []),
     ];
 
     return (
