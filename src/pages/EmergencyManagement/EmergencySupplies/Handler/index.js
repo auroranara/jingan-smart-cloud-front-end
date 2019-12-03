@@ -277,6 +277,32 @@ export default class EmergencySuppliesHandler extends PureComponent {
               />
             )}
           </FormItem>
+          {/* <FormItem label="定期检查间隔（天）" {...formItemLayout}>
+            {getFieldDecorator('materialCount', {
+              // rules: [{ required: true, message: '请输入定期检查间隔（天）' }],
+            })(
+              <InputNumber
+                {...itemStyles}
+                min={0}
+                placeholder="请输入定期检查间隔"
+                formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
+                parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
+              />
+            )}
+          </FormItem>
+          <FormItem label="定期保修间隔（天）" {...formItemLayout}>
+            {getFieldDecorator('materialCount', {
+              // rules: [{ required: true, message: '请输入物资数量' }],
+            })(
+              <InputNumber
+                {...itemStyles}
+                min={0}
+                placeholder="请输入定期保修间隔"
+                formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
+                parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
+              />
+            )}
+          </FormItem> */}
           <FormItem label="备注" {...formItemLayout}>
             {getFieldDecorator('remark')(
               <TextArea rows={4} placeholder="请输入备注" maxLength="500" {...itemStyles} />

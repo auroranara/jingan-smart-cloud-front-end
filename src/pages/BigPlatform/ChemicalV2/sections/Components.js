@@ -1,6 +1,6 @@
 import Risk from './Risk';
 import KeyPoints from './KeyPoints';
-import HighDanger from './HighDanger';
+import SafetyOfficerDrawer from './SafetyOfficerDrawer';
 import Emergency from './Emergency';
 import Remind from './Remind';
 import Tips from './Tips';
@@ -9,11 +9,12 @@ import StorageAreaDrawer from './StorageAreaDrawer';
 import HiddenDanger from './HiddenDanger';
 import Map from './Map';
 import DangerAreaDrawer from './DangerAreaDrawer';
+import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 
 export {
   Risk,
   KeyPoints,
-  HighDanger,
+  SafetyOfficerDrawer,
   Emergency,
   Remind,
   Tips,
@@ -22,4 +23,5 @@ export {
   HiddenDanger,
   Map,
   DangerAreaDrawer,
+  SpecialEquipmentDrawer,
 };

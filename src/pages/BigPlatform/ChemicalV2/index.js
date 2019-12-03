@@ -14,7 +14,7 @@ import { POINTS } from './utils';
 import {
   Risk,
   KeyPoints,
-  HighDanger,
+  SafetyOfficerDrawer,
   Emergency,
   Remind,
   Tips,
@@ -23,6 +23,7 @@ import {
   HiddenDanger,
   Map,
   DangerAreaDrawer,
+  SpecialEquipmentDrawer,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -45,6 +46,8 @@ export default class Chemical extends PureComponent {
       riskPointType: {},
       dangerAreaDrawerVisible: false,
       storageAreaDrawerVisible: false,
+      safetyOfficerDrawerVisible: false,
+      specialEquipmentDrawerVisible: false,
     };
   }
 
@@ -86,6 +89,8 @@ export default class Chemical extends PureComponent {
       riskPointType,
       dangerAreaDrawerVisible,
       storageAreaDrawerVisible,
+      safetyOfficerDrawerVisible,
+      specialEquipmentDrawerVisible,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -157,6 +162,22 @@ export default class Chemical extends PureComponent {
           visible={storageAreaDrawerVisible}
           onClose={() => {
             this.setDrawerVisible('storageArea');
+          }}
+        />
+
+        {/* 安全人员抽屉 */}
+        <SafetyOfficerDrawer
+          visible={safetyOfficerDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('safetyOfficer');
+          }}
+        />
+
+        {/* 特种设备抽屉 */}
+        <SpecialEquipmentDrawer
+          visible={specialEquipmentDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('specialEquipment');
           }}
         />
       </BigPlatformLayout>

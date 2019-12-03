@@ -1,0 +1,80 @@
+.overflow() {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.container {
+  padding: 0 1em;
+}
+
+.scrollContainer {
+  height: calc(~'100% - 6em') !important;
+}
+
+/* 人员统计 */
+.personWrapper {
+  padding-bottom: 1em;
+
+  .person {
+    display: flex;
+    justify-content: space-between;
+    // padding: 0.5em 0 0.5em 2em;
+    padding: 0.5em 2em;
+
+    .personName {
+      // width: 6em;
+      max-width: 10em;
+      color: #00ffff;
+      white-space: nowrap;
+    }
+
+    .personValue {
+      // flex: 1;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* 人员列表 */
+.personList {
+  position: relative;
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+  border-left: 6px solid #fff;
+  background-color: rgb(4, 64, 125);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .personItem {
+    display: flex;
+    padding: 0.75em 0;
+    overflow: hidden;
+
+    .personItemName {
+      flex: 1;
+      .overflow;
+    }
+
+    .personItemPhone {
+      flex: 3;
+      .overflow;
+    }
+  }
+
+  .personLabel {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    padding: 0.25em;
+    min-width: 5em;
+    white-space: nowrap;
+    text-align: center;
+    color: #00ffff;
+    border: 1px solid #00ffff;
+    border-radius: 4px;
+    box-sizing: content-box;
+  }
+}

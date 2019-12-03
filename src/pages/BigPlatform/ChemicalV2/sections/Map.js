@@ -1,9 +1,11 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 // 引入样式文件
 import styles from './Map.less';
 import monitor from '../imgs/monitor.png';
 import riskPoint from '../imgs/risk-point.png';
 import video from '../imgs/video.png';
+import mapDot from '@/pages/BigPlatform/NewFireControl/img/mapDot.png';
 
 const fengMap = fengmap; // eslint-disable-line
 let map;
@@ -33,7 +35,9 @@ var polygon = [
 ];
 
 export default class Map extends PureComponent {
-  state = {};
+  state = {
+    gdMapVisible: false,
+  };
 
   componentDidMount() {
     this.initMap();
@@ -103,9 +107,22 @@ export default class Map extends PureComponent {
       console.log(error);
     });
 
-    //地图加载完成事件
+    //2D、3D控件配置
+    var toolControl = new fengmap.toolControl(map, {
+      init2D: false, //初始化2D模式
+      groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
+      position: fengmap.controlPositon.LEFT_TOP,
+      //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
+      clickCallBack: function(type, value) {
+        // console.log(type,value);
+      },
+    });
+
+    // 地图加载完成事件
     map.on('loadComplete', () => {
       console.log('地图加载完成！');
+      map.rotateAngle = 60;
+      map.mapScaleLevel = 21;
       //显示按钮
       // document.getElementById('btnsGroup').style.display = 'block';
       [...riskPointData, ...videoData, ...monitorData].forEach(element => {
@@ -127,7 +144,6 @@ export default class Map extends PureComponent {
         ID,
       } = clickedObj;
       if (ID && (ID >= 158 && ID <= 171)) {
-        console.log('44444');
         setDrawerVisible('storageArea');
       } else if (ID && [18, 22, 23, 45, 24, 26, 25].includes(ID)) {
         setDrawerVisible('dangerArea');
@@ -153,7 +169,75 @@ export default class Map extends PureComponent {
     });
   }
 
+  handleClickMap = () => {
+    this.setState({ gdMapVisible: false });
+    this.initMap();
+  };
+
+  renderMarkers = () => {
+    return (
+      <Marker
+        // title={name}
+        position={{ longitude: 120.3660553694, latitude: 31.5441255765 }}
+        // offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
+        offset={[-22, -45]}
+        events={{
+          click: this.handleClickMap,
+          // created: () => {
+          //   if (isLast) {
+          //     this.mapInstance.on('complete', () => {
+          //       this.mapInstance.setFitView(
+          //         this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
+          //       );
+          //     });
+          //   }
+          // },
+        }}
+      >
+        <div
+          className={styles.dotIcon}
+          // onMouseEnter={isSelected ? null : handleMouseEnter}
+          // onMouseLeave={isSelected ? null : hideTooltip}
+          style={{ backgroundImage: `url(${mapDot})` }}
+        />
+      </Marker>
+    );
+  };
+
   render() {
-    return <div className={styles.container} id="fengMap" />;
+    const { gdMapVisible } = this.state;
+    return (
+      <div className={styles.container} id="fengMap">
+        {gdMapVisible && (
+          <GDMap
+            version={'1.4.10'}
+            amapkey="665bd904a802559d49a33335f1e4aa0d"
+            plugins={[
+              { name: 'Scale', options: { locate: false } },
+              { name: 'ToolBar', options: { locate: false } },
+            ]}
+            status={{
+              keyboardEnable: false,
+            }}
+            useAMapUI
+            mapStyle="amap://styles/b9d9da96da6ba2487d60019876b26fc5"
+            center={[120.3660553694, 31.5441255765]}
+            zoom={18}
+            pitch={60}
+            expandZoomRange
+            zooms={[3, 20]}
+            events={{
+              created: mapInstance => {
+                this.mapInstance = mapInstance;
+                // mapInstance.setCity(region);
+              },
+            }}
+          >
+            {this.renderMarkers()}
+            {/* <MapTypeBar /> */}
+          </GDMap>
+        )}
+      </div>
+    );
   }
 }

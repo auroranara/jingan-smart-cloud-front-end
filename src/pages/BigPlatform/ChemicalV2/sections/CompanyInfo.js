@@ -17,7 +17,7 @@ import styles from './CompanyInfo.less';
 }))
 export default class CompanyInfo extends PureComponent {
   render() {
-    const {handleClickCount}=this.props;
+    const { handleClickCount } = this.props;
     const {
       companyName = '无锡晶安机械设备有限公司(演示)',
       // 安全管理员
@@ -25,11 +25,11 @@ export default class CompanyInfo extends PureComponent {
       // 联系电话
       headOfSecurityPhone = '18151518810',
       // 风险点总数
-      countCheckItem = 3,
+      countCheckItem = 61,
       // 手机号是否可见
       phoneVisible = true,
-      countCompanyUser = 4,
-      specialEquipmentCount = 2,
+      countCompanyUser = 59,
+      specialEquipmentCount = 4,
       total = 4,
       isImportant = true,
     } = {};
@@ -75,9 +75,9 @@ export default class CompanyInfo extends PureComponent {
             <div
               className={countCompanyUser ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${safetyOfficerIcon})` }}
-              // onClick={() => {
-              //   countCompanyUser && handleClickCount('safetyOfficer');
-              // }}
+              onClick={() => {
+                countCompanyUser && handleClickCount('safetyOfficer');
+              }}
             >
               <div className={styles.countLabel}>
                 <div>安全人员</div>
@@ -99,9 +99,9 @@ export default class CompanyInfo extends PureComponent {
             <div
               className={specialEquipmentCount ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${specialEquipmentIcon})` }}
-              // onClick={() => {
-              //   specialEquipmentCount && handleClickCount('specialEquipment');
-              // }}
+              onClick={() => {
+                specialEquipmentCount && handleClickCount('specialEquipment');
+              }}
             >
               <div className={styles.countLabel}>
                 <div>特种设备</div>
