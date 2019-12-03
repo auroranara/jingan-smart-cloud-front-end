@@ -82,7 +82,7 @@ const certificateState = {
 };
 
 const paststatusVal = {
-  0: '未到期 ',
+  0: ' ',
   1: '即将到期',
   2: '已过期',
 };
@@ -107,7 +107,7 @@ export default class DangerChemicalList extends PureComponent {
       case 0:
         return '#1890ff';
       case 1:
-        return '#faad14';
+        return '#f5222d';
       case 2:
         return '#f5222d';
       default:

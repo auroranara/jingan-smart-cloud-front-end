@@ -44,6 +44,7 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
   </Transfer>
 );
 
+// 储罐区列表
 const leftStorageColumns = [
   {
     dataIndex: 'type',
@@ -70,6 +71,7 @@ const rightStorageColumns = [
   },
 ];
 
+// 库区列表
 const leftReserviorColumns = [
   {
     dataIndex: 'type',
@@ -96,8 +98,35 @@ const rightReserviorColumns = [
   },
 ];
 
+// 气柜列表
+const leftGasColumns = [
+  {
+    dataIndex: 'type',
+    title: '类别',
+    render: () => <span>气柜</span>,
+  },
+  {
+    dataIndex: 'unifiedCode',
+    title: '统一编码',
+  },
+  {
+    dataIndex: 'gasholderName',
+    title: '名称',
+  },
+];
+const rightGasColumns = [
+  {
+    dataIndex: 'gasholderName',
+    title: '名称',
+  },
+  {
+    dataIndex: 'unifiedCode',
+    title: '统一编码',
+  },
+];
+
 export default class TabTransfer extends PureComponent {
-  getDataList = (i, s, a) => {
+  getDataList = (i, s, a, g) => {
     switch (+i) {
       case 1:
         return s;
@@ -105,8 +134,8 @@ export default class TabTransfer extends PureComponent {
         return a;
       // case 3:
       //   return '';
-      // case 4:
-      //   return '';
+      case 4:
+        return g;
       default:
         return;
     }
@@ -120,8 +149,8 @@ export default class TabTransfer extends PureComponent {
         return leftReserviorColumns;
       // case 3:
       //   return '';
-      // case 4:
-      //   return '';
+      case 4:
+        return leftGasColumns;
       default:
         return;
     }
@@ -135,16 +164,12 @@ export default class TabTransfer extends PureComponent {
         return rightReserviorColumns;
       // case 3:
       //   return '';
-      // case 4:
-      //   return '';
+      case 4:
+        return rightGasColumns;
       default:
         return;
     }
   };
-
-  // handleSearch = i => {
-  //   console.log('iiiii', i);
-  // };
 
   filterOption = (inputValue, option) => {
     const { dangerType } = this.props;
@@ -155,18 +180,25 @@ export default class TabTransfer extends PureComponent {
     } else if (+dangerType === 3) {
       return option.indexOf(inputValue) > -1;
     } else {
-      return option.name.indexOf(inputValue) > -1;
+      return option.gasholderName.indexOf(inputValue) > -1;
     }
   };
 
   render() {
-    const { areaList, storageList, targetKeys, onTargetKeysClick, dangerType } = this.props;
+    const {
+      areaList,
+      storageList,
+      gasList,
+      targetKeys,
+      onTargetKeysClick,
+      dangerType,
+    } = this.props;
 
     return (
       <div>
         <TableTransfer
           showSearch
-          dataSource={this.getDataList(dangerType, storageList, areaList)} // 数据源(左侧)
+          dataSource={this.getDataList(dangerType, storageList, areaList, gasList)} // 数据源(左侧)
           targetKeys={targetKeys}
           onSearch={this.handleSearch}
           filterOption={this.filterOption}
