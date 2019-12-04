@@ -1,26 +1,38 @@
 import React, { PureComponent } from 'react';
-// import { connect } from 'dva';
+import { connect } from 'dva';
 import router from 'umi/router';
+import moment from 'moment';
 import { Card, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST, LIST_URL } from './utils';
+import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL, handleDetails } from './utils';
 
+@connect(({ cardsInfo, loading }) => ({
+  cardsInfo,
+  loading: loading.models.cardsInfo,
+}))
 @Form.create()
 export default class Edit extends PureComponent {
   componentDidMount() {
     const {
       match: { params: { id } },
     } = this.props;
-    id && this.getDetail();
+    id && this.getDetail(id);
   }
 
-  getDetail = () => {
+  getDetail = id => {
     const {
+      dispatch,
       form: { setFieldsValue },
     } = this.props;
-    setTimeout(() => setFieldsValue(LIST[0]), 0.3);
+    dispatch({
+      type: 'cardsInfo/getCommitCard',
+      payload: id,
+      callback: detail => {
+        setFieldsValue(handleDetails(detail));
+      },
+    });
   };
 
   handleSubmit = e => {
@@ -35,9 +47,10 @@ export default class Edit extends PureComponent {
       if (errors)
         return;
 
+      const vals = { ...values, companyId: values.companyId.key, time: +values.time };
       dispatch({
         type: `cardsInfo/${id ? 'edit' : 'add'}CommitCard`,
-        payload: id ? { id, ...values } : values,
+        payload: id ? { id, ...vals } : vals,
         callback: (code, msg) => {
           if (code === 200) {
             message.success('操作成功');

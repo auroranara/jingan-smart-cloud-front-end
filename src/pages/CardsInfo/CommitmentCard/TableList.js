@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table } from 'antd';
+import { Button, Card, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, LIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, TABLE_COLUMNS as COLUMNS } from './utils';
+import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableColumns } from './utils';
 
 @connect(({ cardsInfo, loading }) => ({
   cardsInfo,
@@ -48,6 +48,23 @@ export default class TableList extends PureComponent {
     this.getList(current);
   };
 
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    const { current } = this.state;
+    dispatch({
+      type: 'cardsInfo/deleteCommitCard',
+      payload: id,
+      callback: (code, msg) => {
+        if (code === 200) {
+          message.success('删除成功');
+          this.getList(current);
+        }
+        else
+          message.error(msg);
+      },
+    });
+  };
+
   render() {
     const {
       loading,
@@ -63,6 +80,7 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
+    const columns = getTableColumns(this.handleDelete);
 
     return (
       <PageHeaderLayout
@@ -70,7 +88,7 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：1
+            共计：{commitTotal}
           </p>
         }
       >
@@ -80,7 +98,7 @@ export default class TableList extends PureComponent {
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            buttonStyle={{ textAlign: 'right' }}
+            // buttonStyle={{ textAlign: 'right' }}
             buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>
@@ -88,7 +106,7 @@ export default class TableList extends PureComponent {
           <Table
             rowKey="id"
             loading={loading}
-            columns={COLUMNS}
+            columns={columns}
             dataSource={list}
             onChange={this.onTableChange}
             scroll={{ x: 1500 }} // 项目不多时注掉

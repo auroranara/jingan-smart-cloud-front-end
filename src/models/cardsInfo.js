@@ -31,8 +31,8 @@ export default {
       const response = yield call(getCommitList, payload);
       const { code, data, msg } = response || {};
       if (code === 200) {
-        yield put({ type: 'saveTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
-        yield put({ type: 'saveTableList', payload: getList(data) });
+        yield put({ type: 'saveCommitTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
+        yield put({ type: 'saveCommitList', payload: getList(data) });
         callback && callback(code, msg);
       }
     },
@@ -41,7 +41,7 @@ export default {
       const { code, data } = response || {};
       if (code === 200) {
         const detail = data || {};
-        yield put({ type: 'saveDetail', payload: detail });
+        yield put({ type: 'saveCommitDetail', payload: detail });
         callback && callback(detail);
       }
     },
@@ -60,17 +60,59 @@ export default {
       const { code, msg } = response || {};
       callback && callback(code, msg);
     },
+    *fetchKnowList({ payload, callback }, { call, put }) {
+      const response = yield call(getKnowList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200) {
+        yield put({ type: 'saveKnowTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
+        yield put({ type: 'saveKnowList', payload: getList(data) });
+        callback && callback(code, msg);
+      }
+    },
+    *getKnowCard({ payload, callback }, { call, put }) {
+      const response = yield call(getKnowItem, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const detail = data || {};
+        yield put({ type: 'saveKnowDetail', payload: detail });
+        callback && callback(detail);
+      }
+    },
+    *addKnowCard({ payload, callback }, { call }) {
+      const response = yield call(addKnowItem, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
+    },
+    *editKnowCard({ payload, callback }, { call }) {
+      const response = yield call(editKnowItem, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
+    },
+    *deleteKnowCard({ payload, callback }, { call }) {
+      const response = yield call(deleteKnowItem, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
+    },
   },
 
   reducers: {
-    saveTotal(state, action) {
-      return { ...state, total: action.payload };
+    saveCommitTotal(state, action) {
+      return { ...state, commitTotal: action.payload };
     },
-    saveTableList(state, action) {
-      return { ...state, list: action.payload };
+    saveCommitList(state, action) {
+      return { ...state, commitList: action.payload };
     },
-    saveDetail(state, action) {
-      return { ...state, detail: action.payload };
+    saveCommitDetail(state, action) {
+      return { ...state, commitDetail: action.payload };
+    },
+    saveKnowTotal(state, action) {
+      return { ...state, knowTotal: action.payload };
+    },
+    saveKnowList(state, action) {
+      return { ...state, knowList: action.payload };
+    },
+    saveKnowDetail(state, action) {
+      return { ...state, knowDetail: action.payload };
     },
   },
 }

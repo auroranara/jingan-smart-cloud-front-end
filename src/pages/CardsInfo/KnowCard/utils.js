@@ -32,19 +32,19 @@ export const BREADCRUMBLIST = [ // modify
 
 export const SEARCH_FIELDS = [ // modify
   {
-    id: 'name',
+    id: 'companyName',
     label: '单位名称',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'cardName',
+    id: 'name',
     label: '应知卡名称',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'man',
+    id: 'publisher',
     label: '发布人员',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
@@ -57,69 +57,72 @@ export const SEARCH_FIELDS = [ // modify
   },
 ];
 
-export const TABLE_COLUMNS = [ // modify
-  {
-    title: '序号',
-    dataIndex: 'index',
-    key: 'index',
-  },
-  {
-    title: '单位名称',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '应知卡名称',
-    dataIndex: 'cardName',
-    key: 'cardName',
-  },
-  {
-    title: '应知卡内容',
-    dataIndex: 'content',
-    key: 'content',
-  },
-  {
-    title: '发布人员',
-    dataIndex: 'man',
-    key: 'man',
-  },
-  {
-    title: '发布时间',
-    dataIndex: 'time',
-    key: 'time',
-    render: t => t.format(DATE_FORMAT),
-  },
-  {
-    title: '在线预览',
-    dataIndex: 'preview',
-    key: 'preview',
-    render: p => <a onClick={e => e.preventDefault()}>预览</a>,
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render(id) {
-      return (
-        <Fragment>
-          <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
-          <Popconfirm
-            title="确定删除当前项目？"
-            onConfirm={e => message.success('删除成功')}
-            okText="确定"
-            cancelText="取消"
-          ><span className={styles1.delete}>删除</span></Popconfirm>
-        </Fragment>
-      );
+export function getTableColumns(handleConfirmDelete) {
+  return [ // modify
+    // {
+    //   title: '序号',
+    //   dataIndex: 'index',
+    //   key: 'index',
+    // },
+    {
+      title: '单位名称',
+      dataIndex: 'companyName',
+      key: 'companyName',
     },
-  },
-];
+    {
+      title: '应知卡名称',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '应知卡内容',
+      dataIndex: 'content',
+      key: 'content',
+      render: txt => txt.length > 10 ? `${txt.slice(0, 10)}...` : txt,
+    },
+    {
+      title: '发布人员',
+      dataIndex: 'publisher',
+      key: 'publisher',
+    },
+    {
+      title: '发布时间',
+      dataIndex: 'time',
+      key: 'time',
+      render: t => moment(t).format(DATE_FORMAT),
+    },
+    {
+      title: '在线预览',
+      dataIndex: 'preview',
+      key: 'preview',
+      render: p => <a onClick={e => e.preventDefault()}>预览</a>,
+    },
+    {
+      title: '操作',
+      dataIndex: 'id',
+      key: 'id',
+      align: 'center',
+      render(id) {
+        return (
+          <Fragment>
+            <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
+            <Popconfirm
+              title="确定删除当前项目？"
+              onConfirm={e => handleConfirmDelete(id)}
+              okText="确定"
+              cancelText="取消"
+            ><span className={styles1.delete}>删除</span></Popconfirm>
+          </Fragment>
+        );
+      },
+    },
+  ];
+}
 
 export const EDIT_FORMITEMS = [ // modify
-    { name: 'name', label: '单位名称' },
-    { name: 'cardName', label: '应知卡名称' },
+    { name: 'companyId', label: '单位名称', type: 'companyselect' },
+    { name: 'name', label: '应知卡名称' },
     { name: 'content', label: '应知卡内容', type: 'text' },
-    { name: 'man', label: '发布人员' },
+    { name: 'publisher', label: '发布人员' },
     { name: 'time', label: '时间', type: 'datepicker' },
 ];

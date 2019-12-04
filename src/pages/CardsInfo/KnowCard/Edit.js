@@ -1,41 +1,65 @@
 import React, { PureComponent } from 'react';
-// import { connect } from 'dva';
+import { connect } from 'dva';
 import router from 'umi/router';
 import { Card, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST, LIST_URL } from './utils';
+import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL } from './utils';
+import { handleDetails } from '../CommitmentCard/utils';
 
+@connect(({ cardsInfo, loading }) => ({
+  cardsInfo,
+  loading: loading.models.cardsInfo,
+}))
 @Form.create()
 export default class Edit extends PureComponent {
   componentDidMount() {
     const {
       match: { params: { id } },
     } = this.props;
-    id && this.getDetail();
+    id && this.getDetail(id);
   }
 
-  getDetail = () => {
+  getDetail = id => {
     const {
+      dispatch,
       form: { setFieldsValue },
     } = this.props;
-    setTimeout(() => setFieldsValue(LIST[0]), 0.3);
+    dispatch({
+      type: 'cardsInfo/getKnowCard',
+      payload: id,
+      callback: detail => {
+        console.log(handleDetails(detail));
+        setFieldsValue(handleDetails(detail));
+      },
+    });
   };
 
   handleSubmit = e => {
     const {
+      dispatch,
       form: { validateFields },
+      match: { params: { id } },
     } = this.props;
 
     e.preventDefault();
     validateFields((errors, values) => {
-      if (!errors) {
-        message.success('操作成功');
-        router.push(LIST_URL);
-      } else {
-        message.error('操作失败');
-      }
+      if (errors)
+        return;
+
+      const vals = { ...values, companyId: values.companyId.key, time: +values.time };
+      dispatch({
+        type: `cardsInfo/${id ? 'edit' : 'add'}KnowCard`,
+        payload: id ? { id, ...vals } : vals,
+        callback: (code, msg) => {
+          if (code === 200) {
+            message.success('操作成功');
+            router.push(LIST_URL);
+          } else
+            message.error(msg);
+        },
+      });
     });
   };
 
