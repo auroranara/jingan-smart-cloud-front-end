@@ -36,11 +36,11 @@ var polygon = [
 
 export default class Map extends PureComponent {
   state = {
-    gdMapVisible: false,
+    gdMapVisible: true,
   };
 
   componentDidMount() {
-    this.initMap();
+    // this.initMap();
   }
 
   /* eslint-disable*/
@@ -133,7 +133,7 @@ export default class Map extends PureComponent {
       this.addPolygon();
     });
 
-    map.on('mapClickNode', function(event) {
+    map.on('mapClickNode', event => {
       var clickedObj = event.target;
       console.log('clickedObj', clickedObj);
       if (!clickedObj) return;
@@ -148,6 +148,7 @@ export default class Map extends PureComponent {
       } else if (ID && [18, 22, 23, 45, 24, 26, 25].includes(ID)) {
         setDrawerVisible('dangerArea');
       }
+      // this.addMarkers(x, y, riskPoint, 0);
 
       // switch (clickedObj.nodeType) {
       //   case fengmap.FMNodeType.FLOOR:

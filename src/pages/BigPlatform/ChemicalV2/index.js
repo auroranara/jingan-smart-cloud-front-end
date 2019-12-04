@@ -156,6 +156,7 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('dangerArea');
           }}
+          setDrawerVisible={this.setDrawerVisible}
         />
 
         <StorageAreaDrawer
