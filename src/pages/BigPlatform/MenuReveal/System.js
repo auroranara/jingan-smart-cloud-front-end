@@ -265,8 +265,8 @@ export default class NewMenuReveal extends Component {
       <div className={styles.newMenuRevealContainer}>
         {/* 头部 */}
         <div className={styles.header}>
-          <span>{projectShortName}</span>
-          <div className={styles.headerLine}></div>
+          <span className={styles.projectTitle}>{projectShortName}</span>
+          {/* <div className={styles.headerLine}></div> */}
           <div className={styles.userInfo}>
             <img src={userLogoUrl} alt="user" />
             <span>{userName}</span>
