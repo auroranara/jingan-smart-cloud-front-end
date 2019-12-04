@@ -6,7 +6,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './index.less';
 
 const TITLE = '定位监控';
-const SRC = 'http://chem2.joysuch.com/index.html#/location-monitor-jump';
+const SRC = 'http://chem2.joysuch.com/js/tunnel.html?to=location&buildId=200647&wh=false&appid=yanshi&secret=4011a04a6615406a9bbe84fcf30533de';
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员定位', name: '人员定位' },
