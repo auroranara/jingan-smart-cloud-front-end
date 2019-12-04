@@ -35,107 +35,109 @@ export const BREADCRUMBLIST = [ // modify
 
 export const SEARCH_FIELDS = [ // modify
   {
-    id: 'name',
+    id: 'companyName',
     label: '单位名称',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'cardName',
+    id: 'name',
     label: '应急卡名称',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'device',
+    id: 'equipmentName',
     label: '作业/设备名称',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
 ];
 
-export const TABLE_COLUMNS = [ // modify
-  {
-    title: '序号',
-    dataIndex: 'index',
-    key: 'index',
-  },
-  {
-    title: '单位名称',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '应急卡名称',
-    dataIndex: 'cardName',
-    key: 'cardName',
-  },
-  {
-    title: '作业/设备名称',
-    dataIndex: 'device',
-    key: 'device',
-  },
-  {
-    title: '风险提示',
-    dataIndex: 'risk',
-    key: 'risk',
-  },
-  {
-    title: '应急处置方法',
-    dataIndex: 'method',
-    key: 'method',
-  },
-  {
-    title: '注意事项',
-    dataIndex: 'notes',
-    key: 'notes',
-  },
-  {
-    title: '应急联系方式',
-    dataIndex: 'emergency',
-    key: 'emergency',
-    render(txt, { man, phone }) {
-      return [`内部：${man} ${phone}`, '外部：火警 119  医疗救护 120'].map((n, i) => <p key={i} className={styles1.p}>{n}</p>);
+export function getTableColumns(handleConfirmDelete) {
+  return [ // modify
+    // {
+    //   title: '序号',
+    //   dataIndex: 'index',
+    //   key: 'index',
+    // },
+    {
+      title: '单位名称',
+      dataIndex: 'companyName',
+      key: 'companyName',
     },
-  },
-  {
-    title: '在线预览',
-    dataIndex: 'preview',
-    key: 'preview',
-    render: p => <a onClick={e => e.preventDefault()}>预览</a>,
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render(id) {
-      return (
-        <Fragment>
-          <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
-          <Popconfirm
-            title="确定删除当前项目？"
-            onConfirm={e => message.success('删除成功')}
-            okText="确定"
-            cancelText="取消"
-          ><span className={styles1.delete}>删除</span></Popconfirm>
-        </Fragment>
-      );
+    {
+      title: '应急卡名称',
+      dataIndex: 'name',
+      key: 'name',
     },
-  },
-];
+    {
+      title: '作业/设备名称',
+      dataIndex: 'equipmentName',
+      key: 'device',
+    },
+    {
+      title: '风险提示',
+      dataIndex: 'riskWarning',
+      key: 'riskWarning',
+    },
+    {
+      title: '应急处置方法',
+      dataIndex: 'emergency',
+      key: 'emergency',
+    },
+    {
+      title: '注意事项',
+      dataIndex: 'needAttention',
+      key: 'needAttention',
+    },
+    {
+      title: '应急联系方式',
+      dataIndex: 'emgcy',
+      key: 'emgcy',
+      render(txt, { safetyNum, telNum }) {
+        return [`内部：${safetyNum} ${telNum}`, '外部：火警 119  医疗救护 120'].map((n, i) => <p key={i} className={styles1.p}>{n}</p>);
+      },
+    },
+    {
+      title: '在线预览',
+      dataIndex: 'preview',
+      key: 'preview',
+      render: p => <a onClick={e => e.preventDefault()}>预览</a>,
+    },
+    {
+      title: '操作',
+      dataIndex: 'id',
+      key: 'id',
+      align: 'center',
+      render(id) {
+        return (
+          <Fragment>
+            <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
+            <Popconfirm
+              title="确定删除当前项目？"
+              onConfirm={e => handleConfirmDelete(id)}
+              okText="确定"
+              cancelText="取消"
+            ><span className={styles1.delete}>删除</span></Popconfirm>
+          </Fragment>
+        );
+      },
+    },
+  ];
+}
 
 export const EDIT_FORMITEMS = [ // modify
-    { name: 'name', label: '单位名称' },
-    { name: 'cardName', label: '应知卡名称' },
-    { name: 'device', label: '作业/设备名称' },
-    { name: 'risk', label: '风险提示', type: 'text' },
-    { name: 'method', label: '应急处置方法', type: 'text' },
-    { name: 'notes', label: '注意事项', type: 'text' },
-    { name: 'emergency', label: '应急联系方式-内部', type: 'component', component: '' },
-    { name: 'man', label: '安全负责人' },
-    { name: 'phone', label: '联系方式' },
-    { name: 'emergency', label: '应急联系方式-外部', type: 'component', component: '' },
+    { name: 'companyId', label: '单位名称', type: 'companyselect' },
+    { name: 'name', label: '应急卡名称' },
+    { name: 'equipmentName', label: '作业/设备名称' },
+    { name: 'riskWarning', label: '风险提示', type: 'text' },
+    { name: 'emergency', label: '应急处置方法', type: 'text' },
+    { name: 'needAttention', label: '注意事项', type: 'text' },
+    { name: 'emergency1', label: '应急联系方式-内部', type: 'component', component: '' },
+    { name: 'safetyNum', label: '安全负责人' },
+    { name: 'telNum', label: '联系方式' },
+    { name: 'emergency2', label: '应急联系方式-外部', type: 'component', component: '' },
     { name: 'fire', label: '火警', type: 'component', component: '119' },
     { name: 'rescue', label: '医疗救护', type: 'component', component: '120' },
 ];

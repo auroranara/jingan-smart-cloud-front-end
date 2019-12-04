@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import moment from 'moment';
+// import moment from 'moment';
 import { Card, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';

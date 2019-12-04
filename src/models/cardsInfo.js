@@ -24,6 +24,12 @@ export default {
     commitTotal: 0,
     commitList: [],
     commitDetail: {},
+    knowTotal: 0,
+    knowList: [],
+    knowDetail: {},
+    emergencyTotal: 0,
+    emergencyList: [],
+    emergencyDetail: {},
   },
 
   effects: {
@@ -93,6 +99,39 @@ export default {
       const { code, msg } = response || {};
       callback && callback(code, msg);
     },
+    *fetchEmergencyList({ payload, callback }, { call, put }) {
+      const response = yield call(getEmergencyList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200) {
+        yield put({ type: 'saveEmergencyTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
+        yield put({ type: 'saveEmergencyList', payload: getList(data) });
+        callback && callback(code, msg);
+      }
+    },
+    *getEmergencyCard({ payload, callback }, { call, put }) {
+      const response = yield call(getEmergencyItem, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const detail = data || {};
+        yield put({ type: 'saveEmergencyDetail', payload: detail });
+        callback && callback(detail);
+      }
+    },
+    *addEmergencyCard({ payload, callback }, { call }) {
+      const response = yield call(addEmergencyItem, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
+    },
+    *editEmergencyCard({ payload, callback }, { call }) {
+      const response = yield call(editEmergencyItem, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
+    },
+    *deleteEmergencyCard({ payload, callback }, { call }) {
+      const response = yield call(deleteEmergencyItem, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
+    },
   },
 
   reducers: {
@@ -113,6 +152,15 @@ export default {
     },
     saveKnowDetail(state, action) {
       return { ...state, knowDetail: action.payload };
+    },
+    saveEmergencyTotal(state, action) {
+      return { ...state, emergencyTotal: action.payload };
+    },
+    saveEmergencyList(state, action) {
+      return { ...state, emergencyList: action.payload };
+    },
+    saveEmergencyDetail(state, action) {
+      return { ...state, emergencyDetail: action.payload };
     },
   },
 }
