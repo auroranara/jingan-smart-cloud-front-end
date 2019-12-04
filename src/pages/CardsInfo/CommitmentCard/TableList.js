@@ -53,7 +53,7 @@ export default class TableList extends PureComponent {
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            buttonStyle={{ textAlign: 'right' }}
+            // buttonStyle={{ textAlign: 'right' }}
             buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>
