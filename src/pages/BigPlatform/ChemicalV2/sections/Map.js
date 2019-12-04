@@ -138,9 +138,9 @@ export default class Map extends PureComponent {
       console.log('clickedObj', clickedObj);
       if (!clickedObj) return;
       const {
-        eventInfo: {
-          coord: { x, y },
-        },
+        // eventInfo: {
+        //   coord: { x, y },
+        // },
         ID,
       } = clickedObj;
       if (ID && (ID >= 158 && ID <= 171)) {
