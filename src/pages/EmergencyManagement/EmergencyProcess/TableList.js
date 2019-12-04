@@ -230,6 +230,8 @@ export default class TableList extends PureComponent {
         render(_, row) {
           const { projectName, treatType, startTime, endTime, place } = row;
           let treeData = emergencyDrill;
+          console.log('emergencyDrill', emergencyDrill);
+
           const string = treatType
             .split(',')
             .map(id => {
@@ -271,6 +273,7 @@ export default class TableList extends PureComponent {
           const { accidName, accidType } = row;
           const types = accidType.split(',');
           let treeData = simAccidentType;
+          console.log('simAccidentType', simAccidentType);
           const string = types
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};

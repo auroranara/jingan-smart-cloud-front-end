@@ -84,6 +84,10 @@ export default class Chemical extends PureComponent {
     callback && callback(this.props);
   };
 
+  handleShowImg = images => {
+    this.setState({ images });
+  };
+
   /**
    * 渲染
    */
@@ -96,6 +100,7 @@ export default class Chemical extends PureComponent {
       safetyOfficerDrawerVisible,
       specialEquipmentDrawerVisible,
       videoVisible,
+      images,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -165,6 +170,7 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('dangerArea');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          handleShowImg={this.handleShowImg}
         />
 
         <StorageAreaDrawer
@@ -199,7 +205,7 @@ export default class Chemical extends PureComponent {
           isTree={false}
         />
 
-        <ImagePreview images={this.state.images} />
+        <ImagePreview images={images} />
       </BigPlatformLayout>
     );
   }
