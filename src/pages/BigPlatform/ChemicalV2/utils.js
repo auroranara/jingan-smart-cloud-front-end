@@ -1,8 +1,27 @@
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
-export const KeyList = [
-  '企业安全员',
-  '企业管理员',
+export const VideoList = [
+  {
+    building_id: 'o_daq93fqgfotow5',
+    device_id: 'jingan_zhihui',
+    company_id: 'DccBRhlrSiu9gMV7fmvizw',
+    key_id: '240ch233_f1',
+    photo_address: '',
+    rtsp_address: 'rtsp://admin:12345@192.168.16.249:554/h264/ch6/sub/av_stream',
+    isInspection: '1',
+    x_fire: '0.513',
+    fix_img_id: 'vpawiw6avqvvkebn',
+    y_num: '0.360',
+    name: '1',
+    x_num: '0.349',
+    y_fire: '0.554',
+    fix_fire_id: 'eua17823vls7wwf3',
+    floor_id: 'ernuei68db6pad8c',
+    id: 'H_X8GPOHT_2mlG71kblk1w',
+    create_date: 1537943399197,
+    status: 1,
+  },
 ];
+export const KeyList = ['企业安全员', '企业管理员'];
 export const ValueList = [
   [
     {
