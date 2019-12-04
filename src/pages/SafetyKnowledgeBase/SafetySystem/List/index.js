@@ -23,7 +23,7 @@ export const DELETE_CODE = 'safetyProductionRegulation.safetySystem.delete';
 export const AUDIT_CODE = 'safetyProductionRegulation.safetySystem.audit';
 export const PUBLISH_CODE = 'safetyProductionRegulation.safetySystem.publish';
 export const EXPIRE_STATUSES = [
-  { key: '0', value: '未到期', color: '#52c41a' },
+  { key: '0', value: '未到期'/* , color: '#52c41a' */ },
   { key: '1', value: '即将到期', color: '#faad14' },
   { key: '2', value: '已过期', color: '#f5222d' },
 ];
@@ -561,7 +561,7 @@ export default class SafetySystemList extends Component {
         dataIndex: 'versionCount',
         width: 88,
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (value, data) => <span className={styles.operation} onClick={() => this.handleHistoryButtonClick(data)}>{value || '1'}</span>,
+        render: (value, data) => <span className={value > 0 ? styles.operation : undefined} onClick={value > 0 ? () => this.handleHistoryButtonClick(data) : undefined}>{value > 0 ? value : '——'}</span>,
         align: 'center',
       },
       {

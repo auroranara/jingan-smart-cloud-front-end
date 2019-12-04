@@ -3,10 +3,13 @@ import { Row, Col, Icon } from 'antd';
 import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
 import styles from './DangerAreaDrawer.less';
 
+import iconStorage from '../imgs/icon-storage.png';
+import iconStorageArea from '../imgs/icon-storageArea.png';
+
 const riskData = [
-  { label: '红色', value: 14, color: '#FC1F02' },
-  { label: '橙色', value: 4, color: '#F17A0A' },
-  { label: '黄色', value: 5, color: '#FFE500' },
+  // { label: '红色', value: 14, color: '#FC1F02' },
+  // { label: '橙色', value: 4, color: '#F17A0A' },
+  { label: '黄色', value: 22, color: '#FFE500' },
   { label: '蓝色', value: 16, color: '#0967D3' },
 ];
 const hiddenDangerData = [
@@ -19,7 +22,7 @@ const riskSourceData = [
   // { label: '储罐监测', value: 3 },
   // { label: '库区监测', value: 1 },
   // { label: '库房监测', value: 2 },
-  { label: '生产装置', value: 2, url: '' },
+  { label: '生产装置', value: 2, url: '', images: [] },
   { label: '气柜', value: 3, url: 'major-hazard-info/gasometer/list' },
   { label: '高危工艺', value: 2, url: 'major-hazard-info/high-risk-process/list' },
 ];
@@ -35,8 +38,12 @@ const threeCardData = [
 export default class KeyPoints extends PureComponent {
   state = { active: 0 };
 
-  handleJump = url => {
-    if (!url) return;
+  handleJump = (url, images) => {
+    const { handleShowImg } = this.props;
+    if (images && images.length > 0) {
+      handleShowImg(images);
+    }
+    if (!url || images) return;
     window.open(`${window.publicPath}#/${url}`, `_blank`);
   };
 
@@ -114,9 +121,13 @@ export default class KeyPoints extends PureComponent {
           <div className={styles.title}>重大危险源</div>
           <div className={styles.content}>
             {riskSourceData.map((item, index) => {
-              const { label, value, url } = item;
+              const { label, value, url, images } = item;
               return (
-                <div className={styles.tagItem} key={index} onClick={() => this.handleJump(url)}>
+                <div
+                  className={styles.tagItem}
+                  key={index}
+                  onClick={() => this.handleJump(url, images)}
+                >
                   {label}
                   <span className={styles.tagValue}>({value})</span>
                   <Icon type="right" className={styles.rightIcon} />
@@ -139,9 +150,13 @@ export default class KeyPoints extends PureComponent {
           <div className={styles.title}>两单</div>
           <div className={styles.content}>
             {twoListData.map((item, index) => {
-              const { label, value, url } = item;
+              const { label, value, url, images } = item;
               return (
-                <div className={styles.tagItem} key={index} onClick={() => this.handleJump(url)}>
+                <div
+                  className={styles.tagItem}
+                  key={index}
+                  onClick={() => this.handleJump(url, images)}
+                >
                   {label}
                   <span className={styles.tagValue}>({value})</span>
                   <Icon type="right" className={styles.rightIcon} />
@@ -155,9 +170,13 @@ export default class KeyPoints extends PureComponent {
           <div className={styles.title}>三卡</div>
           <div className={styles.content}>
             {threeCardData.map((item, index) => {
-              const { label, value, url } = item;
+              const { label, value, url, images } = item;
               return (
-                <div className={styles.tagItem} key={index} onClick={() => this.handleJump(url)}>
+                <div
+                  className={styles.tagItem}
+                  key={index}
+                  onClick={() => this.handleJump(url, images)}
+                >
                   {label}
                   <span className={styles.tagValue}>({value})</span>
                   <Icon type="right" className={styles.rightIcon} />

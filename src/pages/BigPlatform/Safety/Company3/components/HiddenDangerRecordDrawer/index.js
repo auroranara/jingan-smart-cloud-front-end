@@ -74,7 +74,7 @@ export default class HiddenDangerRecordDrawer extends Component {
         }}
       >
         <div className={styles.list}>
-          {(list || []).map((item) => (
+          {list && list.length > 0 ? list.map((item) => (
             <HiddenDangerCard
               className={styles.item}
               key={item.id}
@@ -82,7 +82,9 @@ export default class HiddenDangerRecordDrawer extends Component {
               fieldNames={FIELDNAMES}
               onClickImage={this.handleShow}
             />
-          ))}
+          )) : (
+            <div className={styles.empty} />
+          )}
           <div className={styles.bottom}>
             <div>查看更多隐患记录</div>
             <div onClick={this.handleClick}>隐患报表>></div>

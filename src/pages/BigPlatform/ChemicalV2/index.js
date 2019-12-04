@@ -9,7 +9,9 @@ import bgImg from '@/pages/BigPlatform/Chemical/imgs/bg.png';
 import menuIcon from './imgs/menu-icon.png';
 import styles from './index.less';
 import { RiskPointDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
-import { POINTS } from './utils';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
+import ImagePreview from '@/jingan-components/ImagePreview';
+import { POINTS, VideoList } from './utils';
 
 import {
   Risk,
@@ -48,6 +50,8 @@ export default class Chemical extends PureComponent {
       storageAreaDrawerVisible: false,
       safetyOfficerDrawerVisible: false,
       specialEquipmentDrawerVisible: false,
+      videoVisible: false,
+      images: null,
     };
   }
 
@@ -80,6 +84,10 @@ export default class Chemical extends PureComponent {
     callback && callback(this.props);
   };
 
+  handleShowImg = images => {
+    this.setState({ images });
+  };
+
   /**
    * 渲染
    */
@@ -91,6 +99,8 @@ export default class Chemical extends PureComponent {
       storageAreaDrawerVisible,
       safetyOfficerDrawerVisible,
       specialEquipmentDrawerVisible,
+      videoVisible,
+      images,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -130,7 +140,10 @@ export default class Chemical extends PureComponent {
 
             <Col span={18} className={styles.height100}>
               <div className={styles.right}>
-                <Map setDrawerVisible={this.setDrawerVisible} />
+                <Map
+                  setDrawerVisible={this.setDrawerVisible}
+                  showVideo={() => this.setState({ videoVisible: true })}
+                />
               </div>
             </Col>
           </Row>
@@ -157,6 +170,7 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('dangerArea');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          handleShowImg={this.handleShowImg}
         />
 
         <StorageAreaDrawer
@@ -181,6 +195,17 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('specialEquipment');
           }}
         />
+
+        <NewVideoPlay
+          showList={true}
+          videoList={VideoList}
+          visible={videoVisible}
+          keyId={VideoList[0].key_id} // keyId
+          handleVideoClose={() => this.setState({ videoVisible: false })}
+          isTree={false}
+        />
+
+        <ImagePreview images={images} />
       </BigPlatformLayout>
     );
   }
