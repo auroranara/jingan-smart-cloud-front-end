@@ -27,20 +27,27 @@ const videoData = [
 ].map(item => ({ ...item, url: video, type: 2 }));
 
 var polygon = [
-  { x: 13224100.28002908, y: 3771532.907471671, z: 5 },
+  { x: 13224092.737655401, y: 3771528.058833545, z: 5 },
   { x: 13224082.323110294, y: 3771521.7336946093, z: 5 },
   { x: 13224090.980083626, y: 3771508.279856456, z: 5 },
-  { x: 13224108.33396728, y: 3771520.1080805957, z: 5 },
-  // { x: 12961590, y: 4861835, z: 56 },
+  { x: 13224100.86477513, y: 3771515.1545231547, z: 5 },
+];
+var polygon2 = [
+  { x: 13224084.575739587, y: 3771540.668235109, z: 5 },
+  { x: 13224080.351547241, y: 3771537.8089334294, z: 5 },
+  { x: 13224086.527122464, y: 3771528.2824612646, z: 5 },
+  { x: 13224090.902601298, y: 3771531.1079516136, z: 5 },
 ];
 
 export default class Map extends PureComponent {
   state = {
-    gdMapVisible: true,
+    gdMapVisible: false,
   };
 
+  ids = [];
+
   componentDidMount() {
-    // this.initMap();
+    this.initMap();
   }
 
   /* eslint-disable*/
@@ -61,7 +68,7 @@ export default class Map extends PureComponent {
     im.alwaysShow();
   };
 
-  addPolygon = () => {
+  addPolygon = (points, color) => {
     var groupLayer = map.getFMGroup(1);
     //创建PolygonMarkerLayer
     var layer = new fengmap.FMPolygonMarkerLayer();
@@ -70,9 +77,9 @@ export default class Map extends PureComponent {
       alpha: 0.5, //设置透明度
       lineWidth: 0, //设置边框线的宽度
       height: 1, //设置高度*/
-      points: polygon, //多边形坐标点
+      points, //多边形坐标点
     });
-
+    polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
     // polygonMarker.alwaysShow(true);
     // polygonMarker.avoid(false);
@@ -90,6 +97,7 @@ export default class Map extends PureComponent {
       // mapThemeURL: './data/theme',
       //设置主题
       defaultThemeName: '2001',
+      modelSelectedEffect: false,
       //默认背景颜色,十六进制颜色值或CSS颜色样式 0xff00ff, '#00ff00'
       // defaultBackgroundColor: '#f7f4f4',
       //必要，地图应用名称，通过蜂鸟云后台创建
@@ -130,19 +138,48 @@ export default class Map extends PureComponent {
         this.addMarkers(x, y, url);
       });
 
-      this.addPolygon();
+      this.addPolygon(polygon, 'rgb(255, 72, 72)');
+      this.addPolygon(polygon2, 'rgb(241, 122, 10)');
+      console.log('fengmap', fengmap);
+      console.log('fengmap.FMNodeType', fengmap.FMNodeType);
+      console.log('getDatasByAlias', map.getDatasByAlias(1, 'model'));
+      // redModel
+      map.getDatasByAlias(1, 'model').forEach(item => {
+        if ((item.ID && (item.ID >= 158 && item.ID <= 171)) || (item.ID >= 258 && item.ID <= 271))
+          item.setColor('rgb(255, 72, 72)', 1);
+      });
+      // orange Model
+      map.getDatasByAlias(1, 'model').forEach(item => {
+        if ([284, 285, 286, 287, 364, 363, 366, 362].includes(item.ID))
+          item.setColor('rgb(241, 122, 10)', 1);
+      });
+      // const model = fengmap.FMStoreModel({ ID: 171 });
+      // console.log('map', map);
+      // model.setColor('#FF00FF', 1);
     });
 
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
       console.log('clickedObj', clickedObj);
       if (!clickedObj) return;
-      const {
-        // eventInfo: {
-        //   coord: { x, y },
-        // },
-        ID,
-      } = clickedObj;
+      const { ID, nodeType } = clickedObj;
+      // clickedObj.setColor('#FF00FF', 1);
+      if (
+        [
+          fengmap.FMNodeType.FLOOR,
+          fengmap.FMNodeType.IMAGE_MARKER,
+          fengmap.FMNodeType.TEXT_MARKER,
+          fengmap.FMNodeType.LABEL,
+          fengmap.FMNodeType.NONE,
+        ].includes(nodeType)
+      )
+        return;
+
+      this.ids.push(ID);
+      console.log('IDS', JSON.stringify(this.ids));
+      // clickedObj.setColorToDefault();
+      // clickedObj.setColor('rgb(212,214,215)', 0.9);
+      // const { eventInfo: { coord: { x, y } } = { coord: {} }, ID } = clickedObj;
       if (ID && (ID >= 158 && ID <= 171)) {
         setDrawerVisible('storageArea');
       } else if (ID && [18, 22, 23, 45, 24, 26, 25].includes(ID)) {
