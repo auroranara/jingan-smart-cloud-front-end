@@ -654,20 +654,22 @@ export default class MajorHazardEdit extends PureComponent {
               ],
             })(
               <Fragment>
-                <span className={styles.label}>
-                  {tankAreaList.map(item => (
-                    <Tag key={item.id}>{item.areaName}</Tag>
-                  ))}
-                  {wareHouseAreaList.map(item => (
-                    <Tag key={item.id}>{item.name}</Tag>
-                  ))}
-                  {gasHolderManageList.map(item => (
-                    <Tag key={item.id}>{item.gasholderName}</Tag>
-                  ))}
-                </span>
-                <Button type="primary" size="small" onClick={this.handleDangerModal}>
-                  选择
-                </Button>
+                <div {...itemStyles}>
+                  <span className={styles.label}>
+                    {tankAreaList.map(item => (
+                      <Tag key={item.id}>{item.areaName}</Tag>
+                    ))}
+                    {wareHouseAreaList.map(item => (
+                      <Tag key={item.id}>{item.name}</Tag>
+                    ))}
+                    {gasHolderManageList.map(item => (
+                      <Tag key={item.id}>{item.gasholderName}</Tag>
+                    ))}
+                  </span>
+                  <Button type="primary" size="small" onClick={this.handleDangerModal}>
+                    选择
+                  </Button>
+                </div>
               </Fragment>
             )}
           </FormItem>
