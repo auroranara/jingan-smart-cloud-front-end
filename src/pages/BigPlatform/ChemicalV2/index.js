@@ -26,6 +26,7 @@ import {
   Map,
   DangerAreaDrawer,
   SpecialEquipmentDrawer,
+  CurrentHiddenDanger,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -53,6 +54,7 @@ export default class Chemical extends PureComponent {
       videoVisible: false,
       images: null,
       videoList: [],
+      currentHiddenDangerDrawerVisible: false,
     };
   }
 
@@ -111,6 +113,7 @@ export default class Chemical extends PureComponent {
       videoVisible,
       videoList,
       images,
+      currentHiddenDangerDrawerVisible,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -211,6 +214,13 @@ export default class Chemical extends PureComponent {
           keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
           handleVideoClose={() => this.setState({ videoVisible: false })}
           isTree={false}
+        />
+
+        <CurrentHiddenDanger
+          visible={currentHiddenDangerDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('currentHiddenDanger');
+          }}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

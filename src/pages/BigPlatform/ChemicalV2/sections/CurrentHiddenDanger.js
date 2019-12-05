@@ -1,13 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Col, Spin } from 'antd';
 import moment from 'moment';
-import DrawerContainer from '../components/DrawerContainer';
+import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import ImageCard from '@/components/ImageCard';
 import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
 import LoadMore from '@/components/LoadMore';
 import ReactEcharts from 'echarts-for-react';
 import Lightbox from 'react-images';
 import styles from './CurrentHiddenDanger.less';
+import { DataList } from '../utils';
 
 const FIELDNAMES = {
   status: 'status', // 隐患状态
@@ -28,18 +29,6 @@ const FIELDNAMES = {
 const redColor = '#E96767'; // 红
 const yellowColor = '#F6B54E'; // 黄
 const blueColor = '#2A8BD5'; // 蓝
-
-const isVague = false;
-function nameToVague(str) {
-  let newStr = '';
-  if (str && str.length === 1) return str;
-  else if (str && str.length === 2) {
-    newStr = str.substr(0, 1) + '*';
-  } else if (str && str.length > 2) {
-    newStr = str.substr(0, 1) + '*' + str.substr(-1);
-  } else return str;
-  return newStr;
-}
 
 export default class CurrentHiddenDanger extends PureComponent {
   constructor(props) {
@@ -115,28 +104,28 @@ export default class CurrentHiddenDanger extends PureComponent {
   };
 
   // dataIndex从0开始
-  onChartClick = ({ dataIndex }, chart) => {
-    const { onClickChat } = this.props;
-    // 如果点击已选中的区块，取消筛选
-    if (this.selectedDangerIndex === dataIndex) {
-      this.selectedDangerIndex = -1;
-      onClickChat({ dataIndex: -1 });
-      chart.dispatchAction({
-        type: 'downplay',
-        seriesIndex: 0,
-        dataIndex,
-      });
-    } else {
-      this.selectedDangerIndex = dataIndex;
-      onClickChat({ dataIndex }, () => {
-        chart.dispatchAction({
-          type: 'highlight',
-          seriesIndex: 0,
-          dataIndex: dataIndex,
-        });
-      });
-    }
-  };
+  // onChartClick = ({ dataIndex }, chart) => {
+  //   const { onClickChat } = this.props;
+  //   // 如果点击已选中的区块，取消筛选
+  //   if (this.selectedDangerIndex === dataIndex) {
+  //     this.selectedDangerIndex = -1;
+  //     onClickChat({ dataIndex: -1 });
+  //     chart.dispatchAction({
+  //       type: 'downplay',
+  //       seriesIndex: 0,
+  //       dataIndex,
+  //     });
+  //   } else {
+  //     this.selectedDangerIndex = dataIndex;
+  //     onClickChat({ dataIndex }, () => {
+  //       chart.dispatchAction({
+  //         type: 'highlight',
+  //         seriesIndex: 0,
+  //         dataIndex: dataIndex,
+  //       });
+  //     });
+  //   }
+  // };
 
   generateShow = (key, hoverIndex) =>
     (this.selectedDangerIndex === key && [-1, key].includes(hoverIndex)) || hoverIndex === key;
@@ -190,26 +179,20 @@ export default class CurrentHiddenDanger extends PureComponent {
       visible,
       onClose,
       onCardClick, // 点击小块查看详情
-      overRectifyNum: ycq,
-      rectifyNum: wcq,
-      reviewNum: dfc,
-      totalNum: total,
+      overRectifyNum: ycq = 2,
+      rectifyNum: wcq = 0,
+      reviewNum: dfc = 2,
+      totalNum: total = 4,
       list = [],
-      loading,
-      hiddenDangerList: {
-        pagination: { total: listTotal, pageNum, pageSize },
-        list: dataList,
-      },
-      fetchHiddenDangerList,
+      // hiddenDangerList: { list: dataList },
     } = this.props;
+    const { loading = false, dataList = DataList } = {};
     const { hoverIndex, images, currentImage, lightBoxVisible } = this.state;
     const legendInfo = {
       已超期: ycq,
       未超期: wcq,
       待复查: dfc,
     };
-    console.log('dataList', JSON.stringify(dataList));
-
     const option = {
       tooltip: {
         show: false,
@@ -309,6 +292,7 @@ export default class CurrentHiddenDanger extends PureComponent {
         },
       ],
     };
+    console.log('visible', visible);
 
     return (
       <Fragment>
@@ -327,7 +311,7 @@ export default class CurrentHiddenDanger extends PureComponent {
                   onEvents={{
                     mouseover: this.onMouseOver,
                     mouseout: this.onMouseOut,
-                    click: this.onChartClick,
+                    // click: this.onChartClick,
                   }}
                 />
                 <div className={styles.total}>
@@ -352,11 +336,11 @@ export default class CurrentHiddenDanger extends PureComponent {
                   ) : (
                     <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>
                   )}
-                  {pageNum * pageSize < listTotal && (
+                  {/* {pageNum * pageSize < listTotal && (
                     <div className={styles.loadMoreWrapper}>
                       <LoadMore onClick={() => fetchHiddenDangerList(pageNum + 1)} />
                     </div>
-                  )}
+                  )} */}
                 </Spin>
                 {/* {list.map((item, index) => {
                 const {

@@ -87,7 +87,13 @@ export default class CompanyInfo extends PureComponent {
               </div>
             </div>
 
-            <div style={{ backgroundImage: `url(${currentHiddenDangerIcon})` }}>
+            <div
+              className={styles.hoverable}
+              style={{ backgroundImage: `url(${currentHiddenDangerIcon})` }}
+              onClick={() => {
+                handleClickCount('currentHiddenDanger');
+              }}
+            >
               <div className={styles.countLabel}>
                 <div>当前隐患</div>
               </div>
