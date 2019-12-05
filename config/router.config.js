@@ -1381,6 +1381,75 @@ module.exports = env => {
                     },
                   ],
                 },
+                {
+                  path: '/iot/major-hazard/tank',
+                  code: 'iot.majorHazard.tank',
+                  name: 'tank',
+                  routes: [
+                    {
+                      path: '/iot/major-hazard/tank',
+                      redirect: '/iot/major-hazard/tank/real-time',
+                    },
+                    {
+                      path: '/iot/major-hazard/tank/real-time',
+                      code: 'iot.majorHazard.tank.realTime',
+                      name: 'realTime',
+                      component: './IoT/MajorHazard/Tank/RealTime',
+                    },
+                    {
+                      path: '/iot/major-hazard/tank/detail/:id',
+                      code: 'iot.majorHazard.tank.detail',
+                      name: 'detail',
+                      component: './IoT/MajorHazard/Tank/Detail',
+                    },
+                  ],
+                },
+                {
+                  path: '/iot/major-hazard/storage-area',
+                  code: 'iot.majorHazard.storageArea',
+                  name: 'storageArea',
+                  routes: [
+                    {
+                      path: '/iot/major-hazard/storage-area',
+                      redirect: '/iot/major-hazard/storage-area/real-time',
+                    },
+                    {
+                      path: '/iot/major-hazard/storage-area/real-time',
+                      code: 'iot.majorHazard.storageArea.realTime',
+                      name: 'realTime',
+                      component: './IoT/MajorHazard/StorageArea/RealTime',
+                    },
+                    {
+                      path: '/iot/major-hazard/storage-area/detail/:id',
+                      code: 'iot.majorHazard.storageArea.detail',
+                      name: 'detail',
+                      component: './IoT/MajorHazard/StorageArea/Detail',
+                    },
+                  ],
+                },
+                {
+                  path: '/iot/major-hazard/storage-house',
+                  code: 'iot.majorHazard.storageHouse',
+                  name: 'storageHouse',
+                  routes: [
+                    {
+                      path: '/iot/major-hazard/storage-house',
+                      redirect: '/iot/major-hazard/storage-house/real-time',
+                    },
+                    {
+                      path: '/iot/major-hazard/storage-house/real-time',
+                      code: 'iot.majorHazard.storageHouse.realTime',
+                      name: 'realTime',
+                      component: './IoT/MajorHazard/StorageHouse/RealTime',
+                    },
+                    {
+                      path: '/iot/major-hazard/storage-house/detail/:id',
+                      code: 'iot.majorHazard.storageHouse.detail',
+                      name: 'detail',
+                      component: './IoT/MajorHazard/StorageHouse/Detail',
+                    },
+                  ],
+                },
               ],
             },
             {
@@ -2236,10 +2305,7 @@ module.exports = env => {
               name: 'monitorReport', // 可燃有毒气体监测报表
               code: 'gasIot.monitorReport',
               path: '/gas-iot/monitor-report',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [
-              ],
+              component: './IoT/MajorHazard/Gas/History',
             },
           ],
         },

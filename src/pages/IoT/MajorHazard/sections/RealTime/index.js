@@ -5,6 +5,9 @@ import moment from 'moment';
 import classNames from 'classnames';
 import {
   TANK_AREA_REAL_TIME_URL,
+  TANK_REAL_TIME_URL,
+  STORAGE_AREA_REAL_TIME_URL,
+  STORAGE_HOUSE_REAL_TIME_URL,
 } from '../../URLS';
 import iconTankArea from '../../imgs/icon-tank-area.png';
 import iconTank from '../../imgs/icon-tank.png';
@@ -20,9 +23,9 @@ import styles from './index.less';
 const DELAY = 1 * 60 * 1000;
 const LIST = [
   { title: '罐区', title2: '储罐区', unit: '个', icon: iconTankArea, realTimeUrl: TANK_AREA_REAL_TIME_URL },
-  { title: '储罐', unit: '个', icon: iconTank },
-  { title: '库区', unit: '个', icon: iconStorageArea },
-  { title: '库房', unit: '个', icon: iconStorageHouse },
+  { title: '储罐', unit: '个', icon: iconTank, realTimeUrl: TANK_REAL_TIME_URL },
+  { title: '库区', unit: '个', icon: iconStorageArea, realTimeUrl: STORAGE_AREA_REAL_TIME_URL },
+  { title: '库房', unit: '个', icon: iconStorageHouse, realTimeUrl: STORAGE_HOUSE_REAL_TIME_URL },
   { title: '生产装置', unit: '套', icon: iconProcessUnit },
   { title: '气柜', unit: '套', icon: iconGasometer },
   { title: '高危工艺', unit: '套', icon: iconHighRiskProcess },

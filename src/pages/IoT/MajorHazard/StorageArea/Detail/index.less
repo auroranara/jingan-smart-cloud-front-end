@@ -1,0 +1,87 @@
+/* 公共样式 */
+.card {
+  margin-bottom: 24px;
+
+  :global {
+    .ant-card-head {
+      padding: 0 24px !important;
+
+      .ant-card-head-wrapper {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 12px 0;
+      }
+      .ant-card-head-title {
+        flex: none;
+        padding: 0 !important;
+        min-height: 0 !important;
+      }
+      .ant-card-extra {
+        margin-left: 0 !important;
+        padding: 0 !important;
+      }
+    }
+    .ant-card-body {
+      padding: 24px !important;
+    }
+  }
+}
+/* 头部信息 */
+.container {
+  :global {
+    .antd-pro\\components\\-page-header\\index-title {
+      margin-bottom: 0 !important;
+    }
+  }
+}
+.icon {
+  width: 36px !important;
+  height: 36px !important;
+}
+.nameWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.25em 0;
+  min-height: 2em;
+  font-size: 14px;
+
+  .name {
+    flex: none;
+    font-size: 20px;
+  }
+
+  .alarmMarker {
+    flex: none;
+    display: inline-block;
+    margin-left: 1em;
+    padding: 0 0.25em;
+    color: #fff;
+    background-color: red;
+    border-radius: 2em;
+  }
+
+  .majorHazard {
+    flex: none;
+    margin-left: 1em;
+    padding-left: 24px;
+    color: red;
+    background: no-repeat left;
+    background-size: 20px;
+  }
+}
+.label {
+  color: rgba(0, 0, 0, 0.45);
+}
+.address {
+  padding: 0.25em 0 0.25em 20px;
+  background: no-repeat left;
+  background-size: 16px;
+}
+.tankCount {
+  padding: 0.25em 0;
+  color: #1890ff;
+}
+.storage {
+  padding: 0.25em 0;
+}

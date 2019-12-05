@@ -6,18 +6,18 @@ import MonitorDataTrend from './MonitorDataTrend';
 import { connect } from 'dva';
 import {
   MAJOR_HAZARD_URL,
-  TANK_AREA_REAL_TIME_URL,
+  TANK_REAL_TIME_URL,
 } from '../../URLS';
-import iconTankArea from '../../imgs/icon-tank-area.png';
+import iconTank from '../../imgs/icon-tank.png';
 import iconIsMajorHazard from '../../imgs/icon-is-major-hazard.png';
 import iconAddress from '../../imgs/icon-address.png';
 import styles from './index.less';
 
-const GET_TANK_AREA_DETAIL = 'majorHazardMonitor/getTankAreaDetail';
-const GET_TANK_AREA_DATA_STATISTICS = 'majorHazardMonitor/getTankAreaDataStatistics';
-const GET_TANK_AREA_MONITOR_DATA_TREND = 'majorHazardMonitor/getTankAreaMonitorDataTrend';
+const GET_TANK_DETAIL = 'majorHazardMonitor/getTankDetail';
+const GET_TANK_DATA_STATISTICS = 'majorHazardMonitor/getTankDataStatistics';
+const GET_TANK_MONITOR_DATA_TREND = 'majorHazardMonitor/getTankMonitorDataTrend';
 const SAVE = 'majorHazardMonitor/save';
-const TITLE = '储罐区详情';
+const TITLE = '储罐详情';
 const BREADCRUMB_LIST = [
   {
     title: '首页',
@@ -34,9 +34,9 @@ const BREADCRUMB_LIST = [
     href: MAJOR_HAZARD_URL,
   },
   {
-    title: '储罐区实时监测',
-    name: '储罐区实时监测',
-    href: TANK_AREA_REAL_TIME_URL,
+    title: '储罐实时监测',
+    name: '储罐实时监测',
+    href: TANK_REAL_TIME_URL,
   },
   {
     title: TITLE,
@@ -51,25 +51,25 @@ const BREADCRUMB_LIST = [
 }) => ({
   user,
   majorHazardMonitor,
-  loading: loading.effects[GET_TANK_AREA_DETAIL],
-  loadingDataStatistics: loading.effects[GET_TANK_AREA_DATA_STATISTICS],
-  loadingMonitorDataTrend: loading.effects[GET_TANK_AREA_MONITOR_DATA_TREND],
+  loading: loading.effects[GET_TANK_DETAIL],
+  loadingDataStatistics: loading.effects[GET_TANK_DATA_STATISTICS],
+  loadingMonitorDataTrend: loading.effects[GET_TANK_MONITOR_DATA_TREND],
 }), dispatch => ({
-  getTankAreaDetail(payload, callback) { // 获取储罐区详情
+  getTankDetail(payload, callback) {
     dispatch({
-      type: GET_TANK_AREA_DETAIL,
+      type: GET_TANK_DETAIL,
       payload,
       callback(success, data) {
         if (!success) {
-          message.error('获取储罐区详情失败，请稍后重试或联系管理人员！');
+          message.error('获取储罐详情失败，请稍后重试或联系管理人员！');
         }
         callback && callback(success, data);
       },
     });
   },
-  getTankAreaDataStatistics(payload, callback) { // 获取储罐区数据统计
+  getTankDataStatistics(payload, callback) {
     dispatch({
-      type: GET_TANK_AREA_DATA_STATISTICS,
+      type: GET_TANK_DATA_STATISTICS,
       payload,
       callback(success, data) {
         if (!success) {
@@ -79,9 +79,9 @@ const BREADCRUMB_LIST = [
       },
     });
   },
-  getTankAreaMonitorDataTrend(payload, callback) { // 获取储罐区监测数据趋势
+  getTankMonitorDataTrend(payload, callback) {
     dispatch({
-      type: GET_TANK_AREA_MONITOR_DATA_TREND,
+      type: GET_TANK_MONITOR_DATA_TREND,
       payload,
       callback(success, data) {
         if (!success) {
@@ -95,14 +95,14 @@ const BREADCRUMB_LIST = [
     dispatch({
       type: SAVE,
       payload: {
-        tankAreaDetail: {},
+        tankDetail: {},
         ...payload,
       },
       callback,
     });
   },
 }))
-export default class TankAreaDetail extends Component { // 储罐区详情
+export default class TankDetail extends Component {
   componentDidMount() {
     this.getDetail();
   }
@@ -122,9 +122,9 @@ export default class TankAreaDetail extends Component { // 储罐区详情
           id,
         },
       },
-      getTankAreaDetail,
+      getTankDetail,
     } = this.props;
-    getTankAreaDetail({
+    getTankDetail({
       id,
     });
   }
@@ -139,9 +139,9 @@ export default class TankAreaDetail extends Component { // 储罐区详情
           id,
         },
       },
-      getTankAreaDataStatistics,
+      getTankDataStatistics,
     } = this.props;
-    getTankAreaDataStatistics({
+    getTankDataStatistics({
       id,
       ...payload,
     });
@@ -157,9 +157,9 @@ export default class TankAreaDetail extends Component { // 储罐区详情
           id,
         },
       },
-      getTankAreaMonitorDataTrend,
+      getTankMonitorDataTrend,
     } = this.props;
-    getTankAreaMonitorDataTrend({
+    getTankMonitorDataTrend({
       id,
       ...payload,
     }, callback);
@@ -168,12 +168,13 @@ export default class TankAreaDetail extends Component { // 储罐区详情
   render() {
     const {
       majorHazardMonitor: {
-        tankAreaDetail: {
+        tankDetail: {
           name,
           status,
           isMajorHazard,
           address,
-          tankCount,
+          number,
+          tankArea,
           storage,
         }={},
       },
@@ -186,7 +187,7 @@ export default class TankAreaDetail extends Component { // 储罐区详情
       <PageHeaderLayout
         className={styles.container}
         breadcrumbList={BREADCRUMB_LIST}
-        logo={<img className={styles.icon} src={iconTankArea} alt="" />}
+        logo={<img className={styles.icon} src={iconTank} alt="" />}
         title={(
           <div className={styles.nameWrapper}>
             <div className={styles.name}>{name}</div>
@@ -197,7 +198,8 @@ export default class TankAreaDetail extends Component { // 储罐区详情
         content={(
           <Fragment>
             <div className={styles.address} style={{ backgroundImage: `url(${iconAddress})` }}>{address}</div>
-            <div className={styles.tankCount}><span className={styles.label}>存放储罐：</span>{tankCount}</div>
+            <div className={styles.number}><span className={styles.label}>位号：</span>{number}</div>
+            <div className={styles.tankArea}><span className={styles.label}>所属罐区：</span>{tankArea}</div>
             <div className={styles.storage}><span className={styles.label}>存储物质：</span>{storage}</div>
           </Fragment>
         )}

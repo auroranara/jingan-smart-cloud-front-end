@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import { Row, Col, Radio, Card, Table, Badge, Select, Button } from 'antd';
+import { Row, Col, Radio, Card, Table, Badge, Select, Button, Spin } from 'antd';
 import ReactEcharts from 'echarts-for-react';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomEmpty from '@/jingan-components/CustomEmpty';
 import Ellipsis from '@/components/Ellipsis';
 import { Range } from '../../components';
 import moment from 'moment';
+import { connect } from 'dva';
 import { toFixed, isNumber, getPageSize, setPageSize } from '@/utils/utils';
 import {
   TYPES,
@@ -47,8 +49,72 @@ export const COLUMNS = [
     sortDirections: ['descend'],
   },
 ];
+const GET_HISTORY = 'gasMonitor/getHistory';
+const GET_LIST = 'gasMonitor/getList';
+const GET_MONITOR_OBJECT_TYPE_LIST = 'gasMonitor/getMonitorObjectTypeList';
+const GET_MONITOR_OBJECT_LIST = 'gasMonitor/getMonitorObjectList';
+const GET_MONITOR_POINT_LIST = 'gasMonitor/getMonitorPointList';
+const EXPORT_DATA = 'gasMonitor/exportData';
+const TITLE = '可燃有毒气体监测报表';
+const BREADCRUMB_LIST = [
+  { title: '首页', name: '首页', href: '/' },
+  { title: '气体监测报警', name: '气体监测报警' },
+  { title: TITLE, name: TITLE },
+];
 
-export default class History extends Component {
+@connect(({
+  user,
+  gasMonitor,
+  loading,
+}) => ({
+  user,
+  gasMonitor,
+  loading: loading.effects[GET_HISTORY] || loading.effects[GET_LIST] || false,
+}), dispatch => ({
+  getHistory(payload, callback) {
+    dispatch({
+      type: GET_HISTORY,
+      payload,
+      callback,
+    });
+  },
+  getList(payload, callback) {
+    dispatch({
+      type: GET_LIST,
+      payload,
+      callback,
+    });
+  },
+  getMonitorObjectTypeList(payload, callback) {
+    dispatch({
+      type: GET_MONITOR_OBJECT_TYPE_LIST,
+      payload,
+      callback,
+    });
+  },
+  getMonitorObjectList(payload, callback) {
+    dispatch({
+      type: GET_MONITOR_OBJECT_LIST,
+      payload,
+      callback,
+    });
+  },
+  getMonitorPointList(payload, callback) {
+    dispatch({
+      type: GET_MONITOR_POINT_LIST,
+      payload,
+      callback,
+    });
+  },
+  exportData(payload, callback) {
+    dispatch({
+      type: EXPORT_DATA,
+      payload,
+      callback,
+    });
+  },
+}))
+export default class GasHistory extends Component {
   state = {
     range: undefined, // 时间范围
     type: TYPES[0].key, // 类型，['图表', '列表']
@@ -65,10 +131,10 @@ export default class History extends Component {
     getMonitorObjectTypeList();
   }
 
-  getData = () => {
-    const { getData } = this.props;
+  getHistory = () => {
+    const { getHistory } = this.props;
     const { range: [startDate, endDate]=[] } = this.state;
-    getData({
+    getHistory({
       startDate,
       endDate,
     });
@@ -101,7 +167,7 @@ export default class History extends Component {
     }, () => {
       const { type } = this.state;
       if (type === TYPES[0].key) {
-        this.getData();
+        this.getHistory();
       } else {
         this.getList();
       }
@@ -122,7 +188,7 @@ export default class History extends Component {
       }),
     });
     if (type === TYPES[0].key) {
-      this.getData();
+      this.getHistory();
     } else {
       this.getList();
     }
@@ -186,12 +252,14 @@ export default class History extends Component {
 
   handleTableChange = ({ current, pageSize }, _, { field }) => {
     const {
-      list: {
-        pagination: {
-          pageSize: prevPageSize=pageSize,
-          field: prevField,
+      gasMonitor: {
+        list: {
+          pagination: {
+            pageSize: prevPageSize=pageSize,
+            field: prevField,
+          }={},
         }={},
-      }={},
+      },
     } = this.props;
     let pageNum;
     if (prevPageSize !== pageSize) {
@@ -238,14 +306,16 @@ export default class History extends Component {
    */
   renderCount() {
     const {
-      data: {
-        majorHazard=0,
-        monitorHazard=0,
-        alertRate=0,
-        alerts=0,
-        alarmTime=0,
-        completeRate=1,
-      }={},
+      gasMonitor: {
+        history: {
+          majorHazard=0,
+          monitorHazard=0,
+          alertRate=0,
+          alerts=0,
+          alarmTime=0,
+          completeRate=1,
+        }={},
+      },
     } = this.props;
 
     return (
@@ -289,9 +359,11 @@ export default class History extends Component {
    */
   renderDurationChart() {
     const {
-      data: {
-        durations=[],
-      }={},
+      gasMonitor: {
+        history: {
+          durations=[],
+        }={},
+      },
     } = this.props;
 
     const option = {
@@ -393,15 +465,17 @@ export default class History extends Component {
    */
   renderTrendChart() {
     const {
-      data: {
-        dateList,
-        pendingList=[],
-        processingList=[],
-        processedList=[],
-        pendingPercentList=[],
-        processingPercentList=[],
-        processedPercentList=[],
-      }={},
+      gasMonitor: {
+        history: {
+          dateList,
+          pendingList=[],
+          processingList=[],
+          processedList=[],
+          pendingPercentList=[],
+          processingPercentList=[],
+          processedPercentList=[],
+        }={},
+      },
     } = this.props;
     const { numberType } = this.state;
     const isPercent = numberType === NUMBER_TYPES[1].key;
@@ -523,11 +597,13 @@ export default class History extends Component {
    */
   renderTrend2Chart() {
     const {
-      data: {
-        dateList,
-        warningList=[],
-        alarmList=[],
-      }={},
+      gasMonitor: {
+        history: {
+          dateList,
+          warningList=[],
+          alarmList=[],
+        }={},
+      },
     } = this.props;
 
     const option = {
@@ -617,9 +693,11 @@ export default class History extends Component {
    */
   renderRankingTable() {
     const {
-      data: {
-        rankList=[],
-      }={},
+      gasMonitor: {
+        history: {
+          rankList=[],
+        }={},
+      },
     } = this.props;
 
     return (
@@ -647,17 +725,19 @@ export default class History extends Component {
    */
   renderTable() {
     const {
-      monitorObjectTypeList=[],
-      monitorObjectList=[],
-      monitorPointList=[],
-      list: {
-        list=[],
-        pagination: {
-          total,
-          pageNum,
-          pageSize,
+      gasMonitor: {
+        list: {
+          list=[],
+          pagination: {
+            total,
+            pageNum,
+            pageSize,
+          }={},
         }={},
-      }={},
+        monitorObjectTypeList=[],
+        monitorObjectList=[],
+        monitorPointList=[],
+      },
     } = this.props;
     const { status, monitorObjectTypeId, monitorObjectId, monitorPointId, selectedRowKeys } = this.state;
     const columns = [
@@ -783,37 +863,45 @@ export default class History extends Component {
   }
 
   render() {
+    const { loading } = this.props;
     const { type } = this.state;
 
     return (
-      <Row className={styles.row} gutter={24}>
-        <Col span={24}>
-          {this.renderToobar()}
-        </Col>
-        {type === TYPES[0].key ? (
-          <Fragment>
+      <PageHeaderLayout
+        title={TITLE}
+        breadcrumbList={BREADCRUMB_LIST}
+      >
+        <Spin spinning={loading}>
+          <Row className={styles.row} gutter={24}>
             <Col span={24}>
-              {this.renderCount()}
+              {this.renderToobar()}
             </Col>
-            <Col xxl={8} lg={12} sm={24} xs={24}>
-              {this.renderDurationChart()}
-            </Col>
-            <Col xxl={16} lg={12} sm={24} xs={24}>
-              {this.renderTrendChart()}
-            </Col>
-            <Col xxl={16} lg={12} sm={24} xs={24}>
-              {this.renderTrend2Chart()}
-            </Col>
-            <Col xxl={8} lg={12} sm={24} xs={24}>
-              {this.renderRankingTable()}
-            </Col>
-          </Fragment>
-        ) : (
-          <Col span={24}>
-            {this.renderTable()}
-          </Col>
-        )}
-      </Row>
+            {type === TYPES[0].key ? (
+              <Fragment>
+                <Col span={24}>
+                  {this.renderCount()}
+                </Col>
+                <Col xxl={8} lg={12} sm={24} xs={24}>
+                  {this.renderDurationChart()}
+                </Col>
+                <Col xxl={16} lg={12} sm={24} xs={24}>
+                  {this.renderTrendChart()}
+                </Col>
+                <Col xxl={16} lg={12} sm={24} xs={24}>
+                  {this.renderTrend2Chart()}
+                </Col>
+                <Col xxl={8} lg={12} sm={24} xs={24}>
+                  {this.renderRankingTable()}
+                </Col>
+              </Fragment>
+            ) : (
+              <Col span={24}>
+                {this.renderTable()}
+              </Col>
+            )}
+          </Row>
+        </Spin>
+      </PageHeaderLayout>
     );
   }
 }
