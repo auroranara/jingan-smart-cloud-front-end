@@ -17,7 +17,7 @@ const riskData = [
 ];
 const hiddenDangerData = [
   { label: '已超期', value: 1, color: '#FC1F02' },
-  { label: '待整改', value: 2, color: '#FFE500' },
+  // { label: '待整改', value: 2, color: '#FFE500' },
   { label: '待复查', value: 1, color: '#0967D3' },
 ];
 const riskSourceData = [
@@ -85,7 +85,7 @@ export default class KeyPoints extends PureComponent {
         <div className={styles.wrapper}>
           <div className={styles.title}>
             风险点
-            <span className={styles.value}>({4})</span>
+            <span className={styles.value}>({38})</span>
             <div
               className={styles.extra}
               onClick={() => setDrawerVisible('riskPoint', { riskPointType: { key: 'status' } })}
@@ -111,11 +111,11 @@ export default class KeyPoints extends PureComponent {
         <div className={styles.wrapper}>
           <div className={styles.title}>
             隐患
-            <span className={styles.value}>({4})</span>
-            <div className={styles.extra}>
+            <span className={styles.value}>({2})</span>
+            {/* <div className={styles.extra}>
               详情
               <span style={{ color: '#0ff' }}>>></span>
-            </div>
+            </div> */}
           </div>
           <div className={styles.content}>
             {hiddenDangerData.map((item, index) => {
