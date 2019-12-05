@@ -30,7 +30,6 @@ export default class Edit extends PureComponent {
       type: 'cardsInfo/getKnowCard',
       payload: id,
       callback: detail => {
-        console.log(handleDetails(detail));
         setFieldsValue(handleDetails(detail));
       },
     });
@@ -48,7 +47,7 @@ export default class Edit extends PureComponent {
       if (errors)
         return;
 
-      const vals = { ...values, companyId: values.companyId.key, time: +values.time };
+      const vals = { ...values, companyId: values.companyId.key, time: +values.time.startOf('day') };
       dispatch({
         type: `cardsInfo/${id ? 'edit' : 'add'}KnowCard`,
         payload: id ? { id, ...vals } : vals,
@@ -65,7 +64,7 @@ export default class Edit extends PureComponent {
 
   isDetail = () => {
     const { match: { url } } = this.props;
-    return url && url.includes('detail');
+    return url && url.includes('view');
   };
 
   render() {

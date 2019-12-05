@@ -20,11 +20,20 @@ export default class TableList extends PureComponent {
     this.getList();
   }
 
-  getList = (pageNum=1) => {
+  getList = pageNum => {
     const { dispatch } = this.props;
+    const vals = { ...this.values };
+    if (vals.time)
+      vals.time = +vals.time.startOf('day');
+
+    if (!pageNum) { // pageNum不存在，则为初始化
+      pageNum = 1;
+      this.setState({ current: 1 });
+    }
+
     dispatch({
       type: 'cardsInfo/fetchKnowList',
-      payload: { pageNum, pageSize: PAGE_SIZE, ...this.values },
+      payload: { pageNum, pageSize: PAGE_SIZE, ...vals },
     });
   };
 
@@ -109,7 +118,7 @@ export default class TableList extends PureComponent {
             columns={columns}
             dataSource={list}
             onChange={this.onTableChange}
-            scroll={{ x: 1500 }} // 项目不多时注掉
+            scroll={{ x: 1400 }} // 项目不多时注掉
             pagination={{ pageSize: PAGE_SIZE, total: knowTotal, current }}
           />
         </div>

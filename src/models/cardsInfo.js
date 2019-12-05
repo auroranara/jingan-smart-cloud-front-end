@@ -14,6 +14,8 @@ import {
   getEmergencyItem,
   editEmergencyItem,
   deleteEmergencyItem,
+  getInformCards,
+  getRiskTypes,
 } from '../services/cardsInfo';
 import { getList } from '@/utils/service';
 
@@ -30,6 +32,9 @@ export default {
     emergencyTotal: 0,
     emergencyList: [],
     emergencyDetail: {},
+    informTotal: 0,
+    informCards: [],
+    riskTypes: [],
   },
 
   effects: {
@@ -132,6 +137,20 @@ export default {
       const { code, msg } = response || {};
       callback && callback(code, msg);
     },
+    *fetchInformCards({ payload, callback }, { call, put }) {
+      const response = yield call(getInformCards, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({ type: 'saveInformTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
+        yield put({ type: 'saveInformCards', payload: getList(data) });
+      }
+    },
+    *fetchRiskTypes({ payload }, { call, put }) {
+      const response = yield call(getRiskTypes, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveRiskTypes', payload: getList(data) });
+    },
   },
 
   reducers: {
@@ -161,6 +180,15 @@ export default {
     },
     saveEmergencyDetail(state, action) {
       return { ...state, emergencyDetail: action.payload };
+    },
+    saveInformTotal(state, action) {
+      return { ...state, informTotal: action.payload };
+    },
+    saveInformCards(state, action) {
+      return { ...state, informCards: action.payload };
+    },
+    saveRiskTypes(state, action) {
+      return { ...state, riskTypes: action.payload };
     },
   },
 }

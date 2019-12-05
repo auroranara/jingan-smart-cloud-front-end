@@ -5,8 +5,7 @@ import { DatePicker, Input, message, Popconfirm, Select } from 'antd';
 
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
-const { Option } = Select;
-
+const MAX_LENGTH = 20;
 const DATE_FORMAT = 'YYYY-MM-DD';
 export const PAGE_SIZE = 20;
 export const ROUTER = '/cards-info/commitment-card'; // modify
@@ -72,23 +71,30 @@ export function getTableColumns(handleConfirmDelete) {
       title: '承诺卡内容',
       dataIndex: 'content',
       key: 'content',
-      render: txt => txt.length > 10 ? `${txt.slice(0, 10)}...` : txt,
+      align: 'center',
+      render: txt => txt.length > MAX_LENGTH ? `${txt.slice(0, MAX_LENGTH)}...` : txt,
     },
     {
       title: '承诺人',
       dataIndex: 'acceptor',
       key: 'acceptor',
+      width: 100,
+      align: 'center',
     },
     {
       title: '时间',
       dataIndex: 'time',
       key: 'time',
+      width: 120,
+      align: 'center',
       render: t => moment(t).format(DATE_FORMAT),
     },
     {
       title: '在线预览',
       dataIndex: 'preview',
       key: 'preview',
+      width: 100,
+      align: 'center',
       render: p => <a onClick={e => e.preventDefault()}>预览</a>,
     },
     {
@@ -96,10 +102,12 @@ export function getTableColumns(handleConfirmDelete) {
       dataIndex: 'id',
       key: 'id',
       align: 'center',
+      fixed: 'right',
       render(id) {
         return (
           <Fragment>
-            <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
+            <Link to={`${ROUTER}/view/${id}`}>查看</Link>
+            <Link to={`${ROUTER}/edit/${id}`} style={{ marginLeft: 8 }}>编辑</Link>
             <Popconfirm
               title="确定删除当前项目？"
               onConfirm={e => handleConfirmDelete(id)}

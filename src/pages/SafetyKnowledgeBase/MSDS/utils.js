@@ -81,7 +81,7 @@ function genFormItem(field, getFieldDecorator) {
 
   let child = null;
 
-  if (type === 'component') child = compt;
+  if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
   else {
     const formOptions = {};
     const opts = getOptions(options);
@@ -90,6 +90,9 @@ function genFormItem(field, getFieldDecorator) {
     let component = null;
     const rules = [];
     switch (type) {
+      case 'compt': // getFieldDecorator包裹的
+        component = compt;
+        break;
       case 'text':
         placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
@@ -166,7 +169,7 @@ function getSections(sections) {
   return sections;
 }
 
-export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl) {
+export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl, loading=false) {
   const secs = getSections(sections);
   const props = {};
   // const props = { ...FORMITEM_LAYOUT };
@@ -175,7 +178,7 @@ export function renderSections(sections, getFieldDecorator, handleSubmit, listUr
       <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>
         取消
       </Button>
-      <Button type="primary" htmlType="submit">
+      <Button type="primary" htmlType="submit" disabled={loading}>
         提交
       </Button>
     </FormItem>

@@ -77,3 +77,13 @@ export async function editEmergencyItem(params) {
 export async function deleteEmergencyItem(id) {
   return request(`${URL_PREFIX}/emergencyCard/emergencyCard/${id}`, { method: 'DELETE' });
 }
+
+// 风险告知卡列表
+export async function getInformCards(params) {
+  return request(`/acloud_new/v2/pointManage/hdLetterForPage?${stringify(params)}`);
+}
+
+// 风险分类
+export async function getRiskTypes() {
+  return request('/acloud_new/v2/pointManage/riskTypeDict');
+}
