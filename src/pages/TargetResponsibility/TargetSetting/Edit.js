@@ -5,18 +5,18 @@ import {
   Button,
   Form,
   Input,
-  Radio,
-  Cascader,
   Select,
   Upload,
-  DatePicker,
   Icon,
   message,
+  Row,
+  Col,
+  Popconfirm,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import CompanySelect from '@/jingan-components/CompanySelect';
-import moment from 'moment';
+import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -32,11 +32,14 @@ const formItemLayout = {
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 
-// 获取根节点
-const getRootChild = () => document.querySelector('#root>div');
+const getFrequency = {
+  1: '月',
+  2: '季度',
+  3: '年',
+};
 
 // 上传文件夹
-const folder = 'dangerChemicalsInfo';
+const folder = 'targetSetting';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 
@@ -48,9 +51,10 @@ const {
 } = codes;
 
 @Form.create()
-@connect(({ targetResponsibility, department, user, loading }) => ({
+@connect(({ targetResponsibility, account, department, user, loading }) => ({
   targetResponsibility,
   department,
+  account,
   user,
   loading: loading.models.targetResponsibility,
 }))
@@ -58,9 +62,10 @@ export default class Edit extends PureComponent {
   state = {
     uploading: false, // 上传是否加载
     photoUrl: [], // 上传照片
+    indexVisible: false, // 指标弹框是否可见
+    dutyStatus: '', // 责任主体选择key
     detailList: {},
-    facNameList: [],
-    dutyStatus: '',
+    safetyIndexList: [],
   };
 
   // 挂载后
@@ -70,7 +75,6 @@ export default class Edit extends PureComponent {
       match: {
         params: { id },
       },
-      targetResponsibility: { facNameList = [] },
     } = this.props;
 
     if (id) {
@@ -96,7 +100,6 @@ export default class Edit extends PureComponent {
           });
         },
       });
-      this.setState({ facNameList: facNameList });
     } else {
       dispatch({
         type: 'targetResponsibility/clearSafeFacDetail',
@@ -115,9 +118,10 @@ export default class Edit extends PureComponent {
     return url && url.includes('view');
   };
 
-  /* 去除左右两边空白 */
+  // 去除左右两边空白
   handleTrim = e => e.target.value.trim();
 
+  // 提交
   handleSubmit = () => {
     const {
       match: {
@@ -126,26 +130,28 @@ export default class Edit extends PureComponent {
       dispatch,
       form: { validateFieldsAndScroll },
       user: {
-        currentUser: { companyId },
+        currentUser: { companyId: unitId },
       },
     } = this.props;
-    const { photoUrl } = this.state;
-    validateFieldsAndScroll((errors, values) => {
-      console.log('values', values);
+    const { photoUrl, safetyIndexList, dutyType, labelId } = this.state;
 
+    validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { category } = values;
+        const { companyId, goalYear } = values;
         const payload = {
           id,
-          companyId: this.companyId || companyId,
-          category: category.join(','),
-          photo:
+          companyId: companyId.key || unitId,
+          goalYear,
+          dutyMajor: dutyType + ',' + labelId,
+          safeProductGoalValueList: safetyIndexList,
+          otherFile:
             photoUrl.length > 0
               ? JSON.stringify(
                   photoUrl.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
                 )
               : undefined,
         };
+        console.log('payload', payload);
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -158,23 +164,24 @@ export default class Edit extends PureComponent {
 
         if (id) {
           dispatch({
-            type: 'targetResponsibility/fetchSafeFacEdit',
+            type: 'targetResponsibility/fetchSettingEdit',
             payload,
             success,
             error,
           });
         } else {
           dispatch({
-            // type: 'targetResponsibility/fetchSafeFacAdd',
-            // payload,
-            // success,
-            // error,
+            type: 'targetResponsibility/fetchSettingAdd',
+            payload,
+            success,
+            error,
           });
         }
       }
     });
   };
 
+  // 上传处理
   handleUploadChange = ({ file, fileList }) => {
     if (file.status === 'uploading') {
       this.setState({
@@ -225,23 +232,206 @@ export default class Edit extends PureComponent {
 
   // 责任主体key切换
   handleDutySelect = key => {
-    this.setState({ dutyStatus: key });
-  };
-
-  handleDutyChange = () => {
     const {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
     const { companyId } = getFieldsValue();
-    dispatch({
-      type: 'department/fetchDepartmentList',
-      payload: { companyId: companyId ? companyId.key : undefined },
+
+    this.setState({ dutyStatus: key });
+    if (+key === 2) {
+      dispatch({
+        type: 'department/fetchDepartmentList',
+        payload: { companyId: companyId ? companyId.key : undefined },
+      });
+    } else if (+key === 3) {
+      dispatch({
+        type: 'account/fetch',
+        payload: {
+          unitId: companyId ? companyId.key : undefined,
+          pageSize: 100,
+          pageNum: 1,
+        },
+      });
+    }
+  };
+
+  // 显示指标弹框
+  handleIndexModal = () => {
+    this.setState({ indexVisible: true });
+    const payload = { pageSize: 10, pageNum: 1 };
+    this.fetchIndexList({ payload });
+  };
+
+  // 获取指标列表
+  fetchIndexList = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'targetResponsibility/fetchIndexManagementList', payload });
+  };
+
+  // 选择确定指标
+  handleIndexSelect = item => {
+    this.setState({ safetyIndexList: item });
+    this.handleIndexClose();
+  };
+
+  // 关闭指标弹框
+  handleIndexClose = () => {
+    this.setState({ indexVisible: false });
+  };
+
+  // 渲染指标弹框
+  renderIndexModal() {
+    const {
+      targetResponsibility: { indexData },
+      loading,
+    } = this.props;
+
+    const { indexVisible } = this.state;
+
+    const field = [
+      {
+        id: 'targetName',
+        render() {
+          return <Input placeholder="请输入指标名称" />;
+        },
+      },
+    ];
+
+    const columns = [
+      {
+        title: '指标',
+        dataIndex: 'targetName',
+        key: 'targetName',
+        align: 'center',
+      },
+      {
+        title: '考核频次',
+        dataIndex: 'checkFrequency',
+        key: 'checkFrequency',
+        align: 'center',
+        render: val => getFrequency[val],
+      },
+    ];
+
+    return (
+      <CompanyModal
+        width={700}
+        title={'选择指标'}
+        loading={loading}
+        visible={indexVisible}
+        modal={indexData}
+        columns={columns}
+        field={field}
+        fetch={this.fetchIndexList}
+        onSelect={this.handleIndexSelect}
+        rowSelection={{ type: 'checkbox ' }}
+        onClose={this.handleIndexClose}
+        multiSelect={true}
+      />
+    );
+  }
+
+  // 输入指标值改变
+  handleChangeIndexValue = (item, value, i, key) => {
+    item[key] = value;
+    this.setState(({ safetyIndexList }) => {
+      let temp = [...safetyIndexList];
+      temp.splice(i, 1, item);
+      return { safetyIndexList: temp };
     });
   };
-  /**
-   * 渲染表单
-   */
+
+  // 删除指标当前列
+  handleIndexForm = index => {
+    const { safetyIndexList } = this.state;
+    this.setState({
+      safetyIndexList: safetyIndexList.filter(({ id }) => {
+        return id !== index;
+      }),
+    });
+  };
+
+  // 渲染指标列表
+  renderIndexForm() {
+    const {
+      targetResponsibility: { targetValueList = [] },
+    } = this.props;
+    const { safetyIndexList } = this.state;
+
+    return (
+      <Row
+        gutter={{ lg: 24, md: 12 }}
+        style={{ position: 'relative', marginTop: '-35px', marginBottom: '20px' }}
+      >
+        {safetyIndexList.map((item, index) => {
+          const { id, targetName, checkFrequency, indexValue } = item;
+          return (
+            <Col span={24} key={id} style={{ marginTop: '10px' }}>
+              <Row gutter={12}>
+                <Col
+                  span={7}
+                  style={{ textAlign: 'right', color: 'rgb(0,0,0,0.85)', lineHeight: '32px' }}
+                >
+                  <span>
+                    {targetName} /{getFrequency[checkFrequency]}
+                  </span>
+                </Col>
+                <Col span={4}>
+                  <Select
+                    placeholder="请选择"
+                    style={{ width: '100%' }}
+                    allowClear
+                    onChange={e => {
+                      console.log('33333333', e);
+                      this.handleChangeIndexValue(item, e, index, 'symbolValue');
+                    }}
+                  >
+                    {targetValueList.map(({ key, value }) => (
+                      <Select.Option key={key} value={key}>
+                        {value}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Col>
+                <Col span={6}>
+                  <Input
+                    placeholder="请输入指标值"
+                    value={indexValue}
+                    onChange={e => {
+                      this.handleChangeIndexValue(item, e.target.value, index, 'indexValue');
+                    }}
+                  />
+                </Col>
+                <Col span={3}>
+                  <Popconfirm
+                    title="确认要删除该内容吗？"
+                    onConfirm={() => this.handleIndexForm(item.id)}
+                  >
+                    <Button>删除</Button>
+                  </Popconfirm>
+                </Col>
+              </Row>
+            </Col>
+          );
+        })}
+      </Row>
+    );
+  }
+
+  handleDutyChange = e => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ dutyMajor: e });
+    this.setState({ dutyType: e });
+  };
+
+  handleIdChange = e => {
+    this.setState({ labelId: e });
+  };
+
+  // 渲染
   renderForm = () => {
     const {
       form: { getFieldDecorator },
@@ -255,11 +445,12 @@ export default class Edit extends PureComponent {
       department: {
         data: { list: departmentList = [] },
       },
+      account: { list: personList = [] },
     } = this.props;
 
-    const isDisabled = id ? true : false;
-
     const { uploading, photoUrl, detailList, dutyStatus } = this.state;
+
+    const isDisabled = id ? true : false;
 
     const { companyName, specifications } = detailList;
     return (
@@ -291,7 +482,7 @@ export default class Edit extends PureComponent {
                   {...itemStyles}
                   style={{ width: '49%', marginRight: '1%' }}
                   onSelect={this.handleDutySelect}
-                  onChange={this.handleDutyChange}
+                  onChange={e => this.handleDutyChange(e)}
                 >
                   {dutyMajorList.map(({ key, value }) => (
                     <Option key={key} value={key}>
@@ -299,7 +490,7 @@ export default class Edit extends PureComponent {
                     </Option>
                   ))}
                 </Select>
-                {+dutyStatus === 1 ? (
+                {+dutyStatus === 1 && (
                   <Input
                     placeholder="请选择"
                     {...itemStyles}
@@ -307,22 +498,51 @@ export default class Edit extends PureComponent {
                     disabled
                     value="本公司"
                   />
-                ) : +dutyStatus === 2 || +dutyStatus === 3 ? (
-                  <Select placeholder="请选择" {...itemStyles} style={{ width: '50%' }}>
+                )}
+                {+dutyStatus === 2 && (
+                  <Select
+                    placeholder="请选择"
+                    {...itemStyles}
+                    style={{ width: '50%' }}
+                    onChange={e => this.handleIdChange(e)}
+                  >
                     {departmentList.map(({ id, name }) => (
                       <Option key={id} value={id}>
                         {name}
                       </Option>
                     ))}
                   </Select>
-                ) : (
+                )}
+                {+dutyStatus === 3 && (
+                  <Select
+                    placeholder="请选择"
+                    {...itemStyles}
+                    style={{ width: '50%' }}
+                    onChange={e => this.handleIdChange(e)}
+                  >
+                    {personList.map(({ loginId, userName }) => (
+                      <Option key={loginId} value={loginId}>
+                        {userName}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+                {+dutyStatus === 0 && (
                   <Input placeholder="请选择" {...itemStyles} style={{ width: '50%' }} disabled />
                 )}
               </div>
             )}
           </FormItem>
+          <FormItem label="安全生产目标数值" {...formItemLayout}>
+            {getFieldDecorator('safeProductGoalNumber', {})(
+              <Button type="primary" size="small" onClick={this.handleIndexModal}>
+                选择指标
+              </Button>
+            )}
+          </FormItem>
+          {this.renderIndexForm()}
           <FormItem label="合同附件" {...formItemLayout}>
-            {getFieldDecorator('photo', {
+            {getFieldDecorator('otherFile', {
               initialValue: photoUrl,
             })(
               <Upload
@@ -388,7 +608,7 @@ export default class Edit extends PureComponent {
               <Button
                 style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 size="large"
-                href={`#/device-management/safety-facilities/list`}
+                href={`#${LIST_URL}`}
               >
                 返回
               </Button>
@@ -404,7 +624,7 @@ export default class Edit extends PureComponent {
                 type="primary"
                 size="large"
                 disabled={!editCode}
-                href={`#/device-management/safety-facilities/edit/${id}`}
+                href={`#${LIST_URL}/edit/${id}`}
               >
                 编辑
               </Button>
@@ -414,13 +634,14 @@ export default class Edit extends PureComponent {
               <Button
                 style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 size="large"
-                href={`#/device-management/safety-facilities/list`}
+                href={`#${LIST_URL}`}
               >
                 返回
               </Button>
             </span>
           </div>
         )}
+        {this.renderIndexModal()}
       </PageHeaderLayout>
     );
   }

@@ -1,8 +1,12 @@
 import {
   queryIndexManageList,
-  querIndexManageAdd,
+  queryIndexManageAdd,
   queryIndexManageEdit,
   queryIndexManageDelete,
+  queryTargetSettingList,
+  queryTargetSettingAdd,
+  queryTargetSettingEdit,
+  queryTargetSettingDelete,
 } from '../services/targetResponsibility.js';
 
 export default {
@@ -10,7 +14,14 @@ export default {
   state: {
     indexData: {
       list: [],
-      pagination: {},
+      pagination: { total: 0, pageNum: 18, pageSize: 1 },
+    },
+    settingData: {
+      list: [],
+      pagination: { total: 0, pageNum: 18, pageSize: 1 },
+    },
+    settingDetail: {
+      data: [],
     },
     dutyMajorList: [
       {
@@ -24,6 +35,16 @@ export default {
       {
         key: '3',
         value: '个人',
+      },
+    ],
+    targetValueList: [
+      {
+        key: '1',
+        value: '≥',
+      },
+      {
+        key: '2',
+        value: '≤',
       },
     ],
   },
@@ -43,7 +64,7 @@ export default {
     },
     // 新建
     *fetchIndexManagementAdd({ payload, callback }, { call }) {
-      const response = yield call(querIndexManageAdd, payload);
+      const response = yield call(queryIndexManageAdd, payload);
       if (callback) callback(response);
     },
     // 修改
@@ -51,11 +72,64 @@ export default {
       const response = yield call(queryIndexManageEdit, payload);
       if (callback) callback(response);
     },
-    // 删除库房
+    // 删除
     *fetchIndexManagementDel({ payload, success, error }, { put, call }) {
       const response = yield call(queryIndexManageDelete, payload);
       if (response.code === 200) {
         yield put({ type: 'saveIndexDel', payload: payload.id });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    /** 目标责任制定实施 */
+
+    // 列表
+    *fetchSettingList({ payload, callback }, { call, put }) {
+      const response = yield call(queryTargetSettingList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveSettingList',
+          payload: response,
+        });
+        if (callback) callback(response);
+      }
+    },
+
+    // 新增
+    *fetchSettingAdd({ payload, success, error }, { call, put }) {
+      const response = yield call(queryTargetSettingAdd, payload);
+      const { code, data } = response;
+      if (code === 200) {
+        yield put({ type: 'saveSettingAdd', payload: data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 修改
+    *fetchSettingEdit({ payload, success, error }, { call, put }) {
+      const response = yield call(queryTargetSettingEdit, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveSettingEdit', payload: response.data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    // 删除
+    *fetchSettingtDel({ payload, success, error }, { put, call }) {
+      const response = yield call(queryTargetSettingDelete, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveSettingDel', payload: payload.id });
         if (success) {
           success();
         }
@@ -68,7 +142,6 @@ export default {
   reducers: {
     saveIndexList(state, { payload }) {
       const { data } = payload;
-      console.log('data', data);
       return {
         ...state,
         indexData: data,
@@ -81,6 +154,48 @@ export default {
         indexData: {
           ...state.indexData,
           list: state.indexData.list.filter(item => item.id !== id),
+        },
+      };
+    },
+
+    saveSettingList(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        settingData: data,
+      };
+    },
+
+    saveSettingAdd(state, { payload }) {
+      return {
+        ...state,
+        settingDetail: payload,
+      };
+    },
+
+    saveSettingEdit(state, { payload }) {
+      return {
+        ...state,
+        settingDetail: {
+          ...state.settingDetail,
+          data: payload,
+        },
+      };
+    },
+
+    clearDetail(state) {
+      return {
+        ...state,
+        settingDetail: { data: {} },
+      };
+    },
+
+    saveSettingDel(state, { payload: id }) {
+      return {
+        ...state,
+        settingData: {
+          ...state.settingData,
+          list: state.settingData.list.filter(item => item.id !== id),
         },
       };
     },

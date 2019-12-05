@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import Link from 'umi/link';
-import moment from 'moment';
-import { DatePicker, Input, message, Popconfirm, Select, Divider } from 'antd';
+// import moment from 'moment';
+import { Input, message, Popconfirm, Select, Divider } from 'antd';
 
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
@@ -38,7 +38,7 @@ export const SEARCH_FIELDS = [
     label: '责任主体',
     render: () => (
       <Select placeholder="请选择" allowClear>
-        {['一', '二'].map((r, i) => (
+        {['单位', '部门', '个人'].map((r, i) => (
           <Option key={i}>{r}</Option>
         ))}
       </Select>
@@ -51,9 +51,9 @@ export const LIST = [
   {
     companyName: '无锡晶安智慧科技有限公司',
     id: '1',
-    year: '2019年',
-    subToliability: '单位：本单位',
-    targetValueList: [
+    goalYear: '2019年',
+    dutyMajor: '单位：本单位',
+    safeProductGoalValueList: [
       {
         id: '1',
         name: '工伤事故次数',
@@ -78,6 +78,12 @@ export const LIST = [
   },
 ];
 
+const dutyType = {
+  1: '单位',
+  2: '部门',
+  3: '个人',
+};
+
 export const TABLE_COLUMNS = [
   // modify
   {
@@ -85,37 +91,34 @@ export const TABLE_COLUMNS = [
     dataIndex: 'companyName',
     key: 'companyName',
     align: 'center',
+    width: 280,
   },
   {
     title: '目标年份',
-    dataIndex: 'year',
-    key: 'year',
+    dataIndex: 'goalYear',
+    key: 'goalYear',
     align: 'center',
   },
   {
     title: '责任主体',
-    dataIndex: 'subToliability',
-    key: 'subToliability',
+    dataIndex: 'dutyMajor',
+    key: 'dutyMajor',
     align: 'center',
-    // render(ns) {
-    //   return ns.map((n, i) => (
-    //     <p key={i} className={styles1.p}>
-    //       {n}
-    //     </p>
-    //   ));
-    // },
+    render: (val, text) => {
+      return (
+        <span>
+          {dutyType[val.substr(0, 1)]}:{text.name || '本公司'}
+        </span>
+      );
+    },
   },
   {
     title: '安全生产目标数值',
-    dataIndex: 'targetValueList',
-    key: 'targetValueList',
+    dataIndex: 'safeProductGoalNumberList',
+    key: 'safeProductGoalNumberList',
     align: 'center',
     render: val => {
-      return val.map(item => (
-        <div key={item.id}>
-          {item.name}:{item.value}
-        </div>
-      ));
+      return val.map((item, index) => <div key={index}>{item}</div>);
     },
   },
   {
