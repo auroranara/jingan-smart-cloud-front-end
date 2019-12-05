@@ -37,10 +37,11 @@ export default class TablePage extends Component {
         }={},
       }={},
       getList,
+      transform,
       error=true,
     } = this.props;
     getList({
-      ...this.prevValues,
+      ...(transform ? transform(this.prevValues) : this.prevValues),
       pageNum,
       pageSize,
     }, success => {
@@ -60,11 +61,12 @@ export default class TablePage extends Component {
         }={},
       }={},
       getList,
+      transform,
       error=true,
     } = this.props;
     this.prevValues = values;
     getList({
-      ...values,
+      ...(transform ? transform(values) : values),
       pageNum: 1,
       pageSize,
     }, success => {
@@ -76,7 +78,7 @@ export default class TablePage extends Component {
 
   // 重置按钮点击事件
   handleResetButtonClick = values => {
-    this.handleSearch(values);
+    this.handleSearchButtonClick(values);
     this.setState({
       selectedRowKeys: [],
     });
@@ -153,10 +155,11 @@ export default class TablePage extends Component {
         }={},
       }={},
       getList,
+      transform,
       error=true,
     } = this.props;
     getList({
-      ...this.prevValues,
+      ...(transform ? transform(this.prevValues) : this.prevValues),
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
     }, success => {
