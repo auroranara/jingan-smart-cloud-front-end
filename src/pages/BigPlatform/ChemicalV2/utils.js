@@ -4,7 +4,7 @@ export const VideoList = [
     building_id: 'o_daq93fqgfotow5',
     device_id: 'jingan_zhihui',
     company_id: 'DccBRhlrSiu9gMV7fmvizw',
-    key_id: '240ch233_f1',
+    key_id: '250ch_11',
     photo_address: '',
     rtsp_address: 'rtsp://admin:12345@192.168.16.249:554/h264/ch6/sub/av_stream',
     isInspection: '1',
