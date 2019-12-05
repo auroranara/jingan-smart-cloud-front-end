@@ -642,4 +642,16 @@ export default {
       delete: 'majorHazardInfo.majorHazard.delete',
     },
   },
+
+  // 隐患排查治理
+  hiddenDangerControl: {
+    // 隐患标准管理数据库
+    dangerStandardDatabase: {
+      list: 'hiddenDangerControl.dangerStandardDatabase.listView',
+      add: 'hiddenDangerControl.dangerStandardDatabase.add',
+      edit: 'hiddenDangerControl.dangerStandardDatabase.edit',
+      delete: 'hiddenDangerControl.dangerStandardDatabase.delete',
+      process: 'hiddenDangerControl.dangerStandardDatabase.process',
+    },
+  },
 };

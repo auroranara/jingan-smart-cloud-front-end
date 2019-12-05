@@ -1332,6 +1332,38 @@ module.exports = env => {
                 },
               ],
             },
+            // 虚拟监测设备
+            {
+              path: '/device-management/virtual-monitoring-device',
+              name: 'virtualMonitoringDevice',
+              code: 'deviceManagement.virtualMonitoringDevice',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/virtual-monitoring-device',
+                  name: 'virtualMonitoringDevice',
+                  redirect: '/device-management/virtual-monitoring-device/list',
+                },
+                {
+                  path: '/device-management/virtual-monitoring-device/list',
+                  name: 'list',
+                  code: 'deviceManagement.virtualMonitoringDevice',
+                  component: './DeviceManagement/VirtualMonitoringDevice/index',
+                },
+                {
+                  path: '/device-management/virtual-monitoring-device/add',
+                  name: 'add',
+                  code: 'deviceManagement.virtualMonitoringDevice',
+                  component: './DeviceManagement/VirtualMonitoringDevice/Handle',
+                },
+                {
+                  path: '/device-management/virtual-monitoring-device/edit/:id',
+                  name: 'edit',
+                  code: 'deviceManagement.virtualMonitoringDevice',
+                  component: './DeviceManagement/VirtualMonitoringDevice/Handle',
+                },
+              ],
+            },
           ],
         },
 
@@ -4438,9 +4470,19 @@ module.exports = env => {
               name: 'dangerStandardDatabase', // 隐患标准管理数据库
               code: 'hiddenDangerControl.dangerStandardDatabase',
               path: '/hidden-danger-control/danger-standard-database',
-              developing: true,
               hideChildrenInMenu: true,
               routes: [
+                {
+                  path: '/hidden-danger-control/danger-standard-database',
+                  name: 'dangerStandardDatabase',
+                  redirect: '/hidden-danger-control/danger-standard-database/list',
+                },
+                {
+                  path: '/hidden-danger-control/danger-standard-database/list',
+                  name: 'list',
+                  code: 'hiddenDangerControl.dangerStandardDatabase.add',
+                  component: './HiddenDangerControl/StandardDatabase',
+                },
               ],
             },
             {
