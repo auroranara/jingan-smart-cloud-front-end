@@ -52,6 +52,7 @@ export default class Chemical extends PureComponent {
       specialEquipmentDrawerVisible: false,
       videoVisible: false,
       images: null,
+      videoList: [],
     };
   }
 
@@ -88,6 +89,14 @@ export default class Chemical extends PureComponent {
     this.setState({ images });
   };
 
+  handleCloseImg = () => {
+    this.setState({ images: null });
+  };
+
+  handleShowVideo = () => {
+    this.setState({ videoList: VideoList, videoVisible: true });
+  };
+
   /**
    * 渲染
    */
@@ -100,6 +109,7 @@ export default class Chemical extends PureComponent {
       safetyOfficerDrawerVisible,
       specialEquipmentDrawerVisible,
       videoVisible,
+      videoList,
       images,
     } = this.state;
     return (
@@ -140,10 +150,7 @@ export default class Chemical extends PureComponent {
 
             <Col span={18} className={styles.height100}>
               <div className={styles.right}>
-                <Map
-                  setDrawerVisible={this.setDrawerVisible}
-                  showVideo={() => this.setState({ videoVisible: true })}
-                />
+                <Map setDrawerVisible={this.setDrawerVisible} showVideo={this.handleShowVideo} />
               </div>
             </Col>
           </Row>
@@ -198,15 +205,15 @@ export default class Chemical extends PureComponent {
         />
 
         <NewVideoPlay
-          showList={true}
-          videoList={VideoList}
+          showList={false}
+          videoList={videoList}
           visible={videoVisible}
-          keyId={VideoList[0].key_id} // keyId
+          keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
           handleVideoClose={() => this.setState({ videoVisible: false })}
           isTree={false}
         />
 
-        <ImagePreview images={images} />
+        <ImagePreview images={images} onClose={this.handleCloseImg} />
       </BigPlatformLayout>
     );
   }
