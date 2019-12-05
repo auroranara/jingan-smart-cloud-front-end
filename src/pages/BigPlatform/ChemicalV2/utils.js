@@ -21,8 +21,34 @@ export const VideoList = [
     status: 1,
   },
 ];
-export const KeyList = ['企业安全员', '企业管理员'];
+export const KeyList = ['企业管理员', '企业安全员'];
 export const ValueList = [
+  [
+    {
+      role_name: '企业管理员',
+      user_name: '宋辉俊',
+      phone_number: '18762815877',
+      id: 'lp4yo91ayifdvrpv',
+    },
+    {
+      role_name: '企业管理员',
+      user_name: '张晓东',
+      phone_number: '18115380825',
+      id: '_4L8zrOSQb2SXPwD1ZtduA',
+    },
+    {
+      role_name: '企业管理员',
+      user_name: '马丽',
+      phone_number: '12864578945',
+      id: 'dix1l47zr_ofgbwi',
+    },
+    {
+      role_name: '企业管理员',
+      user_name: '仲红辉',
+      phone_number: '18762815546',
+      id: 'agesDyCnT02OaJFiwrCtoQ',
+    },
+  ],
   [
     {
       role_name: '企业安全员',
@@ -59,98 +85,6 @@ export const ValueList = [
       user_name: '倪静',
       phone_number: '13771565522',
       id: 'iq2c7o14vikujpbj',
-    },
-    {
-      role_name: '企业安全员',
-      user_name: '奚鸿强',
-      phone_number: '13771565521',
-      id: 'ry0gsd8btznl7j2t',
-    },
-    {
-      role_name: '企业安全员',
-      user_name: '刘敏',
-      phone_number: '18014754183',
-      id: 'h9k_xn8qhucac2lq',
-    },
-    {
-      role_name: '企业安全员',
-      user_name: '武平',
-      phone_number: '18762815578',
-      id: 'dOzE_RTYRZSrjWYE9P0dCQ',
-    },
-    {
-      role_name: '企业安全员',
-      user_name: '楚华亮',
-      phone_number: '13815205565',
-      id: 'nSZHx15hTeuFpUUeFitDzQ',
-    },
-    {
-      role_name: '企业安全员',
-      user_name: '施旭峰',
-      phone_number: '15645685263',
-      id: 's593jr_haighuyap',
-    },
-    {
-      role_name: '企业安全员',
-      user_name: '贺国强',
-      phone_number: '18762845578',
-      id: 'liojjg1rrr9m6pai',
-    },
-  ],
-  [
-    {
-      role_name: '企业管理员',
-      user_name: '宋辉俊',
-      phone_number: '18762815877',
-      id: 'lp4yo91ayifdvrpv',
-    },
-    {
-      role_name: '企业管理员',
-      user_name: '张晓东',
-      phone_number: '18115380825',
-      id: '_4L8zrOSQb2SXPwD1ZtduA',
-    },
-    {
-      role_name: '企业管理员',
-      user_name: '马丽',
-      phone_number: '12864578945',
-      id: 'dix1l47zr_ofgbwi',
-    },
-    {
-      role_name: '企业管理员',
-      user_name: '仲红辉',
-      phone_number: '18762815546',
-      id: 'agesDyCnT02OaJFiwrCtoQ',
-    },
-    {
-      role_name: '企业管理员',
-      user_name: '王玉林',
-      phone_number: '18533333333',
-      id: '66UvwI_lSjyUR_3HehvNMg',
-    },
-    {
-      role_name: '企业管理员',
-      user_name: '王成刚',
-      phone_number: '18762815543',
-      id: '1jKt_HaIQUm8h7_QO_alHA',
-    },
-    {
-      role_name: '企业管理员',
-      user_name: '余云',
-      phone_number: '18726945517',
-      id: 'bASXZjDeTjmUuZMAIW1Flw',
-    },
-    {
-      role_name: '企业管理员',
-      user_name: '顾松峰',
-      phone_number: '13900000001',
-      id: 'vcXbjgkBSIeQMBdFinkfFw',
-    },
-    {
-      role_name: '企业管理员',
-      user_name: '高国荣',
-      phone_number: '15111331133',
-      id: 'ckCQQk2LTG_fUryQmUfpjQ',
     },
   ],
 ];

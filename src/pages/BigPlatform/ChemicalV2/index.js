@@ -162,6 +162,7 @@ export default class Chemical extends PureComponent {
           }}
           data={POINTS}
           riskPointType={riskPointType}
+          zIndex={1066}
         />
 
         <DangerAreaDrawer
