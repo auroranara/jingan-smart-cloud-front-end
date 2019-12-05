@@ -6,14 +6,17 @@ import router from 'umi/router';
 import moment from 'moment';
 import {
   MAJOR_HAZARD_URL,
-  TANK_AREA_DETAIL_URL,
+  TANK_DETAIL_URL,
 } from '../../URLS';
-import iconTankArea from '../../imgs/icon-tank-area.png';
+import iconTank from '../../imgs/icon-tank.png';
 import iconAddress from '../../imgs/icon-address.png';
 import iconIsMajorHazard from '../../imgs/icon-is-major-hazard.png';
+import iconLiquidLevel from '../../imgs/icon-liquid-level.png';
+import iconPressure from '../../imgs/icon-pressure.png';
+import iconTemperature from '../../imgs/icon-temperature.png';
 import styles from './index.less';
 
-const TITLE = '储罐区实时监测';
+const TITLE = '储罐实时监测';
 const DELAY = 1 * 60 * 1000;
 const BREADCRUMB_LIST = [
   {
@@ -38,20 +41,29 @@ const BREADCRUMB_LIST = [
 const TABS = [
   {
     key: '0',
-    tab: '全部储罐区',
+    tab: '全部储罐',
   },
   {
     key: '1',
-    tab: '报警储罐区',
+    tab: '报警储罐',
   },
   {
     key: '2',
-    tab: '正常储罐区',
+    tab: '正常储罐',
   },
 ];
 const STATUS_MAPPER = [undefined, 1, 0];
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const GET_TANK_AREA_LIST = 'majorHazardMonitor/getTankAreaList';
+const GET_TANK_LIST = 'majorHazardMonitor/getTankList';
+const GRID = {
+  gutter: 24,
+  column: 1,
+};
+const paramIconMapper = {
+  液位: iconLiquidLevel,
+  压力: iconPressure,
+  温度: iconTemperature,
+};
 
 @connect(({
   user,
@@ -60,20 +72,20 @@ const GET_TANK_AREA_LIST = 'majorHazardMonitor/getTankAreaList';
   user,
   majorHazardMonitor,
 }), dispatch => ({
-  getTankAreaList(payload, callback) { // 获取储罐区实时监测
+  getTankList(payload, callback) {
     dispatch({
-      type: GET_TANK_AREA_LIST,
+      type: GET_TANK_LIST,
       payload,
       callback(success, data) {
         if (!success) {
-          message.error('获取储罐区实时监测数据失败，请稍后重试或联系管理人员！');
+          message.error('获取储罐实时监测数据失败，请稍后重试或联系管理人员！');
         }
         callback && callback(success, data);
       },
     });
   },
 }))
-export default class TankAreaRealTime extends Component {
+export default class TankRealTime extends Component {
   state = {
     tabActiveKey: TABS[0].key,
     loading: false,
@@ -89,10 +101,10 @@ export default class TankAreaRealTime extends Component {
     this.clearRealTimer();
   }
 
-  getTankAreaList = () => {
-    const { getTankAreaList } = this.props;
+  getTankList = () => {
+    const { getTankList } = this.props;
     const { tabActiveKey } = this.state;
-    getTankAreaList({
+    getTankList({
       status: STATUS_MAPPER[tabActiveKey],
     }, () => {
       this.setState({
@@ -103,7 +115,7 @@ export default class TankAreaRealTime extends Component {
 
   setRealTimer = () => {
     setTimeout(() => {
-      this.getTankAreaList();
+      this.getTankList();
       this.setRealTimer();
     }, DELAY);
   }
@@ -116,7 +128,7 @@ export default class TankAreaRealTime extends Component {
     this.setState({
       tabActiveKey,
       loading: true,
-    }, this.getTankAreaList);
+    }, this.getTankList);
     this.clearRealTimer();
     this.setRealTimer();
   }
@@ -140,7 +152,7 @@ export default class TankAreaRealTime extends Component {
   render() {
     const {
       majorHazardMonitor: {
-        tankAreaList=[],
+        tankList=[],
       },
     } = this.props;
     const { tabActiveKey, loading } = this.state;
@@ -155,8 +167,8 @@ export default class TankAreaRealTime extends Component {
         onTabChange={this.handleTabChange}
       >
         <List
-          grid={{ gutter: 24, column: 1 }}
-          dataSource={tankAreaList}
+          grid={GRID}
+          dataSource={tankList}
           loading={loading && {
             wrapperClassName: styles.spinContainer,
           }}
@@ -169,29 +181,34 @@ export default class TankAreaRealTime extends Component {
             id,
             name,
             address,
+            number,
+            tankArea,
             storage,
             status,
             isMajorHazard,
             params=[],
           }) => (
             <List.Item>
-              <Card hoverable onClick={() => router.push(`${TANK_AREA_DETAIL_URL}/${id}`)}>
-                <div className={styles.top} style={{ backgroundImage: `url(${iconTankArea})` }}>
+              <Card hoverable onClick={() => router.push(`${TANK_DETAIL_URL}/${id}`)}>
+                <div className={styles.top} style={{ backgroundImage: `url(${iconTank})` }}>
                   <div className={styles.nameWrapper}>
                     <div className={styles.name}>{name}</div>
                     {status > 0 && <div className={styles.alarmMarker}>报警</div>}
                     {isMajorHazard > 0 && <div className={styles.majorHazard} style={{ backgroundImage: `url(${iconIsMajorHazard})` }}>构成重大危险源</div>}
                   </div>
                   <div className={styles.address} style={{ backgroundImage: `url(${iconAddress})` }}>{address}</div>
+                  <div className={styles.number}><span className={styles.label}>位号：</span>{number}</div>
+                  <div className={styles.tankArea}><span className={styles.label}>所属罐区：</span>{tankArea}</div>
                   <div className={styles.storage}><span className={styles.label}>存储物质：</span>{storage}</div>
                 </div>
                 <div className={styles.bottom}>
                   <div className={styles.params}>
-                    {params && params.map(({ id, name, unit, value, address, normalUpper, largeUpper, updateTime }) => (
+                    {params && params.map(({ id, name, unit, value, normalUpper, largeUpper, updateTime }) => (
                       <div className={styles.param} key={id}>
-                        <div className={styles.paramName}>{`${name}（${unit}）`}</div>
-                        <div className={styles.paramValueWrapper}>{this.renderParamValue({ value, normalUpper, largeUpper })}</div>
-                        <div className={styles.paramAddress} style={{ backgroundImage: `url(${iconAddress})` }}>{address}</div>
+                        <div className={styles.paramInner} style={{ backgroundImage: `url(${paramIconMapper[name]})` }}>
+                          <div className={styles.paramName}>{`${name}（${unit}）`}</div>
+                          <div className={styles.paramValueWrapper}>{this.renderParamValue({ value, normalUpper, largeUpper })}</div>
+                        </div>
                         <div className={styles.paramUpdateTime}>
                           <div className={styles.label}>最近更新时间：</div>
                           <div>{updateTime && moment(updateTime).format(DEFAULT_FORMAT)}</div>
