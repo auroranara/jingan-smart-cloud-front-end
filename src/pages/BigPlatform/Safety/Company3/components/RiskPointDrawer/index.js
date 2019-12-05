@@ -179,6 +179,7 @@ export default class RiskPointDrawer extends PureComponent {
       visible,
       // 抽屉关闭事件
       onClose,
+      zIndex,
       // 数据
       data: {
         redNormalPointList=[],
@@ -313,6 +314,7 @@ export default class RiskPointDrawer extends PureComponent {
           ),
           visible,
           onClose,
+          zIndex,
         }}
         sectionProps={{
           refScroll: this.refScroll,

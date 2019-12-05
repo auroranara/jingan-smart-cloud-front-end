@@ -3,8 +3,11 @@ import { Row, Col, Icon } from 'antd';
 import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
 import styles from './DangerAreaDrawer.less';
 
-import iconStorage from '../imgs/icon-storage.png';
-import iconStorageArea from '../imgs/icon-storageArea.png';
+import dangerFactorsList from '../imgs/danger-factors-list.png';
+import safetyRiskList from '../imgs/safety-risk-list.png';
+import knowCard from '../imgs/know-card.png';
+import commitmentCard from '../imgs/commitment-card.png';
+import emergencyCard from '../imgs/emergency-card.png';
 
 const riskData = [
   // { label: '红色', value: 14, color: '#FC1F02' },
@@ -27,14 +30,25 @@ const riskSourceData = [
   { label: '高危工艺', value: 2, url: 'major-hazard-info/high-risk-process/list' },
 ];
 const twoListData = [
-  { label: '风险辨识清单', value: 2, url: 'two-information-management/danger-factors-list/list' },
-  { label: '分级管控清单', value: 2, url: 'two-information-management/safety-risk-list/list' },
+  {
+    label: '风险辨识清单',
+    value: 1,
+    url: 'two-information-management/danger-factors-list/list',
+    images: [dangerFactorsList],
+  },
+  {
+    label: '分级管控清单',
+    value: 1,
+    url: 'two-information-management/safety-risk-list/list',
+    images: [safetyRiskList],
+  },
 ];
 const threeCardData = [
-  { label: '承诺卡', value: 1, url: 'cards-info/commitment-card/list' },
-  { label: '应知卡', value: 3, url: 'cards-info/know-card/list' },
-  { label: '应急卡', value: 1, url: 'cards-info/emergency-card/list' },
+  { label: '承诺卡', value: 1, url: 'cards-info/commitment-card/list', images: [commitmentCard] },
+  { label: '应知卡', value: 1, url: 'cards-info/know-card/list', images: [knowCard] },
+  { label: '应急卡', value: 1, url: 'cards-info/emergency-card/list', images: [emergencyCard] },
 ];
+
 export default class KeyPoints extends PureComponent {
   state = { active: 0 };
 
