@@ -1,0 +1,137 @@
+.statisticalCard {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  white-space: nowrap;
+
+  .statisticalCardIcon {
+    flex: none;
+    margin-right: 24px;
+    width: 4em;
+    height: 4em;
+    background: no-repeat center;
+    background-size: contain;
+  }
+  .statisticalCardContent {
+    flex: 1;
+    line-height: 1;
+    .statisticalCardContentLabel {
+      font-size: 12px;
+    }
+    .statisticalCardContentValue {
+      margin-top: 8px;
+      min-height: 1em;
+      font-size: 28px;
+    }
+  }
+
+  &.alarmRateCard {
+    background-color: #2DB6F4;
+    border-color: #2DB6F4;
+    color: #fff;
+    .statisticalCardContentLabel {
+      font-size: 16px;
+    }
+  }
+  &.alarmDurationCard {
+    background-color: #7DC856;
+    border-color: #7DC856;
+    color: #fff;
+  }
+  &.alarmCountCard {
+    background-color: #5D6977;
+    border-color: #5D6977;
+    color: #fff;
+  }
+}
+.chartRow {
+  margin-bottom: -24px;
+  overflow: hidden;
+
+  .statisticalChartWrapper {
+    margin-bottom: 24px;
+    padding: 24px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+
+    .statisticalChartTitle {
+      color: rgba(0, 0, 0, 0.85);
+    }
+    .statisticalChartContent {
+      height: 200px;
+    }
+  }
+
+  .table {
+    :global {
+      th, td {
+        padding: 3px !important;
+        white-space: nowrap;
+      }
+      th {
+        color: rgba(0, 0, 0, 0.45) !important;
+        background-color: transparent !important;
+      }
+      td {
+        span {
+          display: block !important;
+        }
+      }
+      .ant-table-thead > tr > th.ant-table-column-has-actions.ant-table-column-has-sorters {
+        padding-right: 14px !important;
+      }
+      .ant-table-thead > tr > th .ant-table-column-sorter {
+        right: auto !important;
+        left: 59px !important;
+      }
+      .ant-table-placeholder {
+        border-bottom: none !important;
+      }
+      .ant-badge-count {
+        width: 20px;
+      }
+    }
+  }
+
+  .compareChartWrapper {
+    padding-right: 24px;
+    font-size: 12px;
+    border-right: 1px solid #ddd;
+
+    .compareChartInfo {
+      height: 136px;
+    }
+
+    .compareChartTitle {
+
+    }
+    .compareChartValue {
+      font-size: 28px;
+    }
+    .compareChartTrend {
+      display: flex;
+      align-items: center;
+
+      .compareChartTrendIcon {
+        flex: none;
+        margin-right: 0.25em;
+      }
+      .compareChartTrendValue {
+        flex: none;
+        margin-right: 0.5em;
+      }
+      .compareChartTrendDescription {
+        flex: none;
+        color: rgba(0, 0, 0, 0.45);
+      }
+    }
+  }
+  .leakageCountChartWrapper {
+    padding-left: 24px;
+  }
+}

@@ -22,13 +22,19 @@ const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 
 // iot/major-hazard/index
 const monitorData = [
-  { icon: iconPoison, label: '可燃有毒气体', value: 2, total: 20 },
+  {
+    icon: iconPoison,
+    label: '可燃有毒气体',
+    value: 2,
+    total: 20,
+    url: 'gas-iot/monitor-report',
+  },
   {
     icon: iconStorage,
     label: '储罐监测',
     value: 2,
     total: 20,
-    // url: 'major-hazard-info/storage-management/list',
+    url: 'iot/major-hazard/tank/real-time',
   },
   { icon: iconHigh, label: '高危工艺监测', value: 2, total: 20 },
   { icon: iconProduce, label: '生产装置监测', value: 2, total: 20 },
@@ -37,21 +43,21 @@ const monitorData = [
     label: '库区监测',
     value: 2,
     total: 20,
-    // url: 'major-hazard-info/reservoir-region-management/list',
+    url: 'iot/major-hazard/storage-area/real-time',
   },
   {
     icon: iconStorehouse,
     label: '库房监测',
     value: 2,
     total: 20,
-    // url: 'major-hazard-info/storehouse/list',
+    url: 'iot/major-hazard/storage-house/real-time',
   },
   {
     icon: iconStorageArea,
     label: '罐区监测',
     value: 2,
     total: 20,
-    // url: 'major-hazard-info/storage-area-management/list',
+    url: 'iot/major-hazard/tank-area/real-time',
   },
   { icon: iconGas, label: '气柜监测', value: 2, total: 20 },
 ];

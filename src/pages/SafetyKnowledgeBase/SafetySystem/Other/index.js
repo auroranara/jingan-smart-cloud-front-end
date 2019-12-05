@@ -78,7 +78,6 @@ export default class SafetySystemOther extends Component {
     const { getDetail, setDetail, match: { params: { id } } } = this.props;
     const navigation = this.getNavigation();
     setDetail();
-    console.log(id);
     if (id) {
       getDetail({
         id,
@@ -204,7 +203,6 @@ export default class SafetySystemOther extends Component {
         this.setState({
           submitting: true,
         });
-        console.log(id);
         (id ? edit : add)(payload, (success) => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
@@ -378,9 +376,9 @@ export default class SafetySystemOther extends Component {
             options: {
               rules: isNotDetail ? [
                 {
-                  type: 'array',
-                  min: 1,
+                  type: 'boolean',
                   required: true,
+                  transform: value => value && value.every(({ status }) => status === 'done'),
                   message: '附件不能为空',
                 },
               ] : undefined,
