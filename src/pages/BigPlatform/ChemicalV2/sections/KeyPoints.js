@@ -36,8 +36,6 @@ const monitorData = [
     total: 20,
     url: 'iot/major-hazard/tank/real-time',
   },
-  { icon: iconHigh, label: '高危工艺监测', value: 2, total: 20 },
-  { icon: iconProduce, label: '生产装置监测', value: 2, total: 20 },
   {
     icon: iconStoreArea,
     label: '库区监测',
@@ -59,6 +57,8 @@ const monitorData = [
     total: 20,
     url: 'iot/major-hazard/tank-area/real-time',
   },
+  { icon: iconHigh, label: '高危工艺监测', value: 2, total: 20 },
+  { icon: iconProduce, label: '生产装置监测', value: 2, total: 20 },
   { icon: iconGas, label: '气柜监测', value: 2, total: 20 },
 ];
 const keyPointsData = [
