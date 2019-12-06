@@ -4483,6 +4483,12 @@ module.exports = env => {
                   code: 'hiddenDangerControl.dangerStandardDatabase.add',
                   component: './HiddenDangerControl/StandardDatabase',
                 },
+                {
+                  path: '/hidden-danger-control/danger-standard-database/process/:id',
+                  name: 'process',
+                  code: 'hiddenDangerControl.dangerStandardDatabase.process',
+                  component: './HiddenDangerControl/StandardDatabase/ProcessList',
+                },
               ],
             },
             {

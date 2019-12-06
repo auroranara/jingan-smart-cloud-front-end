@@ -618,6 +618,7 @@ export default {
   'menu.hiddenDangerControl': '隐患排查治理',
   'menu.hiddenDangerControl.dangerStandardDatabase': '隐患标准管理数据库',
   'menu.hiddenDangerControl.dangerStandardDatabase.list': '隐患标准管理数据库',
+  'menu.hiddenDangerControl.dangerStandardDatabase.process': '检查流程',
   'menu.hiddenDangerControl.hiddenDangerPlan': '隐患排查计划',
   'menu.hiddenDangerControl.hiddenDangerReport': '隐患排查报表',
   'menu.hiddenDangerControl.hiddenDangerReport.list': '隐患排查报表',

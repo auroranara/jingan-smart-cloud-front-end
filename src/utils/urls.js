@@ -68,6 +68,13 @@ export default {
     edit: '/training/examination-paper/edit/',
     preview: '/training/examination-paper/preview/',
   },
+  // 隐患排查治理
+  hiddenDangerControl: {
+    dangerStandardDatabase: {
+      list: '/hidden-danger-control/danger-standard-database/list',
+      process: '/hidden-danger-control/danger-standard-database/process/',
+    },
+  },
   exception: {
     500: '/exception/500/',
     403: '/exception/403/',
