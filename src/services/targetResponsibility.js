@@ -40,6 +40,24 @@ export async function queryTargetSettingList(params) {
   return request(`${URL_PREFIX}/goalDutyManage/goalDutyDesign/page?${stringify(params)}`);
 }
 
+// 详情
+export async function queryTargetSettingView({ id }) {
+  return request(`${URL_PREFIX}/goalDutyManage/goalDutyDesign/${id}`);
+}
+
+// 新增考核
+export async function queryExamAdd(params) {
+  return request(`${URL_PREFIX}/goalDutyManage/goalDutyDesignExam`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 考核详情
+export async function queryExamView({ id }) {
+  return request(`${URL_PREFIX}/goalDutyManage/goalDutyDesignExamList/${id}`);
+}
+
 // 新增
 export async function queryTargetSettingAdd(params) {
   return request(`${URL_PREFIX}/goalDutyManage/goalDutyDesign`, {

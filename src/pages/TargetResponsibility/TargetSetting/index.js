@@ -1,12 +1,23 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table } from 'antd';
+import Link from 'umi/link';
+// import moment from 'moment';
+import { Button, Card, Table, message, Popconfirm, Divider } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, ROUTER, SEARCH_FIELDS as FIELDS, TABLE_COLUMNS as COLUMNS } from './utils';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+
+// 权限
+const {
+  targetResponsibility: {
+    targetSetting: { view: viewAuth, edit: editAuth, delete: deleteAuth, add: addAuth },
+  },
+} = codes;
 
 @connect(({ targetResponsibility, user, loading }) => ({
   targetResponsibility,
@@ -61,6 +72,21 @@ export default class TableList extends PureComponent {
     this.fetchList(pageNum, pageSize, { ...formData });
   };
 
+  handleDeleteClick = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'targetResponsibility/fetchSettingtDel',
+      payload: { id: id },
+      success: () => {
+        this.fetchList();
+        message.success('删除成功！');
+      },
+      error: () => {
+        message.error('删除失败!');
+      },
+    });
+  };
+
   render() {
     const {
       loading = false,
@@ -70,15 +96,68 @@ export default class TableList extends PureComponent {
           pagination: { total, pageNum, pageSize },
         },
       },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
+
+    // 权限
+    const viewCode = hasAuthority(viewAuth, permissionCodes);
+    const editCode = hasAuthority(editAuth, permissionCodes);
+    const deleteCode = hasAuthority(deleteAuth, permissionCodes);
+    const addCode = hasAuthority(addAuth, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <Button
+        type="primary"
+        disabled={!addCode}
+        onClick={this.handleAdd}
+        style={{ marginTop: '8px' }}
+      >
         新增
       </Button>
     );
+
+    const extraColumns = [
+      {
+        title: '操作',
+        dataIndex: 'id',
+        key: 'id',
+        align: 'center',
+        render: (val, text) => {
+          return (
+            <Fragment>
+              {viewCode ? (
+                <Link to={`${ROUTER}/detail/${text.id}`}>查看</Link>
+              ) : (
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+              )}
+              <Divider type="vertical" />
+              {editCode ? (
+                <Link to={`${ROUTER}/edit/${text.id}`}>编辑</Link>
+              ) : (
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+              )}
+              <Divider type="vertical" />
+              {deleteCode ? (
+                <Popconfirm
+                  title="确定删除当前该内容吗？"
+                  onConfirm={() => this.handleDeleteClick(text.id)}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <span className={styles1.delete}>删除</span>
+                </Popconfirm>
+              ) : (
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
+              )}
+            </Fragment>
+          );
+        },
+      },
+    ];
 
     return (
       <PageHeaderLayout
@@ -106,7 +185,7 @@ export default class TableList extends PureComponent {
               bordered
               rowKey="id"
               loading={loading}
-              columns={COLUMNS}
+              columns={[...COLUMNS, ...extraColumns]}
               dataSource={list}
               onChange={this.onTableChange}
               pagination={{

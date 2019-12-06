@@ -20,7 +20,7 @@ import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
-import { BREADCRUMBLIST, LIST_URL } from './utils';
+import { BREADCRUMBLIST, LIST_URL, ROUTER } from './utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -79,30 +79,53 @@ export default class Edit extends PureComponent {
 
     if (id) {
       dispatch({
-        type: 'targetResponsibility/fetchSafeFacList',
+        type: 'targetResponsibility/fetchSettingDetail',
         payload: {
-          pageSize: 48,
-          pageNum: 1,
+          id,
         },
         callback: res => {
-          const { list } = res;
-          const currentList = list.find(item => item.id === id) || {};
-          const { photoList } = currentList;
-          this.setState({
-            detailList: currentList,
-            photoUrl: photoList.map(({ dbUrl, webUrl }, index) => ({
-              uid: index,
-              status: 'done',
-              name: `附件${index + 1}`,
-              url: webUrl,
-              dbUrl,
-            })),
-          });
+          const { data } = res;
+          const { companyId, name, dutyMajor, otherFileList, safeProductGoalValueList } = data;
+          this.setState(
+            {
+              photoUrl: Array.isArray(otherFileList)
+                ? otherFileList.map(({ dbUrl, webUrl }, index) => ({
+                    uid: index,
+                    status: 'done',
+                    name: `附件${index + 1}`,
+                    url: webUrl,
+                    dbUrl,
+                  }))
+                : [],
+              safetyIndexList: Array.isArray(safeProductGoalValueList)
+                ? safeProductGoalValueList
+                : [],
+              dutyStatus: dutyMajor.substr(0, 1),
+              labelId: name,
+            },
+            () => {
+              if (+dutyMajor.substr(0, 1) === 2) {
+                dispatch({
+                  type: 'department/fetchDepartmentList',
+                  payload: { companyId: companyId },
+                });
+              } else if (+dutyMajor.substr(0, 1) === 3) {
+                dispatch({
+                  type: 'account/fetch',
+                  payload: {
+                    unitId: companyId,
+                    pageSize: 100,
+                    pageNum: 1,
+                  },
+                });
+              }
+            }
+          );
         },
       });
     } else {
       dispatch({
-        type: 'targetResponsibility/clearSafeFacDetail',
+        type: 'targetResponsibility/clearSettingDetail',
       });
     }
   }
@@ -115,7 +138,7 @@ export default class Edit extends PureComponent {
     const {
       match: { url },
     } = this.props;
-    return url && url.includes('view');
+    return url && url.includes('detail');
   };
 
   // 去除左右两边空白
@@ -133,7 +156,7 @@ export default class Edit extends PureComponent {
         currentUser: { companyId: unitId },
       },
     } = this.props;
-    const { photoUrl, safetyIndexList, dutyType, labelId } = this.state;
+    const { photoUrl, safetyIndexList, dutyStatus, labelId } = this.state;
 
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
@@ -142,7 +165,7 @@ export default class Edit extends PureComponent {
           id,
           companyId: companyId.key || unitId,
           goalYear,
-          dutyMajor: dutyType + ',' + labelId,
+          dutyMajor: +dutyStatus === 1 ? dutyStatus : dutyStatus + ',' + labelId,
           safeProductGoalValueList: safetyIndexList,
           otherFile:
             photoUrl.length > 0
@@ -151,7 +174,6 @@ export default class Edit extends PureComponent {
                 )
               : undefined,
         };
-        console.log('payload', payload);
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -346,8 +368,8 @@ export default class Edit extends PureComponent {
   handleIndexForm = index => {
     const { safetyIndexList } = this.state;
     this.setState({
-      safetyIndexList: safetyIndexList.filter(({ id }) => {
-        return id !== index;
+      safetyIndexList: safetyIndexList.filter((item, i) => {
+        return i !== index;
       }),
     });
   };
@@ -365,9 +387,9 @@ export default class Edit extends PureComponent {
         style={{ position: 'relative', marginTop: '-35px', marginBottom: '20px' }}
       >
         {safetyIndexList.map((item, index) => {
-          const { id, targetName, checkFrequency, indexValue } = item;
+          const { targetName, checkFrequency, symbolValue, indexValue } = item;
           return (
-            <Col span={24} key={id} style={{ marginTop: '10px' }}>
+            <Col span={24} key={index} style={{ marginTop: '10px' }}>
               <Row gutter={12}>
                 <Col
                   span={7}
@@ -379,11 +401,11 @@ export default class Edit extends PureComponent {
                 </Col>
                 <Col span={4}>
                   <Select
+                    value={symbolValue}
                     placeholder="请选择"
                     style={{ width: '100%' }}
                     allowClear
                     onChange={e => {
-                      console.log('33333333', e);
                       this.handleChangeIndexValue(item, e, index, 'symbolValue');
                     }}
                   >
@@ -406,7 +428,7 @@ export default class Edit extends PureComponent {
                 <Col span={3}>
                   <Popconfirm
                     title="确认要删除该内容吗？"
-                    onConfirm={() => this.handleIndexForm(item.id)}
+                    onConfirm={() => this.handleIndexForm(index)}
                   >
                     <Button>删除</Button>
                   </Popconfirm>
@@ -424,7 +446,7 @@ export default class Edit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({ dutyMajor: e });
-    this.setState({ dutyType: e });
+    this.setState({ dutyStatus: e });
   };
 
   handleIdChange = e => {
@@ -435,51 +457,54 @@ export default class Edit extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator },
-      targetResponsibility: { dutyMajorList = [] },
+      targetResponsibility: {
+        dutyMajorList = [],
+        settingDetail: { data },
+      },
       user: {
         currentUser: { unitType },
       },
-      match: {
-        params: { id },
-      },
+      // match: {
+      //   params: { id },
+      // },
       department: {
         data: { list: departmentList = [] },
       },
       account: { list: personList = [] },
     } = this.props;
 
-    const { uploading, photoUrl, detailList, dutyStatus } = this.state;
+    const { companyId, companyName, goalYear, dutyMajor } = data || {};
 
-    const isDisabled = id ? true : false;
+    const { uploading, photoUrl, dutyStatus, labelId } = this.state;
 
-    const { companyName, specifications } = detailList;
     return (
       <Card>
         <Form>
           {unitType !== 4 && (
             <FormItem label="单位名称" {...formItemLayout}>
               {getFieldDecorator('companyId', {
-                initialValue: companyName,
+                initialValue: { key: companyId, label: companyName },
                 rules: [{ required: true, message: '请选择单位名称' }],
-              })(<CompanySelect {...itemStyles} disabled={isDisabled} placeholder="请选择" />)}
+              })(<CompanySelect {...itemStyles} placeholder="请选择" />)}
             </FormItem>
           )}
           <FormItem label="目标年份" {...formItemLayout}>
             {getFieldDecorator('goalYear', {
-              initialValue: specifications,
+              initialValue: goalYear,
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入规格型号' }],
+              rules: [{ required: true, message: '请输入目标年份' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="责任主体" {...formItemLayout}>
             {getFieldDecorator('dutyMajor', {
-              initialValue: specifications,
+              initialValue: dutyMajor,
               rules: [{ required: true, message: '请选择' }],
             })(
               <div {...itemStyles}>
                 <Select
-                  placeholder="请选择"
                   {...itemStyles}
+                  placeholder="请选择"
+                  value={dutyStatus}
                   style={{ width: '49%', marginRight: '1%' }}
                   onSelect={this.handleDutySelect}
                   onChange={e => this.handleDutyChange(e)}
@@ -501,6 +526,7 @@ export default class Edit extends PureComponent {
                 )}
                 {+dutyStatus === 2 && (
                   <Select
+                    value={labelId}
                     placeholder="请选择"
                     {...itemStyles}
                     style={{ width: '50%' }}
@@ -515,13 +541,17 @@ export default class Edit extends PureComponent {
                 )}
                 {+dutyStatus === 3 && (
                   <Select
+                    value={labelId}
                     placeholder="请选择"
                     {...itemStyles}
                     style={{ width: '50%' }}
                     onChange={e => this.handleIdChange(e)}
                   >
-                    {personList.map(({ loginId, userName }) => (
-                      <Option key={loginId} value={loginId}>
+                    {personList.map(({ users, userName }) => (
+                      <Option
+                        key={users.map(item => item.id)[0]}
+                        value={users.map(item => item.id)[0]}
+                      >
                         {userName}
                       </Option>
                     ))}
@@ -585,14 +615,25 @@ export default class Edit extends PureComponent {
     const editCode = hasAuthority(editAuth, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
-    breadcrumbList.push({ title: '新增', name: '新增' });
+    breadcrumbList.push({ title, name: title });
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
-        {!this.isDetail() && (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <span>
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <span>
+            {this.isDetail() ? (
+              <Button
+                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                type="primary"
+                size="large"
+                disabled={!editCode}
+                href={`#${ROUTER}/edit/${id}`}
+              >
+                编辑
+              </Button>
+            ) : (
               <Button
                 style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 type="primary"
@@ -602,45 +643,19 @@ export default class Edit extends PureComponent {
               >
                 提交
               </Button>
-            </span>
+            )}
+          </span>
 
-            <span style={{ marginLeft: 10 }}>
-              <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                size="large"
-                href={`#${LIST_URL}`}
-              >
-                返回
-              </Button>
-            </span>
-          </div>
-        )}
-
-        {this.isDetail() && (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <span>
-              <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                type="primary"
-                size="large"
-                disabled={!editCode}
-                href={`#${LIST_URL}/edit/${id}`}
-              >
-                编辑
-              </Button>
-            </span>
-
-            <span style={{ marginLeft: 10 }}>
-              <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                size="large"
-                href={`#${LIST_URL}`}
-              >
-                返回
-              </Button>
-            </span>
-          </div>
-        )}
+          <span style={{ marginLeft: 10 }}>
+            <Button
+              style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+              size="large"
+              href={`#${LIST_URL}`}
+            >
+              返回
+            </Button>
+          </span>
+        </div>
         {this.renderIndexModal()}
       </PageHeaderLayout>
     );

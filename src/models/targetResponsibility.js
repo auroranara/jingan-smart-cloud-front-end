@@ -4,9 +4,12 @@ import {
   queryIndexManageEdit,
   queryIndexManageDelete,
   queryTargetSettingList,
+  queryTargetSettingView,
   queryTargetSettingAdd,
   queryTargetSettingEdit,
   queryTargetSettingDelete,
+  queryExamView,
+  queryExamAdd,
 } from '../services/targetResponsibility.js';
 
 export default {
@@ -21,6 +24,9 @@ export default {
       pagination: { total: 0, pageNum: 18, pageSize: 1 },
     },
     settingDetail: {
+      data: [],
+    },
+    examDetail: {
       data: [],
     },
     dutyMajorList: [
@@ -99,6 +105,36 @@ export default {
       }
     },
 
+    // 详情
+    *fetchSettingDetail({ payload, callback }, { call, put }) {
+      const response = yield call(queryTargetSettingView, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveSettingDetail',
+          payload: response.data,
+        });
+        if (callback) callback(response);
+      }
+    },
+
+    // 新增考核
+    *fetchExamAdd({ payload, callback }, { call, put }) {
+      const response = yield call(queryExamAdd, payload);
+      if (callback) callback(response);
+    },
+
+    // 考核详情
+    *fetchExamDetail({ payload, callback }, { call, put }) {
+      const response = yield call(queryExamView, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveExamDetail',
+          payload: response.data,
+        });
+        if (callback) callback(response);
+      }
+    },
+
     // 新增
     *fetchSettingAdd({ payload, success, error }, { call, put }) {
       const response = yield call(queryTargetSettingAdd, payload);
@@ -166,6 +202,26 @@ export default {
       };
     },
 
+    saveSettingDetail(state, { payload }) {
+      return {
+        ...state,
+        settingDetail: {
+          ...state.settingDetail,
+          data: payload,
+        },
+      };
+    },
+
+    saveExamDetail(state, { payload }) {
+      return {
+        ...state,
+        examDetail: {
+          ...state.examDetail,
+          data: payload,
+        },
+      };
+    },
+
     saveSettingAdd(state, { payload }) {
       return {
         ...state,
@@ -183,7 +239,7 @@ export default {
       };
     },
 
-    clearDetail(state) {
+    clearSettingDetail(state) {
       return {
         ...state,
         settingDetail: { data: {} },

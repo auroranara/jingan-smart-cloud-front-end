@@ -655,6 +655,7 @@ export default {
     // 目标责任制定实施
     targetSetting: {
       list: 'targetResponsibility.targetSetting.listView',
+      view: 'targetResponsibility.targetSetting.view',
       add: 'targetResponsibility.targetSetting.add',
       edit: 'targetResponsibility.targetSetting.edit',
       delete: 'targetResponsibility.targetSetting.delete',

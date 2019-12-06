@@ -1,9 +1,7 @@
-import React, { Fragment } from 'react';
-import Link from 'umi/link';
-// import moment from 'moment';
-import { Input, message, Popconfirm, Select, Divider } from 'antd';
-
-import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
+import React from 'react';
+import { Input, Select, Form, Modal, DatePicker } from 'antd';
+const { MonthPicker } = DatePicker;
+// import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
 const { Option } = Select;
 
@@ -28,18 +26,18 @@ export const SEARCH_FIELDS = [
     transform: v => v.trim(),
   },
   {
-    id: 'year',
+    id: 'goalYear',
     label: '目标年份',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'subToliability',
+    id: 'dutyMajor',
     label: '责任主体',
     render: () => (
       <Select placeholder="请选择" allowClear>
         {['单位', '部门', '个人'].map((r, i) => (
-          <Option key={i}>{r}</Option>
+          <Option key={i + 1}>{r}</Option>
         ))}
       </Select>
     ),
@@ -118,7 +116,7 @@ export const TABLE_COLUMNS = [
     key: 'safeProductGoalNumberList',
     align: 'center',
     render: val => {
-      return val.map((item, index) => <div key={index}>{item}</div>);
+      return val ? val.map((item, index) => <div key={index}>{item}</div>) : [];
     },
   },
   {
@@ -126,32 +124,163 @@ export const TABLE_COLUMNS = [
     dataIndex: 'performance',
     key: 'performance',
     align: 'center',
-    render: () => {
-      return <a>填写考核结果</a>;
-    },
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render(id) {
-      return (
-        <Fragment>
-          <Link to={`${ROUTER}/detail/${id}`}>查看</Link>
-          <Divider type="vertical" />
-          <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
-          <Divider type="vertical" />
-          <Popconfirm
-            title="确定删除当前项目？"
-            onConfirm={e => message.success('删除成功')}
-            okText="确定"
-            cancelText="取消"
-          >
-            <span className={styles1.delete}>删除</span>
-          </Popconfirm>
-        </Fragment>
-      );
+    render: (val, text) => {
+      return <a href={`#${ROUTER}/check-detail/${text.id}`}>填写考核结果</a>;
     },
   },
 ];
+
+const getFrequency = {
+  1: '月',
+  2: '季度',
+  3: '年',
+};
+
+export const DETAIL_COLUMNS = [
+  {
+    title: '指标',
+    dataIndex: 'targetName',
+    key: 'targetName',
+    align: 'center',
+    width: 280,
+  },
+  {
+    title: '考核频次',
+    dataIndex: 'checkFrequency',
+    key: 'checkFrequency',
+    align: 'center',
+    render: val => getFrequency[val],
+  },
+  {
+    title: '目标值',
+    dataIndex: 'safeProductGoalNumber',
+    key: 'safeProductGoalNumber',
+    align: 'center',
+    render: val => {
+      return (
+        <span>
+          {+val.substr(0, 1) === 1 ? '≥' : '≤'} {val.substr(1)}
+        </span>
+      );
+    },
+  },
+  {
+    title: '实际值',
+    dataIndex: 'actualValue',
+    key: 'actualValue',
+    align: 'center',
+    // render:(val,text)=>{
+    //   const {checkFrequency} = text;
+    //   return  +checkFrequency===2 && val.substr(0,1)==='1'?''
+    // },
+  },
+  {
+    title: '平均值',
+    dataIndex: 'avgValue',
+    key: 'avgValue',
+    align: 'center',
+  },
+];
+
+const quarterList = [
+  {
+    key: '1',
+    value: '一季度',
+  },
+  {
+    key: '2',
+    value: '二季度',
+  },
+  {
+    key: '3',
+    value: '三季度',
+  },
+];
+
+export const ExamModal = Form.create()(props => {
+  const {
+    form: { getFieldDecorator, validateFields, resetFields },
+    modalVisible,
+    isopen,
+    time,
+    handleModalClose,
+    handleModalAdd,
+    handlePanelChange,
+    handleOpenChange,
+    clearDateValue,
+    currentId,
+    list,
+  } = props;
+
+  const curList = list.find(item => item.targetId === currentId);
+
+  const { checkFrequency, targetId, goalDutyId } = curList || {};
+  const formItemCol = {
+    labelCol: {
+      span: 5,
+    },
+    wrapperCol: {
+      span: 15,
+    },
+  };
+
+  const onConfirm = () => {
+    validateFields((err, fieldsValue) => {
+      if (err) return;
+      resetFields();
+      return handleModalAdd({ time, targetId, goalDutyId, fieldsValue });
+    });
+  };
+
+  const handleClose = () => {
+    resetFields();
+    handleModalClose();
+  };
+
+  return (
+    <Modal title={'考核结果'} visible={modalVisible} onCancel={handleClose} onOk={onConfirm}>
+      <Form>
+        <Form.Item {...formItemCol} label="考核频次：">
+          <span>{getFrequency[checkFrequency]}</span>
+        </Form.Item>
+        {checkFrequency === '1' && (
+          <Form.Item {...formItemCol} label="考核时间段:">
+            {getFieldDecorator('checkFrequency', {})(<MonthPicker placeholder="请选择" />)}
+          </Form.Item>
+        )}
+        {checkFrequency === '2' && (
+          <Form.Item {...formItemCol} label="考核时间段:">
+            {getFieldDecorator('checkFrequency', {})(
+              <Select placeholder="请选择" allowClear>
+                {quarterList.map(({ key, value }) => (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
+        )}
+        {checkFrequency === '3' && (
+          <Form.Item {...formItemCol} label="考核时间段:">
+            <DatePicker
+              placeholder="请选择"
+              value={time}
+              open={isopen}
+              onOpenChange={s => handleOpenChange(s)}
+              onChange={clearDateValue}
+              onPanelChange={v => handlePanelChange(v)}
+              format="YYYY"
+              mode="year"
+            />
+          </Form.Item>
+        )}
+        <Form.Item {...formItemCol} label="实际值:">
+          {getFieldDecorator('actualValue', {
+            rules: [{ required: true, message: '请选择实际值' }],
+          })(<Input placeholder="请输入" />)}
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+});
