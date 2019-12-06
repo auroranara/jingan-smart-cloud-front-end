@@ -1,8 +1,7 @@
 import {
-  getCompanyList,
-  getAreaList,
+  getList,
   getMonitorTypeList,
-} from '@/services/common';
+} from '@/services/alarmMessage';
 
 const transformMonitorTypeList = (list) => {
   return list ? list.reduce((result, { id, name: title, child: children }) => {
@@ -16,55 +15,30 @@ const transformMonitorTypeList = (list) => {
       },
     ];
   }, []) : [];
-};
+}
 
 export default {
-  namespace: 'common',
+  namespace: 'alarmMessage',
 
   state: {
-    companyList: {
-      list: [],
-      pagination: {
-        pageSize: 10,
-        pageNum: 1,
-        total: 0,
-      },
-    },
-    areaList: [],
+    list: {},
     monitorTypeList: [],
   },
 
   effects: {
-    /* 获取列表 */
-    *fetchCompanyList({ payload, callback }, { call, put }) {
-      const response = yield call(getCompanyList, payload);
-      const { code, data } = response || {};
-      if (code === 200) {
-        const companyList = data || {};
-        yield put({
-          type: 'save',
-          payload: {
-            companyList,
-          },
-        });
-        if (callback) {
-          callback(companyList);
-        }
-      }
-    },
-    // 获取区域列表
-    *getAreaList({ payload, callback }, { call, put }) {
-      const response = yield call(getAreaList, payload);
+    // 获取列表
+    *getList({ payload, callback }, { call, put }) {
+      const response = yield call(getList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const areaList = data.list;
+        const list = data;
         yield put({
           type: 'save',
           payload: {
-            areaList,
+            list,
           },
         });
-        callback && callback(true, areaList);
+        callback && callback(true, list);
       } else {
         callback && callback(false, msg);
       }
@@ -92,5 +66,3 @@ export default {
     save: (state, { payload }) => ({ ...state, ...payload }),
   },
 }
-
-

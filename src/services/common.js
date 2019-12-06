@@ -10,3 +10,8 @@ export async function getCompanyList(params) {
 export async function getAreaList(params) {
   return request(`/acloud_new/v2/baseInfo/city/new?${stringify(params)}`);
 }
+
+// 获取监测类型列表
+export async function getMonitorTypeList(params) {
+  return request(`/acloud_new/v2/monitor/monitorTypeTree?${stringify(params)}`);
+}

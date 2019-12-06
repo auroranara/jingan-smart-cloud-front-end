@@ -1544,10 +1544,7 @@ module.exports = env => {
               name: 'alarmMessage', // 报警消息
               code: 'iot.alarmMessage',
               path: '/iot/alarm-message',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [
-              ],
+              component: './IoT/AlarmMessage',
             },
           ],
         },
