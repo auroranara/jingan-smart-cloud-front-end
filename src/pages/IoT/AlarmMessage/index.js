@@ -96,6 +96,15 @@ const TRANSFORM = (data) => {
   },
 }))
 export default class AlarmMessage extends Component {
+  empty = true
+
+  getRangeFromEvent = (range) => {
+    const empty = !(range && range.length);
+    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
+    this.empty = empty;
+    return result;
+  }
+
   render() {
     const {
       user: {
@@ -141,6 +150,9 @@ export default class AlarmMessage extends Component {
         //   xs: 24,
         // },
         render: () => <DatePickerOrSpan placeholder={['开始时间', '结束时间']} format={DEFAULT_FORMAT} showTime allowClear type="RangePicker" style={{ width: '100%' }} />,
+        options: {
+          getValueFromEvent: this.getRangeFromEvent,
+        },
       },
       {
         id: 'statusType',
@@ -178,7 +190,7 @@ export default class AlarmMessage extends Component {
         dataIndex: 'messageContent',
         render: (value) => value && (
           <div style={{ textAlign: 'left' }}>
-            {value.split('\n').map(v => <div>{v}</div>)}
+            {value.split('\n').map(v => <div key={v}>{v}</div>)}
           </div>
         ),
         align: 'center',
