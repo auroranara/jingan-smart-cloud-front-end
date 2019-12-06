@@ -3,13 +3,13 @@ import { TreeSelect } from 'antd';
 import { connect} from 'dva';
 
 @connect(({
-  alarmMessage,
+  common,
 }) => ({
-  alarmMessage,
+  common,
 }), dispatch => ({
   getMonitorTypeList(payload, callback) {
     dispatch({
-      type: 'alarmMessage/getMonitorTypeList',
+      type: 'common/getMonitorTypeList',
       payload,
       callback,
     });
@@ -25,12 +25,12 @@ export default class MonitorTypeSelect extends Component {
 
   render() {
     const {
-      alarmMessage: {
+      common: {
         monitorTypeList=[],
       },
       value,
       onChange,
-      allowClear=true,
+      allowClear=false,
     } = this.props;
 
     return (

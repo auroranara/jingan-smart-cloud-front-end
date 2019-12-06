@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Input } from 'antd';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
+import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
 import TablePage from '@/templates/TablePage';
-import MonitorTypeSelect from './components/MonitorTypeSelect';
 import { connect } from 'dva';
 import moment from 'moment';
 
@@ -124,7 +124,7 @@ export default class AlarmMessage extends Component {
       {
         id: 'monitorType',
         label: '监测类型',
-        render: () => <MonitorTypeSelect />,
+        render: () => <MonitorTypeSelect allowClear />,
       },
       {
         id: 'monitorEquipmentAreaLocation',
