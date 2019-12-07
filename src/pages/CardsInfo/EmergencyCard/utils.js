@@ -99,7 +99,8 @@ export function getTableColumns(handleConfirmDelete) {
       title: '应急联系方式',
       dataIndex: 'emgcy',
       key: 'emgcy',
-      align: 'center',
+      width: 250,
+      // align: 'center',
       render(txt, { safetyNum, telNum }) {
         return [`内部：${safetyNum} ${telNum}`, '外部：火警 119  医疗救护 120'].map((n, i) => <p key={i} className={styles1.p}>{n}</p>);
       },

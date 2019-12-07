@@ -75,6 +75,7 @@ function genFormItem(field, getFieldDecorator) {
     placeholder,
     required = true,
     options,
+    formItemOptions,
     component: compt,
     formExtraStyle,
   } = field;
@@ -83,7 +84,7 @@ function genFormItem(field, getFieldDecorator) {
 
   if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
   else {
-    const formOptions = {};
+    const formOptions = formItemOptions || {};
     const opts = getOptions(options);
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
 

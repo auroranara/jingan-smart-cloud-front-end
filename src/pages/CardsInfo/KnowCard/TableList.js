@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, message } from 'antd';
+import { Button, Card, Modal, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -13,7 +13,7 @@ import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableCol
   loading: loading.models.cardsInfo,
 }))
 export default class TableList extends PureComponent {
-  state = { current: 1 };
+  state = { current: 1, src: '' };
   values = {};
 
   componentDidMount() {
@@ -74,12 +74,16 @@ export default class TableList extends PureComponent {
     });
   };
 
+  showModal = item => {
+    this.setState({  })
+  };
+
   render() {
     const {
       loading,
       cardsInfo: { knowList, knowTotal },
     } = this.props;
-    const { current } = this.state;
+    const { current, src } = this.state;
 
     const list = knowList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
@@ -118,10 +122,13 @@ export default class TableList extends PureComponent {
             columns={columns}
             dataSource={list}
             onChange={this.onTableChange}
-            scroll={{ x: 1400 }} // 项目不多时注掉
+            // scroll={{ x: 1400 }} // 项目不多时注掉
             pagination={{ pageSize: PAGE_SIZE, total: knowTotal, current }}
           />
         </div>
+        <Modal width="60%">
+          <div style={{ backgroundImage: `url(${src})` }} />
+        </Modal>
       </PageHeaderLayout>
     );
   }

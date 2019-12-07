@@ -55,7 +55,7 @@ export const SEARCH_FIELDS = [ // modify
   },
 ];
 
-export function getTableColumns(handleConfirmDelete) {
+export function getTableColumns(handleConfirmDelete, showModal) {
   return [ // modify
     // {
     //   title: '序号',
@@ -72,13 +72,13 @@ export function getTableColumns(handleConfirmDelete) {
       dataIndex: 'name',
       key: 'name',
     },
-    {
-      title: '应知卡内容',
-      dataIndex: 'content',
-      key: 'content',
-      align: 'center',
-      render: txt => txt.length > MAX_LENGTH ? `${txt.slice(0, MAX_LENGTH)}...` : txt,
-    },
+    // {
+    //   title: '应知卡内容',
+    //   dataIndex: 'content',
+    //   key: 'content',
+    //   align: 'center',
+    //   render: txt => txt.length > MAX_LENGTH ? `${txt.slice(0, MAX_LENGTH)}...` : txt,
+    // },
     {
       title: '发布人员',
       dataIndex: 'publisher',
@@ -100,14 +100,14 @@ export function getTableColumns(handleConfirmDelete) {
       key: 'preview',
       width: 100,
       align: 'center',
-      render: p => <a onClick={e => e.preventDefault()}>预览</a>,
+      render: (p, record) => <a onClick={e => { e.preventDefault(); showModal(record); }}>预览</a>,
     },
     {
       title: '操作',
       dataIndex: 'id',
       key: 'id',
       align: 'center',
-      fixed: 'right',
+      // fixed: 'right',
       render(id) {
         return (
           <Fragment>
@@ -126,10 +126,16 @@ export function getTableColumns(handleConfirmDelete) {
   ];
 }
 
-export const EDIT_FORMITEMS = [ // modify
-    { name: 'companyId', label: '单位名称', type: 'companyselect' },
-    { name: 'name', label: '应知卡名称' },
-    { name: 'content', label: '应知卡内容', type: 'text' },
-    { name: 'publisher', label: '发布人员' },
-    { name: 'time', label: '时间', type: 'datepicker' },
-];
+// export const EDIT_FORMITEMS = [ // modify
+//     { name: 'companyId', label: '单位名称', type: 'companyselect' },
+//     { name: 'name', label: '应知卡名称' },
+//     { name: 'content', label: '应知卡内容', type: 'text' },
+//     { name: 'publisher', label: '发布人员' },
+//     { name: 'time', label: '时间', type: 'datepicker' },
+// ];
+
+// export function handleUploadFileList(list) {
+//   list.map(({ uid, name,  }) => ({
+
+//   }));
+// }
