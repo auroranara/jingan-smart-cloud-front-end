@@ -7,9 +7,9 @@ import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
 // import { filterBigPlatform } from '@/utils/customAuth';
+import { SRC_MAP, setBlocks } from './utils';
 import classNames from 'classnames';
 import styles from './NewMenu.less';
-
 // 每个模块标题左侧图
 import dividerPic from '@/assets/divider.png';
 
@@ -40,39 +40,29 @@ const itemColWrapper = {
 // 菜单模块分类配置
 const blockClassification = [
   {
-    name: '安全生产全流程管理系统',
-    blocks: [
-      'baseInfo',
-      'fireControl',
-      'roleAuthorization',
-      'dataAnalysis',
-      'systemManagement',
-      'lawEnforcement',
-      'safetyKnowledgeBase',
-      'announcementManagement',
-    ],
-    icon: 'http://data.jingan-china.cn/v2/menu/icon-security-production.png',
-  },
-  {
-    name: '安全风险分区管理系统',
-    blocks: ['riskControl', 'twoInformationManagement', 'cardsInfo'],
-    icon: 'http://data.jingan-china.cn/v2/menu/icon-security-risk.png',
-  },
-  {
     name: '重大危险源监测预警系统',
-    blocks: [
-      'deviceManagement',
-      'videoMonitor',
-      'emergencyManagement',
-      'accidentManagement',
-      'iot',
-    ],
+    blocks: [],
     icon: 'http://data.jingan-china.cn/v2/menu/icon-major%20hazard.png',
   },
   {
+    name: '可燃有毒气体监测预警系统',
+    blocks: [],
+    icon: 'http://data.jingan-china.cn/v2/new-menu/icon-gas.png',
+  },
+  {
+    name: '企业安全风险分区管理系统',
+    blocks: [],
+    icon: 'http://data.jingan-china.cn/v2/menu/icon-security-risk.png',
+  },
+  {
     name: '人员在岗在位管理系统',
-    blocks: ['training', 'personnelPosition', 'securityManage', 'personnelManagement'],
+    blocks: [],
     icon: 'http://data.jingan-china.cn/v2/menu/icon-Staff.png',
+  },
+  {
+    name: '企业安全生产全流程管理系统',
+    blocks: [],
+    icon: 'http://data.jingan-china.cn/v2/menu/icon-security-production.png',
   },
 ];
 
@@ -90,20 +80,25 @@ export default class NewMenuReveal extends Component {
   }
   componentDidMount () {
     const { dispatch } = this.props;
+    const { routes } = config;
+    setBlocks(blockClassification, routes);
     // 深拷贝，防止污染配置文件
-    const menuAll = JSON.parse(JSON.stringify(config['routes']));
+    const menuAll = JSON.parse(JSON.stringify(routes));
     dispatch({ type: 'user/fetchGrids' });
     // 获取用户信息 包含permissionCodes，
     dispatch({
       type: 'user/fetchCurrent',
-      callback: () => {
+      callback: (data, login) => {
+        const { logined } = login;
         // 驾驶舱路由、系统路由
         const configSys = menuAll.find(item => item.path === '/');
         const menuSysAll = this.filterSysMenu(configSys.routes, 2);
         const blocks = blockClassification[0].blocks;
         const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
         this.setState({ menuSys, menuSysAll });
-        // console.log('menuSys', menuSysAll);
+
+        if (logined)
+          dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
       },
     });
   }
@@ -115,11 +110,11 @@ export default class NewMenuReveal extends Component {
  * @param {String} parentLocale 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
  **/
   filterSysMenu = (array, depth = 0, parentLocale) => {
-    const {
-      user: {
-        currentUser: { permissionCodes },
-      },
-    } = this.props;
+    // const {
+    //   user: {
+    //     currentUser: { permissionCodes },
+    //   },
+    // } = this.props;
     return array.reduce((arr, item) => {
       let locale = 'menu';
       if (parentLocale && item.name) {
@@ -133,8 +128,9 @@ export default class NewMenuReveal extends Component {
       if (
         item.redirect ||
         item.hideInMenu ||
-        ['/dashboard', '/company-workbench'].includes(item.path) ||
-        !permissionCodes.includes(item.code)
+        ['/dashboard', '/company-workbench'].includes(item.path)
+        // ['/dashboard', '/company-workbench'].includes(item.path) ||
+        // !permissionCodes.includes(item.code)
       ) {
         return arr;
       } else if (item.routes && item.routes.length && +depth > 1) {
@@ -164,15 +160,20 @@ export default class NewMenuReveal extends Component {
   clearParam = url => (/\:/.test(url) ? url.split(':').shift() : url);
 
   // 生成系统菜单图标url http://data.jingan-china.cn/v2/menu/+模块名称+菜单名称
-  generateSysUrl = ({ locale, title }) => {
-    const parentLocale = locale
-      .split('.')
-      .slice(0, 2)
-      .join('.');
-    const parentTitle = formatMessage({ id: parentLocale });
-    return `http://data.jingan-china.cn/v2/menu/${encodeURIComponent(
-      parentTitle
-    )}/${encodeURIComponent(title)}.png`;
+  // generateSysUrl = ({ locale, title }) => {
+  //   const parentLocale = locale
+  //     .split('.')
+  //     .slice(0, 2)
+  //     .join('.');
+  //   const parentTitle = formatMessage({ id: parentLocale });
+  //   return `http://data.jingan-china.cn/v2/menu/${encodeURIComponent(
+  //     parentTitle
+  //   )}/${encodeURIComponent(title)}.png`;
+  // };
+
+  generateSysUrl = ({ name, code }) => {
+    const title = SRC_MAP[code] || name;
+    return `http://data.jingan-china.cn/v2/new-menu/${title}.png`;
   };
 
   // 点击模块分类
@@ -190,7 +191,7 @@ export default class NewMenuReveal extends Component {
 
   generateMenuItemClass = index => {
     const { currentBlockClassification } = this.state;
-    return classNames(styles.menyItem, {
+    return classNames(styles.menuItem, {
       [styles.selectedItem]: currentBlockClassification === index,
     })
   }
@@ -220,6 +221,7 @@ export default class NewMenuReveal extends Component {
 
   renderBlockMenus = () => {
     const { menuSys } = this.state;
+    // console.log(menuSys);
     return (
       <div className={styles.innerContent}>
         {menuSys.length
@@ -235,10 +237,11 @@ export default class NewMenuReveal extends Component {
                       <div className={styles.item}>
                         <div
                           className={styles.itemInner}
-                          onClick={() => this.handleOpenMenu(item.path)}
+                          onClick={item.developing ? null : () => this.handleOpenMenu(item.path)}
                         >
                           <img src={this.generateSysUrl(item)} alt="logo" />
                           <div>{item.title}</div>
+                          {item.developing ? <span className={styles.dot} /> : null}
                         </div>
                       </div>
                     </Col>
@@ -259,8 +262,9 @@ export default class NewMenuReveal extends Component {
           userName,
         },
       },
-    } = this.props
-    const { currentBlockClassification } = this.state
+    } = this.props;
+    // 当前选择的分类下标
+    const { currentBlockClassification } = this.state;
     return (
       <div className={styles.newMenuRevealContainer}>
         {/* 头部 */}
@@ -276,7 +280,7 @@ export default class NewMenuReveal extends Component {
             <div className={styles.menuContainer}>
               {blockClassification.map((item, index) => (
                 <div key={index} className={this.generateMenuItemClass(index)} onClick={() => this.handleSelectBlockClassification(index)}>
-                  <span>{item.name}</span>
+                  <span>{item.name.slice(0, -2)}</span>
                 </div>
               ))}
               <div onClick={() => { this.setState({ currentBlockClassification: null }) }} className={styles.backButton}></div>

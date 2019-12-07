@@ -12,7 +12,6 @@ import {
 } from 'antd';
 import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
-import router from 'umi/router';
 
 const FormItem = Form.Item;
 

@@ -82,7 +82,7 @@ const certificateState = {
 };
 
 const paststatusVal = {
-  0: '未到期 ',
+  0: ' ',
   1: '即将到期',
   2: '已过期',
 };
@@ -107,7 +107,7 @@ export default class DangerChemicalList extends PureComponent {
       case 0:
         return '#1890ff';
       case 1:
-        return '#faad14';
+        return '#f5222d';
       case 2:
         return '#f5222d';
       default:
@@ -471,7 +471,7 @@ export default class DangerChemicalList extends PureComponent {
         render: (val, record) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/base-info/danger-chemicals-permit/edit/${record.id}`}>编辑</Link>
+              <Link to={`/unit-license/danger-chemicals-permit/edit/${record.id}`}>编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}

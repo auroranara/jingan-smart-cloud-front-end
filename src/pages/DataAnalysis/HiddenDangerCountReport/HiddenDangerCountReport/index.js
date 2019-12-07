@@ -84,7 +84,7 @@ export default class HiddenDangerCountReport extends PureComponent {
       }
     } else {
       if (!id) {
-        router.push('/data-analysis/hidden-danger-count-report/list');
+        router.push('/control-measures-follow-up/hidden-danger-count-report/list');
       } else {
         this.companyId = id;
         this.companyName = name;
@@ -416,15 +416,15 @@ export default class HiddenDangerCountReport extends PureComponent {
     /* 面包屑 */
     const breadcrumbList = [
       { title: "首页", name: "首页", href: "/" },
-      { title: "数据分析", name: "数据分析" },
-      // { title: "隐患统计报表", name: "隐患统计报表", href: companyId ? undefined : '/data-analysis/hidden-danger-count-report/list' },
+      { title: "管控措施跟进信息管理", name: "管控措施跟进信息管理" },
+      // { title: "隐患统计报表", name: "隐患统计报表", href: companyId ? undefined : '/control-measures-follow-up/hidden-danger-count-report/list' },
       // { title: "单位详情", name: "单位详情" },
     ];
     if (unitType !== 4) {
       breadcrumbList.push({
         title: "隐患统计报表",
         name: "隐患统计报表",
-        href: '/data-analysis/hidden-danger-count-report/list',
+        href: '/control-measures-follow-up/hidden-danger-count-report/list',
       }, {
         title: "单位详情",
         name: "单位详情",

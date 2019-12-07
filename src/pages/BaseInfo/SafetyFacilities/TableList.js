@@ -11,7 +11,7 @@ const { Option } = Select;
 // 标题
 const title = '安全设施';
 
-export const ROUTER = '/base-info/safety-facilities'; // modify
+export const ROUTER = '/device-management/safety-facilities'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 
 //面包屑
@@ -22,8 +22,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '物联设备管理',
+    name: '物联设备管理',
   },
   {
     title,
@@ -39,7 +39,7 @@ const {
 } = codes;
 
 const paststatusVal = {
-  0: '未到期 ',
+  0: ' ',
   1: '即将到期',
   2: '已过期',
 };
@@ -144,7 +144,7 @@ export default class TableList extends PureComponent {
       case 0:
         return '#1890ff';
       case 1:
-        return '#faad14';
+        return '#f5222d';
       case 2:
         return '#f5222d';
       default:
@@ -252,7 +252,7 @@ export default class TableList extends PureComponent {
           const { endDate, paststatus } = record;
           return endDate ? (
             <div>
-              <span>{moment(endDate).format('YYYY-MM-DD')}</span>
+              {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}
               <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
               </span>

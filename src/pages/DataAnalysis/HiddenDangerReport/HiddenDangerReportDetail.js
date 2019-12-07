@@ -30,8 +30,8 @@ const mtTitle = '维保检查报表详情';
 const govListTitle = '政府监督报表';
 const govDetailTitle = '政府监督报表详情';
 
-const crListUrl = '/data-analysis/company-report/list';
-const govListUrl = '/data-analysis/goverment-report/list';
+const crListUrl = '/control-measures-follow-up/company-report/list';
+const govListUrl = '/control-measures-follow-up/goverment-report/list';
 
 /* 头部标签列表 */
 const tabList = [
@@ -369,11 +369,11 @@ export default class App extends PureComponent {
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 
-    const crDetailUrl = `/data-analysis/company-report/detail/${checkId}?companyName=${companyName}&&object_title=${encodeURIComponent(
+    const crDetailUrl = `/control-measures-follow-up/company-report/detail/${checkId}?companyName=${companyName}&&object_title=${encodeURIComponent(
       object_title
     )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
-    const mtUrl = `/data-analysis/maintenance-report/detail/${checkId}?companyName=${companyMtName}&&objectTitle=${encodeURIComponent(objectTitle)}&&checkCompanyName=${checkCompanyName}&&itemTypeName=${itemTypeName}&&userName=${userName}&&checkDate=${checkDate}&&status=${mtStatus}`;
-    const govDetailUrl = `/data-analysis/goverment-report/detail/${checkId}?companyName=${companyGovName}&&object_title=${encodeURIComponent(
+    const mtUrl = `/control-measures-follow-up/maintenance-report/detail/${checkId}?companyName=${companyMtName}&&objectTitle=${encodeURIComponent(objectTitle)}&&checkCompanyName=${checkCompanyName}&&itemTypeName=${itemTypeName}&&userName=${userName}&&checkDate=${checkDate}&&status=${mtStatus}`;
+    const govDetailUrl = `/control-measures-follow-up/goverment-report/detail/${checkId}?companyName=${companyGovName}&&object_title=${encodeURIComponent(
       object_title
     )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
 

@@ -21,8 +21,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '执法检查',
-    name: '执法检查',
+    title: '安全生产制度法规',
+    name: '安全生产制度法规',
   },
   {
     title,
@@ -58,13 +58,13 @@ export default class IllegalDatabaseList extends PureComponent {
   // 跳转到详情页面
   goIllegalDetail = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/law-enforcement/illegal/detail/${id}`));
+    dispatch(routerRedux.push(`/safety-production-regulation/illegal/detail/${id}`));
   };
 
   // 跳转到编辑页面
   goIllegalEdit = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/law-enforcement/illegal/edit/${id}`));
+    dispatch(routerRedux.push(`/safety-production-regulation/illegal/edit/${id}`));
   };
 
   // 挂载后
@@ -251,7 +251,7 @@ export default class IllegalDatabaseList extends PureComponent {
               <AuthButton
                 type="primary"
                 code={codesMap.lawEnforcement.illegal.add}
-                href="#/law-enforcement/illegal/add"
+                href="#/safety-production-regulation/illegal/add"
               >
                 新增
               </AuthButton>

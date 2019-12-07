@@ -18,6 +18,7 @@ const projectShortName = generateName(PROJECT_ENV);
 
 const hosts = {
   lm: '192.168.10.2', // 吕旻
+  lm1: '192.168.14.241:8080',
   sj: '192.168.10.3', // 沈杰
   gjm: '192.168.10.55', // 顾家铭
   ct: '192.168.10.29:8080', //陈涛
@@ -43,7 +44,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.ct}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -78,12 +79,12 @@ export default {
         dynamicImport: true,
         ...(os.platform() === 'darwin'
           ? {
-            dll: {
-              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-              exclude: ['@babel/runtime'],
-            },
-            hardSource: false,
-          }
+              dll: {
+                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+                exclude: ['@babel/runtime'],
+              },
+              hardSource: false,
+            }
           : {}),
       },
     ],

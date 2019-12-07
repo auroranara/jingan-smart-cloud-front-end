@@ -208,6 +208,8 @@ export default class CurrentHiddenDanger extends PureComponent {
       未超期: wcq,
       待复查: dfc,
     };
+    console.log('dataList', JSON.stringify(dataList));
+
     const option = {
       tooltip: {
         show: false,

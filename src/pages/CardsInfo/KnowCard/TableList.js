@@ -43,7 +43,7 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：1
+            共计：{list.length}
           </p>
         }
       >

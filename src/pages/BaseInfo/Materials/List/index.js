@@ -30,7 +30,7 @@ const {
     materials: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
   },
 } = codes;
-const addUrl = '/base-info/materials/add';
+const addUrl = '/major-hazard-info/materials/add';
 
 const { Option } = Select;
 const title = '物料信息';
@@ -41,8 +41,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title,
@@ -262,6 +262,30 @@ export default class MaterialsList extends PureComponent {
         },
       },
       {
+        id: 'superviseChemicals',
+        render() {
+          const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
+          return (
+            <Select
+              allowClear
+              showSearch
+              placeholder="是否重点监管危险化学品"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {options.map(item => {
+                const { value, name } = item;
+                return (
+                  <Option value={value} key={value}>
+                    {name}
+                  </Option>
+                );
+              })}
+            </Select>
+          );
+        },
+      },
+      {
         id: 'companyName',
         render() {
           return <Input placeholder="请输入单位名称" />;
@@ -305,7 +329,7 @@ export default class MaterialsList extends PureComponent {
   };
 
   goEdit = id => {
-    router.push(`/base-info/materials/edit/${id}`);
+    router.push(`/major-hazard-info/materials/edit/${id}`);
   };
 
   // 表格改变触发，包含分页变动
@@ -362,10 +386,9 @@ export default class MaterialsList extends PureComponent {
         align: 'center',
         // width: 250,
         render: (data, record) => {
-          const { type, unifiedCode, chineName, riskCateg, superviseChemicals, casNo } = record;
+          const { unifiedCode, chineName, riskCateg, superviseChemicals, casNo } = record;
           return (
             <div className={styles.multi}>
-              <div>{['生产原料', '中间产品', '最终产品'][type - 1]}</div>
               <div>
                 统一编码：
                 {unifiedCode}
@@ -409,6 +432,7 @@ export default class MaterialsList extends PureComponent {
           } = record;
           return (
             <div className={styles.multi}>
+              <div>{['生产原料', '中间产品', '最终产品'][type - 1]}</div>
               {type === '1' ? (
                 <div>
                   年生产能力：

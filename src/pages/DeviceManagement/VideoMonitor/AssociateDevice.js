@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { connect } from 'dva';
-import { Card, Spin, Form, Input, Button, Select, Row, Col, Table, Popconfirm, message } from 'antd';
+import { Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import AssociatePersonnelPosition from './AssociatePersonnelPosition.js';
@@ -34,7 +34,7 @@ export default class AssociateDevice extends Component {
     tabActiveKey: null, // 页头上得tab得key
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       match: { params: { type } },
     } = this.props
@@ -56,7 +56,7 @@ export default class AssociateDevice extends Component {
     this.setState({ tabActiveKey })
   }
 
-  render() {
+  render () {
     const {
       loading,
       match: { params: { id, type } },
@@ -71,17 +71,17 @@ export default class AssociateDevice extends Component {
         href: '/',
       },
       {
-        title: '设备管理',
-        name: '设备管理',
+        title: '物联设备管理',
+        name: '物联设备管理',
       },
       {
-        title: '视频监控',
-        name: '视频监控',
+        title: '监控摄像头',
+        name: '监控摄像头',
         href: '/device-management/video-monitor/list',
       },
       {
-        title: '视频监控列表',
-        name: '视频监控列表',
+        title: '监控摄像头列表',
+        name: '监控摄像头列表',
         href: `/device-management/video-monitor/video-equipment/${companyId}?name=${name}`,
       },
       {

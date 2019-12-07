@@ -11,7 +11,7 @@ import { AuthButton } from '@/utils/customAuth';
 import styles from './index.less';
 
 const { Option } = Select;
-const title = '单位网关设备管理';
+const title = '网关设备管理';
 const breadcrumbList = [
   {
     title: '首页',
@@ -19,8 +19,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '设备管理',
-    name: '设备管理',
+    title: '物联设备管理',
+    name: '物联设备管理',
   },
   {
     title,

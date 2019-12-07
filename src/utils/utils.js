@@ -394,3 +394,11 @@ export function setPageSize(pageSize) {
 export function isNumber(value) {
   return !Number.isNaN(Number.parseFloat(value));
 }
+
+/**
+ * 保留2位有效数字
+ */
+
+export function toFixed(value, digit=2) {
+  return Number.parseFloat(value.toFixed(digit));
+}

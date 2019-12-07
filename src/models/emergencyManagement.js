@@ -98,6 +98,7 @@ export default {
     },
     emergencyDrill: [],
     simAccidentType: [],
+    emergencyEquip: [],
   },
   effects: {
     // 查询应急装备列表

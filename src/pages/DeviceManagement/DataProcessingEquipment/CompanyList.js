@@ -9,10 +9,10 @@ import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
 
-const title = '单位数据处理设备'
+const title = '数据处理设备'
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理' },
+  { title: '物联设备管理', name: '物联设备管理' },
   { title, name: title },
 ];
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }

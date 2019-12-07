@@ -74,7 +74,7 @@
 }
 
 // custom footer for fixed footer toolbar
-.advancedForm+div {
+.advancedForm + div {
   padding-bottom: 64px;
 }
 
@@ -93,4 +93,24 @@
 .optional {
   color: @text-color-secondary;
   font-style: normal;
+}
+
+.dangerContainer {
+  width: 100%;
+  height: auto;
+  display: flex;
+}
+
+.label {
+  // width: 70%;
+  // // border: 1px solid rgb(214, 213, 213);
+  // border-radius: 4px;
+  // padding-left: 8px;
+  // margin-right: 10px;
+
+  :global {
+    .ant-tag {
+      font-size: 14px;
+    }
+  }
 }

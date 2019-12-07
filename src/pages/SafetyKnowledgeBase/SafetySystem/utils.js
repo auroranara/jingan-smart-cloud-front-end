@@ -10,7 +10,7 @@ const { Option } = Select;
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 export const PAGE_SIZE = 20;
-export const ROUTER = '/safety-knowledge-base/safety-system'; // modify
+export const ROUTER = '/safety-production-regulation/safety-system'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 export const LIST = [ // modify
   {
@@ -29,7 +29,7 @@ export const LIST = [ // modify
 
 export const BREADCRUMBLIST = [ // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '安全生产知识库', name: '安全生产知识库' },
+  { title: '安全生产制度法规', name: '安全生产制度法规' },
   { title: '安全制度管理', name: '安全制度管理', href: LIST_URL },
 ];
 

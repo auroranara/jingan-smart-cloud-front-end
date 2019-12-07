@@ -1,0 +1,40 @@
+.card:not(:last-child) {
+  margin-bottom: 24px;
+}
+.table {
+  :global {
+    .ant-table {
+
+      td,
+      th {
+        white-space: nowrap;
+      }
+    }
+
+    .ant-table-body {
+      overflow-x: auto !important;
+    }
+
+    .ant-spin-nested-loading {
+      z-index: 2;
+    }
+  }
+}
+.operation {
+  display: inline-block;
+  padding: 0 8px;
+  color: #1890ff !important;
+  cursor: pointer;
+
+  &:hover {
+    color: #40a9ff !important;
+  }
+  &:active {
+    color: #096dd9 !important;
+  }
+
+  &.disabled {
+    color: rgba(0,0,0,0.25) !important;
+    cursor: not-allowed;
+  }
+}

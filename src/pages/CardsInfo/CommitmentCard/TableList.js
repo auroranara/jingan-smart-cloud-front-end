@@ -43,7 +43,7 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：1
+            共计：{list.length}
           </p>
         }
       >
@@ -53,7 +53,7 @@ export default class TableList extends PureComponent {
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            buttonStyle={{ textAlign: 'right' }}
+            // buttonStyle={{ textAlign: 'right' }}
             buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>

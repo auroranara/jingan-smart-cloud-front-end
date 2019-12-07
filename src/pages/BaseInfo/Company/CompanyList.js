@@ -406,7 +406,8 @@ export default class CompanyList extends PureComponent {
       goToAdd,
     } = this.props;
     // 是否有新增权限
-    const hasAddAuthority = hasAuthority(addCode, permissionCodes);
+    // const hasAddAuthority = hasAuthority(addCode, permissionCodes);
+    const hasAddAuthority = true;
 
     return (
       <Card>
@@ -621,7 +622,8 @@ export default class CompanyList extends PureComponent {
                     <Link
                       to={detailUrl + id}
                       onClick={hasDetailAuthority ? null : preventDefault}
-                      disabled={!hasDetailAuthority}
+                      // disabled={!hasDetailAuthority}
+                      disabled={false}
                       target="_blank"
                     >
                       查看
@@ -629,7 +631,8 @@ export default class CompanyList extends PureComponent {
                     <Link
                       to={editUrl + id}
                       onClick={hasEditAuthority ? null : preventDefault}
-                      disabled={!hasEditAuthority}
+                      // disabled={!hasEditAuthority}
+                      disabled={false}
                       target="_blank"
                     >
                       编辑
@@ -637,7 +640,8 @@ export default class CompanyList extends PureComponent {
                     <Link
                       to={departmentUrl + id}
                       onClick={hasViewDepAuthority ? null : preventDefault}
-                      disabled={!hasViewDepAuthority}
+                      // disabled={!hasViewDepAuthority}
+                      disabled={false}
                       target="_blank"
                     >
                       部门

@@ -5,45 +5,46 @@ import styles from './index.less';
 
 const { Option } = Select;
 
-@connect(({
-  gateway,
-}) => ({
-  gateway,
-}), (dispatch) => ({
-  getBuildingList(payload) {
-    dispatch({
-      type: 'gateway/fetchBuildingList',
-      payload,
-    });
-  },
-  getFloorList(payload) {
-    dispatch({
-      type: 'gateway/fetchFloorList',
-      payload,
-    });
-  },
-  setBuildingList() {
-    dispatch({
-      type: 'gateway/save',
-      payload: {
-        buildingList: [],
-      },
-    });
-  },
-  setFloorList() {
-    dispatch({
-      type: 'gateway/save',
-      payload: {
-        floorList: [],
-      },
-    });
-  },
-}))
+@connect(
+  ({ gateway }) => ({
+    gateway,
+  }),
+  dispatch => ({
+    getBuildingList(payload) {
+      dispatch({
+        type: 'gateway/fetchBuildingList',
+        payload,
+      });
+    },
+    getFloorList(payload) {
+      dispatch({
+        type: 'gateway/fetchFloorList',
+        payload,
+      });
+    },
+    setBuildingList() {
+      dispatch({
+        type: 'gateway/save',
+        payload: {
+          buildingList: [],
+        },
+      });
+    },
+    setFloorList() {
+      dispatch({
+        type: 'gateway/save',
+        payload: {
+          floorList: [],
+        },
+      });
+    },
+  })
+)
 export default class BuildingFloorSelect extends Component {
   state = {
     buildingOpen: false,
     floorOpen: false,
-  }
+  };
 
   componentDidMount() {
     const { getBuildingList, getFloorList, companyId, marker, onChange, value } = this.props;
@@ -81,7 +82,7 @@ export default class BuildingFloorSelect extends Component {
     }
   }
 
-  handleBuildingChange = (building_id) => {
+  handleBuildingChange = building_id => {
     const { getFloorList, onChange } = this.props;
     getFloorList({
       pageNum: 1,
@@ -89,20 +90,20 @@ export default class BuildingFloorSelect extends Component {
       building_id,
     });
     onChange && onChange([building_id]);
-  }
+  };
 
-  handleBuildingDropdownVisibleChange = (buildingOpen) => {
+  handleBuildingDropdownVisibleChange = buildingOpen => {
     this.setState({
       buildingOpen,
     });
-  }
+  };
 
-  handleFloorChange = (floorId) => {
+  handleFloorChange = floorId => {
     const { onChange, value } = this.props;
     onChange && onChange([value ? value[0] : undefined, floorId]);
-  }
+  };
 
-  handleFloorDropdownVisibleChange = (floorOpen) => {
+  handleFloorDropdownVisibleChange = floorOpen => {
     const { value } = this.props;
     const [building] = value || [];
     if (!building && floorOpen) {
@@ -114,10 +115,17 @@ export default class BuildingFloorSelect extends Component {
         floorOpen,
       });
     }
-  }
+  };
 
   handleReload = () => {
-    const { setBuildingList, setFloorList, companyId, getBuildingList, onChange, value } = this.props;
+    const {
+      setBuildingList,
+      setFloorList,
+      companyId,
+      getBuildingList,
+      onChange,
+      value,
+    } = this.props;
     setBuildingList();
     setFloorList();
     if (companyId) {
@@ -130,14 +138,11 @@ export default class BuildingFloorSelect extends Component {
     if (value && (value[0] || value[1])) {
       onChange && onChange([]);
     }
-  }
+  };
 
   render() {
     const {
-      gateway: {
-        buildingList=[],
-        floorList=[],
-      },
+      gateway: { buildingList = [], floorList = [] },
       value,
     } = this.props;
     const { buildingOpen, floorOpen } = this.state;
@@ -153,7 +158,9 @@ export default class BuildingFloorSelect extends Component {
           open={buildingOpen}
           onDropdownVisibleChange={this.handleBuildingDropdownVisibleChange}
         >
-          {buildingList.map(({ id, buildingName }) => <Option key={id}>{buildingName}</Option>)}
+          {buildingList.map(({ id, buildingName }) => (
+            <Option key={id}>{buildingName}</Option>
+          ))}
         </Select>
         <Select
           className={styles.floorSelect}
@@ -163,11 +170,20 @@ export default class BuildingFloorSelect extends Component {
           open={floorOpen}
           onDropdownVisibleChange={this.handleFloorDropdownVisibleChange}
         >
-          {floorList.map(({ id, floorName }) => <Option key={id}>{floorName}</Option>)}
+          {floorList.map(({ id, floorName }) => (
+            <Option key={id}>{floorName}</Option>
+          ))}
         </Select>
-        <Button className={styles.addButton} type="primary" href="/#/base-info/buildings-info/list" target="_blank">新增建筑物楼层</Button>
+        <Button
+          className={styles.addButton}
+          type="primary"
+          href="/#/base-info-management/buildings-info/list"
+          target="_blank"
+        >
+          新增建筑物楼层
+        </Button>
         <Tooltip title="刷新建筑物列表">
-        <Icon className={styles.reloadIcon} type="reload" onClick={this.handleReload} />
+          <Icon className={styles.reloadIcon} type="reload" onClick={this.handleReload} />
         </Tooltip>
       </div>
     );

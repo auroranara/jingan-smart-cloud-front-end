@@ -33,8 +33,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '基础数据管理',
+    name: '基础数据管理',
   },
   {
     title,
@@ -65,7 +65,7 @@ const categoryList = {
 };
 
 const paststatusVal = {
-  0: '未到期 ',
+  0: ' ',
   1: '即将到期',
   2: '已过期',
 };
@@ -191,7 +191,7 @@ export default class RegSafetyEngList extends PureComponent {
       case 0:
         return '#1890ff';
       case 1:
-        return '#faad14';
+        return '#f5222d';
       case 2:
         return '#f5222d';
       default:
