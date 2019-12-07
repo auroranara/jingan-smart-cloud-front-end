@@ -79,7 +79,7 @@ const leftReserviorColumns = [
     render: () => <span>库区</span>,
   },
   {
-    dataIndex: 'unitCode',
+    dataIndex: 'number',
     title: '统一编码',
   },
   {

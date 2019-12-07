@@ -3,11 +3,11 @@ import { connect } from 'dva';
 // import router from 'umi/router';
 // import Link from 'umi/link';
 import moment from 'moment';
-import { Card, Table, message } from 'antd';
+import { Card, Table, message, Button } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, DETAIL_COLUMNS as COLUMNS, ExamModal } from './utils';
+import { BREADCRUMBLIST, DETAIL_COLUMNS as COLUMNS, ExamModal, LIST_URL } from './utils';
 @connect(({ targetResponsibility, user, loading }) => ({
   targetResponsibility,
   user,
@@ -31,7 +31,7 @@ export default class CheckDetail extends PureComponent {
   }
 
   // 获取列表
-  fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
+  fetchList = (pageNum = 1, pageSize = 10) => {
     const {
       dispatch,
       match: {
@@ -42,7 +42,6 @@ export default class CheckDetail extends PureComponent {
       type: 'targetResponsibility/fetchExamDetail',
       payload: {
         id,
-        ...params,
         pageSize,
         pageNum,
       },
@@ -112,10 +111,7 @@ export default class CheckDetail extends PureComponent {
       loading = false,
       targetResponsibility: {
         examDetail: {
-          data: {
-            list = [],
-            // pagination: { total, pageNum, pageSize },
-          },
+          data: { list = [] },
         },
       },
     } = this.props;
@@ -156,7 +152,7 @@ export default class CheckDetail extends PureComponent {
           </p>
         }
       >
-        <div className={styles1.container}>
+        <div className={styles1.container} style={{ padding: '14px 10px 30px' }}>
           {list.length > 0 ? (
             <Table
               bordered
@@ -165,25 +161,16 @@ export default class CheckDetail extends PureComponent {
               columns={[...COLUMNS, ...extraColumns]}
               dataSource={list}
               onChange={this.onTableChange}
-              // pagination={false}
-              // pagination={{
-              //   current: pageNum,
-              //   pageSize,
-              //   total,
-              //   showQuickJumper: true,
-              //   showSizeChanger: true,
-              //   pageSizeOptions: ['5', '10', '15', '20'],
-              //   onChange: this.handlePageChange,
-              //   onShowSizeChange: (num, size) => {
-              //     this.handlePageChange(1, size);
-              //   },
-              // }}
+              pagination={false}
             />
           ) : (
             <Card bordered={false} style={{ textAlign: 'center' }}>
               <span>暂无数据</span>
             </Card>
           )}
+          <div style={{ textAlign: 'right', marginTop: 20 }}>
+            <Button href={`#${LIST_URL}`}>返回</Button>
+          </div>
         </div>
         <ExamModal {...modalData} />
       </PageHeaderLayout>

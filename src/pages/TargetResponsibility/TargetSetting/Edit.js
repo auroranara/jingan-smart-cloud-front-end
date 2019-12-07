@@ -12,12 +12,14 @@ import {
   Row,
   Col,
   Popconfirm,
+  DatePicker,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
+import moment from 'moment';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { BREADCRUMBLIST, LIST_URL, ROUTER } from './utils';
@@ -66,6 +68,7 @@ export default class Edit extends PureComponent {
     dutyStatus: '', // 责任主体选择key
     detailList: {},
     safetyIndexList: [],
+    isopen: false,
   };
 
   // 挂载后
@@ -85,7 +88,13 @@ export default class Edit extends PureComponent {
         },
         callback: res => {
           const { data } = res;
-          const { companyId, name, dutyMajor, otherFileList, safeProductGoalValueList } = data;
+          const {
+            companyId,
+            dutyMajorId,
+            dutyMajor,
+            otherFileList,
+            safeProductGoalValueList,
+          } = data;
           this.setState(
             {
               photoUrl: Array.isArray(otherFileList)
@@ -101,7 +110,7 @@ export default class Edit extends PureComponent {
                 ? safeProductGoalValueList
                 : [],
               dutyStatus: dutyMajor.substr(0, 1),
-              labelId: name,
+              labelId: dutyMajorId,
             },
             () => {
               if (+dutyMajor.substr(0, 1) === 2) {
@@ -134,6 +143,7 @@ export default class Edit extends PureComponent {
     router.push(`${LIST_URL}`);
   };
 
+  // 当前页面是否为详情页面
   isDetail = () => {
     const {
       match: { url },
@@ -158,13 +168,17 @@ export default class Edit extends PureComponent {
     } = this.props;
     const { photoUrl, safetyIndexList, dutyStatus, labelId } = this.state;
 
+    const symbolValue = safetyIndexList.map(item => item.symbolValue);
+    if (symbolValue.indexOf(undefined) >= 0)
+      return message.warning('请先填写安全生产目标数值，不能为空！');
+
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const { companyId, goalYear } = values;
         const payload = {
           id,
           companyId: companyId.key || unitId,
-          goalYear,
+          goalYear: moment(goalYear).format('YYYY'),
           dutyMajor: +dutyStatus === 1 ? dutyStatus : dutyStatus + ',' + labelId,
           safeProductGoalValueList: safetyIndexList,
           otherFile:
@@ -174,7 +188,6 @@ export default class Edit extends PureComponent {
                 )
               : undefined,
         };
-
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
           message.success(msg, 1, this.goBack());
@@ -203,81 +216,6 @@ export default class Edit extends PureComponent {
     });
   };
 
-  // 上传处理
-  handleUploadChange = ({ file, fileList }) => {
-    if (file.status === 'uploading') {
-      this.setState({
-        photoUrl: fileList,
-        uploading: true,
-      });
-    } else if (file.status === 'done' && file.response.code === 200) {
-      const {
-        data: {
-          list: [result],
-        },
-      } = file.response;
-      if (result) {
-        this.setState({
-          photoUrl: fileList.map(item => {
-            if (!item.url && item.response) {
-              return {
-                ...item,
-                url: result.webUrl,
-                dbUrl: result.dbUrl,
-              };
-            }
-            return item;
-          }),
-          uploading: false,
-        });
-        message.success('上传成功！');
-      }
-    } else if (file.status === 'removed') {
-      // 删除
-      this.setState({
-        photoUrl: fileList.filter(item => {
-          return item.status !== 'removed';
-        }),
-        uploading: false,
-      });
-    } else {
-      // error
-      message.error('上传失败！');
-      this.setState({
-        photoUrl: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
-        uploading: false,
-      });
-    }
-  };
-
-  // 责任主体key切换
-  handleDutySelect = key => {
-    const {
-      dispatch,
-      form: { getFieldsValue },
-    } = this.props;
-    const { companyId } = getFieldsValue();
-
-    this.setState({ dutyStatus: key });
-    if (+key === 2) {
-      dispatch({
-        type: 'department/fetchDepartmentList',
-        payload: { companyId: companyId ? companyId.key : undefined },
-      });
-    } else if (+key === 3) {
-      dispatch({
-        type: 'account/fetch',
-        payload: {
-          unitId: companyId ? companyId.key : undefined,
-          pageSize: 100,
-          pageNum: 1,
-        },
-      });
-    }
-  };
-
   // 显示指标弹框
   handleIndexModal = () => {
     this.setState({ indexVisible: true });
@@ -293,7 +231,11 @@ export default class Edit extends PureComponent {
 
   // 选择确定指标
   handleIndexSelect = item => {
-    this.setState({ safetyIndexList: item });
+    const { safetyIndexList } = this.state;
+    const fixId = safetyIndexList.map(item => item.id);
+    const filterItem = item.filter(item => fixId.indexOf(item.id) < 0);
+
+    this.setState({ safetyIndexList: safetyIndexList.concat([...filterItem]) });
     this.handleIndexClose();
   };
 
@@ -377,6 +319,7 @@ export default class Edit extends PureComponent {
   // 渲染指标列表
   renderIndexForm() {
     const {
+      form: { getFieldDecorator },
       targetResponsibility: { targetValueList = [] },
     } = this.props;
     const { safetyIndexList } = this.state;
@@ -417,13 +360,28 @@ export default class Edit extends PureComponent {
                   </Select>
                 </Col>
                 <Col span={6}>
-                  <Input
-                    placeholder="请输入指标值"
-                    value={indexValue}
-                    onChange={e => {
-                      this.handleChangeIndexValue(item, e.target.value, index, 'indexValue');
-                    }}
-                  />
+                  <Form.Item style={{ marginTop: '-4px', marginBottom: '-13px' }}>
+                    {getFieldDecorator(`indexValue${index}`, {
+                      initialValue: indexValue,
+                      rules: [
+                        {
+                          // pattern: new RegExp(
+                          // /^[1-9]\d*$/,
+                          //  'g' || /^((\d+\.?\d*)|(\d*\.\d+))\%$/,
+                          //  'g'
+                          // ),
+                          message: '只能输入数字或者百分数',
+                        },
+                      ],
+                    })(
+                      <Input
+                        placeholder="请输入指标值"
+                        onChange={e => {
+                          this.handleChangeIndexValue(item, e.target.value, index, 'indexValue');
+                        }}
+                      />
+                    )}
+                  </Form.Item>
                 </Col>
                 <Col span={3}>
                   <Popconfirm
@@ -441,6 +399,38 @@ export default class Edit extends PureComponent {
     );
   }
 
+  // 单位名称切换，清空责任主体
+  onChangeComapny = () => {
+    this.setState({ dutyStatus: '', labelId: '' });
+  };
+
+  // 责任主体key切换
+  handleDutySelect = key => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const { companyId } = getFieldsValue();
+
+    this.setState({ dutyStatus: key, labelId: '' });
+    if (+key === 2) {
+      dispatch({
+        type: 'department/fetchDepartmentList',
+        payload: { companyId: companyId ? companyId.key : undefined },
+      });
+    } else if (+key === 3) {
+      dispatch({
+        type: 'account/fetch',
+        payload: {
+          unitId: companyId ? companyId.key : undefined,
+          pageSize: 100,
+          pageNum: 1,
+        },
+      });
+    }
+  };
+
+  // 责任主体类型切换
   handleDutyChange = e => {
     const {
       form: { setFieldsValue },
@@ -451,6 +441,81 @@ export default class Edit extends PureComponent {
 
   handleIdChange = e => {
     this.setState({ labelId: e });
+  };
+
+  // 切换日历面板
+  handlePanelChange = v => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ goalYear: v });
+    this.setState({ isopen: false });
+  };
+
+  // 弹出日历和关闭日历
+  handleOpenChange = s => {
+    if (s) {
+      this.setState({ isopen: true });
+    } else {
+      this.setState({ isopen: false });
+    }
+  };
+
+  // 清除日历面板输入框的值
+  clearDateValue = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ goalYear: '' });
+  };
+
+  // 上传处理
+  handleUploadChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        photoUrl: fileList,
+        uploading: true,
+      });
+    } else if (file.status === 'done' && file.response.code === 200) {
+      const {
+        data: {
+          list: [result],
+        },
+      } = file.response;
+      if (result) {
+        this.setState({
+          photoUrl: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          uploading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        photoUrl: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        uploading: false,
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        photoUrl: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        uploading: false,
+      });
+    }
   };
 
   // 渲染
@@ -475,7 +540,7 @@ export default class Edit extends PureComponent {
 
     const { companyId, companyName, goalYear, dutyMajor } = data || {};
 
-    const { uploading, photoUrl, dutyStatus, labelId } = this.state;
+    const { uploading, photoUrl, dutyStatus, labelId, isopen } = this.state;
 
     return (
       <Card>
@@ -485,15 +550,31 @@ export default class Edit extends PureComponent {
               {getFieldDecorator('companyId', {
                 initialValue: { key: companyId, label: companyName },
                 rules: [{ required: true, message: '请选择单位名称' }],
-              })(<CompanySelect {...itemStyles} placeholder="请选择" />)}
+              })(
+                <CompanySelect
+                  {...itemStyles}
+                  placeholder="请选择"
+                  onChange={this.onChangeComapny}
+                />
+              )}
             </FormItem>
           )}
           <FormItem label="目标年份" {...formItemLayout}>
             {getFieldDecorator('goalYear', {
-              initialValue: goalYear,
-              getValueFromEvent: this.handleTrim,
+              initialValue: goalYear ? moment(goalYear) : '',
               rules: [{ required: true, message: '请输入目标年份' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
+            })(
+              <DatePicker
+                {...itemStyles}
+                placeholder="请选择"
+                open={isopen}
+                onOpenChange={s => this.handleOpenChange(s)}
+                onChange={this.clearDateValue}
+                onPanelChange={v => this.handlePanelChange(v)}
+                format="YYYY"
+                mode="year"
+              />
+            )}
           </FormItem>
           <FormItem label="责任主体" {...formItemLayout}>
             {getFieldDecorator('dutyMajor', {
@@ -564,11 +645,9 @@ export default class Edit extends PureComponent {
             )}
           </FormItem>
           <FormItem label="安全生产目标数值" {...formItemLayout}>
-            {getFieldDecorator('safeProductGoalNumber', {})(
-              <Button type="primary" size="small" onClick={this.handleIndexModal}>
-                选择指标
-              </Button>
-            )}
+            <Button type="primary" size="small" onClick={this.handleIndexModal}>
+              选择指标
+            </Button>
           </FormItem>
           {this.renderIndexForm()}
           <FormItem label="合同附件" {...formItemLayout}>

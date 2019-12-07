@@ -1,11 +1,10 @@
 import React from 'react';
+import moment from 'moment';
 import { Input, Select, Form, Modal, DatePicker } from 'antd';
 const { MonthPicker } = DatePicker;
-// import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
 const { Option } = Select;
 
-// const DATE_FORMAT = 'YYYY-MM-DD';
 export const PAGE_SIZE = 20;
 export const ROUTER = '/target-responsibility/target-setting'; // modify
 export const LIST_URL = `${ROUTER}/index`;
@@ -29,7 +28,9 @@ export const SEARCH_FIELDS = [
     id: 'goalYear',
     label: '目标年份',
     render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
+    transform(value) {
+      return value.trim();
+    },
   },
   {
     id: 'dutyMajor',
@@ -136,6 +137,12 @@ const getFrequency = {
   3: '年',
 };
 
+const getQuarter = {
+  1: '一季度',
+  2: '二季度',
+  3: '三季度',
+};
+
 export const DETAIL_COLUMNS = [
   {
     title: '指标',
@@ -166,19 +173,49 @@ export const DETAIL_COLUMNS = [
   },
   {
     title: '实际值',
-    dataIndex: 'actualValue',
-    key: 'actualValue',
+    dataIndex: 'actualValueList',
+    key: 'actualValueList',
     align: 'center',
-    // render:(val,text)=>{
-    //   const {checkFrequency} = text;
-    //   return  +checkFrequency===2 && val.substr(0,1)==='1'?''
-    // },
+    render: (val, text) => {
+      const { checkFrequency } = text;
+      return val && val.length > 0
+        ? val.map((item, index) => {
+            const { actualValue, examtime } = item;
+            return (
+              (+checkFrequency === 1 && (
+                <div key={index}>
+                  {moment(examtime).format('M月')}：{actualValue}
+                </div>
+              )) ||
+              (+checkFrequency === 2 && (
+                <div key={index}>
+                  {getQuarter[examtime]}：{actualValue}
+                </div>
+              )) ||
+              (+checkFrequency === 3 && (
+                <div key={index}>
+                  {examtime}
+                  年： {actualValue}
+                </div>
+              ))
+            );
+          })
+        : '';
+    },
   },
   {
     title: '平均值',
     dataIndex: 'avgValue',
     key: 'avgValue',
     align: 'center',
+    render: (val, text) => {
+      const { checkFrequency } = text;
+      return (
+        (+checkFrequency === 1 && <span>{Math.floor(val * 100) / 100} /月</span>) ||
+        (+checkFrequency === 2 && <span>{Math.floor(val * 100) / 100} /季度</span>) ||
+        (+checkFrequency === 3 && <span>{Math.floor(val * 100) / 100} /年</span>)
+      );
+    },
   },
 ];
 
@@ -245,7 +282,9 @@ export const ExamModal = Form.create()(props => {
         </Form.Item>
         {checkFrequency === '1' && (
           <Form.Item {...formItemCol} label="考核时间段:">
-            {getFieldDecorator('checkFrequency', {})(<MonthPicker placeholder="请选择" />)}
+            {getFieldDecorator('checkFrequency', {})(
+              <MonthPicker placeholder="请选择" format="M月" />
+            )}
           </Form.Item>
         )}
         {checkFrequency === '2' && (
