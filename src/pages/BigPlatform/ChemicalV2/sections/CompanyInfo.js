@@ -19,7 +19,7 @@ export default class CompanyInfo extends PureComponent {
   render() {
     const { handleClickCount } = this.props;
     const {
-      companyName = '无锡晶安机械设备有限公司(演示)',
+      companyName = '无锡晶安智慧科技有限公司',
       // 安全管理员
       headOfSecurity = '张小东',
       // 联系电话

@@ -547,7 +547,7 @@ export default class MaterialsHandler extends PureComponent {
                   </FormItem> */}
                   <FormItem label="年生产能力" {...formItemLayout}>
                     {getFieldDecorator('annualThroughput', {
-                      getValueFromEvent: this.handleTrim,
+                      // getValueFromEvent: this.handleTrim,
                       rules: [{ required: true, message: '请输入年生产能力' }],
                     })(<InputNumber {...itemStyles} min={0} placeholder="请输入年生产能力" />)}
                   </FormItem>
@@ -568,7 +568,7 @@ export default class MaterialsHandler extends PureComponent {
                     </FormItem> */}
                     <FormItem label="年消耗量" {...formItemLayout}>
                       {getFieldDecorator('annualConsumption', {
-                        getValueFromEvent: this.handleTrim,
+                        // getValueFromEvent: this.handleTrim,
                         rules: [{ required: true, message: '请输年消耗量' }],
                       })(<InputNumber {...itemStyles} min={0} placeholder="请输年消耗量" />)}
                     </FormItem>
@@ -587,7 +587,7 @@ export default class MaterialsHandler extends PureComponent {
                     </FormItem> */}
                     <FormItem label="最大存储量" {...formItemLayout}>
                       {getFieldDecorator('maxStoreDay', {
-                        getValueFromEvent: this.handleTrim,
+                        // getValueFromEvent: this.handleTrim,
                         rules: [{ required: true, message: '请输入最大存储量' }],
                       })(<InputNumber {...itemStyles} min={0} placeholder="请输入最大存储量" />)}
                     </FormItem>
@@ -605,7 +605,7 @@ export default class MaterialsHandler extends PureComponent {
           <div className={styles.unitWrapper}>
             <FormItem label="实际存储量" {...formItemLayout}>
               {getFieldDecorator('actualReserves', {
-                getValueFromEvent: this.handleTrim,
+                // getValueFromEvent: this.handleTrim,
                 rules: [{ required: true, message: '请输入实际存储量' }],
               })(<InputNumber {...itemStyles} min={0} placeholder="请输入实际存储量" />)}
             </FormItem>

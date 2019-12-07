@@ -22,7 +22,7 @@ import {
   Tips,
   CompanyInfo,
   StorageAreaDrawer,
-  HiddenDanger,
+  MonitorDrawer,
   Map,
   DangerAreaDrawer,
   SpecialEquipmentDrawer,
@@ -55,6 +55,7 @@ export default class Chemical extends PureComponent {
       images: null,
       videoList: [],
       currentHiddenDangerDrawerVisible: false,
+      monitorDrawerVisible: true,
     };
   }
 
@@ -114,6 +115,7 @@ export default class Chemical extends PureComponent {
       videoList,
       images,
       currentHiddenDangerDrawerVisible,
+      monitorDrawerVisible,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -220,6 +222,13 @@ export default class Chemical extends PureComponent {
           visible={currentHiddenDangerDrawerVisible}
           onClose={() => {
             this.setDrawerVisible('currentHiddenDanger');
+          }}
+        />
+
+        <MonitorDrawer
+          visible={monitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('monitor');
           }}
         />
 

@@ -552,7 +552,7 @@ export default class StorehouseHandler extends PureComponent {
           </FormItem>
           <FormItem label="库房面积（㎡）" {...formItemLayout}>
             {getFieldDecorator('area', {
-              getValueFromEvent: this.handleTrim,
+              // getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入库房面积' }],
             })(
               <InputNumber

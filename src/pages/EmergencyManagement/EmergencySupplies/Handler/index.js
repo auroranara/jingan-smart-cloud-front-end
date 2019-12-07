@@ -72,8 +72,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
       },
       form: { setFieldsValue },
     } = this.props;
-    // this.fetchMonitoringTypeDict();
-    // this.fetchSensorBrandDict()
+    this.fetchDict({ type: 'emergencyEquip' });
     // 如果编辑
     if (id) {
       // 获取详情
@@ -97,7 +96,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             materialName,
             code,
             levelCode,
-            materialType,
+            materialType: materialType && materialType.split(','),
             materialCode,
             materialCount,
             remark,
@@ -109,6 +108,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
       });
     }
   }
+
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
+  };
 
   /**
    * 获取企业列表（弹窗）
@@ -129,7 +133,10 @@ export default class EmergencySuppliesHandler extends PureComponent {
 
     validateFields((error, formData) => {
       if (!error) {
-        const payload = { ...formData };
+        const payload = {
+          ...formData,
+          materialType: formData.materialType.join(','),
+        };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           router.push(listUrl);
@@ -180,15 +187,30 @@ export default class EmergencySuppliesHandler extends PureComponent {
     });
   };
 
+  handleChangeMaterialType = value => {
+    const {
+      emergencyManagement: { emergencyEquip = [] },
+      form: { setFieldsValue },
+    } = this.props;
+    let treeData = emergencyEquip;
+    const typeCodes = value.map(id => {
+      const val = treeData.find(item => item.id === id) || {};
+      treeData = val.children;
+      return val.value;
+    });
+    setFieldsValue({ materialCode: typeCodes[typeCodes.length - 1] });
+  };
+
   /**
    * 渲染表单
    */
   renderForm = () => {
     const {
-      form: { getFieldDecorator, getFieldValue },
+      form: { getFieldDecorator, getFieldsValue },
+      emergencyManagement: { emergencyEquip = [] },
     } = this.props;
     const { selectedCompany } = this.state;
-
+    const { materialCode } = getFieldsValue();
     return (
       <Card>
         <Form>
@@ -240,29 +262,27 @@ export default class EmergencySuppliesHandler extends PureComponent {
           </FormItem>
           <FormItem label="物资类型" {...formItemLayout}>
             {getFieldDecorator('materialType', {
-              // rules: [{ required: true, message: '请选择物资类型' }],
+              rules: [{ required: true, message: '请选择物资类型' }],
             })(
               <Cascader
-                options={[]}
+                options={emergencyEquip}
                 fieldNames={{
                   value: 'id',
-                  label: 'name',
+                  label: 'label',
                   children: 'children',
                   isLeaf: 'isLeaf',
                 }}
-                loadData={selectedOptions => {
-                  this.handleLoadData(['registerAddress'], selectedOptions);
-                }}
                 changeOnSelect
-                placeholder="请选择物资类型"
+                placeholder="请选择模拟事故类型"
                 allowClear
                 getPopupContainer={getRootChild}
+                onChange={this.handleChangeMaterialType}
                 {...itemStyles}
               />
             )}
           </FormItem>
           <FormItem label="物资编码" {...formItemLayout}>
-            {getFieldDecorator('materialCode')(<span> </span>)}
+            {getFieldDecorator('materialCode')(<span>{materialCode || ''}</span>)}
           </FormItem>
           <FormItem label="物资数量" {...formItemLayout}>
             {getFieldDecorator('materialCount', {

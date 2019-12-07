@@ -11,6 +11,7 @@ import Map from './Map';
 import DangerAreaDrawer from './DangerAreaDrawer';
 import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
+import MonitorDrawer from './MonitorDrawer';
 
 export {
   Risk,
@@ -26,4 +27,5 @@ export {
   DangerAreaDrawer,
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
+  MonitorDrawer,
 };
