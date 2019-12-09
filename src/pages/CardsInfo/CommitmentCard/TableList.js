@@ -1,10 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, message } from 'antd';
+import moment from 'moment';
+import { Button, Card, Modal, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import styles from './TableList.less';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableColumns } from './utils';
 
@@ -13,7 +15,7 @@ import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableCol
   loading: loading.models.cardsInfo,
 }))
 export default class TableList extends PureComponent {
-  state = { current: 1 };
+  state = { current: 1, modalVisible: false, modalItem: {} };
   values = {};
 
   componentDidMount() {
@@ -70,6 +72,30 @@ export default class TableList extends PureComponent {
     });
   };
 
+  showModal = item => {
+    this.setState({ modalVisible: true, modalItem: item });
+  };
+
+  hideModal = () => {
+    this.setState({ modalVisible: false });
+  };
+
+  renderModal() {
+    const { modalVisible, modalItem } = this.state;
+    const { name, content, acceptor, time } = modalItem;
+
+    return (
+      <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null} >
+        <div className={styles.container}>
+          <h2 className={styles.title}>{name}</h2>
+          <pre>{content}</pre>
+          <p className={styles.man}>{`承诺人：${acceptor}`}</p>
+          <p className={styles.time}>{moment(time).format('YYYY-MM-DD')}</p>
+        </div>
+      </Modal>
+    );
+  }
+
   render() {
     const {
       loading,
@@ -85,7 +111,7 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
-    const columns = getTableColumns(this.handleDelete);
+    const columns = getTableColumns(this.handleDelete, this.showModal);
 
     return (
       <PageHeaderLayout
@@ -118,6 +144,7 @@ export default class TableList extends PureComponent {
             pagination={{ pageSize: PAGE_SIZE, total: commitTotal, current }}
           />
         </div>
+        {this.renderModal()}
       </PageHeaderLayout>
     );
   }

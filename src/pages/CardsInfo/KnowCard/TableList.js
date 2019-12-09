@@ -13,7 +13,11 @@ import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableCol
   loading: loading.models.cardsInfo,
 }))
 export default class TableList extends PureComponent {
-  state = { current: 1, src: '' };
+  state = {
+    current: 1,
+    src: '',
+    modalVisible: false,
+  };
   values = {};
 
   componentDidMount() {
@@ -75,7 +79,11 @@ export default class TableList extends PureComponent {
   };
 
   showModal = item => {
-    this.setState({  })
+    this.setState({ modalVisible: true, src: item.contentDetails[0].webUrl });
+  };
+
+  hideModal = () => {
+    this.setState({ modalVisible: false });
   };
 
   render() {
@@ -83,7 +91,7 @@ export default class TableList extends PureComponent {
       loading,
       cardsInfo: { knowList, knowTotal },
     } = this.props;
-    const { current, src } = this.state;
+    const { modalVisible, current, src } = this.state;
 
     const list = knowList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
@@ -93,7 +101,7 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
-    const columns = getTableColumns(this.handleDelete);
+    const columns = getTableColumns(this.handleDelete, this.showModal);
 
     return (
       <PageHeaderLayout
@@ -126,8 +134,8 @@ export default class TableList extends PureComponent {
             pagination={{ pageSize: PAGE_SIZE, total: knowTotal, current }}
           />
         </div>
-        <Modal width="60%">
-          <div style={{ backgroundImage: `url(${src})` }} />
+        <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null}>
+          <div style={{ height: 700, backgroundImage: `url(${src})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: '50% 50%' }} />
         </Modal>
       </PageHeaderLayout>
     );

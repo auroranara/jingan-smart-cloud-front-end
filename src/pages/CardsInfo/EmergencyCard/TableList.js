@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, message } from 'antd';
+import { Button, Card, Modal, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import styles from './TableList.less';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableColumns } from './utils';
 
@@ -13,7 +14,7 @@ import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableCol
   loading: loading.models.cardsInfo,
 }))
 export default class TableList extends PureComponent {
-  state = { current: 1 };
+  state = { current: 1, modalVisible: false, modalItem: {} };
   values = {};
 
   componentDidMount() {
@@ -70,6 +71,56 @@ export default class TableList extends PureComponent {
     });
   };
 
+  showModal = item => {
+    this.setState({ modalVisible: true, modalItem: item });
+  };
+
+  hideModal = () => {
+    this.setState({ modalVisible: false });
+  };
+
+  renderModal() {
+    const { modalVisible, modalItem } = this.state;
+    const { name, equipmentName, riskWarning, emergency, needAttention, safetyNum, telNum } = modalItem;
+
+    return (
+      <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null} >
+        <table className={styles.table}>
+          <tr>
+            <th colspan="2" className={styles.th}>{name}</th>
+          </tr>
+          <tr>
+            <td className={styles.td}>作业/设备名称</td>
+            <td>{equipmentName}</td>
+          </tr>
+          <tr>
+            <td className={styles.td}>风险提示</td>
+            <td>{riskWarning}</td>
+          </tr>
+          <tr>
+            <td className={styles.td}>应急处置方法</td>
+            <td>{emergency}</td>
+          </tr>
+          <tr>
+            <td className={styles.td}>注意事项</td>
+            <td>{needAttention}</td>
+          </tr>
+          <tr>
+            <td colspan="2" className={styles.td1}>应急联系方式</td>
+          </tr>
+          <tr>
+            <td className={styles.td}>内部</td>
+            <td>{`${safetyNum} ${telNum}`}</td>
+          </tr>
+          <tr>
+            <td className={styles.td}>外部</td>
+            <td>火警：119 医疗救护：120</td>
+          </tr>
+        </table>
+      </Modal>
+    );
+  }
+
   render() {
     const {
       loading,
@@ -85,7 +136,7 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
-    const columns = getTableColumns(this.handleDelete);
+    const columns = getTableColumns(this.handleDelete, this.showModal);
 
     return (
       <PageHeaderLayout
@@ -118,6 +169,7 @@ export default class TableList extends PureComponent {
             pagination={{ pageSize: PAGE_SIZE, total: emergencyTotal, current }}
           />
         </div>
+        {this.renderModal()}
       </PageHeaderLayout>
     );
   }

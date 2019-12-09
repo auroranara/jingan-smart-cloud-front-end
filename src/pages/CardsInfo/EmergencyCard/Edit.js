@@ -269,7 +269,7 @@ export default class Edit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL)}
+          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
         </Card>
         {this.renderModal()}
       </PageHeaderLayout>

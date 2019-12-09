@@ -52,7 +52,7 @@ export const SEARCH_FIELDS = [ // modify
   },
 ];
 
-export function getTableColumns(handleConfirmDelete) {
+export function getTableColumns(handleConfirmDelete, showModal) {
   return [ // modify
     // {
     //   title: '序号',
@@ -111,7 +111,7 @@ export function getTableColumns(handleConfirmDelete) {
       key: 'preview',
       width: 100,
       align: 'center',
-      render: p => <a onClick={e => e.preventDefault()}>预览</a>,
+      render: (p, record) => <a onClick={e => { e.preventDefault(); showModal(record); }}>预览</a>,
     },
     {
       title: '操作',

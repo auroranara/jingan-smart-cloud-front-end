@@ -179,7 +179,7 @@ export function renderSections(sections, getFieldDecorator, handleSubmit, listUr
       <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>
         取消
       </Button>
-      <Button type="primary" htmlType="submit" disabled={loading}>
+      <Button type="primary" htmlType="submit" loading={loading}>
         提交
       </Button>
     </FormItem>

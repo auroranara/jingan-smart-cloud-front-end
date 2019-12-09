@@ -100,7 +100,11 @@ export function getTableColumns(handleConfirmDelete, showModal) {
       key: 'preview',
       width: 100,
       align: 'center',
-      render: (p, record) => <a onClick={e => { e.preventDefault(); showModal(record); }}>预览</a>,
+      render: (p, record) => {
+        if (record && record.contentDetails && record.contentDetails.length)
+          return <a onClick={e => { e.preventDefault(); showModal(record); }}>预览</a>;
+        return '预览';
+      },
     },
     {
       title: '操作',
