@@ -316,6 +316,17 @@ export default class Edit extends PureComponent {
     });
   };
 
+  validatorID = (rule, value, callback) => {
+    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+    if (value) {
+      if (chineseRe.test(value)) {
+        callback('注：不能含有中文');
+      } else {
+        callback();
+      }
+    }
+  };
+
   // 渲染指标列表
   renderIndexForm() {
     const {
@@ -365,12 +376,10 @@ export default class Edit extends PureComponent {
                       initialValue: indexValue,
                       rules: [
                         {
-                          // pattern: new RegExp(
-                          // /^[1-9]\d*$/,
-                          //  'g' || /^((\d+\.?\d*)|(\d*\.\d+))\%$/,
-                          //  'g'
-                          // ),
                           message: '只能输入数字或者百分数',
+                        },
+                        {
+                          validator: this.validatorID,
                         },
                       ],
                     })(
