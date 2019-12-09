@@ -1337,7 +1337,7 @@ module.exports = env => {
               ],
             },
             {
-              path: '/device-management/user-transmission-device',
+              path: '/device-management/user-transmission-device', // 用户传输装置
               code: 'deviceManagement.userTransmissionDevice',
               name: 'userTransmissionDevice',
               hideChildrenInMenu: true,
@@ -1379,6 +1379,38 @@ module.exports = env => {
                   code: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
                   name: 'pointManagement',
                   component: './DeviceManagement/UserTransmissionDevice/PointManagement',
+                },
+              ],
+            },
+            {
+              path: '/device-management/associate-sensor', // 虚拟设备 设备关联传感
+              code: 'deviceManagement.associateSensor',
+              name: 'associateSensor',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/associate-sensor',
+                  name: 'associateSensor',
+                  redirect: '/device-management/associate-sensor/list',
+                },
+                {
+                  path: '/device-management/associate-sensor/list',
+                  name: 'listView',
+                  code: 'deviceManagement.associateSensor.listView',
+                  component: './DeviceManagement/AssociateSensor/SensorCompanyList',
+                },
+                {
+                  path: '/device-management/associate-sensor/company/:companyId/water-system',
+                  name: 'waterSystem',
+                  code: 'deviceManagement.associateSensor.waterSystem',
+                  component: './DeviceManagement/AssociateSensor/WaterSystem',
+                },
+                {
+                  path:
+                    '/device-management/associate-sensor/company/:companyId/temperature-and-humidity',
+                  name: 'temperatureAndHumidity',
+                  code: 'deviceManagement.associateSensor.temperatureAndHumidity',
+                  component: './DeviceManagement/AssociateSensor/TemperatureAndHumidity',
                 },
               ],
             },
