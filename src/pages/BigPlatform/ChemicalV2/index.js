@@ -191,6 +191,7 @@ export default class Chemical extends PureComponent {
           }}
           setDrawerVisible={this.setDrawerVisible}
           handleShowImg={this.handleShowImg}
+          handleShowVideo={this.handleShowVideo}
         />
 
         <StorageAreaDrawer
