@@ -28,6 +28,7 @@ import {
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
   MonitorDetailDrawer,
+  Messages,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -60,6 +61,7 @@ export default class Chemical extends PureComponent {
       monitorType: 0,
       monitorDetailDrawerVisible: false,
       monitorData: {},
+      msgVisible: false,
     };
   }
 
@@ -104,6 +106,10 @@ export default class Chemical extends PureComponent {
     this.setState({ videoList: VideoList, videoVisible: true });
   };
 
+  handleParentChange = newState => {
+    this.setState({ ...newState });
+  };
+
   /**
    * 渲染
    */
@@ -123,6 +129,7 @@ export default class Chemical extends PureComponent {
       monitorType,
       monitorDetailDrawerVisible,
       monitorData,
+      msgVisible,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -163,14 +170,26 @@ export default class Chemical extends PureComponent {
             <Col span={18} className={styles.height100}>
               <div className={styles.right}>
                 <Map setDrawerVisible={this.setDrawerVisible} showVideo={this.handleShowVideo} />
+
+                {msgVisible ? (
+                  <Messages
+                    setDrawerVisible={this.setDrawerVisible}
+                    handleParentChange={this.handleParentChange}
+                  />
+                ) : (
+                  <div className={styles.msgContainer}>
+                    {/* <Badge count={3}> */}
+                    <Icon
+                      type="message"
+                      className={styles.msgIcon}
+                      onClick={() => this.setState({ msgVisible: true })}
+                    />
+                    {/* </Badge> */}
+                  </div>
+                )}
               </div>
             </Col>
           </Row>
-          <div className={styles.msgContainer}>
-            <Badge count={3}>
-              <Icon type="message" className={styles.msgIcon} />
-            </Badge>
-          </div>
         </div>
 
         {/* 风险点抽屉 */}
