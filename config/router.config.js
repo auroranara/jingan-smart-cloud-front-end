@@ -1336,6 +1336,52 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/device-management/user-transmission-device',
+              code: 'deviceManagement.userTransmissionDevice',
+              name: 'userTransmissionDevice',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/user-transmission-device',
+                  name: 'userTransmissionDevice',
+                  redirect: '/device-management/user-transmission-device/list',
+                },
+                {
+                  path: '/device-management/user-transmission-device/list',
+                  code: 'deviceManagement.userTransmissionDevice.listView',
+                  name: 'list',
+                  component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDevice',
+                },
+                {
+                  path: '/device-management/user-transmission-device/:companyId/detail',
+                  code: 'deviceManagement.userTransmissionDevice.view',
+                  name: 'deviceDetail',
+                  component:
+                    './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
+                },
+                {
+                  path:
+                    '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
+                  code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
+                  name: 'importPointPosition',
+                  component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
+                },
+                {
+                  path: '/device-management/user-transmission-device/add',
+                  code: 'deviceManagement.userTransmissionDevice.add',
+                  name: 'add',
+                  component: './DeviceManagement/UserTransmissionDevice/TransmissionDeviceAdd',
+                },
+                {
+                  path:
+                    '/device-management/user-transmission-device/:companyId/point-managament/:hostId',
+                  code: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
+                  name: 'pointManagement',
+                  component: './DeviceManagement/UserTransmissionDevice/PointManagement',
+                },
+              ],
+            },
           ],
         },
 
