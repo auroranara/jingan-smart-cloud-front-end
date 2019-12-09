@@ -220,7 +220,11 @@ module.exports = env => {
           path: '/menu-reveal',
           redirect: '/menu-reveal/system',
         },
-        { path: '/menu-reveal/system', name: 'system', component: './BigPlatform/MenuReveal/System' },
+        {
+          path: '/menu-reveal/system',
+          name: 'system',
+          component: './BigPlatform/MenuReveal/System',
+        },
         { path: '/menu-reveal/menus', name: 'menus', component: './BigPlatform/MenuReveal/Menus' },
       ],
     },
@@ -1537,8 +1541,7 @@ module.exports = env => {
               path: '/iot/alarm-work-order',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'alarmMessage', // 报警消息
@@ -2198,8 +2201,7 @@ module.exports = env => {
               path: '/gas-iot/alarm-work-order',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'alarmMessage', // 可燃有毒气体报警消息
@@ -2207,8 +2209,7 @@ module.exports = env => {
               path: '/gas-iot/alarm-message',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               path: '/gas-iot/IOT-abnormal-data', // IOT数据分析
@@ -2295,8 +2296,7 @@ module.exports = env => {
               path: '/gas-iot/realtime-monitor',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'monitorReport', // 可燃有毒气体监测报表
@@ -2388,8 +2388,7 @@ module.exports = env => {
               path: '/risk-control/four-color-image',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'upgradeWarning', // 风险升级预警信息
@@ -2397,8 +2396,7 @@ module.exports = env => {
               path: '/risk-control/upgrade-warning',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'reevaluateWarning', // 复评预警管理
@@ -2406,8 +2404,7 @@ module.exports = env => {
               path: '/risk-control/reevaluate-warning',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'changeWarning', // 变更预警管理
@@ -2415,8 +2412,7 @@ module.exports = env => {
               path: '/risk-control/change-warning',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
           ],
         },
@@ -3980,8 +3976,7 @@ module.exports = env => {
               path: '/facility-management/operation-record',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
           ],
         },
@@ -3992,24 +3987,68 @@ module.exports = env => {
           name: 'targetResponsibility',
           icon: 'flag',
           systemType: 4,
-          developing: true,
+          // developing: true,
           routes: [
             {
               name: 'indexManagement', // 安全生产指标管理
               code: 'targetResponsibility.indexManagement',
               path: '/target-responsibility/index-management',
-              developing: true,
               hideChildrenInMenu: true,
               routes: [
+                {
+                  name: 'list',
+                  path: '/target-responsibility/index-management',
+                  redirect: '/target-responsibility/index-management/index',
+                },
+                {
+                  name: 'list',
+                  code: 'targetResponsibility.indexManagement.list',
+                  path: '/target-responsibility/index-management/index',
+                  component: './TargetResponsibility/IndexManagement/index',
+                },
               ],
             },
             {
               name: 'targetSetting', // 目标责任制定实施
               code: 'targetResponsibility.targetSetting',
               path: '/target-responsibility/target-setting',
-              developing: true,
               hideChildrenInMenu: true,
               routes: [
+                {
+                  name: 'list',
+                  path: '/target-responsibility/target-setting',
+                  redirect: '/target-responsibility/target-setting/index',
+                },
+                {
+                  name: 'list',
+                  code: 'targetResponsibility.targetSetting.list',
+                  path: '/target-responsibility/target-setting/index',
+                  component: './TargetResponsibility/TargetSetting/index',
+                },
+                {
+                  name: 'add',
+                  code: 'targetResponsibility.targetSetting.add',
+                  path: '/target-responsibility/target-setting/add',
+                  component: './TargetResponsibility/TargetSetting/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'targetResponsibility.targetSetting.edit',
+                  path: '/target-responsibility/target-setting/edit/:id',
+                  component: './TargetResponsibility/TargetSetting/Edit',
+                },
+                {
+                  name: 'detail',
+                  code: 'targetResponsibility.targetSetting.edit',
+                  path: '/target-responsibility/target-setting/detail/:id',
+                  component: './TargetResponsibility/TargetSetting/Edit',
+                },
+                {
+                  name: 'checkDetail',
+                  code: 'targetResponsibility.targetSetting.list',
+                  path: '/target-responsibility/target-setting/check-detail/:id',
+                  component: './TargetResponsibility/TargetSetting/CheckDetail',
+                },
               ],
             },
             {
@@ -4018,8 +4057,7 @@ module.exports = env => {
               path: '/target-responsibility/target-analysis',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
           ],
         },
@@ -4447,8 +4485,7 @@ module.exports = env => {
               name: 'riskGrading',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'promise', // 风险研判与承诺公告
@@ -4503,8 +4540,7 @@ module.exports = env => {
               path: '/hidden-danger-control/danger-standard-database',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               path: '/hidden-danger-control/hidden-danger-plan', // 隐患排查计划(风险点管理子集)
@@ -4512,8 +4548,7 @@ module.exports = env => {
               name: 'hiddenDangerPlan',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               path: '/hidden-danger-control/hidden-danger-report', // 隐患排查报表
@@ -4556,8 +4591,7 @@ module.exports = env => {
               path: '/operation-safety/post-info',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'specialOperationPermit', // 特种作业操作证人员
@@ -4645,7 +4679,8 @@ module.exports = env => {
                   component: './DataAnalysis/WorkApprovalReport/WorkApprovalList',
                 },
                 {
-                  path: '/operation-safety/work-approval-report/company/:companyId/:type/detail/:id',
+                  path:
+                    '/operation-safety/work-approval-report/company/:companyId/:type/detail/:id',
                   name: 'detail',
                   code: 'operationSafety.workApprovalReport.detail',
                   component: './DataAnalysis/WorkApprovalReport/WorkApprovalDetail',
@@ -4669,8 +4704,7 @@ module.exports = env => {
               path: '/major-hazard-monitor/alarm',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
             {
               name: 'interlock', // 联锁管理功能
@@ -4678,8 +4712,7 @@ module.exports = env => {
               path: '/major-hazard-monitor/interlock',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
           ],
         },
@@ -5015,12 +5048,10 @@ module.exports = env => {
               path: '/change-management/change-log',
               developing: true,
               hideChildrenInMenu: true,
-              routes: [
-              ],
+              routes: [],
             },
           ],
         },
-
       ],
     },
   ];
