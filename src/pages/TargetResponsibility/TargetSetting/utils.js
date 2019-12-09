@@ -246,6 +246,7 @@ export const ExamModal = Form.create()(props => {
     handleOpenChange,
     clearDateValue,
     currentId,
+    validatorID,
     list,
   } = props;
 
@@ -316,7 +317,7 @@ export const ExamModal = Form.create()(props => {
         )}
         <Form.Item {...formItemCol} label="实际值:">
           {getFieldDecorator('actualValue', {
-            rules: [{ required: true, message: '请选择实际值' }],
+            rules: [{ required: true, message: '请选择实际值' }, { validator: validatorID }],
           })(<Input placeholder="请输入" />)}
         </Form.Item>
       </Form>
