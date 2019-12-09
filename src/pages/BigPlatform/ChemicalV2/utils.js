@@ -17678,8 +17678,8 @@ export const MonitorList = [
           gaugeData: { value: 52, title: '压力', unit: 'Mpa' },
         },
         {
-          gaugeData: { value: 65, title: '温度', unit: '℃' },
-          extra: 5,
+          gaugeData: { value: 68, title: '温度', unit: '℃' },
+          extra: 8,
         },
       ],
     },

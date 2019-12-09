@@ -23,28 +23,29 @@ const hiddenDangerData = [
   { label: '待复查', value: 1, color: '#0967D3' },
 ];
 const riskSourceData = [
-  { label: '储罐区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
-  { label: '储罐监测', value: 3, tip: '液位、压力、温度' },
-  { label: '库区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
-  { label: '库房监测', value: 2, tip: '温度、湿度' },
-  { label: '生产装置', value: 3, url: '', tip: '压力、温度' },
+  // { label: '储罐区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
+  // { label: '储罐监测', value: 3, tip: '液位、压力、温度' },
+  // { label: '库区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
+  { label: '库房监测', value: 2, tip: '温度、湿度', type: 4 },
+  { label: '生产装置', value: 3, url: '', tip: '压力、温度', type: 3 },
   {
     label: '气柜',
     value: 2,
     url: 'major-hazard-info/gasometer/list',
     tip: '柜容、压力、可燃气体浓度、有毒气体浓度',
+    type: 5,
   },
   // { label: '高危工艺', value: 2, url: 'major-hazard-info/high-risk-process/list', tip: '压力、温度'  },
 ];
 const twoListData = [
   {
-    label: '风险辨识清单',
+    label: '危险（有害）因素排查辨识清单',
     value: 1,
     url: 'two-information-management/danger-factors-list/list',
     images: [dangerFactorsList],
   },
   {
-    label: '分级管控清单',
+    label: '安全风险分级管控清单',
     value: 1,
     url: 'two-information-management/safety-risk-list/list',
     images: [safetyRiskList],
@@ -151,12 +152,15 @@ export default class KeyPoints extends PureComponent {
           </div>
           <div className={styles.content}>
             {riskSourceData.map((item, index) => {
-              const { label, value, url, images, tip } = item;
+              const { label, value, url, images, tip, type } = item;
               return (
                 <div
                   className={styles.tagItem}
                   key={index}
-                  onClick={() => this.handleJump(url, images)}
+                  // onClick={() => this.handleJump(url, images)}
+                  onClick={() => {
+                    setDrawerVisible('monitor', { monitorType: type });
+                  }}
                 >
                   {label}
                   <span className={styles.tagValue}>({value})</span>
