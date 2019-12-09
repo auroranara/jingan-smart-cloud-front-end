@@ -13,12 +13,15 @@ import {
   Col,
   Popconfirm,
   DatePicker,
+  AutoComplete,
+  Spin,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
+import debounce from 'lodash/debounce';
 import moment from 'moment';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -61,15 +64,21 @@ const {
   loading: loading.models.targetResponsibility,
 }))
 export default class Edit extends PureComponent {
-  state = {
-    uploading: false, // 上传是否加载
-    photoUrl: [], // 上传照片
-    indexVisible: false, // 指标弹框是否可见
-    dutyStatus: '', // 责任主体选择key
-    detailList: {},
-    safetyIndexList: [],
-    isopen: false,
-  };
+  constructor(props) {
+    super(props);
+    this.handlePersonSearch = debounce(this.handlePersonSearch, 800);
+    this.state = {
+      uploading: false, // 上传是否加载
+      photoUrl: [], // 上传照片
+      indexVisible: false, // 指标弹框是否可见
+      dutyStatus: '', // 责任主体选择key
+      detailList: {},
+      safetyIndexList: [],
+      isopen: false,
+      departmentId: '', // 部门id
+      personId: {}, // 个人id
+    };
+  }
 
   // 挂载后
   componentDidMount() {
@@ -77,6 +86,9 @@ export default class Edit extends PureComponent {
       dispatch,
       match: {
         params: { id },
+      },
+      user: {
+        currentUser: { companyId: unitId, unitType },
       },
     } = this.props;
 
@@ -94,6 +106,7 @@ export default class Edit extends PureComponent {
             dutyMajor,
             otherFileList,
             safeProductGoalValueList,
+            name: personName,
           } = data;
           this.setState(
             {
@@ -110,20 +123,21 @@ export default class Edit extends PureComponent {
                 ? safeProductGoalValueList
                 : [],
               dutyStatus: dutyMajor.substr(0, 1),
-              labelId: dutyMajorId,
+              departmentId: dutyMajorId,
+              personId: { key: dutyMajorId, label: personName },
             },
             () => {
               if (+dutyMajor.substr(0, 1) === 2) {
                 dispatch({
                   type: 'department/fetchDepartmentList',
-                  payload: { companyId: companyId },
+                  payload: { companyId: unitType === 4 ? unitId : companyId },
                 });
               } else if (+dutyMajor.substr(0, 1) === 3) {
                 dispatch({
                   type: 'account/fetch',
                   payload: {
-                    unitId: companyId,
-                    pageSize: 100,
+                    unitId: unitType === 4 ? unitId : companyId,
+                    pageSize: 10,
                     pageNum: 1,
                   },
                 });
@@ -151,9 +165,6 @@ export default class Edit extends PureComponent {
     return url && url.includes('detail');
   };
 
-  // 去除左右两边空白
-  handleTrim = e => e.target.value.trim();
-
   // 提交
   handleSubmit = () => {
     const {
@@ -163,23 +174,38 @@ export default class Edit extends PureComponent {
       dispatch,
       form: { validateFieldsAndScroll },
       user: {
-        currentUser: { companyId: unitId },
+        currentUser: { companyId: unitId, unitType },
       },
     } = this.props;
-    const { photoUrl, safetyIndexList, dutyStatus, labelId } = this.state;
+    const { photoUrl, safetyIndexList, dutyStatus, departmentId, personId } = this.state;
 
-    const symbolValue = safetyIndexList.map(item => item.symbolValue);
-    if (symbolValue.indexOf(undefined) >= 0)
+    const departmentValue = dutyStatus + ',' + departmentId;
+    const personValue = dutyStatus + ',' + personId.key;
+
+    const indexValue = safetyIndexList
+      .map(item => item.indexValue)
+      .concat(safetyIndexList.map(item => item.symbolValue));
+
+    if (indexValue.indexOf(undefined) >= 0 || indexValue.indexOf('') >= 0)
       return message.warning('请先填写安全生产目标数值，不能为空！');
+
+    if (+dutyStatus === 3 && !personId.key) {
+      return message.warning(`个人选项不能为空！`);
+    }
+
+    if (+dutyStatus === 2 && !departmentId) {
+      return message.warning(`部门选项不能为空！`);
+    }
 
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const { companyId, goalYear } = values;
         const payload = {
           id,
-          companyId: companyId.key || unitId,
+          companyId: unitType === 4 ? unitId : companyId.key,
           goalYear: moment(goalYear).format('YYYY'),
-          dutyMajor: +dutyStatus === 1 ? dutyStatus : dutyStatus + ',' + labelId,
+          dutyMajor:
+            +dutyStatus === 1 ? dutyStatus : +dutyStatus === 2 ? departmentValue : personValue,
           safeProductGoalValueList: safetyIndexList,
           otherFile:
             photoUrl.length > 0
@@ -316,10 +342,19 @@ export default class Edit extends PureComponent {
     });
   };
 
+  // 验证指标输入
   validatorID = (rule, value, callback) => {
     const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+    const patterDot = new RegExp(
+      "[`~!@#$^&*()=|{}':;',\\[\\]<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]"
+    );
     if (value) {
-      if (chineseRe.test(value) || /[a-z]/.test(value) || /[A-Z]/.test(value)) {
+      if (
+        chineseRe.test(value) ||
+        /[a-z]/.test(value) ||
+        /[A-Z]/.test(value) ||
+        patterDot.test(value)
+      ) {
         callback('注：只能输入数字');
       } else {
         callback();
@@ -374,6 +409,7 @@ export default class Edit extends PureComponent {
                   <Form.Item style={{ marginTop: '-4px', marginBottom: '-13px' }}>
                     {getFieldDecorator(`indexValue${index}`, {
                       initialValue: indexValue,
+                      getValueFromEvent: e => e.target.value.trim(),
                       rules: [
                         {
                           message: '只能输入数字或者百分数',
@@ -410,7 +446,7 @@ export default class Edit extends PureComponent {
 
   // 单位名称切换，清空责任主体
   onChangeComapny = () => {
-    this.setState({ dutyStatus: '', labelId: '' });
+    this.setState({ dutyStatus: '', departmentId: '', personId: {} });
   };
 
   // 责任主体key切换
@@ -418,24 +454,54 @@ export default class Edit extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      user: {
+        currentUser: { companyId: unitId, unitType },
+      },
     } = this.props;
     const { companyId } = getFieldsValue();
 
-    this.setState({ dutyStatus: key, labelId: '' });
+    this.setState({ dutyStatus: key, departmentId: '', personId: {} });
     if (+key === 2) {
       dispatch({
         type: 'department/fetchDepartmentList',
-        payload: { companyId: companyId ? companyId.key : undefined },
+        payload: { companyId: companyId ? companyId.key : unitType === 4 ? unitId : undefined },
       });
-    } else if (+key === 3) {
+    }
+    if (+key === 3) {
       dispatch({
         type: 'account/fetch',
         payload: {
-          unitId: companyId ? companyId.key : undefined,
-          pageSize: 100,
+          unitId: companyId ? companyId.key : unitType === 4 ? unitId : undefined,
+          pageSize: 10,
           pageNum: 1,
         },
       });
+    }
+  };
+
+  // 模糊搜索个人列表
+  handlePersonSearch = value => {
+    const { dispatch } = this.props;
+    // 根据输入值获取列表
+    dispatch({
+      type: 'account/fetch',
+      payload: {
+        userName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 18,
+      },
+    });
+  };
+
+  // 个人选择框切换
+  handlePersonChange = e => {
+    this.setState({ personId: { key: e.key, label: e.label } });
+  };
+
+  // 个人选择框失去焦点
+  handlePersonBlur = value => {
+    if (value.key && value.key === value.label) {
+      this.setState({ personId: '' });
     }
   };
 
@@ -449,7 +515,7 @@ export default class Edit extends PureComponent {
   };
 
   handleIdChange = e => {
-    this.setState({ labelId: e });
+    this.setState({ departmentId: e });
   };
 
   // 切换日历面板
@@ -530,6 +596,7 @@ export default class Edit extends PureComponent {
   // 渲染
   renderForm = () => {
     const {
+      loading,
       form: { getFieldDecorator },
       targetResponsibility: {
         dutyMajorList = [],
@@ -538,9 +605,6 @@ export default class Edit extends PureComponent {
       user: {
         currentUser: { unitType },
       },
-      // match: {
-      //   params: { id },
-      // },
       department: {
         data: { list: departmentList = [] },
       },
@@ -549,7 +613,7 @@ export default class Edit extends PureComponent {
 
     const { companyId, companyName, goalYear, dutyMajor } = data || {};
 
-    const { uploading, photoUrl, dutyStatus, labelId, isopen } = this.state;
+    const { uploading, photoUrl, dutyStatus, departmentId, personId, isopen } = this.state;
 
     return (
       <Card>
@@ -616,7 +680,7 @@ export default class Edit extends PureComponent {
                 )}
                 {+dutyStatus === 2 && (
                   <Select
-                    value={labelId}
+                    value={departmentId}
                     placeholder="请选择"
                     {...itemStyles}
                     style={{ width: '50%' }}
@@ -630,12 +694,19 @@ export default class Edit extends PureComponent {
                   </Select>
                 )}
                 {+dutyStatus === 3 && (
-                  <Select
-                    value={labelId}
-                    placeholder="请选择"
+                  <AutoComplete
+                    value={personId}
+                    mode="combobox"
+                    labelInValue
+                    optionLabelProp="children"
+                    placeholder="请输入"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handlePersonSearch}
+                    onBlur={this.handlePersonBlur}
+                    filterOption={false}
                     {...itemStyles}
                     style={{ width: '50%' }}
-                    onChange={e => this.handleIdChange(e)}
+                    onChange={e => this.handlePersonChange(e)}
                   >
                     {personList.map(({ users, userName }) => (
                       <Option
@@ -645,7 +716,7 @@ export default class Edit extends PureComponent {
                         {userName}
                       </Option>
                     ))}
-                  </Select>
+                  </AutoComplete>
                 )}
                 {+dutyStatus === 0 && (
                   <Input placeholder="请选择" {...itemStyles} style={{ width: '50%' }} disabled />

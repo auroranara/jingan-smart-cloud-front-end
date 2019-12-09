@@ -659,6 +659,7 @@ export default {
       add: 'targetResponsibility.targetSetting.add',
       edit: 'targetResponsibility.targetSetting.edit',
       delete: 'targetResponsibility.targetSetting.delete',
+      result: 'targetResponsibility.targetSetting.result',
     },
   },
 };

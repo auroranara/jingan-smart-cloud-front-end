@@ -97,7 +97,7 @@ export default class TableList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -109,6 +109,7 @@ export default class TableList extends PureComponent {
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
+
     const toolBarAction = (
       <Button
         type="primary"
@@ -172,7 +173,7 @@ export default class TableList extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={FIELDS}
+            fields={unitType === 4 ? FIELDS.slice(1, FIELDS.length) : FIELDS}
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
@@ -185,7 +186,11 @@ export default class TableList extends PureComponent {
               bordered
               rowKey="id"
               loading={loading}
-              columns={[...COLUMNS, ...extraColumns]}
+              columns={
+                unitType === 4
+                  ? [...COLUMNS.slice(1, COLUMNS.length), ...extraColumns]
+                  : [...COLUMNS, ...extraColumns]
+              }
               dataSource={list}
               onChange={this.onTableChange}
               pagination={{

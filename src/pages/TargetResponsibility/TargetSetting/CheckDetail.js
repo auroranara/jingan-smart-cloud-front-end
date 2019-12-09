@@ -3,11 +3,12 @@ import { connect } from 'dva';
 // import router from 'umi/router';
 // import Link from 'umi/link';
 import moment from 'moment';
-import { Card, Table, message, Button } from 'antd';
+import { Card, Table, message, Button, Form } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, DETAIL_COLUMNS as COLUMNS, ExamModal, LIST_URL } from './utils';
+@Form.create()
 @connect(({ targetResponsibility, user, loading }) => ({
   targetResponsibility,
   user,
@@ -60,20 +61,22 @@ export default class CheckDetail extends PureComponent {
 
   handleModalAdd = formData => {
     const {
-      time,
-      fieldsValue: { actualValue, checkFrequency },
+      fieldsValue: { actualValue, monthTime, yearTime, quarter },
       goalDutyId,
       targetId,
     } = formData;
     const { dispatch } = this.props;
-
     dispatch({
       type: 'targetResponsibility/fetchExamAdd',
       payload: {
         goalDutyId,
         targetId,
-        examtime: checkFrequency ? checkFrequency : moment(time).format('YYYY'),
         actualValue: actualValue,
+        examtime: quarter
+          ? quarter
+          : monthTime
+            ? moment(monthTime).format('MM')
+            : moment(yearTime).format('YYYY'),
       },
       callback: response => {
         if (response && response.code === 200) {
@@ -99,17 +102,28 @@ export default class CheckDetail extends PureComponent {
   };
 
   clearDateValue = () => {
-    this.setState({ time: null });
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ yearTime: null, monthTime: null, quarter: null });
   };
 
   handleModalClose = () => {
-    this.setState({ modalVisible: false });
+    this.setState({ modalVisible: false, time: '' });
   };
 
   validatorID = (rule, value, callback) => {
     const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+    const patterDot = new RegExp(
+      "[`~!@#$^&*()=|{}':;',\\[\\]<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]"
+    );
     if (value) {
-      if (chineseRe.test(value) || /[a-z]/.test(value) || /[A-Z]/.test(value)) {
+      if (
+        chineseRe.test(value) ||
+        /[a-z]/.test(value) ||
+        /[A-Z]/.test(value) ||
+        patterDot.test(value)
+      ) {
         callback('注：只能输入数字');
       } else {
         callback();

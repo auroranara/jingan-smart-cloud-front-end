@@ -1,6 +1,9 @@
 import React from 'react';
 import moment from 'moment';
-import { Input, Select, Form, Modal, DatePicker } from 'antd';
+import { Input, Select, Form, Modal, DatePicker, message } from 'antd';
+import { AuthA } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
+
 const { MonthPicker } = DatePicker;
 
 const { Option } = Select;
@@ -8,7 +11,6 @@ const { Option } = Select;
 export const PAGE_SIZE = 20;
 export const ROUTER = '/target-responsibility/target-setting'; // modify
 export const LIST_URL = `${ROUTER}/index`;
-
 export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
@@ -126,7 +128,22 @@ export const TABLE_COLUMNS = [
     key: 'performance',
     align: 'center',
     render: (val, text) => {
-      return <a href={`#${ROUTER}/check-detail/${text.id}`}>填写考核结果</a>;
+      const { safeProductGoalNumberList } = text;
+      return safeProductGoalNumberList ? (
+        <AuthA
+          code={codesMap.targetResponsibility.targetSetting.result}
+          href={`#${ROUTER}/check-detail/${text.id}`}
+        >
+          填写考核结果
+        </AuthA>
+      ) : (
+        <AuthA
+          code={codesMap.targetResponsibility.targetSetting.result}
+          onClick={() => message.warning('禁止进入考核页面,请先添加安全生产目标数值')}
+        >
+          填写考核结果
+        </AuthA>
+      );
     },
   },
 ];
@@ -266,7 +283,7 @@ export const ExamModal = Form.create()(props => {
     validateFields((err, fieldsValue) => {
       if (err) return;
       resetFields();
-      return handleModalAdd({ time, targetId, goalDutyId, fieldsValue });
+      return handleModalAdd({ targetId, goalDutyId, fieldsValue });
     });
   };
 
@@ -283,14 +300,17 @@ export const ExamModal = Form.create()(props => {
         </Form.Item>
         {checkFrequency === '1' && (
           <Form.Item {...formItemCol} label="考核时间段:">
-            {getFieldDecorator('checkFrequency', {})(
-              <MonthPicker placeholder="请选择" format="M月" />
-            )}
+            {getFieldDecorator('monthTime', {
+              initialValue: time,
+              rules: [{ required: true, message: '请选择考核时间段' }],
+            })(<MonthPicker placeholder="请选择" format="M月" />)}
           </Form.Item>
         )}
         {checkFrequency === '2' && (
           <Form.Item {...formItemCol} label="考核时间段:">
-            {getFieldDecorator('checkFrequency', {})(
+            {getFieldDecorator('quarter', {
+              rules: [{ required: true, message: '请选择考核时间段' }],
+            })(
               <Select placeholder="请选择" allowClear>
                 {quarterList.map(({ key, value }) => (
                   <Option key={key} value={key}>
@@ -303,21 +323,26 @@ export const ExamModal = Form.create()(props => {
         )}
         {checkFrequency === '3' && (
           <Form.Item {...formItemCol} label="考核时间段:">
-            <DatePicker
-              placeholder="请选择"
-              value={time}
-              open={isopen}
-              onOpenChange={s => handleOpenChange(s)}
-              onChange={clearDateValue}
-              onPanelChange={v => handlePanelChange(v)}
-              format="YYYY"
-              mode="year"
-            />
+            {getFieldDecorator('yearTime', {
+              initialValue: time,
+              rules: [{ required: true, message: '请选择考核时间段' }],
+            })(
+              <DatePicker
+                placeholder="请选择"
+                open={isopen}
+                onOpenChange={s => handleOpenChange(s)}
+                onChange={clearDateValue}
+                onPanelChange={v => handlePanelChange(v)}
+                format="YYYY"
+                mode="year"
+              />
+            )}
           </Form.Item>
         )}
         <Form.Item {...formItemCol} label="实际值:">
           {getFieldDecorator('actualValue', {
             rules: [{ required: true, message: '请选择实际值' }, { validator: validatorID }],
+            getValueFromEvent: e => e.target.value.trim(),
           })(<Input placeholder="请输入" />)}
         </Form.Item>
       </Form>

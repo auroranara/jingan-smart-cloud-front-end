@@ -4045,7 +4045,7 @@ module.exports = env => {
                 },
                 {
                   name: 'checkDetail',
-                  code: 'targetResponsibility.targetSetting.list',
+                  code: 'targetResponsibility.targetSetting.result',
                   path: '/target-responsibility/target-setting/check-detail/:id',
                   component: './TargetResponsibility/TargetSetting/CheckDetail',
                 },
