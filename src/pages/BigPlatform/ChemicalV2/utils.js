@@ -17636,10 +17636,10 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '可燃气体浓度', unit: 'mg/m³' },
         },
         {
-          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
           extra: 5,
         },
       ],
@@ -17655,10 +17655,10 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '可燃气体浓度', unit: 'mg/m³' },
         },
         {
-          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
           extra: 5,
         },
       ],
@@ -17675,10 +17675,10 @@ export const MonitorList = [
       location: '储罐监测点A',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' },
         },
         {
-          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 65, title: '温度', unit: '℃' },
           extra: 5,
         },
       ],
@@ -17692,10 +17692,10 @@ export const MonitorList = [
       location: '储罐监测点B',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' },
         },
         {
-          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 65, title: '温度', unit: '℃' },
           extra: 5,
         },
       ],
@@ -17709,10 +17709,10 @@ export const MonitorList = [
       location: '储罐监测点C',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' },
         },
         {
-          gaugeData: { value: 42, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 42, title: '温度', unit: '℃' },
         },
       ],
     },
@@ -17727,10 +17727,10 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' },
         },
         {
-          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 65, title: '温度', unit: '℃' },
           extra: 5,
         },
       ],
@@ -17743,10 +17743,10 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' },
         },
         {
-          gaugeData: { value: 35, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 35, title: '温度', unit: '℃' },
         },
       ],
     },
@@ -17758,10 +17758,10 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' },
         },
         {
-          gaugeData: { value: 41, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 41, title: '温度', unit: '℃' },
         },
       ],
     },
@@ -17776,11 +17776,11 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 70, title: '温度', unit: '℃' },
+          extra: 10,
         },
         {
-          gaugeData: { value: 70, title: '温度', unit: '℃' }, 
-          extra: 10,
+          gaugeData: { value: 52, title: '湿度', unit: '%' },
         },
       ],
     },
@@ -17792,10 +17792,10 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 27, title: '温度', unit: '℃' },
         },
         {
-          gaugeData: { value: 27, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 52, title: '湿度', unit: '%' },
         },
       ],
     },
@@ -17810,10 +17810,10 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '可燃气体浓度', unit: 'mg/m³' },
         },
         {
-          gaugeData: { value: 81, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 81, title: '有毒气体浓度', unit: 'mg/m³' },
           extra: 21,
         },
       ],
@@ -17826,37 +17826,46 @@ export const MonitorList = [
       store: '甲醛、乙炔、一氧化碳',
       monitors: [
         {
-          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+          gaugeData: { value: 52, title: '可燃气体浓度', unit: 'mg/m³' },
         },
         {
-          gaugeData: { value: 47, title: '温度', unit: '℃' }, 
+          gaugeData: { value: 47, title: '有毒气体浓度', unit: 'mg/m³' },
         },
       ],
     },
   ],
   // 可燃有毒气体
   [
-    { title: '可燃有毒气体监测', status: 1, location: '仓库-1号仓库', isDanger: 1,
-    monitors: [
-      {
-        gaugeData: { value: 71, title: '可燃气体浓度', unit: 'mg/m³' }, 
-        extra: 26,
-      },
-      {
-        gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' }, 
-        extra: 12,
-      },
-    ],
-   },
-    { title: '可燃有毒气体监测', status: 2, location: '仓库-3号仓库', isDanger: 0,
-    monitors: [
-      {
-        gaugeData: { value: 35, title: '可燃气体浓度', unit: 'mg/m³' }, 
-      },
-      {
-        gaugeData: { value: 47, title: '有毒气体浓度', unit: 'mg/m³' }, 
-      },
-    ]},
+    {
+      title: '可燃有毒气体监测',
+      status: 1,
+      location: '仓库-1号仓库',
+      isDanger: 1,
+      monitors: [
+        {
+          gaugeData: { value: 71, title: '可燃气体浓度', unit: 'mg/m³' },
+          extra: 26,
+        },
+        {
+          gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
+          extra: 12,
+        },
+      ],
+    },
+    {
+      title: '可燃有毒气体监测',
+      status: 2,
+      location: '仓库-3号仓库',
+      isDanger: 0,
+      monitors: [
+        {
+          gaugeData: { value: 35, title: '可燃气体浓度', unit: 'mg/m³' },
+        },
+        {
+          gaugeData: { value: 47, title: '有毒气体浓度', unit: 'mg/m³' },
+        },
+      ],
+    },
   ],
 ];
 
@@ -18000,6 +18009,7 @@ export const MonitorDetailFields = [
   ],
   // 气柜
   [
+    { label: '气柜名称', value: 'title' },
     { label: '区域位置', value: 'location' },
     {
       label: '是否构成重大危险源',

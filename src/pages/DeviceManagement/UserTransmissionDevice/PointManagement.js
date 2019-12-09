@@ -444,7 +444,7 @@ export default class PointManagement extends Component {
     const deleteAuth = hasAuthority(deleteCode, permissionCodes)
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '设备管理', name: '设备管理' },
+      { title: '物联设备管理', name: '物联设备管理' },
       { title: '用户传输装置', name: '用户传输装置', href: '/device-management/user-transmission-device/list' },
       { title: '详情页', name: '详情页', href: `/device-management/user-transmission-device/${companyId}/detail` },
       { title: TITLE, name: TITLE },
