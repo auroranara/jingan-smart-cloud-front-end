@@ -261,6 +261,7 @@ export default class Edit extends PureComponent {
       { name: 'emergency2', label: '应急联系方式-外部', type: 'component', component: '' },
       { name: 'fire', label: '火警', type: 'component', component: '119' },
       { name: 'rescue', label: '医疗救护', type: 'component', component: '120' },
+      { name: 'section', label: '风险分区', type: 'select', required: false },
     ];
 
     return (

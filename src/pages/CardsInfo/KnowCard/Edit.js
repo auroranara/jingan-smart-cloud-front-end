@@ -145,6 +145,7 @@ export default class Edit extends PureComponent {
       { name: 'contentDetails', label: '附件', type: 'compt', component: uploadBtn },
       { name: 'publisher', label: '发布人员' },
       { name: 'time', label: '时间', type: 'datepicker' },
+      { name: 'section', label: '风险分区', type: 'select', required: false },
     ];
 
     return (

@@ -127,6 +127,7 @@ export const EDIT_FORMITEMS = [ // modify
     { name: 'content', label: '承诺卡内容', type: 'text' },
     { name: 'acceptor', label: '承诺人' },
     { name: 'time', label: '时间', type: 'datepicker' },
+    { name: 'section', label: '风险分区', type: 'select', required: false },
 ];
 
 export function handleDetails(values, deletedProps=['companyName']) {
