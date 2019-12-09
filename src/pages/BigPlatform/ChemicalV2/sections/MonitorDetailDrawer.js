@@ -9,6 +9,8 @@ import { Gauge } from '../components/Components';
 import styles from './MonitorDetailDrawer.less';
 import iconAlarm from '@/assets/icon-alarm.png';
 import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
+import iconList from '../imgs/icon-list.png';
+import iconChart from '../imgs/icon-chart.png';
 import { MonitorTitles, MonitorDetailFields } from '../utils';
 
 export default class MonitorDetailDrawer extends PureComponent {
@@ -28,26 +30,10 @@ export default class MonitorDetailDrawer extends PureComponent {
         }}
       >
         <div className={styles.top}>
-          {/* <div>
-            <span className={styles.label}>罐区名称：</span>
-            {title}
-          </div>
-          <div>
-            <span className={styles.label}>位号：</span>
-            {number}
-          </div>
-          <div>
-            <span className={styles.label}>存储物质：</span>
-            甲醛、乙炔、一氧化碳
-          </div>
-          <div>
-            <span className={styles.label}>是否构成重大危险源：</span>
-            {isDanger === 0 ? '否' : '是'}
-          </div> */}
           {MonitorDetailFields[type].map((item, index) => {
             const { label, value, render } = item;
             return (
-              <div>
+              <div key={index}>
                 <span className={styles.label}>{label}：</span>
                 {render ? render(monitorData[value]) : monitorData[value]}
               </div>
@@ -58,6 +44,7 @@ export default class MonitorDetailDrawer extends PureComponent {
               className={styles.alarm}
               style={{
                 background: `url(${iconAlarm}) center center / 100% 100% no-repeat`,
+                top: type === 6 && '3px',
               }}
             />
           )}
@@ -73,6 +60,20 @@ export default class MonitorDetailDrawer extends PureComponent {
               }}
               onClick={handleShowVideo}
             />
+            <span className={styles.extra}>
+              <span
+                className={styles.icon}
+                style={{
+                  background: `url(${iconList}) center center / 100% 100% no-repeat`,
+                }}
+              />
+              <span
+                className={styles.icon}
+                style={{
+                  background: `url(${iconChart}) center center / 100% 100% no-repeat`,
+                }}
+              />
+            </span>
           </div>
           <Row>
             {monitors.map((item, index) => {
@@ -97,6 +98,20 @@ export default class MonitorDetailDrawer extends PureComponent {
               }}
               onClick={handleShowVideo}
             />
+            <span className={styles.extra}>
+              <span
+                className={styles.icon}
+                style={{
+                  background: `url(${iconList}) center center / 100% 100% no-repeat`,
+                }}
+              />
+              <span
+                className={styles.icon}
+                style={{
+                  background: `url(${iconChart}) center center / 100% 100% no-repeat`,
+                }}
+              />
+            </span>
           </div>
           <Row>
             {monitors.map((item, index) => {

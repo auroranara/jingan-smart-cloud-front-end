@@ -319,8 +319,8 @@ export default class Edit extends PureComponent {
   validatorID = (rule, value, callback) => {
     const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
     if (value) {
-      if (chineseRe.test(value)) {
-        callback('注：不能含有中文');
+      if (chineseRe.test(value) || /[a-z]/.test(value) || /[A-Z]/.test(value)) {
+        callback('注：只能输入数字');
       } else {
         callback();
       }
