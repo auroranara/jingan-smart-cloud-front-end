@@ -23,43 +23,48 @@ const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 // iot/major-hazard/index
 const monitorData = [
   {
-    icon: iconPoison,
-    label: '可燃有毒气体',
-    value: 2,
-    total: 20,
-    url: 'gas-iot/monitor-report',
+    icon: iconStorageArea,
+    label: '罐区监测',
+    value: 1,
+    total: 1,
+    url: 'iot/major-hazard/tank-area/real-time',
+    type: 0,
+  },
+  {
+    icon: iconStoreArea,
+    label: '库区监测',
+    value: 1,
+    total: 1,
+    url: 'iot/major-hazard/storage-area/real-time',
+    type: 1,
   },
   {
     icon: iconStorage,
     label: '储罐监测',
     value: 2,
-    total: 20,
+    total: 3,
     url: 'iot/major-hazard/tank/real-time',
+    type: 2,
   },
-  {
-    icon: iconStoreArea,
-    label: '库区监测',
-    value: 2,
-    total: 20,
-    url: 'iot/major-hazard/storage-area/real-time',
-  },
+  { icon: iconProduce, label: '生产装置监测', value: 1, total: 3, type: 3 },
   {
     icon: iconStorehouse,
     label: '库房监测',
-    value: 2,
-    total: 20,
+    value: 1,
+    total: 2,
     url: 'iot/major-hazard/storage-house/real-time',
+    type: 4,
   },
+  { icon: iconGas, label: '气柜监测', value: 1, total: 2, type: 5 },
   {
-    icon: iconStorageArea,
-    label: '罐区监测',
-    value: 2,
-    total: 20,
-    url: 'iot/major-hazard/tank-area/real-time',
+    icon: iconPoison,
+    label: '可燃有毒气体',
+    value: 1,
+    total: 2,
+    url: 'gas-iot/monitor-report',
+    type: 6,
   },
-  { icon: iconHigh, label: '高危工艺监测', value: 2, total: 20 },
-  { icon: iconProduce, label: '生产装置监测', value: 2, total: 20 },
-  { icon: iconGas, label: '气柜监测', value: 2, total: 20 },
+  { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
 ];
 const keyPointsData = [
   { icon: iconDangerSource, label: '重大危险源', value: 2 },
@@ -74,9 +79,12 @@ export default class KeyPoints extends PureComponent {
     this.setState({ active: i });
   };
 
-  handleClick = url => {
-    if (!url) return;
-    window.open(`${window.publicPath}#/${url}`, `_blank`);
+  handleClick = type => {
+    const { setDrawerVisible } = this.props;
+    if (type || type === 0) {
+      setDrawerVisible('monitor', { monitorType: type });
+    }
+    // window.open(`${window.publicPath}#/${url}`, `_blank`);
   };
 
   render() {
@@ -94,17 +102,17 @@ export default class KeyPoints extends PureComponent {
           <div className={styles.scroll}>
             <Row>
               {[monitorData, keyPointsData][active].map((item, index) => {
-                const { icon, label, value, total, url } = item;
+                const { icon, label, value, total, type } = item;
                 return (
                   <Col span={12} key={index}>
                     <div
                       className={styles.item}
                       style={{
                         background: `url(${icon}) 3em center / 3em 3em no-repeat`,
-                        cursor: url ? 'pointer' : 'default',
+                        cursor: type || type === 0 ? 'pointer' : 'default',
                       }}
                       onClick={() => {
-                        this.handleClick(url);
+                        this.handleClick(type);
                       }}
                     >
                       <div className={styles.countLabel}>

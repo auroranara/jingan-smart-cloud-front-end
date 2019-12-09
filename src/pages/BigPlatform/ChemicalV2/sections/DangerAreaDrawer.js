@@ -152,7 +152,13 @@ export default class KeyPoints extends PureComponent {
         </div>
 
         <div className={styles.wrapper}>
-          <div className={styles.title} style={{ cursor: 'pointer' }}>
+          <div
+            className={styles.title}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setDrawerVisible('monitorDetail', { monitorType: 6 });
+            }}
+          >
             可燃有毒气体监测
             <div className={styles.extra}>
               <Icon type="right" className={styles.rightIcon} />

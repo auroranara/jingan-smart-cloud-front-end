@@ -3,29 +3,14 @@ import { Col, Select } from 'antd';
 import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './MonitorDrawer.less';
-// import { DataList } from '../utils';
+import { MonitorItem } from '../components/Components';
+import { MonitorList, MonitorFields, MonitorTitles } from '../utils';
 
 const { Option } = Select;
 const options = [
   { label: '全部状态', value: 0 },
   { label: '报警', value: 1 },
   { label: '正常', value: 2 },
-];
-
-const list = [
-  { title: 'name', status: 2, location: '仓库-7号仓库', isDanger: 0 },
-  // { title: 'name', label: '区域位置', value: '仓库-7号仓库' },
-  // { title: 'name', label: '是否构成重大危险源', value: '是' },
-];
-const fields = [
-  { label: '区域位置', value: 'location' },
-  {
-    label: '是否构成重大危险源',
-    value: 'isDanger',
-    render: val => {
-      return val === 0 ? '否' : '是';
-    },
-  },
 ];
 export default class MonitorDrawer extends PureComponent {
   constructor(props) {
@@ -39,16 +24,28 @@ export default class MonitorDrawer extends PureComponent {
     this.setState({ selected: value });
   };
 
+  handleClick = data => {
+    const { setDrawerVisible } = this.props;
+    setDrawerVisible('monitorDetail', { monitorData: data });
+  };
+
   render() {
-    const { visible, onClose, type } = this.props;
+    // type = [0,1,2,3,4,5,6]    ['罐区', '库区', '储罐', '生产装置', '库房', '气柜', '可燃有毒气体']
+    const { visible, onClose, type = 0 } = this.props;
     const { selected } = this.state;
     return (
       <DrawerContainer
-        title="当前隐患"
+        title={`${MonitorTitles[type]}监测（${MonitorList[type].length}）`}
         visible={visible}
-        onClose={onClose}
+        onClose={() => {
+          onClose();
+          setTimeout(() => {
+            this.setState({ selected: 0 });
+          }, 500);
+        }}
         width={535}
         destroyOnClose={true}
+        zIndex={1666}
         left={
           <div className={styles.container}>
             <Select
@@ -72,6 +69,23 @@ export default class MonitorDrawer extends PureComponent {
                 );
               })}
             </Select>
+            <div className={styles.items}>
+              {MonitorList[type]
+                .filter(item => {
+                  if (selected === 0) {
+                    return true;
+                  }
+                  return item.status === selected;
+                })
+                .map((item, index) => (
+                  <MonitorItem
+                    key={index}
+                    data={item}
+                    fields={MonitorFields[type]}
+                    onClick={() => this.handleClick(item)}
+                  />
+                ))}
+            </div>
           </div>
         }
       />

@@ -292,7 +292,6 @@ export default class CurrentHiddenDanger extends PureComponent {
         },
       ],
     };
-    console.log('visible', visible);
 
     return (
       <Fragment>

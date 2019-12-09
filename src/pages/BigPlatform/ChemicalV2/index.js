@@ -27,6 +27,7 @@ import {
   DangerAreaDrawer,
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
+  MonitorDetailDrawer,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -55,7 +56,10 @@ export default class Chemical extends PureComponent {
       images: null,
       videoList: [],
       currentHiddenDangerDrawerVisible: false,
-      monitorDrawerVisible: true,
+      monitorDrawerVisible: false,
+      monitorType: 0,
+      monitorDetailDrawerVisible: false,
+      monitorData: {},
     };
   }
 
@@ -116,6 +120,9 @@ export default class Chemical extends PureComponent {
       images,
       currentHiddenDangerDrawerVisible,
       monitorDrawerVisible,
+      monitorType,
+      monitorDetailDrawerVisible,
+      monitorData,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -149,7 +156,7 @@ export default class Chemical extends PureComponent {
               </div>
 
               <div className={styles.leftBottom}>
-                <KeyPoints />
+                <KeyPoints setDrawerVisible={this.setDrawerVisible} />
               </div>
             </Col>
 
@@ -230,6 +237,18 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('monitor');
           }}
+          type={monitorType}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <MonitorDetailDrawer
+          visible={monitorDetailDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('monitorDetail');
+          }}
+          type={monitorType}
+          monitorData={monitorData}
+          handleShowVideo={this.handleShowVideo}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

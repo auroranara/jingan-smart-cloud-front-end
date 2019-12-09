@@ -17624,3 +17624,391 @@ export const POINTS = {
     ],
   },
 };
+
+export const MonitorList = [
+  // 罐区
+  [
+    {
+      title: '溶剂罐区',
+      status: 1,
+      location: '仓库-7号仓库',
+      isDanger: 1,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          extra: 5,
+        },
+      ],
+    },
+  ],
+  // 库区
+  [
+    {
+      title: '甲类库区',
+      status: 1,
+      location: '甲类库区监测点A',
+      isDanger: 1,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          extra: 5,
+        },
+      ],
+    },
+  ],
+  // 储罐
+  [
+    {
+      title: '甲烷气体储罐',
+      status: 1,
+      number: '64501B',
+      isDanger: 1,
+      store: '甲醛、乙炔、一氧化碳',
+      location: '储罐监测点A',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          extra: 5,
+        },
+      ],
+    },
+    {
+      title: '甲醇储罐',
+      status: 1,
+      number: '3621C',
+      isDanger: 1,
+      store: '甲醛、乙炔、一氧化碳',
+      location: '储罐监测点B',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          extra: 5,
+        },
+      ],
+    },
+    {
+      title: '溶剂储罐',
+      status: 2,
+      number: '4305A',
+      isDanger: 0,
+      store: '甲醛、乙炔、一氧化碳',
+      location: '储罐监测点C',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 42, title: '温度', unit: '℃' }, 
+        },
+      ],
+    },
+  ],
+  // 生产装置
+  [
+    {
+      title: '催化装置',
+      status: 1,
+      location: '监测点B',
+      isDanger: 1,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 65, title: '温度', unit: '℃' }, 
+          extra: 5,
+        },
+      ],
+    },
+    {
+      title: '甲醇生产装置',
+      status: 2,
+      location: '监测点A',
+      isDanger: 0,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 35, title: '温度', unit: '℃' }, 
+        },
+      ],
+    },
+    {
+      title: '过滤装置',
+      status: 2,
+      location: '监测点C',
+      isDanger: 0,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 41, title: '温度', unit: '℃' }, 
+        },
+      ],
+    },
+  ],
+  // 库房
+  [
+    {
+      title: '原料库房',
+      status: 1,
+      location: '库房监测点A',
+      isDanger: 1,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 70, title: '温度', unit: '℃' }, 
+          extra: 10,
+        },
+      ],
+    },
+    {
+      title: '产品库房',
+      status: 2,
+      location: '库房监测点B',
+      isDanger: 0,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 27, title: '温度', unit: '℃' }, 
+        },
+      ],
+    },
+  ],
+  // 气柜
+  [
+    {
+      title: '甲烷气柜',
+      status: 1,
+      location: '气柜监测点A',
+      isDanger: 1,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 81, title: '温度', unit: '℃' }, 
+          extra: 21,
+        },
+      ],
+    },
+    {
+      title: '乙烯气柜',
+      status: 2,
+      location: '气柜监测点B',
+      isDanger: 0,
+      store: '甲醛、乙炔、一氧化碳',
+      monitors: [
+        {
+          gaugeData: { value: 52, title: '压力', unit: 'Mpa' }, 
+        },
+        {
+          gaugeData: { value: 47, title: '温度', unit: '℃' }, 
+        },
+      ],
+    },
+  ],
+  // 可燃有毒气体
+  [
+    { title: '可燃有毒气体监测', status: 1, location: '仓库-1号仓库', isDanger: 1,
+    monitors: [
+      {
+        gaugeData: { value: 71, title: '可燃气体浓度', unit: 'mg/m³' }, 
+        extra: 26,
+      },
+      {
+        gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' }, 
+        extra: 12,
+      },
+    ],
+   },
+    { title: '可燃有毒气体监测', status: 2, location: '仓库-3号仓库', isDanger: 0,
+    monitors: [
+      {
+        gaugeData: { value: 35, title: '可燃气体浓度', unit: 'mg/m³' }, 
+      },
+      {
+        gaugeData: { value: 47, title: '有毒气体浓度', unit: 'mg/m³' }, 
+      },
+    ]},
+  ],
+];
+
+export const MonitorFields = [
+  // 罐区
+  [
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 库区
+  [
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 储罐
+  [
+    { label: '位号', value: 'number' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 生产装置
+  [
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 库房
+  [
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 气柜
+  [
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 可燃有毒气体
+  [{ label: '监测区域名称', value: 'location' }],
+];
+
+export const MonitorTitles = ['罐区', '库区', '储罐', '生产装置', '库房', '气柜', '可燃有毒气体'];
+
+export const MonitorDetailFields = [
+  // 罐区
+  [
+    { label: '罐区名称', value: 'title' },
+    { label: '存储物质', value: 'store' },
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 库区
+  [
+    { label: '库区名称', value: 'title' },
+    { label: '存储物质', value: 'store' },
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 储罐
+  [
+    { label: '储罐名称', value: 'title' },
+    { label: '位号', value: 'number' },
+    { label: '存储物质', value: 'store' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 生产装置
+  [
+    { label: '生产装置名称', value: 'title' },
+    { label: '存储物质', value: 'store' },
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 库房
+  [
+    { label: '库房名称', value: 'title' },
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 气柜
+  [
+    { label: '区域位置', value: 'location' },
+    {
+      label: '是否构成重大危险源',
+      value: 'isDanger',
+      render: val => {
+        return val === 0 ? '否' : '是';
+      },
+    },
+  ],
+  // 可燃有毒气体
+  [{ label: '监测区域名称', value: 'location' }],
+];
