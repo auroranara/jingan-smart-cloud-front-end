@@ -121,6 +121,7 @@ export function getTableColumns(handleConfirmDelete, showModal) {
       title: '操作',
       dataIndex: 'id',
       key: 'id',
+      width: 132,
       align: 'center',
       fixed: 'right',
       render(id) {
