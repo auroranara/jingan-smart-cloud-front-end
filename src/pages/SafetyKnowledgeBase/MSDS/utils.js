@@ -2,6 +2,8 @@ import { Fragment } from 'react';
 import router from 'umi/router';
 import { Button, Cascader, DatePicker, Form, Input, Radio, Select } from 'antd';
 
+import CompanySelect from '@/jingan-components/CompanySelect';
+
 const { Item: FormItem } = Form;
 const { TextArea } = Input;
 const { Option } = Select;
@@ -73,21 +75,25 @@ function genFormItem(field, getFieldDecorator) {
     placeholder,
     required = true,
     options,
+    formItemOptions,
     component: compt,
     formExtraStyle,
   } = field;
 
   let child = null;
 
-  if (type === 'component') child = compt;
+  if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
   else {
-    const formOptions = {};
+    const formOptions = formItemOptions || {};
     const opts = getOptions(options);
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
 
     let component = null;
     const rules = [];
     switch (type) {
+      case 'compt': // getFieldDecorator包裹的
+        component = compt;
+        break;
       case 'text':
         placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
@@ -115,6 +121,10 @@ function genFormItem(field, getFieldDecorator) {
       case 'cascader':
         placeholder = placeholder || `请选择${label}`;
         component = <Cascader placeholder={placeholder} options={options} allowClear />;
+        break;
+      case 'companyselect':
+        placeholder = placeholder || `请选择${label}`;
+        component = <CompanySelect />;
         break;
       default:
         placeholder = placeholder || `请输入${label}`;
@@ -160,7 +170,7 @@ function getSections(sections) {
   return sections;
 }
 
-export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl) {
+export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl, loading=false) {
   const secs = getSections(sections);
   const props = {};
   // const props = { ...FORMITEM_LAYOUT };
@@ -169,7 +179,7 @@ export function renderSections(sections, getFieldDecorator, handleSubmit, listUr
       <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>
         取消
       </Button>
-      <Button type="primary" htmlType="submit">
+      <Button type="primary" htmlType="submit" loading={loading}>
         提交
       </Button>
     </FormItem>

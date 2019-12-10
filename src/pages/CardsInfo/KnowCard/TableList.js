@@ -1,20 +1,54 @@
 import React, { PureComponent } from 'react';
-// import { connect } from 'dva';
+import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table } from 'antd';
+import { Button, Card, Modal, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, LIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, TABLE_COLUMNS as COLUMNS } from './utils';
+import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableColumns } from './utils';
 
+@connect(({ cardsInfo, loading }) => ({
+  cardsInfo,
+  loading: loading.models.cardsInfo,
+}))
 export default class TableList extends PureComponent {
+  state = {
+    current: 1,
+    src: '',
+    modalVisible: false,
+  };
+  values = {};
+
+  componentDidMount() {
+    this.getList();
+  }
+
+  getList = pageNum => {
+    const { dispatch } = this.props;
+    const vals = { ...this.values };
+    if (vals.time)
+      vals.time = +vals.time.startOf('day');
+
+    if (!pageNum) { // pageNum不存在，则为初始化
+      pageNum = 1;
+      this.setState({ current: 1 });
+    }
+
+    dispatch({
+      type: 'cardsInfo/fetchKnowList',
+      payload: { pageNum, pageSize: PAGE_SIZE, ...vals },
+    });
+  };
+
   handleSearch = values => {
-    return;
+    this.values = values;
+    this.getList();
   };
 
   handleReset = () => {
-    return;
+    this.values = {};
+    this.getList();
   };
 
   handleAdd = () => {
@@ -22,13 +56,44 @@ export default class TableList extends PureComponent {
   };
 
   onTableChange = (pagination, filters, sorter) => {
-    return;
+    const { current } = pagination;
+    this.setState({ current });
+    this.getList(current);
+  };
+
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    const { current } = this.state;
+    dispatch({
+      type: 'cardsInfo/deleteKnowCard',
+      payload: id,
+      callback: (code, msg) => {
+        if (code === 200) {
+          message.success('删除成功');
+          this.getList(current);
+        }
+        else
+          message.error(msg);
+      },
+    });
+  };
+
+  showModal = item => {
+    this.setState({ modalVisible: true, src: item.contentDetails[0].webUrl });
+  };
+
+  hideModal = () => {
+    this.setState({ modalVisible: false });
   };
 
   render() {
-    const { loading=false } = this.props;
+    const {
+      loading,
+      cardsInfo: { knowList, knowTotal },
+    } = this.props;
+    const { modalVisible, current, src } = this.state;
 
-    const list = LIST;
+    const list = knowList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
@@ -36,6 +101,7 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
+    const columns = getTableColumns(this.handleDelete, this.showModal);
 
     return (
       <PageHeaderLayout
@@ -43,7 +109,7 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：{list.length}
+            共计：{knowTotal}
           </p>
         }
       >
@@ -61,13 +127,16 @@ export default class TableList extends PureComponent {
           <Table
             rowKey="id"
             loading={loading}
-            columns={COLUMNS}
+            columns={columns}
             dataSource={list}
             onChange={this.onTableChange}
-            scroll={{ x: 1500 }} // 项目不多时注掉
-            pagination={{ pageSize: PAGE_SIZE, total: PAGE_SIZE, current: 1 }}
+            // scroll={{ x: 1400 }} // 项目不多时注掉
+            pagination={{ pageSize: PAGE_SIZE, total: knowTotal, current }}
           />
         </div>
+        <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null}>
+          <div style={{ height: 700, backgroundImage: `url(${src})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: '50% 50%' }} />
+        </Modal>
       </PageHeaderLayout>
     );
   }
