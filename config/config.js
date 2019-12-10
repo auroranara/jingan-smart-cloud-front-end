@@ -40,6 +40,7 @@ const hosts = {
   sk: '192.168.10.21',
   ly: '192.168.10.19:8080',
   show: 'www.jinganyun.net',
+  five: 'five.jinganyun.net',
 };
 
 export default {

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Icon, Badge } from 'antd';
+import { Row, Col, Icon, Badge, notification } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
@@ -11,7 +11,10 @@ import styles from './index.less';
 import { RiskPointDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { VideoList } from './utils';
+import { VideoList, MonitorList } from './utils';
+import iconFire from '@/assets/icon-fire-msg.png';
+import iconFault from '@/assets/icon-fault-msg.png';
+import iconAlarm from '@/assets/icon-alarm.png';
 
 import {
   Risk,
@@ -42,6 +45,41 @@ const HEADER_STYLE = {
 };
 
 const CONTENT_STYLE = { position: 'relative', height: '90.37037%', zIndex: 0 };
+
+const msgInfo = [
+  {
+    title: '火警提示',
+    icon: iconFire,
+    color: '#f83329',
+    body: '发生报警，',
+    bottom: '情况危急，请立即处理！',
+    animation: styles.redShadow,
+    types: [7, 38],
+  },
+  {
+    title: '故障提示',
+    icon: iconFault,
+    color: '#f4710f',
+    body: '发生故障，',
+    bottom: '请及时维修！',
+    animation: styles.orangeShadow,
+    types: [9, 40],
+  },
+  {
+    title: '报警提示',
+    icon: iconAlarm,
+    color: '#f83329',
+    body: '发生报警，',
+    bottom: '情况危急，请立即处理！',
+    animation: styles.redShadow,
+    types: [32, 36, 39],
+  },
+];
+notification.config({
+  placement: 'bottomRight',
+  duration: 30,
+  bottom: 6,
+});
 
 @connect(({ unitSafety, bigPlatform }) => ({ unitSafety, bigPlatform }))
 export default class Chemical extends PureComponent {
@@ -133,6 +171,76 @@ export default class Chemical extends PureComponent {
     this.setState({ ...newState });
   };
 
+  handleClickNotification = () => {
+    const style = {
+      boxShadow: `0px 0px 20px #f83329`,
+    };
+    const styleAnimation = {
+      ...style,
+      animation: `${styles.redShadow} 2s linear 0s infinite alternate`,
+    };
+    const options = {
+      key: 'messageId',
+      className: styles.notification,
+      message: this.renderNotificationTitle(),
+      description: this.renderNotificationMsg(),
+      style: { ...style, width: screen.availWidth / 5 },
+      // style: { ...style, width: '24%' },
+    };
+    notification.open({
+      ...options,
+    });
+
+    setTimeout(() => {
+      // 解决加入animation覆盖notification自身显示动效时长问题
+      notification.open({
+        ...options,
+        style: { ...styleAnimation, width: screen.availWidth / 5 },
+        onClose: () => {
+          notification.open({
+            ...options,
+          });
+          setTimeout(() => {
+            notification.close('messageId');
+          }, 200);
+        },
+      });
+    }, 800);
+  };
+
+  renderNotificationTitle = item => {
+    const msgItem = msgInfo[2];
+    return (
+      <div className={styles.notificationTitle} style={{ color: msgItem.color }}>
+        <span className={styles.iconFire}>
+          <img src={msgItem.icon} alt="fire" />
+        </span>
+        {msgItem.title}
+      </div>
+    );
+  };
+
+  renderNotificationMsg = () => {
+    return (
+      <div
+        className={styles.notificationBody}
+        onClick={() =>
+          this.setDrawerVisible('monitorDetail', { monitorType: 2, monitorData: MonitorList[2][0] })
+        }
+      >
+        <div>
+          <span className={styles.time}>刚刚</span>{' '}
+          {/* <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '} */}
+          {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
+          <span className={styles.address}>{'储罐监测发生报警'}</span>
+        </div>
+        <div style={{ color: '#f83329' }}>温度为68℃，超过预警值8℃</div>
+        <div>监测设备：储罐监测设备</div>
+        <div>区域位置：储罐监测点A</div>
+      </div>
+    );
+  };
+
   /**
    * 渲染
    */
@@ -214,6 +322,8 @@ export default class Chemical extends PureComponent {
                     {/* </Badge> */}
                   </div>
                 )}
+
+                <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
               </div>
             </Col>
           </Row>
