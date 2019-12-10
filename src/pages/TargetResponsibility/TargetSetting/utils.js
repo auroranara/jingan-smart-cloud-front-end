@@ -301,7 +301,7 @@ export const ExamModal = Form.create()(props => {
         {checkFrequency === '1' && (
           <Form.Item {...formItemCol} label="考核时间段:">
             {getFieldDecorator('monthTime', {
-              initialValue: time,
+              initialValue: time ? time : undefined,
               rules: [{ required: true, message: '请选择考核时间段' }],
             })(<MonthPicker placeholder="请选择" format="M月" />)}
           </Form.Item>
@@ -324,7 +324,7 @@ export const ExamModal = Form.create()(props => {
         {checkFrequency === '3' && (
           <Form.Item {...formItemCol} label="考核时间段:">
             {getFieldDecorator('yearTime', {
-              initialValue: time,
+              initialValue: time ? time : undefined,
               rules: [{ required: true, message: '请选择考核时间段' }],
             })(
               <DatePicker

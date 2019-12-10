@@ -241,7 +241,6 @@ export default class TableList extends PureComponent {
               loading={loading}
               columns={[...COLUMNS, ...extraColumns]}
               dataSource={list}
-              onChange={this.onTableChange}
               pagination={{
                 current: pageNum,
                 pageSize,
