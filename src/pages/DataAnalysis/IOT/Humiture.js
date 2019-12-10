@@ -18,9 +18,9 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '物联网监测', name: '物联网监测' },
   {
-    title: 'IOT数据分析',
-    name: 'IOT数据分析',
-    href: '/iot/IOT-abnormal-data/list',
+    title: 'IOT监测及趋势统计',
+    name: 'IOT监测及趋势统计',
+    href: '/company-iot/IOT-abnormal-data/list',
   },
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];
