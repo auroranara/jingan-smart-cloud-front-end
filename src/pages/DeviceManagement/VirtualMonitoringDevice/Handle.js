@@ -391,8 +391,8 @@ export default class HandleVirtualMonitoringDevice extends Component {
       { title: '首页', name: '首页', href: '/' },
       { title: '物联设备管理', name: '物联设备管理' },
       {
-        title: '虚拟监测设备管理',
-        name: '虚拟监测设备管理',
+        title: '虚拟监测对象管理',
+        name: '虚拟监测对象管理',
         href: '/device-management/virtual-monitoring-device/list',
       },
       { title, name: title },
