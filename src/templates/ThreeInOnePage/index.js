@@ -141,10 +141,10 @@ export default class ThreeInOnePage extends Component {
     this.form = form;
   }
 
-  @bind()
-  @debounce(300)
-  refresh() {
-    this.forceUpdate();
+  refresh = () => {
+    setTimeout(() => {
+      this.forceUpdate();
+    })
   }
 
   // 返回按钮点击事件
@@ -182,6 +182,12 @@ export default class ThreeInOnePage extends Component {
     this.props.goToEdit();
   }
 
+  handleCompanyChange = (company) => {
+    if (!company || company.key !== company.label) {
+      this.refresh();
+    }
+  }
+
   renderItem = (values, item, index) => {
     if (Array.isArray(item)) {
       return {
@@ -200,7 +206,7 @@ export default class ThreeInOnePage extends Component {
         labelCol,
         render: () => {
           if (component === 'Input') {
-            return <InputOrSpan className={styles.item} placeholder={`请输入${label}`} type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+            return <InputOrSpan className={styles.item} placeholder={`请输入${label}`} type={isNotDetail || 'span'} onChange={refreshEnable ? this.handleCompanyChange : undefined} {...props} />;
           } else if (component === 'Select') {
             return <SelectOrSpan className={styles.item} placeholder={`请选择${label}`} type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} allowClear={!required} {...props} />;
           } else if (component === 'CompanySelect') {
@@ -236,7 +242,7 @@ export default class ThreeInOnePage extends Component {
               ...(component === 'CustomUpload' && {
                 type: 'array',
                 min: 1,
-                transform: value => value && value.filter(({ status }) => status === 'done'),
+                // transform: value => value && value.filter(({ status }) => status === 'done'),
               }),
             },
           ],
@@ -257,6 +263,7 @@ export default class ThreeInOnePage extends Component {
       hasEditAuthority,
       detail={},
       unitId,
+      getLoading,
     } = this.props;
     const { initialValues ,submitting } = this.state;
     const showEdit = typeof editEnable === 'function' ? editEnable(detail) : editEnable;
@@ -284,9 +291,9 @@ export default class ThreeInOnePage extends Component {
               <Fragment>
                 <Button onClick={this.handleBackButtonClick}>返回</Button>
                 {isNotDetail ? (
-                  <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+                  <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting || (getLoading && getLoading(values))}>提交</Button>
                 ) : showEdit && (
-                  <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+                  <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority} loading={submitting || (getLoading && getLoading(values))}>编辑</Button>
                 )}
               </Fragment>
             )}
