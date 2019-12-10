@@ -6,6 +6,7 @@ import monitor from '../imgs/monitor.png';
 import riskPoint from '../imgs/risk-point.png';
 import video from '../imgs/video.png';
 import mapDot from '@/pages/BigPlatform/NewFireControl/img/mapDot.png';
+import { MonitorList } from '../utils';
 
 const fengMap = fengmap; // eslint-disable-line
 let map;
@@ -253,12 +254,12 @@ export default class Map extends PureComponent {
         this.addMarkers(x, y, url, iconType);
       });
 
-      this.addPolygon(polygon, 'rgb(255, 72, 72)');
+      this.addPolygon(polygon, 'rgb(251, 247, 25)');
       this.addPolygon(polygon2, 'rgb(241, 122, 10)');
       this.addPolygon(polygon3, 'rgb(241, 122, 10)');
       this.addPolygon(polygon4, 'rgb(30, 96, 255)');
       this.addPolygon(polygon5, 'rgb(30, 96, 255)');
-      this.addPolygon(polygon6, 'rgb(251, 247, 25)');
+      this.addPolygon(polygon6, 'rgb(255, 72, 72)');
       console.log('fengmap', fengmap);
       console.log('fengmap.FMNodeType', fengmap.FMNodeType);
       console.log('getDatasByAlias', map.getDatasByAlias(1, 'model'));
@@ -266,14 +267,14 @@ export default class Map extends PureComponent {
       const models = map.getDatasByAlias(1, 'model');
       models.forEach(item => {
         if ((item.ID && (item.ID >= 158 && item.ID <= 171)) || (item.ID >= 258 && item.ID <= 271)) {
-          // red
-          item.setColor('rgb(255, 72, 72)', 1);
+          // yellow
+          item.setColor('rgb(251, 247, 25)', 1);
         } else if (orangeIds.includes(item.ID)) {
           // orange
           item.setColor('rgb(241, 122, 10)', 1);
         } else if (yellowIds.includes(item.ID)) {
-          // yellow
-          item.setColor('rgb(251, 247, 25)', 1);
+          // red
+          item.setColor('rgb(255, 72, 72)', 1);
         } else if (blueIds.includes(item.ID)) {
           // blue
           item.setColor('rgb(30, 96, 255)', 1);
@@ -309,7 +310,8 @@ export default class Map extends PureComponent {
         console.log('iconType', iconType);
         if (iconType === 2) showVideo();
         else if (iconType === 0) setDrawerVisible('dangerArea');
-        else if (iconType === 1) setDrawerVisible('storageArea');
+        else if (iconType === 1)
+          setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
       }
 
       // this.ids.push(ID);
