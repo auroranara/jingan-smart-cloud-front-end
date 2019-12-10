@@ -84,6 +84,7 @@ export default class EmergencySuppliesList extends PureComponent {
   pageSize = 10;
 
   componentDidMount() {
+    this.fetchDict({ type: 'emergencyEquip' });
     this.fetchList(1);
   }
 
@@ -95,8 +96,14 @@ export default class EmergencySuppliesList extends PureComponent {
         pageNum,
         pageSize,
         ...filters,
+        materialType: filters.materialType && filters.materialType.join(','),
       },
     });
+  };
+
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
   };
 
   renderForm = () => {
@@ -104,6 +111,7 @@ export default class EmergencySuppliesList extends PureComponent {
       user: {
         currentUser: { permissionCodes },
       },
+      emergencyManagement: { emergencyEquip = [] },
     } = this.props;
     const fields = [
       {
@@ -118,16 +126,13 @@ export default class EmergencySuppliesList extends PureComponent {
         render() {
           return (
             <Cascader
-              options={[]}
+              options={emergencyEquip}
               fieldNames={{
                 value: 'id',
-                label: 'name',
+                label: 'label',
                 children: 'children',
                 isLeaf: 'isLeaf',
               }}
-              // loadData={selectedOptions => {
-              //   this.handleLoadData(['registerAddress'], selectedOptions);
-              // }}
               changeOnSelect
               placeholder="请选择物资分类"
               allowClear
@@ -135,7 +140,6 @@ export default class EmergencySuppliesList extends PureComponent {
             />
           );
         },
-        transform,
       },
       {
         id: 'materialCode',
@@ -272,6 +276,7 @@ export default class EmergencySuppliesList extends PureComponent {
       loading = false,
       emergencyManagement: {
         supplies: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} },
+        emergencyEquip = [],
       },
     } = this.props;
     const { currentPage } = this.state;
@@ -319,9 +324,18 @@ export default class EmergencySuppliesList extends PureComponent {
         width: 200,
         render: (data, record) => {
           const { materialType, materialCode } = record;
+          let treeData = emergencyEquip;
+          const string = materialType
+            .split(',')
+            .map(id => {
+              const val = treeData.find(item => item.id === id) || {};
+              treeData = val.children;
+              return val.label;
+            })
+            .join('/');
           return (
             <div className={styles.multi}>
-              <div>{materialType}</div>
+              <div>{string}</div>
               <div>{materialCode}</div>
             </div>
           );

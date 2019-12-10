@@ -11,7 +11,7 @@ import styles from './index.less';
 import { RiskPointDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { POINTS, VideoList } from './utils';
+import { VideoList } from './utils';
 
 import {
   Risk,
@@ -22,11 +22,13 @@ import {
   Tips,
   CompanyInfo,
   StorageAreaDrawer,
-  HiddenDanger,
+  MonitorDrawer,
   Map,
   DangerAreaDrawer,
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
+  MonitorDetailDrawer,
+  Messages,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -41,6 +43,7 @@ const HEADER_STYLE = {
 
 const CONTENT_STYLE = { position: 'relative', height: '90.37037%', zIndex: 0 };
 
+@connect(({ unitSafety, bigPlatform }) => ({ unitSafety, bigPlatform }))
 export default class Chemical extends PureComponent {
   constructor(props) {
     super(props);
@@ -55,10 +58,37 @@ export default class Chemical extends PureComponent {
       images: null,
       videoList: [],
       currentHiddenDangerDrawerVisible: false,
+      monitorDrawerVisible: false,
+      monitorType: 0,
+      monitorDetailDrawerVisible: false,
+      monitorData: {},
+      msgVisible: false,
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.fetchPoints();
+    this.fetchHiddenDangerList();
+  }
+
+  fetchPoints = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId: 'DccBRhlrSiu9gMV7fmvizw' } });
+  };
+
+  fetchHiddenDangerList = pageNum => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerListForPage',
+      payload: {
+        company_id: 'DccBRhlrSiu9gMV7fmvizw',
+        // businessType: 2,
+        // status: hdStatus,
+        pageNum,
+        pageSize: 10,
+      },
+    });
+  };
 
   handleDrawerVisibleChange = (name, rest) => {
     const stateName = `${name}DrawerVisible`;
@@ -99,10 +129,18 @@ export default class Chemical extends PureComponent {
     this.setState({ videoList: VideoList, videoVisible: true });
   };
 
+  handleParentChange = newState => {
+    this.setState({ ...newState });
+  };
+
   /**
    * 渲染
    */
   render() {
+    const {
+      unitSafety: { points },
+      bigPlatform: { hiddenDangerList },
+    } = this.props;
     const {
       riskPointDrawerVisible,
       riskPointType,
@@ -114,6 +152,11 @@ export default class Chemical extends PureComponent {
       videoList,
       images,
       currentHiddenDangerDrawerVisible,
+      monitorDrawerVisible,
+      monitorType,
+      monitorDetailDrawerVisible,
+      monitorData,
+      msgVisible,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -147,21 +190,33 @@ export default class Chemical extends PureComponent {
               </div>
 
               <div className={styles.leftBottom}>
-                <KeyPoints />
+                <KeyPoints setDrawerVisible={this.setDrawerVisible} />
               </div>
             </Col>
 
             <Col span={18} className={styles.height100}>
               <div className={styles.right}>
                 <Map setDrawerVisible={this.setDrawerVisible} showVideo={this.handleShowVideo} />
+
+                {msgVisible ? (
+                  <Messages
+                    setDrawerVisible={this.setDrawerVisible}
+                    handleParentChange={this.handleParentChange}
+                  />
+                ) : (
+                  <div className={styles.msgContainer}>
+                    {/* <Badge count={3}> */}
+                    <Icon
+                      type="message"
+                      className={styles.msgIcon}
+                      onClick={() => this.setState({ msgVisible: true })}
+                    />
+                    {/* </Badge> */}
+                  </div>
+                )}
               </div>
             </Col>
           </Row>
-          <div className={styles.msgContainer}>
-            <Badge count={3}>
-              <Icon type="message" className={styles.msgIcon} />
-            </Badge>
-          </div>
         </div>
 
         {/* 风险点抽屉 */}
@@ -170,9 +225,18 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('riskPoint');
           }}
-          data={POINTS}
+          data={points}
           riskPointType={riskPointType}
           zIndex={1066}
+        />
+
+        {/* 当前隐患抽屉 */}
+        <CurrentHiddenDanger
+          visible={currentHiddenDangerDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('currentHiddenDanger');
+          }}
+          hiddenDangerList={hiddenDangerList}
         />
 
         <DangerAreaDrawer
@@ -182,6 +246,7 @@ export default class Chemical extends PureComponent {
           }}
           setDrawerVisible={this.setDrawerVisible}
           handleShowImg={this.handleShowImg}
+          handleShowVideo={this.handleShowVideo}
         />
 
         <StorageAreaDrawer
@@ -216,11 +281,23 @@ export default class Chemical extends PureComponent {
           isTree={false}
         />
 
-        <CurrentHiddenDanger
-          visible={currentHiddenDangerDrawerVisible}
+        <MonitorDrawer
+          visible={monitorDrawerVisible}
           onClose={() => {
-            this.setDrawerVisible('currentHiddenDanger');
+            this.setDrawerVisible('monitor');
           }}
+          type={monitorType}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <MonitorDetailDrawer
+          visible={monitorDetailDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('monitorDetail');
+          }}
+          type={monitorType}
+          monitorData={monitorData}
+          handleShowVideo={this.handleShowVideo}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

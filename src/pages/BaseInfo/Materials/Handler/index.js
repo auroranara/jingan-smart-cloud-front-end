@@ -457,10 +457,15 @@ export default class MaterialsHandler extends PureComponent {
             {getFieldDecorator('type', {
               rules: [{ required: true, message: '请选择物料类型' }],
             })(
-              <RadioGroup {...itemStyles} onChange={this.handleTypeChange}>
-                <Radio value="1">生产原料</Radio>
-                <Radio value="2">中间产品</Radio>
-                <Radio value="3">最终产品</Radio>
+              <RadioGroup
+                {...itemStyles}
+                onChange={this.handleTypeChange}
+                defaultValue="1"
+                buttonStyle="solid"
+              >
+                <Radio.Button value="1">生产原料</Radio.Button>
+                <Radio.Button value="2">中间产品</Radio.Button>
+                <Radio.Button value="3">最终产品</Radio.Button>
               </RadioGroup>
             )}
           </FormItem>
@@ -495,22 +500,22 @@ export default class MaterialsHandler extends PureComponent {
             {getFieldDecorator('materialForm', {
               rules: [{ required: true, message: '请选择物质形态' }],
             })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="1">固态</Radio>
-                <Radio value="2">液态</Radio>
-                <Radio value="3">气态</Radio>
-                <Radio value="4">等离子态</Radio>
-              </RadioGroup>
+              <Radio.Group {...itemStyles} defaultValue="1" buttonStyle="solid">
+                <Radio.Button value="1">固态</Radio.Button>
+                <Radio.Button value="2">液态</Radio.Button>
+                <Radio.Button value="3">气态</Radio.Button>
+                <Radio.Button value="4">等离子态</Radio.Button>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem label="是否重点监管的危险化学品" {...formItemLayout}>
             {getFieldDecorator('superviseChemicals', {
               rules: [{ required: true, message: '请选择是否重点监管的危险化学品' }],
             })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="0">否</Radio>
+              <Radio.Group {...itemStyles}>
                 <Radio value="1">是</Radio>
-              </RadioGroup>
+                <Radio value="0">否</Radio>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem label="品名" {...formItemLayout}>
@@ -547,7 +552,7 @@ export default class MaterialsHandler extends PureComponent {
                   </FormItem> */}
                   <FormItem label="年生产能力" {...formItemLayout}>
                     {getFieldDecorator('annualThroughput', {
-                      getValueFromEvent: this.handleTrim,
+                      // getValueFromEvent: this.handleTrim,
                       rules: [{ required: true, message: '请输入年生产能力' }],
                     })(<InputNumber {...itemStyles} min={0} placeholder="请输入年生产能力" />)}
                   </FormItem>
@@ -568,7 +573,7 @@ export default class MaterialsHandler extends PureComponent {
                     </FormItem> */}
                     <FormItem label="年消耗量" {...formItemLayout}>
                       {getFieldDecorator('annualConsumption', {
-                        getValueFromEvent: this.handleTrim,
+                        // getValueFromEvent: this.handleTrim,
                         rules: [{ required: true, message: '请输年消耗量' }],
                       })(<InputNumber {...itemStyles} min={0} placeholder="请输年消耗量" />)}
                     </FormItem>
@@ -587,7 +592,7 @@ export default class MaterialsHandler extends PureComponent {
                     </FormItem> */}
                     <FormItem label="最大存储量" {...formItemLayout}>
                       {getFieldDecorator('maxStoreDay', {
-                        getValueFromEvent: this.handleTrim,
+                        // getValueFromEvent: this.handleTrim,
                         rules: [{ required: true, message: '请输入最大存储量' }],
                       })(<InputNumber {...itemStyles} min={0} placeholder="请输入最大存储量" />)}
                     </FormItem>
@@ -605,7 +610,7 @@ export default class MaterialsHandler extends PureComponent {
           <div className={styles.unitWrapper}>
             <FormItem label="实际存储量" {...formItemLayout}>
               {getFieldDecorator('actualReserves', {
-                getValueFromEvent: this.handleTrim,
+                // getValueFromEvent: this.handleTrim,
                 rules: [{ required: true, message: '请输入实际存储量' }],
               })(<InputNumber {...itemStyles} min={0} placeholder="请输入实际存储量" />)}
             </FormItem>
@@ -622,14 +627,35 @@ export default class MaterialsHandler extends PureComponent {
               rules: [{ required: true, message: '请输入存储场所' }],
             })(<Input placeholder="请输入存储场所" {...itemStyles} />)}
           </FormItem>
+          <FormItem label="高危化学品" {...formItemLayout}>
+            {getFieldDecorator('highRiskChemicals', {
+              rules: [{ required: false, message: '请选择高危化学品' }],
+            })(
+              <Select placeholder="请选择重点监管危险化工工艺" {...itemStyles}>
+                <Option value={'0'}>硝酸铵</Option>
+                <Option value={'1'}>硝化棉</Option>
+                <Option value={'2'}>氰化钠</Option>
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label="是否剧毒化学品" {...formItemLayout}>
+            {getFieldDecorator('highlyToxicChem', {
+              rules: [{ required: true, message: '是否剧毒化学品' }],
+            })(
+              <Radio.Group {...itemStyles}>
+                <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
+              </Radio.Group>
+            )}
+          </FormItem>
           <FormItem label="是否属于高危储存设施" {...formItemLayout}>
             {getFieldDecorator('highRiskStorefacil', {
               rules: [{ required: true, message: '请选择是否属于高危储存设施' }],
             })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="0">否</Radio>
+              <Radio.Group {...itemStyles}>
                 <Radio value="1">是</Radio>
-              </RadioGroup>
+                <Radio value="0">否</Radio>
+              </Radio.Group>
             )}
           </FormItem>
           {/* <FormItem label="是否构成危险化学品重大危险源" {...formItemLayout}>
@@ -676,10 +702,10 @@ export default class MaterialsHandler extends PureComponent {
             {getFieldDecorator('keySupervisionProcess', {
               rules: [{ required: true, message: '所在工艺流程是否属于重点监管危险化工工艺' }],
             })(
-              <RadioGroup {...itemStyles} onChange={this.handleKeySupervisionChange}>
-                <Radio value="0">否</Radio>
+              <Radio.Group {...itemStyles} onChange={this.handleKeySupervisionChange}>
                 <Radio value="1">是</Radio>
-              </RadioGroup>
+                <Radio value="0">否</Radio>
+              </Radio.Group>
             )}
           </FormItem>
           {keySupervisionVisible && (
@@ -697,24 +723,23 @@ export default class MaterialsHandler extends PureComponent {
               )}
             </FormItem>
           )}
-          <FormItem label="高危化学品" {...formItemLayout}>
-            {getFieldDecorator('highRiskChemicals', {
-              rules: [{ required: true, message: '请选择高危化学品' }],
-            })(
-              <Select placeholder="请选择重点监管危险化工工艺" {...itemStyles}>
-                <Option value={'0'}>硝酸铵</Option>
-                <Option value={'1'}>硝化棉</Option>
-                <Option value={'2'}>氰化钠</Option>
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="是否剧毒化学品" {...formItemLayout}>
-            {getFieldDecorator('highlyToxicChem', {
-              rules: [{ required: true, message: '是否剧毒化学品' }],
+          <FormItem label="是否易制毒" {...formItemLayout}>
+            {getFieldDecorator('easyMakePoison', {
+              rules: [{ required: true, message: '请选择是否易制毒' }],
             })(
               <RadioGroup {...itemStyles}>
-                <Radio value="0">否</Radio>
                 <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem label="是否易制爆" {...formItemLayout}>
+            {getFieldDecorator('easyMakeExplode', {
+              rules: [{ required: true, message: '请选择是否易制爆' }],
+            })(
+              <RadioGroup {...itemStyles}>
+                <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
               </RadioGroup>
             )}
           </FormItem>
@@ -730,26 +755,6 @@ export default class MaterialsHandler extends PureComponent {
               rules: [{ required: true, message: '请输入应急处置措施' }],
             })(
               <TextArea rows={4} placeholder="请输入应急处置措施" maxLength="500" {...itemStyles} />
-            )}
-          </FormItem>
-          <FormItem label="是否易制毒" {...formItemLayout}>
-            {getFieldDecorator('easyMakePoison', {
-              rules: [{ required: true, message: '请选择是否易制毒' }],
-            })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="0">否</Radio>
-                <Radio value="1">是</Radio>
-              </RadioGroup>
-            )}
-          </FormItem>
-          <FormItem label="是否易制爆" {...formItemLayout}>
-            {getFieldDecorator('easyMakeExplode', {
-              rules: [{ required: true, message: '请选择是否易制爆' }],
-            })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="0">否</Radio>
-                <Radio value="1">是</Radio>
-              </RadioGroup>
             )}
           </FormItem>
         </Form>

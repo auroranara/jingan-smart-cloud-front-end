@@ -365,8 +365,8 @@ export default class FloorManagementList extends PureComponent {
                   查看附件
                 </AuthA>
               ) : (
-                  <span style={{ color: '#aaa' }}>查看附件</span>
-                )}
+                <span style={{ color: '#aaa' }}>查看附件</span>
+              )}
             </Fragment>
           );
         },
@@ -423,8 +423,8 @@ export default class FloorManagementList extends PureComponent {
             bordered
           />
         ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
         <Lightbox
           images={imgUrl}
           isOpen={visible}

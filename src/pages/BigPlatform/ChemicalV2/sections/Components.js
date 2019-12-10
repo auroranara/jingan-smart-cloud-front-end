@@ -6,11 +6,14 @@ import Remind from './Remind';
 import Tips from './Tips';
 import CompanyInfo from './CompanyInfo';
 import StorageAreaDrawer from './StorageAreaDrawer';
+import MonitorDetailDrawer from './MonitorDetailDrawer';
 import HiddenDanger from './HiddenDanger';
 import Map from './Map';
 import DangerAreaDrawer from './DangerAreaDrawer';
 import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
+import MonitorDrawer from './MonitorDrawer';
+import Messages from './Messages';
 
 export {
   Risk,
@@ -26,4 +29,7 @@ export {
   DangerAreaDrawer,
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
+  MonitorDrawer,
+  MonitorDetailDrawer,
+  Messages,
 };

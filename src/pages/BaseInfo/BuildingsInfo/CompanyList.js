@@ -34,8 +34,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '基本信息管理',
-    name: '基本信息管理',
+    title: '基本数据管理',
+    name: '基本数据管理',
   },
   {
     title: '建筑物管理',

@@ -17,7 +17,7 @@ const PAGE_SIZE = 18;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理' },
+  { title: '物联设备管理', name: '物联设备管理' },
   { title: '用户传输装置', name: '用户传输装置' },
 ];
 

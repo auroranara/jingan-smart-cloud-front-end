@@ -1,7 +1,22 @@
 import {
   getCompanyList,
   getAreaList,
+  getMonitorTypeList,
 } from '@/services/common';
+
+const transformMonitorTypeList = (list) => {
+  return list ? list.reduce((result, { id, name: title, child: children }) => {
+    return [
+      ...result,
+      {
+        key: id,
+        value: id,
+        title,
+        children: children && children.length > 0 ? transformMonitorTypeList(children) : undefined,
+      },
+    ];
+  }, []) : [];
+};
 
 export default {
   namespace: 'common',
@@ -16,6 +31,7 @@ export default {
       },
     },
     areaList: [],
+    monitorTypeList: [],
   },
 
   effects: {
@@ -49,6 +65,23 @@ export default {
           },
         });
         callback && callback(true, areaList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取监测类型列表
+    *getMonitorTypeList({ payload, callback }, { call, put }) {
+      const response = yield call(getMonitorTypeList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const monitorTypeList = transformMonitorTypeList(data.list);
+        yield put({
+          type: 'save',
+          payload: {
+            monitorTypeList,
+          },
+        });
+        callback && callback(true, monitorTypeList);
       } else {
         callback && callback(false, msg);
       }

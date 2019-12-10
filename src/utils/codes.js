@@ -213,17 +213,17 @@ export default {
     },
     // 建筑物信息
     buildingsInfo: {
-      list: 'baseInfoManagement.buildingsInfo.listView',
-      view: 'baseInfoManagement.buildingsInfo.view',
-      add: 'baseInfoManagement.buildingsInfo.add',
-      edit: 'baseInfoManagement.buildingsInfo.edit',
-      delete: 'baseInfoManagement.buildingsInfo.delete',
+      list: 'baseInfo.buildingsInfo.listView',
+      view: 'baseInfo.buildingsInfo.view',
+      add: 'baseInfo.buildingsInfo.add',
+      edit: 'baseInfo.buildingsInfo.edit',
+      delete: 'baseInfo.buildingsInfo.delete',
       // 楼层
-      floorListView: 'baseInfoManagement.buildingsInfo.floorListView',
-      floorAdd: 'baseInfoManagement.buildingsInfo.floorAdd',
-      floorEdit: 'baseInfoManagement.buildingsInfo.floorEdit',
-      floorView: 'baseInfoManagement.buildingsInfo.floorView',
-      floorDelete: 'baseInfoManagement.buildingsInfo.floorDelete',
+      floorListView: 'baseInfo.buildingsInfo.floorListView',
+      floorAdd: 'baseInfo.buildingsInfo.floorAdd',
+      floorEdit: 'baseInfo.buildingsInfo.floorEdit',
+      floorView: 'baseInfo.buildingsInfo.floorView',
+      floorDelete: 'baseInfo.buildingsInfo.floorDelete',
     },
   },
   // 个人备案
@@ -256,16 +256,16 @@ export default {
   },
   dataAnalysis: {
     IOTAbnormalData: {
-      electricity: 'iot.IOTAbnormalData.electricity',
-      'toxic-gas': 'iot.IOTAbnormalData.toxicGas',
-      'waste-water': 'iot.IOTAbnormalData.wasteWater',
-      'waste-gas': 'iot.IOTAbnormalData.wasteGas',
-      'storage-tank': 'iot.IOTAbnormalData.storageTank',
-      'smoke-detector': 'iot.IOTAbnormalData.smokeDetector',
-      humiture: 'iot.IOTAbnormalData.humiture',
-      fire: 'iot.IOTAbnormalData.fireDetailView',
-      history: 'iot.IOTAbnormalData.fireHistoryRecordView',
-      water: 'iot.IOTAbnormalData.water',
+      electricity: 'companyIot.IOTAbnormalData.electricity',
+      'toxic-gas': 'companyIot.IOTAbnormalData.toxicGas',
+      'waste-water': 'companyIot.IOTAbnormalData.wasteWater',
+      'waste-gas': 'companyIot.IOTAbnormalData.wasteGas',
+      'storage-tank': 'companyIot.IOTAbnormalData.storageTank',
+      'smoke-detector': 'companyIot.IOTAbnormalData.smokeDetector',
+      humiture: 'companyIot.IOTAbnormalData.humiture',
+      fire: 'companyIot.IOTAbnormalData.fireDetailView',
+      history: 'companyIot.IOTAbnormalData.fireHistoryRecordView',
+      water: 'companyIot.IOTAbnormalData.water',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',
@@ -640,6 +640,26 @@ export default {
       add: 'majorHazardInfo.majorHazard.add',
       edit: 'majorHazardInfo.majorHazard.edit',
       delete: 'majorHazardInfo.majorHazard.delete',
+    },
+  },
+
+  // 目标责任管理
+  targetResponsibility: {
+    // 安全生产指标
+    indexManagement: {
+      list: 'targetResponsibility.indexManagement.listView',
+      add: 'targetResponsibility.indexManagement.add',
+      edit: 'targetResponsibility.indexManagement.edit',
+      delete: 'targetResponsibility.indexManagement.delete',
+    },
+    // 目标责任制定实施
+    targetSetting: {
+      list: 'targetResponsibility.targetSetting.listView',
+      view: 'targetResponsibility.targetSetting.view',
+      add: 'targetResponsibility.targetSetting.add',
+      edit: 'targetResponsibility.targetSetting.edit',
+      delete: 'targetResponsibility.targetSetting.delete',
+      result: 'targetResponsibility.targetSetting.result',
     },
   },
 };

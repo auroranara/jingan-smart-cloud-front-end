@@ -179,14 +179,14 @@ export default class CurrentHiddenDanger extends PureComponent {
       visible,
       onClose,
       onCardClick, // 点击小块查看详情
-      overRectifyNum: ycq = 2,
-      rectifyNum: wcq = 0,
-      reviewNum: dfc = 2,
+      overRectifyNum: ycq = 0,
+      rectifyNum: wcq = 3,
+      reviewNum: dfc = 1,
       totalNum: total = 4,
       list = [],
-      // hiddenDangerList: { list: dataList },
+      hiddenDangerList: { list: dataList },
     } = this.props;
-    const { loading = false, dataList = DataList } = {};
+    const { loading = false } = {};
     const { hoverIndex, images, currentImage, lightBoxVisible } = this.state;
     const legendInfo = {
       已超期: ycq,
@@ -198,14 +198,14 @@ export default class CurrentHiddenDanger extends PureComponent {
         show: false,
       },
       legend: {
-        left: '13%',
+        left: 'center',
         top: '82%',
         itemGap: 20,
         itemWidth: 25,
         selectedMode: false, // 禁选
         formatter: name => `${name} ${legendInfo[name]}`,
         data: [
-          { name: '已超期', icon: 'circle' },
+          // { name: '已超期', icon: 'circle' },
           { name: '未超期', icon: 'circle' },
           { name: '待复查', icon: 'circle' },
         ],
@@ -249,19 +249,19 @@ export default class CurrentHiddenDanger extends PureComponent {
             },
           },
           data: [
-            {
-              value: ycq,
-              name: '已超期',
-              itemStyle: { color: `${redColor}` },
-              labelLine: {
-                show: this.generateShow(0, hoverIndex),
-                lineStyle: { color: `${redColor}` },
-              },
-              label: {
-                show: this.generateShow(0, hoverIndex),
-                color: { color: `${redColor}` },
-              },
-            },
+            // {
+            //   value: ycq,
+            //   name: '已超期',
+            //   itemStyle: { color: `${redColor}` },
+            //   labelLine: {
+            //     show: this.generateShow(0, hoverIndex),
+            //     lineStyle: { color: `${redColor}` },
+            //   },
+            //   label: {
+            //     show: this.generateShow(0, hoverIndex),
+            //     color: { color: `${redColor}` },
+            //   },
+            // },
             {
               value: wcq,
               name: '未超期',
@@ -292,7 +292,6 @@ export default class CurrentHiddenDanger extends PureComponent {
         },
       ],
     };
-    console.log('visible', visible);
 
     return (
       <Fragment>
@@ -330,7 +329,7 @@ export default class CurrentHiddenDanger extends PureComponent {
                         data={item}
                         fieldNames={FIELDNAMES}
                         onClickImage={this.handleShow}
-                        onClick={() => onCardClick(item)}
+                        // onClick={() => onCardClick(item)}
                       />
                     ))
                   ) : (

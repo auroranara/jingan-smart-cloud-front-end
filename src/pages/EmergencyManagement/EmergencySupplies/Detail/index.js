@@ -69,8 +69,14 @@ const LvlCodes = ['01 国家级', '02 社会力量', '99 其他'];
 }))
 export default class EmergencySuppliesDetail extends Component {
   componentDidMount() {
+    this.fetchDict({ type: 'emergencyEquip' });
     this.getDetail();
   }
+
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
+  };
 
   getDetail = () => {
     const {
@@ -93,6 +99,7 @@ export default class EmergencySuppliesDetail extends Component {
     const {
       emergencyManagement: {
         supplies: { detail = {} },
+        emergencyEquip = [],
       },
       loading,
     } = this.props;
@@ -105,6 +112,17 @@ export default class EmergencySuppliesDetail extends Component {
         renderItem = <span>{codeItem ? codeItem.name : NO_DATA}</span>;
       } else if (id === 'levelCode') {
         renderItem = <span>{LvlCodes[data - 1] || NO_DATA}</span>;
+      } else if (id === 'materialType') {
+        let treeData = emergencyEquip;
+        const string = data
+          .split(',')
+          .map(id => {
+            const val = treeData.find(item => item.id === id) || {};
+            treeData = val.children;
+            return val.label;
+          })
+          .join('/');
+        renderItem = <span>{string || NO_DATA}</span>;
       }
       return {
         ...item,
