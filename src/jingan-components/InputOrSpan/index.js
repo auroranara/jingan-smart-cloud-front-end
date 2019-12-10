@@ -19,7 +19,7 @@ export default class InputOrSpan extends Component {
       const Item = ({ InputNumber, TextArea, Search })[type] || Input;
       return <Item className={className} value={value} {...restProps} />
     } else {
-      return <div className={classNames(styles.span, className)} {...restProps}>{value}</div>
+      return <span className={classNames(styles.span, className)} {...restProps}>{value}</span>
     }
   }
 }

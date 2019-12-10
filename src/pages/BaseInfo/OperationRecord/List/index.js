@@ -99,7 +99,7 @@ export default class OperationRecordList extends Component {
     {
       title: '运维评价',
       dataIndex: 'operaEvaluation',
-      render: value => <InputOrSpan value={value} type="span" />,
+      render: value => <InputOrSpan value={value} type="span" style={{ maxWidth: 256 }} />,
       align: 'center',
     },
     {
