@@ -177,7 +177,7 @@ export default class BuildingFloorSelect extends Component {
         <Button
           className={styles.addButton}
           type="primary"
-          href="/#/base-info-management/buildings-info/list"
+          href="/#/base-info/buildings-info/list"
           target="_blank"
         >
           新增建筑物楼层

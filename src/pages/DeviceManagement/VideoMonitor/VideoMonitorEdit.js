@@ -594,8 +594,8 @@ export default class VideoMonitorEdit extends PureComponent {
     const cName = company.name || name;
     router.push(
       cId
-        ? `/base-info-management/buildings-info/add?companyId=${cId}&&name=${cName}`
-        : '/base-info-management/buildings-info/add'
+        ? `/base-info/buildings-info/add?companyId=${cId}&&name=${cName}`
+        : '/base-info/buildings-info/add'
     );
   };
 

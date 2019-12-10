@@ -386,7 +386,7 @@ export default class HandleVirtualMonitoringDevice extends Component {
         params: { id },
       },
     } = this.props;
-    const title = id ? '编辑虚拟监测设备' : '新增虚拟监测设备';
+    const title = id ? '编辑虚拟监测对象' : '新增虚拟监测对象';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '物联设备管理', name: '物联设备管理' },

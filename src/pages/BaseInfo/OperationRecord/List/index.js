@@ -17,8 +17,8 @@ const TRANSFORM = (data) => {
   const { range: [startDate, endDate]=[], ...rest } = data || {};
   return {
     ...rest,
-    startDate: startDate && +startDate.startOf('day'),
-    endDate: endDate && +endDate.endOf('day'),
+    startDate: startDate && startDate.format('YYYY-MM-DD'),
+    endDate: endDate && endDate.format('YYYY-MM-DD'),
   };
 };
 
@@ -99,14 +99,14 @@ export default class OperationRecordList extends Component {
     {
       title: '运维评价',
       dataIndex: 'operaEvaluation',
-      render: value => <InputOrSpan value={value} type="span" />,
+      render: value => <InputOrSpan value={value} type="span" style={{ padding: 0, maxWidth: 256 }} />,
       align: 'center',
     },
     {
       title: '操作',
       dataIndex: 'id',
       width: 164,
-      fixed: list && list.lenth ? 'right' : false,
+      fixed: list && list.length ? 'right' : false,
       render: id => (
         <Fragment>
           {renderDetailButton(id)}
