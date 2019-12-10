@@ -13,6 +13,7 @@ import DangerAreaDrawer from './DangerAreaDrawer';
 import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
 import MonitorDrawer from './MonitorDrawer';
+import Messages from './Messages';
 
 export {
   Risk,
@@ -30,4 +31,5 @@ export {
   CurrentHiddenDanger,
   MonitorDrawer,
   MonitorDetailDrawer,
+  Messages,
 };

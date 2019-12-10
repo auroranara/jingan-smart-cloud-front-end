@@ -11,7 +11,7 @@ const FormItem = Form.Item;
 const title = '消防给水系统';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理' },
+  { title: '物联设备管理', name: '物联设备管理' },
   { title: '设备关联传感', name: '设备关联传感', href: '/device-management/associate-sensor/list' },
   { title, name: title },
 ]
