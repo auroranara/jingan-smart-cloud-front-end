@@ -2,34 +2,41 @@ import React, { Component, Fragment } from 'react';
 import { Spin, Button, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
+import CompanySelect from '@/jingan-components/CompanySelect';
+import InputOrSpan from '@/jingan-components/InputOrSpan';
+import SelectOrSpan from '@/jingan-components/SelectOrSpan';
+import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
+import RadioOrSpan from '@/jingan-components/RadioOrSpan';
+import CustomUpload from '@/jingan-components/CustomUpload';
+import Text from '@/jingan-components/Text';
 import { connect } from 'dva';
 import { kebabCase, trimEnd } from 'lodash';
+import { bind, debounce } from 'lodash-decorators';
 import router from 'umi/router';
 import locales from '@/locales/zh-CN';
 import styles from './index.less';
 
-@connect((state, { code, route: { name } }) => {
-  let temp = code.split('.');
-  const { breadcrumbList } = temp.reduce((result, item) => {
+const SPAN = { span: 24 };
+const LABEL_COL = { span: 6 };
+
+@connect((state, { route: { name, code } }) => {
+  const { breadcrumbList } = code.split('.').reduce((result, item, index, list) => {
     const key = `${result.key}.${item}`;
     const title = locales[key];
     result.key = key;
     result.breadcrumbList.push({
       title,
       name: title,
-      href: `${trimEnd(result.breadcrumbList[result.breadcrumbList.length - 1].href)}/${kebabCase(item)}`,
+      href: index === list.length - 2 ? `${trimEnd(result.breadcrumbList[result.breadcrumbList.length - 1].href, '/')}/${kebabCase(item)}` : undefined,
     });
-    return key;
+    return result;
   }, {
     breadcrumbList: [
       { title: '首页', name: '首页', href: '/' },
     ],
     key: 'menu',
   });
-  temp = temp.slice(0, -1);
-  const prefix = temp.join('.');
-  const title = locales[`menu.${prefix}.${name}`];
-  const namespace = temp[temp.length - 1];
+  const namespace = code.replace(/.*\.(.*)\..*/, '$1');
   const {
     user: {
       currentUser: {
@@ -42,23 +49,22 @@ import styles from './index.less';
       detail,
     },
     loading: {
-      effectes: {
+      effects: {
         [`${namespace}/getDetail`]: loading,
       },
     },
   } = state;
   return {
-    companyId: +unitType === 4 ? unitId : undefined,
+    unitId: +unitType === 4 ? unitId : undefined,
     detail,
     loading,
-    title,
-    breadcrumbList: breadcrumbList.concat({ title, name: title }),
+    breadcrumbList,
     isNotDetail: name !== 'detail',
-    hasEditAuthority: permissionCodes.includes(`${prefix}.edit`),
+    isEdit: name === 'edit',
+    hasEditAuthority: permissionCodes.includes(code.replace(name, 'edit')),
   };
-}, (dispatch, { code, match: { params: { id } }, error=true }) => {
-  const namespace = code.replace(/.*\.(.*)\.list$/, '$1');
-  const prefix = code.split('.').map(v => kebabCase(v)).join('/');
+}, (dispatch, { match: { params: { id } }, route: { name, code, path }, error=true }) => {
+  const namespace = code.replace(/.*\.(.*)\..*/, '$1');
   return {
     getDetail(payload, callback) {
       if (id) {
@@ -95,7 +101,7 @@ import styles from './index.less';
         callback: (success, data) => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(`${prefix}/list`);
+            router.push(path.replace(new RegExp(`${name}.*`), 'list'));
           } else if (error) {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试或联系管理人员！`);
           }
@@ -108,13 +114,14 @@ import styles from './index.less';
       window.scrollTo(0, 0);
     },
     goToEdit() {
-      router.push(`${prefix}/edit/${id}`);
+      router.push(path.replace(new RegExp(`${name}.*`), `edit/${id}`));
       window.scrollTo(0, 0);
     },
   };
 })
 export default class ThreeInOnePage extends Component {
   state = {
+    initialValues: {},
     submitting: false,
   }
 
@@ -123,17 +130,21 @@ export default class ThreeInOnePage extends Component {
     setDetail();
     getDetail(undefined, (success, data) => {
       if (success) {
-        const initialValues = initialize ? initialize(data) : data;
-        this.form && this.form.setFieldsValue(initialValues);
-        setTimeout(() => {
-          this.form && this.form.setFieldsValue(initialValues);
-        }); // 确保关联字段显示
+        this.setState({
+          initialValues: initialize ? initialize(data) : data,
+        });
       }
     });
   }
 
   setFormReference = form => {
     this.form = form;
+  }
+
+  @bind()
+  @debounce(300)
+  refresh() {
+    this.forceUpdate();
   }
 
   // 返回按钮点击事件
@@ -144,21 +155,18 @@ export default class ThreeInOnePage extends Component {
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
     const {
-      companyId,
+      unitId,
       handler,
       transform,
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const payload = transform ? transform(values) : values;
+        const payload = transform ? transform({ unitId, ...values }) : values;
         this.setState({
           submitting: true,
         });
-        handler({
-          ...payload,
-          companyId: companyId || values.company.key,
-        }, (success) => {
+        handler(payload, (success) => {
           if (!success) {
             this.setState({
               submitting: false,
@@ -174,9 +182,73 @@ export default class ThreeInOnePage extends Component {
     this.props.goToEdit();
   }
 
+  renderItem = (values, item, index) => {
+    if (Array.isArray(item)) {
+      return {
+        key: `${index}`,
+        fields: item.map((item, index) => this.renderItem(values, item, index)).filter(v => v),
+      };
+    } else {
+      const { isEdit, isNotDetail } = this.props;
+      const { initialValues } = this.state;
+      const { id, label, required, options, span=SPAN, labelCol=LABEL_COL, component, props, hidden, refreshEnable } = item;
+      const isHidden = typeof hidden === 'function' ? hidden(values) : hidden;
+      return !isHidden && {
+        id,
+        label,
+        span,
+        labelCol,
+        render: () => {
+          if (component === 'Input') {
+            return <InputOrSpan className={styles.item} placeholder={`请输入${label}`} type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+          } else if (component === 'Select') {
+            return <SelectOrSpan className={styles.item} placeholder={`请选择${label}`} type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} allowClear={!required} {...props} />;
+          } else if (component === 'CompanySelect') {
+            return <CompanySelect className={styles.item} placeholder={`请选择${label}`} disabled={isEdit} type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+          } else if (component === 'DatePicker') {
+            return <DatePickerOrSpan className={styles.item} placeholder={`请选择${label}`} type={isNotDetail || 'span'} allowClear={!required} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+          } else if (component === 'RangePicker') {
+            return <DatePickerOrSpan className={styles.item} placeholder={['开始时间', '结束时间']} type={isNotDetail ? 'RangePicker' : 'span'} allowClear={!required} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+          } else if (component === 'TextArea') {
+            return <InputOrSpan className={styles.item} placeholder={`请输入${label}`} type={isNotDetail ? 'TextArea' : 'span'} autosize={{ minRows: 3 }} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+          } else if (component === 'CustomUpload') {
+            return <CustomUpload type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props}  />;
+          } else if (component === 'Radio') {
+            return <RadioOrSpan type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+          } else if (component === 'Text') {
+            return <Text {...props} />;
+          } else {
+            return <component className={styles.item} type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+          }
+        },
+        options: isNotDetail && required ? (options ? {
+          ...options,
+          initialValue: initialValues[id],
+        } : {
+          initialValue: initialValues[id],
+          rules: [
+            {
+              type: ['CompanySelect', 'DatePicker'].includes(component) ? 'object' : undefined,
+              required: true,
+              whitespace: ['Input', 'TextArea'].includes(component) ? true : undefined,
+              message: `${label}不能为空`,
+              transform: component === 'RangePicker' ? value => value && value[0] && value[1] : undefined,
+              ...(component === 'CustomUpload' && {
+                type: 'array',
+                min: 1,
+                transform: value => value && value.filter(({ status }) => status === 'done'),
+              }),
+            },
+          ],
+        }) : {
+          initialValue: initialValues[id],
+        },
+      };
+    }
+  }
+
   render() {
     const {
-      title,
       breadcrumbList,
       loading=false,
       fields,
@@ -184,19 +256,28 @@ export default class ThreeInOnePage extends Component {
       isNotDetail,
       hasEditAuthority,
       detail={},
+      unitId,
     } = this.props;
-    const { submitting } = this.state;
+    const { initialValues ,submitting } = this.state;
     const showEdit = typeof editEnable === 'function' ? editEnable(detail) : editEnable;
+    const values = { unitId, ...initialValues, ...(this.form && this.form.getFieldsValue()) };
+    let Fields = fields.map((item, index) => this.renderItem(values, item, index)).filter(v => v);
+    if (!Fields[0].fields) {
+      Fields = [{
+        key: '0',
+        fields: Fields,
+      }];
+    }
 
     return (
       <PageHeaderLayout
-        title={title}
+        title={breadcrumbList[breadcrumbList.length - 1].title}
         breadcrumbList={breadcrumbList}
       >
         <Spin spinning={loading}>
           <CustomForm
             mode="multiple"
-            fields={fields}
+            fields={Fields}
             searchable={false}
             resetable={false}
             action={(

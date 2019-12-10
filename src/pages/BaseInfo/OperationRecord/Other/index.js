@@ -1,50 +1,39 @@
-...props 页面组件本身的props
-initialize 对detail数据转换成控件需要的格式
-transform 对控件值转换成提交的数据格式
-error=true 接口错误时是否显示错误提示
-editEnable=true 是否显示编辑按钮，可以为函数，参数为detail
-
-示例
-
-```javascript
 import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import moment from 'moment';
 import { isNumber } from '@/utils/utils';
-
-const TYPE_LIST = [
-  { key: '0', value: '安全设施' },
-  { key: '1', value: '监控设施' },
-  { key: '2', value: '生产装置' },
-  { key: '3', value: '特种设备' },
-];
+import {
+  TYPES,
+} from '../List';
 
 export default class OperationRecordOther extends Component {
   initialize = ({
     companyId,
     companyName,
-    type,
-    time,
-    person,
-    evaluate,
-    otherFiles,
+    equipType,
+    operaDate,
+    operaPerson,
+    operaEvaluation,
+    otherFile,
   }) => ({
     company: companyId ? { key: companyId, label: companyName } : undefined,
-    type: isNumber(type) ? type : undefined,
-    time: time ? moment(time) : undefined,
-    person: person || undefined,
-    evaluate: evaluate || undefined,
-    otherFiles: otherFiles || [],
+    equipType: isNumber(equipType) ? `${equipType}` : undefined,
+    operaDate: operaDate ? moment(operaDate) : undefined,
+    operaPerson: operaPerson || undefined,
+    operaEvaluation: operaEvaluation || undefined,
+    otherFile: otherFile || [],
   })
 
   transform = ({
     unitId,
     company,
-    time,
+    operaDate,
+    otherFile,
     ...rest
   }) => ({
     companyId: unitId || company.key,
-    time: time && time.format('YYYY-MM-DD'),
+    operaDate: operaDate && +operaDate,
+    otherFile: otherFile && otherFile.length ? JSON.stringify(otherFile) : undefined,
     ...rest,
   })
 
@@ -58,34 +47,34 @@ export default class OperationRecordOther extends Component {
         hidden: ({ unitId }) => unitId,
       },
       {
-        id: 'type',
+        id: 'equipType',
         label: '设备设施类型',
         required: true,
         component: 'Select',
         props: {
-          list: TYPE_LIST,
+          list: TYPES,
         },
       },
       {
-        id: 'time',
+        id: 'operaDate',
         label: '运维时间',
         required: true,
         component: 'DatePicker',
       },
       {
-        id: 'person',
+        id: 'operaPerson',
         label: '运维人员',
         required: true,
         component: 'Input',
       },
       {
-        id: 'evaluate',
+        id: 'operaEvaluation',
         label: '运维评价',
         required: true,
         component: 'TextArea',
       },
       {
-        id: 'otherFiles',
+        id: 'otherFile',
         label: '附件',
         component: 'CustomUpload',
       },
@@ -101,4 +90,3 @@ export default class OperationRecordOther extends Component {
     );
   }
 }
-```

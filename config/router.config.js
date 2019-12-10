@@ -1544,7 +1544,19 @@ module.exports = env => {
               name: 'alarmMessage', // 报警消息
               code: 'iot.alarmMessage',
               path: '/iot/alarm-message',
-              component: './IoT/AlarmMessage',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/iot/alarm-message',
+                  redirect: '/iot/alarm-message/list',
+                },
+                {
+                  name: 'list',
+                  code: 'iot.alarmMessage.list',
+                  path: '/iot/alarm-message/list',
+                  component: './IoT/AlarmMessage',
+                },
+              ],
             },
           ],
         },
@@ -3978,9 +3990,36 @@ module.exports = env => {
               name: 'operationRecord', // 设备设施运维记录
               code: 'facilityManagement.operationRecord',
               path: '/facility-management/operation-record',
-              developing: true,
               hideChildrenInMenu: true,
               routes: [
+                {
+                  path: '/facility-management/operation-record',
+                  redirect: '/facility-management/operation-record/list',
+                },
+                {
+                  name: 'list',
+                  code: 'facilityManagement.operationRecord.list',
+                  path: '/facility-management/operation-record/list',
+                  component: './BaseInfo/OperationRecord/List',
+                },
+                {
+                  name: 'add',
+                  code: 'facilityManagement.operationRecord.add',
+                  path: '/facility-management/operation-record/add',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'facilityManagement.operationRecord.edit',
+                  path: '/facility-management/operation-record/edit/:id',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
+                {
+                  name: 'detail',
+                  code: 'facilityManagement.operationRecord.detail',
+                  path: '/facility-management/operation-record/detail/:id',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
               ],
             },
           ],

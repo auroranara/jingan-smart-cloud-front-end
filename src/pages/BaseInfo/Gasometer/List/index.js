@@ -345,7 +345,7 @@ export default class GasometerList extends Component {
       {
         title: '操作',
         dataIndex: 'id',
-        width: 250,
+        width: 164,
         fixed: list && list.length > 0 ? 'right' : false,
         render: id => (
           <Fragment>

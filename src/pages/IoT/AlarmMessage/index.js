@@ -4,18 +4,8 @@ import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
 import TablePage from '@/templates/TablePage';
-import { connect } from 'dva';
 import moment from 'moment';
 
-const TITLE = '报警消息';
-const BREADCRUMB_LIST = [
-  { title: '首页', name: '首页', href: '/' },
-  { title: '物联网监测', name: '物联网监测' },
-  { title: TITLE, name: TITLE },
-];
-const GET_LIST = 'alarmMessage/getList';
-const REMOVE = 'alarmMessage/remove';
-const EXPORT_LIST = 'alarmMessage/exportList';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const TYPES = [
   { key: '0', value: '预警' },
@@ -64,143 +54,103 @@ const TRANSFORM = (data) => {
   };
 };
 
-@connect(({
-  user,
-  alarmMessage,
-  loading,
-}) => ({
-  user,
-  alarmMessage,
-  loading: loading.effects[GET_LIST] || loading.effects[REMOVE] || loading.effects[EXPORT_LIST],
-}), dispatch => ({
-  getList(payload, callback) {
-    dispatch({
-      type: GET_LIST,
-      payload,
-      callback,
-    });
-  },
-  remove(payload, callback) {
-    dispatch({
-      type: REMOVE,
-      payload,
-      callback,
-    });
-  },
-  exportList(payload, callback) {
-    dispatch({
-      type: EXPORT_LIST,
-      payload,
-      callback,
-    });
-  },
-}))
 export default class AlarmMessage extends Component {
-  render() {
-    const {
-      user: {
-        currentUser: {
-          unitType,
-        },
-      },
-      alarmMessage: {
-        list,
-      },
-      getList,
-      remove,
-      exportList,
-      loading,
-    } = this.props;
-    const isNotCompany = +unitType !== 4;
-    const fields = [
-      ...(isNotCompany ? [
-        {
-          id: 'companyName',
-          label: '单位名称',
-          transform: value => value.trim(),
-          render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
-        },
-      ] : []),
+  empty = true
+
+  getRangeFromEvent = (range) => {
+    const empty = !(range && range.length);
+    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
+    this.empty = empty;
+    return result;
+  }
+
+  getFields = ({
+    unitId,
+  }) => ([
+    ...(!unitId ? [
       {
-        id: 'monitorType',
-        label: '监测类型',
-        render: () => <MonitorTypeSelect allowClear />,
-      },
-      {
-        id: 'monitorEquipmentAreaLocation',
-        label: '报警区域位置',
+        id: 'companyName',
+        label: '单位名称',
         transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
       },
-      {
-        id: 'range',
-        label: '发生时间',
-        // span: {
-        //   xl: 16,
-        //   sm: 24,
-        //   xs: 24,
-        // },
-        render: () => <DatePickerOrSpan placeholder={['开始时间', '结束时间']} format={DEFAULT_FORMAT} showTime allowClear type="RangePicker" style={{ width: '100%' }} />,
+    ] : []),
+    {
+      id: 'monitorType',
+      label: '监测类型',
+      render: () => <MonitorTypeSelect allowClear />,
+    },
+    {
+      id: 'monitorEquipmentAreaLocation',
+      label: '报警区域位置',
+      transform: value => value.trim(),
+      render: ({ handleSearch }) => <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />,
+    },
+    {
+      id: 'range',
+      label: '发生时间',
+      // span: {
+      //   xl: 16,
+      //   sm: 24,
+      //   xs: 24,
+      // },
+      render: () => <DatePickerOrSpan placeholder={['开始时间', '结束时间']} format={DEFAULT_FORMAT} showTime allowClear type="RangePicker" style={{ width: '100%' }} />,
+      options: {
+        getValueFromEvent: this.getRangeFromEvent,
       },
+    },
+    {
+      id: 'statusType',
+      label: '消息类型',
+      render: () => <SelectOrSpan placeholder="请选择消息类型" list={TYPES} allowClear />,
+    },
+  ])
+
+  getColumns = ({
+    unitId,
+  }) => ([
+    ...(!unitId ? [
       {
-        id: 'statusType',
-        label: '消息类型',
-        render: () => <SelectOrSpan placeholder="请选择消息类型" list={TYPES} allowClear />,
-      },
-    ];
-    const columns = [
-      ...(isNotCompany ? [
-        {
-          title: '单位名称',
-          dataIndex: 'companyName',
-          align: 'center',
-        },
-      ] : []),
-      {
-        title: '监测类型',
-        dataIndex: 'monitorTypeName',
+        title: '单位名称',
+        dataIndex: 'companyName',
         align: 'center',
       },
-      {
-        title: '消息类型',
-        dataIndex: 'statusType',
-        render: (_, data) => GET_TYPE_NAME(data),
-        align: 'center',
-      },
-      {
-        title: '发生时间',
-        dataIndex: 'happenTime',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT),
-        align: 'center',
-      },
-      {
-        title: '消息内容',
-        dataIndex: 'messageContent',
-        render: (value) => value && (
-          <div style={{ textAlign: 'left' }}>
-            {value.split('\n').map(v => <div>{v}</div>)}
-          </div>
-        ),
-        align: 'center',
-      },
-    ];
+    ] : []),
+    {
+      title: '监测类型',
+      dataIndex: 'monitorTypeName',
+      align: 'center',
+    },
+    {
+      title: '消息类型',
+      dataIndex: 'statusType',
+      render: (_, data) => GET_TYPE_NAME(data),
+      align: 'center',
+    },
+    {
+      title: '发生时间',
+      dataIndex: 'happenTime',
+      render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+      align: 'center',
+    },
+    {
+      title: '消息内容',
+      dataIndex: 'messageContent',
+      render: (value) => value && (
+        <div style={{ textAlign: 'left' }}>
+          {value.split('\n').map(v => <div key={v}>{v}</div>)}
+        </div>
+      ),
+      align: 'center',
+    },
+  ])
+
+  render() {
     const props = {
-      title: TITLE,
-      breadcrumbList: BREADCRUMB_LIST,
-      permissions: {
-        export: true,
-      },
-      list,
-      getList,
-      remove,
-      exportList,
-      loading,
-      addEnable: false,
-      // exportEnable: true,
-      operateEnable: false,
-      fields,
-      columns,
+      fields: this.getFields,
+      columns: this.getColumns,
       transform: TRANSFORM,
+      ...this.props,
     };
 
     return (
