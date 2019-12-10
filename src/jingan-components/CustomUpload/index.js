@@ -38,6 +38,26 @@ export default class CustomUpload extends Component {
     }, []));
   }
 
+  // 上传前
+  handleBeforeUpload = (file) => {
+    const { types, size } = this.props
+    const hasType = types && types.length ? types.some(type => {
+      let lowerCaseType = type.toLowerCase();
+      if (lowerCaseType === 'jpg') {
+        lowerCaseType = 'jpeg';
+      }
+      return file.type.includes(lowerCaseType);
+    }) : true;
+    if (!hasType) {
+      message.error(`文件上传只支持${types.join('/')}格式!`);
+    }
+    const isLtSize = size ? file.size / 1024 / 1024 <= size : true;
+    if (!isLtSize) {
+      message.error(`文件上传最大支持${size >= 1 ? `${size}MB` : `${size * 1000}KB`}!`);
+    }
+    return hasType && isLtSize;
+  }
+
   render() {
     const {
       className,
@@ -46,6 +66,7 @@ export default class CustomUpload extends Component {
       folder='file',
       onChange,
       type,
+      types,
       ...restProps
     } = this.props;
 
@@ -61,6 +82,7 @@ export default class CustomUpload extends Component {
         fileList={value}
         multiple
         onChange={this.handleChange}
+        beforeUpload={this.handleBeforeUpload}
         headers={{ 'JA-Token': getToken() }}
         {...restProps}
       >

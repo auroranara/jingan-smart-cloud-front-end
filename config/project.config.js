@@ -38,7 +38,7 @@ const defaultConfig = {
     'http://data.jingan-china.cn/v2/login/smoke.png',
   ],
   // projectKey: 'dev',
-  projectKey: 'v2_test',
+  projectKey: 'huagong_pro',
   projectShortName: '五位一体信息化管理平台',
   servicePhone: '400-928-5656',
   serviceSupport: '无锡晶安智慧科技有限公司',

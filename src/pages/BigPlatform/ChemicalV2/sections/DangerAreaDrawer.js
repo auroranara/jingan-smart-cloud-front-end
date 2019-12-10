@@ -12,14 +12,14 @@ import { MonitorList } from '../utils';
 import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
 
 const riskData = [
-  // { label: '红色', value: 14, color: '#FC1F02' },
-  // { label: '橙色', value: 4, color: '#F17A0A' },
-  { label: '黄色', value: 22, color: '#FFE500' },
-  { label: '蓝色', value: 16, color: '#0967D3' },
+  { label: '红色', value: 2, color: '#FC1F02' },
+  { label: '橙色', value: 3, color: '#F17A0A' },
+  { label: '黄色', value: 3, color: '#FFE500' },
+  { label: '蓝色', value: 4, color: '#0967D3' },
 ];
 const hiddenDangerData = [
-  { label: '已超期', value: 1, color: '#FC1F02' },
-  // { label: '待整改', value: 2, color: '#FFE500' },
+  // { label: '已超期', value: 1, color: '#FC1F02' },
+  { label: '待整改', value: 1, color: '#FFE500' },
   { label: '待复查', value: 1, color: '#0967D3' },
 ];
 const riskSourceData = [
@@ -85,15 +85,15 @@ export default class KeyPoints extends PureComponent {
           <div>区域名称：生产区域</div>
           <div>区域负责人：张三</div>
           <div>联系电话：139123456789</div>
-          <div className={styles.areaColor} style={{ backgroundColor: '#FFE500', color: '#000' }}>
-            黄
+          <div className={styles.areaColor} style={{ backgroundColor: '#ff4848', color: '#fff' }}>
+            红
           </div>
         </div>
 
         <div className={styles.wrapper}>
           <div className={styles.title}>
             风险点
-            <span className={styles.value}>({38})</span>
+            <span className={styles.value}>({12})</span>
             <div
               className={styles.extra}
               onClick={() => setDrawerVisible('riskPoint', { riskPointType: { key: 'status' } })}

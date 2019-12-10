@@ -78,6 +78,13 @@ import {
   bindVideoAndMonitorEquipment,
   unbindVideoAndMonitorEquipment,
 } from '@/services/device/monitoringDevice';
+import {
+  fetchVirtualMonitoringDevice,
+  addVirtualMonitoringDevice,
+  editVirtualMonitoringDevice,
+  deleteVirtualMonitoringDevice,
+  fetchVirtualMonitoringDeviceDetail,
+} from '@/services/device/virtualMonitoringDevice';
 
 const defaultPagination = {
   total: 0,
@@ -227,6 +234,13 @@ export default {
     },
     // 监测设备详情
     monitoringDeviceDetail: {},
+    // 虚拟监测设备
+    virtualMonitoringDevice: {
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 虚拟监测设备详情
+    virtualMonitoringDeviceDetail: {},
   },
   effects: {
     // 获取监测类型列表树
@@ -819,6 +833,48 @@ export default {
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
+    },
+    // 获取虚拟监测设备列表（分页）
+    *fetchVirtualMonitoringDevice ({ payload }, { call, put }) {
+      const res = yield call(fetchVirtualMonitoringDevice, payload)
+      if (res && res.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { virtualMonitoringDevice: res.data },
+        })
+      }
+    },
+    // 新增虚拟监测设备
+    *addVirtualMonitoringDevice ({ payload, success, error }, { call }) {
+      const response = yield call(addVirtualMonitoringDevice, payload)
+      if (response && response.code === 200) {
+        success && success();
+      } else if (error) error(response);
+    },
+    // 编辑虚拟监测设备
+    *editVirtualMonitoringDevice ({ payload, success, error }, { call }) {
+      const response = yield call(editVirtualMonitoringDevice, payload)
+      if (response && response.code === 200) {
+        success && success();
+      } else if (error) error(response);
+    },
+    // 删除虚拟监测设备
+    *deleteVirtualMonitoringDevice ({ payload, success, error }, { call }) {
+      const response = yield call(deleteVirtualMonitoringDevice, payload)
+      if (response && response.code === 200) {
+        success && success();
+      } else if (error) error(response);
+    },
+    // 获取虚拟监测设备详情
+    *fetchVirtualMonitoringDeviceDetail ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchVirtualMonitoringDeviceDetail, payload);
+      if (res && res.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { virtualMonitoringDeviceDetail: res.data || {} },
+        })
+        if (callback) callback(res.data || {})
+      }
     },
   },
   reducers: {

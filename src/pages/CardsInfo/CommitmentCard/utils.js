@@ -5,8 +5,7 @@ import { DatePicker, Input, message, Popconfirm, Select } from 'antd';
 
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
-const { Option } = Select;
-
+const MAX_LENGTH = 20;
 const DATE_FORMAT = 'YYYY-MM-DD';
 export const PAGE_SIZE = 20;
 export const ROUTER = '/cards-info/commitment-card'; // modify
@@ -52,88 +51,114 @@ export const BREADCRUMBLIST = [ // modify
 
 export const SEARCH_FIELDS = [ // modify
   {
-    id: 'name',
+    id: 'companyName',
     label: '单位名称',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'cardName',
+    id: 'name',
     label: '承诺卡名称',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'man',
+    id: 'acceptor',
     label: '承诺人',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
 ];
 
-export const TABLE_COLUMNS = [ // modify
-  {
-    title: '序号',
-    dataIndex: 'index',
-    key: 'index',
-  },
-  {
-    title: '单位名称',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '承诺卡名称',
-    dataIndex: 'cardName',
-    key: 'cardName',
-  },
-  {
-    title: '承诺卡内容',
-    dataIndex: 'content',
-    key: 'content',
-  },
-  {
-    title: '承诺人',
-    dataIndex: 'man',
-    key: 'man',
-  },
-  {
-    title: '时间',
-    dataIndex: 'time',
-    key: 'time',
-    render: t => t.format(DATE_FORMAT),
-  },
-  {
-    title: '在线预览',
-    dataIndex: 'preview',
-    key: 'preview',
-    render: p => <a onClick={e => e.preventDefault()}>预览</a>,
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render(id) {
-      return (
-        <Fragment>
-          <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
-          <Popconfirm
-            title="确定删除当前项目？"
-            onConfirm={e => message.success('删除成功')}
-            okText="确定"
-            cancelText="取消"
-          ><span className={styles1.delete}>删除</span></Popconfirm>
-        </Fragment>
-      );
+export function getTableColumns(handleConfirmDelete, showModal) {
+  return [ // modify
+    // {
+    //   title: '序号',
+    //   dataIndex: 'index',
+    //   key: 'index',
+    // },
+    {
+      title: '单位名称',
+      dataIndex: 'companyName',
+      key: 'companyName',
     },
-  },
-];
+    {
+      title: '承诺卡名称',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '承诺卡内容',
+      dataIndex: 'content',
+      key: 'content',
+      align: 'center',
+      render: txt => txt.length > MAX_LENGTH ? `${txt.slice(0, MAX_LENGTH)}...` : txt,
+    },
+    {
+      title: '承诺人',
+      dataIndex: 'acceptor',
+      key: 'acceptor',
+      width: 100,
+      align: 'center',
+    },
+    {
+      title: '时间',
+      dataIndex: 'time',
+      key: 'time',
+      width: 120,
+      align: 'center',
+      render: t => moment(t).format(DATE_FORMAT),
+    },
+    {
+      title: '在线预览',
+      dataIndex: 'preview',
+      key: 'preview',
+      width: 100,
+      align: 'center',
+      render: (p, record) => <a onClick={e => { e.preventDefault(); showModal(record); }}>预览</a>,
+    },
+    {
+      title: '操作',
+      dataIndex: 'id',
+      key: 'id',
+      width: 132,
+      align: 'center',
+      fixed: 'right',
+      render(id) {
+        return (
+          <Fragment>
+            <Link to={`${ROUTER}/view/${id}`}>查看</Link>
+            <Link to={`${ROUTER}/edit/${id}`} style={{ marginLeft: 8 }}>编辑</Link>
+            <Popconfirm
+              title="确定删除当前项目？"
+              onConfirm={e => handleConfirmDelete(id)}
+              okText="确定"
+              cancelText="取消"
+            ><span className={styles1.delete}>删除</span></Popconfirm>
+          </Fragment>
+        );
+      },
+    },
+  ];
+}
 
 export const EDIT_FORMITEMS = [ // modify
-    { name: 'name', label: '单位名称' },
-    { name: 'cardName', label: '承诺卡名称' },
+    { name: 'companyId', label: '单位名称', type: 'companyselect' },
+    { name: 'name', label: '承诺卡名称' },
     { name: 'content', label: '承诺卡内容', type: 'text' },
-    { name: 'man', label: '承诺人' },
+    { name: 'acceptor', label: '承诺人' },
     { name: 'time', label: '时间', type: 'datepicker' },
+    { name: 'section', label: '风险分区', type: 'select', required: false },
 ];
+
+export function handleDetails(values, deletedProps=['companyName']) {
+  const { companyId, companyName, time } = values;
+  // const vals = { ...values };
+  // deletedProps.forEach(p => delete vals[p]);
+
+  return {
+    ...values,
+    companyId: { key: companyId, label: companyName },
+    time: moment(time),
+  };
+}

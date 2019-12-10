@@ -86,9 +86,7 @@ export default class MonitoringDevice extends Component {
         message.success('删除成功！');
         this.handleQuery()
       },
-      error: () => {
-        message.error('已绑定库房，删除失败!');
-      },
+      error: res => { message.error(res ? res.msg : '删除失败!') },
     });
   };
 

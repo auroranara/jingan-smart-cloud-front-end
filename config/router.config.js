@@ -2351,9 +2351,37 @@ module.exports = env => {
               name: 'operationRecord', // 设备设施运维记录
               code: 'facilityManagement.operationRecord',
               path: '/facility-management/operation-record',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/facility-management/operation-record',
+                  redirect: '/facility-management/operation-record/list',
+                },
+                {
+                  name: 'list',
+                  code: 'facilityManagement.operationRecord.list',
+                  path: '/facility-management/operation-record/list',
+                  component: './BaseInfo/OperationRecord/List',
+                },
+                {
+                  name: 'add',
+                  code: 'facilityManagement.operationRecord.add',
+                  path: '/facility-management/operation-record/add',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'facilityManagement.operationRecord.edit',
+                  path: '/facility-management/operation-record/edit/:id',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
+                {
+                  name: 'detail',
+                  code: 'facilityManagement.operationRecord.detail',
+                  path: '/facility-management/operation-record/detail/:id',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
+              ],
             },
           ],
         },
@@ -2915,9 +2943,26 @@ module.exports = env => {
               name: 'dangerStandardDatabase', // 隐患标准管理数据库
               code: 'hiddenDangerControl.dangerStandardDatabase',
               path: '/hidden-danger-control/danger-standard-database',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/hidden-danger-control/danger-standard-database',
+                  name: 'dangerStandardDatabase',
+                  redirect: '/hidden-danger-control/danger-standard-database/list',
+                },
+                {
+                  path: '/hidden-danger-control/danger-standard-database/list',
+                  name: 'list',
+                  code: 'hiddenDangerControl.dangerStandardDatabase.add',
+                  component: './HiddenDangerControl/StandardDatabase',
+                },
+                {
+                  path: '/hidden-danger-control/danger-standard-database/process/:id',
+                  name: 'process',
+                  code: 'hiddenDangerControl.dangerStandardDatabase.process',
+                  component: './HiddenDangerControl/StandardDatabase/ProcessList',
+                },
+              ],
             },
             // {
             //   path: '/hidden-danger-control/hidden-danger-plan', // 隐患排查计划(风险点管理子集)
@@ -3416,7 +3461,7 @@ module.exports = env => {
               ],
             },
             {
-              path: '/device-management/associate-sensor', // 虚拟设备 设备关联传感
+              path: '/device-management/associate-sensor', // 设备关联传感
               code: 'deviceManagement.associateSensor',
               name: 'associateSensor',
               hideChildrenInMenu: true,
@@ -3444,6 +3489,37 @@ module.exports = env => {
                   name: 'temperatureAndHumidity',
                   code: 'deviceManagement.associateSensor.temperatureAndHumidity',
                   component: './DeviceManagement/AssociateSensor/TemperatureAndHumidity',
+                },
+              ],
+            },
+            {
+              path: '/device-management/virtual-monitoring-device',
+              name: 'virtualMonitoringDevice',
+              code: 'deviceManagement.virtualMonitoringDevice',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/virtual-monitoring-device',
+                  name: 'virtualMonitoringDevice',
+                  redirect: '/device-management/virtual-monitoring-device/list',
+                },
+                {
+                  path: '/device-management/virtual-monitoring-device/list',
+                  name: 'list',
+                  code: 'deviceManagement.virtualMonitoringDevice',
+                  component: './DeviceManagement/VirtualMonitoringDevice/index',
+                },
+                {
+                  path: '/device-management/virtual-monitoring-device/add',
+                  name: 'add',
+                  code: 'deviceManagement.virtualMonitoringDevice',
+                  component: './DeviceManagement/VirtualMonitoringDevice/Handle',
+                },
+                {
+                  path: '/device-management/virtual-monitoring-device/edit/:id',
+                  name: 'edit',
+                  code: 'deviceManagement.virtualMonitoringDevice',
+                  component: './DeviceManagement/VirtualMonitoringDevice/Handle',
                 },
               ],
             },
@@ -3548,7 +3624,19 @@ module.exports = env => {
               name: 'alarmMessage', // 报警消息
               code: 'companyIot.alarmMessage',
               path: '/company-iot/alarm-message',
-              component: './IoT/AlarmMessage',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/company-iot/alarm-message',
+                  redirect: '/company-iot/alarm-message/list',
+                },
+                {
+                  code: 'companyIot.alarmMessage.list',
+                  name: 'list',
+                  path: '/company-iot/alarm-message/list',
+                  component: './IoT/AlarmMessage',
+                },
+              ],
             },
           ],
         },

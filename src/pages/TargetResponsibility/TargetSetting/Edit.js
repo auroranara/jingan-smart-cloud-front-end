@@ -621,8 +621,14 @@ export default class Edit extends PureComponent {
           {unitType !== 4 && (
             <FormItem label="单位名称" {...formItemLayout}>
               {getFieldDecorator('companyId', {
-                initialValue: { key: companyId, label: companyName },
-                rules: [{ required: true, message: '请选择单位名称' }],
+                initialValue: companyId ? { key: companyId, label: companyName } : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择单位名称',
+                    transform: value => value && value.label,
+                  },
+                ],
               })(
                 <CompanySelect
                   {...itemStyles}
@@ -634,7 +640,7 @@ export default class Edit extends PureComponent {
           )}
           <FormItem label="目标年份" {...formItemLayout}>
             {getFieldDecorator('goalYear', {
-              initialValue: goalYear ? moment(goalYear) : '',
+              initialValue: goalYear ? moment(goalYear) : undefined,
               rules: [{ required: true, message: '请输入目标年份' }],
             })(
               <DatePicker
@@ -658,7 +664,7 @@ export default class Edit extends PureComponent {
                 <Select
                   {...itemStyles}
                   placeholder="请选择"
-                  value={dutyStatus}
+                  value={dutyStatus ? dutyStatus : undefined}
                   style={{ width: '49%', marginRight: '1%' }}
                   onSelect={this.handleDutySelect}
                   onChange={e => this.handleDutyChange(e)}

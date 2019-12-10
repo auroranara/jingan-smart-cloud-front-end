@@ -66,6 +66,7 @@ export default class CompanySelect extends Component {
       value,
       onChange,
       disabled,
+      placeholder="请选择单位名称",
       type,
     } = this.props;
 
@@ -78,7 +79,7 @@ export default class CompanySelect extends Component {
         value={value}
         onChange={onChange}
         optionLabelProp="children"
-        placeholder="请选择单位名称"
+        placeholder={placeholder}
         defaultActiveFirstOption={false}
         filterOption={false}
         onSearch={this.debouncedHandleSearch}

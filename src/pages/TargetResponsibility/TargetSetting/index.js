@@ -87,6 +87,13 @@ export default class TableList extends PureComponent {
     });
   };
 
+  handlePageChange = (pageNum, pageSize) => {
+    const { formData } = this.state;
+    this.pageNum = pageNum;
+    this.pageSize = pageSize;
+    this.fetchList(pageNum, pageSize, { ...formData });
+  };
+
   render() {
     const {
       loading = false,
@@ -192,7 +199,6 @@ export default class TableList extends PureComponent {
                   : [...COLUMNS, ...extraColumns]
               }
               dataSource={list}
-              onChange={this.onTableChange}
               pagination={{
                 current: pageNum,
                 pageSize,

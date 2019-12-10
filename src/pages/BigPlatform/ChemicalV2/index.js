@@ -11,7 +11,7 @@ import styles from './index.less';
 import { RiskPointDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { POINTS, VideoList } from './utils';
+import { VideoList } from './utils';
 
 import {
   Risk,
@@ -43,6 +43,7 @@ const HEADER_STYLE = {
 
 const CONTENT_STYLE = { position: 'relative', height: '90.37037%', zIndex: 0 };
 
+@connect(({ unitSafety, bigPlatform }) => ({ unitSafety, bigPlatform }))
 export default class Chemical extends PureComponent {
   constructor(props) {
     super(props);
@@ -65,7 +66,29 @@ export default class Chemical extends PureComponent {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.fetchPoints();
+    this.fetchHiddenDangerList();
+  }
+
+  fetchPoints = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId: 'DccBRhlrSiu9gMV7fmvizw' } });
+  };
+
+  fetchHiddenDangerList = pageNum => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerListForPage',
+      payload: {
+        company_id: 'DccBRhlrSiu9gMV7fmvizw',
+        // businessType: 2,
+        // status: hdStatus,
+        pageNum,
+        pageSize: 10,
+      },
+    });
+  };
 
   handleDrawerVisibleChange = (name, rest) => {
     const stateName = `${name}DrawerVisible`;
@@ -114,6 +137,10 @@ export default class Chemical extends PureComponent {
    * 渲染
    */
   render() {
+    const {
+      unitSafety: { points },
+      bigPlatform: { hiddenDangerList },
+    } = this.props;
     const {
       riskPointDrawerVisible,
       riskPointType,
@@ -198,9 +225,18 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('riskPoint');
           }}
-          data={POINTS}
+          data={points}
           riskPointType={riskPointType}
           zIndex={1066}
+        />
+
+        {/* 当前隐患抽屉 */}
+        <CurrentHiddenDanger
+          visible={currentHiddenDangerDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('currentHiddenDanger');
+          }}
+          hiddenDangerList={hiddenDangerList}
         />
 
         <DangerAreaDrawer
@@ -243,13 +279,6 @@ export default class Chemical extends PureComponent {
           keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
           handleVideoClose={() => this.setState({ videoVisible: false })}
           isTree={false}
-        />
-
-        <CurrentHiddenDanger
-          visible={currentHiddenDangerDrawerVisible}
-          onClose={() => {
-            this.setDrawerVisible('currentHiddenDanger');
-          }}
         />
 
         <MonitorDrawer
