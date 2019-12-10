@@ -135,11 +135,11 @@ export default class TrainingProgramOther extends Component {
     this.form = form;
   }
 
-  @bind()
-  @debounce(300)
-  refresh() {
-    this.forceUpdate();
-  }
+  // @bind()
+  // @debounce(300)
+  // refresh() {
+  //   this.forceUpdate();
+  // }
 
   // 返回按钮点击事件
   handleBackButtonClick = () => {
@@ -215,6 +215,20 @@ export default class TrainingProgramOther extends Component {
     }
   }
 
+  handleCompanyChange = (company) => {
+    if (!company || company.key !== company.label) {
+      setTimeout(() => {
+        this.forceUpdate();
+      });
+    }
+  }
+
+  handlePlanFileListChange = () => {
+    setTimeout(() => {
+      this.forceUpdate();
+    });
+  }
+
   renderForm() {
     const {
       match: {
@@ -259,6 +273,7 @@ export default class TrainingProgramOther extends Component {
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const values = this.form && this.form.getFieldsValue() || {};
     const { realCompanyId, realCompanyName } = isNotCompany ? (values.company && values.company.key !== values.company.label ? { realCompanyId: values.company.key, realCompanyName: values.company.label } : { realCompanyId: companyId, realCompanyName: companyName }) : { realCompanyId: unitId, realCompanyName: unitName };
+    const uploading = (values.planFileList || []).some(({ status }) => status === 'uploading');
 
     const fields = [
       {
@@ -269,7 +284,7 @@ export default class TrainingProgramOther extends Component {
             label: '单位名称',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} /> : <span>{companyName}</span>,
+            render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} onChange={this.handleCompanyChange} /> : <span>{companyName}</span>,
             options: {
               initialValue: companyId && { key: companyId, label: companyName },
               rules: isNotDetail ? [
@@ -500,20 +515,14 @@ export default class TrainingProgramOther extends Component {
             label: '计划扫描件',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CustomUpload folder="trainingProgram" /> : (
-              <div className={styles.fileList}>
-                {planFileList && planFileList.map(({ webUrl, fileName }, index) => (
-                  <div key={index}>
-                    <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
-                  </div>
-                ))}
-              </div>
-            ),
+            render: () => <CustomUpload folder="trainingProgram" onChange={this.handlePlanFileListChange} type={isNotDetail || 'span'} />,
             options: {
               initialValue: planFileList || [],
               rules: isNotDetail ? [
                 {
                   required: true,
+                  type: 'array',
+                  min: 1,
                   message: '计划扫描件不能为空',
                 },
               ] : undefined,
@@ -550,9 +559,9 @@ export default class TrainingProgramOther extends Component {
           <Fragment>
             <Button onClick={this.handleBackButtonClick}>返回</Button>
             {type !== 'detail' ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick}>提交</Button>
+              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>提交</Button>
             ) : +planStatus === 0 && (
-              <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+              <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority} loading={uploading}>编辑</Button>
             )}
           </Fragment>
         }
