@@ -896,7 +896,7 @@ module.exports = env => {
           systemType: 0,
           routes: [
             {
-              path: '/iot/major-hazard', // 重大危险源监测
+              path: '/iot/major-hazard', // 重大危险源监测及报表
               code: 'iot.majorHazard',
               name: 'majorHazard',
               hideChildrenInMenu: true,
@@ -1005,99 +1005,6 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              path: '/iot/IOT-abnormal-data', // IOT数据分析
-              code: 'iot.IOTAbnormalData',
-              name: 'IOTAbnormalData',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/iot/IOT-abnormal-data',
-                  name: 'IOTAbnormalData',
-                  redirect: '/iot/IOT-abnormal-data/list',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/list',
-                  code: 'iot.IOTAbnormalData.listView',
-                  name: 'list',
-                  component: './DataAnalysis/IOT/DataAnalysisList',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/electricity/:id/count/:count',
-                  code: 'iot.IOTAbnormalData.electricity',
-                  name: 'electricity',
-                  component: './DataAnalysis/IOT/Electricity',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/toxic-gas/:id/count/:count',
-                  code: 'iot.IOTAbnormalData.toxicGas',
-                  name: 'toxicGas',
-                  component: './DataAnalysis/IOT/ToxicGas',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/waste-water/:id/count/:count',
-                  code: 'iot.IOTAbnormalData.wasteWater',
-                  name: 'wasteWater',
-                  component: './DataAnalysis/IOT/WasteWater',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/waste-gas/:id/count/:count',
-                  code: 'iot.IOTAbnormalData.wasteGas',
-                  name: 'wasteGas',
-                  component: './DataAnalysis/IOT/WasteGas',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/storage-tank/:id/count/:count',
-                  code: 'iot.IOTAbnormalData.storageTank',
-                  name: 'storageTank',
-                  component: './DataAnalysis/IOT/StorageTank',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/smoke-detector/:id/count/:count',
-                  code: 'iot.IOTAbnormalData.smokeDetector',
-                  name: 'smokeDetector',
-                  component: './DataAnalysis/IOT/SmokeDetector',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/humiture/:id/count/:count',
-                  code: 'iot.IOTAbnormalData.humiture',
-                  name: 'humiture',
-                  component: './DataAnalysis/IOT/Humiture',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/water/:id/count/:count',
-                  code: 'iot.IOTAbnormalData.water',
-                  name: 'water',
-                  component: './DataAnalysis/IOT/Water',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/fire-alarm/company/:companyId',
-                  code: 'iot.IOTAbnormalData.fireDetailView',
-                  name: 'companyDetail',
-                  component: './DynamicMonitoring/FireAlarm/CompanyDetail',
-                },
-                {
-                  path: '/iot/IOT-abnormal-data/fire-alarm/history-record/:companyId',
-                  name: 'historyRecord',
-                  code: 'iot.IOTAbnormalData.fireHistoryRecordView',
-                  component: './DynamicMonitoring/FireAlarm/HistoryRecord',
-                },
-              ],
-            },
-            {
-              name: 'alarmWorkOrder', // 报警工单管理
-              code: 'iot.alarmWorkOrder',
-              path: '/iot/alarm-work-order',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
-            {
-              name: 'alarmMessage', // 报警消息
-              code: 'iot.alarmMessage',
-              path: '/iot/alarm-message',
-              component: './IoT/AlarmMessage',
-            },
           ],
         },
 
@@ -1176,43 +1083,6 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              path: '/safety-knowledge-base/laws', // 安全生产法律法规
-              code: 'safetyKnowledgeBase.laws',
-              name: 'laws',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/safety-knowledge-base/laws',
-                  name: 'laws',
-                  redirect: '/safety-knowledge-base/laws/list',
-                },
-                {
-                  path: '/safety-knowledge-base/laws/list',
-                  code: 'safetyKnowledgeBase.laws.listView',
-                  name: 'listView',
-                  component: './LawEnforcement/Laws/LawDatabaseList',
-                },
-                {
-                  path: '/safety-knowledge-base/laws/add',
-                  code: 'safetyKnowledgeBase.laws.add',
-                  name: 'add',
-                  component: './LawEnforcement/Laws/LawDatabaseEdit',
-                },
-                {
-                  path: '/safety-knowledge-base/laws/edit/:id',
-                  code: 'safetyKnowledgeBase.laws.edit',
-                  name: 'edit',
-                  component: './LawEnforcement/Laws/LawDatabaseEdit',
-                },
-                {
-                  path: '/safety-knowledge-base/laws/detail/:id',
-                  code: 'safetyKnowledgeBase.laws.view',
-                  name: 'view',
-                  component: './LawEnforcement/Laws/LawDatabaseDetail',
-                },
-              ],
-            },
           ],
         },
 
@@ -1224,101 +1094,6 @@ module.exports = env => {
           icon: 'wifi',
           systemType: 1,
           routes: [
-            {
-              name: 'alarmWorkOrder', // 可燃有毒气体报警工单
-              code: 'gasIot.alarmWorkOrder',
-              path: '/gas-iot/alarm-work-order',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
-            {
-              name: 'alarmMessage', // 可燃有毒气体报警消息
-              code: 'gasIot.alarmMessage',
-              path: '/gas-iot/alarm-message',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
-            {
-              path: '/gas-iot/IOT-abnormal-data', // IOT数据分析
-              code: 'gasIot.IOTAbnormalData',
-              name: 'IOTAbnormalData',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/gas-iot/IOT-abnormal-data',
-                  name: 'IOTAbnormalData',
-                  redirect: '/gas-iot/IOT-abnormal-data/list',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/list',
-                  code: 'gasIot.IOTAbnormalData.listView',
-                  name: 'list',
-                  component: './DataAnalysis/IOT/DataAnalysisList',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/electricity/:id/count/:count',
-                  code: 'gasIot.IOTAbnormalData.electricity',
-                  name: 'electricity',
-                  component: './DataAnalysis/IOT/Electricity',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/toxic-gas/:id/count/:count',
-                  code: 'gasIot.IOTAbnormalData.toxicGas',
-                  name: 'toxicGas',
-                  component: './DataAnalysis/IOT/ToxicGas',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/waste-water/:id/count/:count',
-                  code: 'gasIot.IOTAbnormalData.wasteWater',
-                  name: 'wasteWater',
-                  component: './DataAnalysis/IOT/WasteWater',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/waste-gas/:id/count/:count',
-                  code: 'gasIot.IOTAbnormalData.wasteGas',
-                  name: 'wasteGas',
-                  component: './DataAnalysis/IOT/WasteGas',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/storage-tank/:id/count/:count',
-                  code: 'gasIot.IOTAbnormalData.storageTank',
-                  name: 'storageTank',
-                  component: './DataAnalysis/IOT/StorageTank',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/smoke-detector/:id/count/:count',
-                  code: 'gasIot.IOTAbnormalData.smokeDetector',
-                  name: 'smokeDetector',
-                  component: './DataAnalysis/IOT/SmokeDetector',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/humiture/:id/count/:count',
-                  code: 'gasIot.IOTAbnormalData.humiture',
-                  name: 'humiture',
-                  component: './DataAnalysis/IOT/Humiture',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/water/:id/count/:count',
-                  code: 'gasIot.IOTAbnormalData.water',
-                  name: 'water',
-                  component: './DataAnalysis/IOT/Water',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/fire-alarm/company/:companyId',
-                  code: 'gasIot.IOTAbnormalData.fireDetailView',
-                  name: 'companyDetail',
-                  component: './DynamicMonitoring/FireAlarm/CompanyDetail',
-                },
-                {
-                  path: '/gas-iot/IOT-abnormal-data/fire-alarm/history-record/:companyId',
-                  name: 'historyRecord',
-                  code: 'gasIot.IOTAbnormalData.fireHistoryRecordView',
-                  component: './DynamicMonitoring/FireAlarm/HistoryRecord',
-                },
-              ],
-            },
             {
               name: 'realtimeMonitor', // 可燃有毒气体实时监测
               code: 'gasIot.realtimeMonitor',
@@ -3039,14 +2814,14 @@ module.exports = env => {
           name: 'safetyRiskControl',
           systemType: 4,
           routes: [
-            {
-              path: '/safety-risk-control/risk-grading', // 风险辨识分级(风险点管理子集)
-              code: 'safetyRiskControl.riskGrading',
-              name: 'riskGrading',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
+            // {
+            //   path: '/safety-risk-control/risk-grading', // 风险辨识分级(风险点管理子集)
+            //   code: 'safetyRiskControl.riskGrading',
+            //   name: 'riskGrading',
+            //   developing: true,
+            //   hideChildrenInMenu: true,
+            //   routes: [],
+            // },
             {
               name: 'promise', // 风险研判与承诺公告
               code: 'safetyRiskControl.promise',
@@ -3102,14 +2877,14 @@ module.exports = env => {
               hideChildrenInMenu: true,
               routes: [],
             },
-            {
-              path: '/hidden-danger-control/hidden-danger-plan', // 隐患排查计划(风险点管理子集)
-              code: 'hiddenDangerControl.hiddenDangerPlan',
-              name: 'hiddenDangerPlan',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
+            // {
+            //   path: '/hidden-danger-control/hidden-danger-plan', // 隐患排查计划(风险点管理子集)
+            //   code: 'hiddenDangerControl.hiddenDangerPlan',
+            //   name: 'hiddenDangerPlan',
+            //   developing: true,
+            //   hideChildrenInMenu: true,
+            //   routes: [],
+            // },
             {
               path: '/hidden-danger-control/hidden-danger-report', // 隐患排查报表
               code: 'hiddenDangerControl.hiddenDangerReport',
@@ -3145,14 +2920,6 @@ module.exports = env => {
           icon: 'team',
           systemType: 4,
           routes: [
-            {
-              name: 'postInfo', // 岗位信息
-              code: 'operationSafety.postInfo',
-              path: '/operation-safety/post-info',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
             {
               name: 'specialOperationPermit', // 特种作业操作证人员
               code: 'operationSafety.specialOperationPermit',
@@ -3637,6 +3404,109 @@ module.exports = env => {
                   component: './DeviceManagement/AssociateSensor/TemperatureAndHumidity',
                 },
               ],
+            },
+          ],
+        },
+
+        {
+          path: '/company-iot', // 物联网监测报警(物联网监测)
+          code: 'companyIot',
+          name: 'companyIot',
+          icon: 'wifi',
+          systemType: 4,
+          routes: [
+            {
+              path: '/company-iot/IOT-abnormal-data', // IOT监测及趋势统计(IOT数据分析)
+              code: 'companyIot.IOTAbnormalData',
+              name: 'IOTAbnormalData',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/company-iot/IOT-abnormal-data',
+                  name: 'IOTAbnormalData',
+                  redirect: '/company-iot/IOT-abnormal-data/list',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/list',
+                  code: 'companyIot.IOTAbnormalData.listView',
+                  name: 'list',
+                  component: './DataAnalysis/IOT/DataAnalysisList',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/electricity/:id/count/:count',
+                  code: 'companyIot.IOTAbnormalData.electricity',
+                  name: 'electricity',
+                  component: './DataAnalysis/IOT/Electricity',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/toxic-gas/:id/count/:count',
+                  code: 'companyIot.IOTAbnormalData.toxicGas',
+                  name: 'toxicGas',
+                  component: './DataAnalysis/IOT/ToxicGas',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/waste-water/:id/count/:count',
+                  code: 'companyIot.IOTAbnormalData.wasteWater',
+                  name: 'wasteWater',
+                  component: './DataAnalysis/IOT/WasteWater',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/waste-gas/:id/count/:count',
+                  code: 'companyIot.IOTAbnormalData.wasteGas',
+                  name: 'wasteGas',
+                  component: './DataAnalysis/IOT/WasteGas',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/storage-tank/:id/count/:count',
+                  code: 'companyIot.IOTAbnormalData.storageTank',
+                  name: 'storageTank',
+                  component: './DataAnalysis/IOT/StorageTank',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/smoke-detector/:id/count/:count',
+                  code: 'companyIot.IOTAbnormalData.smokeDetector',
+                  name: 'smokeDetector',
+                  component: './DataAnalysis/IOT/SmokeDetector',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/humiture/:id/count/:count',
+                  code: 'companyIot.IOTAbnormalData.humiture',
+                  name: 'humiture',
+                  component: './DataAnalysis/IOT/Humiture',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/water/:id/count/:count',
+                  code: 'companyIot.IOTAbnormalData.water',
+                  name: 'water',
+                  component: './DataAnalysis/IOT/Water',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/fire-alarm/company/:companyId',
+                  code: 'companyIot.IOTAbnormalData.fireDetailView',
+                  name: 'companyDetail',
+                  component: './DynamicMonitoring/FireAlarm/CompanyDetail',
+                },
+                {
+                  path: '/company-iot/IOT-abnormal-data/fire-alarm/history-record/:companyId',
+                  name: 'historyRecord',
+                  code: 'companyIot.IOTAbnormalData.fireHistoryRecordView',
+                  component: './DynamicMonitoring/FireAlarm/HistoryRecord',
+                },
+              ],
+            },
+            {
+              name: 'alarmWorkOrder', // 报警工单管理
+              code: 'companyIot.alarmWorkOrder',
+              path: '/company-iot/alarm-work-order',
+              developing: true,
+              hideChildrenInMenu: true,
+              routes: [],
+            },
+            {
+              name: 'alarmMessage', // 报警消息
+              code: 'companyIot.alarmMessage',
+              path: '/company-iot/alarm-message',
+              component: './IoT/AlarmMessage',
             },
           ],
         },
