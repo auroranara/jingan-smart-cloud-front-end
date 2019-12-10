@@ -1190,9 +1190,38 @@ module.exports = env => {
               name: 'fourColorImage', // 风险四色图管理
               code: 'riskControl.fourColorImage',
               path: '/risk-control/four-color-image',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  "name": "list",
+                  "path": "/risk-control/four-color-image",
+                  "redirect": "/risk-control/four-color-image/list",
+                },
+                {
+                  "name": "list",
+                  "code": "riskControl.fourColorImage.list",
+                  "path": "/risk-control/four-color-image/list",
+                  // "component": "./RiskControl/FourColorImage/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "riskControl.fourColorImage.view",
+                  "path": "/risk-control/four-color-image/view/:id",
+                  // "component": "./RiskControl/FourColorImage/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "riskControl.fourColorImage.add",
+                  "path": "/risk-control/four-color-image/add",
+                  // "component": "./RiskControl/FourColorImage/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "riskControl.fourColorImage.edit",
+                  "path": "/risk-control/four-color-image/edit/:id",
+                  // "component": "./RiskControl/FourColorImage/Edit",
+                },
+              ],
             },
             {
               name: 'upgradeWarning', // 风险升级预警信息
@@ -1855,6 +1884,19 @@ module.exports = env => {
           name: 'securityManage',
           systemType: 3,
           routes: [
+            {
+              path: '/security-manage/video-identity', // 视频智能识别管理
+              code: 'securityManage.videoIdentity',
+              name: 'videoIdentity',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/security-manage/video-identity',
+                  name: 'videoIdentity',
+                  redirect: '/security-manage/entrance-and-exit-monitor/company-list',
+                },
+              ],
+            },
             {
               path: '/security-manage/entrance-and-exit-monitor', // 出入口监测
               code: 'securityManage.entranceAndExitMonitor',
