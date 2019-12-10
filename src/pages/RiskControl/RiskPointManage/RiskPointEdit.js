@@ -560,7 +560,12 @@ export default class RiskPointEdit extends PureComponent {
           <span>
             <a
               onClick={() => {
-                if (flow_id.join(',').indexOf(record.flow_id) >= 0) {
+                if (
+                  flow_id
+                    .map(item => item.flow_id_data)
+                    .join(',')
+                    .indexOf(record.flow_id) >= 0
+                ) {
                   return;
                 }
                 this.setState({ flowList: [...flowList, record] });
@@ -635,7 +640,9 @@ export default class RiskPointEdit extends PureComponent {
   }
 
   // 显示定位模态框
-  showModalCoordinate = index => {
+  showModalCoordinate = (index, item) => {
+    const { xnum, ynum, fixImgId, imgType } = item;
+    const { buildingId, floorId } = this.state;
     const {
       riskPointManage: {
         imgData: { list },
@@ -649,78 +656,48 @@ export default class RiskPointEdit extends PureComponent {
       dispatch,
     } = this.props;
 
-    const { picList, typeIndex, floorId: addFloorId } = this.state;
-    const imgType = picList.map(i => i.imgType);
-    const imgIndex = imgType[index];
-
-    const xNumCurrent = picList.map(item => item.xnum)[index] || '';
-    const yNumCurrent = picList.map(item => item.ynum)[index] || '';
-    const imgIdCurrent = picList.map(item => item.fixImgId)[index] || '';
-
-    const buildingList = picList.filter(item => item.imgType === 2);
-    const buildingId = buildingList.map(item => item.buildingId).join('');
-    const floorId = buildingList.map(item => item.floorId).join('');
+    const { typeIndex } = this.state;
 
     const callback = () => {
       this.setState({
         picModalVisible: true,
-        xNumCurrent: xNumCurrent,
-        yNumCurrent: yNumCurrent,
-        imgIdCurrent: imgIdCurrent,
-        imgIndex: imgIndex,
+        xNumCurrent: xnum,
+        yNumCurrent: ynum,
+        imgIdCurrent: fixImgId,
+        imgIndex: imgType,
       });
     };
 
-    if (!id && list.length === 0) {
-      message.error('该单位暂无图片！');
-    } else {
-      if (!typeIndex && !imgIndex) {
-        return message.error('请先选择平面图类型!');
-      } else {
-        if (!typeIndex) {
-          if ((id && imgIndex !== 2) || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
-            dispatch({
-              type: 'riskPointManage/fetchFixImgInfo',
-              payload: {
-                companyId,
-                type: imgIndex,
-              },
-              callback,
-            });
-          } else {
-            if (id || imgIndex === 2) {
-              dispatch({
-                type: 'buildingsInfo/fetchBuildingList',
-                payload: {
-                  company_id: companyId,
-                  pageSize: 0,
-                  pageNum: 1,
-                },
-                success: () => {
-                  callback();
-                  this.getFloorInfo(buildingId);
-                  dispatch({
-                    type: 'riskPointManage/fetchFixImgInfo',
-                    payload: {
-                      companyId,
-                      type: imgIndex,
-                      buildingId: buildingId,
-                      floorId: addFloorId ? addFloorId : floorId,
-                    },
-                  });
-                },
-              });
-            }
-          }
-        } else {
-          callback();
-          if (id && list.length === 0) {
-            message.error('该单位暂无图片！');
-          }
-        }
-      }
-    }
+    const isImgType = id ? imgType || typeIndex : typeIndex;
 
+    if (!id && list.length === 0) return message.error('该单位暂无图片！');
+    // 如果没有选择平面图类型
+    if (!isImgType) return message.error('请先选择平面图类型!');
+    // 如果是楼层平面图，需要选择建筑物和楼层后才能定位
+    if (+isImgType === 2) {
+      if (!buildingId) return message.error('请选择所属建筑物!');
+      if (!floorId) return message.error('请选择所属楼层!');
+      dispatch({
+        type: 'riskPointManage/fetchFixImgInfo',
+        payload: {
+          companyId,
+          type: imgType || typeIndex,
+          buildingId: buildingId,
+          floorId: floorId,
+        },
+        callback,
+      });
+    } else {
+      // 如果平面图是其他类型
+      dispatch({
+        type: 'riskPointManage/fetchFixImgInfo',
+        payload: {
+          companyId,
+          type: imgType || typeIndex,
+        },
+        callback,
+      });
+    }
     this.coordIndex = index;
   };
 
@@ -1042,7 +1019,7 @@ export default class RiskPointEdit extends PureComponent {
                 </Col>
                 <Col span={4}>
                   <Button
-                    onClick={() => this.showModalCoordinate(index)}
+                    onClick={() => this.showModalCoordinate(index, item)}
                     disabled={item.isDisabled}
                   >
                     定位
