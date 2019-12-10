@@ -2351,9 +2351,37 @@ module.exports = env => {
               name: 'operationRecord', // 设备设施运维记录
               code: 'facilityManagement.operationRecord',
               path: '/facility-management/operation-record',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/facility-management/operation-record',
+                  redirect: '/facility-management/operation-record/list',
+                },
+                {
+                  name: 'list',
+                  code: 'facilityManagement.operationRecord.list',
+                  path: '/facility-management/operation-record/list',
+                  component: './BaseInfo/OperationRecord/List',
+                },
+                {
+                  name: 'add',
+                  code: 'facilityManagement.operationRecord.add',
+                  path: '/facility-management/operation-record/add',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'facilityManagement.operationRecord.edit',
+                  path: '/facility-management/operation-record/edit/:id',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
+                {
+                  name: 'detail',
+                  code: 'facilityManagement.operationRecord.detail',
+                  path: '/facility-management/operation-record/detail/:id',
+                  component: './BaseInfo/OperationRecord/Other',
+                },
+              ],
             },
           ],
         },

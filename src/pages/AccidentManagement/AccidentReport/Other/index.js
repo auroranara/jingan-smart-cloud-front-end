@@ -509,7 +509,7 @@ export default class ReportOther extends Component {
             label: '报送类型',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <RadioOrSpan list={REPORT_TYPES} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => <RadioOrSpan list={REPORT_TYPES} type={isNotDetail || 'span'} />,
             options: {
               rules: isNotDetail ? [
                 {

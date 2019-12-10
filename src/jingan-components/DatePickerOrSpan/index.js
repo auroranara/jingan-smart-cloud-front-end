@@ -8,8 +8,8 @@ export default class DatePickerOrSpan extends Component {
       type,
       value,
       format='YYYY-MM-DD',
-      unknown,
-      separator,
+      unknown='?',
+      separator=' 至 ',
       ...restProps
     } = this.props;
 
