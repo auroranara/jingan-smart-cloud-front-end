@@ -3112,43 +3112,6 @@ module.exports = env => {
           systemType: 4,
           routes: [
             {
-              name: 'safetyFacilities', // 安全设施
-              code: 'deviceManagement.safetyFacilities',
-              path: '/device-management/safety-facilities',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  name: 'list',
-                  path: '/device-management/safety-facilities',
-                  redirect: '/device-management/safety-facilities/list',
-                },
-                {
-                  name: 'list',
-                  code: 'deviceManagement.safetyFacilities.list',
-                  path: '/device-management/safety-facilities/list',
-                  component: './BaseInfo/SafetyFacilities/TableList',
-                },
-                {
-                  name: 'view',
-                  code: 'deviceManagement.safetyFacilities.view',
-                  path: '/device-management/safety-facilities/view/:id',
-                  component: './BaseInfo/SafetyFacilities/Edit',
-                },
-                {
-                  name: 'add',
-                  code: 'deviceManagement.safetyFacilities.add',
-                  path: '/device-management/safety-facilities/add',
-                  component: './BaseInfo/SafetyFacilities/Edit',
-                },
-                {
-                  name: 'edit',
-                  code: 'deviceManagement.safetyFacilities.edit',
-                  path: '/device-management/safety-facilities/edit/:id',
-                  component: './BaseInfo/SafetyFacilities/Edit',
-                },
-              ],
-            },
-            {
               path: '/device-management/video-monitor', // 监控摄像头
               code: 'deviceManagement.videoMonitor',
               name: 'videoMonitor',
