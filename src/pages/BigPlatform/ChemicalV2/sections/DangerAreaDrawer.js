@@ -8,6 +8,8 @@ import safetyRiskList from '../imgs/safety-risk-list.png';
 import knowCard from '../imgs/know-card.png';
 import commitmentCard from '../imgs/commitment-card.png';
 import emergencyCard from '../imgs/emergency-card.png';
+import { MonitorList } from '../utils';
+import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
 
 const riskData = [
   // { label: '红色', value: 14, color: '#FC1F02' },
@@ -21,23 +23,29 @@ const hiddenDangerData = [
   { label: '待复查', value: 1, color: '#0967D3' },
 ];
 const riskSourceData = [
-  // { label: '储罐区监测', value: 1 },
-  // { label: '储罐监测', value: 3 },
-  // { label: '库区监测', value: 1 },
-  // { label: '库房监测', value: 2 },
-  { label: '生产装置', value: 2, url: '', images: [] },
-  { label: '气柜', value: 3, url: 'major-hazard-info/gasometer/list' },
-  { label: '高危工艺', value: 2, url: 'major-hazard-info/high-risk-process/list' },
+  // { label: '储罐区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
+  // { label: '储罐监测', value: 3, tip: '液位、压力、温度' },
+  // { label: '库区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
+  { label: '库房监测', value: 2, tip: '温度、湿度', type: 4 },
+  { label: '生产装置', value: 3, url: '', tip: '压力、温度', type: 3 },
+  {
+    label: '气柜',
+    value: 2,
+    url: 'major-hazard-info/gasometer/list',
+    tip: '柜容、压力、可燃气体浓度、有毒气体浓度',
+    type: 5,
+  },
+  // { label: '高危工艺', value: 2, url: 'major-hazard-info/high-risk-process/list', tip: '压力、温度'  },
 ];
 const twoListData = [
   {
-    label: '风险辨识清单',
+    label: '危险（有害）因素排查辨识清单',
     value: 1,
     url: 'two-information-management/danger-factors-list/list',
     images: [dangerFactorsList],
   },
   {
-    label: '分级管控清单',
+    label: '安全风险分级管控清单',
     value: 1,
     url: 'two-information-management/safety-risk-list/list',
     images: [safetyRiskList],
@@ -62,7 +70,7 @@ export default class KeyPoints extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, setDrawerVisible } = this.props;
+    const { visible, onClose, setDrawerVisible, handleShowVideo } = this.props;
     const { active } = this.state;
 
     return (
@@ -132,19 +140,32 @@ export default class KeyPoints extends PureComponent {
         </div>
 
         <div className={styles.wrapper}>
-          <div className={styles.title}>重大危险源</div>
+          <div className={styles.title}>
+            重大危险源
+            <span
+              className={styles.video}
+              style={{
+                background: `url(${cameraImg}) center center / 100% 100% no-repeat`,
+              }}
+              onClick={handleShowVideo}
+            />
+          </div>
           <div className={styles.content}>
             {riskSourceData.map((item, index) => {
-              const { label, value, url, images } = item;
+              const { label, value, url, images, tip, type } = item;
               return (
                 <div
                   className={styles.tagItem}
                   key={index}
-                  onClick={() => this.handleJump(url, images)}
+                  // onClick={() => this.handleJump(url, images)}
+                  onClick={() => {
+                    setDrawerVisible('monitor', { monitorType: type });
+                  }}
                 >
                   {label}
                   <span className={styles.tagValue}>({value})</span>
                   <Icon type="right" className={styles.rightIcon} />
+                  <span className={styles.tip}>{tip}</span>
                 </div>
               );
             })}
@@ -152,7 +173,13 @@ export default class KeyPoints extends PureComponent {
         </div>
 
         <div className={styles.wrapper}>
-          <div className={styles.title} style={{ cursor: 'pointer' }}>
+          <div
+            className={styles.title}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setDrawerVisible('monitorDetail', { monitorType: 6, monitorData: MonitorList[6][0] });
+            }}
+          >
             可燃有毒气体监测
             <div className={styles.extra}>
               <Icon type="right" className={styles.rightIcon} />

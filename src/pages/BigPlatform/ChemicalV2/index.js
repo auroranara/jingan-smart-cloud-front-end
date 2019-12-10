@@ -27,6 +27,8 @@ import {
   DangerAreaDrawer,
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
+  MonitorDetailDrawer,
+  Messages,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -55,7 +57,11 @@ export default class Chemical extends PureComponent {
       images: null,
       videoList: [],
       currentHiddenDangerDrawerVisible: false,
-      monitorDrawerVisible: true,
+      monitorDrawerVisible: false,
+      monitorType: 0,
+      monitorDetailDrawerVisible: false,
+      monitorData: {},
+      msgVisible: false,
     };
   }
 
@@ -100,6 +106,10 @@ export default class Chemical extends PureComponent {
     this.setState({ videoList: VideoList, videoVisible: true });
   };
 
+  handleParentChange = newState => {
+    this.setState({ ...newState });
+  };
+
   /**
    * 渲染
    */
@@ -116,6 +126,10 @@ export default class Chemical extends PureComponent {
       images,
       currentHiddenDangerDrawerVisible,
       monitorDrawerVisible,
+      monitorType,
+      monitorDetailDrawerVisible,
+      monitorData,
+      msgVisible,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -149,21 +163,33 @@ export default class Chemical extends PureComponent {
               </div>
 
               <div className={styles.leftBottom}>
-                <KeyPoints />
+                <KeyPoints setDrawerVisible={this.setDrawerVisible} />
               </div>
             </Col>
 
             <Col span={18} className={styles.height100}>
               <div className={styles.right}>
                 <Map setDrawerVisible={this.setDrawerVisible} showVideo={this.handleShowVideo} />
+
+                {msgVisible ? (
+                  <Messages
+                    setDrawerVisible={this.setDrawerVisible}
+                    handleParentChange={this.handleParentChange}
+                  />
+                ) : (
+                  <div className={styles.msgContainer}>
+                    {/* <Badge count={3}> */}
+                    <Icon
+                      type="message"
+                      className={styles.msgIcon}
+                      onClick={() => this.setState({ msgVisible: true })}
+                    />
+                    {/* </Badge> */}
+                  </div>
+                )}
               </div>
             </Col>
           </Row>
-          <div className={styles.msgContainer}>
-            <Badge count={3}>
-              <Icon type="message" className={styles.msgIcon} />
-            </Badge>
-          </div>
         </div>
 
         {/* 风险点抽屉 */}
@@ -184,6 +210,7 @@ export default class Chemical extends PureComponent {
           }}
           setDrawerVisible={this.setDrawerVisible}
           handleShowImg={this.handleShowImg}
+          handleShowVideo={this.handleShowVideo}
         />
 
         <StorageAreaDrawer
@@ -230,6 +257,18 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('monitor');
           }}
+          type={monitorType}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <MonitorDetailDrawer
+          visible={monitorDetailDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('monitorDetail');
+          }}
+          type={monitorType}
+          monitorData={monitorData}
+          handleShowVideo={this.handleShowVideo}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

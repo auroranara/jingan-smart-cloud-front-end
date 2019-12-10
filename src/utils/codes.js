@@ -642,4 +642,24 @@ export default {
       delete: 'majorHazardInfo.majorHazard.delete',
     },
   },
+
+  // 目标责任管理
+  targetResponsibility: {
+    // 安全生产指标
+    indexManagement: {
+      list: 'targetResponsibility.indexManagement.listView',
+      add: 'targetResponsibility.indexManagement.add',
+      edit: 'targetResponsibility.indexManagement.edit',
+      delete: 'targetResponsibility.indexManagement.delete',
+    },
+    // 目标责任制定实施
+    targetSetting: {
+      list: 'targetResponsibility.targetSetting.listView',
+      view: 'targetResponsibility.targetSetting.view',
+      add: 'targetResponsibility.targetSetting.add',
+      edit: 'targetResponsibility.targetSetting.edit',
+      delete: 'targetResponsibility.targetSetting.delete',
+      result: 'targetResponsibility.targetSetting.result',
+    },
+  },
 };

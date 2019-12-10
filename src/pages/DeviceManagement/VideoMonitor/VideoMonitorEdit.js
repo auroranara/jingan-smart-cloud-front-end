@@ -77,7 +77,7 @@ const defaultPagination = {
   }),
   dispatch => ({
     // 获取企业
-    fetchModelList(action) {
+    fetchModelList (action) {
       dispatch({
         type: 'videoMonitor/fetchModelList',
         ...action,
@@ -105,7 +105,7 @@ export default class VideoMonitorEdit extends PureComponent {
   };
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -116,7 +116,6 @@ export default class VideoMonitorEdit extends PureComponent {
       },
       form: { setFieldsValue },
     } = this.props;
-    this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     this.fetchConnectTypeDict();
     if (id) {
       // 根据id获取详情
@@ -137,11 +136,13 @@ export default class VideoMonitorEdit extends PureComponent {
             company: { id: companyId, name: companyName },
             gatewayEquipment: { id: plugFlowEquipment, code: plugFlowEquipmentCode },
           });
+          this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
         },
       });
     } else {
       // 清空详情
       dispatch({ type: 'videoMonitor/clearDetail' });
+      this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     }
     // 根据id获取四色图和消防平面图
     if (id || companyId) {
@@ -380,11 +381,13 @@ export default class VideoMonitorEdit extends PureComponent {
     const inheritNvr = getFieldValue('inheritNvr');
     setFieldsValue({
       companyId: value.name,
+      plugFlowEquipment: undefined,
     });
     this.setState(
       {
         companyId: value.id,
         company: value,
+        gatewayEquipment: {},
       },
       () => {
         this.fetchEquipmentsForAll();
@@ -409,7 +412,7 @@ export default class VideoMonitorEdit extends PureComponent {
   };
 
   // 渲染选择企业模态框
-  renderCompanyModal() {
+  renderCompanyModal () {
     const {
       companyModal: { loading, visible },
     } = this.state;
@@ -619,20 +622,16 @@ export default class VideoMonitorEdit extends PureComponent {
    * 获取网关设备（分页）
    */
   fetchGatewayForPage = (payload = { pageNum: 1, pageSize: 10 }) => {
-    const {
-      dispatch,
-      location: {
-        query: { companyId },
-      },
-    } = this.props;
+    const { dispatch } = this.props;
+    const { company } = this.state;
     dispatch({
       type: 'device/fetchGatewayEquipmentForPage',
-      payload: { companyId, ...payload },
+      payload: { companyId: company && company.id ? company.id : undefined, ...payload },
     });
   };
 
   // 渲染视频设备信息
-  renderVideoInfo() {
+  renderVideoInfo () {
     const {
       location: {
         query: { name: nameCompany },
@@ -703,46 +702,46 @@ export default class VideoMonitorEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.companyName}>
             {id
               ? getFieldDecorator('companyId', {
-                  initialValue: companyName,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择单位',
-                    },
-                  ],
-                })(
-                  <Input
-                    {...itemStyles}
-                    disabled
-                    ref={input => {
-                      this.CompanyIdInput = input;
-                    }}
-                    placeholder="请选择单位"
-                  />
-                )
+                initialValue: companyName,
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择单位',
+                  },
+                ],
+              })(
+                <Input
+                  {...itemStyles}
+                  disabled
+                  ref={input => {
+                    this.CompanyIdInput = input;
+                  }}
+                  placeholder="请选择单位"
+                />
+              )
               : getFieldDecorator('companyId', {
-                  initialValue:
-                    unitType === 4 || unitType === 1
-                      ? nameCompany || defaultName
-                      : nameCompany
-                        ? nameCompany
-                        : undefined,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择单位',
-                    },
-                  ],
-                })(
-                  <Input
-                    {...itemStyles}
-                    disabled
-                    ref={input => {
-                      this.CompanyIdInput = input;
-                    }}
-                    placeholder="请选择单位"
-                  />
-                )}
+                initialValue:
+                  unitType === 4 || unitType === 1
+                    ? nameCompany || defaultName
+                    : nameCompany
+                      ? nameCompany
+                      : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择单位',
+                  },
+                ],
+              })(
+                <Input
+                  {...itemStyles}
+                  disabled
+                  ref={input => {
+                    this.CompanyIdInput = input;
+                  }}
+                  placeholder="请选择单位"
+                />
+              )}
             {id || nameCompany || (defaultName && unitType !== 2) ? null : (
               <Button type="primary" onClick={this.handleShowCompanyModal}>
                 {' '}
@@ -1040,7 +1039,7 @@ export default class VideoMonitorEdit extends PureComponent {
   }
 
   /* 渲染错误信息 */
-  renderErrorInfo() {
+  renderErrorInfo () {
     const {
       form: { getFieldsError },
     } = this.props;
@@ -1084,7 +1083,7 @@ export default class VideoMonitorEdit extends PureComponent {
   }
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar() {
+  renderFooterToolbar () {
     const {
       location: {
         query: { companyId: companyIdParams, name: nameParams },
@@ -1118,16 +1117,16 @@ export default class VideoMonitorEdit extends PureComponent {
             返回
           </Button>
         ) : (
-          <Button type="primary" size="large" onClick={this.goBack}>
-            返回
+            <Button type="primary" size="large" onClick={this.goBack}>
+              返回
           </Button>
-        )}
+          )}
       </FooterToolbar>
     );
   }
 
   // 渲染页面所有信息
-  render() {
+  render () {
     const {
       gatewayLoading,
       match: {

@@ -1,0 +1,78 @@
+.container {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(17, 58, 112, 0.9);
+  width: 25%;
+  border-radius: 0 10px 10px 10px;
+  border: 1px solid #0ff;
+
+  .shrinkContainer {
+    color: #0ff;
+    text-align: right;
+    font-size: 18px;
+
+    .shrink {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+  }
+
+  .scroll {
+    padding: 0 5px;
+    margin-top: -10px;
+    padding-bottom: 15px;
+
+    .msgItem {
+      position: relative;
+
+      .timeDivider {
+        margin-top: 0;
+        margin-bottom: 5px;
+
+        &::before {
+          border-top: 1px solid #114685;
+        }
+
+        &::after {
+          border-top: 1px solid #114685;
+        }
+
+        .time {
+          color: #a4aebf;
+          font-size: 14px;
+        }
+      }
+
+      .msgContent {
+        position: relative;
+        padding-left: 25px;
+        line-height: 26px;
+        cursor: pointer;
+
+        .rightIcon {
+          color: #4F6F96;
+          font-size: 16px;
+          position: absolute;
+          right: 10px;
+          top: calc(~'(50% - 16px)');
+        }
+
+        .title {
+          color: #0ff;
+        }
+
+        .alarm {
+          color: #fc4849;
+        }
+
+        .content {
+          .label {
+            color: #8198B4;
+          }
+        }
+      }
+    }
+  }
+
+}
