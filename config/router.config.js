@@ -3576,7 +3576,19 @@ module.exports = env => {
               name: 'alarmMessage', // 报警消息
               code: 'companyIot.alarmMessage',
               path: '/company-iot/alarm-message',
-              component: './IoT/AlarmMessage',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/company-iot/alarm-message',
+                  redirect: '/company-iot/alarm-message/list',
+                },
+                {
+                  code: 'companyIot.alarmMessage.list',
+                  name: 'list',
+                  path: '/company-iot/alarm-message/list',
+                  component: './IoT/AlarmMessage',
+                },
+              ],
             },
           ],
         },

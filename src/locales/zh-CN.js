@@ -477,6 +477,7 @@ export default {
   'menu.companyIot.IOTAbnormalData.water': '水系统数据分析',
   'menu.companyIot.alarmWorkOrder': '报警工单管理',
   'menu.companyIot.alarmMessage': '报警消息',
+  'menu.companyIot.alarmMessage.list': '报警消息',
   'menu.majorHazardMonitor': '重大危险源监控管理',
   'menu.majorHazardMonitor.alarm': '报警管理功能',
   'menu.majorHazardMonitor.interlock': '联锁管理功能',
