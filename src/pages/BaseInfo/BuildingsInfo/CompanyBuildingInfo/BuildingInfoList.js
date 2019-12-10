@@ -63,13 +63,13 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '基础数据管理',
+    name: '基础数据管理',
   },
   {
     title: '建筑物信息',
     name: '建筑物信息',
-    href: '/base-info-management/buildings-info/list',
+    href: '/base-info/buildings-info/list',
   },
   {
     title: '建筑物信息列表',
@@ -346,7 +346,7 @@ export default class BuildingInfoList extends PureComponent {
                 <AuthButton
                   type="primary"
                   code={addCode}
-                  href={`#/base-info-management/buildings-info/add?companyId=${companyId}&&name=${name}`}
+                  href={`#/base-info/buildings-info/add?companyId=${companyId}&&name=${name}`}
                 >
                   新增
                 </AuthButton>
@@ -401,7 +401,7 @@ export default class BuildingInfoList extends PureComponent {
                     <AuthLink
                       code={editCode}
                       codes={codes}
-                      to={`/base-info-management/buildings-info/edit/${id}?companyId=${companyId}&&name=${name}`}
+                      to={`/base-info/buildings-info/edit/${id}?companyId=${companyId}&&name=${name}`}
                       target="_blank"
                     >
                       编辑
@@ -465,7 +465,7 @@ export default class BuildingInfoList extends PureComponent {
                       <AuthButton
                         code={floorListViewCode}
                         style={{ cursor: 'pointer' }}
-                        href={`#/base-info-management/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
+                        href={`#/base-info/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
                         target="_blank"
                       >
                         楼层管理

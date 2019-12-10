@@ -236,8 +236,8 @@ export default class BuildingInfoEdit extends PureComponent {
       message.success(id ? '编辑成功' : '新增成功');
       router.push(
         company_Id
-          ? `/base-info-management/buildings-info/detail/${company_Id}?name=${company_name}`
-          : '/base-info-management/buildings-info/list'
+          ? `/base-info/buildings-info/detail/${company_Id}?name=${company_name}`
+          : '/base-info/buildings-info/list'
       );
     };
 
@@ -723,15 +723,15 @@ export default class BuildingInfoEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '一企一档',
-        name: '一企一档',
+        title: '基础数据管理',
+        name: '基础数据管理',
       },
       {
         title: company_Id ? '建筑物信息列表' : '建筑物信息',
         name: company_Id ? '建筑物信息列表' : '建筑物信息',
         href: company_Id
-          ? `/base-info-management/buildings-info/detail/${company_Id}?name=${company_name}`
-          : '/base-info-management/buildings-info/list',
+          ? `/base-info/buildings-info/detail/${company_Id}?name=${company_name}`
+          : '/base-info/buildings-info/list',
       },
       {
         title: '新增建筑物',
@@ -753,7 +753,7 @@ export default class BuildingInfoEdit extends PureComponent {
                 {company_Id ? (
                   <Button
                     loading={uploading}
-                    href={`#/base-info-management/buildings-info/detail/${company_Id}?name=${company_name}`}
+                    href={`#/base-info/buildings-info/detail/${company_Id}?name=${company_name}`}
                     type="primary"
                     style={{ marginLeft: '10px' }}
                   >
@@ -762,7 +762,7 @@ export default class BuildingInfoEdit extends PureComponent {
                 ) : (
                   <Button
                     loading={uploading}
-                    href="#/base-info-management/buildings-info/list"
+                    href="#/base-info/buildings-info/list"
                     type="primary"
                     style={{ marginLeft: '10px' }}
                   >

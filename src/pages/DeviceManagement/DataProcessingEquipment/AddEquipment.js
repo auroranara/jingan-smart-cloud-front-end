@@ -311,7 +311,7 @@ export default class AddEquipment extends Component {
    */
   jumpToBuildingManagement = () => {
     const win = window.open(
-      `${window.publicPath}#/base-info-management/buildings-info/list`,
+      `${window.publicPath}#/base-info/buildings-info/list`,
       '_blank'
     );
     win.focus();
