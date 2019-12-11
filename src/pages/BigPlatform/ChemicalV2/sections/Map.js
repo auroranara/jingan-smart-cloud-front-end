@@ -31,7 +31,7 @@ const videoData = [
   { x: 13224080.80175761, y: 3771554.9751555184 },
 ].map(item => ({ ...item, url: video, iconType: 2 }));
 
-var polygon = [
+const polygon = [
   { x: 13224092.737655401, y: 3771528.058833545, z: 5 },
   { x: 13224082.323110294, y: 3771521.7336946093, z: 5 },
   { x: 13224090.980083626, y: 3771508.279856456, z: 5 },
@@ -238,6 +238,38 @@ const isPointInPolygon = (point, polygon) => {
   }
 };
 
+const alarmIds = [
+  164,
+  162,
+  163,
+  161,
+  158,
+  159,
+  160,
+  167,
+  170,
+  168,
+  165,
+  169,
+  166,
+  171,
+  270,
+  268,
+  267,
+  264,
+  262,
+  261,
+  258,
+  259,
+  260,
+  263,
+  282,
+  265,
+  266,
+  269,
+  271,
+];
+
 export default class Map extends PureComponent {
   state = {
     gdMapVisible: true,
@@ -245,17 +277,34 @@ export default class Map extends PureComponent {
 
   ids = [];
 
+  polygonArray = [];
+  markerArray = [];
+
   componentDidMount() {
     // this.initMap();
+    const { onRef } = this.props;
+    onRef && onRef(this);
   }
 
   /* eslint-disable*/
+  handleUpdateMap = () => {
+    if (!map) return;
+    this.polygonArray[0].setColor('rgb(255, 72, 72)');
+    const models = map.getDatasByAlias(1, 'model');
+    models.forEach(item => {
+      if (item.ID && alarmIds.includes(item.ID)) {
+        item.setColor('rgb(255, 72, 72)', 1);
+      }
+    });
+    this.markerArray[2].jump({ times: 0, duration: 2, height: 2, delay: 0 });
+  };
+
   addMarkers = (x, y, url, iconType) => {
     const groupID = 1;
     const groupLayer = map.getFMGroup(groupID);
-    var layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+    const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
     groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
-    var im = new fengmap.FMImageMarker({
+    const im = new fengmap.FMImageMarker({
       x,
       y,
       url, //设置图片路径
@@ -265,14 +314,15 @@ export default class Map extends PureComponent {
     });
     layer.addMarker(im); //图片标注层添加图片Marker
     im.alwaysShow();
+    this.markerArray.push(im);
   };
 
   addPolygon = (points, color) => {
-    var groupLayer = map.getFMGroup(1);
+    const groupLayer = map.getFMGroup(1);
     //创建PolygonMarkerLayer
-    var layer = new fengmap.FMPolygonMarkerLayer();
+    const layer = new fengmap.FMPolygonMarkerLayer();
     groupLayer.addLayer(layer);
-    var polygonMarker = new fengmap.FMPolygonMarker({
+    const polygonMarker = new fengmap.FMPolygonMarker({
       alpha: 0.5, //设置透明度
       lineWidth: 0, //设置边框线的宽度
       height: 1, //设置高度*/
@@ -280,6 +330,7 @@ export default class Map extends PureComponent {
     });
     polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
+    this.polygonArray.push(polygonMarker);
     // polygonMarker.alwaysShow(true);
     // polygonMarker.avoid(false);
   };
@@ -287,7 +338,7 @@ export default class Map extends PureComponent {
 
   initMap() {
     const { setDrawerVisible, showVideo } = this.props;
-    var mapOptions = {
+    const mapOptions = {
       //必要，地图容器
       container: document.getElementById('fengMap'),
       //地图数据位置
@@ -315,7 +366,7 @@ export default class Map extends PureComponent {
     });
 
     //2D、3D控件配置
-    var toolControl = new fengmap.toolControl(map, {
+    const toolControl = new fengmap.toolControl(map, {
       init2D: false, //初始化2D模式
       groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
       position: fengmap.controlPositon.LEFT_TOP,
@@ -350,7 +401,7 @@ export default class Map extends PureComponent {
       // storeModels
       const models = map.getDatasByAlias(1, 'model');
       models.forEach(item => {
-        if ((item.ID && (item.ID >= 158 && item.ID <= 171)) || (item.ID >= 258 && item.ID <= 271)) {
+        if (item.ID && alarmIds.includes(item.ID)) {
           // orange
           item.setColor('rgb(241, 122, 10)', 1);
         } else if (orangeIds.includes(item.ID)) {
@@ -369,9 +420,9 @@ export default class Map extends PureComponent {
     });
 
     map.on('mapClickNode', event => {
-      var clickedObj = event.target;
+      const clickedObj = event.target;
       console.log('clickedObj', clickedObj);
-      console.log('time', moment().valueOf());
+      // console.log('time', moment().valueOf());
       // isPointInPolygon
 
       if (!clickedObj) return;
@@ -381,6 +432,7 @@ export default class Map extends PureComponent {
         // eventInfo: { coord: { x, y } = { coord: {} } },
       } = clickedObj;
       // this.ids.push({ x, y });
+      // this.ids.push(ID);
       // console.log('IDS', JSON.stringify(this.ids));
       if (
         [

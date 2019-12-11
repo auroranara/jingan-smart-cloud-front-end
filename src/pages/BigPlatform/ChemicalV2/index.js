@@ -191,6 +191,8 @@ export default class Chemical extends PureComponent {
       ...options,
     });
 
+    this.childMap.handleUpdateMap();
+
     setTimeout(() => {
       // 解决加入animation覆盖notification自身显示动效时长问题
       notification.open({
@@ -239,6 +241,10 @@ export default class Chemical extends PureComponent {
         <div>区域位置：储罐监测点A</div>
       </div>
     );
+  };
+
+  onRef = ref => {
+    this.childMap = ref;
   };
 
   /**
@@ -304,7 +310,11 @@ export default class Chemical extends PureComponent {
 
             <Col span={18} className={styles.height100}>
               <div className={styles.right}>
-                <Map setDrawerVisible={this.setDrawerVisible} showVideo={this.handleShowVideo} />
+                <Map
+                  setDrawerVisible={this.setDrawerVisible}
+                  showVideo={this.handleShowVideo}
+                  onRef={this.onRef}
+                />
 
                 {msgVisible ? (
                   <Messages
