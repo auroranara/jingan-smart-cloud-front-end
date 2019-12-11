@@ -12,7 +12,7 @@ export default {
   },
 
   effects: {
-    *fetchCommitList({ payload, callback }, { call, put }) {
+    *fetchWarningList({ payload, callback }, { call, put }) {
       const response = yield call(getWarningList, payload);
       const { code, data, msg } = response || {};
       if (code === 200) {

@@ -731,6 +731,12 @@ module.exports = env => {
                   component: './BaseInfo/StorageManagement/StorageList',
                 },
                 {
+                  name: 'view',
+                  code: 'majorHazardInfo.storageAreaManagement.listView',
+                  path: '/major-hazard-info/storage-management/view/:id',
+                  component: './BaseInfo/StorageManagement/StorageEdit',
+                },
+                {
                   name: 'add',
                   code: 'majorHazardInfo.storageAreaManagement.add',
                   path: '/major-hazard-info/storage-management/add',
@@ -760,6 +766,12 @@ module.exports = env => {
                   code: 'majorHazardInfo.reservoirRegionManagement.listView',
                   path: '/major-hazard-info/reservoir-region-management/list',
                   component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionList',
+                },
+                {
+                  name: 'view',
+                  code: 'majorHazardInfo.reservoirRegionManagement.listView',
+                  path: '/major-hazard-info/reservoir-region-management/view/:id',
+                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
                 },
                 {
                   name: 'add',
@@ -2151,6 +2163,12 @@ module.exports = env => {
                   component: './BaseInfo/RegisteredEngineerManagement/index',
                 },
                 {
+                  name: 'view',
+                  code: 'baseInfo.registeredEngineerManagement.listView',
+                  path: '/base-info/registered-engineer-management/view/:id',
+                  component: './BaseInfo/RegisteredEngineerManagement/Handle',
+                },
+                {
                   name: 'add',
                   code: 'baseInfo.registeredEngineerManagement.add',
                   path: '/base-info/registered-engineer-management/add',
@@ -2316,7 +2334,7 @@ module.exports = env => {
                   path: '/facility-management/special-equipment/detail/:id',
                   code: 'facilityManagement.specialEquipment.detail',
                   name: 'detail',
-                  component: './BaseInfo/SpecialEquipment/Detail/index',
+                  component: './BaseInfo/SpecialEquipment/Handler/index',
                 },
               ],
             },
@@ -3035,6 +3053,12 @@ module.exports = env => {
                   component: './BaseInfo/SpecialOperationPermit/List',
                 },
                 {
+                  path: '/operation-safety/special-operation-permit/view/:id',
+                  name: 'view',
+                  code: 'operationSafety.specialOperationPermit.listView',
+                  component: './BaseInfo/SpecialOperationPermit/Handle',
+                },
+                {
                   path: '/operation-safety/special-operation-permit/add',
                   name: 'add',
                   code: 'operationSafety.specialOperationPermit.add',
@@ -3064,6 +3088,12 @@ module.exports = env => {
                   name: 'list',
                   code: 'operationSafety.specialEquipmentOperators.listView',
                   component: './BaseInfo/SpecialEquipmentOperators/List',
+                },
+                {
+                  path: '/operation-safety/special-equipment-operators/view/:id',
+                  name: 'view',
+                  code: 'operationSafety.specialEquipmentOperators.listView',
+                  component: './BaseInfo/SpecialEquipmentOperators/Handle',
                 },
                 {
                   path: '/operation-safety/special-equipment-operators/add',

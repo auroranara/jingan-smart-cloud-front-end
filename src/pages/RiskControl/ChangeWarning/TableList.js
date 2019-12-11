@@ -1,11 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
-import { Button, Card, Table, message } from 'antd';
+import { Card, Table } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import styles from './TableList.less';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, SEARCH_FIELDS as FIELDS, COLUMNS } from './utils';
 
@@ -38,7 +36,7 @@ export default class TableList extends PureComponent {
 
     dispatch({
       type: 'changeWarning/fetchWarningList',
-      payload: { pageNum, pageSize: PAGE_SIZE, ...this.values },
+      payload: { pageNum, pageSize: PAGE_SIZE, ...vals },
     });
   };
 

@@ -490,10 +490,13 @@ export default class specialOperationPermitHandle extends PureComponent {
     const {
       companyLoading,
       match: { params: { id } },
+      route: { name },
       sensor: { companyModal }, // companyModal { list , pagination:{} }
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? '编辑特种作业操作证人员' : '新增特种作业操作证人员';
+
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : '编辑' : '新增';
     const breadcrumbList = [
       {
         title: homeTitle,
@@ -517,13 +520,15 @@ export default class specialOperationPermitHandle extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
-        <Button
-          style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-          type="primary"
-          onClick={this.handleSubmit}
-        >
-          提交
-        </Button>
+        {isDetail ? null : (
+          <Button
+            style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+            type="primary"
+            onClick={this.handleSubmit}
+          >
+            提交
+          </Button>
+        )}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"

@@ -1402,6 +1402,7 @@ export default class StorageEdit extends PureComponent {
     const {
       companyLoading,
       match: { params: { id } },
+      route: { name },
       sensor: { companyModal }, // companyModal { list , pagination:{} }
       baseInfo: {
         storageTankArea, // 储罐区
@@ -1419,11 +1420,12 @@ export default class StorageEdit extends PureComponent {
       selectedTempKeys,
     } = this.state
 
-    const title = id ? editTitle : addTitle;
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : editTitle : addTitle;
     // 面包屑
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '一企一档', name: '一企一档' },
+      { title: '重大危险源基本信息', name: '重大危险源基本信息' },
       { title: '储罐管理', name: '储罐管理', href: '/major-hazard-info/storage-management/list' },
       { title, name: title },
     ];
@@ -1466,7 +1468,7 @@ export default class StorageEdit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
-        {this.renderFooterToolbar()}
+        {isDetail ? null : this.renderFooterToolbar()}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"

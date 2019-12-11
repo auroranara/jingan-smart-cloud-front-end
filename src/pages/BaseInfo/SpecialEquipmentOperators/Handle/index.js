@@ -505,10 +505,12 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
     const {
       companyLoading,
       match: { params: { id } },
+      route: { name },
       sensor: { companyModal }, // companyModal { list , pagination:{} }
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? "编辑特种设备作业人员" : "新增特种设备作业人员"
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : "编辑" : "新增";
     const breadcrumbList = [
       {
         title: homeTitle,
@@ -535,7 +537,15 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         {this.renderForm()}
-        <Button style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }} type="primary" onClick={this.handleSubmit}>提交</Button>
+        {isDetail ? null : (
+          <Button
+            type="primary"
+            style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+            onClick={this.handleSubmit}
+          >
+            提交
+          </Button>
+        )}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"

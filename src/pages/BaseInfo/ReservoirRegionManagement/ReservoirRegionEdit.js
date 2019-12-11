@@ -14,9 +14,9 @@ const FormItem = Form.Item;
 // const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
 
 // 编辑页面标题
-const editTitle = '编辑库区';
+const editTitle = '编辑';
 // 添加页面标题
-const addTitle = '新增库区';
+const addTitle = '新增';
 
 // 表单标签
 const fieldLabels = {};
@@ -648,8 +648,11 @@ export default class ReservoirRegionEdit extends PureComponent {
       match: {
         params: { id },
       },
+      route: { name },
     } = this.props;
-    const title = id ? editTitle : addTitle;
+
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : editTitle : addTitle;
 
     // 面包屑
     const breadcrumbList = [
@@ -676,7 +679,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
-        {this.renderFooterToolbar()}
+        {isDetail ? null : this.renderFooterToolbar()}
         {this.renderModal()}
         {/* {this.renderDangerModal()} */}
       </PageHeaderLayout>
