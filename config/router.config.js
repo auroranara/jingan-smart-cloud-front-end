@@ -1243,9 +1243,19 @@ module.exports = env => {
               name: 'changeWarning', // 变更预警管理
               code: 'riskControl.changeWarning',
               path: '/risk-control/change-warning',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/risk-control/change-warning',
+                  redirect: '/risk-control/change-warning/list',
+                },
+                {
+                  path: '/risk-control/change-warning/list',
+                  code: 'riskControl.changeWarning.list',
+                  name: 'list',
+                  component: './RiskControl/ChangeWarning/TableList',
+                },
+              ],
             },
           ],
         },
