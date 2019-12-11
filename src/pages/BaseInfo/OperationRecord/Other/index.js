@@ -37,10 +37,6 @@ export default class OperationRecordOther extends Component {
     ...rest,
   })
 
-  getLoading = ({
-    otherFile,
-  }) => (otherFile || []).some(({ status }) => status === 'uploading')
-
   render() {
     const fields = [
       {
@@ -90,7 +86,6 @@ export default class OperationRecordOther extends Component {
         initialize={this.initialize}
         transform={this.transform}
         fields={fields}
-        getLoading={this.getLoading}
         {...this.props}
       />
     );
