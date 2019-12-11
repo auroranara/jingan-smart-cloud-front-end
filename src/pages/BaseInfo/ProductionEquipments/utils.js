@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
 import Link from 'umi/link';
-import { Input, message, Popconfirm, Select } from 'antd';
+import { Input, message, Popconfirm, Select, Form } from 'antd';
 
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
+import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
 const { Option } = Select;
 
