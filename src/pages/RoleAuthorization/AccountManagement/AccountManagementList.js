@@ -33,12 +33,12 @@ import codesMap from '@/utils/codes';
 import { getListByUnitId, getScreenList, getUserPath } from './utils';
 import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
 
-
 const { TreeNode } = TreeSelect;
 const { Option } = Select;
 
 const title = '账号管理'; // 标题
-const breadcrumbList = [ // 面包屑
+const breadcrumbList = [
+  // 面包屑
   {
     title: '首页',
     name: '首页',
@@ -89,7 +89,10 @@ const getEmptyData = () => {
     user,
     hiddenDangerReport,
     loading: loading.models.account,
-    screenListLoading: loading.effects['account/fetchAssociatedUnitDetail'] || loading.effects['account/fetchRoles'] || loading.effects['role/fetchRolePermissions'],
+    screenListLoading:
+      loading.effects['account/fetchAssociatedUnitDetail'] ||
+      loading.effects['account/fetchRoles'] ||
+      loading.effects['role/fetchRolePermissions'],
   }),
   dispatch => ({
     fetch(action) {
@@ -718,7 +721,7 @@ export default class accountManagementList extends React.Component {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={filteredList}
           renderItem={item => {
-            const { loginId, loginName, userName, phoneNumber, status, users } = item;
+            const { loginId, loginName, userName, phoneNumber, isBindWechat, status, users } = item;
             const isUsersExist = Array.isArray(users) && users.length;
             let isSelf = false;
             if (isUsersExist) {
@@ -757,20 +760,19 @@ export default class accountManagementList extends React.Component {
             return (
               <List.Item key={loginId}>
                 <Card
-                  title={loginName}
+                  title={
+                    <div>
+                      <span>loginName</span>
+                      {!!isBindWechat && (
+                        <span style={{ paddingLeft: 10 }}>
+                          <span>{<Icon type="wechat" />}</span>
+                          <span>{<Icon type="mobile" />}</span>
+                        </span>
+                      )}
+                    </div>
+                  }
                   className={styles.card}
                   actions={actions}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
                 >
                   <div>
                     <Row>
@@ -968,8 +970,7 @@ export default class accountManagementList extends React.Component {
       type: 'account/fetchDashboard',
       payload: { key: id },
       callback: list => {
-        if (list.length)
-          this.setState({ screenCode: list[0].code });
+        if (list.length) this.setState({ screenCode: list[0].code });
       },
     });
   }
@@ -989,7 +990,9 @@ export default class accountManagementList extends React.Component {
               type: 'role/fetchRolePermissions', // 获取所选角色对应的权限id列表
               payload: { id: roleId },
               success: permissions => {
-                this.setState({ screenList: getScreenList(webPermissions, permissions, extraPermissions) });
+                this.setState({
+                  screenList: getScreenList(webPermissions, permissions, extraPermissions),
+                });
               },
             });
           },
@@ -1005,7 +1008,7 @@ export default class accountManagementList extends React.Component {
   handleScreenModalOk = () => {
     const { dispatch } = this.props;
     const { user, screenCode } = this.state;
-    const { id } = user
+    const { id } = user;
     this.handleScreenModalClose();
     // const path = getUserPath(screenCode, user);
     dispatch({
@@ -1043,7 +1046,11 @@ export default class accountManagementList extends React.Component {
           className={styles.screenModal}
           onChange={this.handleScreenSelectChange}
         >
-          {screenList.map(({ id, code, showZname }) => <Option value={code} key={id}>{showZname.slice(2)}</Option>)}
+          {screenList.map(({ id, code, showZname }) => (
+            <Option value={code} key={id}>
+              {showZname.slice(2)}
+            </Option>
+          ))}
         </Select>
       </Modal>
     );
