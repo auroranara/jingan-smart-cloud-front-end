@@ -885,6 +885,43 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              "name": "productionEquipments",
+              "code": "majorHazardInfo.productionEquipments",
+              "path": "/major-hazard-info/production-equipments",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/major-hazard-info/production-equipments",
+                  "redirect": "/major-hazard-info/production-equipments/list",
+                },
+                {
+                  "name": "list",
+                  "code": "majorHazardInfo.productionEquipments.list",
+                  "path": "/major-hazard-info/production-equipments/list",
+                  // "component": "./MajorHazardInfo/ProductionEquipments/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "majorHazardInfo.productionEquipments.view",
+                  "path": "/major-hazard-info/production-equipments/view/:id",
+                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "majorHazardInfo.productionEquipments.add",
+                  "path": "/major-hazard-info/production-equipments/add",
+                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "majorHazardInfo.productionEquipments.edit",
+                  "path": "/major-hazard-info/production-equipments/edit/:id",
+                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                },
+              ],
+            },
           ],
         },
 
