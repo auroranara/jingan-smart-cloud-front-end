@@ -3493,7 +3493,7 @@ module.exports = env => {
               ],
             },
             {
-              path: '/device-management/virtual-monitoring-device',
+              path: '/device-management/virtual-monitoring-device', // 虚拟监测对象管理
               name: 'virtualMonitoringDevice',
               code: 'deviceManagement.virtualMonitoringDevice',
               hideChildrenInMenu: true,
@@ -3520,6 +3520,25 @@ module.exports = env => {
                   name: 'edit',
                   code: 'deviceManagement.virtualMonitoringDevice',
                   component: './DeviceManagement/VirtualMonitoringDevice/Handle',
+                },
+              ],
+            },
+            {
+              path: '/device-management/tag-library', // 图标库管理
+              name: 'tagLibrary',
+              code: 'deviceManagement.tagLibrary',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/tag-library',
+                  name: 'tagLibrary',
+                  redirect: '/device-management/tag-library/list',
+                },
+                {
+                  path: '/device-management/tag-library/list',
+                  code: 'deviceManagement.tagLibrary.listView',
+                  name: 'listView',
+                  component: './DeviceManagement/TagLibrary',
                 },
               ],
             },
