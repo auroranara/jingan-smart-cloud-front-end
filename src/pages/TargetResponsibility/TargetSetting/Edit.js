@@ -50,8 +50,8 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 
 // 权限
 const {
-  baseInfo: {
-    safetyFacilities: { edit: editAuth },
+  targetResponsibility: {
+    targetSetting: { edit: editAuth },
   },
 } = codes;
 
