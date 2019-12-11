@@ -1201,7 +1201,7 @@ module.exports = env => {
                   "name": "list",
                   "code": "riskControl.fourColorImage.list",
                   "path": "/risk-control/four-color-image/list",
-                  // "component": "./RiskControl/FourColorImage/TableList",
+                  "component": "./RiskControl/FourColorImage/TableList",
                 },
                 {
                   "name": "view",
