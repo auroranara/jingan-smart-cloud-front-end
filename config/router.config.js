@@ -881,7 +881,7 @@ module.exports = env => {
                   path: '/major-hazard-info/high-risk-process/detail/:id',
                   code: 'majorHazardInfo.highRiskProcess.detail',
                   name: 'detail',
-                  component: './BaseInfo/HighRiskProcess/Detail/index',
+                  component: './BaseInfo/HighRiskProcess/Handler/index',
                 },
               ],
             },

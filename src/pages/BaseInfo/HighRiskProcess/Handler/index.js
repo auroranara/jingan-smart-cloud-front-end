@@ -7,30 +7,24 @@ import {
   Button,
   Radio,
   Row,
-  Modal,
-  Col,
   message,
   InputNumber,
-  DatePicker,
   Upload,
   Icon,
-  Cascader,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import debounce from 'lodash/debounce';
 import { getToken } from 'utils/authority';
 import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import styles from './index.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const Option = Select.Option;
 const { Group: RadioGroup } = Radio;
 /* root下的div */
-const getRootChild = () => document.querySelector('#root>div');
+// const getRootChild = () => document.querySelector('#root>div');
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
@@ -316,6 +310,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
         keySupervisionProcessOptions,
       },
     } = this.props;
+    // 是否是详情
+    const isDetail = /detail/i.test(window.location.href);
     const {
       selectedCompany,
       selectedMiddle,
@@ -617,11 +613,13 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
-            提交
+        {!isDetail && (
+          <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+            <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+              提交
           </Button>
-        </Row>
+          </Row>
+        )}
       </Card>
     );
   };
@@ -640,7 +638,9 @@ export default class EmergencySuppliesHandler extends PureComponent {
       finalModalVisible,
       selectedTemp,
     } = this.state;
-    const title = id ? '编辑' : '新增';
+    // 是否是详情
+    const isDetail = /detail/i.test(window.location.href);
+    const title = id ? isDetail ? '高危工艺流程详情' : '编辑高危工艺流程' : '新增高危工艺流程';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '重大危险源基本信息', name: '重大危险源基本信息' },

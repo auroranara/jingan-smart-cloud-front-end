@@ -20,11 +20,13 @@ const {
       delete: deleteCode,
       bind: bindCode,
       unbind: unbindCode,
+      detail: detailCode,
     },
   },
 } = codes;
 const addUrl = '/major-hazard-info/high-risk-process/add';
 const editUrl = '/major-hazard-info/high-risk-process/edit/';
+const detailUrl = '/major-hazard-info/high-risk-process/detail/'
 const { Option } = Select;
 const title = '高危工艺流程';
 const breadcrumbList = [
@@ -401,12 +403,14 @@ export default class HighRiskProcessList extends PureComponent {
         key: '操作',
         align: 'center',
         fixed: 'right',
-        width: 250,
+        width: 280,
         render: (val, row) => (
           <Fragment>
             <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
               绑定监测设备
             </AuthA>
+            <Divider type="vertical" />
+            <AuthA code={detailCode} onClick={() => { router.push(detailUrl + row.id) }}>查看</AuthA>
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row.id)}>编辑</AuthA>
             <Divider type="vertical" />
