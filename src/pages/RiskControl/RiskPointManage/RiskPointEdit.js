@@ -669,7 +669,7 @@ export default class RiskPointEdit extends PureComponent {
     };
 
     const isImgType = id ? imgType || typeIndex : typeIndex;
-
+    console.log('1111111111111', isImgType);
     if (!id && list.length === 0) return message.error('该单位暂无图片！');
     // 如果没有选择平面图类型
     if (!isImgType) return message.error('请先选择平面图类型!');
