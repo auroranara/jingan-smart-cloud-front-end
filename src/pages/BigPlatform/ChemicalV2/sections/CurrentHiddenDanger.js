@@ -266,27 +266,27 @@ export default class CurrentHiddenDanger extends PureComponent {
               value: wcq,
               name: '未超期',
               itemStyle: { color: `${yellowColor}` },
-              labelLine: {
-                show: this.generateShow(1, hoverIndex),
-                lineStyle: { color: `${yellowColor}` },
-              },
-              label: {
-                show: this.generateShow(1, hoverIndex),
-                color: { color: `${yellowColor}` },
-              },
+              // labelLine: {
+              //   show: this.generateShow(1, hoverIndex),
+              //   lineStyle: { color: `${yellowColor}` },
+              // },
+              // label: {
+              //   show: this.generateShow(1, hoverIndex),
+              //   color: { color: `${yellowColor}` },
+              // },
             },
             {
               value: dfc,
               name: '待复查',
               itemStyle: { color: `${blueColor}` },
-              labelLine: {
-                show: this.generateShow(2, hoverIndex),
-                lineStyle: { color: `${blueColor}` },
-              },
-              label: {
-                show: this.generateShow(2, hoverIndex),
-                color: { color: `${blueColor}` },
-              },
+              // labelLine: {
+              //   show: this.generateShow(2, hoverIndex),
+              //   lineStyle: { color: `${blueColor}` },
+              // },
+              // label: {
+              //   show: this.generateShow(2, hoverIndex),
+              //   color: { color: `${blueColor}` },
+              // },
             },
           ],
         },
