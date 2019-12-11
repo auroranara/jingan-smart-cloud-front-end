@@ -2990,7 +2990,7 @@ module.exports = env => {
                 {
                   path: '/hidden-danger-control/danger-standard-database/list',
                   name: 'list',
-                  code: 'hiddenDangerControl.dangerStandardDatabase.add',
+                  code: 'hiddenDangerControl.dangerStandardDatabase.listView',
                   component: './HiddenDangerControl/StandardDatabase',
                 },
                 {
