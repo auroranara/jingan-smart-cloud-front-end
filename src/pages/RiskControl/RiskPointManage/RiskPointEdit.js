@@ -728,6 +728,7 @@ export default class RiskPointEdit extends PureComponent {
 
   // 获取平面图内容
   getImgInfo = key => {
+    console.log('key', key);
     const {
       dispatch,
       location: {
@@ -753,11 +754,12 @@ export default class RiskPointEdit extends PureComponent {
         },
       });
     }
-    this.setState({ typeIndex: key, picModalVisible: false });
+    this.setState({ picModalVisible: false });
   };
 
   // 清空当前平面图信息
-  handleImgIndex = index => {
+  handleImgIndex = (e, index) => {
+    console.log('select', e);
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -772,7 +774,7 @@ export default class RiskPointEdit extends PureComponent {
     ];
     this.setState({
       isImgSelect: false,
-      typeIndex: '',
+      typeIndex: e,
       picList: newList,
       isEdit: true,
     });
@@ -953,7 +955,7 @@ export default class RiskPointEdit extends PureComponent {
                       allowClear
                       placeholder="请选择平面图类型"
                       onChange={this.getImgInfo}
-                      onSelect={() => this.handleImgIndex(index)}
+                      onSelect={e => this.handleImgIndex(e, index)}
                       disabled={item.isDisabled}
                     >
                       {imgTypeList.map(({ key, value }) => (
