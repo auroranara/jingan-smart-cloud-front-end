@@ -2444,7 +2444,7 @@ module.exports = env => {
                 },
                 {
                   name: 'detail',
-                  code: 'targetResponsibility.targetSetting.edit',
+                  code: 'targetResponsibility.targetSetting.view',
                   path: '/target-responsibility/target-setting/detail/:id',
                   component: './TargetResponsibility/TargetSetting/Edit',
                 },
