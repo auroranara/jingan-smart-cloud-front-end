@@ -162,6 +162,7 @@ export default {
   'menu.riskControl.upgradeWarning': '风险升级预警信息',
   'menu.riskControl.reevaluateWarning': '复评预警管理',
   'menu.riskControl.changeWarning': '变更预警管理',
+  'menu.riskControl.changeWarning.list': '变更预警管理',
   'menu.controlMeasuresFollowUp': '管控措施跟进信息管理',
   'menu.controlMeasuresFollowUp.companyReport': '企业风险点自查报表',
   'menu.controlMeasuresFollowUp.companyReport.list': '企业风险点自查报表',

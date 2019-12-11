@@ -28,6 +28,14 @@ export default class TableList extends PureComponent {
       this.setState({ current: 1 });
     }
 
+    const { companyId, range } = this.values;
+    const vals = { ...this.values };
+    delete vals.range;
+    if (companyId)
+      vals.companyId = companyId.key;
+    if (range)
+      [vals.startDate, vals.endDate] = range.map(t => +t);
+
     dispatch({
       type: 'changeWarning/fetchWarningList',
       payload: { pageNum, pageSize: PAGE_SIZE, ...this.values },
@@ -72,7 +80,7 @@ export default class TableList extends PureComponent {
             fields={FIELDS}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            // buttonStyle={{ textAlign: 'right' }}
+            buttonStyle={{ textAlign: 'right' }}
             buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>
