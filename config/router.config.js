@@ -1260,14 +1260,14 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              name: 'upgradeWarning', // 风险升级预警信息
-              code: 'riskControl.upgradeWarning',
-              path: '/risk-control/upgrade-warning',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
+            // {
+            //   name: 'upgradeWarning', // 风险升级预警信息
+            //   code: 'riskControl.upgradeWarning',
+            //   path: '/risk-control/upgrade-warning',
+            //   developing: true,
+            //   hideChildrenInMenu: true,
+            //   routes: [],
+            // },
             {
               name: 'reevaluateWarning', // 复评预警管理
               code: 'riskControl.reevaluateWarning',
