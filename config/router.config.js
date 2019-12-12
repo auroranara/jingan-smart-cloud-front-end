@@ -121,11 +121,17 @@ module.exports = env => {
         //   path: '/big-platform/video',
         //   component: './BigPlatform/Video',
         // },
+        // {
+        //   path: '/big-platform/position/:companyId',
+        //   code: 'dashboard.personnelPositioningView',
+        //   name: 'personnelPositioning',
+        //   component: './BigPlatform/Position/index',
+        // },
         {
-          path: '/big-platform/position/:companyId',
+          path: '/big-platform/personnel-position/:companyId',
           code: 'dashboard.personnelPositioningView',
           name: 'personnelPositioning',
-          component: './BigPlatform/Position/index',
+          component: './BigPlatform/PersonnelPosition/index',
         },
         // {
         //   path: '/big-platform/position/:companyId/history/:id',

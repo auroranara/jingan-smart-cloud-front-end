@@ -55,6 +55,7 @@ const clearParam = url => /\:/.test(url) ? url.split(':').shift() : url
  * @param {Array} array 需要处理的数组
  * @param {Object} model user模块
  */
+const OPE_SCREENS = ['governmentSafety', 'newFireControl', 'electricityMonitor', 'gas', 'smoke', 'operation', 'personnelPositioning'];
 export const filterBigPlatform = (array, model) => {
   const {
     currentUser: {
@@ -108,7 +109,7 @@ export const filterBigPlatform = (array, model) => {
     if (['electricityMonitor', 'gas', 'smoke'].includes(name)) {
       item.path = `${path}${grids.length ? grids[0].value : 'index'}`
     } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
-      item.path = path + companyId;
+      item.path = path + (companyId || 'index');
     } else if (['governmentSafety', 'newFireControl', 'chemical'].includes(name)) {
       item.path = path + 'index';
     } else item.path = path;
@@ -126,7 +127,7 @@ export const filterBigPlatform = (array, model) => {
       if (['electricityMonitor', 'gas', 'smoke'].includes(name)) return [...arr, item]
     } else if (unitType === 3) {
       // 运营
-      if (['governmentSafety', 'newFireControl', 'electricityMonitor', 'gas', 'smoke', 'operation'].includes(name)) return [...arr, item]
+      if (OPE_SCREENS.includes(name)) return [...arr, item]
     } else if (unitType === 4) {
       // 企事业
       if (name === 'companySafety' && safetyProduction && clfcSafetyAuth) return [...arr, item]
