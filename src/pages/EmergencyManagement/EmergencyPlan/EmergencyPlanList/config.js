@@ -112,6 +112,7 @@ export const SECRET_CODES = [
     value: '其他',
   },
 ];
+export const DATE_STATUS = ['未到期', '即将到期', '已过期']; //到期状态  0：未到期 1：即将到期 2：已过期
 export const DEFAULT_PAGE_SIZE = 10;
 export const DEFAULT_PAGE_NUM = 1;
 export const ADD_CODE = 'emergencyManagement.emergencyPlan.add';

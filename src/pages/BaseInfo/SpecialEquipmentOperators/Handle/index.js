@@ -45,6 +45,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const getRootChild = () => document.querySelector('#root>div');
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+const BTN_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
 @connect(({ baseInfo, sensor, user, loading }) => ({
@@ -516,10 +517,12 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
     const {
       companyLoading,
       match: { params: { id } },
+      route: { name },
       sensor: { companyModal }, // companyModal { list , pagination:{} }
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? "编辑特种设备作业人员" : "新增特种设备作业人员"
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : "编辑" : "新增";
     const breadcrumbList = [
       {
         title: homeTitle,
@@ -546,7 +549,15 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         {this.renderForm()}
-        <Button style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }} type="primary" onClick={this.handleSubmit}>提交</Button>
+        {isDetail ? (
+          <Button type="primary" style={BTN_STYLE} onClick={e => router.push(`/operation-safety/special-equipment-operators/edit/${id}`)}>
+            编辑
+          </Button>
+        ) : (
+          <Button type="primary" style={BTN_STYLE} onClick={this.handleSubmit}>
+            提交
+          </Button>
+        )}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"
