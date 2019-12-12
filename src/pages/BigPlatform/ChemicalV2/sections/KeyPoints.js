@@ -121,7 +121,7 @@ export default class KeyPoints extends PureComponent {
           />
           <div className={styles.scroll}>
             <Row>
-              {[monitorData, keyPointsData1, keyPointsData][active].map((item, index) => {
+              {[monitorData, keyPointsData, keyPointsData][active].map((item, index) => {
                 const { icon, label, value, total, type } = item;
                 return (
                   <Col span={12} key={index}>
