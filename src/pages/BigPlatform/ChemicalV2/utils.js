@@ -1416,14 +1416,14 @@ export const MonitorList = [
   // 可燃有毒气体
   [
     {
-      title: '可燃有毒气体监测',
+      title: '可燃气体监测',
       status: 1,
-      location: '仓库-1号仓库',
+      location: '7号罐附近',
       isDanger: 1,
       monitors: [
         {
-          gaugeData: { value: 71, title: '可燃气体浓度', unit: 'mg/m³' },
-          extra: 26,
+          gaugeData: { value: 24, title: '可燃气体浓度', unit: 'mg/m³' },
+          extra: 15,
         },
         {
           gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
@@ -1431,17 +1431,22 @@ export const MonitorList = [
         },
       ],
     },
+  ],
+  // 可燃有毒气体
+  [
     {
-      title: '可燃有毒气体监测',
-      status: 2,
-      location: '仓库-3号仓库',
-      isDanger: 0,
+      title: '有毒气体监测',
+      status: 1,
+      location: '6号罐附近',
+      isDanger: 1,
       monitors: [
         {
-          gaugeData: { value: 35, title: '可燃气体浓度', unit: 'mg/m³' },
+          gaugeData: { value: 6.2, title: '可燃气体浓度', unit: 'mg/m³' },
+          extra: 6,
         },
         {
-          gaugeData: { value: 47, title: '有毒气体浓度', unit: 'mg/m³' },
+          gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
+          extra: 12,
         },
       ],
     },
@@ -1517,9 +1522,20 @@ export const MonitorFields = [
   ],
   // 可燃有毒气体
   [{ label: '监测区域名称', value: 'location' }],
+  // 可燃有毒气体
+  [{ label: '监测区域名称', value: 'location' }],
 ];
 
-export const MonitorTitles = ['罐区', '库区', '储罐', '生产装置', '库房', '气柜', '可燃有毒气体'];
+export const MonitorTitles = [
+  '罐区',
+  '库区',
+  '储罐',
+  '生产装置',
+  '库房',
+  '气柜',
+  '可燃气体',
+  '有毒气体',
+];
 
 export const MonitorDetailFields = [
   // 罐区
@@ -1598,6 +1614,8 @@ export const MonitorDetailFields = [
       },
     },
   ],
-  // 可燃有毒气体
+  // 可燃气体
+  [{ label: '监测区域名称', value: 'location' }],
+  // 有毒气体
   [{ label: '监测区域名称', value: 'location' }],
 ];

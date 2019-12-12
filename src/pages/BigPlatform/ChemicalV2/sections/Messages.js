@@ -12,7 +12,7 @@ export default class Messages extends PureComponent {
   componentDidMount() {}
 
   render() {
-    const { style = {}, setDrawerVisible, handleParentChange } = this.props;
+    const { style = {}, setDrawerVisible, handleParentChange, handleGasOpen } = this.props;
     return (
       <div className={styles.container} style={{ ...style }}>
         <div className={styles.shrinkContainer}>
@@ -34,22 +34,23 @@ export default class Messages extends PureComponent {
                 background: `url(${iconAlarm}) 1px -8px / 30px 30px no-repeat`,
               }}
               onClick={() =>
-                setDrawerVisible('monitorDetail', {
-                  monitorType: 2,
-                  monitorData: MonitorList[2][0],
-                })
+                // setDrawerVisible('monitorDetail', {
+                //   monitorType: 2,
+                //   monitorData: MonitorList[2][0],
+                // })
+                setDrawerVisible('tankMonitor')
               }
             >
               <Icon type="right" className={styles.rightIcon} />
               <div className={styles.title}>【储罐监测】</div>
-              <div className={styles.alarm}>温度为68℃，超过预警值8℃</div>
+              <div className={styles.alarm}>压力为0.15MPa，超过告警值0.05MPa</div>
               <div className={styles.content}>
                 <span className={styles.label}>监测设备：</span>
                 储罐监测设备
               </div>
               <div className={styles.content}>
                 <span className={styles.label}>区域位置：</span>
-                储罐监测点A
+                东厂区1号楼危险品液体原料储罐区
               </div>
             </div>
           </div>
@@ -63,23 +64,24 @@ export default class Messages extends PureComponent {
               style={{
                 background: `url(${iconAlarm}) 1px -8px / 30px 30px no-repeat`,
               }}
-              onClick={() =>
-                setDrawerVisible('monitorDetail', {
-                  monitorType: 6,
-                  monitorData: MonitorList[6][0],
-                })
+              onClick={
+                () => handleGasOpen()
+                // setDrawerVisible('monitorDetail', {
+                //   monitorType: 6,
+                //   monitorData: MonitorList[6][0],
+                // })
               }
             >
               <Icon type="right" className={styles.rightIcon} />
-              <div className={styles.title}>【可燃有毒气体监测】</div>
-              <div className={styles.alarm}>当前浓度为65%LEL，超过告警值12%LEL</div>
+              <div className={styles.title}>【可燃气体监测】</div>
+              <div className={styles.alarm}>当前浓度为24%LEL，超过告警值15%LEL</div>
               <div className={styles.content}>
                 <span className={styles.label}>监测设备：</span>
-                可燃有毒气体监测设备
+                可燃气体监测设备
               </div>
               <div className={styles.content}>
                 <span className={styles.label}>区域位置：</span>
-                仓库-1号仓库
+                7号罐附近
               </div>
             </div>
           </div>

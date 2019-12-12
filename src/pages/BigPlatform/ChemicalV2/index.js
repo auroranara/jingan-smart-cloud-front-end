@@ -19,6 +19,7 @@ import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
 import Lightbox from 'react-images';
+import TankMonitorDrawer from './sections/TankMonitorDrawer';
 
 import {
   DangerSourceInfoDrawer,
@@ -41,6 +42,8 @@ import {
   TechnologyDrawer,
   StorageDrawer,
   Messages,
+  GasDrawer,
+  PoisonDrawer,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -122,6 +125,9 @@ export default class Chemical extends PureComponent {
       imageFiles: [],
       currentImage: 0,
       modalImgVisible: false,
+      gasVisible: false,
+      poisonVisible: false,
+      tankMonitorDrawerVisible: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
   }
@@ -244,7 +250,8 @@ export default class Chemical extends PureComponent {
       <div
         className={styles.notificationBody}
         onClick={() =>
-          this.setDrawerVisible('monitorDetail', { monitorType: 2, monitorData: MonitorList[2][0] })
+          // this.setDrawerVisible('monitorDetail', { monitorType: 2, monitorData: MonitorList[2][0] })
+          this.setDrawerVisible('tankMonitor')
         }
       >
         <div>
@@ -382,6 +389,22 @@ export default class Chemical extends PureComponent {
     });
   };
 
+  handleGasOpen = () => {
+    this.setState({ gasVisible: true });
+  };
+
+  handleGasClose = () => {
+    this.setState({ gasVisible: false });
+  };
+
+  handlePoisonOpen = () => {
+    this.setState({ poisonVisible: true });
+  };
+
+  handlePoisonClose = () => {
+    this.setState({ poisonVisible: false });
+  };
+
   /**
    * 渲染
    */
@@ -417,6 +440,9 @@ export default class Chemical extends PureComponent {
       imageFiles,
       currentImage,
       modalImgVisible,
+      gasVisible,
+      poisonVisible,
+      tankMonitorDrawerVisible,
     } = this.state;
     console.log('points', points);
 
@@ -469,6 +495,7 @@ export default class Chemical extends PureComponent {
                   <Messages
                     setDrawerVisible={this.setDrawerVisible}
                     handleParentChange={this.handleParentChange}
+                    handleGasOpen={this.handleGasOpen}
                   />
                 ) : (
                   <div className={styles.msgContainer}>
@@ -516,6 +543,8 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           handleShowImg={this.handleShowImg}
           handleShowVideo={this.handleShowVideo}
+          handleGasOpen={this.handleGasOpen}
+          handlePoisonOpen={this.handlePoisonOpen}
         />
 
         <StorageAreaDrawer
@@ -558,6 +587,8 @@ export default class Chemical extends PureComponent {
           }}
           type={monitorType}
           setDrawerVisible={this.setDrawerVisible}
+          handleGasOpen={this.handleGasOpen}
+          handlePoisonOpen={this.handlePoisonOpen}
         />
 
         <MonitorDetailDrawer
@@ -636,6 +667,27 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('storage');
           }}
           setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <GasDrawer
+          visible={gasVisible}
+          handleClose={this.handleGasClose}
+          handleShowVideo={this.handleShowVideo}
+        />
+
+        <PoisonDrawer
+          visible={poisonVisible}
+          handleClose={this.handlePoisonClose}
+          handleShowVideo={this.handleShowVideo}
+        />
+
+        <TankMonitorDrawer
+          id={'111'}
+          visible={tankMonitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('tankMonitor');
+          }}
+          handleShowVideo={this.handleShowVideo}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

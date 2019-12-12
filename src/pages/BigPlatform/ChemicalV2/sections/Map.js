@@ -15,6 +15,8 @@ import riskPointActive from '../imgs/risk-point-active.png';
 import riskPointGray from '../imgs/risk-point-gray.png';
 import videoActive from '../imgs/video-active.png';
 import videoGray from '../imgs/video-gray.png';
+import position from '../imgs/position.png';
+import monitorAlarm from '../imgs/monitor-alarm.png';
 
 const fengMap = fengmap; // eslint-disable-line
 const COLOR = {
@@ -311,7 +313,7 @@ export default class Map extends PureComponent {
   handleUpdateMap = () => {
     console.log('map', map);
 
-    if (!map) return;
+    if (!map || !this.markerArray.length) return;
     // this.polygonArray[0].setColor('rgb(255, 72, 72)');
     // const models = map.getDatasByAlias(1, 'model');
     // models.forEach(item => {
@@ -319,7 +321,8 @@ export default class Map extends PureComponent {
     //     item.setColor('rgb(255, 72, 72)', 1);
     //   }
     // });
-    this.markerArray[2].jump({ times: 0, duration: 2, height: 2, delay: 0 });
+    this.markerArray[5].url = monitorAlarm;
+    this.markerArray[5].jump({ times: 0, duration: 2, height: 2, delay: 0 });
   };
 
   addMarkers = (x, y, url, restProps) => {
@@ -393,6 +396,7 @@ export default class Map extends PureComponent {
       init2D: false, //初始化2D模式
       groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
       position: fengmap.controlPositon.LEFT_TOP,
+      offset: { x: 0, y: 40 },
       //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
       clickCallBack: function(type, value) {
         // console.log(type,value);
@@ -500,7 +504,8 @@ export default class Map extends PureComponent {
         if (iconType === 2) showVideo();
         else if (iconType === 0) handleClickRiskPoint(itemId, status);
         else if (iconType === 1)
-          setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
+          // setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
+          setDrawerVisible('tankMonitor');
       }
       // this.addMarkers(x, y, riskPoint, 0);
 
@@ -530,6 +535,10 @@ export default class Map extends PureComponent {
   handleClickMap = () => {
     this.setState({ gdMapVisible: false });
     this.initMap();
+  };
+
+  handlePosition = () => {
+    window.open(`${window.publicPath}#/big-platform/personnel-position/index`, `_blank`);
   };
 
   renderMarkers = () => {
@@ -578,6 +587,7 @@ export default class Map extends PureComponent {
       this.markerArray[4].show = copy[index];
     } else if (index === 2) {
       this.markerArray[5].show = copy[index];
+      this.markerArray[6].show = copy[index];
     }
   };
 
@@ -640,6 +650,13 @@ export default class Map extends PureComponent {
                 </div>
               );
             })}
+            <div
+              className={styles.positionBtn}
+              style={{
+                background: `url(${position}) center center / auto 80% no-repeat #fff`,
+              }}
+              onClick={this.handlePosition}
+            />
           </div>
         )}
       </div>

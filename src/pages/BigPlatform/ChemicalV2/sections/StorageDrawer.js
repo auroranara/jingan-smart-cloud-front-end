@@ -41,26 +41,26 @@ const list = [
     pressure: '0.1MPa',
     nowPressure: '0.07MPa',
   },
-  {
-    store: '乙酸乙酯',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '8t',
-    max: '18t',
-    contain: '16t',
-    nowCotain: '2t',
-    pressure: '0.1MPa',
-    nowPressure: '0.05MPa',
-  },
-  {
-    store: '乙腈',
-    type: '第3类 易燃液体，有毒品',
-    acture: '10t',
-    max: '16t',
-    contain: '16t',
-    nowCotain: '2t',
-    pressure: '0.1MPa',
-    nowPressure: '0.08MPa',
-  },
+  // {
+  //   store: '乙酸乙酯',
+  //   type: '第3.2类 中闪点易燃液体',
+  //   acture: '8t',
+  //   max: '18t',
+  //   contain: '16t',
+  //   nowCotain: '2t',
+  //   pressure: '0.1MPa',
+  //   nowPressure: '0.05MPa',
+  // },
+  // {
+  //   store: '乙腈',
+  //   type: '第3类 易燃液体，有毒品',
+  //   acture: '10t',
+  //   max: '16t',
+  //   contain: '16t',
+  //   nowCotain: '2t',
+  //   pressure: '0.1MPa',
+  //   nowPressure: '0.08MPa',
+  // },
   // {
   //   store: '甲醇',
   //   type: '第3.2类 中闪点一级易燃液体，有毒品',
@@ -158,12 +158,12 @@ export default class DangerSourceInfoDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose } = this.props;
+    const { visible, onClose, setDrawerVisible } = this.props;
     const {} = this.state;
 
     return (
       <DrawerContainer
-        title="储罐(5)"
+        title={`储罐(${list.length})`}
         visible={visible}
         onClose={onClose}
         width={535}
@@ -192,7 +192,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                     </div>
                   </Fragment>
                 }
-                onClick={() => {}}
+                onClick={() => setDrawerVisible('tankMonitor')}
               />
             ))}
           </div>
