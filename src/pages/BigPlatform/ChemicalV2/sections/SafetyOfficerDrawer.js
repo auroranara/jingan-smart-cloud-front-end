@@ -76,7 +76,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
                   className={styles.left}
                   style={{
                     background: `url(${PersonSafety}) no-repeat center center`,
-                    backgroundSize: '80% 65% ',
+                    backgroundSize: '77% 65% ',
                   }}
                 />
                 <div className={styles.middle}>
@@ -114,10 +114,10 @@ export default class SafetyOfficerDrawer extends PureComponent {
                         className={styles.icon}
                         style={{
                           background: `url(${EduIcon}) no-repeat center bottom`,
-                          backgroundSize: '50% 55%',
+                          backgroundSize: '48% 95%',
                           cursor: 'pointer',
                         }}
-                        onClick={() => handleClickImgShow(id, eduPic)}
+                        onClick={() => handleClickImgShow([eduPic])}
                       />
                     </Tooltip>
                     <Tooltip title="注册安全工程师">
@@ -125,10 +125,10 @@ export default class SafetyOfficerDrawer extends PureComponent {
                         className={styles.icon}
                         style={{
                           background: `url(${RegisterEnginIcon}) no-repeat center bottom`,
-                          backgroundSize: '50% 55%',
+                          backgroundSize: '48%  95%',
                           cursor: 'pointer',
                         }}
-                        onClick={() => handleClickImgShow(id, enginPic)}
+                        onClick={() => handleClickImgShow([enginPic])}
                       />
                     </Tooltip>
                   </div>

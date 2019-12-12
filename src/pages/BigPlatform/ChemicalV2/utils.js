@@ -72,7 +72,7 @@ export const PersonList = [
     education: '大专',
     work: '应用化工技术',
     sign: '安全管理员',
-    eduPic: [{ nbEdu }],
+    eduPic: nbEdu,
     enginPic: nbEngin,
   },
   {

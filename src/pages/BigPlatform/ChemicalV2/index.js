@@ -333,18 +333,13 @@ export default class Chemical extends PureComponent {
     dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
   };
 
-  handleClickImgShow = (i, imageFiles) => {
-    console.log('imageFiles', imageFiles);
-    const newFiles = imageFiles.map(item => {
-      return {
-        src: item,
-      };
-    });
-    console.log('newFiles', newFiles);
+  handleClickImgShow = images => {
+    console.log('imageFiles', images);
+
     this.setState({
       modalImgVisible: true,
-      currentImage: i,
-      imageFiles: newFiles,
+      currentImage: 0,
+      imageFiles: images,
     });
   };
 
@@ -354,25 +349,25 @@ export default class Chemical extends PureComponent {
     });
   };
 
-  // 附件图片的点击翻入上一页
+  // 上一页
   gotoPrevious = () => {
-    let { currentImage } = this.state;
-    if (currentImage <= 0) return;
-    this.setState({ currentImage: --currentImage });
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
   };
 
-  // 附件图片的点击翻入下一页
+  // 下一页
   gotoNext = () => {
-    let { currentImage, imageFiles } = this.state;
-    if (currentImage >= imageFiles.length - 1) return;
-    this.setState({ currentImage: ++currentImage });
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
   };
 
-  // 附件图片点击下方缩略图
-  handleClickThumbnail = i => {
-    const { currentImage } = this.state;
-    if (currentImage === i) return;
-    this.setState({ currentImage: i });
+  // 图片点击下方缩略图
+  handleClickThumbnail = currentImage => {
+    this.setState({
+      currentImage,
+    });
   };
 
   /**
@@ -571,7 +566,7 @@ export default class Chemical extends PureComponent {
         <ImagePreview images={images} onClose={this.handleCloseImg} />
 
         <Lightbox
-          images={imageFiles}
+          images={imageFiles.map(src => ({ src }))}
           isOpen={modalImgVisible}
           currentImage={currentImage}
           onClickPrev={this.gotoPrevious}
