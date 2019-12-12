@@ -506,6 +506,8 @@ export default {
       edit: 'majorHazardInfo.highRiskProcess.edit',
       detail: 'majorHazardInfo.highRiskProcess.detail',
       delete: 'majorHazardInfo.highRiskProcess.delete',
+      bind: 'majorHazardInfo.highRiskProcess.bind',
+      unbind: 'majorHazardInfo.highRiskProcess.unbind',
     },
     // 特种设备管理
     specialEquipment: {
