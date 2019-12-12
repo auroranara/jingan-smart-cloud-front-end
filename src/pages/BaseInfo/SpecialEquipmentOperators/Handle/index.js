@@ -48,9 +48,10 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 const BTN_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
-@connect(({ baseInfo, sensor, loading }) => ({
+@connect(({ baseInfo, sensor, user, loading }) => ({
   baseInfo,
   sensor,
+  user,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 export default class SpecialEquipmentOperatorsHandle extends PureComponent {
@@ -72,6 +73,10 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: {
+        isCompany, // 是否企业账号
+        currentUser,
+      },
     } = this.props;
     // 获取作业项目
     this.fetchDict({
@@ -110,6 +115,11 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
           setFieldsValue({ companyId });
         },
       })
+    } else if (isCompany) {
+      // 如果企业账号
+      const { companyId, companyName } = currentUser;
+      this.setState({ selectedCompany: { id: companyId, name: companyName } });
+      setFieldsValue({ companyId });
     }
   }
 
@@ -314,7 +324,8 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
     const {
       match: { params: { id } },
       form: { getFieldDecorator },
-    } = this.props
+      user: { isCompany },
+    } = this.props;
     const {
       frontPhotoList,
       backPhotoList,
@@ -324,7 +335,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       detail,
       workProjectOptions,
       workTypeOptions,
-    } = this.state
+    } = this.state;
     return (
       <Card>
         <Form>
@@ -334,7 +345,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
             })(
               <Fragment>
                 <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择" />
-                <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
+                {!isCompany && (<Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>)}
               </Fragment>
             )}
           </FormItem>

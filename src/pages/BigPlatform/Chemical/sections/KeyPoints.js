@@ -5,7 +5,7 @@ import { TabTitle } from '../components/Components';
 // 引入样式文件
 import styles from './KeyPoints.less';
 
-const LABELS = ['危险化学品', '高危工艺'];
+const LABELS = ['重点监管危险化学品', '重点监管危险化工工艺'];
 const TITLE_STYLE = { marginLeft: 10 };
 const chemicalData = [
   { value: 10, name: '环氧乙烷' },

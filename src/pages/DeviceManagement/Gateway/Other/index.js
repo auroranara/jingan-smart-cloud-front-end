@@ -32,50 +32,50 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
   adding: loading.effects['gateway/add'],
   editing: loading.effects['gateway/edit'],
 }), (dispatch) => ({
-  getDetail(payload, callback) {
+  getDetail (payload, callback) {
     dispatch({
       type: 'gateway/fetchDetail',
       payload,
       callback,
     });
   },
-  getTypeList(payload, callback) {
+  getTypeList (payload, callback) {
     dispatch({
       type: 'gateway/fetchTypeList',
       payload,
       callback,
     });
   },
-  getProtocolList() {
+  getProtocolList () {
     dispatch({
       type: 'gateway/fetchProtocolList',
     });
   },
-  getNetworkingList() {
+  getNetworkingList () {
     dispatch({
       type: 'gateway/fetchNetworkingList',
     });
   },
-  getBrandList(payload, callback) {
+  getBrandList (payload, callback) {
     dispatch({
       type: 'gateway/fetchBrandList',
       payload,
       callback,
     });
   },
-  getModelList(payload, callback) {
+  getModelList (payload, callback) {
     dispatch({
       type: 'gateway/fetchModelList',
       payload,
       callback,
     });
   },
-  getOperatorList() {
+  getOperatorList () {
     dispatch({
       type: 'gateway/fetchOperatorList',
     });
   },
-  setDetail() {
+  setDetail () {
     dispatch({
       type: 'gateway/save',
       payload: {
@@ -83,14 +83,14 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
       },
     });
   },
-  add(payload, callback) {
+  add (payload, callback) {
     dispatch({
       type: 'gateway/add',
       payload,
       callback,
     });
   },
-  edit(payload, callback) {
+  edit (payload, callback) {
     dispatch({
       type: 'gateway/edit',
       payload,
@@ -99,19 +99,15 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
   },
 }))
 export default class GatewayOther extends Component {
-  componentDidMount() {
+
+  state = {
+    selectedCompany: {},// 选中企业
+  }
+
+  componentDidMount () {
     const {
-      match: {
-        params: {
-          type,
-          id,
-        },
-      },
-      user: {
-        currentUser: {
-          permissionCodes,
-        },
-      },
+      match: { params: { type, id } },
+      user: { isCompany, currentUser: { permissionCodes }, currentUser },
       getDetail,
       getTypeList,
       getProtocolList,
@@ -131,7 +127,9 @@ export default class GatewayOther extends Component {
       getNetworkingList();
       getOperatorList();
       if (type !== 'add') { // 不考虑id不存在的情况，由request来跳转到500
-        getDetail && getDetail({ id }, ({ equipmentType, brand }) => {
+        getDetail && getDetail({ id }, ({ equipmentType, brand, companyId, companyName }) => {
+          isCompany && this.form.setFieldsValue({ company: { key: companyId, label: companyName } });
+          // isCompany && this.setState({ selectedCompany: { key: companyId, label: companyName } });
           getBrandList({
             equipmentType,
           }, () => {
@@ -147,13 +145,14 @@ export default class GatewayOther extends Component {
       } else {
         getBrandList();
         getModelList();
+        //  this.setState({ selectedCompany: { key: currentUser.companyId, label: currentUser.companyName } });
       }
     } else {
       router.replace('/404');
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { setDetail } = this.props;
     setDetail && setDetail({});
   }
@@ -191,12 +190,7 @@ export default class GatewayOther extends Component {
       match: { params: { type } },
       // 如果url中传递参数设备类型 equipmentType，则此选项不可编辑
       location: { query: { equipmentType: initialEquipmentType }, query },
-      user: {
-        currentUser: {
-          unitType,
-          unitId,
-        },
-      },
+      user: { currentUser: { unitType, unitId }, currentUser },
       gateway: {
         detail: {
           companyId,
@@ -257,14 +251,14 @@ export default class GatewayOther extends Component {
       {
         title: '基本信息',
         fields: [
-          ...(isNotCompany ? [{
+          {
             id: 'company',
             label: '单位名称',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CompanySelect disabled={isEdit || !!query.companyId} className={styles.item} /> : <span>{companyName}</span>,
+            render: () => isNotDetail ? <CompanySelect disabled={isEdit || !!query.companyId || !isNotCompany} className={styles.item} /> : <span>{companyName}</span>,
             options: {
-              initialValue: (companyId && { key: companyId, label: companyName }) || (query.companyId && { key: query.companyId, label: query.companyName }) || undefined,
+              initialValue: (companyId && { key: companyId, label: companyName }) || (query.companyId && { key: query.companyId, label: query.companyName }) || (!isNotCompany && { key: currentUser.companyId, label: currentUser.companyName }) || undefined,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -273,7 +267,7 @@ export default class GatewayOther extends Component {
                 },
               ] : undefined,
             },
-          }] : []),
+          },
           {
             id: 'equipmentType',
             label: '设备类型',
@@ -850,7 +844,7 @@ export default class GatewayOther extends Component {
     return isJpgOrPng;
   }
 
-  render() {
+  render () {
     const {
       match: {
         params: {

@@ -74,8 +74,8 @@ const keyPointsData1 = [
 ];
 const keyPointsData = [
   { icon: iconDangerSource, label: '重大危险源', value: 2 },
-  { icon: iconChemical, label: '危险化学品', value: 2 },
-  { icon: iconHigh, label: '高危工艺', value: 2 },
+  { icon: iconChemical, label: '重点监管危险化学品', value: 2 },
+  { icon: iconHigh, label: '重点监管危险化工工艺', value: 2 },
 ];
 
 export default class KeyPoints extends PureComponent {
