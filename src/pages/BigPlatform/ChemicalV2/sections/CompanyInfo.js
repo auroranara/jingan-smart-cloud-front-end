@@ -30,7 +30,7 @@ export default class CompanyInfo extends PureComponent {
       phoneVisible = true,
       countCompanyUser = 10,
       specialEquipmentCount = 4,
-      total = 4,
+      total = 8,
       isImportant = true,
     } = {};
     const phone =

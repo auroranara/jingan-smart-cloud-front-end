@@ -179,10 +179,10 @@ export default class CurrentHiddenDanger extends PureComponent {
       visible,
       onClose,
       onCardClick, // 点击小块查看详情
-      overRectifyNum: ycq = 0,
-      rectifyNum: wcq = 3,
+      overRectifyNum: ycq = 3,
+      rectifyNum: wcq = 4,
       reviewNum: dfc = 1,
-      totalNum: total = 4,
+      totalNum: total = 8,
       list = [],
       hiddenDangerList: { list: dataList },
     } = this.props;
@@ -205,7 +205,7 @@ export default class CurrentHiddenDanger extends PureComponent {
         selectedMode: false, // 禁选
         formatter: name => `${name} ${legendInfo[name]}`,
         data: [
-          // { name: '已超期', icon: 'circle' },
+          { name: '已超期', icon: 'circle' },
           { name: '未超期', icon: 'circle' },
           { name: '待复查', icon: 'circle' },
         ],
@@ -249,19 +249,19 @@ export default class CurrentHiddenDanger extends PureComponent {
             },
           },
           data: [
-            // {
-            //   value: ycq,
-            //   name: '已超期',
-            //   itemStyle: { color: `${redColor}` },
-            //   labelLine: {
-            //     show: this.generateShow(0, hoverIndex),
-            //     lineStyle: { color: `${redColor}` },
-            //   },
-            //   label: {
-            //     show: this.generateShow(0, hoverIndex),
-            //     color: { color: `${redColor}` },
-            //   },
-            // },
+            {
+              value: ycq,
+              name: '已超期',
+              itemStyle: { color: `${redColor}` },
+              // labelLine: {
+              //   show: this.generateShow(0, hoverIndex),
+              //   lineStyle: { color: `${redColor}` },
+              // },
+              // label: {
+              //   show: this.generateShow(0, hoverIndex),
+              //   color: { color: `${redColor}` },
+              // },
+            },
             {
               value: wcq,
               name: '未超期',
