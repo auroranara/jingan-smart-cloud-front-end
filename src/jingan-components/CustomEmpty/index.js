@@ -7,12 +7,13 @@ export default class CustomEmpty extends Component {
     const {
       className,
       style,
+      label="暂无数据",
     } = this.props;
 
     return (
       <div className={classNames("custom-empty-container", className)} style={style}>
         <div className="custom-empty-icon" />
-        <div className="custom-empty-label">暂无数据</div>
+        <div className="custom-empty-label">{label}</div>
       </div>
     );
   }

@@ -1,5 +1,5 @@
 import {
-  getRealTime,
+  getRealTimeList,
   getHistory,
   exportData,
 } from '@/services/gasMonitor';
@@ -10,7 +10,7 @@ export default {
   namespace: 'gasMonitor',
 
   state: {
-    realTime: [],
+    realTimeList: [],
     history: {},
     list: {},
     monitorObjectTypeList: [],
@@ -20,32 +20,18 @@ export default {
 
   effects: {
     // 获取实时监测数据
-    *getRealTime({ payload, callback }, { call, put }) {
-      // const response = yield call(getRealTime, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [
-            { normal: 4, alarm: 1 },
-            { normal: 4, alarm: 1 },
-            { normal: 4, alarm: 1 },
-            { normal: 4, alarm: 1 },
-            { normal: 4, alarm: 1 },
-            { normal: 4, alarm: 1 },
-            { normal: 4, alarm: 1 },
-          ],
-        },
-      };
+    *getRealTimeList({ payload, callback }, { call, put }) {
+      const response = yield call(getRealTimeList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const realTime = data.list;
+        const realTimeList = data.list;
         yield put({
           type: 'save',
           payload: {
-            realTime,
+            realTimeList,
           },
         });
-        callback && callback(true, realTime);
+        callback && callback(true, realTimeList);
       } else {
         callback && callback(false, msg);
       }
