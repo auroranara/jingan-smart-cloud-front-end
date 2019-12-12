@@ -21,6 +21,8 @@ import ChemicalDetailDrawer from './ChemicalDetailDrawer';
 import TechnologyDrawer from './TechnologyDrawer';
 import StorageDrawer from './StorageDrawer';
 import Messages from './Messages';
+import GasDrawer from './GasDrawer';
+import PoisonDrawer from './PoisonDrawer';
 
 export {
   Risk,
@@ -46,4 +48,6 @@ export {
   TechnologyDrawer,
   StorageDrawer,
   Messages,
+  GasDrawer,
+  PoisonDrawer,
 };

@@ -41,6 +41,8 @@ import {
   TechnologyDrawer,
   StorageDrawer,
   Messages,
+  GasDrawer,
+  PoisonDrawer,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -122,6 +124,8 @@ export default class Chemical extends PureComponent {
       imageFiles: [],
       currentImage: 0,
       modalImgVisible: false,
+      gasVisible: false,
+      poisonVisible: true,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
   }
@@ -382,6 +386,22 @@ export default class Chemical extends PureComponent {
     });
   };
 
+  handleGasOpen = () => {
+    this.setState({ gasVisible: true });
+  };
+
+  handleGasClose = () => {
+    this.setState({ gasVisible: false });
+  };
+
+  handlePoisonOpen = () => {
+    this.setState({ poisonVisible: true });
+  };
+
+  handlePoisonClose = () => {
+    this.setState({ poisonVisible: false });
+  };
+
   /**
    * 渲染
    */
@@ -417,6 +437,8 @@ export default class Chemical extends PureComponent {
       imageFiles,
       currentImage,
       modalImgVisible,
+      gasVisible,
+      poisonVisible,
     } = this.state;
     console.log('points', points);
 
@@ -636,6 +658,16 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('storage');
           }}
           setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <GasDrawer
+          visible={gasVisible}
+          handleClose={this.handleGasClose}
+        />
+
+        <PoisonDrawer
+          visible={poisonVisible}
+          handleClose={this.handlePoisonClose}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
