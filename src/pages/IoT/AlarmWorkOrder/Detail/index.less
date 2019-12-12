@@ -1,0 +1,125 @@
+.card:not(:last-child) {
+  margin-bottom: 24px;
+}
+.empty {
+  color: rgba(0, 0, 0, 0.45);
+}
+.statusContainer {
+  margin: 0 -8px;
+
+  .status {
+    display: inline-block;
+    padding: 0 8px;
+    vertical-align: top;
+  }
+
+  .realAlarm {
+    display: inline-block;
+    padding: 0 8px;
+    color: #ff4848;
+    vertical-align: top;
+  }
+}
+.nameWrapper {
+  margin: 0 -8px;
+
+  .name {
+    display: inline-block;
+    padding: 0 8px;
+    vertical-align: top;
+  }
+  .videoWrapper {
+    display: inline-block;
+    padding: 0 8px;
+    vertical-align: top;
+    .video {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      vertical-align: top;
+      background: url('@/assets/videoCamera.png') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+    }
+  }
+}
+.imageContainer {
+  margin: 0 -4px;
+}
+.imageWrapper {
+  padding: 0 4px;
+}
+.image {
+  display: inline-block;
+  vertical-align: top;
+  width: 60px;
+  height: 80px;
+  background: no-repeat center;
+  background-size: contain;
+  cursor: pointer;
+}
+.descriptionList:not(:last-child) {
+  margin-bottom: 16px;
+}
+.collapse {
+  :global {
+    .ant-collapse-header {
+      padding-left: 16px !important;
+      padding-right: 40px !important;
+
+      .ant-collapse-arrow {
+        right: 16px !important;
+        left: auto !important;
+      }
+    }
+  }
+
+  .message {
+    display: flex;
+    justify-content: space-between;
+
+    .messageLeft {
+      flex: none;
+    }
+    .messageRight {
+      flex: none;
+    }
+  }
+
+  .receiverWrapper {
+    display: flex;
+    align-items: center;
+
+    .avatar {
+      flex: none;
+      margin-right: 12px;
+      background-color: #1890ff;
+    }
+    .receiverInfoWrapper {
+      flex: 1;
+
+      .receiverInfo {
+        margin: 0 -8px;
+
+        .receiverName {
+          display: inline-block;
+          padding: 0 8px;
+          vertical-align: top;
+        }
+        .receiverPhone {
+          display: inline-block;
+          padding: 0 8px;
+          vertical-align: top;
+        }
+      }
+      .receiverStatus {
+        font-size: 12px;
+        color: #ff4848;
+      }
+    }
+  }
+}
+.total {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+}

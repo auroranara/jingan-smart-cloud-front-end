@@ -20,6 +20,7 @@ import router from 'umi/router';
 import { AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import moment from 'moment';
 import codes from '@/utils/codes';
+import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
 
 const FormItem = Form.Item;
 
@@ -291,13 +292,27 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
         width: 300,
         render: (val, { paststatus, operapersonNumber, firstDate, startDate, endDate, reviewDate }) => (
           <div style={{ textAlign: 'left' }}>
-            {!isNaN(paststatus) && [1, 2].includes(+paststatus) && (<div style={{ color: 'red' }}>{expirationStatusList[+paststatus].label}</div>)}
+            {/* {!isNaN(paststatus) && [1, 2].includes(+paststatus) && (<div style={{ color: 'red' }}>{expirationStatusList[+paststatus].label}</div>)} */}
             <div>证号：{operapersonNumber}</div>
             <div>初领日期：{this.formateTime(firstDate)}</div>
             <div>有效日期：{`${this.formateTime(startDate)}~${this.formateTime(endDate)}`}</div>
             <div>复审日期：{this.formateTime(reviewDate)}</div>
           </div>
         ),
+      },
+      {
+        title: '证件状态',
+        dataIndex: 'paststatus',
+        key: 'paststatus',
+        align: 'center',
+        width: 120,
+        render: (status, { endDate }) => {
+          return (
+            <span style={{ color: getColorVal(status) }}>
+              {endDate ? paststatusVal[status] : '-'}
+            </span>
+          );
+        },
       },
       {
         title: '附件',

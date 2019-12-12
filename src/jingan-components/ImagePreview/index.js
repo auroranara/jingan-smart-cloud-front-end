@@ -9,26 +9,26 @@ export default class ImagePreview extends PureComponent {
   }
 
   componentDidMount() {
-    const { images } = this.props;
+    const { images, currentImage } = this.props;
     if (images) {
-      this.handleShow(images);
+      this.handleShow(images, currentImage);
     }
   }
 
   componentDidUpdate({ images: prevImages }) {
-    const { images } = this.props;
+    const { images, currentImage } = this.props;
     if (prevImages !== images) {
-      this.handleShow(images);
+      this.handleShow(images, currentImage);
     }
   }
 
   /**
    * 显示图片详情
    */
-  handleShow = (images) => {
+  handleShow = (images, currentImage=0) => {
     this.setState({
       images: images ? images.map(src => ({ src })) : null,
-      currentImage: 0,
+      currentImage,
     });
   }
 

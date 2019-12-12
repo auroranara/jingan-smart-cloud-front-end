@@ -39,7 +39,7 @@ const {
 } = codes;
 
 const paststatusVal = {
-  0: ' ',
+  0: '未到期',
   1: '即将到期',
   2: '已过期',
 };
@@ -142,9 +142,9 @@ export default class TableList extends PureComponent {
   getColorVal = status => {
     switch (+status) {
       case 0:
-        return '#1890ff';
+        return 'rgba(0, 0, 0, 0.65)';
       case 1:
-        return '#f5222d';
+        return 'rgb(250, 173, 20)';
       case 2:
         return '#f5222d';
       default:
@@ -253,14 +253,23 @@ export default class TableList extends PureComponent {
           return endDate ? (
             <div>
               {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}
-              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+              {/* <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
-              </span>
+              </span> */}
             </div>
-          ) : (
-            <span>---</span>
-          );
+          ) : '-';
         },
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        width: 120,
+        align: 'center',
+        render: (paststatus, { endDate }) => (
+          <span style={{ color: this.getColorVal(paststatus) }}>
+            {endDate ? paststatusVal[paststatus] : '-'}
+          </span>
+        ),
       },
       {
         title: '操作',
