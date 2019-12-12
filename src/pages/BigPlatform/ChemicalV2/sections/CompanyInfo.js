@@ -28,7 +28,7 @@ export default class CompanyInfo extends PureComponent {
       countCheckItem = 12,
       // 手机号是否可见
       phoneVisible = true,
-      countCompanyUser = 10,
+      countCompanyUser = 6,
       specialEquipmentCount = 4,
       total = 8,
       isImportant = true,

@@ -1153,9 +1153,7 @@ module.exports = env => {
               name: 'realtimeMonitor', // 可燃有毒气体实时监测
               code: 'gasIot.realtimeMonitor',
               path: '/gas-iot/realtime-monitor',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
+              component: './IoT/MajorHazard/Gas/RealTime',
             },
             {
               name: 'monitorReport', // 可燃有毒气体监测报表
@@ -3683,9 +3681,31 @@ module.exports = env => {
               name: 'alarmWorkOrder', // 报警工单管理
               code: 'companyIot.alarmWorkOrder',
               path: '/company-iot/alarm-work-order',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/company-iot/alarm-work-order',
+                  redirect: '/company-iot/alarm-work-order/list',
+                },
+                {
+                  name: 'list',
+                  code: 'companyIot.alarmWorkOrder.list',
+                  path: '/company-iot/alarm-work-order/list',
+                  component: './IoT/AlarmWorkOrder/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'companyIot.alarmWorkOrder.detail',
+                  path: '/company-iot/alarm-work-order/detail/:id',
+                  component: './IoT/AlarmWorkOrder/Detail',
+                },
+                {
+                  name: 'monitorTrend',
+                  code: 'companyIot.alarmWorkOrder.monitorTrend',
+                  path: '/company-iot/alarm-work-order/monitor-trend/:id',
+                  component: './IoT/AlarmWorkOrder/MonitorTrend',
+                },
+              ],
             },
             {
               name: 'alarmMessage', // 报警消息
