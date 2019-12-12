@@ -16,7 +16,6 @@ const breadcrumbList = [
   { title: '物联设备管理', name: '物联设备管理' },
   { title, name: title },
 ]
-const noAuthStyle = { style: { color: 'rgba(0, 0, 0, 0.25)', cursor: 'not-allowed' } }
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 const {
@@ -128,7 +127,7 @@ export default class NewSensorList extends Component {
   handleDelete = ({ id, dataExecuteEquipmentId, beMonitorTargetId }) => {
     const { dispatch } = this.props
     if (!dataExecuteEquipmentId || !beMonitorTargetId) {
-      message.warning('该传感器已绑定数据处理设备或监测对象，不可直接删除，请先解绑')
+      message.warning('该该传感器已绑定监测设备，不可直接删除，请先解绑')
       return
     }
     dispatch({

@@ -69,8 +69,9 @@ const expirationStatusList = [
 const defaultPageSize = 10;
 
 @Form.create()
-@connect(({ baseInfo, loading }) => ({
+@connect(({ baseInfo, user, loading }) => ({
   baseInfo,
+  user,
   tableLoading: loading.effects['baseInfo/fetchSpecialWorkPerson'],
 }))
 export default class specialOperationPermitList extends PureComponent {
@@ -143,7 +144,8 @@ export default class specialOperationPermitList extends PureComponent {
     })
   }
 
-  formateTime = timestramp => moment(timestramp).format('YYYY-MM-DD')
+  // 格式化日期
+  formateTime = timestramp => timestramp ? moment(timestramp).format('YYYY-MM-DD') : '暂无数据';
 
   // 删除数据
   handleDelete = (id) => {
@@ -165,6 +167,7 @@ export default class specialOperationPermitList extends PureComponent {
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
+      user: { isCompany },
     } = this.props;
     const { operationCategory } = this.state;
     return (
@@ -208,13 +211,15 @@ export default class specialOperationPermitList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('companyName')(
-                  <Input placeholder="单位名称" />
-                )}
-              </FormItem>
-            </Col>
+            {!isCompany && (
+              <Col {...colWrapper}>
+                <FormItem {...formItemStyle}>
+                  {getFieldDecorator('companyName')(
+                    <Input placeholder="单位名称" />
+                  )}
+                </FormItem>
+              </Col>
+            )}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
@@ -240,14 +245,15 @@ export default class specialOperationPermitList extends PureComponent {
           pagination: { total = 0, pageNum = 1, pageSize = 10 },
         },
       },
+      user: { isCompany },
     } = this.props
     const columns = [
-      {
+      ...isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      },
+      }],
       {
         title: '基本信息',
         key: '基本信息',

@@ -108,15 +108,12 @@ export default class VideoMonitorEdit extends PureComponent {
   componentDidMount () {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
-      location: {
-        query: { companyId, name },
-      },
+      match: { params: { id } },
+      location: { query },
       form: { setFieldsValue },
+      user: { isCompany, currentUser },
     } = this.props;
-    this.fetchConnectTypeDict();
+    const companyId = query.companyId || currentUser.companyId;
     if (id) {
       // 根据id获取详情
       dispatch({
@@ -133,18 +130,16 @@ export default class VideoMonitorEdit extends PureComponent {
           nvr, // NVR编号
         } = {}) => {
           setFieldsValue({ buildingFloor: { buildingId, floorId }, inheritNvr });
-          this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
           this.setState({
             company: { id: companyId, name: companyName },
             gatewayEquipment: { id: plugFlowEquipment, code: plugFlowEquipmentCode },
           });
           this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
-          if (!isNaN(inheritNvr)) {
-            setTimeout(() => {
-              +inheritNvr === 1 && setFieldsValue({ plugFlowEquipment });
-              +inheritNvr === 0 && setFieldsValue({ nvr });
-            }, 0);
-          }
+          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+          setTimeout(() => {
+            +inheritNvr === 1 && setFieldsValue({ plugFlowEquipment });
+            +inheritNvr === 0 && setFieldsValue({ nvr });
+          }, 0);
         },
       });
     } else {
@@ -153,17 +148,18 @@ export default class VideoMonitorEdit extends PureComponent {
       this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     }
     // 根据id获取四色图和消防平面图
-    if (id || companyId) {
+    if (id || query.companyId || isCompany) {
       dispatch({
         type: 'safety/fetch',
-        payload: { companyId: id ? companyId : undefined || companyId },
+        payload: { companyId },
       });
       dispatch({
         type: 'company/fetchCompany',
-        payload: { id: id ? companyId : undefined || companyId },
+        payload: { id: companyId },
       });
-      companyId && this.setState({ company: { id: companyId, name } });
+      companyId && this.setState({ company: { id: companyId, name: query.name } });
     }
+    this.fetchConnectTypeDict();
     this.fetchEquipmentsForAll();
   }
 

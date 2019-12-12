@@ -48,9 +48,10 @@ const getRootChild = () => document.querySelector('#root>div');
 const uploadAction = '/acloud_new/v2/uploadFile';
 
 @Form.create()
-@connect(({ baseInfo, sensor, loading }) => ({
+@connect(({ baseInfo, sensor, user, loading }) => ({
   baseInfo,
   sensor,
+  user,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 export default class specialOperationPermitHandle extends PureComponent {
@@ -70,6 +71,7 @@ export default class specialOperationPermitHandle extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: { isCompany, currentUser },
     } = this.props
     // 获取作业类别
     this.fetchDict({
@@ -105,6 +107,11 @@ export default class specialOperationPermitHandle extends PureComponent {
           setFieldsValue({ companyId })
         },
       })
+    } else if (isCompany) {
+      // 如果企业账号
+      const { companyId, companyName } = currentUser;
+      this.setState({ selectedCompany: { id: companyId, name: companyName } })
+      setFieldsValue({ companyId })
     }
   }
 
@@ -240,7 +247,7 @@ export default class specialOperationPermitHandle extends PureComponent {
     }
   }
 
-  getTime = obj => obj.startOf('day').unix() * 1000
+  getTime = obj => obj ? obj.startOf('day').unix() * 1000 : obj;
 
   /**
    * 提交表单
@@ -317,6 +324,7 @@ export default class specialOperationPermitHandle extends PureComponent {
     const {
       match: { params: { id } },
       form: { getFieldDecorator },
+      user: { isCompany },
     } = this.props;
     const {
       frontPhotoList,
@@ -336,7 +344,7 @@ export default class specialOperationPermitHandle extends PureComponent {
             })(
               <Fragment>
                 <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择单位" />
-                <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
+                {!isCompany && (<Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>)}
               </Fragment>
             )}
           </FormItem>

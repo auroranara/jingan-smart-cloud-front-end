@@ -343,9 +343,9 @@ export default class StorageAreaManagement extends PureComponent {
           const { code, areaName, tankCount } = row;
           return (
             <div className={styles.multi}>
-              <div>统一编码：{code} </div>
-              <div>储罐区名称： {areaName}</div>
-              <div>储罐个数： {tankCount}</div>
+              <div>统一编码：{code || '暂无数据'} </div>
+              <div>储罐区名称： {areaName || '暂无数据'}</div>
+              <div>储罐个数： {tankCount || 0}</div>
             </div>
           );
         },
