@@ -417,7 +417,7 @@ export default class DangerChemicalList extends PureComponent {
         title: '证件状态',
         dataIndex: 'certificateState',
         align: 'center',
-        width: 300,
+        width: 100,
         render: val => {
           return <span>{certificateState[val]}</span>;
         },
@@ -426,18 +426,29 @@ export default class DangerChemicalList extends PureComponent {
         title: '有效期至',
         dataIndex: 'endDate',
         align: 'center',
-        width: 300,
+        width: 120,
         render: (val, record) => {
           const { endDate, paststatus } = record;
           return (
             <div>
               <span>{moment(endDate).format('YYYY-MM-DD')}</span>
-              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+              {/* <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
-              </span>
+              </span> */}
             </div>
           );
         },
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        width: 120,
+        align: 'center',
+        render: pastStatus => (
+          <span style={{ color: this.getColorVal(pastStatus), paddingLeft: 10 }}>
+            {paststatusVal[pastStatus]}
+          </span>
+        ),
       },
       {
         title: '附件',

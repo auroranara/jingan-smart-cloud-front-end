@@ -431,22 +431,35 @@ export default class SpecialEquipmentList extends PureComponent {
       },
       {
         title: '有效期至',
+        dataIndex: 'endDate',
+        key: 'endDate',
+        align: 'center',
+        width: 250,
+        render: (endDate, row) => {
+          // const { endDate } = row;
+          return endDate ? (
+            <div>
+              {/* <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
+                {val && ['未到期', '即将到期', '已过期'][+val]}
+              </div> */}
+              <div>{endDate && moment(endDate).format('YYYY年MM月DD日')}</div>
+            </div>
+          ) : '-';
+        },
+      },
+      {
+        title: '有效期状态',
         dataIndex: 'paststatus',
         key: 'paststatus',
         align: 'center',
-        width: 250,
+        width: 120,
         render: (val, row) => {
           const { endDate } = row;
           return endDate ? (
-            <div>
               <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
                 {val && ['未到期', '即将到期', '已过期'][+val]}
               </div>
-              <div>{endDate && moment(endDate).format('YYYY年MM月DD日')}</div>
-            </div>
-          ) : (
-            NO_DATA
-          );
+          ) : '-';
         },
       },
       {

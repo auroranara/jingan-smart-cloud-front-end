@@ -342,7 +342,7 @@ export default class RegSafetyEngList extends PureComponent {
           const { regDate, regCode, endDate, status } = record;
           return (
             <div>
-              <p style={{ color: this.getColorVal(status) }}> {paststatusVal[status]}</p>
+              {/* <p style={{ color: this.getColorVal(status) }}> {paststatusVal[status]}</p> */}
               <p>
                 注册日期:
                 {moment(+regDate).format('YYYY-MM-DD')}
@@ -358,6 +358,13 @@ export default class RegSafetyEngList extends PureComponent {
             </div>
           );
         },
+      },
+      {
+        title: '注册证状态',
+        dataIndex: 'status',
+        align: 'center',
+        width: 120,
+        render: status => <span style={{ color: this.getColorVal(status) }}> {paststatusVal[status]}</span>,
       },
       {
         title: '证照附件',

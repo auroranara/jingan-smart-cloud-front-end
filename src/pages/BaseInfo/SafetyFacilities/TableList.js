@@ -253,14 +253,23 @@ export default class TableList extends PureComponent {
           return endDate ? (
             <div>
               {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}
-              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+              {/* <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
-              </span>
+              </span> */}
             </div>
-          ) : (
-            <span>---</span>
-          );
+          ) : '-';
         },
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'pastStatus',
+        width: 120,
+        align: 'center',
+        render: paststatus => (
+          <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+            {paststatusVal[paststatus]}
+          </span>
+        ),
       },
       {
         title: '操作',

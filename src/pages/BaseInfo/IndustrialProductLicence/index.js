@@ -293,12 +293,23 @@ export default class IndustriallicenceList extends PureComponent {
           return (
             <div>
               <span>{moment(endDate).format('YYYY-MM-DD')}</span>
-              <span style={{ color: this.getColorVal(pastStatus), paddingLeft: 10 }}>
+              {/* <span style={{ color: this.getColorVal(pastStatus), paddingLeft: 10 }}>
                 {paststatusVal[pastStatus]}
-              </span>
+              </span> */}
             </div>
           );
         },
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'pastStatus',
+        width: 120,
+        align: 'center',
+        render: pastStatus => (
+          <span style={{ color: this.getColorVal(pastStatus), paddingLeft: 10 }}>
+            {paststatusVal[pastStatus]}
+          </span>
+        ),
       },
       {
         title: '证照附件',
