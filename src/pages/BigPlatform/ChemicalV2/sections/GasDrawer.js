@@ -4,6 +4,16 @@ import CustomDrawer from '@/jingan-components/CustomDrawer';
 import styles from './GasDrawer.less';
 
 export default class GasDrawer extends PureComponent {
+  handleWorkOrderIconClick = () => {
+    const { xxx: { id = 1 } = {} } = this.props;
+    window.open(`${window.publicPath}#/company-iot/alarm-work-order/detail/${id}`);
+  };
+
+  handleMonitorTrendIconClick = () => {
+    const { xxx: { id = 1 } = {} } = this.props;
+    window.open(`${window.publicPath}#/company-iot/alarm-work-order/monitor-trend/${id}`);
+  };
+
   render() {
     const { visible, handleClose } = this.props;
 
@@ -22,8 +32,8 @@ export default class GasDrawer extends PureComponent {
             <span className={styles.label}>监测区域名称：</span>7号罐附近
             <span className={styles.camera} />
             <div className={styles.icons}>
-              <span className={styles.sheet} />
-              <span className={styles.trend} />
+              <span className={styles.sheet} onClick={this.handleWorkOrderIconClick} />
+              <span className={styles.trend} onClick={this.handleMonitorTrendIconClick} />
             </div>
           </div>
           <div>
