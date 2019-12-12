@@ -21,8 +21,8 @@ import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-
 import styles from './index.less';
+import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
 
 const {
   emergencyManagement: {
@@ -355,12 +355,26 @@ export default class EmergencyEquipmentList extends PureComponent {
       },
       {
         title: '有效期至',
-        dataIndex: 'expiryDate',
-        key: 'expiryDate',
+        dataIndex: 'endDate',
+        key: 'endDate',
         align: 'center',
-        width: 120,
-        render: (data, record) => {
-          return '2019.7.11';
+        width: 200,
+        render: date => {
+          return date ? moment(date).format('YYYY-MM-DD') : '-';
+        },
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        key: 'paststatus',
+        align: 'center',
+        width: 140,
+        render: (status, { endDate }) => {
+          return (
+            <span style={{ color: getColorVal(status) }}>
+              {endDate ? paststatusVal[status] : '-'}
+            </span>
+          );
         },
       },
       {
@@ -375,11 +389,11 @@ export default class EmergencyEquipmentList extends PureComponent {
         },
       },
       {
-        title: '装备单价（元）',
+        title: '装备单价(元)',
         dataIndex: 'equipPrice',
         key: 'equipPrice',
         align: 'center',
-        width: 120,
+        width: 200,
       },
       {
         title: '操作',

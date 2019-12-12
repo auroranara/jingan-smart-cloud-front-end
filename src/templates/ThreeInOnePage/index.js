@@ -10,7 +10,6 @@ import RadioOrSpan from '@/jingan-components/RadioOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import Text from '@/jingan-components/Text';
 import { connect } from 'dva';
-import { kebabCase, trimEnd } from 'lodash';
 import router from 'umi/router';
 import locales from '@/locales/zh-CN';
 import styles from './index.less';
@@ -18,7 +17,7 @@ import styles from './index.less';
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
 
-@connect((state, { route: { name, code } }) => {
+@connect((state, { route: { name, code, path } }) => {
   const { breadcrumbList } = code.split('.').reduce((result, item, index, list) => {
     const key = `${result.key}.${item}`;
     const title = locales[key];
@@ -26,7 +25,7 @@ const LABEL_COL = { span: 6 };
     result.breadcrumbList.push({
       title,
       name: title,
-      href: index === list.length - 2 ? `${trimEnd(result.breadcrumbList[result.breadcrumbList.length - 1].href, '/')}/${kebabCase(item)}` : undefined,
+      href: index === list.length - 2 ? path.replace(new RegExp(`${name}.*`), 'list') : undefined,
     });
     return result;
   }, {
