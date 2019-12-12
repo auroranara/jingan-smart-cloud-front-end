@@ -1,17 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import Link from 'umi/link';
 import {
-  Button,
   Card,
   Table,
   Form,
   message,
-  Popconfirm,
   Input,
   Select,
   DatePicker,
+  Divider,
 } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -26,9 +24,21 @@ import {
   TYPE,
   CONCLUSION,
 } from './utils';
+import { AuthA, AuthButton, AuthLink, AuthPopConfirm } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+
+const {
+  facilityManagement: {
+    threeSimultaneity: {
+      add: addCode,
+      edit: editCode,
+      delete: deleteCode,
+    },
+  },
+} = codes;
 
 @Form.create()
 @connect(({ baseInfo, user, loading }) => ({
@@ -111,9 +121,9 @@ export default class TableList extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <AuthButton code={addCode} type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
         新增
-      </Button>
+      </AuthButton>
     );
     const fields = [ // modify
       ...isUnit ? [] : [{
@@ -237,13 +247,15 @@ export default class TableList extends PureComponent {
         render: (id, row) => {
           return (
             <Fragment>
-              <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
-              <Popconfirm
+              <AuthLink code={editCode} to={`${ROUTER}/edit/${id}`}>编辑</AuthLink>
+              <Divider type="vertical" />
+              <AuthPopConfirm
                 title="确定删除当前数据？"
                 onConfirm={e => this.handleDelete(row.id)}
                 okText="确定"
                 cancelText="取消"
-              ><span className={styles1.delete}>删除</span></Popconfirm>
+                code={deleteCode}
+              >删除</AuthPopConfirm>
             </Fragment>
           );
         },

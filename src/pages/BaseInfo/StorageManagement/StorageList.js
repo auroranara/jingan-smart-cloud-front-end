@@ -341,7 +341,7 @@ export default class StorageList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 200,
+        width: 250,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
