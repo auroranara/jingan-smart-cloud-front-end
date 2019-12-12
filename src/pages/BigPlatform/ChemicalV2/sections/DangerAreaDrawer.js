@@ -23,18 +23,19 @@ const hiddenDangerData = [
   { label: '待复查', value: 1, color: '#0967D3' },
 ];
 const riskSourceData = [
+  { label: '危险品液体原料储罐区' },
   // { label: '储罐区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
   // { label: '储罐监测', value: 3, tip: '液位、压力、温度' },
   // { label: '库区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
-  { label: '库房监测', value: 2, tip: '温度、湿度', type: 4 },
-  { label: '生产装置', value: 3, url: '', tip: '压力、温度', type: 3 },
-  {
-    label: '气柜',
-    value: 2,
-    url: 'major-hazard-info/gasometer/list',
-    tip: '柜容、压力、可燃气体浓度、有毒气体浓度',
-    type: 5,
-  },
+  // { label: '库房监测', value: 2, tip: '温度、湿度', type: 4 },
+  // { label: '生产装置', value: 3, url: '', tip: '压力、温度', type: 3 },
+  // {
+  //   label: '气柜',
+  //   value: 2,
+  //   url: 'major-hazard-info/gasometer/list',
+  //   tip: '柜容、压力、可燃气体浓度、有毒气体浓度',
+  //   type: 5,
+  // },
   // { label: '高危工艺', value: 2, url: 'major-hazard-info/high-risk-process/list', tip: '压力、温度'  },
 ];
 const twoListData = [
@@ -159,11 +160,11 @@ export default class KeyPoints extends PureComponent {
                   key={index}
                   // onClick={() => this.handleJump(url, images)}
                   onClick={() => {
-                    setDrawerVisible('monitor', { monitorType: type });
+                    setDrawerVisible('storage');
                   }}
                 >
                   {label}
-                  <span className={styles.tagValue}>({value})</span>
+                  {/* <span className={styles.tagValue}>({value})</span> */}
                   <Icon type="right" className={styles.rightIcon} />
                   <span className={styles.tip}>{tip}</span>
                 </div>
@@ -180,7 +181,22 @@ export default class KeyPoints extends PureComponent {
               setDrawerVisible('monitorDetail', { monitorType: 6, monitorData: MonitorList[6][0] });
             }}
           >
-            可燃有毒气体监测
+            可燃气体
+            <div className={styles.extra}>
+              <Icon type="right" className={styles.rightIcon} />
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.wrapper}>
+          <div
+            className={styles.title}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setDrawerVisible('monitorDetail', { monitorType: 6, monitorData: MonitorList[6][0] });
+            }}
+          >
+            有毒气体
             <div className={styles.extra}>
               <Icon type="right" className={styles.rightIcon} />
             </div>

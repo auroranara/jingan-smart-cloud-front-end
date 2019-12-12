@@ -17,7 +17,8 @@ import iconStorehouse from '../imgs/icon-storehouse.png';
 import iconChemical from '../imgs/icon-chemical.png';
 import iconDangerSource from '../imgs/icon-dangerSource.png';
 
-const LABELS = ['实时监测', '两重点一重大'];
+// const LABELS = ['监测对象', 'IOT监测', '两重点一重大'];
+const LABELS = ['监测对象', '两重点一重大'];
 const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 
 // iot/major-hazard/index
@@ -66,6 +67,11 @@ const monitorData = [
   },
   { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
 ];
+const keyPointsData1 = [
+  { icon: iconDangerSource, label: '重大危险源', value: 2 },
+  { icon: iconChemical, label: '危险化学品', value: 2 },
+  { icon: iconHigh, label: '高危工艺', value: 2 },
+];
 const keyPointsData = [
   { icon: iconDangerSource, label: '重大危险源', value: 2 },
   { icon: iconChemical, label: '危险化学品', value: 2 },
@@ -79,12 +85,18 @@ export default class KeyPoints extends PureComponent {
     this.setState({ active: i });
   };
 
-  handleClick = type => {
+  handleClickMonitor = type => {
     const { setDrawerVisible } = this.props;
     if (type || type === 0) {
       setDrawerVisible('monitor', { monitorType: type });
     }
     // window.open(`${window.publicPath}#/${url}`, `_blank`);
+  };
+
+  handleClickKey = index => {
+    const { setDrawerVisible } = this.props;
+    const drawers = ['dangerSource', 'chemical', 'technology'];
+    setDrawerVisible(drawers[index]);
   };
 
   render() {
@@ -101,7 +113,7 @@ export default class KeyPoints extends PureComponent {
           />
           <div className={styles.scroll}>
             <Row>
-              {[monitorData, keyPointsData][active].map((item, index) => {
+              {[monitorData, keyPointsData1, keyPointsData][active].map((item, index) => {
                 const { icon, label, value, total, type } = item;
                 return (
                   <Col span={12} key={index}>
@@ -109,10 +121,12 @@ export default class KeyPoints extends PureComponent {
                       className={styles.item}
                       style={{
                         background: `url(${icon}) 3em center / 3em 3em no-repeat`,
-                        cursor: type || type === 0 ? 'pointer' : 'default',
+                        // cursor: type || type === 0 ? 'pointer' : 'default',
+                        cursor: 'pointer',
                       }}
                       onClick={() => {
-                        this.handleClick(type);
+                        active === 0 && this.handleClickMonitor(type);
+                        active === 1 && this.handleClickKey(index);
                       }}
                     >
                       <div className={styles.countLabel}>
