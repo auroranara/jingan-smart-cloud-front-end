@@ -33,7 +33,9 @@ const riskPointData = [
 ].map(item => ({ ...item, url: riskPoint, iconType: 0 }));
 const monitorData = [
   { x: 13224079.889752572, y: 3771535.0431545274 },
-  { x: 13224088.911112975, y: 3771542.825565829 },
+  // { x: 13224088.911112975, y: 3771542.825565829 },
+  { x: 13224097.540287659, y: 3771516.5485505313 },
+  { x: 13224087.917599482, y: 3771520.8262529834 },
 ].map(item => ({
   ...item,
   url: monitor,
@@ -431,7 +433,7 @@ export default class Map extends PureComponent {
       const popMarker = new fengmap.FMPopInfoWindow(map, ctlOpt);
 
       this.addPolygon(polygon, COLOR.red); // 罐区4
-      this.addPolygon(polygon2, COLOR.orange);
+      this.addPolygon(polygon2, COLOR.red); // 罐区4 1 2
       this.addPolygon(polygon3, COLOR.orange);
       this.addPolygon(polygon4, COLOR.blue);
       this.addPolygon(polygon5, COLOR.yellow);
@@ -445,7 +447,7 @@ export default class Map extends PureComponent {
           item.setColor(COLOR.red, 1);
         } else if (orangeIds.includes(item.ID)) {
           // orange 储罐 1 2
-          item.setColor(COLOR.orange, 1);
+          item.setColor(COLOR.red, 1);
         } else if (yellowIds.includes(item.ID)) {
           // 最大区域
           item.setColor(COLOR.orange, 1);
