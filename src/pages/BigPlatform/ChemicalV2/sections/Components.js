@@ -19,6 +19,7 @@ import DangerSourceLvlDrawer from './DangerSourceLvlDrawer';
 import ChemicalDrawer from './ChemicalDrawer';
 import ChemicalDetailDrawer from './ChemicalDetailDrawer';
 import TechnologyDrawer from './TechnologyDrawer';
+import StorageDrawer from './StorageDrawer';
 import Messages from './Messages';
 
 export {
@@ -43,5 +44,6 @@ export {
   ChemicalDrawer,
   ChemicalDetailDrawer,
   TechnologyDrawer,
+  StorageDrawer,
   Messages,
 };

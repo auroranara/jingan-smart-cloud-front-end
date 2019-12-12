@@ -39,6 +39,7 @@ import {
   ChemicalDrawer,
   ChemicalDetailDrawer,
   TechnologyDrawer,
+  StorageDrawer,
   Messages,
 } from './sections/Components';
 
@@ -116,6 +117,7 @@ export default class Chemical extends PureComponent {
       chemicalDrawerVisible: false,
       chemicalDetailDrawerVisible: false,
       technologyDrawerVisible: false,
+      storageDrawerVisible: false,
       riskPointDetailDrawerVisible: false,
       imageFiles: [],
       currentImage: 0,
@@ -411,6 +413,7 @@ export default class Chemical extends PureComponent {
       chemicalDetailDrawerVisible,
       riskPointDetailDrawerVisible,
       technologyDrawerVisible,
+      storageDrawerVisible,
       imageFiles,
       currentImage,
       modalImgVisible,
@@ -623,6 +626,14 @@ export default class Chemical extends PureComponent {
           visible={technologyDrawerVisible}
           onClose={() => {
             this.setDrawerVisible('technology');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <StorageDrawer
+          visible={storageDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('storage');
           }}
           setDrawerVisible={this.setDrawerVisible}
         />

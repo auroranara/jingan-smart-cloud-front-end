@@ -84,8 +84,8 @@ export default class KeyPoints extends PureComponent {
       >
         <div className={styles.areaContainer}>
           <div>区域名称：生产区域</div>
-          <div>区域负责人：张三</div>
-          <div>联系电话：139123456789</div>
+          <div>区域负责人：牛斌</div>
+          <div>联系电话：15857623543</div>
           <div className={styles.areaColor} style={{ backgroundColor: '#ff4848', color: '#fff' }}>
             红
           </div>

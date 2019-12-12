@@ -26,7 +26,9 @@ export default class CardItem extends PureComponent {
           return (
             <div className={styles.field} key={index}>
               {label && <span className={styles.label}>{label}：</span>}
-              <span className={styles.value}>{render ? render(data[value]) : data[value]}</span>
+              <span className={styles.value}>
+                {render ? render(data[value], data) : data[value]}
+              </span>
               {extra || null}
             </div>
           );

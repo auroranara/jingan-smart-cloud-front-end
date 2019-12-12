@@ -59,13 +59,21 @@ const monitorData = [
   { icon: iconGas, label: '气柜监测', value: 1, total: 2, type: 5 },
   {
     icon: iconPoison,
-    label: '可燃有毒气体',
+    label: '可燃气体',
     value: 1,
     total: 2,
     url: 'gas-iot/monitor-report',
     type: 6,
   },
-  { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
+  {
+    icon: iconHigh,
+    label: '有毒气体',
+    value: 1,
+    total: 2,
+    url: 'gas-iot/monitor-report',
+    type: 6,
+  },
+  // { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
 ];
 const keyPointsData1 = [
   { icon: iconDangerSource, label: '重大危险源', value: 2 },
