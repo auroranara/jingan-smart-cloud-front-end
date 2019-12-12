@@ -1,14 +1,16 @@
-import { PureComponent } from 'react';
+import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Form, Input, Radio, Select, message } from 'antd';
+import { Card, Button, Form, Input, Radio, Select, message, InputNumber } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import { BREADCRUMBLIST, LIST_URL } from './utils';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
+import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
+const { TextArea } = Input;
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -29,19 +31,23 @@ const autoList = [
 ];
 
 @Form.create()
-@connect(({ safeFacilities, majorHazardInfo, user, loading }) => ({
-  safeFacilities,
-  majorHazardInfo,
+@connect(({ productionEquipments, materials, user, loading }) => ({
+  productionEquipments,
+  materials,
   user,
-  loading: loading.models.safeFacilities,
-  technologyLoading: loading.effects['majorHazardInfo/fetchHighRiskProcessList'],
+  loading: loading.models.productionEquipments,
+  technologyLoading: loading.effects['productionEquipments/fetchHighRiskProcessList'],
+  materialsLoading: loading.effects['materials/fetchMaterialsList'],
 }))
 export default class Edit extends PureComponent {
   state = {
     technologyVisible: false, // 危险化工工艺弹框是否可见
-    chemiclaVisible: false, // 危化品及数量弹框是否可见
+    materialsVisible: false, // 贮存物质弹框是否可见
+    selectedCompany: {}, // 选中的company
+    selectedMaterials: [], // 选中的贮存物质
+    materialsNum: {}, // 危化品数量
+    dangerTechnologyId: '', // 选中的高危工艺Id
     detailList: {},
-    facNameList: [],
   };
 
   // 挂载后
@@ -51,67 +57,125 @@ export default class Edit extends PureComponent {
       match: {
         params: { id },
       },
-      safeFacilities: { facNameList = [] },
+      form: { setFieldsValue },
     } = this.props;
 
     if (id) {
       dispatch({
-        type: 'safeFacilities/fetchSafeFacList',
+        type: 'productionEquipments/fetchProEquipList',
         payload: {
           pageSize: 48,
           pageNum: 1,
         },
         callback: res => {
-          const { list } = res;
+          const {
+            data: { list },
+          } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { photoList } = currentList;
+          const {
+            companyId,
+            companyName,
+            dangerTechnologyList,
+            unitChemiclaNumDetail,
+          } = currentList;
           this.setState({
             detailList: currentList,
-            photoUrl: photoList.map(({ dbUrl, webUrl }, index) => ({
-              uid: index,
-              status: 'done',
-              name: `附件${index + 1}`,
-              url: webUrl,
-              dbUrl,
+            dangerTechnologyId: dangerTechnologyList.map(item => item.id).join(','),
+            selectedCompany: { key: companyId, label: companyName },
+            selectedMaterials: unitChemiclaNumDetail.map(item => ({
+              ...item,
+              id: item.materialId,
             })),
+            materialsNum: unitChemiclaNumDetail.reduce((prev, next) => {
+              const { materialId, unitChemiclaNum } = next;
+              prev[materialId] = unitChemiclaNum;
+              return prev;
+            }, {}),
           });
         },
       });
-      this.setState({ facNameList: facNameList });
     } else {
       dispatch({
-        type: 'safeFacilities/clearSafeFacDetail',
+        type: 'productionEquipments/clearDetail',
       });
     }
   }
 
   goBack = () => {
-    router.push('/facility-management/safety-facilities/list');
+    router.push(`${LIST_URL}`);
   };
 
-  /**
-   * 去除左右两边空白
-   */
+  // 去除左右两边空白
   handleTrim = e => e.target.value.trim();
 
-  /**
-   * 打开危险化工工艺弹框
-   */
+  // 选择企业
+  onChangeComapny = item => {
+    this.setState({ selectedCompany: item });
+  };
+
+  // 打开高危工艺弹框
   handleTechnologyModal = () => {
     this.setState({ technologyVisible: true });
     const payload = { pageSize: 10, pageNum: 1 };
     this.fetchTechnologyList({ payload });
   };
 
+  // 获取高危工艺列表
   fetchTechnologyList = ({ payload }) => {
+    const { selectedCompany } = this.state;
     const { dispatch } = this.props;
     dispatch({
-      type: 'majorHazardInfo/fetchHighRiskProcessList',
-      payload: { ...payload },
+      type: 'productionEquipments/fetchHighRiskProcessList',
+      payload: { ...payload, companyId: selectedCompany.key },
     });
   };
 
-  handleTechnologySelect = item => {};
+  // 选择高危工艺
+  handleTechnologySelect = item => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ dangerTechnologyName: item.map(item => item.processName).join(',') });
+    this.setState({
+      technologyVisible: false,
+      dangerTechnologyId: item.map(item => item.id).join(','),
+    });
+  };
+
+  // 打开贮存物质弹框
+  handleMaterialsModal = () => {
+    this.setState({ materialsVisible: true });
+    const payload = { pageSize: 10, pageNum: 1 };
+    this.fetchMaterialsList({ payload });
+  };
+
+  // 获取贮存物质列表
+  fetchMaterialsList = ({ payload }) => {
+    const { dispatch } = this.props;
+    const { selectedCompany } = this.state;
+    dispatch({
+      type: 'materials/fetchMaterialsList',
+      payload: { ...payload, companyId: selectedCompany.key },
+    });
+  };
+
+  // 选择贮存物质
+  handleMaterialsSelect = selectedMaterials => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    const { materialsNum } = this.state;
+    this.setState({ selectedMaterials, materialsVisible: false });
+    setFieldsValue({
+      unitChemicla: JSON.stringify(
+        selectedMaterials.map(item => ({
+          chineName: item.chineName,
+          materialId: item.id,
+          unitChemiclaNum: materialsNum[item.id],
+        }))
+      ),
+    });
+  };
 
   handleSubmit = () => {
     const {
@@ -121,43 +185,46 @@ export default class Edit extends PureComponent {
       dispatch,
       form: { validateFieldsAndScroll },
       user: {
-        currentUser: { companyId },
+        currentUser: { companyId, unitType },
       },
     } = this.props;
-    const { photoUrl } = this.state;
+    const { selectedCompany, dangerTechnologyId } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const {
-          category,
-          safeFacilitiesName,
-          specifications,
-          processFacilitiesInvolved,
-          equipNumber,
-          equipStatus,
-          productFactory,
-          leaveFactoryDate,
-          useYear,
-          notes,
+          code,
+          name,
+          model,
+          location,
+          keyDevice,
+          environment,
+          deviceFunction,
+          deviceStatus,
+          deviceProduct,
+          pressure,
+          deviceEnergyConsumption,
+          deviceTechnology,
+          automaticControl,
+          unitChemicla,
         } = values;
         const payload = {
           id,
-          companyId: this.companyId || companyId,
-          category: category.join(','),
-          safeFacilitiesName,
-          specifications,
-          processFacilitiesInvolved,
-          equipNumber,
-          equipStatus,
-          productFactory,
-          leaveFactoryDate: leaveFactoryDate ? leaveFactoryDate.format('YYYY-MM-DD') : undefined,
-          useYear,
-          notes,
-          photo:
-            photoUrl.length > 0
-              ? JSON.stringify(
-                  photoUrl.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
-                )
-              : undefined,
+          companyId: unitType === 4 ? companyId : selectedCompany.key,
+          code,
+          name,
+          model,
+          location,
+          keyDevice,
+          dangerTechnology: dangerTechnologyId,
+          environment,
+          deviceFunction,
+          deviceStatus,
+          deviceProduct,
+          pressure,
+          deviceEnergyConsumption,
+          deviceTechnology,
+          automaticControl,
+          unitChemicla,
         };
 
         const success = () => {
@@ -171,14 +238,14 @@ export default class Edit extends PureComponent {
 
         if (id) {
           dispatch({
-            type: 'safeFacilities/fetchSafeFacEdit',
+            type: 'productionEquipments/fetchProEquipEdit',
             payload,
             success,
             error,
           });
         } else {
           dispatch({
-            type: 'safeFacilities/fetchSafeFacAdd',
+            type: 'productionEquipments/fetchProEquipAdd',
             payload,
             success,
             error,
@@ -198,7 +265,7 @@ export default class Edit extends PureComponent {
         currentUser: { unitType },
       },
     } = this.props;
-    const { detailList } = this.state;
+    const { detailList, selectedMaterials, materialsNum } = this.state;
 
     const {
       companyName,
@@ -208,8 +275,7 @@ export default class Edit extends PureComponent {
       model,
       location,
       keyDevice,
-      dangerTechnology,
-      unitChemicla,
+      dangerTechnologyList,
       environment,
       deviceFunction,
       deviceStatus,
@@ -218,6 +284,7 @@ export default class Edit extends PureComponent {
       deviceEnergyConsumption,
       deviceTechnology,
       automaticControl,
+      unitChemicla,
     } = detailList;
 
     return (
@@ -292,8 +359,10 @@ export default class Edit extends PureComponent {
           </FormItem>
 
           <FormItem label="所属危险化工工艺" {...formItemLayout}>
-            {getFieldDecorator('dangerTechnology', {
-              initialValue: dangerTechnology,
+            {getFieldDecorator('dangerTechnologyName', {
+              initialValue: dangerTechnologyList
+                ? dangerTechnologyList.map(item => item.processName).join(',')
+                : undefined,
               rules: [{ required: true, message: '请选择' }],
             })(<Input placeholder="请选择" disabled {...itemStyles} />)}
             <Button type="primary" onClick={this.handleTechnologyModal}>
@@ -305,10 +374,24 @@ export default class Edit extends PureComponent {
             {getFieldDecorator('unitChemicla', {
               initialValue: unitChemicla,
               rules: [{ required: true, message: '请选择' }],
-            })(<Input placeholder="请选择" disabled {...itemStyles} />)}
-            <Button type="primary" onClick={this.handleChemiclaModal}>
-              选择
-            </Button>
+            })(
+              <Fragment>
+                <TextArea
+                  {...itemStyles}
+                  rows={4}
+                  placeholder="请选择"
+                  value={selectedMaterials
+                    .map(
+                      item => item.chineName + (materialsNum[item.id] ? materialsNum[item.id] : '')
+                    )
+                    .join('，')}
+                  disabled
+                />
+                <Button type="primary" onClick={this.handleMaterialsModal}>
+                  选择
+                </Button>
+              </Fragment>
+            )}
           </FormItem>
 
           <FormItem label="周围环境" {...formItemLayout}>
@@ -343,6 +426,7 @@ export default class Edit extends PureComponent {
           <FormItem label="装置生产能力" {...formItemLayout}>
             {getFieldDecorator('deviceProduct', {
               initialValue: deviceProduct,
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
@@ -350,6 +434,7 @@ export default class Edit extends PureComponent {
           <FormItem label="装置能耗" {...formItemLayout}>
             {getFieldDecorator('deviceEnergyConsumption', {
               initialValue: deviceEnergyConsumption,
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
@@ -357,6 +442,7 @@ export default class Edit extends PureComponent {
           <FormItem label="装置技术条件" {...formItemLayout}>
             {getFieldDecorator('deviceTechnology', {
               initialValue: deviceTechnology,
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
@@ -364,6 +450,7 @@ export default class Edit extends PureComponent {
           <FormItem label="设计压力" {...formItemLayout}>
             {getFieldDecorator('pressure', {
               initialValue: pressure,
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
@@ -388,23 +475,32 @@ export default class Edit extends PureComponent {
 
   render() {
     const {
+      technologyLoading,
+      materialsLoading,
       match: {
         params: { id },
       },
-      // majorHazardInfo: {
-      //   // 高危工艺流程
-      //   highRiskProces,
-      // },
+      materials,
+      productionEquipments: { highRiskProcess },
     } = this.props;
 
-    const { technologyLoading, technologyVisible } = this.state;
+    const { technologyVisible, materialsVisible, materialsNum, selectedMaterials } = this.state;
+
     const title = id ? '编辑' : '新增';
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
 
+    const materialsModal = {
+      ...materials,
+      list: materials.list.map(item => {
+        const material = selectedMaterials.find(material => material.materialId === item.id) || {};
+        return { ...item, unitChemiclaNum: material.unitChemiclaNum };
+      }),
+    };
+
     const technologyFields = [
       {
-        id: 'targetName',
+        id: 'processName',
         render() {
           return <Input placeholder="请输入高危工艺名称" />;
         },
@@ -444,11 +540,82 @@ export default class Edit extends PureComponent {
       },
     ];
 
+    const materialsFields = [
+      {
+        id: 'casNo',
+        render() {
+          return <Input placeholder="CAS号" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+      {
+        id: 'chineName',
+        render() {
+          return <Input placeholder="品名" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+    ];
+
+    const materialsColumns = [
+      {
+        title: '统一编码',
+        dataIndex: 'unifiedCode',
+        key: 'unifiedCode',
+        align: 'center',
+      },
+      {
+        title: '品名',
+        dataIndex: 'chineName',
+        key: 'chineName',
+        align: 'center',
+      },
+      {
+        title: 'CAS号',
+        dataIndex: 'casNo',
+        key: 'casNo',
+        align: 'center',
+      },
+      {
+        title: '危险性类别',
+        dataIndex: 'riskCateg',
+        key: 'riskCateg',
+        align: 'center',
+        render: data => RISK_CATEGORIES[data],
+      },
+      {
+        title: '危化品数量',
+        dataIndex: 'unitChemiclaNum',
+        key: 'unitChemiclaNum',
+        align: 'center',
+        render: (data, row) => (
+          <InputNumber
+            placeholder="危化品数量"
+            min={0}
+            ref={node => (this.input = node)}
+            onBlur={e => {
+              this.setState({
+                materialsNum: {
+                  ...materialsNum,
+                  [row.id]: e.target.value,
+                },
+              });
+            }}
+            defaultValue={data}
+            formatter={value => (!value || isNaN(value) ? '' : value)}
+            parser={value => (!value || isNaN(value) ? '' : value)}
+            style={{ width: '100%' }}
+          />
+        ),
+      },
+    ];
+
     return (
-      <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span>
@@ -466,27 +633,45 @@ export default class Edit extends PureComponent {
             <Button
               style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
               size="large"
-              href={`#LIST_URL`}
+              href={`#${LIST_URL}`}
             >
               返回
             </Button>
           </span>
         </div>
 
-        {/** 选择危险化工工艺 */}
+        {/** 选择高危工艺 */}
         <CompanyModal
-          title="选择单位"
+          title="选择高危工艺"
+          multiSelect
+          rowSelection={{ type: 'checkbox' }}
           loading={technologyLoading}
           visible={technologyVisible}
-          modal={{
-            highRiskProces: { list: [], pagination: { pageNum: 1, pageSize: 1, total: 0 } },
-          }}
+          modal={highRiskProcess}
           columns={technologyColumns}
           field={technologyFields}
           fetch={this.fetchTechnologyList}
           onSelect={this.handleTechnologySelect}
           onClose={() => {
             this.setState({ technologyVisible: false });
+          }}
+        />
+
+        {/** 选择贮存物质 */}
+        <CompanyModal
+          title="选择贮存物质"
+          multiSelect
+          rowSelection={{ type: 'checkbox' }}
+          butonStyles={{ width: 'auto' }}
+          loading={materialsLoading}
+          visible={materialsVisible}
+          modal={materialsModal}
+          columns={materialsColumns}
+          field={materialsFields}
+          fetch={this.fetchMaterialsList}
+          onSelect={this.handleMaterialsSelect}
+          onClose={() => {
+            this.setState({ materialsVisible: false });
           }}
         />
       </PageHeaderLayout>

@@ -59,9 +59,10 @@ export default class RegSafetyEngEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { requirementsFilesList, regFilesList } = currentList;
+          const { companyId, requirementsFilesList, regFilesList } = currentList;
           this.setState({
             detailList: currentList,
+            editCompanyId: companyId,
             requireFilesList: requirementsFilesList.map(({ dbUrl, webUrl }, index) => ({
               uid: index,
               status: 'done',
@@ -101,6 +102,7 @@ export default class RegSafetyEngEdit extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
+    const { editCompanyId } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const { requireFilesList, regFilesList } = this.state;
@@ -118,7 +120,7 @@ export default class RegSafetyEngEdit extends PureComponent {
         } = values;
         const payload = {
           id,
-          companyId: this.companyId || companyId,
+          companyId: this.companyId || companyId || editCompanyId,
           name,
           sex,
           birth: birth.format('YYYY-MM-DD'),

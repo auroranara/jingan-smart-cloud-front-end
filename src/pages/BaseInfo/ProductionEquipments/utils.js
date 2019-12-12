@@ -1,9 +1,5 @@
-import React, { Fragment } from 'react';
-import Link from 'umi/link';
-import { Input, message, Popconfirm, Select, Form } from 'antd';
-
-import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import CompanyModal from '../../BaseInfo/Company/CompanyModal';
+import React from 'react';
+import { Input, Select } from 'antd';
 
 const { Option } = Select;
 
@@ -61,12 +57,6 @@ export const SEARCH_FIELDS = [
     transform: v => v.trim(),
   },
   {
-    id: 'dangerTechnology',
-    label: '化工工艺',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
     id: 'deviceStatus',
     label: '装置状态',
     render: () => (
@@ -94,18 +84,29 @@ export const TABLE_COLUMNS = [
     dataIndex: 'companyName',
     key: 'companyName',
     align: 'center',
+    width: 300,
   },
   {
     title: '装置信息',
     dataIndex: 'info',
     key: 'info',
     align: 'center',
-    render: () => {
+    width: 200,
+    render: (val, row) => {
       return (
         <div>
-          <p>装置编号:</p>
-          <p>装置名称:</p>
-          <p>设备型号:</p>
+          <p>
+            装置编号:
+            {row.code}
+          </p>
+          <p>
+            装置名称:
+            {row.name}
+          </p>
+          <p>
+            设备型号:
+            {row.model}
+          </p>
         </div>
       );
     },
@@ -115,6 +116,7 @@ export const TABLE_COLUMNS = [
     dataIndex: 'keyDevice',
     key: 'keyDevice',
     align: 'center',
+    width: 150,
     render: val => {
       return +val === 1 ? '是' : '否';
     },
@@ -124,12 +126,25 @@ export const TABLE_COLUMNS = [
     dataIndex: 'dangerTechnology',
     key: 'dangerTechnology',
     align: 'center',
-    render: () => {
+    width: 250,
+    render: (val, row) => {
+      const { dangerTechnologyList, unitChemiclaNumDetail } = row;
+      console.log('unitChemiclaNumDetail', unitChemiclaNumDetail);
       return (
         <div>
-          <p>化工工艺:</p>
-          <p>危化品:</p>
-          <p>危化品数量:</p>
+          <p>
+            化工工艺:
+            {dangerTechnologyList.map(item => item.processName).join(',')}
+          </p>
+          {unitChemiclaNumDetail.map((item, index) => {
+            const { chineName, unitChemiclaNum } = item;
+            return (
+              <p key={index}>
+                危化品:
+                {chineName} {unitChemiclaNum}
+              </p>
+            );
+          })}
         </div>
       );
     },
@@ -139,6 +154,7 @@ export const TABLE_COLUMNS = [
     dataIndex: 'deviceStatus',
     key: 'deviceStatus',
     align: 'center',
+    width: 100,
     render: val => {
       return getDeviceStatus[val];
     },
@@ -148,14 +164,30 @@ export const TABLE_COLUMNS = [
     dataIndex: 'otherInfo',
     key: 'otherInfo',
     align: 'center',
-    render: () => {
+    width: 250,
+    render: (val, row) => {
       return (
         <div>
-          <p>装置功能:</p>
-          <p>生产能力:</p>
-          <p>装置能耗:</p>
-          <p>装置技术条件:</p>
-          <p>设计压力:</p>
+          <p>
+            装置功能:
+            {row.deviceFunction}
+          </p>
+          <p>
+            生产能力:
+            {row.deviceProduct}
+          </p>
+          <p>
+            装置能耗:
+            {row.deviceEnergyConsumption}
+          </p>
+          <p>
+            装置技术条件:
+            {row.deviceTechnology}
+          </p>
+          <p>
+            设计压力:
+            {row.pressure}
+          </p>
         </div>
       );
     },
@@ -165,33 +197,13 @@ export const TABLE_COLUMNS = [
     dataIndex: 'location',
     key: 'location',
     align: 'center',
+    width: 200,
   },
   {
     title: '已绑定传感器',
     dataIndex: 'bindSensor',
     key: 'bindSensor',
     align: 'center',
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render(id) {
-      return (
-        <Fragment>
-          <Link to={`${ROUTER}/edit/${id}`}>绑定传感器</Link>
-          <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
-          <Popconfirm
-            title="确定删除当前项目？"
-            onConfirm={e => message.success('删除成功')}
-            okText="确定"
-            cancelText="取消"
-          >
-            <span className={styles1.delete}>删除</span>
-          </Popconfirm>
-        </Fragment>
-      );
-    },
+    width: 150,
   },
 ];

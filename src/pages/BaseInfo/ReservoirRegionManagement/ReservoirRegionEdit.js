@@ -58,9 +58,10 @@ export default class ReservoirRegionEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          // const { dangerSource, dangerSourceMessage } = currentList;
+          const { companyId } = currentList;
           this.setState({
             detailList: currentList,
+            editCompanyId: companyId,
             // hasDangerSourse: dangerSource,
             // dangerSourceUnitId: dangerSourceMessage,
           });
@@ -95,7 +96,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           submitting: true,
         });
 
-        // const { dangerSourceUnitId } = this.state;
+        const { editCompanyId } = this.state;
 
         const {
           number,
@@ -113,7 +114,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         } = values;
 
         const payload = {
-          companyId: this.companyId || companyId,
+          companyId: this.companyId || companyId || editCompanyId,
           number,
           name,
           position,
