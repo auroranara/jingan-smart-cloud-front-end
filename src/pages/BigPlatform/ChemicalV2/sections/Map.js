@@ -17,6 +17,12 @@ import videoActive from '../imgs/video-active.png';
 import videoGray from '../imgs/video-gray.png';
 
 const fengMap = fengmap; // eslint-disable-line
+const COLOR = {
+  blue: 'rgb(30, 96, 255)',
+  orange: 'rgb(241, 122, 10)',
+  yellow: 'rgb(251, 247, 25)',
+  red: 'rgb(255, 72, 72)',
+};
 let map;
 const fmapID = '100';
 const riskPointData = [
@@ -25,7 +31,10 @@ const riskPointData = [
   { x: 13224076.644961352, y: 3771543.500124462, itemId: 'o0lmmj6eupouatni', status: 2 },
   { x: 13224087.328251136, y: 3771529.231526666, itemId: 'mog_zz27sbvr2o3t', status: 1 },
 ].map(item => ({ ...item, url: riskPoint, iconType: 0 }));
-const monitorData = [{ x: 13224092.070077084, y: 3771519.1187018724 }].map(item => ({
+const monitorData = [
+  { x: 13224079.889752572, y: 3771535.0431545274 },
+  { x: 13224088.911112975, y: 3771542.825565829 },
+].map(item => ({
   ...item,
   url: monitor,
   iconType: 1,
@@ -421,28 +430,28 @@ export default class Map extends PureComponent {
       });
       const popMarker = new fengmap.FMPopInfoWindow(map, ctlOpt);
 
-      this.addPolygon(polygon, 'rgb(241, 122, 10)');
-      this.addPolygon(polygon2, 'rgb(241, 122, 10)');
-      this.addPolygon(polygon3, 'rgb(241, 122, 10)');
-      this.addPolygon(polygon4, 'rgb(30, 96, 255)');
-      this.addPolygon(polygon5, 'rgb(251, 247, 25)');
-      this.addPolygon(polygon6, 'rgb(255, 72, 72)'); //红色
+      this.addPolygon(polygon, COLOR.red); // 罐区4
+      this.addPolygon(polygon2, COLOR.orange);
+      this.addPolygon(polygon3, COLOR.orange);
+      this.addPolygon(polygon4, COLOR.blue);
+      this.addPolygon(polygon5, COLOR.yellow);
+      this.addPolygon(polygon6, COLOR.orange); // 厂房装置区
       console.log('getDatasByAlias', map.getDatasByAlias(1, 'model'));
       // storeModels
       const models = map.getDatasByAlias(1, 'model');
       models.forEach(item => {
         if (item.ID && alarmIds.includes(item.ID)) {
-          // orange
-          item.setColor('rgb(241, 122, 10)', 1);
+          // 储罐 3 4
+          item.setColor(COLOR.red, 1);
         } else if (orangeIds.includes(item.ID)) {
-          // orange
-          item.setColor('rgb(241, 122, 10)', 1);
+          // orange 储罐 1 2
+          item.setColor(COLOR.orange, 1);
         } else if (yellowIds.includes(item.ID)) {
-          // red
-          item.setColor('rgb(255, 72, 72)', 1);
+          // 最大区域
+          item.setColor(COLOR.orange, 1);
         } else if (blueIds.includes(item.ID)) {
           // blue
-          item.setColor('rgb(30, 96, 255)', 1);
+          item.setColor(COLOR.blue, 1);
         } else if (yellowIds2.includes(item.ID)) {
           item.setColor('rgb(251, 247, 25)', 1);
         }
@@ -478,7 +487,7 @@ export default class Map extends PureComponent {
       )
         return;
       const { eventInfo: { coord } = {} } = clickedObj;
-      if (coord && isPointInPolygon(coord, polygon6)) setDrawerVisible('dangerArea');
+      if (coord && isPointInPolygon(coord, polygon)) setDrawerVisible('dangerArea');
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
         const {
           opts_: { iconType, itemId, status },

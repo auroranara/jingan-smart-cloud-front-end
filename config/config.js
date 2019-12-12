@@ -46,7 +46,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.five}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -56,7 +56,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.five}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -81,12 +81,12 @@ export default {
         dynamicImport: true,
         ...(os.platform() === 'darwin'
           ? {
-            dll: {
-              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-              exclude: ['@babel/runtime'],
-            },
-            hardSource: false,
-          }
+              dll: {
+                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+                exclude: ['@babel/runtime'],
+              },
+              hardSource: false,
+            }
           : {}),
       },
     ],
