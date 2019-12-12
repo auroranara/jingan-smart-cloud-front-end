@@ -92,15 +92,15 @@ export default class TankMonitorDrawer extends Component {
       xxx: {
         name = '1号罐',
         upateTime = +new Date(),
-        designPressure = 0.02,
+        designPressure = 0.1,
         designStore = 16,
         realTimeStore = 5,
         temperature = 30,
         temperatureStatus = 0,
         liquidLevel = 2.3,
         liquidLevelStatus = 0,
-        pressure = 0.03,
-        pressureStatus = 0,
+        pressure = 0.15,
+        pressureStatus = 1,
         videoList,
       } = {},
     } = this.props;
@@ -110,7 +110,7 @@ export default class TankMonitorDrawer extends Component {
       <CustomDrawer
         className={classNames(styles.container, className)}
         style={style}
-        width="30em"
+        // width="30em"
         title="储罐监测"
         visible={visible}
         onClose={onClose}
@@ -118,6 +118,8 @@ export default class TankMonitorDrawer extends Component {
           scrollProps: { ref: this.setScrollReference },
           spinProps: { loading },
         }}
+        zIndex={1566}
+        width={535}
       >
         <div className={styles.top}>
           <div className={styles.line}>

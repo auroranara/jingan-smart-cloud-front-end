@@ -15,13 +15,15 @@ export default class GasDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, handleClose } = this.props;
+    const { visible, handleClose, handleShowVideo } = this.props;
 
     return (
       <CustomDrawer
         title="可燃气体监测"
         visible={visible}
         onClose={handleClose}
+        zIndex={1322}
+        width={535}
         // sectionProps={{
         //   scrollProps: { ref: (scroll) => this.scroll = scroll && scroll.dom },
         //   spinProps: { loading },
@@ -29,8 +31,9 @@ export default class GasDrawer extends PureComponent {
       >
         <div className={styles.up}>
           <div className={styles.section}>
-            <span className={styles.label}>监测区域名称：</span>7号罐附近
-            <span className={styles.camera} />
+            <span className={styles.label}>监测区域名称：</span>
+            7号罐附近
+            <span className={styles.camera} onClick={handleShowVideo} />
             <div className={styles.icons}>
               <span className={styles.sheet} onClick={this.handleWorkOrderIconClick} />
               <span className={styles.trend} onClick={this.handleMonitorTrendIconClick} />
@@ -51,8 +54,10 @@ export default class GasDrawer extends PureComponent {
               2019-12-13 12:00:00
             </p>
             <p className={styles.detail}>
-              <span className={styles.label}>浓度(%LEL)：</span>24
-              <span className={styles.status}>状态：</span><span className={styles.alarm}>报警(≥15)</span>
+              <span className={styles.label}>浓度(%LEL)：</span>
+              24
+              <span className={styles.status}>状态：</span>
+              <span className={styles.alarm}>报警(≥15)</span>
             </p>
           </div>
         </div>

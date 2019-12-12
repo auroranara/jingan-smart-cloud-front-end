@@ -127,7 +127,7 @@ export default class Chemical extends PureComponent {
       modalImgVisible: false,
       gasVisible: false,
       poisonVisible: false,
-      tankMonitorDrawerVisible: true,
+      tankMonitorDrawerVisible: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
   }
@@ -250,7 +250,8 @@ export default class Chemical extends PureComponent {
       <div
         className={styles.notificationBody}
         onClick={() =>
-          this.setDrawerVisible('monitorDetail', { monitorType: 2, monitorData: MonitorList[2][0] })
+          // this.setDrawerVisible('monitorDetail', { monitorType: 2, monitorData: MonitorList[2][0] })
+          this.setDrawerVisible('tankMonitor')
         }
       >
         <div>
@@ -494,6 +495,7 @@ export default class Chemical extends PureComponent {
                   <Messages
                     setDrawerVisible={this.setDrawerVisible}
                     handleParentChange={this.handleParentChange}
+                    handleGasOpen={this.handleGasOpen}
                   />
                 ) : (
                   <div className={styles.msgContainer}>
@@ -541,6 +543,8 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           handleShowImg={this.handleShowImg}
           handleShowVideo={this.handleShowVideo}
+          handleGasOpen={this.handleGasOpen}
+          handlePoisonOpen={this.handlePoisonOpen}
         />
 
         <StorageAreaDrawer
@@ -583,6 +587,8 @@ export default class Chemical extends PureComponent {
           }}
           type={monitorType}
           setDrawerVisible={this.setDrawerVisible}
+          handleGasOpen={this.handleGasOpen}
+          handlePoisonOpen={this.handlePoisonOpen}
         />
 
         <MonitorDetailDrawer
@@ -663,9 +669,17 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
         />
 
-        <GasDrawer visible={gasVisible} handleClose={this.handleGasClose} />
+        <GasDrawer
+          visible={gasVisible}
+          handleClose={this.handleGasClose}
+          handleShowVideo={this.handleShowVideo}
+        />
 
-        <PoisonDrawer visible={poisonVisible} handleClose={this.handlePoisonClose} />
+        <PoisonDrawer
+          visible={poisonVisible}
+          handleClose={this.handlePoisonClose}
+          handleShowVideo={this.handleShowVideo}
+        />
 
         <TankMonitorDrawer
           id={'111'}
@@ -673,6 +687,7 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('tankMonitor');
           }}
+          handleShowVideo={this.handleShowVideo}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

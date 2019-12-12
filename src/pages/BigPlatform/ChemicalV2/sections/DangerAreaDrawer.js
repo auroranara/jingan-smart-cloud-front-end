@@ -80,6 +80,7 @@ export default class KeyPoints extends PureComponent {
           title: '风险分区信息',
           visible,
           onClose,
+          zIndex: 1200,
         }}
       >
         <div className={styles.areaContainer}>
@@ -178,7 +179,7 @@ export default class KeyPoints extends PureComponent {
             className={styles.title}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setDrawerVisible('monitorDetail', { monitorType: 6, monitorData: MonitorList[6][0] });
+              setDrawerVisible('monitor', { monitorType: 6, monitorData: MonitorList[6][0] });
             }}
           >
             可燃气体
@@ -193,7 +194,7 @@ export default class KeyPoints extends PureComponent {
             className={styles.title}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setDrawerVisible('monitorDetail', { monitorType: 6, monitorData: MonitorList[6][0] });
+              setDrawerVisible('monitor', { monitorType: 7, monitorData: MonitorList[7][0] });
             }}
           >
             有毒气体

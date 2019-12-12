@@ -502,7 +502,8 @@ export default class Map extends PureComponent {
         if (iconType === 2) showVideo();
         else if (iconType === 0) handleClickRiskPoint(itemId, status);
         else if (iconType === 1)
-          setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
+          // setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
+          setDrawerVisible('tankMonitor');
       }
       // this.addMarkers(x, y, riskPoint, 0);
 
@@ -532,6 +533,10 @@ export default class Map extends PureComponent {
   handleClickMap = () => {
     this.setState({ gdMapVisible: false });
     this.initMap();
+  };
+
+  handlePosition = () => {
+    window.open(`${window.publicPath}#/big-platform/personnel-position/index`, `_blank`);
   };
 
   renderMarkers = () => {
@@ -648,6 +653,7 @@ export default class Map extends PureComponent {
               style={{
                 background: `url(${position}) center center / auto 80% no-repeat #fff`,
               }}
+              onClick={this.handlePosition}
             />
           </div>
         )}

@@ -58,20 +58,20 @@ const monitorData = [
   },
   { icon: iconGas, label: '气柜监测', value: 1, total: 2, type: 5 },
   {
-    icon: iconPoison,
+    icon: iconHigh,
     label: '可燃气体',
     value: 1,
-    total: 2,
+    total: 1,
     url: 'gas-iot/monitor-report',
     type: 6,
   },
   {
-    icon: iconHigh,
+    icon: iconPoison,
     label: '有毒气体',
     value: 1,
-    total: 2,
+    total: 1,
     url: 'gas-iot/monitor-report',
-    type: 6,
+    type: 7,
   },
   // { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
 ];
@@ -96,6 +96,10 @@ export default class KeyPoints extends PureComponent {
   handleClickMonitor = type => {
     const { setDrawerVisible } = this.props;
     if (type || type === 0) {
+      if (type === 2) {
+        setDrawerVisible('storage');
+        return;
+      }
       setDrawerVisible('monitor', { monitorType: type });
     }
     // window.open(`${window.publicPath}#/${url}`, `_blank`);

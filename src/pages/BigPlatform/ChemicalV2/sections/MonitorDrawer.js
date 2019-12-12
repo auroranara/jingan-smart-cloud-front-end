@@ -25,7 +25,12 @@ export default class MonitorDrawer extends PureComponent {
   };
 
   handleClick = data => {
-    const { setDrawerVisible } = this.props;
+    const { setDrawerVisible, type = 0, handleGasOpen, handlePoisonOpen } = this.props;
+    if (type === 6 || type === 7) {
+      type === 6 && handleGasOpen();
+      type === 7 && handlePoisonOpen();
+      return;
+    }
     setDrawerVisible('monitorDetail', { monitorData: data });
   };
 
@@ -45,7 +50,7 @@ export default class MonitorDrawer extends PureComponent {
         }}
         width={535}
         destroyOnClose={true}
-        zIndex={1666}
+        zIndex={1222}
         left={
           <div className={styles.container}>
             <Select
