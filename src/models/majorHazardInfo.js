@@ -18,6 +18,7 @@ export default {
     highRiskProcess: {
       list: [],
       pagination: {},
+      companyNum: 0, // 单位数量
     },
     // 高危工艺流程详情
     highRiskProcessDetail: {},
@@ -29,7 +30,7 @@ export default {
       if (res && res.code === 200) {
         yield put({
           type: 'save',
-          payload: { highRiskProcess: res.data },
+          payload: { highRiskProcess: { ...res.data, companyNum: isNaN(res.msg) ? 0 : +res.msg } },
         })
       }
     },

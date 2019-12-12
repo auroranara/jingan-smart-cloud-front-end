@@ -339,6 +339,7 @@ export default class HighRiskProcessList extends PureComponent {
             pageSize = 10,
             total = 0,
           },
+          companyNum, // 单位数量
         },
       },
       user: { currentUser: { permissionCodes } },
@@ -394,9 +395,17 @@ export default class HighRiskProcessList extends PureComponent {
       },
       {
         title: '已绑定监测设备',
-        dataIndex: 'aa',
+        dataIndex: 'monitorEquipmentCount',
         align: 'center',
-        width: 200,
+        width: 120,
+        render: (val, row) => (
+          <span
+            onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+          >
+            {val}
+          </span>
+        ),
       },
       {
         title: '操作',
@@ -462,9 +471,9 @@ export default class HighRiskProcessList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位数量：0
+            单位数量：{companyNum || 0}
             <span style={{ marginLeft: 15 }}>高危工艺流程：{total}</span>
-            <span style={{ marginLeft: 15 }}>已绑传感器数：0</span>
+            {/* <span style={{ marginLeft: 15 }}>已绑监测设备数：0</span> */}
           </div>
         }
       >
