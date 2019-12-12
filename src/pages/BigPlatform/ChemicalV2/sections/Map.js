@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 // 引入样式文件
 import styles from './Map.less';
+import moment from 'moment';
 import monitor from '../imgs/monitor.png';
 import riskPoint from '../imgs/risk-point.png';
 import video from '../imgs/video.png';
@@ -30,7 +31,7 @@ const videoData = [
   { x: 13224080.80175761, y: 3771554.9751555184 },
 ].map(item => ({ ...item, url: video, iconType: 2 }));
 
-var polygon = [
+const polygon = [
   { x: 13224092.737655401, y: 3771528.058833545, z: 5 },
   { x: 13224082.323110294, y: 3771521.7336946093, z: 5 },
   { x: 13224090.980083626, y: 3771508.279856456, z: 5 },
@@ -154,6 +155,120 @@ const yellowIds = [
 ];
 const blueIds = [325, 324, 323, 322, 320, 275, 2];
 const yellowIds2 = [62, 63, 64, 65, 377, 376];
+const isPointInPolygon = (point, polygon) => {
+  //下述代码来源：http://paulbourke.net/geometry/insidepoly/，进行了部分修改
+  //基本思想是利用射线法，计算射线与多边形各边的交点，如果是偶数，则点在多边形外，否则
+  //在多边形内。还会考虑一些特殊情况，如点在多边形顶点上，点在多边形边上等特殊情况。
+
+  var N = polygon.length;
+  var boundOrVertex = true; //如果点位于多边形的顶点或边上，也算做点在多边形内，直接返回true
+  var intersectCount = 0; //cross points count of x
+  var precision = 2e-10; //浮点类型计算时候与0比较时候的容差
+  var p1, p2; //neighbour bound vertices
+  var p = point; //测试点
+
+  p1 = polygon[0]; //left vertex
+  for (var i = 1; i <= N; ++i) {
+    //check all rays
+    if (p.x == p1.x && p.y == p1.y) {
+      return boundOrVertex; //p is an vertex
+    }
+
+    p2 = polygon[i % N]; //right vertex
+    if (p.y < Math.min(p1.y, p2.y) || p.y > Math.max(p1.y, p2.y)) {
+      //ray is outside of our interests
+      p1 = p2;
+      continue; //next ray left point
+    }
+
+    if (p.y > Math.min(p1.y, p2.y) && p.y < Math.max(p1.y, p2.y)) {
+      //ray is crossing over by the algorithm (common part of)
+      if (p.x <= Math.max(p1.x, p2.x)) {
+        //x is before of ray
+        if (p1.y == p2.y && p.x >= Math.min(p1.x, p2.x)) {
+          //overlies on a horizontal ray
+          return boundOrVertex;
+        }
+
+        if (p1.x == p2.x) {
+          //ray is vertical
+          if (p1.x == p.x) {
+            //overlies on a vertical ray
+            return boundOrVertex;
+          } else {
+            //before ray
+            ++intersectCount;
+          }
+        } else {
+          //cross point on the left side
+          var xinters = ((p.y - p1.y) * (p2.x - p1.x)) / (p2.y - p1.y) + p1.x; //cross point of x
+          if (Math.abs(p.x - xinters) < precision) {
+            //overlies on a ray
+            return boundOrVertex;
+          }
+
+          if (p.x < xinters) {
+            //before ray
+            ++intersectCount;
+          }
+        }
+      }
+    } else {
+      //special case when ray is crossing through the vertex
+      if (p.y == p2.y && p.x <= p2.x) {
+        //p crossing over p2
+        var p3 = polygon[(i + 1) % N]; //next vertex
+        if (p.y >= Math.min(p1.y, p3.y) && p.y <= Math.max(p1.y, p3.y)) {
+          //p.y lies between p1.y & p3.y
+          ++intersectCount;
+        } else {
+          intersectCount += 2;
+        }
+      }
+    }
+    p1 = p2; //next ray left point
+  }
+
+  if (intersectCount % 2 == 0) {
+    //偶数在多边形外
+    return false;
+  } else {
+    //奇数在多边形内
+    return true;
+  }
+};
+
+const alarmIds = [
+  164,
+  162,
+  163,
+  161,
+  158,
+  159,
+  160,
+  167,
+  170,
+  168,
+  165,
+  169,
+  166,
+  171,
+  270,
+  268,
+  267,
+  264,
+  262,
+  261,
+  258,
+  259,
+  260,
+  263,
+  282,
+  265,
+  266,
+  269,
+  271,
+];
 
 export default class Map extends PureComponent {
   state = {
@@ -162,17 +277,34 @@ export default class Map extends PureComponent {
 
   ids = [];
 
+  polygonArray = [];
+  markerArray = [];
+
   componentDidMount() {
     // this.initMap();
+    const { onRef } = this.props;
+    onRef && onRef(this);
   }
 
   /* eslint-disable*/
+  handleUpdateMap = () => {
+    if (!map) return;
+    this.polygonArray[0].setColor('rgb(255, 72, 72)');
+    const models = map.getDatasByAlias(1, 'model');
+    models.forEach(item => {
+      if (item.ID && alarmIds.includes(item.ID)) {
+        item.setColor('rgb(255, 72, 72)', 1);
+      }
+    });
+    this.markerArray[2].jump({ times: 0, duration: 2, height: 2, delay: 0 });
+  };
+
   addMarkers = (x, y, url, iconType) => {
     const groupID = 1;
     const groupLayer = map.getFMGroup(groupID);
-    var layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+    const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
     groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
-    var im = new fengmap.FMImageMarker({
+    const im = new fengmap.FMImageMarker({
       x,
       y,
       url, //设置图片路径
@@ -182,14 +314,15 @@ export default class Map extends PureComponent {
     });
     layer.addMarker(im); //图片标注层添加图片Marker
     im.alwaysShow();
+    this.markerArray.push(im);
   };
 
   addPolygon = (points, color) => {
-    var groupLayer = map.getFMGroup(1);
+    const groupLayer = map.getFMGroup(1);
     //创建PolygonMarkerLayer
-    var layer = new fengmap.FMPolygonMarkerLayer();
+    const layer = new fengmap.FMPolygonMarkerLayer();
     groupLayer.addLayer(layer);
-    var polygonMarker = new fengmap.FMPolygonMarker({
+    const polygonMarker = new fengmap.FMPolygonMarker({
       alpha: 0.5, //设置透明度
       lineWidth: 0, //设置边框线的宽度
       height: 1, //设置高度*/
@@ -197,6 +330,7 @@ export default class Map extends PureComponent {
     });
     polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
+    this.polygonArray.push(polygonMarker);
     // polygonMarker.alwaysShow(true);
     // polygonMarker.avoid(false);
   };
@@ -204,7 +338,7 @@ export default class Map extends PureComponent {
 
   initMap() {
     const { setDrawerVisible, showVideo } = this.props;
-    var mapOptions = {
+    const mapOptions = {
       //必要，地图容器
       container: document.getElementById('fengMap'),
       //地图数据位置
@@ -232,7 +366,7 @@ export default class Map extends PureComponent {
     });
 
     //2D、3D控件配置
-    var toolControl = new fengmap.toolControl(map, {
+    const toolControl = new fengmap.toolControl(map, {
       init2D: false, //初始化2D模式
       groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
       position: fengmap.controlPositon.LEFT_TOP,
@@ -267,7 +401,7 @@ export default class Map extends PureComponent {
       // storeModels
       const models = map.getDatasByAlias(1, 'model');
       models.forEach(item => {
-        if ((item.ID && (item.ID >= 158 && item.ID <= 171)) || (item.ID >= 258 && item.ID <= 271)) {
+        if (item.ID && alarmIds.includes(item.ID)) {
           // orange
           item.setColor('rgb(241, 122, 10)', 1);
         } else if (orangeIds.includes(item.ID)) {
@@ -286,8 +420,11 @@ export default class Map extends PureComponent {
     });
 
     map.on('mapClickNode', event => {
-      var clickedObj = event.target;
+      const clickedObj = event.target;
       console.log('clickedObj', clickedObj);
+      // console.log('time', moment().valueOf());
+      // isPointInPolygon
+
       if (!clickedObj) return;
       const {
         ID,
@@ -295,24 +432,27 @@ export default class Map extends PureComponent {
         // eventInfo: { coord: { x, y } = { coord: {} } },
       } = clickedObj;
       // this.ids.push({ x, y });
+      // this.ids.push(ID);
       // console.log('IDS', JSON.stringify(this.ids));
       if (
         [
-          fengmap.FMNodeType.FLOOR,
-          // fengmap.FMNodeType.IMAGE_MARKER,
+          // fengmap.FMNodeType.FLOOR,
+          fengmap.FMNodeType.FACILITY,
           fengmap.FMNodeType.TEXT_MARKER,
           fengmap.FMNodeType.LABEL,
           fengmap.FMNodeType.NONE,
         ].includes(nodeType)
       )
         return;
+      const { eventInfo: { coord } = {} } = clickedObj;
+      if (coord && isPointInPolygon(coord, polygon6)) setDrawerVisible('dangerArea');
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
         const {
           opts_: { iconType },
         } = clickedObj;
         console.log('iconType', iconType);
         if (iconType === 2) showVideo();
-        else if (iconType === 0) setDrawerVisible('dangerArea');
+        // else if (iconType === 0) setDrawerVisible('dangerArea');
         else if (iconType === 1)
           setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
       }

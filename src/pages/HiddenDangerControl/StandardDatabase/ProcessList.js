@@ -15,7 +15,7 @@ import {
   Checkbox,
 } from 'antd';
 import { connect } from 'dva';
-import router from 'umi/router';
+// import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import urls from '@/utils/urls';
 
@@ -60,8 +60,8 @@ const HandleModal = Form.create()(props => {
   const handleOk = () => {
     validateFields((err, values) => {
       if (err) return;
-      const { objectTitle, ...resValues } = values;
-      onOk({ ...resValues, objectId: checkItem.id })
+      const { objectTitle, necessary, ...resValues } = values;
+      onOk({ ...resValues, objectId: checkItem.id, necessary: necessary ? '1' : '0' })
     })
   }
   return (
@@ -98,6 +98,7 @@ const HandleModal = Form.create()(props => {
           {getFieldDecorator('flowName', {
             rules: [{ required: true, message: '请输入检查流程' }],
             initialValue: flowId ? detail.flowName : undefined,
+            getValueFromEvent: e => e.target.value.trim(),
           })(
             <Input placeholder="请输入" />
           )}
@@ -105,7 +106,7 @@ const HandleModal = Form.create()(props => {
         <FormItem label="必要性" {...formWrapper}>
           {getFieldDecorator('necessary', {
             valuePropName: 'checked',
-            initialValue: flowId ? !!detail.necessary : undefined,
+            initialValue: flowId ? !!+detail.necessary : undefined,
           })(
             <Checkbox>可以忽略</Checkbox>
           )}
@@ -114,6 +115,7 @@ const HandleModal = Form.create()(props => {
           {getFieldDecorator('checkWay', {
             rules: [{ required: true, message: '请输入检查方法' }],
             initialValue: flowId ? detail.checkWay : undefined,
+            getValueFromEvent: e => e.target.value.trim(),
           })(
             <TextArea rows={2} placeholder="请输入" />
           )}
@@ -264,14 +266,14 @@ export default class StandardProcessList extends Component {
         key: 'index',
         align: 'center',
         width: 150,
-        render: (val, row, index) => index,
+        render: (val, row, index) => 1 + index,
       },
       {
         title: '必要性',
         dataIndex: 'necessary',
         align: 'center',
         width: 150,
-        render: (val) => val ? '是' : '否',
+        render: (val) => +val === 1 ? '是' : '否',
       },
       {
         title: '检查流程',

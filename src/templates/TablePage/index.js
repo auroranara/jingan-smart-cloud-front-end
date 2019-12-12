@@ -12,7 +12,7 @@ import styles from './index.less';
 /**
  * 表格页
  */
-@connect((state, { route: { name, code }, codes }) => {
+@connect((state, { route: { name, code } }) => {
   const { breadcrumbList } = code.split('.').slice(0, -1).reduce((result, item) => {
     const key = `${result.key}.${item}`;
     const title = locales[key];
@@ -58,10 +58,6 @@ import styles from './index.less';
     hasDetailAuthority: permissionCodes.includes(code.replace(name, 'detail')),
     hasDeleteAuthority: permissionCodes.includes(code.replace(name, 'delete')),
     hasExportAuthority: permissionCodes.includes(code.replace(name, 'export')),
-    otherAuthorities: codes && codes.reduce((result, item) => {
-      result[`has${`${item[0].toUpperCase()}${item.slice(1)}`}Authority`] = permissionCodes.includes(code.replace(name, item));
-      return result;
-    }, {}),
   };
 }, (dispatch, { route: { name, code, path }, error=true }) => {
   const namespace = code.replace(/.*\.(.*)\..*/, '$1');
@@ -265,13 +261,11 @@ export default class TablePage extends Component {
       fields,
       action,
       unitId,
-      otherAuthorities,
     } = this.props;
-    const Fields = typeof fields === 'function' ? fields({ unitId, ...otherAuthorities }) : fields;
+    const Fields = typeof fields === 'function' ? fields({ unitId }) : fields;
     const Action = typeof action === 'function' ? action({
       renderAddButton: this.renderAddButton,
       renderExportButton: this.renderExportButton,
-      ...otherAuthorities,
     }) : fields;
 
     return (
@@ -322,7 +316,6 @@ export default class TablePage extends Component {
       columns,
       loading=false,
       unitId,
-      otherAuthorities,
     } = this.props;
     const { selectedRowKeys } = this.state;
 
@@ -332,7 +325,6 @@ export default class TablePage extends Component {
       renderDetailButton: this.renderDetailButton,
       renderEditButton: this.renderEditButton,
       renderDeleteButton: this.renderDeleteButton,
-      ...otherAuthorities,
     }) : columns;
 
     return (

@@ -11,7 +11,6 @@ import CustomUpload from '@/jingan-components/CustomUpload';
 import Text from '@/jingan-components/Text';
 import { connect } from 'dva';
 import { kebabCase, trimEnd } from 'lodash';
-import { bind, debounce } from 'lodash-decorators';
 import router from 'umi/router';
 import locales from '@/locales/zh-CN';
 import styles from './index.less';
@@ -141,10 +140,10 @@ export default class ThreeInOnePage extends Component {
     this.form = form;
   }
 
-  @bind()
-  @debounce(300)
-  refresh() {
-    this.forceUpdate();
+  refresh = () => {
+    setTimeout(() => {
+      this.forceUpdate();
+    })
   }
 
   // 返回按钮点击事件
@@ -182,6 +181,12 @@ export default class ThreeInOnePage extends Component {
     this.props.goToEdit();
   }
 
+  handleCompanyChange = (company) => {
+    if (!company || company.key !== company.label) {
+      this.refresh();
+    }
+  }
+
   renderItem = (values, item, index) => {
     if (Array.isArray(item)) {
       return {
@@ -200,7 +205,7 @@ export default class ThreeInOnePage extends Component {
         labelCol,
         render: () => {
           if (component === 'Input') {
-            return <InputOrSpan className={styles.item} placeholder={`请输入${label}`} type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
+            return <InputOrSpan className={styles.item} placeholder={`请输入${label}`} type={isNotDetail || 'span'} onChange={refreshEnable ? this.handleCompanyChange : undefined} {...props} />;
           } else if (component === 'Select') {
             return <SelectOrSpan className={styles.item} placeholder={`请选择${label}`} type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} allowClear={!required} {...props} />;
           } else if (component === 'CompanySelect') {
@@ -212,7 +217,7 @@ export default class ThreeInOnePage extends Component {
           } else if (component === 'TextArea') {
             return <InputOrSpan className={styles.item} placeholder={`请输入${label}`} type={isNotDetail ? 'TextArea' : 'span'} autosize={{ minRows: 3 }} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
           } else if (component === 'CustomUpload') {
-            return <CustomUpload type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props}  />;
+            return <CustomUpload type={isNotDetail || 'span'} onChange={this.refresh} {...props}  />;
           } else if (component === 'Radio') {
             return <RadioOrSpan type={isNotDetail || 'span'} onChange={refreshEnable ? this.refresh : undefined} {...props} />;
           } else if (component === 'Text') {
@@ -236,7 +241,7 @@ export default class ThreeInOnePage extends Component {
               ...(component === 'CustomUpload' && {
                 type: 'array',
                 min: 1,
-                transform: value => value && value.filter(({ status }) => status === 'done'),
+                // transform: value => value && value.filter(({ status }) => status === 'done'),
               }),
             },
           ],
@@ -257,10 +262,17 @@ export default class ThreeInOnePage extends Component {
       hasEditAuthority,
       detail={},
       unitId,
+      getLoading,
     } = this.props;
     const { initialValues ,submitting } = this.state;
     const showEdit = typeof editEnable === 'function' ? editEnable(detail) : editEnable;
     const values = { unitId, ...initialValues, ...(this.form && this.form.getFieldsValue()) };
+    const uploading = fields.reduce((result, { id, component }) => {
+      if (component === 'CustomUpload') {
+        result = result || (values[id] || []).some(({ status }) => status === 'uploading');
+      }
+      return result;
+    }, false);
     let Fields = fields.map((item, index) => this.renderItem(values, item, index)).filter(v => v);
     if (!Fields[0].fields) {
       Fields = [{
@@ -284,9 +296,9 @@ export default class ThreeInOnePage extends Component {
               <Fragment>
                 <Button onClick={this.handleBackButtonClick}>返回</Button>
                 {isNotDetail ? (
-                  <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+                  <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting || uploading || (getLoading && getLoading(values))}>提交</Button>
                 ) : showEdit && (
-                  <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+                  <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority} loading={submitting || uploading || (getLoading && getLoading(values))}>编辑</Button>
                 )}
               </Fragment>
             )}

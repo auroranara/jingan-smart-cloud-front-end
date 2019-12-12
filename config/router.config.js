@@ -885,6 +885,43 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              "name": "productionEquipments",
+              "code": "majorHazardInfo.productionEquipments",
+              "path": "/major-hazard-info/production-equipments",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/major-hazard-info/production-equipments",
+                  "redirect": "/major-hazard-info/production-equipments/list",
+                },
+                {
+                  "name": "list",
+                  "code": "majorHazardInfo.productionEquipments.list",
+                  "path": "/major-hazard-info/production-equipments/list",
+                  // "component": "./MajorHazardInfo/ProductionEquipments/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "majorHazardInfo.productionEquipments.view",
+                  "path": "/major-hazard-info/production-equipments/view/:id",
+                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "majorHazardInfo.productionEquipments.add",
+                  "path": "/major-hazard-info/production-equipments/add",
+                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "majorHazardInfo.productionEquipments.edit",
+                  "path": "/major-hazard-info/production-equipments/edit/:id",
+                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                },
+              ],
+            },
           ],
         },
 
@@ -1223,14 +1260,14 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              name: 'upgradeWarning', // 风险升级预警信息
-              code: 'riskControl.upgradeWarning',
-              path: '/risk-control/upgrade-warning',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
+            // {
+            //   name: 'upgradeWarning', // 风险升级预警信息
+            //   code: 'riskControl.upgradeWarning',
+            //   path: '/risk-control/upgrade-warning',
+            //   developing: true,
+            //   hideChildrenInMenu: true,
+            //   routes: [],
+            // },
             {
               name: 'reevaluateWarning', // 复评预警管理
               code: 'riskControl.reevaluateWarning',
@@ -2444,7 +2481,7 @@ module.exports = env => {
                 },
                 {
                   name: 'detail',
-                  code: 'targetResponsibility.targetSetting.edit',
+                  code: 'targetResponsibility.targetSetting.view',
                   path: '/target-responsibility/target-setting/detail/:id',
                   component: './TargetResponsibility/TargetSetting/Edit',
                 },
@@ -2953,7 +2990,7 @@ module.exports = env => {
                 {
                   path: '/hidden-danger-control/danger-standard-database/list',
                   name: 'list',
-                  code: 'hiddenDangerControl.dangerStandardDatabase.add',
+                  code: 'hiddenDangerControl.dangerStandardDatabase.listView',
                   component: './HiddenDangerControl/StandardDatabase',
                 },
                 {
@@ -3111,43 +3148,6 @@ module.exports = env => {
           name: 'deviceManagement',
           systemType: 4,
           routes: [
-            {
-              name: 'safetyFacilities', // 安全设施
-              code: 'deviceManagement.safetyFacilities',
-              path: '/device-management/safety-facilities',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  name: 'list',
-                  path: '/device-management/safety-facilities',
-                  redirect: '/device-management/safety-facilities/list',
-                },
-                {
-                  name: 'list',
-                  code: 'deviceManagement.safetyFacilities.list',
-                  path: '/device-management/safety-facilities/list',
-                  component: './BaseInfo/SafetyFacilities/TableList',
-                },
-                {
-                  name: 'view',
-                  code: 'deviceManagement.safetyFacilities.view',
-                  path: '/device-management/safety-facilities/view/:id',
-                  component: './BaseInfo/SafetyFacilities/Edit',
-                },
-                {
-                  name: 'add',
-                  code: 'deviceManagement.safetyFacilities.add',
-                  path: '/device-management/safety-facilities/add',
-                  component: './BaseInfo/SafetyFacilities/Edit',
-                },
-                {
-                  name: 'edit',
-                  code: 'deviceManagement.safetyFacilities.edit',
-                  path: '/device-management/safety-facilities/edit/:id',
-                  component: './BaseInfo/SafetyFacilities/Edit',
-                },
-              ],
-            },
             {
               path: '/device-management/video-monitor', // 监控摄像头
               code: 'deviceManagement.videoMonitor',
@@ -3493,7 +3493,7 @@ module.exports = env => {
               ],
             },
             {
-              path: '/device-management/virtual-monitoring-device',
+              path: '/device-management/virtual-monitoring-device', // 虚拟监测对象管理
               name: 'virtualMonitoringDevice',
               code: 'deviceManagement.virtualMonitoringDevice',
               hideChildrenInMenu: true,
@@ -3520,6 +3520,25 @@ module.exports = env => {
                   name: 'edit',
                   code: 'deviceManagement.virtualMonitoringDevice',
                   component: './DeviceManagement/VirtualMonitoringDevice/Handle',
+                },
+              ],
+            },
+            {
+              path: '/device-management/tag-library', // 图标库管理
+              name: 'tagLibrary',
+              code: 'deviceManagement.tagLibrary',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/tag-library',
+                  name: 'tagLibrary',
+                  redirect: '/device-management/tag-library/list',
+                },
+                {
+                  path: '/device-management/tag-library/list',
+                  code: 'deviceManagement.tagLibrary.listView',
+                  name: 'listView',
+                  component: './DeviceManagement/TagLibrary',
                 },
               ],
             },

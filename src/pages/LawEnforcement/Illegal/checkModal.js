@@ -115,6 +115,8 @@ export default class CompanyModal extends PureComponent {
     } = this.props;
     const { checkList, clickContent } = this.state;
 
+    const filterList = list.filter(item => item.business_type !== null);
+
     return (
       <Modal
         title={title}
@@ -145,7 +147,7 @@ export default class CompanyModal extends PureComponent {
             bordered
             size="middle"
             rowKey={rowKey || 'id'}
-            dataSource={list || []}
+            dataSource={filterList || []}
             columns={columns}
             pagination={{
               total,

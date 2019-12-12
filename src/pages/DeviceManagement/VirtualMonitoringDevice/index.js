@@ -10,7 +10,7 @@ import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/Monitorin
 
 const FormItem = Form.Item;
 
-const title = '虚拟监测设备管理'
+const title = '虚拟监测对象管理'
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '物联设备管理', name: '物联设备管理' },

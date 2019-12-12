@@ -565,11 +565,11 @@ export default {
     },
     // 安全设施
     safetyFacilities: {
-      list: 'deviceManagement.safetyFacilities.list',
-      view: 'deviceManagement.safetyFacilities.view',
-      add: 'deviceManagement.safetyFacilities.add',
-      edit: 'deviceManagement.safetyFacilities.edit',
-      delete: 'deviceManagement.safetyFacilities.delete',
+      list: 'facilityManagement.safetyFacilities.list',
+      view: 'facilityManagement.safetyFacilities.view',
+      add: 'facilityManagement.safetyFacilities.add',
+      edit: 'facilityManagement.safetyFacilities.edit',
+      delete: 'facilityManagement.safetyFacilities.delete',
     },
     // 储罐管理
     storageManagement: {

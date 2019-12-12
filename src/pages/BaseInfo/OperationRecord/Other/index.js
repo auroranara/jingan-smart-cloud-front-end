@@ -77,6 +77,7 @@ export default class OperationRecordOther extends Component {
         id: 'otherFile',
         label: '附件',
         component: 'CustomUpload',
+        refreshEnable: true,
       },
     ];
 
