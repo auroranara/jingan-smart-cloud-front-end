@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import { Card, Input, Select, Button, Table, Popconfirm, Modal, Spin, message } from 'antd';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import CustomForm from '@/jingan-components/CustomForm';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import classNames from 'classnames';
+import { Card, Input, Select, Button, Table, Popconfirm, Modal, Spin, message } from 'antd';
+
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import CustomForm from '@/jingan-components/CustomForm';
 import {
   TITLE,
   BREADCRUMB_LIST,
@@ -22,8 +23,10 @@ import {
   PUBLISH_CODE,
   SECRET_CODES,
   STATUSES,
+  DATE_STATUS,
 } from './config';
 import styles from './index.less';
+import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
 
 const { Option } = Select;
 
@@ -281,6 +284,15 @@ export default class EmergencyPlanList extends Component {
         ),
       },
       {
+        id: 'paststatus',
+        label: '到期状态',
+        render: () => (
+          <Select placeholder="请选择到期状态" allowClear>
+            {DATE_STATUS.map((v, i) => <Option key={i}>{v}</Option>)}
+          </Select>
+        ),
+      },
+      {
         id: 'isRecord',
         label: '是否已备案',
         render: () => (
@@ -381,8 +393,22 @@ export default class EmergencyPlanList extends Component {
       {
         title: '有效期至',
         dataIndex: 'endDate',
-        render: endDate => endDate && moment(endDate).format('YYYY.M.D'),
+        render: endDate => endDate ? moment(endDate).format('YYYY-MM-DD') : '-',
         align: 'center',
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        key: 'paststatus',
+        align: 'center',
+        width: 120,
+        render: (status, { endDate }) => {
+          return (
+            <span style={{ color: getColorVal(status) }}>
+              {endDate ? paststatusVal[status] : '-'}
+            </span>
+          );
+        },
       },
       {
         title: '代码',
@@ -416,7 +442,7 @@ export default class EmergencyPlanList extends Component {
             </div>
           </div>
         ) : '未备案',
-        align: 'center',
+        // align: 'center',
       },
       {
         title: '预案附件',
@@ -430,7 +456,7 @@ export default class EmergencyPlanList extends Component {
             ))}
           </Fragment>
         ),
-        align: 'center',
+        // align: 'center',
       },
       {
         title: '状态',

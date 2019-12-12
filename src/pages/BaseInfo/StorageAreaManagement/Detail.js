@@ -8,7 +8,7 @@ import moment from 'moment';
 
 const listUrl = '/major-hazard-info/storage-area-management/list';
 const HEADER = '储罐区管理';
-const TITLE = HEADER + '详情';
+const TITLE = '详情';
 const BREADCRUMB = [
   {
     title: '首页',
@@ -95,7 +95,7 @@ export default class StorehouseDetail extends Component {
       storageAreaManagement: { list = [{}] },
       loading,
     } = this.props;
-    const detail = list[0];
+    const detail = list[0] || {};
     const items =
       detail.hasCoffer === '1' ? dspItems : dspItems.filter(item => item.id !== 'cofferArea');
     const fields = items.map(item => {
@@ -130,6 +130,7 @@ export default class StorehouseDetail extends Component {
               resetable={false}
               action={
                 <Fragment>
+                  <Button onClick={e => router.push(`/major-hazard-info/storage-area-management/edit/${detail.id}`)}>编辑</Button>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
                 </Fragment>
               }

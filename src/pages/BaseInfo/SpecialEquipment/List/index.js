@@ -20,8 +20,8 @@ import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-
 import styles from './index.less';
+import { getColorVal, paststatusVal } from '../utils';
 
 const {
   baseInfo: {
@@ -431,21 +431,33 @@ export default class SpecialEquipmentList extends PureComponent {
       },
       {
         title: '有效期至',
+        dataIndex: 'endDate',
+        key: 'endDate',
+        align: 'center',
+        width: 250,
+        render: (endDate, row) => {
+          // const { endDate } = row;
+          return endDate ? (
+            <div>
+              {/* <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
+                {val && ['未到期', '即将到期', '已过期'][+val]}
+              </div> */}
+              <div>{endDate && moment(endDate).format('YYYY年MM月DD日')}</div>
+            </div>
+          ) : '-';
+        },
+      },
+      {
+        title: '有效期状态',
         dataIndex: 'paststatus',
         key: 'paststatus',
         align: 'center',
-        width: 250,
-        render: (val, row) => {
-          const { endDate } = row;
-          return endDate ? (
-            <div>
-              <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
-                {val && ['未到期', '即将到期', '已过期'][+val]}
-              </div>
-              <div>{endDate && moment(endDate).format('YYYY年MM月DD日')}</div>
-            </div>
-          ) : (
-            NO_DATA
+        width: 120,
+        render: (status, { endDate }) => {
+          return (
+            <span style={{ color: getColorVal(status) }}>
+              {endDate ? paststatusVal[status] : '-'}
+            </span>
           );
         },
       },
