@@ -504,18 +504,20 @@ export default class RegSafetyEngEdit extends PureComponent {
   };
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar() {
+  renderFooterToolbar(isDetail) {
     const { regUploading, reqUploading } = this.state;
     return (
       <FooterToolbar>
-        <Button
-          type="primary"
-          size="large"
-          loading={reqUploading || regUploading}
-          onClick={this.handleSubmit}
-        >
-          提交
-        </Button>
+        {isDetail ? null : (
+          <Button
+            type="primary"
+            size="large"
+            loading={reqUploading || regUploading}
+            onClick={this.handleSubmit}
+          >
+            提交
+          </Button>
+        )}
         <Button type="primary" size="large" onClick={this.goBack}>
           返回
         </Button>
@@ -528,8 +530,10 @@ export default class RegSafetyEngEdit extends PureComponent {
       match: {
         params: { id },
       },
+      route: { name },
     } = this.props;
-    const title = id ? '编辑人员' : '新增人员';
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : '编辑' : '新增';
     const breadcrumbList = [
       {
         title: '首页',
@@ -554,7 +558,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
         {this.renderModal()}
-        {this.renderFooterToolbar()}{' '}
+        {this.renderFooterToolbar(isDetail)}{' '}
       </PageHeaderLayout>
     );
   }

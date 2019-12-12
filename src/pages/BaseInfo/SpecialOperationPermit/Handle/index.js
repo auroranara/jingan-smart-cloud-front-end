@@ -46,6 +46,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const getRootChild = () => document.querySelector('#root>div');
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+const BUTTON_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
 @connect(({ baseInfo, sensor, loading }) => ({
@@ -490,10 +491,13 @@ export default class specialOperationPermitHandle extends PureComponent {
     const {
       companyLoading,
       match: { params: { id } },
+      route: { name },
       sensor: { companyModal }, // companyModal { list , pagination:{} }
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? '编辑特种作业操作证人员' : '新增特种作业操作证人员';
+
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : '编辑' : '新增';
     const breadcrumbList = [
       {
         title: homeTitle,
@@ -517,13 +521,23 @@ export default class specialOperationPermitHandle extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
-        <Button
-          style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-          type="primary"
-          onClick={this.handleSubmit}
-        >
-          提交
-        </Button>
+        {isDetail ? (
+          <Button
+            style={BUTTON_STYLE}
+            type="primary"
+            onClick={e => router.push(`/operation-safety/special-operation-permit/edit/${id}`)}
+          >
+            编辑
+          </Button>
+        ) : (
+          <Button
+            style={BUTTON_STYLE}
+            type="primary"
+            onClick={this.handleSubmit}
+          >
+            提交
+          </Button>
+        )}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"
