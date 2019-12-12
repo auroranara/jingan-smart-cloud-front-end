@@ -1,0 +1,113 @@
+.top {
+  padding: 0 2em 1em;
+  border-bottom: 1px solid #ddd;
+}
+.line {
+  display: flex;
+  padding: 0.25em 0;
+  position: relative;
+
+  .label {
+    flex: none;
+    color: #0ff;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .value {
+    flex: 1;
+  }
+  .number {
+    display: inline-block;
+    width: 4em;
+    letter-spacing: 2em;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+.video {
+  margin-left: 1em;
+  margin: 0.25em 0;
+  width: 1.4em;
+  height: 1em;
+  background: url('../../imgs/icon-video.png') no-repeat center;
+  background-size: auto 1em;
+  cursor: pointer;
+}
+.jumperWrapper {
+  position: absolute;
+  top: 0;
+  right: 2em;
+  margin: 0 -0.5em;
+
+  span {
+    display: inline-block;
+    padding: 0 0.5em;
+    background: no-repeat center;
+    background-size: auto 1.5em;
+    vertical-align: top;
+    cursor: pointer;
+
+    &:first-child {
+      background-image: url('../../imgs/icon-work-order.png');
+    }
+    &:nth-child(2) {
+      background-image: url('../../imgs/icon-trend.png');
+    }
+  }
+}
+.middle {
+  padding: 1.5em 2em;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+
+  .icon {
+    flex: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1em;
+    width: 5em;
+    font-size: 20px;
+    background: url('../../imgs/icon-tank-big.png') no-repeat center;
+    background-size: 100%;
+  }
+  .infoWrapper {
+    flex: 1;
+    padding: 0.5em 1em;
+    border: 1px dashed #0ff;
+  }
+  .lineWrapper {
+    display: flex;
+    justify-content: space-between;
+    .line {
+      flex: none;
+    }
+  }
+}
+.bottom {
+  padding-top: 0.5em;
+
+  .bottomTitle {
+    display: flex;
+    padding: 1em;
+
+    .bottomTitleIcon {
+      flex: none;
+      margin-right: 0.625em;
+      width: 1em;
+      height: 1em;
+      background-color: #0ff;
+    }
+    .bottomTitleLabel {
+      flex: none;
+      line-height: 1;
+    }
+    .bottomContent {
+      padding: 0 2em;
+      text-indent: 2em;
+      line-height: 2;
+    }
+  }
+}
+
