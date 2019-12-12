@@ -8,7 +8,10 @@ import headerBg from '@/assets/new-header-bg.png';
 import bgImg from '@/pages/BigPlatform/Chemical/imgs/bg.png';
 import menuIcon from './imgs/menu-icon.png';
 import styles from './index.less';
-import { RiskPointDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
+import {
+  RiskPointDrawer,
+  RiskPointDetailDrawer,
+} from '@/pages/BigPlatform/Safety/Company3/components';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import { VideoList, MonitorList } from './utils';
@@ -43,7 +46,7 @@ const HEADER_STYLE = {
   backgroundImage: `url(${headerBg})`,
   backgroundSize: '100% 100%',
 };
-
+const DEFAULT_PAGE_SIZE = 10;
 const CONTENT_STYLE = { position: 'relative', height: '90.37037%', zIndex: 0 };
 
 const msgInfo = [
@@ -80,6 +83,7 @@ notification.config({
   duration: 30,
   bottom: 6,
 });
+const companyId = 'DccBRhlrSiu9gMV7fmvizw';
 
 @connect(({ unitSafety, bigPlatform }) => ({ unitSafety, bigPlatform }))
 export default class Chemical extends PureComponent {
@@ -101,7 +105,9 @@ export default class Chemical extends PureComponent {
       monitorDetailDrawerVisible: false,
       monitorData: {},
       msgVisible: false,
+      riskPointDetailDrawerVisible: false,
     };
+    this.itemId = 'DXx842SFToWxksqR1BhckA';
   }
 
   componentDidMount() {
@@ -109,17 +115,12 @@ export default class Chemical extends PureComponent {
     this.fetchHiddenDangerList();
   }
 
-  fetchPoints = () => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId: 'DccBRhlrSiu9gMV7fmvizw' } });
-  };
-
   fetchHiddenDangerList = pageNum => {
     const { dispatch } = this.props;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
-        company_id: 'DccBRhlrSiu9gMV7fmvizw',
+        company_id: companyId,
         // businessType: 2,
         // status: hdStatus,
         pageNum,
@@ -248,6 +249,87 @@ export default class Chemical extends PureComponent {
   };
 
   /**
+   * 获取风险点巡查列表
+   */
+  getRiskPointInspectionList = restProps => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointInspectionList',
+      payload: {
+        itemId: this.itemId,
+        pageNum: 1,
+        pageSize: DEFAULT_PAGE_SIZE,
+        ...restProps,
+      },
+    });
+  };
+
+  /**
+   * 获取风险点隐患列表
+   */
+  getRiskPointHiddenDangerList = restProps => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointHiddenDangerList',
+      payload: {
+        itemId: this.itemId,
+        pageNum: 1,
+        pageSize: DEFAULT_PAGE_SIZE,
+        ...restProps,
+      },
+    });
+  };
+
+  /**
+   * 获取风险点的隐患统计
+   */
+  getRiskPointHiddenDangerCount = restProps => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointHiddenDangerCount',
+      payload: {
+        itemId: this.itemId,
+        ...restProps,
+      },
+    });
+  };
+
+  /**
+   * 获取风险点的巡查统计
+   */
+  getRiskPointInspectionCount = restProps => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointInspectionCount',
+      payload: {
+        itemId: this.itemId,
+        ...restProps,
+      },
+    });
+  };
+
+  handleClickRiskPoint = (itemId, status) => {
+    const { dispatch } = this.props;
+    this.itemId = itemId;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointCardList',
+      payload: { itemId, status },
+      callback: () => {
+        this.setDrawerVisible('riskPointDetail');
+      },
+    });
+    // 获取隐患列表
+    this.getRiskPointHiddenDangerList();
+    // 获取隐患统计
+    this.getRiskPointHiddenDangerCount();
+  };
+
+  fetchPoints = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
+  };
+
+  /**
    * 渲染
    */
   render() {
@@ -271,7 +353,10 @@ export default class Chemical extends PureComponent {
       monitorDetailDrawerVisible,
       monitorData,
       msgVisible,
+      riskPointDetailDrawerVisible,
     } = this.state;
+    console.log('points', points);
+
     return (
       <BigPlatformLayout
         title="五位一体信息化管理平台"
@@ -314,6 +399,7 @@ export default class Chemical extends PureComponent {
                   setDrawerVisible={this.setDrawerVisible}
                   showVideo={this.handleShowVideo}
                   onRef={this.onRef}
+                  handleClickRiskPoint={this.handleClickRiskPoint}
                 />
 
                 {msgVisible ? (
@@ -418,6 +504,18 @@ export default class Chemical extends PureComponent {
           type={monitorType}
           monitorData={monitorData}
           handleShowVideo={this.handleShowVideo}
+        />
+
+        {/* 风险点详情抽屉 */}
+        <RiskPointDetailDrawer
+          visible={riskPointDetailDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('riskPointDetail');
+          }}
+          getRiskPointInspectionList={this.getRiskPointInspectionList}
+          getRiskPointHiddenDangerList={this.getRiskPointHiddenDangerList}
+          getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
+          getRiskPointInspectionCount={this.getRiskPointInspectionCount}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
