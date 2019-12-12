@@ -110,7 +110,7 @@ export default class TankMonitorDrawer extends Component {
       <CustomDrawer
         className={classNames(styles.container, className)}
         style={style}
-        width="40em"
+        width="30em"
         title="储罐监测"
         visible={visible}
         onClose={onClose}

@@ -1,6 +1,6 @@
 .top {
   padding: 0 2em 1em;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #aaa;
 }
 .line {
   display: flex;
@@ -22,6 +22,7 @@
     letter-spacing: 2em;
     white-space: nowrap;
     overflow: hidden;
+    vertical-align: top;
   }
 }
 .video {
@@ -42,10 +43,13 @@
   span {
     display: inline-block;
     padding: 0 0.5em;
+    width: 1.5em;
+    height: 1.5em;
     background: no-repeat center;
     background-size: auto 1.5em;
     vertical-align: top;
     cursor: pointer;
+    box-sizing: content-box;
 
     &:first-child {
       background-image: url('../../imgs/icon-work-order.png');
@@ -59,7 +63,7 @@
   padding: 1.5em 2em;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #aaa;
 
   .icon {
     flex: none;
@@ -68,6 +72,7 @@
     align-items: center;
     margin-right: 1em;
     width: 5em;
+    height: 7.5em;
     font-size: 20px;
     background: url('../../imgs/icon-tank-big.png') no-repeat center;
     background-size: 100%;
@@ -82,6 +87,12 @@
     justify-content: space-between;
     .line {
       flex: none;
+
+      &:last-child {
+        .label {
+          color: #fff;
+        }
+      }
     }
   }
 }
@@ -103,11 +114,26 @@
       flex: none;
       line-height: 1;
     }
-    .bottomContent {
-      padding: 0 2em;
-      text-indent: 2em;
-      line-height: 2;
-    }
+  }
+  .bottomContent {
+    padding: 0 2em;
+    text-indent: 2em;
+    line-height: 2;
   }
 }
 
+@media screen and (max-width: 1599px) and (min-width: 1400px) {
+.middle {
+  .icon {
+    font-size: 18px;
+  }
+}
+}
+
+@media screen and (max-width: 1399px) {
+  .middle {
+    .icon {
+      font-size: 16px;
+    }
+  }
+}
