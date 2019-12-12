@@ -15,21 +15,22 @@
 /* 人员统计 */
 .personWrapper {
   padding-bottom: 1em;
+  font-size: 15px;
 
   .person {
     display: flex;
     justify-content: space-between;
     // padding: 0.5em 0 0.5em 2em;
-    padding: 0.5em 2em;
+    padding: 0.5em 3em;
 
     .personName {
       // width: 6em;
-      max-width: 10em;
-      color: #00ffff;
+      max-width: 8em;
       white-space: nowrap;
     }
 
     .personValue {
+      color: #00ffff;
       // flex: 1;
       white-space: nowrap;
     }
@@ -38,43 +39,108 @@
 
 /* 人员列表 */
 .personList {
+  width: 100%;
   position: relative;
   margin-bottom: 1em;
-  padding-left: 1.5em;
-  border-left: 6px solid #fff;
-  background-color: rgb(4, 64, 125);
+  padding-left: 8px;
+  border: 1px solid #0ff;
+  display: flex;
 
-  &:last-child {
-    margin-bottom: 0;
+  .left {
+    width: 30%;
+    background-size: 100% 100%;
   }
 
-  .personItem {
-    display: flex;
-    padding: 0.75em 0;
-    overflow: hidden;
+  .middle {
+    width: 45%;
+    padding-top: 1em;
+    padding-bottom: 0.4em;
 
-    .personItemName {
-      flex: 1;
-      .overflow;
+    .name {
+      font-size: 16px;
+      padding-bottom: 8px;
     }
 
-    .personItemPhone {
-      flex: 3;
-      .overflow;
+    .item {
+      padding-bottom: 8px;
+
+      .label {
+        color: #00ffff;
+        font-size: 14px;
+      }
+
+      .value {
+        font-size: 14px;
+      }
     }
   }
 
-  .personLabel {
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
-    padding: 0.25em;
-    min-width: 5em;
-    white-space: nowrap;
-    text-align: center;
-    color: #00ffff;
-    border: 1px solid #00ffff;
-    border-radius: 4px;
-    box-sizing: content-box;
+  .right {
+    width: 25%;
+    padding-top: 1.5em;
+    font-size: 14px;
+
+    .sign {
+      width: 80%;
+      height: 70%;
+    }
+
+    .signName {
+      border: 1px solid #0ff;
+      padding: 3px 10px;
+      color: #0ff;
+    }
+
+    .iconBtn {
+      width: 80%;
+      height: 20%;
+      display: flex;
+    }
+
+    .icon {
+      width: 100%;
+      height: 100%;
+    }
   }
 }
+// .personList {
+//   position: relative;
+//   margin-bottom: 1em;
+//   padding-left: 1.5em;
+//   border-left: 6px solid #fff;
+//   background-color: rgb(4, 64, 125);
+
+//   &:last-child {
+//     margin-bottom: 0;
+//   }
+
+//   .personItem {
+//     display: flex;
+//     padding: 0.75em 0;
+//     overflow: hidden;
+
+//     .personItemName {
+//       flex: 1;
+//       .overflow;
+//     }
+
+//     .personItemPhone {
+//       flex: 3;
+//       .overflow;
+//     }
+//   }
+
+//   .personLabel {
+//     position: absolute;
+//     top: 0.5em;
+//     right: 0.5em;
+//     padding: 0.25em;
+//     min-width: 5em;
+//     white-space: nowrap;
+//     text-align: center;
+//     color: #00ffff;
+//     border: 1px solid #00ffff;
+//     border-radius: 4px;
+//     box-sizing: content-box;
+//   }
+// }

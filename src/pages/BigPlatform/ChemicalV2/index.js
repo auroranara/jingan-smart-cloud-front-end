@@ -18,6 +18,7 @@ import { VideoList, MonitorList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
+import Lightbox from 'react-images';
 
 import {
   Risk,
@@ -106,6 +107,9 @@ export default class Chemical extends PureComponent {
       monitorData: {},
       msgVisible: false,
       riskPointDetailDrawerVisible: false,
+      imageFiles: [],
+      currentImage: 0,
+      modalImgVisible: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
   }
@@ -329,6 +333,48 @@ export default class Chemical extends PureComponent {
     dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
   };
 
+  handleClickImgShow = (i, imageFiles) => {
+    console.log('imageFiles', imageFiles);
+    const newFiles = imageFiles.map(item => {
+      return {
+        src: item,
+      };
+    });
+    console.log('newFiles', newFiles);
+    this.setState({
+      modalImgVisible: true,
+      currentImage: i,
+      imageFiles: newFiles,
+    });
+  };
+
+  handleModalImgClose = () => {
+    this.setState({
+      modalImgVisible: false,
+    });
+  };
+
+  // 附件图片的点击翻入上一页
+  gotoPrevious = () => {
+    let { currentImage } = this.state;
+    if (currentImage <= 0) return;
+    this.setState({ currentImage: --currentImage });
+  };
+
+  // 附件图片的点击翻入下一页
+  gotoNext = () => {
+    let { currentImage, imageFiles } = this.state;
+    if (currentImage >= imageFiles.length - 1) return;
+    this.setState({ currentImage: ++currentImage });
+  };
+
+  // 附件图片点击下方缩略图
+  handleClickThumbnail = i => {
+    const { currentImage } = this.state;
+    if (currentImage === i) return;
+    this.setState({ currentImage: i });
+  };
+
   /**
    * 渲染
    */
@@ -354,6 +400,9 @@ export default class Chemical extends PureComponent {
       monitorData,
       msgVisible,
       riskPointDetailDrawerVisible,
+      imageFiles,
+      currentImage,
+      modalImgVisible,
     } = this.state;
     console.log('points', points);
 
@@ -465,6 +514,7 @@ export default class Chemical extends PureComponent {
         {/* 安全人员抽屉 */}
         <SafetyOfficerDrawer
           visible={safetyOfficerDrawerVisible}
+          handleClickImgShow={this.handleClickImgShow}
           onClose={() => {
             this.setDrawerVisible('safetyOfficer');
           }}
@@ -519,6 +569,18 @@ export default class Chemical extends PureComponent {
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
+
+        <Lightbox
+          images={imageFiles}
+          isOpen={modalImgVisible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleModalImgClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
+        />
       </BigPlatformLayout>
     );
   }
