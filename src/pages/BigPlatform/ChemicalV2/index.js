@@ -19,6 +19,7 @@ import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
 import Lightbox from 'react-images';
+import TankMonitorDrawer from './sections/TankMonitorDrawer';
 
 import {
   DangerSourceInfoDrawer,
@@ -125,7 +126,8 @@ export default class Chemical extends PureComponent {
       currentImage: 0,
       modalImgVisible: false,
       gasVisible: false,
-      poisonVisible: true,
+      poisonVisible: false,
+      tankMonitorDrawerVisible: true,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
   }
@@ -439,6 +441,7 @@ export default class Chemical extends PureComponent {
       modalImgVisible,
       gasVisible,
       poisonVisible,
+      tankMonitorDrawerVisible,
     } = this.state;
     console.log('points', points);
 
@@ -660,14 +663,16 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
         />
 
-        <GasDrawer
-          visible={gasVisible}
-          handleClose={this.handleGasClose}
-        />
+        <GasDrawer visible={gasVisible} handleClose={this.handleGasClose} />
 
-        <PoisonDrawer
-          visible={poisonVisible}
-          handleClose={this.handlePoisonClose}
+        <PoisonDrawer visible={poisonVisible} handleClose={this.handlePoisonClose} />
+
+        <TankMonitorDrawer
+          id={'111'}
+          visible={tankMonitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('tankMonitor');
+          }}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
