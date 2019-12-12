@@ -43,7 +43,7 @@ const DATA_TYPE_MAP = {
   'sewm': '/operation-safety/special-equipment-operators/view',
   'gwgy': '/major-hazard-info/high-risk-process/detail',
   'se': '/facility-management/special-equipment/detail',
-  'sczz': '',
+  'sczz': '/major-hazard-info/high-risk-process/detail',
   'tankArea': '/major-hazard-info/storage-area-management/detail',
   'tank': '/major-hazard-info/storage-management/view',
   'wareHouse': '/major-hazard-info/storehouse/detail',
