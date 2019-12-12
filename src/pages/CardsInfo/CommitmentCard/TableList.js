@@ -88,7 +88,7 @@ export default class TableList extends PureComponent {
       <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null} >
         <div className={styles.container}>
           <h2 className={styles.title}>{name}</h2>
-          <pre>{content}</pre>
+          <div className={styles.content}>{content}</div>
           <p className={styles.man}>{`承诺人：${acceptor}`}</p>
           <p className={styles.time}>{moment(time).format('YYYY-MM-DD')}</p>
         </div>
