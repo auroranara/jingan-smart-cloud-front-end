@@ -18,6 +18,7 @@ import { VideoList, MonitorList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
+import Lightbox from 'react-images';
 
 import {
   Risk,
@@ -106,6 +107,9 @@ export default class Chemical extends PureComponent {
       monitorData: {},
       msgVisible: false,
       riskPointDetailDrawerVisible: false,
+      imageFiles: [],
+      currentImage: 0,
+      modalImgVisible: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
   }
@@ -329,6 +333,43 @@ export default class Chemical extends PureComponent {
     dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
   };
 
+  handleClickImgShow = images => {
+    console.log('imageFiles', images);
+
+    this.setState({
+      modalImgVisible: true,
+      currentImage: 0,
+      imageFiles: images,
+    });
+  };
+
+  handleModalImgClose = () => {
+    this.setState({
+      modalImgVisible: false,
+    });
+  };
+
+  // 上一页
+  gotoPrevious = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
+  };
+
+  // 下一页
+  gotoNext = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
+  };
+
+  // 图片点击下方缩略图
+  handleClickThumbnail = currentImage => {
+    this.setState({
+      currentImage,
+    });
+  };
+
   /**
    * 渲染
    */
@@ -354,6 +395,9 @@ export default class Chemical extends PureComponent {
       monitorData,
       msgVisible,
       riskPointDetailDrawerVisible,
+      imageFiles,
+      currentImage,
+      modalImgVisible,
     } = this.state;
     console.log('points', points);
 
@@ -465,6 +509,7 @@ export default class Chemical extends PureComponent {
         {/* 安全人员抽屉 */}
         <SafetyOfficerDrawer
           visible={safetyOfficerDrawerVisible}
+          handleClickImgShow={this.handleClickImgShow}
           onClose={() => {
             this.setDrawerVisible('safetyOfficer');
           }}
@@ -519,6 +564,18 @@ export default class Chemical extends PureComponent {
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
+
+        <Lightbox
+          images={imageFiles.map(src => ({ src }))}
+          isOpen={modalImgVisible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleModalImgClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
+        />
       </BigPlatformLayout>
     );
   }

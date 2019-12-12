@@ -1,3 +1,16 @@
+import nbEdu from './imgs/niubinEdu.png';
+import nbEngin from './imgs/niubinEngin.png';
+import wangybEdu from './imgs/wangybEdu.png';
+import wangybEngin from './imgs/wangybEngin.png';
+import zhgEdu from './imgs/zhgEdu.png';
+import zhgEngin from './imgs/zhgEngin.png';
+import zhqEdu from './imgs/zhqEdu.png';
+import zhqEngin from './imgs/zhqEngin.png';
+import zskEdu from './imgs/zskEdu.png';
+import zskEngin from './imgs/zskEngin.png';
+import zblEdu from './imgs/zblEdu.png';
+import zblEngin from './imgs/zblEngin.png';
+
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
   {
@@ -21,7 +34,108 @@ export const VideoList = [
     status: 1,
   },
 ];
-export const KeyList = ['企业管理员', '企业安全员'];
+// export const KeyList = ['企业管理员', '企业安全员'];
+export const KeyList = [
+  {
+    key: '1',
+    label: '企业管理员',
+    value: '2',
+  },
+  {
+    key: '2',
+    label: '安全员',
+    value: '4',
+  },
+  {
+    key: '3',
+    label: '本科',
+    value: '1',
+  },
+  {
+    key: '4',
+    label: '专科',
+    value: '5',
+  },
+  {
+    key: '5',
+    label: '注册工程师证',
+    value: '6',
+  },
+];
+export const PersonList = [
+  {
+    id: 1,
+    name: '牛斌',
+    sex: '男',
+    age: '57',
+    phone: '15857623543',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全管理员',
+    eduPic: nbEdu,
+    enginPic: nbEngin,
+  },
+  {
+    id: 2,
+    name: '王银冰',
+    sex: '男',
+    age: '32',
+    phone: '13925867749',
+    education: '本科',
+    work: '化工工艺',
+    sign: '安全管理员',
+    eduPic: wangybEdu,
+    enginPic: wangybEngin,
+  },
+  {
+    id: 3,
+    name: '张胡根',
+    sex: '男',
+    age: '58',
+    phone: '18083412691',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    eduPic: zhgEdu,
+    enginPic: zhgEngin,
+  },
+  {
+    id: 4,
+    name: '张会强',
+    sex: '男',
+    age: '40',
+    phone: '13952496637',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    eduPic: zhqEdu,
+    enginPic: zhqEngin,
+  },
+  {
+    id: 5,
+    name: '张世凯',
+    sex: '男',
+    age: '50',
+    phone: '13677342963',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    eduPic: zskEdu,
+    enginPic: zskEngin,
+  },
+  {
+    id: 6,
+    name: '赵炳良',
+    sex: '男',
+    age: '41',
+    phone: '18153654961',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    eduPic: zblEdu,
+    enginPic: zblEngin,
+  },
+];
 export const ValueList = [
   [
     {
