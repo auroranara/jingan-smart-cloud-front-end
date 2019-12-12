@@ -82,7 +82,7 @@ const certificateState = {
 };
 
 const paststatusVal = {
-  0: ' ',
+  0: '未到期',
   1: '即将到期',
   2: '已过期',
 };
@@ -105,9 +105,9 @@ export default class DangerChemicalList extends PureComponent {
   getColorVal = status => {
     switch (+status) {
       case 0:
-        return '#1890ff';
+        return 'rgba(0, 0, 0, 0.65)';
       case 1:
-        return '#f5222d';
+        return 'rgb(250, 173, 20)';
       case 2:
         return '#f5222d';
       default:
@@ -445,7 +445,7 @@ export default class DangerChemicalList extends PureComponent {
         width: 120,
         align: 'center',
         render: pastStatus => (
-          <span style={{ color: this.getColorVal(pastStatus), paddingLeft: 10 }}>
+          <span style={{ color: this.getColorVal(pastStatus) }}>
             {paststatusVal[pastStatus]}
           </span>
         ),

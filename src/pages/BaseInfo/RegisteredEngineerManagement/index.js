@@ -65,7 +65,7 @@ const categoryList = {
 };
 
 const paststatusVal = {
-  0: ' ',
+  0: '未到期',
   1: '即将到期',
   2: '已过期',
 };
@@ -189,9 +189,9 @@ export default class RegSafetyEngList extends PureComponent {
   getColorVal = status => {
     switch (+status) {
       case 0:
-        return '#1890ff';
+        return 'rgba(0, 0, 0, 0.65)';
       case 1:
-        return '#f5222d';
+        return 'rgb(250, 173, 20)';
       case 2:
         return '#f5222d';
       default:
@@ -364,7 +364,11 @@ export default class RegSafetyEngList extends PureComponent {
         dataIndex: 'status',
         align: 'center',
         width: 120,
-        render: status => <span style={{ color: this.getColorVal(status) }}> {paststatusVal[status]}</span>,
+        render: (status, { endDate }) => (
+          <span style={{ color: this.getColorVal(status) }}>
+            {endDate ? paststatusVal[status] : '-'}
+          </span>
+        ),
       },
       {
         title: '证照附件',

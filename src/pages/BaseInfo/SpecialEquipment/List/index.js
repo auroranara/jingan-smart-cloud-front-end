@@ -20,8 +20,8 @@ import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-
 import styles from './index.less';
+import { getColorVal, paststatusVal } from '../utils';
 
 const {
   baseInfo: {
@@ -453,13 +453,12 @@ export default class SpecialEquipmentList extends PureComponent {
         key: 'paststatus',
         align: 'center',
         width: 120,
-        render: (val, row) => {
-          const { endDate } = row;
-          return endDate ? (
-              <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
-                {val && ['未到期', '即将到期', '已过期'][+val]}
-              </div>
-          ) : '-';
+        render: (status, { endDate }) => {
+          return (
+            <span style={{ color: getColorVal(status) }}>
+              {endDate ? paststatusVal[status] : '-'}
+            </span>
+          );
         },
       },
       {
