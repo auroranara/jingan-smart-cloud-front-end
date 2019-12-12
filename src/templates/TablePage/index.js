@@ -6,13 +6,14 @@ import { getPageSize, setPageSize } from '@/utils/utils';
 import classNames from 'classnames';
 import router from 'umi/router';
 import { connect } from 'dva';
+import { kebabCase } from 'lodash';
 import locales from '@/locales/zh-CN';
 import styles from './index.less';
 
 /**
  * 表格页
  */
-@connect((state, { route: { name, code } }) => {
+@connect((state, { route: { name, code }, otherOperation }) => {
   const { breadcrumbList } = code.split('.').slice(0, -1).reduce((result, item) => {
     const key = `${result.key}.${item}`;
     const title = locales[key];
@@ -58,8 +59,14 @@ import styles from './index.less';
     hasDetailAuthority: permissionCodes.includes(code.replace(name, 'detail')),
     hasDeleteAuthority: permissionCodes.includes(code.replace(name, 'delete')),
     hasExportAuthority: permissionCodes.includes(code.replace(name, 'export')),
+    ...(otherOperation && otherOperation.reduce((result, { code: codeName }) => {
+      return {
+        ...result,
+        [`has${codeName[0].toUpperCase()}${codeName.slice(1)}Authority`]: permissionCodes.includes(code.replace(name, codeName)),
+      };
+    }, {})),
   };
-}, (dispatch, { route: { name, code, path }, error=true }) => {
+}, (dispatch, { route: { name, code, path }, error=true, otherOperation }) => {
   const namespace = code.replace(/.*\.(.*)\..*/, '$1');
   return {
     getList(payload, callback) {
@@ -109,6 +116,14 @@ import styles from './index.less';
     goToDetail(id) {
       router.push(path.replace(new RegExp(`${name}.*`), `detail/${id}`));
     },
+    ...(otherOperation && otherOperation.reduce((result, { code: codeName, onClick }) => {
+      return onClick ? result : {
+        ...result,
+        [`goTo${codeName[0].toUpperCase()}${codeName.slice(1)}`](id) {
+          router.push(path.replace(new RegExp(`${name}.*`), `${kebabCase(codeName)}${id ? `/${id}` : ''}`));
+        },
+      };
+    }, {})),
   };
 })
 export default class TablePage extends Component {
@@ -316,6 +331,7 @@ export default class TablePage extends Component {
       columns,
       loading=false,
       unitId,
+      otherOperation,
     } = this.props;
     const { selectedRowKeys } = this.state;
 
@@ -325,6 +341,20 @@ export default class TablePage extends Component {
       renderDetailButton: this.renderDetailButton,
       renderEditButton: this.renderEditButton,
       renderDeleteButton: this.renderDeleteButton,
+      ...(otherOperation && otherOperation.reduce((result, { code, name, onClick }) => {
+        const upperCode = `${code[0].toUpperCase()}${code.slice(1)}`;
+        const hasAuthority = this.props[`has${upperCode}Authority`];
+        return {
+          ...result,
+          [`render${upperCode}Button`]: (id) => {
+            return (
+              <span className={classNames(styles.operation, !hasAuthority && styles.disabled)} onClick={hasAuthority ? (
+                onClick ? () => onClick(id) : () => this.props[`goTo${upperCode}`](id)
+              ) : undefined}>{name}</span>
+            );
+          },
+        };
+      }, {})),
     }) : columns;
 
     return (
