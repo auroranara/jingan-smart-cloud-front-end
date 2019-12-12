@@ -114,7 +114,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
                         className={styles.icon}
                         style={{
                           background: `url(${EduIcon}) no-repeat center bottom`,
-                          backgroundSize: '48% 95%',
+                          backgroundSize: '38% 95%',
                           cursor: 'pointer',
                         }}
                         onClick={() => handleClickImgShow([eduPic])}
@@ -125,7 +125,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
                         className={styles.icon}
                         style={{
                           background: `url(${RegisterEnginIcon}) no-repeat center bottom`,
-                          backgroundSize: '48%  95%',
+                          backgroundSize: '38%  95%',
                           cursor: 'pointer',
                         }}
                         onClick={() => handleClickImgShow([enginPic])}

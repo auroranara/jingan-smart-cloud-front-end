@@ -1243,6 +1243,7 @@ module.exports = env => {
               name: 'fourColorImage', // 风险四色图管理
               code: 'riskControl.fourColorImage',
               path: '/risk-control/four-color-image',
+              developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -1296,6 +1297,7 @@ module.exports = env => {
               name: 'changeWarning', // 变更预警管理
               code: 'riskControl.changeWarning',
               path: '/risk-control/change-warning',
+              developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
