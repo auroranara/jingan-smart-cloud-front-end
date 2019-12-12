@@ -22,6 +22,7 @@ import {
   PUBLISH_CODE,
   SECRET_CODES,
   STATUSES,
+  DATE_STATUS,
 } from './config';
 import styles from './index.less';
 
@@ -281,6 +282,15 @@ export default class EmergencyPlanList extends Component {
         ),
       },
       {
+        id: 'paststatus',
+        label: '到期状态',
+        render: () => (
+          <Select placeholder="请选择到期状态" allowClear>
+            {DATE_STATUS.map((v, i) => <Option key={i}>{v}</Option>)}
+          </Select>
+        ),
+      },
+      {
         id: 'isRecord',
         label: '是否已备案',
         render: () => (
@@ -381,7 +391,13 @@ export default class EmergencyPlanList extends Component {
       {
         title: '有效期至',
         dataIndex: 'endDate',
-        render: endDate => endDate && moment(endDate).format('YYYY.M.D'),
+        render: endDate => endDate ? moment(endDate).format('YYYY.M.D') : '-',
+        align: 'center',
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        render: s => +s ? <span style={{ color: '#F00' }}>{DATE_STATUS[s]}</span> : s === null ? '-' : DATE_STATUS[s],
         align: 'center',
       },
       {
@@ -416,7 +432,7 @@ export default class EmergencyPlanList extends Component {
             </div>
           </div>
         ) : '未备案',
-        align: 'center',
+        // align: 'center',
       },
       {
         title: '预案附件',
@@ -430,7 +446,7 @@ export default class EmergencyPlanList extends Component {
             ))}
           </Fragment>
         ),
-        align: 'center',
+        // align: 'center',
       },
       {
         title: '状态',

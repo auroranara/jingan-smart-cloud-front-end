@@ -483,6 +483,7 @@ export default class SpecialEquipment extends PureComponent {
   renderForm = (isDetail) => {
     const {
       dispatch,
+      match: { params: { id } },
       form,
       form: { getFieldDecorator, getFieldsValue },
       personnelPosition: {
@@ -824,7 +825,11 @@ export default class SpecialEquipment extends PureComponent {
           )}
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
-          {isDetail ? null : (
+          {isDetail ? (
+            <Button type="primary" style={{ marginLeft: '10px' }} onClick={e => router.push(`/facility-management/special-equipment/edit/${id}`)}>
+              编辑
+            </Button>
+          ) : (
             <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
               提交
             </Button>

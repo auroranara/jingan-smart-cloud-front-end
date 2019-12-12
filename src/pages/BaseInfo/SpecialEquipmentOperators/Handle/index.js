@@ -45,6 +45,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const getRootChild = () => document.querySelector('#root>div');
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+const BTN_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
 @connect(({ baseInfo, sensor, loading }) => ({
@@ -537,12 +538,12 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         {this.renderForm()}
-        {isDetail ? null : (
-          <Button
-            type="primary"
-            style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-            onClick={this.handleSubmit}
-          >
+        {isDetail ? (
+          <Button type="primary" style={BTN_STYLE} onClick={e => router.push(`/operation-safety/special-equipment-operators/edit/${id}`)}>
+            编辑
+          </Button>
+        ) : (
+          <Button type="primary" style={BTN_STYLE} onClick={this.handleSubmit}>
             提交
           </Button>
         )}

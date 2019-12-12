@@ -1,4 +1,3 @@
-import Link from 'umi/link';
 import moment from 'moment';
 import { Input, Select, DatePicker } from 'antd';
 
@@ -38,7 +37,7 @@ function getValueByKey(k, list) {
 }
 
 const DATA_TYPE_MAP = {
-  'dept': '',
+  'dept': '/base-info/company/department/list',
   'safeEng': '/base-info/registered-engineer-management/view',
   'secm': '/operation-safety/special-operation-permit/view',
   'sewm': '/operation-safety/special-equipment-operators/view',
@@ -51,10 +50,13 @@ const DATA_TYPE_MAP = {
   'wareHouseArea': '/major-hazard-info/reservoir-region-management/view',
   'gasHolder': '/major-hazard-info/gasometer/detail',
   'area': '',
-  'point': '',
+  'point': '/risk-control/risk-point-manage/risk-point-edit',
 };
 
-function getRouter(id, type) {
+function getRouter(dataId, type, companyId) {
+  let id = dataId;
+  if (type === 'dept')
+    id = companyId;
   return `${DATA_TYPE_MAP[type]}/${id}`;
 }
 
@@ -132,7 +134,7 @@ export const COLUMNS = [
     title: '操作人',
     dataIndex: 'userName',
     key: 'userName',
-    width: 100,
+    width: 120,
     align: 'center',
   },
   {
@@ -142,10 +144,10 @@ export const COLUMNS = [
     width: 80,
     align: 'center',
     fixed: 'right',
-    render(id, record) {
-      return record.changeType === 'delete'
+    render(dataId, { changeType, dataType, companyId }) {
+      return changeType === 'delete' || dataType === 'area'
         ? <span style={{ cursor: 'not-allowed' }}>查看</span>
-        : <a href={`${window.publicPath}#${getRouter(id, record.dataType)}`} target="_blank" rel="noopener noreferrer">查看</a>;
+        : <a href={`${window.publicPath}#${getRouter(dataId, dataType, companyId)}`} target="_blank" rel="noopener noreferrer">查看</a>;
     },
   },
 ];

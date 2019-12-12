@@ -46,6 +46,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const getRootChild = () => document.querySelector('#root>div');
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+const BUTTON_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
 @connect(({ baseInfo, sensor, loading }) => ({
@@ -520,9 +521,17 @@ export default class specialOperationPermitHandle extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
-        {isDetail ? null : (
+        {isDetail ? (
           <Button
-            style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+            style={BUTTON_STYLE}
+            type="primary"
+            onClick={e => router.push(`/operation-safety/special-operation-permit/edit/${id}`)}
+          >
+            编辑
+          </Button>
+        ) : (
+          <Button
+            style={BUTTON_STYLE}
             type="primary"
             onClick={this.handleSubmit}
           >

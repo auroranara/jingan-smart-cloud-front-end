@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import router from 'umi/router';
 import { routerRedux } from 'dva/router';
 import { Form, Input, Button, Card, Icon, Popover, Select, message } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
+import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import styles from './ReservoirRegion.less';
 
 const { Option } = Select;
@@ -627,14 +628,20 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 渲染底部工具栏
-  renderFooterToolbar() {
+  renderFooterToolbar(isDetail, id) {
     const { submitting } = this.state;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" size="large" loading={submitting} onClick={this.handleClickValidate}>
-          提交
-        </Button>
+        {isDetail ? (
+          <Button type="primary" size="large" onClick={e => router.push(`/major-hazard-info/reservoir-region-management/edit/${id}`)}>
+            编辑
+          </Button>
+        ) : (
+          <Button type="primary" size="large" loading={submitting} onClick={this.handleClickValidate}>
+            提交
+          </Button>
+        )}
         <Button type="primary" size="large" onClick={this.goBack}>
           返回
         </Button>
@@ -679,7 +686,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
-        {isDetail ? null : this.renderFooterToolbar()}
+        {this.renderFooterToolbar(isDetail, id)}
         {this.renderModal()}
         {/* {this.renderDangerModal()} */}
       </PageHeaderLayout>

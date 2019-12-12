@@ -1383,13 +1383,21 @@ export default class StorageEdit extends PureComponent {
   /**
   * 渲染底部工具栏
   **/
-  renderFooterToolbar () {
+  renderFooterToolbar(isDetail) {
+    const { match: { params: { id } } } = this.props;
+
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" size="large" onClick={this.handleSubmit}>
+        {isDetail ? (
+          <Button type="primary" size="large" onClick={e => router.push(`/major-hazard-info/storage-management/edit/${id}`)}>
+            编辑
+          </Button>
+        ) : (
+          <Button type="primary" size="large" onClick={this.handleSubmit}>
           提交
         </Button>
+        )}
         <Button type="primary" size="large" onClick={this.goBack}>
           返回
         </Button>
@@ -1468,7 +1476,7 @@ export default class StorageEdit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
-        {isDetail ? null : this.renderFooterToolbar()}
+        {this.renderFooterToolbar(isDetail)}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"
