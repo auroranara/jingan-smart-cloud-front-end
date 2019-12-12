@@ -129,14 +129,22 @@ export default class VideoMonitorEdit extends PureComponent {
           companyName,
           plugFlowEquipmentCode,
           plugFlowEquipment,
+          inheritNvr, // 是否集成NVR
+          nvr, // NVR编号
         } = {}) => {
-          setFieldsValue({ buildingFloor: { buildingId, floorId } });
+          setFieldsValue({ buildingFloor: { buildingId, floorId }, inheritNvr });
           this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
           this.setState({
             company: { id: companyId, name: companyName },
             gatewayEquipment: { id: plugFlowEquipment, code: plugFlowEquipmentCode },
           });
           this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+          if (!isNaN(inheritNvr)) {
+            setTimeout(() => {
+              +inheritNvr === 1 && setFieldsValue({ plugFlowEquipment });
+              +inheritNvr === 0 && setFieldsValue({ nvr });
+            }, 0);
+          }
         },
       });
     } else {
@@ -881,8 +889,8 @@ export default class VideoMonitorEdit extends PureComponent {
           {/* 设备关系 */}
           <FormItem {...formItemLayout} label={fieldLabels.inheritNvr}>
             {getFieldDecorator('inheritNvr', {
-              initialValue: id ? detail.inheritNvr : 1,
-              rules: [{ required: true, message: '请选择是否集成NVR' }],
+              initialValue: id ? detail.inheritNvr : undefined,
+              // rules: [{ required: true, message: '请选择是否集成NVR' }],
             })(
               <Radio.Group>
                 <Radio value={1}>是</Radio>
@@ -894,8 +902,8 @@ export default class VideoMonitorEdit extends PureComponent {
           {+inheritNvr === 1 && (
             <FormItem {...formItemLayout} label={fieldLabels.plugFlowEquipment}>
               {getFieldDecorator('plugFlowEquipment', {
-                initialValue: id ? detail.plugFlowEquipment : undefined,
-                rules: [{ required: true, message: '请选择推流主机编号' }],
+                // initialValue: id ? detail.plugFlowEquipment : undefined,
+                // rules: [{ required: true, message: '请选择推流主机编号' }],
               })(
                 <Fragment>
                   <Input
@@ -915,8 +923,8 @@ export default class VideoMonitorEdit extends PureComponent {
           {+inheritNvr === 0 && (
             <FormItem {...formItemLayout} label={fieldLabels.nvr}>
               {getFieldDecorator('nvr', {
-                initialValue: id ? detail.nvr : undefined,
-                rules: [{ required: true, message: '请选择NVR编号' }],
+                // initialValue: id ? detail.nvr : undefined,
+                // rules: [{ required: true, message: '请选择NVR编号' }],
               })(
                 <Select placeholder="请选择" {...itemStyles}>
                   {equipmentList.map(({ id, code }) => (
@@ -932,7 +940,7 @@ export default class VideoMonitorEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.connectType}>
             {getFieldDecorator('connectType', {
               initialValue: id ? detail.connectType : undefined,
-              rules: [{ required: true, message: '请选择连接方式' }],
+              // rules: [{ required: true, message: '请选择连接方式' }],
             })(
               <Select placeholder="请选择" {...itemStyles}>
                 {connectTypeDict.map(({ value, desc }) => (
