@@ -21,10 +21,10 @@ import iconAlarm from '@/assets/icon-alarm.png';
 import Lightbox from 'react-images';
 
 import {
-  Risk,
+  DangerSourceInfoDrawer,
   KeyPoints,
   SafetyOfficerDrawer,
-  Emergency,
+  DangerSourceDrawer,
   Remind,
   Tips,
   CompanyInfo,
@@ -35,6 +35,10 @@ import {
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
   MonitorDetailDrawer,
+  DangerSourceLvlDrawer,
+  ChemicalDrawer,
+  ChemicalDetailDrawer,
+  TechnologyDrawer,
   Messages,
 } from './sections/Components';
 
@@ -106,6 +110,12 @@ export default class Chemical extends PureComponent {
       monitorDetailDrawerVisible: false,
       monitorData: {},
       msgVisible: false,
+      dangerSourceDrawerVisible: false,
+      dangerSourceInfoDrawerVisible: false,
+      dangerSourceLvlDrawerVisible: false,
+      chemicalDrawerVisible: false,
+      chemicalDetailDrawerVisible: false,
+      technologyDrawerVisible: false,
       riskPointDetailDrawerVisible: false,
       imageFiles: [],
       currentImage: 0,
@@ -394,7 +404,13 @@ export default class Chemical extends PureComponent {
       monitorDetailDrawerVisible,
       monitorData,
       msgVisible,
+      dangerSourceDrawerVisible,
+      dangerSourceInfoDrawerVisible,
+      dangerSourceLvlDrawerVisible,
+      chemicalDrawerVisible,
+      chemicalDetailDrawerVisible,
       riskPointDetailDrawerVisible,
+      technologyDrawerVisible,
       imageFiles,
       currentImage,
       modalImgVisible,
@@ -561,6 +577,54 @@ export default class Chemical extends PureComponent {
           getRiskPointHiddenDangerList={this.getRiskPointHiddenDangerList}
           getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
           getRiskPointInspectionCount={this.getRiskPointInspectionCount}
+        />
+
+        <DangerSourceDrawer
+          visible={dangerSourceDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('dangerSource');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <DangerSourceInfoDrawer
+          visible={dangerSourceInfoDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('dangerSourceInfo');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <DangerSourceLvlDrawer
+          visible={dangerSourceLvlDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('dangerSourceLvl');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <ChemicalDrawer
+          visible={chemicalDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('chemical');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <ChemicalDetailDrawer
+          visible={chemicalDetailDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('chemicalDetail');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <TechnologyDrawer
+          visible={technologyDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('technology');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
