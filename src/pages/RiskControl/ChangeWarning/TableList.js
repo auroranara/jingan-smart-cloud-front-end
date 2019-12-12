@@ -32,7 +32,7 @@ export default class TableList extends PureComponent {
     if (companyId)
       vals.companyId = companyId.key;
     if (range)
-      [vals.startDate, vals.endDate] = range.map(t => +t);
+      [vals.startDate, vals.endDate] = range.map(m => +m);
 
     dispatch({
       type: 'changeWarning/fetchWarningList',

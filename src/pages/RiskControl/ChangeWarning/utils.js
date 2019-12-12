@@ -73,7 +73,7 @@ export const SEARCH_FIELDS = [
     render: () => <CompanySelect placeholder="请输入单位名称" allowClear />,
   },
   {
-    id: 'changeType',
+    id: 'dataType',
     label: '变更对象',
     render: () => (
       <Select placeholder="请选择变更对象" allowClear>
@@ -90,7 +90,7 @@ export const SEARCH_FIELDS = [
   {
     id: 'range',
     label: '操作时间',
-    render: () => <RangePicker allowClear />,
+    render: () => <RangePicker showTime={{ format: 'HH:mm:ss' }} allowClear />,
   },
 ];
 
