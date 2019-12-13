@@ -200,7 +200,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         },
         padding: 0,
       },
-      color: ['#1890ff'],
+      color: ['#720EBC'],
       tooltip : {
         trigger: 'axis',
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
@@ -267,7 +267,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
                 {
                   yAxis: min,
                   itemStyle: {
-                    color: '#ffb6b2',
+                    color: '#F5868E',
                   },
                 },
                 {
@@ -278,7 +278,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
                 {
                   yAxis: isNumber(smallLower) ? smallLower : min,
                   itemStyle: {
-                    color: '#ffdfb2',
+                    color: '#E8B176',
                   },
                 },
                 {
@@ -289,7 +289,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
                 {
                   yAxis: Math.max(isNumber(normalLower) ? normalLower : min, isNumber(smallLower) ? smallLower : min, min),
                   itemStyle: {
-                    color: '#ddffcc',
+                    color: '#8FB4F2',
                   },
                 },
                 {
@@ -300,7 +300,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
                 {
                   yAxis: normalUpper,
                   itemStyle: {
-                    color: '#ffdfb2',
+                    color: '#E8B176',
                   },
                 },
                 {
@@ -311,7 +311,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
                 {
                   yAxis: largeUpper,
                   itemStyle: {
-                    color: '#ffb6b2',
+                    color: '#F5868E',
                   },
                 },
                 {

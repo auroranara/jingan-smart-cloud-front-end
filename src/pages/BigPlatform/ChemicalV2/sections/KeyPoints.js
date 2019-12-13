@@ -94,10 +94,12 @@ export default class KeyPoints extends PureComponent {
   };
 
   handleClickMonitor = type => {
-    const { setDrawerVisible } = this.props;
+    const { setDrawerVisible, handleGasOpen, handlePoisonOpen } = this.props;
     if (type || type === 0) {
-      if (type === 2) {
-        setDrawerVisible('storage');
+      if (type === 2 || type === 6 || type === 7) {
+        type === 2 && setDrawerVisible('storage');
+        type === 6 && handleGasOpen();
+        type === 7 && handlePoisonOpen();
         return;
       }
       setDrawerVisible('monitor', { monitorType: type });

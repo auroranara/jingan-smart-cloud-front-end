@@ -478,7 +478,11 @@ export default class Chemical extends PureComponent {
               </div>
 
               <div className={styles.leftBottom}>
-                <KeyPoints setDrawerVisible={this.setDrawerVisible} />
+                <KeyPoints
+                  setDrawerVisible={this.setDrawerVisible}
+                  handleGasOpen={this.handleGasOpen}
+                  handlePoisonOpen={this.handlePoisonOpen}
+                />
               </div>
             </Col>
 
@@ -687,7 +691,7 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('tankMonitor');
           }}
-          handleShowVideo={this.handleShowVideo}
+          onVideoClick={this.handleShowVideo}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

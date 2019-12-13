@@ -301,6 +301,7 @@ export default class CurrentHiddenDanger extends PureComponent {
           onClose={onClose}
           width={535}
           destroyOnClose={true}
+          zIndex={1333}
           left={
             <div className={styles.currentHiddenDanger}>
               <div className={styles.chartContainer}>

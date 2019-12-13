@@ -870,6 +870,7 @@ module.exports = env => {
               path: '/major-hazard-info/high-risk-process', // 高危工艺流程
               code: 'majorHazardInfo.highRiskProcess',
               name: 'highRiskProcess',
+              developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -904,9 +905,10 @@ module.exports = env => {
               ],
             },
             {
-              "name": "productionEquipments",
+              "name": "productionEquipments", // 生产装置
               "code": "majorHazardInfo.productionEquipments",
               "path": "/major-hazard-info/production-equipments",
+              developing: true,
               "hideChildrenInMenu": true,
               "routes": [
                 {
@@ -2422,6 +2424,7 @@ module.exports = env => {
               name: 'operationRecord', // 设备设施运维记录
               code: 'facilityManagement.operationRecord',
               path: '/facility-management/operation-record',
+              developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
