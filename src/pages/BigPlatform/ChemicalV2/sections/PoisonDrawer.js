@@ -46,6 +46,7 @@ export default class PoisonDrawer extends PureComponent {
         </div>
         <div className={styles.down}>
           <div className={styles.device1}>
+            <span className={styles.redDot} />
             <p className={styles.lel}>LEL</p>
             <p className={styles.value}>6.2%</p>
           </div>
