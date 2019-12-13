@@ -687,7 +687,7 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('tankMonitor');
           }}
-          handleShowVideo={this.handleShowVideo}
+          onVideoClick={this.handleShowVideo}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

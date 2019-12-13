@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
 import { Row, Col } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
+import Wave from '@/jingan-components/Wave';
 import styles from './StorageDrawer.less';
 import { CardItem } from '../components/Components';
 import storage from '../imgs/storage.png';
@@ -95,7 +96,7 @@ const list = [
   ...item,
   name: `${index + 1}号罐`,
   number: creatNum(index + 1, 4),
-  icon: storage,
+  icon: <Wave frontStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.8)' }} backStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.3)' }} />,
   type: '拱顶式',
 }));
 const fields = [
@@ -186,10 +187,10 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                         }}
                       />
                     )}
-                    <div className={styles.name}>
+                    {/* <div className={styles.name}>
                       {index + 1}
                       号罐
-                    </div>
+                    </div> */}
                   </Fragment>
                 }
                 onClick={() => setDrawerVisible('tankMonitor')}
