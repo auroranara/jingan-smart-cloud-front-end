@@ -71,7 +71,14 @@ export default class KeyPoints extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, setDrawerVisible, handleShowVideo } = this.props;
+    const {
+      visible,
+      onClose,
+      setDrawerVisible,
+      handleShowVideo,
+      handlePoisonOpen,
+      handleGasOpen,
+    } = this.props;
     const { active } = this.state;
 
     return (
@@ -122,10 +129,10 @@ export default class KeyPoints extends PureComponent {
           <div className={styles.title}>
             隐患
             <span className={styles.value}>({2})</span>
-            {/* <div className={styles.extra}>
+            <div className={styles.extra} onClick={() => setDrawerVisible('currentHiddenDanger')}>
               详情
               <span style={{ color: '#0ff' }}>>></span>
-            </div> */}
+            </div>
           </div>
           <div className={styles.content}>
             {hiddenDangerData.map((item, index) => {
@@ -179,7 +186,8 @@ export default class KeyPoints extends PureComponent {
             className={styles.title}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setDrawerVisible('monitor', { monitorType: 6, monitorData: MonitorList[6][0] });
+              // setDrawerVisible('monitor', { monitorType: 6, monitorData: MonitorList[6][0] });
+              handleGasOpen();
             }}
           >
             可燃气体
@@ -194,7 +202,8 @@ export default class KeyPoints extends PureComponent {
             className={styles.title}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setDrawerVisible('monitor', { monitorType: 7, monitorData: MonitorList[7][0] });
+              // setDrawerVisible('monitor', { monitorType: 7, monitorData: MonitorList[7][0] });
+              handlePoisonOpen();
             }}
           >
             有毒气体

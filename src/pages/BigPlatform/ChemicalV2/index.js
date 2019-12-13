@@ -478,7 +478,11 @@ export default class Chemical extends PureComponent {
               </div>
 
               <div className={styles.leftBottom}>
-                <KeyPoints setDrawerVisible={this.setDrawerVisible} />
+                <KeyPoints
+                  setDrawerVisible={this.setDrawerVisible}
+                  handleGasOpen={this.handleGasOpen}
+                  handlePoisonOpen={this.handlePoisonOpen}
+                />
               </div>
             </Col>
 
