@@ -6,7 +6,6 @@ import { KeyList, ValueList, PersonList } from '../utils';
 // 引入样式文件
 import styles from './SafetyOfficerDrawer.less';
 import EduIcon from '../imgs/eduIcon.png';
-import PersonSafety from '../imgs/personSafety.png';
 import RegisterEnginIcon from '../imgs/registerEnginIcon.png';
 
 // const borderColorList = ['#FF4848', '#C6C181', '#00A8FF', '#0967D3'];
@@ -69,13 +68,25 @@ export default class SafetyOfficerDrawer extends PureComponent {
         </Row>
         <div className={styles.container}>
           {personList.map(item => {
-            const { id, name, sex, age, phone, education, work, sign, eduPic, enginPic } = item;
+            const {
+              id,
+              name,
+              sex,
+              age,
+              phone,
+              education,
+              work,
+              sign,
+              personPic,
+              eduPic,
+              enginPic,
+            } = item;
             return (
               <div className={styles.personList} key={id}>
                 <div
                   className={styles.left}
                   style={{
-                    background: `url(${PersonSafety}) no-repeat center center`,
+                    background: `url(${personPic}) no-repeat center center`,
                     backgroundSize: '77% 65% ',
                   }}
                 />

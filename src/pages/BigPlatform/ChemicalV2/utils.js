@@ -10,6 +10,13 @@ import zskEdu from './imgs/zskEdu.png';
 import zskEngin from './imgs/zskEngin.png';
 import zblEdu from './imgs/zblEdu.png';
 import zblEngin from './imgs/zblEngin.png';
+import per1 from './imgs/personSafety.png';
+import per2 from './imgs/perSafeSecond.png';
+import per3 from './imgs/perSafeThird.png';
+import per4 from './imgs/perSafeFourth.png';
+import per5 from './imgs/perSafeFiFth.png';
+import per6 from './imgs/perSafeSixth.png';
+
 
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
@@ -72,6 +79,7 @@ export const PersonList = [
     education: '大专',
     work: '应用化工技术',
     sign: '安全管理员',
+    personPic: per1,
     eduPic: nbEdu,
     enginPic: nbEngin,
   },
@@ -84,6 +92,7 @@ export const PersonList = [
     education: '本科',
     work: '化工工艺',
     sign: '安全管理员',
+    personPic: per2,
     eduPic: wangybEdu,
     enginPic: wangybEngin,
   },
@@ -96,6 +105,7 @@ export const PersonList = [
     education: '大专',
     work: '应用化工技术',
     sign: '安全员',
+    personPic: per3,
     eduPic: zhgEdu,
     enginPic: zhgEngin,
   },
@@ -108,6 +118,7 @@ export const PersonList = [
     education: '大专',
     work: '应用化工技术',
     sign: '安全员',
+    personPic: per4,
     eduPic: zhqEdu,
     enginPic: zhqEngin,
   },
@@ -120,6 +131,7 @@ export const PersonList = [
     education: '大专',
     work: '应用化工技术',
     sign: '安全员',
+    personPic: per5,
     eduPic: zskEdu,
     enginPic: zskEngin,
   },
@@ -132,6 +144,7 @@ export const PersonList = [
     education: '大专',
     work: '应用化工技术',
     sign: '安全员',
+    personPic: per6,
     eduPic: zblEdu,
     enginPic: zblEngin,
   },
