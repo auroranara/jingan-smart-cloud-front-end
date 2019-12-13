@@ -11,6 +11,7 @@ const ICON_STYLE = {
   fontSize: 18,
   color: '#FFF',
   cursor: 'pointer',
+  zIndex: 66,
 };
 const WIDTH = 960;
 
