@@ -46,6 +46,7 @@ export default class GasDrawer extends PureComponent {
         </div>
         <div className={styles.down}>
           <div className={styles.device}>
+            <span className={styles.redDot} />
             <p className={styles.lel}>LEL</p>
             <p className={styles.value}>24%</p>
           </div>
