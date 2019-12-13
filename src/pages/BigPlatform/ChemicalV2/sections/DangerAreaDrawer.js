@@ -18,8 +18,8 @@ const riskData = [
   { label: '蓝色', value: 1, color: '#0967D3' },
 ];
 const hiddenDangerData = [
-  // { label: '已超期', value: 1, color: '#FC1F02' },
-  { label: '待整改', value: 1, color: '#FFE500' },
+  { label: '已超期', value: 1, color: '#FC1F02' },
+  // { label: '待整改', value: 1, color: '#FFE500' },
   { label: '待复查', value: 1, color: '#0967D3' },
 ];
 const riskSourceData = [
