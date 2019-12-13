@@ -453,31 +453,31 @@ export default {
                 },
                 {
                   time: +moment('2019-12-13 08:50:00') + Math.floor(Math.random() * 1200000),
-                  value: Math.floor(Math.random() * 15),
+                  value: 16 + Math.floor(Math.random() * 9),
                 },
                 {
                   time: +moment('2019-12-13 09:20:00') + Math.floor(Math.random() * 1200000),
-                  value: Math.floor(Math.random() * 15),
+                  value: 16 + Math.floor(Math.random() * 9),
                 },
                 {
                   time: +moment('2019-12-13 09:50:00') + Math.floor(Math.random() * 1200000),
-                  value: Math.floor(Math.random() * 15),
+                  value: 16 + Math.floor(Math.random() * 9),
                 },
                 {
                   time: +moment('2019-12-13 10:20:00') + Math.floor(Math.random() * 1200000),
-                  value: Math.floor(Math.random() * 15),
+                  value: 16 + Math.floor(Math.random() * 9),
                 },
                 {
                   time: +moment('2019-12-13 10:50:00') + Math.floor(Math.random() * 1200000),
-                  value: Math.floor(Math.random() * 15),
+                  value: 16 + Math.floor(Math.random() * 9),
                 },
                 {
                   time: +moment('2019-12-13 11:20:00') + Math.floor(Math.random() * 1200000),
-                  value: Math.floor(Math.random() * 15),
+                  value: 16 + Math.floor(Math.random() * 9),
                 },
                 {
                   time: +moment('2019-12-13 11:50:00') + Math.floor(Math.random() * 1200000),
-                  value: Math.floor(Math.random() * 15),
+                  value: 16 + Math.floor(Math.random() * 9),
                 },
               ],
             },
