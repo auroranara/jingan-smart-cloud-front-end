@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import moment from 'moment';
 
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import styles from './GasDrawer.less';
@@ -19,7 +20,7 @@ export default class PoisonDrawer extends PureComponent {
 
     return (
       <CustomDrawer
-        title="可燃气体监测"
+        title="有毒气体监测"
         visible={visible}
         onClose={handleClose}
         zIndex={1322}
@@ -51,7 +52,7 @@ export default class PoisonDrawer extends PureComponent {
           <div className={styles.info}>
             <p className={styles.time}>
               <span className={styles.label}>更新时间：</span>
-              2019-12-12 12:00:00
+              {moment().format('YYYY-MM-DD HH:mm:ss')}
             </p>
             <p className={styles.detail}>
               <span className={styles.label}>浓度(%LEL)：</span>
