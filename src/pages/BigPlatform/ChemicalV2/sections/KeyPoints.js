@@ -27,7 +27,7 @@ const monitorData = [
     icon: iconStorage,
     label: '储罐监测',
     value: 1,
-    total: 3,
+    total: 11,
     url: 'iot/major-hazard/tank/real-time',
     type: 2,
   },
@@ -83,7 +83,7 @@ const keyPointsData1 = [
 const keyPointsData = [
   { icon: iconDangerSource, label: '重大危险源', value: 2 },
   { icon: iconChemical, label: '重点监管危险化学品', value: 3 },
-  { icon: iconHigh, label: '重点监管危险化工工艺', value: 1 },
+  { icon: iconHigh, label: '重点监管危险化工工艺', value: 2 },
 ];
 
 export default class KeyPoints extends PureComponent {

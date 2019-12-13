@@ -25,12 +25,12 @@ export default class CompanyInfo extends PureComponent {
       // 联系电话
       headOfSecurityPhone = '15857623543',
       // 风险点总数
-      countCheckItem = 12,
+      countCheckItem = 4,
       // 手机号是否可见
       phoneVisible = true,
       countCompanyUser = 6,
       specialEquipmentCount = 4,
-      total = 8,
+      total = 2,
       isImportant = true,
     } = {};
     const phone =

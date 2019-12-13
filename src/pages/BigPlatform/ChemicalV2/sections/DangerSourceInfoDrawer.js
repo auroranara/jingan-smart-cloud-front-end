@@ -24,7 +24,7 @@ const list = [
   {
     store: '无水乙醇',
     type: '第3.2类 中闪点易燃液体',
-    acture: '2t',
+    acture: '5t',
     max: '16t',
   },
   {

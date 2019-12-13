@@ -179,10 +179,10 @@ export default class CurrentHiddenDanger extends PureComponent {
       visible,
       onClose,
       onCardClick, // 点击小块查看详情
-      overRectifyNum: ycq = 7,
+      overRectifyNum: ycq = 1,
       // rectifyNum: wcq = 4,
       reviewNum: dfc = 1,
-      totalNum: total = 8,
+      totalNum: total = 2,
       list = [],
       hiddenDangerList: { list: dataList },
     } = this.props;
