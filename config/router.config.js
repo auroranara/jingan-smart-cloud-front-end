@@ -1299,7 +1299,7 @@ module.exports = env => {
               name: 'changeWarning', // 变更预警管理
               code: 'riskControl.changeWarning',
               path: '/risk-control/change-warning',
-              developing: true,
+              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
