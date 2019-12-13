@@ -166,7 +166,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                 fields={fields}
                 extraBtn={
                   <Fragment>
-                    <div className={styles.more} onClick={() => setDrawerVisible('tankmonitor')}>
+                    <div className={styles.more} onClick={() => setDrawerVisible('tankMonitor')}>
                       更多监测参数>
                     </div>
                     <div className={styles.name}>
