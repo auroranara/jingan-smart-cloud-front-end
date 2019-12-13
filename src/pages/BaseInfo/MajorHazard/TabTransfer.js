@@ -125,15 +125,43 @@ const rightGasColumns = [
   },
 ];
 
+// 生产装置
+const leftProductColumns = [
+  {
+    dataIndex: 'type',
+    title: '类别',
+    render: () => <span>生产装置</span>,
+  },
+  {
+    dataIndex: 'code',
+    title: '统一编码',
+  },
+  {
+    dataIndex: 'name',
+    title: '名称',
+  },
+];
+
+const rightProductColumns = [
+  {
+    dataIndex: 'name',
+    title: '名称',
+  },
+  {
+    dataIndex: 'code',
+    title: '统一编码',
+  },
+];
+
 export default class TabTransfer extends PureComponent {
-  getDataList = (i, s, a, g) => {
+  getDataList = (i, s, a, p, g) => {
     switch (+i) {
       case 1:
         return s;
       case 2:
         return a;
-      // case 3:
-      //   return '';
+      case 3:
+        return p;
       case 4:
         return g;
       default:
@@ -147,8 +175,8 @@ export default class TabTransfer extends PureComponent {
         return leftStorageColumns;
       case 2:
         return leftReserviorColumns;
-      // case 3:
-      //   return '';
+      case 3:
+        return leftProductColumns;
       case 4:
         return leftGasColumns;
       default:
@@ -162,8 +190,8 @@ export default class TabTransfer extends PureComponent {
         return rightStorageColumns;
       case 2:
         return rightReserviorColumns;
-      // case 3:
-      //   return '';
+      case 3:
+        return rightProductColumns;
       case 4:
         return rightGasColumns;
       default:
@@ -189,6 +217,7 @@ export default class TabTransfer extends PureComponent {
       areaList,
       storageList,
       gasList,
+      proEquipList,
       targetKeys,
       onTargetKeysClick,
       dangerType,
@@ -198,7 +227,7 @@ export default class TabTransfer extends PureComponent {
       <div>
         <TableTransfer
           showSearch
-          dataSource={this.getDataList(dangerType, storageList, areaList, gasList)} // 数据源(左侧)
+          dataSource={this.getDataList(dangerType, storageList, areaList, proEquipList, gasList)} // 数据源(左侧)
           targetKeys={targetKeys}
           onSearch={this.handleSearch}
           filterOption={this.filterOption}

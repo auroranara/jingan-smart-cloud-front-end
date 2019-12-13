@@ -7,7 +7,7 @@ import { BREADCRUMBLIST, LIST_URL } from './utils';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-
+import { AutoList } from './utils';
 const FormItem = Form.Item;
 const { Option } = Select;
 const { TextArea } = Input;
@@ -18,17 +18,6 @@ const formItemLayout = {
 };
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
-
-const autoList = [
-  { key: '1', value: '反馈控制' },
-  { key: '2', value: '前馈控制' },
-  { key: '3', value: '顺序控制' },
-  { key: '4', value: '比值控制系统' },
-  { key: '5', value: '串级控制系统' },
-  { key: '6', value: '超驰控制系统' },
-  { key: '7', value: '程序控制系统' },
-  { key: '8', value: '批量控制系统' },
-];
 
 @Form.create()
 @connect(({ productionEquipments, materials, user, loading }) => ({
@@ -57,7 +46,6 @@ export default class Edit extends PureComponent {
       match: {
         params: { id },
       },
-      form: { setFieldsValue },
     } = this.props;
 
     if (id) {
@@ -266,6 +254,8 @@ export default class Edit extends PureComponent {
       },
     } = this.props;
     const { detailList, selectedMaterials, materialsNum } = this.state;
+
+    const { autoList = AutoList } = {};
 
     const {
       companyName,

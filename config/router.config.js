@@ -2950,7 +2950,7 @@ module.exports = env => {
                   name: 'view',
                   code: 'safetyRiskControl.promise.view',
                   path: '/safety-risk-control/promise/view/:id',
-                  component: './AnnouncementManagement/Promise/Edit',
+                  component: './AnnouncementManagement/Promise/detail',
                 },
                 {
                   name: 'add',

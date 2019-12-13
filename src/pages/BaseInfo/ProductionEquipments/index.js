@@ -13,7 +13,7 @@ import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/Monitorin
 import {
   BREADCRUMBLIST,
   // LIST,
-  PAGE_SIZE,
+  // PAGE_SIZE,
   ROUTER,
   SEARCH_FIELDS as FIELDS,
   TABLE_COLUMNS as COLUMNS,
@@ -22,7 +22,7 @@ import {
 // 权限
 const {
   baseInfo: {
-    reservoirRegionManagement: {
+    productionEquipments: {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
@@ -292,6 +292,7 @@ export default class TableList extends PureComponent {
       },
       unbindAuthority,
     };
+
     const bindedModalProps = {
       type: 'unbind',
       visible: bindedModalVisible,

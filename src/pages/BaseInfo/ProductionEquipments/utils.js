@@ -129,7 +129,6 @@ export const TABLE_COLUMNS = [
     width: 250,
     render: (val, row) => {
       const { dangerTechnologyList, unitChemiclaNumDetail } = row;
-      console.log('unitChemiclaNumDetail', unitChemiclaNumDetail);
       return (
         <div>
           <p>
@@ -206,4 +205,15 @@ export const TABLE_COLUMNS = [
     align: 'center',
     width: 150,
   },
+];
+
+export const AutoList = [
+  { key: '1', value: '反馈控制' },
+  { key: '2', value: '前馈控制' },
+  { key: '3', value: '顺序控制' },
+  { key: '4', value: '比值控制系统' },
+  { key: '5', value: '串级控制系统' },
+  { key: '6', value: '超驰控制系统' },
+  { key: '7', value: '程序控制系统' },
+  { key: '8', value: '批量控制系统' },
 ];
