@@ -28,7 +28,7 @@ const COLOR = {
 let map;
 const fmapID = '100';
 const riskPointData = [
-  { x: 13224097.846242769, y: 3771544.420560548, itemId: 'xoderg7d9w_mm40m', status: 2 },
+  { x: 13224080.80175761, y: 3771554.9751555184, itemId: 'xoderg7d9w_mm40m', status: 2 },
   { x: 13224106.708094861, y: 3771522.2904702066, itemId: '3j6vtq7_dolqfgy7', status: 4 },
   { x: 13224076.644961352, y: 3771543.500124462, itemId: 'o0lmmj6eupouatni', status: 2 },
   { x: 13224087.328251136, y: 3771529.231526666, itemId: 'mog_zz27sbvr2o3t', status: 1 },
@@ -43,7 +43,7 @@ const monitorData = [
   url: monitor,
   iconType: 1,
 }));
-const videoData = [{ x: 13224080.80175761, y: 3771554.9751555184 }].map(item => ({
+const videoData = [{ x: 13224097.846242769, y: 3771544.420560548 }].map(item => ({
   ...item,
   url: video,
   iconType: 2,
@@ -588,6 +588,7 @@ export default class Map extends PureComponent {
     } else if (index === 2) {
       this.markerArray[5].show = copy[index];
       this.markerArray[6].show = copy[index];
+      this.markerArray[7].show = copy[index];
     }
   };
 

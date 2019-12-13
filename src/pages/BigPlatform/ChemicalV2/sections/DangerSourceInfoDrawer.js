@@ -24,7 +24,7 @@ const list = [
   {
     store: '无水乙醇',
     type: '第3.2类 中闪点易燃液体',
-    acture: '2t',
+    acture: '5t',
     max: '16t',
   },
   {
@@ -114,7 +114,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose } = this.props;
+    const { visible, onClose, setDrawerVisible } = this.props;
     const {} = this.state;
     const basicFields = [
       { label: '统一编码', value: 'code' },
@@ -166,7 +166,9 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                 fields={fields}
                 extraBtn={
                   <Fragment>
-                    <div className={styles.more}>更多监测参数></div>
+                    <div className={styles.more} onClick={() => setDrawerVisible('tankMonitor')}>
+                      更多监测参数>
+                    </div>
                     <div className={styles.name}>
                       {index + 1}
                       号罐

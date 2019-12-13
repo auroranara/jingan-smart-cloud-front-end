@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import moment from 'moment';
 
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import styles from './GasDrawer.less';
@@ -45,13 +46,14 @@ export default class GasDrawer extends PureComponent {
         </div>
         <div className={styles.down}>
           <div className={styles.device}>
+            <span className={styles.redDot} />
             <p className={styles.lel}>LEL</p>
             <p className={styles.value}>24%</p>
           </div>
           <div className={styles.info}>
             <p className={styles.time}>
               <span className={styles.label}>更新时间：</span>
-              2019-12-13 12:00:00
+              {moment().format('YYYY-MM-DD HH:mm:ss')}
             </p>
             <p className={styles.detail}>
               <span className={styles.label}>浓度(%LEL)：</span>

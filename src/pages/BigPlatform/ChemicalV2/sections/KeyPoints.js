@@ -24,39 +24,13 @@ const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 // iot/major-hazard/index
 const monitorData = [
   {
-    icon: iconStorageArea,
-    label: '罐区监测',
-    value: 1,
-    total: 1,
-    url: 'iot/major-hazard/tank-area/real-time',
-    type: 0,
-  },
-  {
-    icon: iconStoreArea,
-    label: '库区监测',
-    value: 1,
-    total: 1,
-    url: 'iot/major-hazard/storage-area/real-time',
-    type: 1,
-  },
-  {
     icon: iconStorage,
     label: '储罐监测',
-    value: 2,
-    total: 3,
+    value: 1,
+    total: 11,
     url: 'iot/major-hazard/tank/real-time',
     type: 2,
   },
-  { icon: iconProduce, label: '生产装置监测', value: 1, total: 3, type: 3 },
-  {
-    icon: iconStorehouse,
-    label: '库房监测',
-    value: 1,
-    total: 2,
-    url: 'iot/major-hazard/storage-house/real-time',
-    type: 4,
-  },
-  { icon: iconGas, label: '气柜监测', value: 1, total: 2, type: 5 },
   {
     icon: iconHigh,
     label: '可燃气体',
@@ -73,6 +47,32 @@ const monitorData = [
     url: 'gas-iot/monitor-report',
     type: 7,
   },
+  {
+    icon: iconStorageArea,
+    label: '罐区监测',
+    value: 1,
+    total: 1,
+    url: 'iot/major-hazard/tank-area/real-time',
+    type: 0,
+  },
+  {
+    icon: iconStoreArea,
+    label: '库区监测',
+    value: 1,
+    total: 1,
+    url: 'iot/major-hazard/storage-area/real-time',
+    type: 1,
+  },
+  { icon: iconProduce, label: '生产装置监测', value: 1, total: 3, type: 3 },
+  {
+    icon: iconStorehouse,
+    label: '库房监测',
+    value: 1,
+    total: 2,
+    url: 'iot/major-hazard/storage-house/real-time',
+    type: 4,
+  },
+  { icon: iconGas, label: '气柜监测', value: 1, total: 2, type: 5 },
   // { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
 ];
 const keyPointsData1 = [
@@ -82,7 +82,7 @@ const keyPointsData1 = [
 ];
 const keyPointsData = [
   { icon: iconDangerSource, label: '重大危险源', value: 2 },
-  { icon: iconChemical, label: '重点监管危险化学品', value: 2 },
+  { icon: iconChemical, label: '重点监管危险化学品', value: 3 },
   { icon: iconHigh, label: '重点监管危险化工工艺', value: 2 },
 ];
 
@@ -94,10 +94,12 @@ export default class KeyPoints extends PureComponent {
   };
 
   handleClickMonitor = type => {
-    const { setDrawerVisible } = this.props;
+    const { setDrawerVisible, handleGasOpen, handlePoisonOpen } = this.props;
     if (type || type === 0) {
-      if (type === 2) {
-        setDrawerVisible('storage');
+      if (type === 2 || type === 6 || type === 7) {
+        type === 2 && setDrawerVisible('storage');
+        type === 6 && handleGasOpen();
+        type === 7 && handlePoisonOpen();
         return;
       }
       setDrawerVisible('monitor', { monitorType: type });
@@ -146,7 +148,12 @@ export default class KeyPoints extends PureComponent {
                       </div>
                       <div className={styles.countValue}>
                         <div>
-                          <span className={styles.value}>{value}</span>
+                          <span
+                            className={styles.value}
+                            style={{ color: total ? '#ff4848' : '#fff' }}
+                          >
+                            {value}
+                          </span>
                           {total && `/${total}`}
                         </div>
                       </div>

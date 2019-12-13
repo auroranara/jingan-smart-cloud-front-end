@@ -12,10 +12,10 @@ import { MonitorList } from '../utils';
 import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
 
 const riskData = [
-  { label: '红色', value: 2, color: '#FC1F02' },
-  { label: '橙色', value: 3, color: '#F17A0A' },
-  { label: '黄色', value: 3, color: '#FFE500' },
-  { label: '蓝色', value: 4, color: '#0967D3' },
+  { label: '红色', value: 1, color: '#FC1F02' },
+  { label: '橙色', value: 1, color: '#F17A0A' },
+  { label: '黄色', value: 1, color: '#FFE500' },
+  { label: '蓝色', value: 1, color: '#0967D3' },
 ];
 const hiddenDangerData = [
   // { label: '已超期', value: 1, color: '#FC1F02' },
@@ -71,7 +71,14 @@ export default class KeyPoints extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, setDrawerVisible, handleShowVideo } = this.props;
+    const {
+      visible,
+      onClose,
+      setDrawerVisible,
+      handleShowVideo,
+      handlePoisonOpen,
+      handleGasOpen,
+    } = this.props;
     const { active } = this.state;
 
     return (
@@ -95,7 +102,7 @@ export default class KeyPoints extends PureComponent {
         <div className={styles.wrapper}>
           <div className={styles.title}>
             风险点
-            <span className={styles.value}>({12})</span>
+            <span className={styles.value}>({4})</span>
             <div
               className={styles.extra}
               onClick={() => setDrawerVisible('riskPoint', { riskPointType: { key: 'status' } })}
@@ -122,10 +129,10 @@ export default class KeyPoints extends PureComponent {
           <div className={styles.title}>
             隐患
             <span className={styles.value}>({2})</span>
-            {/* <div className={styles.extra}>
+            <div className={styles.extra} onClick={() => setDrawerVisible('currentHiddenDanger')}>
               详情
               <span style={{ color: '#0ff' }}>>></span>
-            </div> */}
+            </div>
           </div>
           <div className={styles.content}>
             {hiddenDangerData.map((item, index) => {
@@ -161,7 +168,7 @@ export default class KeyPoints extends PureComponent {
                   key={index}
                   // onClick={() => this.handleJump(url, images)}
                   onClick={() => {
-                    setDrawerVisible('storage');
+                    setDrawerVisible('dangerSourceInfo');
                   }}
                 >
                   {label}
@@ -179,7 +186,8 @@ export default class KeyPoints extends PureComponent {
             className={styles.title}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setDrawerVisible('monitor', { monitorType: 6, monitorData: MonitorList[6][0] });
+              // setDrawerVisible('monitor', { monitorType: 6, monitorData: MonitorList[6][0] });
+              handleGasOpen();
             }}
           >
             可燃气体
@@ -194,7 +202,8 @@ export default class KeyPoints extends PureComponent {
             className={styles.title}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setDrawerVisible('monitor', { monitorType: 7, monitorData: MonitorList[7][0] });
+              // setDrawerVisible('monitor', { monitorType: 7, monitorData: MonitorList[7][0] });
+              handlePoisonOpen();
             }}
           >
             有毒气体

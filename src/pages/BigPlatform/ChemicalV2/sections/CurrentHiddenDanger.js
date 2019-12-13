@@ -179,10 +179,10 @@ export default class CurrentHiddenDanger extends PureComponent {
       visible,
       onClose,
       onCardClick, // 点击小块查看详情
-      overRectifyNum: ycq = 3,
-      rectifyNum: wcq = 4,
+      overRectifyNum: ycq = 1,
+      // rectifyNum: wcq = 4,
       reviewNum: dfc = 1,
-      totalNum: total = 8,
+      totalNum: total = 2,
       list = [],
       hiddenDangerList: { list: dataList },
     } = this.props;
@@ -190,7 +190,7 @@ export default class CurrentHiddenDanger extends PureComponent {
     const { hoverIndex, images, currentImage, lightBoxVisible } = this.state;
     const legendInfo = {
       已超期: ycq,
-      未超期: wcq,
+      // 未超期: wcq,
       待复查: dfc,
     };
     const option = {
@@ -206,7 +206,7 @@ export default class CurrentHiddenDanger extends PureComponent {
         formatter: name => `${name} ${legendInfo[name]}`,
         data: [
           { name: '已超期', icon: 'circle' },
-          { name: '未超期', icon: 'circle' },
+          // { name: '未超期', icon: 'circle' },
           { name: '待复查', icon: 'circle' },
         ],
         textStyle: {
@@ -262,19 +262,19 @@ export default class CurrentHiddenDanger extends PureComponent {
               //   color: { color: `${redColor}` },
               // },
             },
-            {
-              value: wcq,
-              name: '未超期',
-              itemStyle: { color: `${yellowColor}` },
-              // labelLine: {
-              //   show: this.generateShow(1, hoverIndex),
-              //   lineStyle: { color: `${yellowColor}` },
-              // },
-              // label: {
-              //   show: this.generateShow(1, hoverIndex),
-              //   color: { color: `${yellowColor}` },
-              // },
-            },
+            // {
+            //   value: wcq,
+            //   name: '未超期',
+            //   itemStyle: { color: `${yellowColor}` },
+            //   // labelLine: {
+            //   //   show: this.generateShow(1, hoverIndex),
+            //   //   lineStyle: { color: `${yellowColor}` },
+            //   // },
+            //   // label: {
+            //   //   show: this.generateShow(1, hoverIndex),
+            //   //   color: { color: `${yellowColor}` },
+            //   // },
+            // },
             {
               value: dfc,
               name: '待复查',
@@ -301,6 +301,7 @@ export default class CurrentHiddenDanger extends PureComponent {
           onClose={onClose}
           width={535}
           destroyOnClose={true}
+          zIndex={1333}
           left={
             <div className={styles.currentHiddenDanger}>
               <div className={styles.chartContainer}>

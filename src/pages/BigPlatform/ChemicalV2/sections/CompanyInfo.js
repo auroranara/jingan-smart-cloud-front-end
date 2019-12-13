@@ -21,16 +21,16 @@ export default class CompanyInfo extends PureComponent {
     const {
       companyName = '无锡晶安智慧科技有限公司',
       // 安全管理员
-      headOfSecurity = '张小东',
+      headOfSecurity = '牛斌',
       // 联系电话
-      headOfSecurityPhone = '18151518810',
+      headOfSecurityPhone = '15857623543',
       // 风险点总数
-      countCheckItem = 12,
+      countCheckItem = 4,
       // 手机号是否可见
       phoneVisible = true,
       countCompanyUser = 6,
       specialEquipmentCount = 4,
-      total = 8,
+      total = 2,
       isImportant = true,
     } = {};
     const phone =
