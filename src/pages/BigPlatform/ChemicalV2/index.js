@@ -260,9 +260,9 @@ export default class Chemical extends PureComponent {
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
           <span className={styles.address}>{'储罐监测发生报警'}</span>
         </div>
-        <div style={{ color: '#f83329' }}>温度为68℃，超过预警值8℃</div>
+        <div style={{ color: '#f83329' }}>压力为0.15MPa，超过告警值0.05MPa</div>
         <div>监测设备：储罐监测设备</div>
-        <div>区域位置：储罐监测点A</div>
+        <div>区域位置：东厂区1号楼危险品液体原料储罐区</div>
       </div>
     );
   };
@@ -523,7 +523,7 @@ export default class Chemical extends PureComponent {
           }}
           data={points}
           riskPointType={riskPointType}
-          zIndex={1066}
+          zIndex={1266}
         />
 
         {/* 当前隐患抽屉 */}

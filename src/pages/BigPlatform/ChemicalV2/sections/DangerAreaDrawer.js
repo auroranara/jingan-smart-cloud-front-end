@@ -161,7 +161,7 @@ export default class KeyPoints extends PureComponent {
                   key={index}
                   // onClick={() => this.handleJump(url, images)}
                   onClick={() => {
-                    setDrawerVisible('storage');
+                    setDrawerVisible('dangerSourceInfo');
                   }}
                 >
                   {label}

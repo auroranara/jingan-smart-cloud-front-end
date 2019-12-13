@@ -588,6 +588,7 @@ export default class Map extends PureComponent {
     } else if (index === 2) {
       this.markerArray[5].show = copy[index];
       this.markerArray[6].show = copy[index];
+      this.markerArray[7].show = copy[index];
     }
   };
 
