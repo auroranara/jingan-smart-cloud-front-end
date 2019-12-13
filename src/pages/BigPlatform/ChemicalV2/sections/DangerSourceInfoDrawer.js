@@ -3,6 +3,7 @@ import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceInfoDrawer.less';
 import { CardItem } from '../components/Components';
+import Wave from '@/jingan-components/Wave';
 import storage from '../imgs/storage.png';
 
 const basicList = [
@@ -91,7 +92,12 @@ const list = [
   ...item,
   name: `${index + 1}号储罐`,
   number: creatNum(index + 1, 4),
-  icon: storage,
+  icon: (
+    <Wave
+      frontStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.8)' }}
+      backStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.3)' }}
+    />
+  ),
 }));
 const fields = [
   { label: '储罐', value: 'name' },
@@ -169,10 +175,10 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                     <div className={styles.more} onClick={() => setDrawerVisible('tankMonitor')}>
                       更多监测参数>
                     </div>
-                    <div className={styles.name}>
+                    {/* <div className={styles.name}>
                       {index + 1}
                       号罐
-                    </div>
+                    </div> */}
                   </Fragment>
                 }
               />
