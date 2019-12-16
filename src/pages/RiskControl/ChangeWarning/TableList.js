@@ -1,13 +1,15 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Table } from 'antd';
+import { Card, Empty, Table } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, SEARCH_FIELDS as FIELDS, COLUMNS } from './utils';
+import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 
-@connect(({ changeWarning, loading }) => ({
+@connect(({ user, changeWarning, loading }) => ({
+  user,
   changeWarning,
   loading: loading.models.changeWarning,
 }))
@@ -59,9 +61,11 @@ export default class TableList extends PureComponent {
   render() {
     const {
       loading,
+      user: { currentUser: { unitType } },
       changeWarning: { list, total },
     } = this.props;
     const { current } = this.state;
+    const columns = isCompanyUser(unitType) ? COLUMNS.filter(({ dataIndex }) => dataIndex !== 'companyName') : COLUMNS;
 
     return (
       <PageHeaderLayout
@@ -83,15 +87,17 @@ export default class TableList extends PureComponent {
           />
         </Card>
         <div className={styles1.container}>
-          <Table
-            rowKey="id"
-            loading={loading}
-            columns={COLUMNS}
-            dataSource={list}
-            onChange={this.onTableChange}
-            scroll={{ x: 1400 }} // 项目不多时注掉
-            pagination={{ pageSize: PAGE_SIZE, total: total, current }}
-          />
+          {list.length ? (
+            <Table
+              rowKey="id"
+              loading={loading}
+              columns={columns}
+              dataSource={list}
+              onChange={this.onTableChange}
+              scroll={{ x: 1400 }} // 项目不多时注掉
+              pagination={{ pageSize: PAGE_SIZE, total: total, current }}
+            />
+          ) : <Empty />}
         </div>
       </PageHeaderLayout>
     );
