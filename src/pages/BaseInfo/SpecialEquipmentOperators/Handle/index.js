@@ -119,7 +119,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       // 如果企业账号
       const { companyId, companyName } = currentUser;
       this.setState({ selectedCompany: { id: companyId, name: companyName } });
-      setFieldsValue({ companyId });
+      // setFieldsValue({ companyId });
     }
   }
 
@@ -189,13 +189,14 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       form: { validateFields },
       match: { params: { id } },
     } = this.props;
-    const { frontPhotoList, backPhotoList } = this.state;
+    const { frontPhotoList, backPhotoList, selectedCompany } = this.state;
     validateFields((err, values) => {
       if (err) return;
       const { effectiveDate, birthday, firstDate, reviewDate, ...resValues } = values;
       const [startDate, endDate] = effectiveDate;
       const payload = {
         ...resValues,
+        companyId: selectedCompany.id,
         startDate: this.getTime(startDate),
         endDate: endDate ? endDate.endOf('day').unix() * 1000 : endDate,
         birthday: this.getTime(birthday),
@@ -339,16 +340,18 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位' }],
-            })(
-              <Fragment>
-                <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择" />
-                {!isCompany && (<Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>)}
-              </Fragment>
-            )}
-          </FormItem>
+          {!isCompany && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位' }],
+              })(
+                <Fragment>
+                  <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择" />
+                  <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="姓名" {...formItemLayout}>
             {getFieldDecorator('name', {
               initialValue: id ? detail.name : undefined,
@@ -554,10 +557,10 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
             编辑
           </Button>
         ) : (
-          <Button type="primary" style={BTN_STYLE} onClick={this.handleSubmit}>
-            提交
+            <Button type="primary" style={BTN_STYLE} onClick={this.handleSubmit}>
+              提交
           </Button>
-        )}
+          )}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"
