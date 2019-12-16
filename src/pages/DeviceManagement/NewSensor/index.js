@@ -124,9 +124,9 @@ export default class NewSensorList extends Component {
   /**
    * 删除传感器
    */
-  handleDelete = ({ id, dataExecuteEquipmentId, beMonitorTargetId }) => {
+  handleDelete = ({ id, dataExecuteEquipmentId, beMonitorTargetId, monitorEquipmentId }) => {
     const { dispatch } = this.props
-    if (!dataExecuteEquipmentId || !beMonitorTargetId) {
+    if (dataExecuteEquipmentId || beMonitorTargetId || monitorEquipmentId) {
       message.warning('该该传感器已绑定监测设备，不可直接删除，请先解绑')
       return
     }
@@ -286,14 +286,15 @@ export default class NewSensorList extends Component {
         },
         monitoringTypeList, // 监测类型列表
       },
+      user: { isCompany },// 是否企业账号
     } = this.props
     const columns = [
-      {
+      ...isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 400,
-      },
+      }],
       {
         title: '传感器名称',
         dataIndex: 'name',

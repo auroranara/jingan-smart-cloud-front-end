@@ -164,7 +164,7 @@ export default class AddAssociate extends Component {
       this.fetchVideoBeaconsAvailable({ payload: { ...values, id, companyId, pageNum, pageSize } });
     } else if (type === 'monitor') {
       this.fetchMonitoringDevice({
-        payload: { ...values, pageNum: 1, pageSize: defaultPageSize, bindVideoStatus: 0, bindVideoId: id, companyId },
+        payload: { ...values, pageNum, pageSize, bindVideoStatus: 0, bindVideoId: id, companyId },
       })
     } else if (type === 'fire') {
       this.fetchUnBindedFireDevice({
