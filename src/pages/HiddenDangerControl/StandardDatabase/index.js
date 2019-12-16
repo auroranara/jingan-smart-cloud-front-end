@@ -88,6 +88,7 @@ const HandleModal = Form.create()(props => {
           {getFieldDecorator('objectTitle', {
             rules: [{ required: true, message: '请输入检查项名称' }],
             initialValue: objectId ? detail.objectTitle : undefined,
+            getValueFromEvent: e => e.target.value.trim(),
           })(
             <Input placeholder="请输入" />
           )}

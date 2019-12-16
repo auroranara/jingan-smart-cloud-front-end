@@ -472,18 +472,19 @@ export default class StorageEdit extends PureComponent {
 
   // 点击打开选择储罐区弹窗
   handleToSelectStorageArea = () => {
-    const { form: { getFieldValue } } = this.props
+    const { form: { getFieldValue } } = this.props;
     const tankArea = getFieldValue('tankArea')
     this.fetchStorageTankAreaForPage({ payload: { pageNum: 1, pageSize: 10 } })
     this.setState({
       storageTankAreaModalVisible: true,
       selectedTempKeys: tankArea ? tankArea.split(',') : [],
+      selectedTemp: this.state.selectedArea,
     })
   }
 
   // 点击打开选择存储介质弹窗
   handleToSelectStorageMedium = () => {
-    const { form: { getFieldValue } } = this.props
+    const { form: { getFieldValue } } = this.props;
     const { selectedCompany } = this.state;
     const companyId = selectedCompany.id;
     const storageMedium = getFieldValue('storageMedium')
@@ -495,6 +496,7 @@ export default class StorageEdit extends PureComponent {
     this.setState({
       storageMediumModalVisible: true,
       selectedTempKeys: storageMedium ? storageMedium.split(',') : [],
+      selectedTemp: this.state.selectedMedium,
     })
   }
 
@@ -1383,7 +1385,7 @@ export default class StorageEdit extends PureComponent {
   /**
   * 渲染底部工具栏
   **/
-  renderFooterToolbar(isDetail) {
+  renderFooterToolbar (isDetail) {
     const { match: { params: { id } } } = this.props;
 
     return (
@@ -1394,10 +1396,10 @@ export default class StorageEdit extends PureComponent {
             编辑
           </Button>
         ) : (
-          <Button type="primary" size="large" onClick={this.handleSubmit}>
-          提交
+            <Button type="primary" size="large" onClick={this.handleSubmit}>
+              提交
         </Button>
-        )}
+          )}
         <Button type="primary" size="large" onClick={this.goBack}>
           返回
         </Button>
