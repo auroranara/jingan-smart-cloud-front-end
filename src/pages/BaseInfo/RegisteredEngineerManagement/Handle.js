@@ -37,6 +37,7 @@ export default class RegSafetyEngEdit extends PureComponent {
     regFilesList: [],
     reqUploading: false, // 上传是否加载
     regUploading: false,
+    editCompanyId: '',
     detailList: {},
   };
 
@@ -59,8 +60,9 @@ export default class RegSafetyEngEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { requirementsFilesList, regFilesList } = currentList;
+          const { companyId, requirementsFilesList, regFilesList } = currentList;
           this.setState({
+            editCompanyId: companyId,
             detailList: currentList,
             requireFilesList: requirementsFilesList.map(({ dbUrl, webUrl }, index) => ({
               uid: index,
@@ -103,7 +105,7 @@ export default class RegSafetyEngEdit extends PureComponent {
     } = this.props;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { requireFilesList, regFilesList } = this.state;
+        const { requireFilesList, regFilesList, editCompanyId } = this.state;
         const {
           name,
           sex,
@@ -118,7 +120,7 @@ export default class RegSafetyEngEdit extends PureComponent {
         } = values;
         const payload = {
           id,
-          companyId: this.companyId || companyId,
+          companyId: this.companyId || companyId || editCompanyId,
           name,
           sex,
           birth: birth.format('YYYY-MM-DD'),
@@ -533,7 +535,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       route: { name },
     } = this.props;
     const isDetail = name === 'view';
-    const title = id ? isDetail ? '详情' : '编辑' : '新增';
+    const title = id ? (isDetail ? '详情' : '编辑') : '新增';
     const breadcrumbList = [
       {
         title: '首页',

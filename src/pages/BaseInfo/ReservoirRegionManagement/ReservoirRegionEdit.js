@@ -36,6 +36,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     submitting: false,
     detailList: {}, // 详情列表
     dangerVisible: false,
+    editCompanyId: '',
     dangerSourceUnitId: [],
   };
 
@@ -59,9 +60,10 @@ export default class ReservoirRegionEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          // const { dangerSource, dangerSourceMessage } = currentList;
+          const { companyId } = currentList;
           this.setState({
             detailList: currentList,
+            editCompanyId: companyId,
             // hasDangerSourse: dangerSource,
             // dangerSourceUnitId: dangerSourceMessage,
           });
@@ -96,7 +98,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           submitting: true,
         });
 
-        // const { dangerSourceUnitId } = this.state;
+        const { editCompanyId } = this.state;
 
         const {
           number,
@@ -114,7 +116,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         } = values;
 
         const payload = {
-          companyId: this.companyId || companyId,
+          companyId: this.companyId || companyId || editCompanyId,
           number,
           name,
           position,
@@ -634,11 +636,20 @@ export default class ReservoirRegionEdit extends PureComponent {
       <FooterToolbar>
         {this.renderErrorInfo()}
         {isDetail ? (
-          <Button type="primary" size="large" onClick={e => router.push(`/major-hazard-info/reservoir-region-management/edit/${id}`)}>
+          <Button
+            type="primary"
+            size="large"
+            onClick={e => router.push(`/major-hazard-info/reservoir-region-management/edit/${id}`)}
+          >
             编辑
           </Button>
         ) : (
-          <Button type="primary" size="large" loading={submitting} onClick={this.handleClickValidate}>
+          <Button
+            type="primary"
+            size="large"
+            loading={submitting}
+            onClick={this.handleClickValidate}
+          >
             提交
           </Button>
         )}
@@ -659,7 +670,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     } = this.props;
 
     const isDetail = name === 'view';
-    const title = id ? isDetail ? '详情' : editTitle : addTitle;
+    const title = id ? (isDetail ? '详情' : editTitle) : addTitle;
 
     // 面包屑
     const breadcrumbList = [
