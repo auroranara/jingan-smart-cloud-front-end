@@ -556,7 +556,7 @@ export default class ReservoirRegionList extends PureComponent {
               {total}
             </span>
             <span style={{ paddingLeft: 20 }}>
-              已绑传感器数：
+              已绑监测设备数：
               {monitorEquipmentCount}
             </span>
           </div>
