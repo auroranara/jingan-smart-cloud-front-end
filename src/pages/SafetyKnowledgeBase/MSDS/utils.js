@@ -97,7 +97,7 @@ function genFormItem(field, getFieldDecorator) {
       case 'text':
         placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
-        component = <TextArea placeholder={placeholder} />;
+        component = <TextArea placeholder={placeholder} autoSize />;
         break;
       case 'select':
         placeholder = placeholder || `请选择${label}`;

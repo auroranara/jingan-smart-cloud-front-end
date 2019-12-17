@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Modal, Table, message } from 'antd';
+import { Button, Card, Empty, Modal, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -159,15 +159,17 @@ export default class TableList extends PureComponent {
           />
         </Card>
         <div className={styles1.container}>
-          <Table
-            rowKey="id"
-            loading={loading}
-            columns={columns}
-            dataSource={list}
-            onChange={this.onTableChange}
-            scroll={{ x: 1400 }} // 项目不多时注掉
-            pagination={{ pageSize: PAGE_SIZE, total: emergencyTotal, current }}
-          />
+          {list.length ? (
+            <Table
+              rowKey="id"
+              loading={loading}
+              columns={columns}
+              dataSource={list}
+              onChange={this.onTableChange}
+              scroll={{ x: 1400 }} // 项目不多时注掉
+              pagination={{ pageSize: PAGE_SIZE, total: emergencyTotal, current }}
+            />
+          ): <Empty />}
         </div>
         {this.renderModal()}
       </PageHeaderLayout>

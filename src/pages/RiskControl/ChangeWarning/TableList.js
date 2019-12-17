@@ -5,7 +5,7 @@ import { Card, Empty, Table } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, PAGE_SIZE, SEARCH_FIELDS as FIELDS, COLUMNS } from './utils';
+import { BREADCRUMBLIST, PAGE_SIZE, COLUMNS, getSearchFields } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 
 @connect(({ user, changeWarning, loading }) => ({
@@ -16,6 +16,7 @@ import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 export default class TableList extends PureComponent {
   state = { current: 1 };
   values = {};
+  empty = true;
 
   componentDidMount() {
     this.getList();
@@ -34,7 +35,7 @@ export default class TableList extends PureComponent {
     if (companyId)
       vals.companyId = companyId.key;
     if (range)
-      [vals.startDate, vals.endDate] = range.map(m => +m);
+      [vals.startDate, vals.endDate] = range.map(m => m.format('YYYY-MM-DD HH:mm:ss'));
 
     dispatch({
       type: 'changeWarning/fetchWarningList',
@@ -58,6 +59,13 @@ export default class TableList extends PureComponent {
     this.getList(current);
   };
 
+  getRangeFromEvent = range => {
+    const empty = !(range && range.length);
+    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
+    this.empty = empty;
+    return result;
+  };
+
   render() {
     const {
       loading,
@@ -65,6 +73,7 @@ export default class TableList extends PureComponent {
       changeWarning: { list, total },
     } = this.props;
     const { current } = this.state;
+    const fields = getSearchFields(this.getRangeFromEvent);
     const columns = isCompanyUser(unitType) ? COLUMNS.filter(({ dataIndex }) => dataIndex !== 'companyName') : COLUMNS;
 
     return (
@@ -79,7 +88,7 @@ export default class TableList extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={FIELDS}
+            fields={fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             buttonStyle={{ textAlign: 'right' }}

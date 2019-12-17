@@ -136,8 +136,8 @@ export function getTableColumns(handleConfirmDelete, showModal) {
       render(id) {
         return (
           <Fragment>
-            <Link to={`${ROUTER}/view/${id}`}>查看</Link>
-            <Link to={`${ROUTER}/edit/${id}`} style={{ marginLeft: 8 }}>编辑</Link>
+            <Link to={`${ROUTER}/view/${id}`} target="_blank">查看</Link>
+            <Link to={`${ROUTER}/edit/${id}`} target="_blank" style={{ marginLeft: 8 }}>编辑</Link>
             <Popconfirm
               title="确定删除当前项目？"
               onConfirm={e => handleConfirmDelete(id)}

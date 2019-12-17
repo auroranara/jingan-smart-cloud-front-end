@@ -66,33 +66,38 @@ export const BREADCRUMBLIST = [
   { title: '变更预警管理', name: '变更预警管理' },
 ];
 
-export const SEARCH_FIELDS = [
-  {
-    id: 'companyId',
-    label: '单位名称',
-    render: () => <CompanySelect placeholder="请输入单位名称" allowClear />,
-  },
-  {
-    id: 'dataType',
-    label: '变更对象',
-    render: () => (
-      <Select placeholder="请选择变更对象" allowClear>
-        {DATA_TYPE_LIST.map(({ key, value }) => <Option key={key} value={key}>{value}</Option>)}
-      </Select>
-    ),
-  },
-  {
-    id: 'userName',
-    label: '操作人',
-    render: () => <Input placeholder="请输入操作人" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'range',
-    label: '操作时间',
-    render: () => <RangePicker showTime={{ format: 'HH:mm:ss' }} allowClear />,
-  },
-];
+export function getSearchFields(getRangeFromEvent) {
+  return [
+    {
+      id: 'companyId',
+      label: '单位名称',
+      render: () => <CompanySelect placeholder="请输入单位名称" allowClear />,
+    },
+    {
+      id: 'dataType',
+      label: '变更对象',
+      render: () => (
+        <Select placeholder="请选择变更对象" allowClear>
+          {DATA_TYPE_LIST.map(({ key, value }) => <Option key={key} value={key}>{value}</Option>)}
+        </Select>
+      ),
+    },
+    {
+      id: 'userName',
+      label: '操作人',
+      render: () => <Input placeholder="请输入操作人" allowClear />,
+      transform: v => v.trim(),
+    },
+    {
+      id: 'range',
+      label: '操作时间',
+      render: () => <RangePicker showTime={{ format: 'HH:mm:ss' }} allowClear />,
+      options: {
+        getValueFromEvent: getRangeFromEvent,
+      },
+    },
+  ];
+}
 
 export const COLUMNS = [
   {

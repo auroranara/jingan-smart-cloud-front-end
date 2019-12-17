@@ -8,8 +8,9 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST_URL, handleEquipmentValues } from './utils';
 import { handleDetails } from '../CommitmentCard/utils';
+import styles from './TableList.less';
 
-const { Search } = Input;
+// const { Search } = Input;
 const { Option } = Select;
 
 const TABLE_PAGE_SIZE = 10;
@@ -105,7 +106,7 @@ export default class Edit extends PureComponent {
     return url && url.includes('view');
   };
 
-  showModal = v => {
+  showModal = e => {
     this.handleReset();
     this.setState({ modalVisible: true });
   };
@@ -127,9 +128,10 @@ export default class Edit extends PureComponent {
 
     this.setState({ selectedCard: undefined });
     const companyId = getFieldValue('companyId');
-    companyId && companyId.value && dispatch({
+    console.log(companyId);
+    companyId && companyId.key && dispatch({
       type: 'cardsInfo/fetchInformCards',
-      payload: { pageNum, pageSize: TABLE_PAGE_SIZE, companyId: companyId.value, ...this.values },
+      payload: { pageNum, pageSize: TABLE_PAGE_SIZE, companyId: companyId.key, ...this.values },
     });
   };
 
@@ -239,12 +241,20 @@ export default class Edit extends PureComponent {
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
 
+    // const selectButton = (
+    //   <Search
+    //     // disabled={isDet ? true : loading}
+    //     disabled
+    //     placeholder="请选择作业/设备名称"
+    //     enterButton={<Button type="primary" onClick={this.showModal}>选择</Button>}
+    //     // onSearch={this.showModal}
+    //   />
+    // );
     const selectButton = (
-      <Search
-        disabled={isDet ? true : loading}
+      <Input
+        disabled
         placeholder="请选择作业/设备名称"
-        enterButton="选择"
-        onSearch={this.showModal}
+        addonAfter={<Button type="primary" onClick={this.showModal}>选择</Button>}
       />
     );
 
@@ -270,7 +280,18 @@ export default class Edit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          <div className={styles.container}>
+            {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          </div>
+          {isDet ? (
+            <Button
+              type="primary"
+              style={{ marginLeft: '45%' }}
+              onClick={e => router.push(`/cards-info/emergency-card/edit/${id}`)}
+            >
+              编辑
+            </Button>
+          ) : null}
         </Card>
         {this.renderModal()}
       </PageHeaderLayout>
