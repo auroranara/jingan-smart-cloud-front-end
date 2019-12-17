@@ -15,15 +15,27 @@
     .ant-tabs {
       width: 950px;
     }
-
   }
-
 }
 
 .cardList {
   margin-bottom: -24px;
 
   .card {
+    &:hover {
+      :global {
+        .ant-card {
+          -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
+          border-color: rgba(0, 0, 0, 0.09);
+        }
+
+        .ant-card-extra {
+          display: block;
+        }
+      }
+    }
+
     :global {
       .ant-card-extra {
         width: 120px;
@@ -61,23 +73,23 @@
     }
   }
 
-  :global {
-    .ant-list .ant-list-item-content-single {
-      max-width: 100%;
+  // :global {
+  //   .ant-list .ant-list-item-content-single {
+  //     max-width: 100%;
 
-      &:hover {
-        .ant-card {
-          -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
-          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
-          border-color: rgba(0, 0, 0, 0.09);
-        }
+  //     &:hover {
+  //       .ant-card {
+  //         -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
+  //         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
+  //         border-color: rgba(0, 0, 0, 0.09);
+  //       }
 
-        .ant-card-extra {
-          display: block;
-        }
-      }
-    }
-  }
+  //       .ant-card-extra {
+  //         display: block;
+  //       }
+  //     }
+  //   }
+  // }
 
   .quantity {
     position: absolute;
@@ -141,7 +153,7 @@
   cursor: pointer;
 }
 
-@media screen and (max-width:1440px) {
+@media screen and (max-width: 1440px) {
   .iconClose {
     position: absolute;
     left: 55.5%;
@@ -152,7 +164,7 @@
   }
 }
 
-@media screen and (max-width:1366px) {
+@media screen and (max-width: 1366px) {
   .iconClose {
     position: absolute;
     left: 56%;

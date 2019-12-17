@@ -271,7 +271,7 @@ export default class FloorManagementList extends PureComponent {
       match: {
         params: { id },
       },
-      buildingsInfo: { floorNumberLists },
+      buildingsInfo: { floorNumberLists, floorIndexList },
     } = this.props;
     return (
       <Card>
@@ -286,9 +286,9 @@ export default class FloorManagementList extends PureComponent {
             <FormItem>
               {getFieldDecorator('floorNumber', {})(
                 <Select style={{ width: '240px' }} placeholder="请选择楼层编号">
-                  {floorNumberLists.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.label}
+                  {floorIndexList.map(item => (
+                    <Option value={item.key} key={item.key}>
+                      {item.value}
                     </Option>
                   ))}
                 </Select>
@@ -326,6 +326,7 @@ export default class FloorManagementList extends PureComponent {
           list,
           pagination: { total, pageSize, pageNum },
         },
+        floorIndexList,
       },
     } = this.props;
     const { visible, imgUrl, currentImage } = this.state;
@@ -344,6 +345,10 @@ export default class FloorManagementList extends PureComponent {
         key: 'floorNumber',
         align: 'center',
         width: '15%',
+        render: val => {
+          const filterIndex = floorIndexList.filter(item => item.key === val);
+          return filterIndex.map(item => item.value).join('');
+        },
       },
       {
         title: '平面图',
@@ -451,7 +456,7 @@ export default class FloorManagementList extends PureComponent {
         query: { name, companyId },
       },
     } = this.props;
-    // console.log('this.props', this.props);
+
     //面包屑
     const breadcrumbList = [
       {
