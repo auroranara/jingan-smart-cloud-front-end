@@ -217,6 +217,11 @@ export default class HandleVirtualMonitoringDevice extends Component {
     })
   }
 
+  jumpToBuildingManagement = () => {
+    const win = window.open(`${window.publicPath}#/base-info/buildings-info/list`, '_blank');
+    win.focus();
+  };
+
   /**
    * 渲染表单
    */

@@ -5,15 +5,17 @@ import { Button, Card, Form, message, Upload } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL } from './utils';
+import { BREADCRUMBLIST, LIST_URL } from './utils';
 import { handleDetails } from '../CommitmentCard/utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
+import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 
 
 const FOLDER = 'knowCard';
 const uploadAction = '/acloud_new/v2/uploadFile';
-@connect(({ cardsInfo, loading }) => ({
+@connect(({ user, cardsInfo, loading }) => ({
+  user,
   cardsInfo,
   loading: loading.models.cardsInfo,
 }))
@@ -24,8 +26,13 @@ export default class Edit extends PureComponent {
   componentDidMount() {
     const {
       match: { params: { id } },
+      form: { setFieldsValue },
+      user: { currentUser: { unitType, companyId, companyName } },
     } = this.props;
-    id && this.getDetail(id);
+    if (id)
+      this.getDetail(id);
+    else if (isCompanyUser(+unitType))
+      setFieldsValue({ companyId: { key: companyId, label: companyName } });
   }
 
   getDetail = id => {
@@ -109,11 +116,20 @@ export default class Edit extends PureComponent {
     setFieldsValue({ contentDetails: fileList.length ? { fileList } : null });
   };
 
+  handleBeforeUpload = file => {
+    const { type } = file;
+    const isImage = ['image/jpeg', 'image/jpg', 'image/png'].includes(type);
+    if (!isImage)
+      message.error(`上传的附近格式为${type}，请上传图片格式的附近！`);
+    return isImage;
+  };
+
   render() {
     const {
       loading,
       match: { params: { id } },
       form: { getFieldDecorator },
+      user: { currentUser: { unitType } },
     } = this.props;
     const { photoList } = this.state;
 
@@ -129,6 +145,7 @@ export default class Edit extends PureComponent {
         data={{ folder: FOLDER }}
         action={uploadAction}
         fileList={photoList}
+        beforeUpload={this.handleBeforeUpload}
         onChange={this.handleUploadPhoto}
         headers={{ 'JA-Token': getToken() }}
       >
@@ -139,7 +156,7 @@ export default class Edit extends PureComponent {
     );
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect' },
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isCompanyUser(+unitType) },
       { name: 'name', label: '应知卡名称' },
       // { name: 'content', label: '应知卡内容', type: 'text' },
       { name: 'contentDetails', label: '附件', type: 'compt', component: uploadBtn },
@@ -155,6 +172,15 @@ export default class Edit extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          {isDet ? (
+            <Button
+              type="primary"
+              style={{ marginLeft: '45%' }}
+              onClick={e => router.push(`/cards-info/know-card/edit/${id}`)}
+            >
+              编辑
+            </Button>
+          ) : null}
         </Card>
       </PageHeaderLayout>
     );

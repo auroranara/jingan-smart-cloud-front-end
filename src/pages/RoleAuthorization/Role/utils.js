@@ -9,6 +9,10 @@ export const GOV = 2; // 政府
 export const OPE = 3; // 运营
 export const COM = 4; // 企事业
 
+export function isCompanyUser(unitType) {
+  return +unitType === COM;
+}
+
 export const COMMON_LIST_URL = '/role-authorization/commonRole/list';
 export const COMMON_DETAIL_URL = '/role-authorization/commonRole/detail';
 export const COMMON_ADD_URL = '/role-authorization/commonRole/add';

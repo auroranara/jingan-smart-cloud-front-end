@@ -3,40 +3,13 @@ import Link from 'umi/link';
 import moment from 'moment';
 import { DatePicker, Input, message, Popconfirm, Select } from 'antd';
 
+import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
 const MAX_LENGTH = 20;
 export const PAGE_SIZE = 20;
 export const ROUTER = '/cards-info/emergency-card'; // modify
 export const LIST_URL = `${ROUTER}/list`;
-export const LIST = [ // modify
-  {
-    index: 1,
-    id: '1',
-    name: '无锡化工有限股份公司',
-    cardName: '岗位应急卡',
-    device: '装卸作业',
-    risk: '易燃易爆',
-    method: '干粉灭火',
-    notes: '避光',
-    man: '张三丰',
-    phone: '18012345555',
-    preview: null,
-  },
-  {
-    index: 2,
-    id: '2',
-    name: '晶安智慧有限公司',
-    cardName: '岗位应急卡',
-    device: '高压反应釜',
-    risk: '高温易爆',
-    method: '释放压力',
-    notes: '避免压力过高',
-    man: '朱翊钧',
-    phone: '13212346666',
-    preview: null,
-  },
-];
 
 export const BREADCRUMBLIST = [ // modify
   { title: '首页', name: '首页', href: '/' },
@@ -44,34 +17,36 @@ export const BREADCRUMBLIST = [ // modify
   { title: '应急卡', name: '应急卡', href: LIST_URL },
 ];
 
-export const SEARCH_FIELDS = [ // modify
-  {
-    id: 'companyName',
-    label: '单位名称',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'name',
-    label: '应急卡名称',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'equipmentName',
-    label: '作业/设备名称',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-];
+export function getSearchFields(unitType) {
+  const fields = [
+    {
+      id: 'companyName',
+      label: '单位名称',
+      render: () => <Input placeholder="请输入" allowClear />,
+      transform: v => v.trim(),
+    },
+    {
+      id: 'name',
+      label: '应急卡名称',
+      render: () => <Input placeholder="请输入" allowClear />,
+      transform: v => v.trim(),
+    },
+    {
+      id: 'equipmentName',
+      label: '作业/设备名称',
+      render: () => <Input placeholder="请输入" allowClear />,
+      transform: v => v.trim(),
+    },
+  ];
 
-export function getTableColumns(handleConfirmDelete, showModal) {
-  return [ // modify
-    // {
-    //   title: '序号',
-    //   dataIndex: 'index',
-    //   key: 'index',
-    // },
+  if (isCompanyUser(+unitType))
+    fields.shift();
+
+  return fields;
+}
+
+export function getTableColumns(handleConfirmDelete, showModal, unitType) {
+  const columns = [
     {
       title: '单位名称',
       dataIndex: 'companyName',
@@ -136,8 +111,8 @@ export function getTableColumns(handleConfirmDelete, showModal) {
       render(id) {
         return (
           <Fragment>
-            <Link to={`${ROUTER}/view/${id}`}>查看</Link>
-            <Link to={`${ROUTER}/edit/${id}`} style={{ marginLeft: 8 }}>编辑</Link>
+            <Link to={`${ROUTER}/view/${id}`} target="_blank">查看</Link>
+            <Link to={`${ROUTER}/edit/${id}`} target="_blank" style={{ marginLeft: 8 }}>编辑</Link>
             <Popconfirm
               title="确定删除当前项目？"
               onConfirm={e => handleConfirmDelete(id)}
@@ -149,6 +124,10 @@ export function getTableColumns(handleConfirmDelete, showModal) {
       },
     },
   ];
+
+  if (isCompanyUser(+unitType))
+    columns.shift();
+  return columns;
 }
 
 // export const EDIT_FORMITEMS = [ // modify
