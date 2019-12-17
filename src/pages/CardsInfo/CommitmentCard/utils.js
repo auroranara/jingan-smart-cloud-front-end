@@ -62,7 +62,6 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       title: '承诺卡内容',
       dataIndex: 'content',
       key: 'content',
-      align: 'center',
       render: txt => txt.length > MAX_LENGTH ? `${txt.slice(0, MAX_LENGTH)}...` : txt,
     },
     {
