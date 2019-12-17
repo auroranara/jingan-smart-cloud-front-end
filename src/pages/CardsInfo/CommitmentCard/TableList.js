@@ -2,15 +2,16 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Button, Card, Modal, Table, message } from 'antd';
+import { Button, Card, Empty, Modal, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './TableList.less';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableColumns } from './utils';
+import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, getSearchFields, getTableColumns } from './utils';
 
-@connect(({ cardsInfo, loading }) => ({
+@connect(({ user, cardsInfo, loading }) => ({
+  user,
   cardsInfo,
   loading: loading.models.cardsInfo,
 }))
@@ -99,6 +100,7 @@ export default class TableList extends PureComponent {
   render() {
     const {
       loading,
+      user: { currentUser: { unitType } },
       cardsInfo: { commitList, commitTotal },
     } = this.props;
     const { current } = this.state;
@@ -111,7 +113,8 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
-    const columns = getTableColumns(this.handleDelete, this.showModal);
+    const fields = getSearchFields(unitType);
+    const columns = getTableColumns(this.handleDelete, this.showModal, unitType);
 
     return (
       <PageHeaderLayout
@@ -125,7 +128,7 @@ export default class TableList extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={FIELDS}
+            fields={fields}
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
@@ -134,15 +137,17 @@ export default class TableList extends PureComponent {
           />
         </Card>
         <div className={styles1.container}>
-          <Table
-            rowKey="id"
-            loading={loading}
-            columns={columns}
-            dataSource={list}
-            onChange={this.onTableChange}
-            scroll={{ x: 1400 }} // 项目不多时注掉
-            pagination={{ pageSize: PAGE_SIZE, total: commitTotal, current }}
-          />
+          {list.length ? (
+            <Table
+              rowKey="id"
+              loading={loading}
+              columns={columns}
+              dataSource={list}
+              onChange={this.onTableChange}
+              scroll={{ x: 1400 }} // 项目不多时注掉
+              pagination={{ pageSize: PAGE_SIZE, total: commitTotal, current }}
+            />
+          ) : <Empty />}
         </div>
         {this.renderModal()}
       </PageHeaderLayout>

@@ -8,6 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST_URL, handleEquipmentValues } from './utils';
 import { handleDetails } from '../CommitmentCard/utils';
+import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './TableList.less';
 
 // const { Search } = Input;
@@ -37,7 +38,8 @@ const COLUMNS = [
   },
 ];
 
-@connect(({ cardsInfo, loading }) => ({
+@connect(({ user, cardsInfo, loading }) => ({
+  user,
   cardsInfo,
   loading: loading.models.cardsInfo,
 }))
@@ -53,8 +55,13 @@ export default class Edit extends PureComponent {
     const {
       dispatch,
       match: { params: { id } },
+      form: { setFieldsValue },
+      user: { currentUser: { unitType, companyId, companyName } },
     } = this.props;
-    id && this.getDetail(id);
+    if (id)
+      this.getDetail(id);
+    else if (isCompanyUser(+unitType))
+      setFieldsValue({ companyId: { key: companyId, label: companyName } });
     dispatch({ type: 'cardsInfo/fetchRiskTypes' });
   }
 
@@ -128,7 +135,8 @@ export default class Edit extends PureComponent {
 
     this.setState({ selectedCard: undefined });
     const companyId = getFieldValue('companyId');
-    console.log(companyId);
+    if (!this.values.letterName)
+      delete this.values.letterName;
     companyId && companyId.key && dispatch({
       type: 'cardsInfo/fetchInformCards',
       payload: { pageNum, pageSize: TABLE_PAGE_SIZE, companyId: companyId.key, ...this.values },
@@ -159,7 +167,6 @@ export default class Edit extends PureComponent {
   };
 
   handleSelectedRowKeysChange = (selectedRowKeys, selectedRows) => {
-    // console.log(selectedRows);
     this.setState({ selectedCard: selectedRows[0] });
   };
 
@@ -233,6 +240,7 @@ export default class Edit extends PureComponent {
       loading,
       match: { params: { id } },
       form: { getFieldDecorator },
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const isDet = this.isDetail();
@@ -251,15 +259,17 @@ export default class Edit extends PureComponent {
     //   />
     // );
     const selectButton = (
-      <Input
-        disabled
-        placeholder="请选择作业/设备名称"
-        addonAfter={<Button type="primary" onClick={this.showModal}>选择</Button>}
-      />
+      <div className={styles.container}>
+        <Input
+          disabled
+          placeholder="请选择作业/设备名称"
+          addonAfter={<Button type="primary" disabled={isDet ? true : loading} onClick={this.showModal}>选择</Button>}
+        />
+      </div>
     );
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect' },
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isCompanyUser(+unitType) },
       { name: 'name', label: '应急卡名称' },
       { name: 'equipmentName', label: '作业/设备名称', type: 'compt', component: selectButton },
       { name: 'riskWarning', label: '风险提示', type: 'text' },
@@ -280,9 +290,7 @@ export default class Edit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          <div className={styles.container}>
-            {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
-          </div>
+          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
           {isDet ? (
             <Button
               type="primary"

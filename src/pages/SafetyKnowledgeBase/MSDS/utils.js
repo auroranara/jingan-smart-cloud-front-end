@@ -72,6 +72,7 @@ function genFormItem(field, getFieldDecorator) {
     type = 'input',
     name,
     label,
+    disabled = false,
     placeholder,
     required = true,
     options,
@@ -97,12 +98,12 @@ function genFormItem(field, getFieldDecorator) {
       case 'text':
         placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
-        component = <TextArea placeholder={placeholder} autoSize />;
+        component = <TextArea placeholder={placeholder} disabled={disabled} autoSize />;
         break;
       case 'select':
         placeholder = placeholder || `请选择${label}`;
         component = (
-          <Select placeholder={placeholder} allowClear>
+          <Select placeholder={placeholder} disabled={disabled} allowClear>
             {opts.map(({ key, value }) => (
               <Option key={key}>{value}</Option>
             ))}
@@ -110,26 +111,26 @@ function genFormItem(field, getFieldDecorator) {
         );
         break;
       case 'radio':
-        component = <RadioGroup options={getOptions(options, ['value', 'label'])} />;
+        component = <RadioGroup disabled={disabled} options={getOptions(options, ['value', 'label'])} />;
         break;
       case 'datepicker':
-        component = <DatePicker allowClear />;
+        component = <DatePicker disabled={disabled} allowClear />;
         break;
       case 'rangepicker':
-        component = <RangePicker allowClear />;
+        component = <RangePicker disabled={disabled} allowClear />;
         break;
       case 'cascader':
         placeholder = placeholder || `请选择${label}`;
-        component = <Cascader placeholder={placeholder} options={options} allowClear />;
+        component = <Cascader placeholder={placeholder} disabled={disabled} options={options} allowClear />;
         break;
       case 'companyselect':
         placeholder = placeholder || `请选择${label}`;
-        component = <CompanySelect />;
+        component = <CompanySelect disabled={disabled} />;
         break;
       default:
         placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
-        component = <Input placeholder={placeholder} allowClear />;
+        component = <Input placeholder={placeholder} disabled={disabled} allowClear />;
     }
 
     rules.unshift({ required, message: `${label}不能为空` });
