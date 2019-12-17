@@ -28,7 +28,7 @@ export default class TableList extends PureComponent {
     const { dispatch } = this.props;
     const vals = { ...this.values };
     if (vals.time)
-      vals.time = +vals.time.startOf('day');
+      vals.time = vals.time.format('YYYY-MM-DD');
 
     if (!pageNum) { // pageNum不存在，则为初始化
       pageNum = 1;
