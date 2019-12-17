@@ -79,7 +79,7 @@ const list = [
 const fields = [
   { label: '存储物质', value: 'store' },
   { label: '危险性类别', value: 'type' },
-  { label: '实际储量(q)', value: 'acture' },
+  { label: '实时储量(q)', value: 'acture' },
   { label: '临界量(Q)', value: 'max' },
 ];
 

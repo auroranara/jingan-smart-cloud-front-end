@@ -294,7 +294,7 @@ const controls = [
 
 export default class Map extends PureComponent {
   state = {
-    gdMapVisible: true,
+    gdMapVisible: false,
     visibles: [true, true, true],
   };
 
@@ -304,7 +304,7 @@ export default class Map extends PureComponent {
   lastTime = 0;
 
   componentDidMount() {
-    // this.initMap();
+    this.initMap();
     const { onRef } = this.props;
     onRef && onRef(this);
   }
@@ -325,20 +325,20 @@ export default class Map extends PureComponent {
     this.markerArray[5].jump({ times: 0, duration: 2, height: 2, delay: 0 });
   };
 
-  addMarkers = (x, y, url, restProps) => {
-    const groupID = 1;
-    const groupLayer = map.getFMGroup(groupID);
-    const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
-    groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
+  addMarkers = (markerProps, layer) => {
+    let markerLayer = layer;
+    if (!layer) {
+      const groupID = 1;
+      const groupLayer = map.getFMGroup(groupID);
+      const newLayer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+      groupLayer.addLayer(newLayer); //添加图片标注层到模型层。否则地图上不会显示
+    }
     const im = new fengmap.FMImageMarker({
-      x,
-      y,
-      url, //设置图片路径
       size: 50, //设置图片显示尺寸
       height: 3, //标注高度，大于model的高度
-      ...restProps,
+      ...markerProps,
     });
-    layer.addMarker(im); //图片标注层添加图片Marker
+    markerLayer.addMarker(im); //图片标注层添加图片Marker
     im.alwaysShow();
     this.markerArray.push(im);
   };
@@ -411,9 +411,19 @@ export default class Map extends PureComponent {
       map.mapScaleLevel = 21;
       //显示按钮
       // document.getElementById('btnsGroup').style.display = 'block';
-      [...riskPointData, ...videoData, ...monitorData].forEach(element => {
-        const { x, y, url, ...rest } = element;
-        this.addMarkers(x, y, url, rest);
+      // [...riskPointData, ...videoData, ...monitorData].forEach(element => {
+      //   const { x, y, url, ...rest } = element;
+      //   this.addMarkers(x, y, url, rest);
+      // });
+
+      [riskPointData, videoData, monitorData].forEach(element => {
+        const groupID = 1;
+        const groupLayer = map.getFMGroup(groupID);
+        const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+        groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
+        element.forEach(item => {
+          this.addMarkers(item, layer);
+        });
       });
 
       const ctlOpt = new fengmap.controlOptions({
@@ -576,20 +586,10 @@ export default class Map extends PureComponent {
     const copy = [...visibles];
     copy[index] = !visibles[index];
     this.setState({ visibles: copy });
-    // const groupLayer = map.getFMGroup(1);
-    // const layers = groupLayer.getLayer('imageMarker');
-    // console.log('layers', layers);
-    if (index === 0) {
-      for (let i = 0; i < 4; i++) {
-        this.markerArray[i].show = copy[index];
-      }
-    } else if (index === 1) {
-      this.markerArray[4].show = copy[index];
-    } else if (index === 2) {
-      this.markerArray[5].show = copy[index];
-      this.markerArray[6].show = copy[index];
-      this.markerArray[7].show = copy[index];
-    }
+    const groupLayer = map.getFMGroup(1);
+    const layers = groupLayer.getLayer('imageMarker');
+    console.log('layers', layers);
+    layers[index].show = !visibles[index];
   };
 
   render() {

@@ -48,8 +48,9 @@ const SuppliesCodes = [
 ];
 
 @Form.create()
-@connect(({ emergencyManagement, company, loading }) => ({
+@connect(({ emergencyManagement, company, loading, user }) => ({
   emergencyManagement,
+  user,
   company,
   companyLoading: loading.effects['company/fetchModelList'],
 }))
@@ -129,12 +130,16 @@ export default class EmergencySuppliesHandler extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
 
     validateFields((error, formData) => {
       if (!error) {
         const payload = {
           ...formData,
+          companyId: unitType === 4 ? companyId : formData.companyId,
           materialType: formData.materialType.join(','),
         };
         const success = () => {
@@ -208,31 +213,37 @@ export default class EmergencySuppliesHandler extends PureComponent {
     const {
       form: { getFieldDecorator, getFieldsValue },
       emergencyManagement: { emergencyEquip = [] },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const { selectedCompany } = this.state;
     const { materialCode } = getFieldsValue();
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
-                </Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位名称"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
+                  </Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="物资名称" {...formItemLayout}>
             {getFieldDecorator('materialName', {
+              getValueFromEvent: e => e.target.value.trim(),
               rules: [{ required: true, message: '请输入物资名称' }],
             })(<Input placeholder="请输入物资名称" {...itemStyles} />)}
           </FormItem>
@@ -297,7 +308,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
               />
             )}
           </FormItem>
-          {/* <FormItem label="定期检查间隔（天）" {...formItemLayout}>
+          <FormItem label="定期检查间隔（天）" {...formItemLayout}>
             {getFieldDecorator('materialCount', {
               // rules: [{ required: true, message: '请输入定期检查间隔（天）' }],
             })(
@@ -322,9 +333,9 @@ export default class EmergencySuppliesHandler extends PureComponent {
                 parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
               />
             )}
-          </FormItem> */}
+          </FormItem>
           <FormItem label="备注" {...formItemLayout}>
-            {getFieldDecorator('remark')(
+            {getFieldDecorator('remark', { getValueFromEvent: e => e.target.value.trim() })(
               <TextArea rows={4} placeholder="请输入备注" maxLength="500" {...itemStyles} />
             )}
           </FormItem>

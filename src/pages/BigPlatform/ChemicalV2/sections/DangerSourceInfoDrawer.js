@@ -105,7 +105,7 @@ const fields = [
   { label: '存储物质', value: 'store' },
   { label: '危险性类别', value: 'type' },
   { label: '设计储量', value: 'max' },
-  { label: '实际储量', value: 'acture' },
+  { label: '实时储量', value: 'acture' },
 ];
 
 export default class DangerSourceInfoDrawer extends PureComponent {

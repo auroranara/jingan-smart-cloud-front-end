@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
+import { mapMutations } from '@/utils/utils';
 import headerBg from '@/assets/new-header-bg.png';
 import bgImg from '@/pages/BigPlatform/Chemical/imgs/bg.png';
 import menuIcon from './imgs/menu-icon.png';
@@ -130,12 +131,67 @@ export default class Chemical extends PureComponent {
       tankMonitorDrawerVisible: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
+
+    mapMutations(this, {
+      namespace: 'unitSafety',
+      types: [
+        // 获取企业信息
+        'fetchCompanyMessage',
+        // 获取特种设备数
+        'fetchSpecialEquipmentCount',
+        // 获取隐患列表
+        // 'fetchHiddenDangerList',
+        // 获取安全人员信息
+        'fetchSafetyOfficer',
+        'fetchHiddenDangerCount',
+        // 获取特种设备列表
+        'fetchSpecialEquipmentList',
+      ],
+    });
   }
 
   componentDidMount() {
+    this.init();
+  }
+
+  init = () => {
+    const {
+      // match: {
+      //   params: { companyId },
+      // },
+      dispatch,
+    } = this.props;
+    // 获取企业信息
+    this.fetchCompanyMessage({ company_id: companyId });
+    // 获取特种设备数
+    this.fetchSpecialEquipmentCount({ company_id: companyId });
+    // 获取隐患列表
+    // this.getHiddenDangerList();
+    // 获取隐患统计
+    this.fetchHiddenDangerCount({ company_id: companyId });
+    // 获取安全人员信息（安全人员信息卡片源数据）
+    this.fetchSafetyOfficer({ company_id: companyId });
+    // 获取特种设备列表
+    this.fetchSpecialEquipmentList({ companyId });
+
     this.fetchPoints();
     this.fetchHiddenDangerList();
-  }
+  };
+
+  getHiddenDangerList = restProps => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    this.fetchHiddenDangerList({
+      pageNum: 1,
+      pageSize: 10,
+      company_id: companyId,
+      status: 5,
+      ...restProps,
+    });
+  };
 
   fetchHiddenDangerList = pageNum => {
     const { dispatch } = this.props;
