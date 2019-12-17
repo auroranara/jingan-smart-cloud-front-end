@@ -7,6 +7,7 @@ import {
   remove,
   audit,
   publish,
+  submitReview,
 } from '@/services/safetySystem';
 
 export default {
@@ -20,7 +21,7 @@ export default {
 
   effects: {
     // 获取列表
-    *getList({ payload, callback }, { call, put }) {
+    *getList ({ payload, callback }, { call, put }) {
       const response = yield call(getList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
@@ -37,7 +38,7 @@ export default {
       }
     },
     // 获取历史列表
-    *getHistoryList({ payload, callback }, { call, put }) {
+    *getHistoryList ({ payload, callback }, { call, put }) {
       const response = yield call(getHistoryList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
@@ -54,14 +55,14 @@ export default {
       }
     },
     // 获取详情
-    *getDetail({ payload, callback }, { call, put }) {
+    *getDetail ({ payload, callback }, { call, put }) {
       const response = yield call(getDetail, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data) {
         const { otherFileList } = data;
         const detail = {
           ...data,
-          otherFile: otherFileList && otherFileList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+          otherFile: otherFileList && otherFileList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1 - index, status: 'done' })),
         };
         yield put({
           type: 'save',
@@ -75,34 +76,39 @@ export default {
       }
     },
     // 新增
-    *add({ payload, callback }, { call }) {
+    *add ({ payload, callback }, { call }) {
       const response = yield call(add, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     // 编辑
-    *edit({ payload, callback }, { call }) {
+    *edit ({ payload, callback }, { call }) {
       const response = yield call(edit, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     // 删除
-    *remove({ payload, callback }, { call }) {
+    *remove ({ payload, callback }, { call }) {
       const response = yield call(remove, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     // 删除
-    *audit({ payload, callback }, { call }) {
+    *audit ({ payload, callback }, { call }) {
       const response = yield call(audit, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     // 发布
-    *publish({ payload, callback }, { call }) {
+    *publish ({ payload, callback }, { call }) {
       const response = yield call(publish, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
+    },
+    // 提交审批
+    *submitReview ({ payload, callback }, { call }) {
+      const res = yield call(submitReview, payload);
+      callback && callback(res)
     },
   },
 
