@@ -94,7 +94,7 @@ export default class EmergencyEquipmentList extends PureComponent {
   renderForm = () => {
     const {
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     const fields = [
@@ -109,13 +109,6 @@ export default class EmergencyEquipmentList extends PureComponent {
         id: 'equipCode',
         render() {
           return <Input placeholder="请输入装备编码" />;
-        },
-        transform,
-      },
-      {
-        id: 'companyName',
-        render() {
-          return <Input placeholder="请输入单位名称" />;
         },
         transform,
       },
@@ -204,6 +197,13 @@ export default class EmergencyEquipmentList extends PureComponent {
           );
         },
       },
+      {
+        id: 'companyName',
+        render() {
+          return <Input placeholder="请输入单位名称" />;
+        },
+        transform,
+      },
     ];
 
     // 是否有新增权限
@@ -212,7 +212,7 @@ export default class EmergencyEquipmentList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={fields}
+          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -279,6 +279,9 @@ export default class EmergencyEquipmentList extends PureComponent {
       loading = false,
       emergencyManagement: {
         equipment: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} },
+      },
+      user: {
+        currentUser: { unitType, permissionCodes },
       },
     } = this.props;
     const { currentPage, scrollX } = this.state;
@@ -439,7 +442,7 @@ export default class EmergencyEquipmentList extends PureComponent {
             <Table
               rowKey="id"
               loading={loading}
-              columns={columns}
+              columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
               dataSource={list}
               pagination={false}
               // scroll={{ x: true }}

@@ -60,8 +60,9 @@ const limitDecimals = value => {
 };
 
 @Form.create()
-@connect(({ emergencyManagement, company, loading }) => ({
+@connect(({ emergencyManagement, company, loading, user }) => ({
   emergencyManagement,
+  user,
   company,
   companyLoading: loading.effects['company/fetchModelList'],
 }))
@@ -87,8 +88,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
       },
       form: { setFieldsValue },
     } = this.props;
-    // this.fetchMonitoringTypeDict();
-    // this.fetchSensorBrandDict()
+    this.fetchDict({ type: 'emergencyOutfit' });
     // 如果编辑
     if (id) {
       // 获取详情
@@ -116,13 +116,14 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             storeName,
             registerType,
             daySpace,
+            dayMaintSpace,
             remark,
             fileList,
           } = response.data;
           setFieldsValue({
             companyId,
             equipName,
-            equipType,
+            equipType: equipType && equipType.split(','),
             equipCode,
             equipSource,
             equipModel,
@@ -130,14 +131,15 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             equipPrice,
             equipUnit,
             equipProducer,
-            produceDate: moment(+produceDate),
+            produceDate: produceDate && moment(+produceDate),
             limitYear,
-            buyDate: moment(+buyDate),
+            buyDate: buyDate && moment(+buyDate),
             use,
             status,
             storeName,
             registerType,
             daySpace,
+            dayMaintSpace,
             remark,
           });
           this.setState({
@@ -161,6 +163,11 @@ export default class EmergencyEquipmentHandler extends PureComponent {
     }
   }
 
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
+  };
+
   /**
    * 获取企业列表（弹窗）
    */
@@ -176,14 +183,19 @@ export default class EmergencyEquipmentHandler extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
     const { fileList } = this.state;
 
     validateFields((error, formData) => {
-      if (!error) {
+      // if (!error) {
+      if (true) {
         const payload = {
           ...formData,
-          equipCode: 66666,
+          companyId: unitType === 4 ? companyId : formData.companyId,
+          equipType: formData.equipType.join(','),
           fileList: fileList.map(({ name, url, dbUrl }) => ({
             fileName: name,
             webUrl: url,
@@ -261,35 +273,55 @@ export default class EmergencyEquipmentHandler extends PureComponent {
     return fileList;
   };
 
+  handleChangeEquipType = value => {
+    const {
+      emergencyManagement: { emergencyOutfit = [] },
+      form: { setFieldsValue },
+    } = this.props;
+    let treeData = emergencyOutfit;
+    const typeCodes = value.map(id => {
+      const val = treeData.find(item => item.id === id) || {};
+      treeData = val.children;
+      return val.value;
+    });
+    setFieldsValue({ equipCode: typeCodes[typeCodes.length - 1] });
+  };
+
   /**
    * 渲染表单
    */
   renderForm = () => {
     const {
-      form: { getFieldDecorator, getFieldValue },
+      form: { getFieldDecorator, getFieldsValue },
+      emergencyManagement: { emergencyOutfit = [] },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const { selectedCompany, uploading, fileList } = this.state;
-
+    const { equipCode } = getFieldsValue();
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
-                </Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位名称"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
+                  </Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="装备名称" {...formItemLayout}>
             {getFieldDecorator('equipName', {
               rules: [{ required: true, message: '请输入装备名称' }],
@@ -297,29 +329,27 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
           <FormItem label="装备类型" {...formItemLayout}>
             {getFieldDecorator('equipType', {
-              // rules: [{ required: true, message: '请选择装备类型' }],
+              rules: [{ required: true, message: '请选择装备类型' }],
             })(
               <Cascader
-                options={[]}
+                options={emergencyOutfit}
                 fieldNames={{
                   value: 'id',
-                  label: 'name',
+                  label: 'label',
                   children: 'children',
                   isLeaf: 'isLeaf',
                 }}
-                loadData={selectedOptions => {
-                  this.handleLoadData(['registerAddress'], selectedOptions);
-                }}
                 changeOnSelect
-                placeholder="请选择装备类型"
+                placeholder="请选择模拟事故类型"
                 allowClear
                 getPopupContainer={getRootChild}
+                onChange={this.handleChangeEquipType}
                 {...itemStyles}
               />
             )}
           </FormItem>
           <FormItem label="装备编码" {...formItemLayout}>
-            {getFieldDecorator('equipCode')(<span>{}</span>)}
+            {getFieldDecorator('equipCode')(<span>{equipCode || ''}</span>)}
           </FormItem>
           <FormItem label="装备来源" {...formItemLayout}>
             {getFieldDecorator('equipSource')(
@@ -431,8 +461,19 @@ export default class EmergencyEquipmentHandler extends PureComponent {
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="定期保修间隔（天）" {...formItemLayout}>
+          <FormItem label="定期检查间隔（天）" {...formItemLayout}>
             {getFieldDecorator('daySpace')(
+              <InputNumber
+                {...itemStyles}
+                min={0}
+                placeholder="请输入定期检查间隔"
+                formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
+                parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
+              />
+            )}
+          </FormItem>
+          <FormItem label="定期保修间隔（天）" {...formItemLayout}>
+            {getFieldDecorator('dayMaintSpace')(
               <InputNumber
                 {...itemStyles}
                 min={0}

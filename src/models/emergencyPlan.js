@@ -6,6 +6,7 @@ import {
   edit,
   audit,
   publish,
+  submitReview,
 } from '@/services/emergencyPlan';
 
 export default {
@@ -18,7 +19,7 @@ export default {
   },
 
   effects: {
-    *fetchList({ payload }, { call, put }) {
+    *fetchList ({ payload }, { call, put }) {
       const response = yield call(getList, payload);
       const { code, data } = response || {};
       if (code === 200) {
@@ -30,7 +31,7 @@ export default {
         });
       }
     },
-    *fetchHistory({ payload }, { call, put }) {
+    *fetchHistory ({ payload }, { call, put }) {
       const response = yield call(getHistory, payload);
       const { code, data } = response || {};
       if (code === 200) {
@@ -42,15 +43,15 @@ export default {
         });
       }
     },
-    *fetchDetail({ payload, callback }, { call, put }) {
+    *fetchDetail ({ payload, callback }, { call, put }) {
       const response = yield call(getDetail, payload);
       const { code, data } = response || {};
       if (code === 200) {
         const { recordCertificateList, emergencyFilesList } = data || {};
         const detail = {
           ...data,
-          recordCertificateList: recordCertificateList && recordCertificateList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
-          emergencyFilesList: emergencyFilesList && emergencyFilesList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+          recordCertificateList: recordCertificateList && recordCertificateList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1 - index, status: 'done' })),
+          emergencyFilesList: emergencyFilesList && emergencyFilesList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1 - index, status: 'done' })),
         };
         yield put({
           type: 'save',
@@ -61,25 +62,29 @@ export default {
         callback && callback(detail);
       }
     },
-    *add({ payload, callback }, { call }) {
+    *add ({ payload, callback }, { call }) {
       const response = yield call(add, payload);
       const { code } = response || {};
       callback && callback(code === 200);
     },
-    *edit({ payload, callback }, { call }) {
+    *edit ({ payload, callback }, { call }) {
       const response = yield call(edit, payload);
       const { code } = response || {};
       callback && callback(code === 200);
     },
-    *audit({ payload, callback }, { call }) {
+    *audit ({ payload, callback }, { call }) {
       const response = yield call(audit, payload);
       const { code } = response || {};
       callback && callback(code === 200);
     },
-    *publish({ payload, callback }, { call }) {
+    *publish ({ payload, callback }, { call }) {
       const response = yield call(publish, payload);
       const { code } = response || {};
       callback && callback(code === 200);
+    },
+    *submitReview ({ payload, callback }, { call }) {
+      const res = yield call(submitReview, payload)
+      if (callback) callback(res)
     },
   },
 
