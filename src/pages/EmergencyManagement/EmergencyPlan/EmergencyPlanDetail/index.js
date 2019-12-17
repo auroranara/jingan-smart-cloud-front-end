@@ -8,6 +8,7 @@ import moment from 'moment';
 import {
   TITLE,
   BREADCRUMB_LIST,
+  STATUS_OPTIONS,
 } from './config';
 import {
   SPAN,
@@ -31,11 +32,11 @@ import styles from './index.less';
   loading: loading.effects['emergencyPlan/fetchDetail'],
 }))
 export default class EmergencyPlanDetail extends Component {
-  componentDidMount() {
+  componentDidMount () {
     this.getDetail();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.clearDetail();
   }
 
@@ -70,7 +71,7 @@ export default class EmergencyPlanDetail extends Component {
     router.goBack();
   }
 
-  render() {
+  render () {
     const {
       emergencyPlan: {
         detail: {
@@ -97,7 +98,8 @@ export default class EmergencyPlanDetail extends Component {
           remark,
           historyType,
           status,
-        }={},
+          approveList = [], // 审核历史
+        } = {},
       },
       user: {
         currentUser: {
@@ -109,7 +111,7 @@ export default class EmergencyPlanDetail extends Component {
     } = this.props;
     const isNotCompany = +unitType !== 4;
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
-
+    const isDetail = window.location.href.includes('detail');
     const FIELDS = [
       ...(isNotCompany ? [{
         id: 'companyName',
@@ -281,21 +283,44 @@ export default class EmergencyPlanDetail extends Component {
         breadcrumbList={BREADCRUMB_LIST}
       >
         <Spin spinning={loading}>
-          <Card bordered={false}>
+          <Card title="基础信息" bordered={false}>
             <CustomForm
               buttonWrapperSpan={BUTTON_WRAPPER_SPAN}
               buttonWrapperClassName={styles.buttonWrapper}
               fields={FIELDS}
               searchable={false}
               resetable={false}
-              action={
-                <Fragment>
-                  <Button onClick={this.handleBackButtonClick}>返回</Button>
-                  {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>}
-                </Fragment>
-              }
+            // action={
+            //   <Fragment>
+            //     <Button onClick={this.handleBackButtonClick}>返回</Button>
+            //     {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>}
+            //   </Fragment>
+            // }
             />
           </Card>
+          {isDetail && approveList && approveList.length > 0 && (
+            <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
+              {approveList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
+                <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
+                  <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
+                  <p>一级审批人：{firstApproveBy || ''}</p>
+                  <p>二级审批人：{secondApproveBy || ''}</p>
+                  <p>三级审批人：{threeApproveBy || ''}</p>
+                  <p>经办人：{approveBy || ''}</p>
+                  <div style={{ display: 'flex' }}>
+                    <span>附件：</span>
+                    <div>{otherFileList.map(({ id, fileName, webUrl }) => (
+                      <div key={id}><a href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></div>
+                    ))}</div>
+                  </div>
+                </Card>
+              ))}
+            </Card>
+          )}
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <Button style={{ marginRight: '10px' }} onClick={this.handleBackButtonClick}>返回</Button>
+            {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>}
+          </div>
         </Spin>
       </PageHeaderLayout>
     );
