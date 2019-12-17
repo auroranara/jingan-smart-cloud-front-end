@@ -321,7 +321,7 @@ export default class StorageList extends PureComponent {
         dataIndex: 'area',
         align: 'center',
         width: 200,
-        render: (val, { area, location }) => `${area || ''}${location || ''}`,
+        render: (val, { area, location, buildingName, floorName }) => `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}`,
       },
       {
         title: '已绑监测设备',

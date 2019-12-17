@@ -2,22 +2,22 @@ import request from '@/utils/request';
 import { stringify } from 'qs';
 
 // 应急预案列表
-export async function getList(params) {
+export async function getList (params) {
   return request(`/acloud_new/v2/emergency/emergencyPlanForPageNew?${stringify(params)}`);
 }
 
 // 应急预案历史版本
-export async function getHistory(params) {
+export async function getHistory (params) {
   return request(`/acloud_new/v2/emergency/emergencyPlanVersionList?${stringify(params)}`);
 }
 
 // 应急预案详情
-export async function getDetail({ id }) {
+export async function getDetail ({ id }) {
   return request(`/acloud_new/v2/emergency/emergencyPlan/${id}`);
 }
 
 // 新增应急预案
-export async function add(params) {
+export async function add (params) {
   return request(`/acloud_new/v2/emergency/emergencyPlan`, {
     method: 'POST',
     body: params,
@@ -25,7 +25,7 @@ export async function add(params) {
 }
 
 // 编辑应急预案
-export async function edit(params) {
+export async function edit (params) {
   return request(`/acloud_new/v2/emergency/emergencyPlan`, {
     method: 'PUT',
     body: params,
@@ -33,11 +33,19 @@ export async function edit(params) {
 }
 
 // 审核应急预案
-export async function audit(params) {
+export async function audit (params) {
   return request(`/acloud_new/v2/emergency/emergencyPlan/approve?${stringify(params)}`);
 }
 
 // 发布应急预案
-export async function publish(params) {
+export async function publish (params) {
   return request(`/acloud_new/v2/emergency/emergencyPlan/publish?${stringify(params)}`);
+}
+
+// 提交审核提示
+export async function submitReview (body) {
+  return request('/acloud_new/v2/emergency/emergencyPlan/approve', {
+    method: 'POST',
+    body,
+  })
 }

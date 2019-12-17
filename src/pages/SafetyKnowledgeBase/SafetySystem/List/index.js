@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Input, Popconfirm, Card, Table, message, Empty, Modal } from 'antd';
+import { Button, Input, Popconfirm, Card, Table, message, Empty, Modal, Divider } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
@@ -10,6 +10,9 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import styles from './index.less';
+// 审核弹窗
+import ReviewModal from '@/pages/EmergencyManagement/EmergencyPlan/ReviewModal';
+import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
 
 export const TITLE = '安全制度管理';
 export const LIST_PATH = '/safety-production-regulation/safety-system/list';
@@ -73,7 +76,7 @@ const PUBLISH = 'safetySystem/publish';
   loading: loading.effects[GET_LIST],
   loadingHistory: loading.effects[GET_HISTORY_LIST],
 }), dispatch => ({
-  getList(payload, callback) {
+  getList (payload, callback) {
     dispatch({
       type: GET_LIST,
       payload: {
@@ -84,7 +87,7 @@ const PUBLISH = 'safetySystem/publish';
       callback,
     });
   },
-  getHistoryList(payload, callback) {
+  getHistoryList (payload, callback) {
     dispatch({
       type: GET_HISTORY_LIST,
       payload: {
@@ -95,37 +98,40 @@ const PUBLISH = 'safetySystem/publish';
       callback,
     });
   },
-  remove(payload, callback) {
+  remove (payload, callback) {
     dispatch({
       type: REMOVE,
       payload,
       callback,
     });
   },
-  audit(payload, callback) {
+  audit (payload, callback) {
     dispatch({
       type: AUDIT,
       payload,
       callback,
     });
   },
-  publish(payload, callback) {
+  publish (payload, callback) {
     dispatch({
       type: PUBLISH,
       payload,
       callback,
     });
   },
+  dispatch,
 }))
 export default class SafetySystemList extends Component {
   state = {
     historyVisible: false,
     data: undefined,
+    reviewModalVisible: false, // 审核弹窗可见
+    ruleId: undefined,
   }
 
   prevValues = {}
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       getList,
     } = this.props;
@@ -141,10 +147,10 @@ export default class SafetySystemList extends Component {
       safetySystem: {
         list: {
           pagination: {
-            pageNum=1,
-            pageSize=getPageSize(),
-          }={},
-        }={},
+            pageNum = 1,
+            pageSize = getPageSize(),
+          } = {},
+        } = {},
       },
       getList,
     } = this.props;
@@ -251,9 +257,9 @@ export default class SafetySystemList extends Component {
       safetySystem: {
         list: {
           pagination: {
-            pageSize=getPageSize(),
-          }={},
-        }={},
+            pageSize = getPageSize(),
+          } = {},
+        } = {},
       },
       getList,
     } = this.props;
@@ -275,9 +281,9 @@ export default class SafetySystemList extends Component {
       safetySystem: {
         list: {
           pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
+            pageSize: prevPageSize = getPageSize(),
+          } = {},
+        } = {},
       },
       getList,
     } = this.props;
@@ -303,9 +309,9 @@ export default class SafetySystemList extends Component {
       safetySystem: {
         list: {
           pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
+            pageSize: prevPageSize = getPageSize(),
+          } = {},
+        } = {},
       },
       getHistoryList,
     } = this.props;
@@ -318,17 +324,46 @@ export default class SafetySystemList extends Component {
     prevPageSize !== pageSize && setPageSize(pageSize);
   }
 
+  // 打开审核意见弹窗
+  handleViewReviewModal = (ruleId) => {
+    this.setState({ ruleId, reviewModalVisible: true })
+  }
+
+  // 提交审核意见
+  handleSubmitReview = (values) => {
+    const { dispatch } = this.props;
+    const { ruleId } = this.state;
+    if (!ruleId) {
+      message.error('参数planId不存在')
+      return;
+    }
+    const payload = { ...values, ruleId }
+    dispatch({
+      type: 'safetySystem/submitReview',
+      payload,
+      callback: (res) => {
+        if (res && res.code === 200) {
+          message.success('审核成功！');
+          this.setState({ reviewModalVisible: false })
+          this.reload();
+        } else {
+          message.warning('审核失败，请稍后重试')
+        }
+      },
+    })
+  }
+
   // 历史版本
-  renderHistory() {
+  renderHistory () {
     const {
       safetySystem: {
         historyList: {
-          list=[],
+          list = [],
           pagination: {
             total,
             pageSize,
             pageNum,
-          }={},
+          } = {},
         },
       },
       loadingHistory,
@@ -416,7 +451,7 @@ export default class SafetySystemList extends Component {
     );
   }
 
-  renderForm() {
+  renderForm () {
     const {
       user: {
         currentUser: {
@@ -475,17 +510,17 @@ export default class SafetySystemList extends Component {
     );
   }
 
-  renderTable() {
+  renderTable () {
     const {
       safetySystem: {
         list: {
-          list=[],
+          list = [],
           pagination: {
             total,
             pageNum,
             pageSize,
-          }={},
-        }={},
+          } = {},
+        } = {},
       },
       user: {
         currentUser: {
@@ -493,11 +528,9 @@ export default class SafetySystemList extends Component {
           unitType,
         },
       },
-      loading=false,
+      loading = false,
     } = this.props;
     const isNotCompany = unitType !== 4;
-    const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
-    const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasAuditAuthority = permissionCodes.includes(AUDIT_CODE);
     const hasPublishAuthority = permissionCodes.includes(PUBLISH_CODE);
     const columns = [
@@ -571,22 +604,26 @@ export default class SafetySystemList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
           <Fragment>
-            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleDetailButtonClick : undefined} data-id={id}>查看</span>}
-            {+status === 1 && (hasAuditAuthority ? (
-              <Popconfirm title="是否通过?" onConfirm={() => this.handleAuditConfirm(id)} onCancel={() => this.handleAuditCancel(id)} okText="通过" cancelText="不通过">
-                <span className={styles.operation}>审核</span>
-              </Popconfirm>
-            ) : (
-              <span className={classNames(styles.operation, styles.disabled)}>审核</span>
-            ))}
-            {+status === 2 && (hasPublishAuthority ? (
-              <Popconfirm title="你确定要发布吗?" onConfirm={() => this.handlePublishConfirm(id)}>
-                <span className={styles.operation} disabled={!hasPublishAuthority}>发布</span>
-              </Popconfirm>
-            ) : (
-              <span className={classNames(styles.operation, styles.disabled)}>发布</span>
-            ))}
-            {(+status === 3 || +status === 4) && <span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditButtonClick : undefined} data-id={id}>编辑</span>}
+            <AuthA code={DETAIL_CODE} onClick={this.handleDetailButtonClick} data-id={id}>查看</AuthA>
+            <Divider type="vertical" />
+            <AuthA
+              hasAuthFn={() => +status === 1 && hasAuditAuthority}
+              onClick={() => this.handleViewReviewModal(id)}
+            >审核</AuthA>
+            <Divider type="vertical" />
+            <AuthPopConfirm
+              title="你确定要发布吗?"
+              authority={+status === 2 && hasPublishAuthority}
+              onConfirm={() => this.handlePublishConfirm(id)}
+            >
+              发布
+            </AuthPopConfirm>
+            {(+status === 3 || +status === 4) && (
+              <Fragment>
+                <Divider type="vertical" />
+                <AuthA code={EDIT_CODE} onClick={this.handleEditButtonClick} data-id={id}>编辑</AuthA>
+              </Fragment>
+            )}
           </Fragment>
         ),
         align: 'center',
@@ -617,27 +654,28 @@ export default class SafetySystemList extends Component {
             }}
           />
         ) : (
-          <Empty />
-        )}
+            <Empty />
+          )}
       </Card>
     );
   }
 
-  render() {
+  render () {
     const {
-      user: {
-        currentUser: {
-          unitType,
-        },
-      },
+      user: { currentUser: { unitType } },
       safetySystem: {
         list: {
-          a=0,
-        }={},
+          a = 0,
+        } = {},
       },
     } = this.props;
+    const { reviewModalVisible } = this.state;
     const isNotCompany = unitType !== 4;
-
+    const reviewModalProps = {
+      visible: reviewModalVisible,
+      onOk: this.handleSubmitReview,
+      onCancel: () => { this.setState({ reviewModalVisible: false }) },
+    };
     return (
       <PageHeaderLayout
         title={TITLE}
@@ -649,6 +687,8 @@ export default class SafetySystemList extends Component {
         {this.renderForm()}
         {this.renderTable()}
         {this.renderHistory()}
+        {/* 审核提示弹窗 */}
+        <ReviewModal {...reviewModalProps} />
       </PageHeaderLayout>
     );
   }

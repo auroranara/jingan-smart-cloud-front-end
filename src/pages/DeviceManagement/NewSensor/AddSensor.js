@@ -95,6 +95,7 @@ export default class AddNewSensor extends Component {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: { isCompany, currentUser },
     } = this.props
     this.fetchMonitoringTypeDict()
     if (id) {
@@ -136,6 +137,9 @@ export default class AddNewSensor extends Component {
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
         },
       })
+    } else if (isCompany) {
+      const { companyId, companyName } = currentUser;
+      this.setState({ selectedCompany: { id: companyId, name: companyName } })
     }
   }
 
@@ -272,12 +276,13 @@ export default class AddNewSensor extends Component {
       dispatch,
       match: { params: { id } },
       form: { validateFields },
-    } = this.props
+    } = this.props;
     const {
       editingIndex,
       paramWarnStrategyDtos, // 报警策略
       fileList, // 安装图片
       pointFixInfoList, // 平面图标志
+      selectedCompany,
     } = this.state
     if (!isNaN(editingIndex)) {
       message.warning('请先保存平面图信息')
@@ -287,6 +292,7 @@ export default class AddNewSensor extends Component {
       if (err) return
       const payload = {
         ...values,
+        companyId: selectedCompany.id,
         paramWarnStrategyDtos, // 参数报警策略列表（自定义）
         installPhotoList: fileList, // 安装图片列表
         pointFixInfoList, // 平面图标注列表
@@ -466,8 +472,8 @@ export default class AddNewSensor extends Component {
   handleRefreshBuilding = (weatherFetch = false) => {
     const {
       form: { setFieldsValue, getFieldValue },
-    } = this.props
-    const companyId = getFieldValue('companyId')
+    } = this.props;
+    const companyId = this.state.selectedCompany.id;
     // 清空选择建筑物和楼层
     setFieldsValue({ buildingId: undefined, floorId: undefined })
     // 获取建筑物下拉 清空楼层下拉
@@ -546,6 +552,7 @@ export default class AddNewSensor extends Component {
       riskPointManage: {
         imgData: { list: imgList = [] },
       },
+      user: { isCompany },
     } = this.props
     const {
       editingIndex,
@@ -562,7 +569,8 @@ export default class AddNewSensor extends Component {
       selectedCompany,
     } = this.state
     // 地址录入方式
-    const { locationType, companyId } = getFieldsValue()
+    const { locationType } = getFieldsValue();
+    const companyId = selectedCompany ? selectedCompany.id : undefined;
     const FlatPicProps = {
       visible: picModalVisible,
       onCancel: () => { this.setState({ picModalVisible: false }) },
@@ -585,23 +593,25 @@ export default class AddNewSensor extends Component {
     return (
       <Card>
         <Form>
-          <FormItem label="所属单位" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
+          {!isCompany && (
+            <FormItem label="所属单位" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
                   </Button>
-              </Fragment>
-            )}
-          </FormItem>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="传感器名称" {...formItemLayout}>
             {getFieldDecorator('name', {
               initialValue: id ? detail.name : undefined,
