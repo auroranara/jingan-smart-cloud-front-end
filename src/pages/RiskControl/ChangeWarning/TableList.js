@@ -74,10 +74,8 @@ export default class TableList extends PureComponent {
     } = this.props;
     const { current } = this.state;
     const isComUser = isCompanyUser(unitType);
-    const fields = getSearchFields(this.getRangeFromEvent);
+    const fields = getSearchFields(this.getRangeFromEvent, isComUser);
     const columns = isComUser ? COLUMNS.filter(({ dataIndex }) => dataIndex !== 'companyName') : COLUMNS;
-    if (isComUser)
-      fields.shift();
 
     return (
       <PageHeaderLayout
