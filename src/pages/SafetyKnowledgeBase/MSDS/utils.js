@@ -79,6 +79,7 @@ function genFormItem(field, getFieldDecorator) {
     formItemOptions,
     component: compt,
     formExtraStyle,
+    wrapperClassName,
   } = field;
 
   let child = null;
@@ -138,15 +139,23 @@ function genFormItem(field, getFieldDecorator) {
     child = getFieldDecorator(name, formOptions)(component);
   }
 
-  return formExtraStyle ? (
-    <FormItem label={label} key={name} {...FORMITEM_LAYOUT_EXTRA}>
-      {child}
-    </FormItem>
-  ) : (
-    <FormItem label={label} key={name} {...FORMITEM_LAYOUT}>
-      {child}
-    </FormItem>
-  );
+  const props = {
+    label,
+    key: name,
+    className: wrapperClassName || undefined,
+    ...(formExtraStyle ? FORMITEM_LAYOUT_EXTRA : FORMITEM_LAYOUT),
+  };
+
+  // return formExtraStyle ? (
+  //   <FormItem label={label} key={name} {...FORMITEM_LAYOUT_EXTRA}>
+  //     {child}
+  //   </FormItem>
+  // ) : (
+  //   <FormItem label={label} key={name} {...FORMITEM_LAYOUT}>
+  //     {child}
+  //   </FormItem>
+  // );
+return <FormItem {...props}>{child}</FormItem>;
 }
 
 function renderSection(section, index, getFieldDecorator) {
