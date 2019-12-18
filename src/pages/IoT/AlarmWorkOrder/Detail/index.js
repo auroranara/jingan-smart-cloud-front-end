@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { message, Card, Steps, Collapse, Row, Col, Avatar, Spin } from 'antd';
+import { message, Card, Steps, Collapse, Row, Col, Avatar, Spin, Empty } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import DescriptionList from '@/components/DescriptionList';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
@@ -18,7 +18,20 @@ import styles from './index.less';
 const { Step } = Steps;
 const { Description } = DescriptionList;
 const { Panel } = Collapse;
-const Empty = () => <span className={styles.empty}>暂无数据</span>;
+const EmptyData = () => <span className={styles.empty}>暂无数据</span>;
+const getTransformedTime = (time) => {
+  if (time < 1000) {
+    return `${time}ms`;
+  } else if (time < 60 * 1000) {
+    return `${Math.round(time / 1000)}s`;
+  } else if (time < 60 * 60 * 1000) {
+    return `${Math.round(time / (60 * 1000))}min`;
+  } else if (time < 24 * 60 * 60 * 1000) {
+    return `${Math.floor(time / (60 * 60 * 1000))}h${Math.round(time % (60 * 60 * 1000) / (60 * 1000))}min`;
+  } else {
+    return `${Math.floor(time / (24 * 60 * 60 * 1000))}d${Math.floor(time % (24 * 60 * 60 * 1000) / (60 * 60 * 1000))}h${Math.round(time % (60 * 60 * 1000) / (60 * 1000))}min`;
+  }
+};
 
 @connect((state, { route: { name, code, path } }) => {
   const { breadcrumbList } = code.split('.').reduce((result, item, index, list) => {
@@ -41,16 +54,19 @@ const Empty = () => <span className={styles.empty}>暂无数据</span>;
   const {
     [namespace]: {
       detail,
+      messageList,
     },
     loading: {
       effects: {
         [`${namespace}/getDetail`]: loading,
+        [`${namespace}/getMessageList`]: loading2,
       },
     },
   } = state;
   return {
     detail,
-    loading,
+    messageList,
+    loading: loading || loading2,
     breadcrumbList,
   };
 }, (dispatch, { match: { params: { id } }, route: { code } }) => {
@@ -71,6 +87,21 @@ const Empty = () => <span className={styles.empty}>暂无数据</span>;
         },
       });
     },
+    getMessageList(payload, callback) {
+      dispatch({
+        type: `${namespace}/getMessageList`,
+        payload: {
+          processId: id,
+          ...payload,
+        },
+        callback: (success, data) => {
+          if (!success) {
+            message.error('获取消息列表失败，请稍后重试或联系管理人员！');
+          }
+          callback && callback(success, data);
+        },
+      });
+    },
   };
 })
 export default class AlarmWorkOrderDetail extends Component {
@@ -79,12 +110,19 @@ export default class AlarmWorkOrderDetail extends Component {
     currentImage: 0,
     videoVisible: false,
     videoKeyId: undefined,
-    collapseActiveKey: '1',
+    collapseActiveKey: undefined,
   }
 
   componentDidMount() {
-    const { getDetail } = this.props;
+    const { getDetail, getMessageList } = this.props;
     getDetail();
+    getMessageList({}, (success, messageList) => {
+      if (success) {
+        this.setState({
+          collapseActiveKey: messageList && messageList.length ? messageList[0].msg_id : undefined,
+        });
+      }
+    });
   }
 
   showVideo = () => {
@@ -113,37 +151,63 @@ export default class AlarmWorkOrderDetail extends Component {
   }
 
   renderWorkOrderFlow() {
-    // const {
-    //   detail: {
-
-    //   }={},
-    // } = this.props;
+    const {
+      detail: {
+        type,
+        createUserName,
+        createDate,
+        executorName,
+        endDate,
+        executeType,
+        startDate,
+        startUserName,
+      }={},
+    } = this.props;
+    let current = 0;
     const steps = [
       {
-        id: 1,
+        id: '工单创建',
         title: '工单创建',
-        description: moment('2019-12-13 08:55:49').format(DEFAULT_FORMAT),
-      },
-      {
-        id: 2,
-        title: '确认警情',
         description: (
           <Fragment>
-            <div>真实警情</div>
-            <div>李磊</div>
-            <div>{moment('2019-12-13 09:05:49').format(DEFAULT_FORMAT)}</div>
+            <div>{createUserName}</div>
+            <div>{moment(createDate).format(DEFAULT_FORMAT)}</div>
           </Fragment>
         ),
       },
-      {
-        id: 3,
-        title: '完成工单',
-      },
     ];
+    if (+executeType !== 2 && startDate) {
+      current += 1;
+      steps.push({
+        id: '确认警情',
+        title: '确认警情',
+        description: (
+          <Fragment>
+            <div>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>
+            <div>{startUserName}</div>
+            <div>{moment(startDate).format(DEFAULT_FORMAT)}</div>
+          </Fragment>
+        ),
+      });
+    }
+    if (endDate) {
+      current += 1;
+      steps.push({
+        id: '完成工单',
+        title: '完成工单',
+        description: (
+          <Fragment>
+            {+executeType !== 2 && <div>{executorName}</div>}
+            <div>{moment(endDate).format(DEFAULT_FORMAT)}</div>
+          </Fragment>
+        ),
+      });
+    }
+
 
     return (
       <Card className={styles.card} title="工单流程">
-        <Steps current={1}>
+        <Steps current={current}>
           {steps.map(({ id, title, description }) => (
             <Step title={title} description={description} key={id} />
           ))}
@@ -155,20 +219,19 @@ export default class AlarmWorkOrderDetail extends Component {
   renderWorkOrderInfo() {
     const {
       detail: {
-        videoList=[],
+        videoList,
         status,
-        isReal,
-        elapsedTime,
-        elapsedTimeUnit,
-        monitorObject,
-        monitorEquipmentName,
-        monitorTypeName,
+        type,
+        spendTime,
+        targetName,
+        deviceName,
+        reportTypeName,
         areaLocation,
-        fileList,
-        description,
+        reportPhotoList,
+        reportDesc,
       }={},
     } = this.props;
-    const isFinished = +status === 2;
+    const isFinished = +status === 1;
 
     return (
       <Card className={styles.card} title="工单信息">
@@ -179,57 +242,57 @@ export default class AlarmWorkOrderDetail extends Component {
                 <div className={styles.status}>
                   <SelectOrSpan list={STATUSES} value={`${status}`} type="span" />
                 </div>
-                {isReal > 0 && <div className={styles.realAlarm}>真实警情</div>}
+                {+type === 2 && <div className={styles.realAlarm}>真实警情</div>}
               </div>
-            ) : <Empty />}
+            ) : <EmptyData />}
           </Description>
           {isFinished && (
             <Description term="耗时">
-              {isNumber(elapsedTime) ? `${elapsedTime}${elapsedTimeUnit || 'min'}` : <Empty />}
+              {isNumber(spendTime) ? getTransformedTime(spendTime) : <EmptyData />}
             </Description>
           )}
           <Description term="监测对象">
-            {monitorObject || <Empty />}
+            {targetName || <EmptyData />}
           </Description>
         </DescriptionList>
         <DescriptionList className={styles.descriptionList} gutter={24}>
-          <Description term="监测设备名称">
+          <Description term="设备名称/主机编号">
             <div className={styles.nameWrapper}>
-              <div className={styles.name}>{monitorEquipmentName || <Empty />}</div>
+              <div className={styles.name}>{deviceName || <EmptyData />}</div>
               {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
             </div>
           </Description>
           <Description term="监测类型">
-            {monitorTypeName || <Empty />}
+            {reportTypeName || <EmptyData />}
           </Description>
           <Description term="区域位置">
-            {areaLocation || <Empty />}
+            {areaLocation || <EmptyData />}
           </Description>
         </DescriptionList>
         {isFinished && (
           <Fragment>
             <DescriptionList className={styles.descriptionList} gutter={24} col={1}>
               <Description term="现场照片">
-                {fileList && fileList.length ? (
+                {reportPhotoList && reportPhotoList.length ? (
                   <div className={styles.imageContainer}>
-                    {fileList.map(({ webUrl }, index) => (
+                    {reportPhotoList.map(({ webUrl }, index) => (
                       <div className={styles.imageWrapper} key={index}>
                         <div
                           className={styles.image}
                           style={{
                             backgroundImage: `url(${webUrl})`,
                           }}
-                          onClick={() => this.setState({ images: fileList.map(({ webUrl }) => webUrl), currentImage: index })}
+                          onClick={() => this.setState({ images: reportPhotoList.map(({ webUrl }) => webUrl), currentImage: index })}
                         />
                       </div>
                     ))}
                   </div>
-                ) : <Empty />}
+                ) : <EmptyData />}
               </Description>
             </DescriptionList>
             <DescriptionList gutter={24} col={1}>
-              <Description term="问题描述">
-                {description || <Empty />}
+              <Description term="问题描述" className={styles.description}>
+                {reportDesc || <EmptyData />}
               </Description>
             </DescriptionList>
           </Fragment>
@@ -239,211 +302,62 @@ export default class AlarmWorkOrderDetail extends Component {
   }
 
   renderMessageNotification() {
-    // const {
-    //   detail: {
-
-    //   }={},
-    // } = this.props;
+    const {
+      messageList=[],
+    } = this.props;
     const { collapseActiveKey } = this.state;
 
     return (
-      <Card className={styles.card} title={<Fragment>消息通知<span className={styles.total}>（共3条）</span></Fragment>}>
+      <Card className={styles.card} title={<Fragment>消息通知<span className={styles.total}>（共{(messageList || []).length}条）</span></Fragment>}>
         <Collapse className={styles.collapse} bordered={false} activeKey={collapseActiveKey} onChange={this.handleCollapseChange}>
-          <Panel header={
-            <div className={styles.message}>
-              <div className={styles.messageLeft}>2019-12-13 08:11:11&nbsp;&nbsp;燃气浓度为 24%LEL，超过预警值 9%LEL</div>
-              <div className={styles.messageRight}>站内信：2人已读，1人未读；短信共发送 2人</div>
-            </div>
-          } key="1">
-            <Row gutter={24}>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    李
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>李磊</div>
-                      <div className={styles.receiverPhone}>131 1243 0900</div>
+          {messageList && messageList.length ? messageList.map(({ msg_id, add_time, msg_content, acceptUserList }) => {
+            const { content, readCount, unreadCount } = acceptUserList && acceptUserList.length ? acceptUserList.reduce((result, { accept_user_id, accept_user_name, accept_user_phone, status }) => {
+              if (+status) {
+                result.unreadCount += 1;
+              } else {
+                result.readCount += 1;
+              }
+              result.content.push((
+                <Col span={6} key={accept_user_id}>
+                  <div className={styles.receiverWrapper}>
+                    <Avatar className={styles.avatar}>
+                      {accept_user_name[0]}
+                    </Avatar>
+                    <div className={styles.receiverInfoWrapper}>
+                      <div className={styles.receiverInfo}>
+                        <div className={styles.receiverName}>{accept_user_name}</div>
+                        <div className={styles.receiverPhone}>{accept_user_phone}</div>
+                      </div>
+                      <div className={styles.receiverStatus}>{`站内信${+status ? '未读' : '已读'}`}</div>
                     </div>
-                    <div className={styles.receiverStatus}>站内信已读，短信已发</div>
                   </div>
+                </Col>
+              ));
+              return result;
+            }, {
+              content: [],
+              readCount: 0,
+              unreadCount: 0,
+            }) : {
+              content: <Empty />,
+              readCount: 0,
+              unreadCount: 0,
+            };
+            return (
+              <Panel header={
+                <div className={styles.message}>
+                  <div className={styles.messageLeft}>{moment(add_time).format(DEFAULT_FORMAT)}&nbsp;&nbsp;{msg_content}</div>
+                  <div className={styles.messageRight}>站内信：{`${readCount}人已读，${unreadCount}人未读`}</div>
                 </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    王
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>王林</div>
-                      <div className={styles.receiverPhone}>131 9800 1276</div>
-                    </div>
-                    <div className={styles.receiverStatus}>站内信未读</div>
-                  </div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                  朱
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>朱鹏</div>
-                      <div className={styles.receiverPhone}>131 9789 2120</div>
-                    </div>
-                    <div className={styles.receiverStatus}>短信已发</div>
-                  </div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    李
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>李梅</div>
-                      <div className={styles.receiverPhone}>131 2243 1980</div>
-                    </div>
-                    <div className={styles.receiverStatus}>站内信已读</div>
-                  </div>
-                </div>
-              </Col>
-            </Row>
-          </Panel>
-          <Panel header={
-            <div className={styles.message}>
-            <div className={styles.messageLeft}>2019-12-12 11:13:12&nbsp;&nbsp;报警解除（燃气浓度）</div>
-            <div className={styles.messageRight}>站内信：3人已读；短信共发送 2人</div>
-          </div>
-          } key="2">
-            <Row gutter={24}>
-            <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    李
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>李磊</div>
-                      <div className={styles.receiverPhone}>131 1243 0900</div>
-                    </div>
-                    <div className={styles.receiverStatus}>站内信已读，短信已发</div>
-                  </div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    王
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>王林</div>
-                      <div className={styles.receiverPhone}>131 9800 1276</div>
-                    </div>
-                    <div className={styles.receiverStatus}>站内信已读</div>
-                  </div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                  朱
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>朱鹏</div>
-                      <div className={styles.receiverPhone}>131 9789 2120</div>
-                    </div>
-                    <div className={styles.receiverStatus}>短信已发</div>
-                  </div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    李
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>李梅</div>
-                      <div className={styles.receiverPhone}>131 2243 1980</div>
-                    </div>
-                    <div className={styles.receiverStatus}>站内信已读</div>
-                  </div>
-                </div>
-              </Col>
-            </Row>
-          </Panel>
-          <Panel header={
-            <div className={styles.message}>
-            <div className={styles.messageLeft}>2019-12-12 08:55:49&nbsp;&nbsp;燃气浓度为 35%LEL，超过报警值 10%LEL</div>
-            <div className={styles.messageRight}>站内信：1人已读，2人未读；短信共发送 2人</div>
-          </div>
-          } key="3">
-            <Row gutter={24}>
-            <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    李
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>李磊</div>
-                      <div className={styles.receiverPhone}>131 1243 0900</div>
-                    </div>
-                    <div className={styles.receiverStatus}>站内信已读，短信已发</div>
-                  </div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    王
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>王林</div>
-                      <div className={styles.receiverPhone}>131 9800 1276</div>
-                    </div>
-                    <div className={styles.receiverStatus}>站内信未读</div>
-                  </div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                  朱
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>朱鹏</div>
-                      <div className={styles.receiverPhone}>131 9789 2120</div>
-                    </div>
-                    <div className={styles.receiverStatus}>短信已发</div>
-                  </div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className={styles.receiverWrapper}>
-                  <Avatar className={styles.avatar}>
-                    李
-                  </Avatar>
-                  <div className={styles.receiverInfoWrapper}>
-                    <div className={styles.receiverInfo}>
-                      <div className={styles.receiverName}>李梅</div>
-                      <div className={styles.receiverPhone}>131 2243 1980</div>
-                    </div>
-                    <div className={styles.receiverStatus}>站内信未读</div>
-                  </div>
-                </div>
-              </Col>
-            </Row>
-          </Panel>
+              } key={msg_id}>
+                <Row gutter={24} className={styles.row}>
+                  {content}
+                </Row>
+              </Panel>
+            );
+          }) : (
+            <Empty />
+          )}
         </Collapse>
       </Card>
     );
