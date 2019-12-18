@@ -99,13 +99,14 @@ export default class Edit extends PureComponent {
   };
 
   handleUploadPhoto = info => {
+    console.log(info);
     const { form: { setFieldsValue } } = this.props
     // 限制一个文件，但有可能新文件上传失败，所以在新文件上传完成后判断，成功则只保留新的，失败，则保留原来的
     const { fileList: fList, file } = info;
     let fileList = [...fList];
 
-    if (file.status === 'done'){
-      if (file.response.code === 200)
+    if (file.status === 'done' || file.status === undefined){ // file.status === undefined 为文件被beforeUpload拦截下拉的情况
+      if (file.response && file.response.code === 200)
         fileList = [file];
       else
         fileList = fileList.slice(0, 1);
