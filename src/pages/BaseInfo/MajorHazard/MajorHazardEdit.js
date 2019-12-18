@@ -27,16 +27,19 @@ const addTitle = '新增重大危险源';
     storageAreaManagement,
     gasometer,
     videoMonitor,
+    account,
     user,
     loading,
   }) => ({
     reservoirRegion,
     user,
     videoMonitor,
+    account,
     storageAreaManagement,
     productionEquipments,
     gasometer,
     loading: loading.models.reservoirRegion,
+    // personModalLoading:
   })
 )
 @Form.create()
@@ -59,7 +62,8 @@ export default class MajorHazardEdit extends PureComponent {
       tankAreaList: [], // 储罐区选中列表
       wareHouseAreaList: [], // 库区选中列表
       gasHolderManageList: [], // 气柜选中列表
-      productList: [],
+      productList: [], // 生产装置选中列表
+      personModalVisible: false, // 重大危险源责任人弹框是否可见
     };
   }
 
@@ -378,6 +382,7 @@ export default class MajorHazardEdit extends PureComponent {
     this.setState({ targetKeys: i });
   };
 
+  // 选中的重大危险源数据
   handleDangerOk = () => {
     const {
       storageAreaManagement: { list: storageList = [] },
@@ -429,14 +434,54 @@ export default class MajorHazardEdit extends PureComponent {
     });
   };
 
+  // 打开责任人弹框
+  handlePersonModal = () => {
+    const {
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+    const { editCompanyId } = this.state;
+    const fixedCompanyId = this.companyId || editCompanyId || companyId;
+    if (fixedCompanyId) {
+      this.fetchPersonModalList({ companyId: fixedCompanyId });
+      this.setState({ personModalVisible: true });
+    } else {
+      message.warning('请先选择单位！');
+    }
+  };
+
+  // 获取责任人列表
+  fetchPersonModalList = () => {
+    const {
+      dispatch,
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'account/fetch',
+      payload: {
+        unitId: this.companyId || companyId,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  };
+
+  // 选中责任人数据
+  handlePersonModalSelect = item => {
+    console.log('item', item);
+  };
+
   renderInfo() {
     const {
       form: { getFieldDecorator, getFieldValue },
       reservoirRegion: {
         dangerTypeList,
-        productTypeList,
-        dangerChemicalsList,
-        memoryPlaceList,
+        // productTypeList,
+        // dangerChemicalsList,
+        // memoryPlaceList,
         antiStaticList,
       },
       user: {
@@ -456,16 +501,16 @@ export default class MajorHazardEdit extends PureComponent {
       code,
       name,
       desc,
-      manageType,
-      memoryPlace,
+      // manageType,
+      // memoryPlace,
       antiStatic,
       dangerTechnology,
       location,
       useDate,
       r,
       dangerLevel,
-      chemiclaNature,
-      industryArea,
+      // chemiclaNature,
+      // industryArea,
       environmentType,
       environmentName,
       environmentNum,
@@ -474,14 +519,15 @@ export default class MajorHazardEdit extends PureComponent {
       linkman,
       linkmanTel,
     } = detailList;
-
-    const dangerSourceList = getFieldValue('dangerSourceList') || [];
+    // const dangerSourceList = getFieldValue('dangerSourceList') || [];
 
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
+
     const itemStyles = { style: { width: '70%', marginRight: '10px' } };
+
     return (
       <Card className={styles.card} bordered={false}>
         <Form style={{ marginTop: 8 }}>
@@ -554,18 +600,41 @@ export default class MajorHazardEdit extends PureComponent {
               />
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="生产经营活动类型">
-            {getFieldDecorator('manageType', {
-              initialValue: manageType,
+          <FormItem {...formItemLayout} label="R值">
+            {getFieldDecorator('r', {
+              initialValue: r,
+              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
-                  message: '请选择生产经营活动类型',
+                  message: '请输入R值',
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择生产经营活动类型">
-                {productTypeList.map(({ key, value }) => (
+              <Fragment>
+                <Input
+                  {...itemStyles}
+                  placeholder="请填入此重大危险源由专家评估的R值"
+                  maxLength={15}
+                />
+                <div style={{ color: '#999' }}>
+                  重大危险源评估，请参照GB 18218-2018 危险化学品重大危险源辨识
+                </div>
+              </Fragment>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="重大危险源等级">
+            {getFieldDecorator('dangerLevel', {
+              initialValue: dangerLevel,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择重大危险源等级',
+                },
+              ],
+            })(
+              <Select {...itemStyles} allowClear placeholder="请选择重大危险源等级">
+                {dangerTypeList.map(({ key, value }) => (
                   <Option key={key} value={key}>
                     {value}
                   </Option>
@@ -573,23 +642,79 @@ export default class MajorHazardEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="生产存储场所产权">
-            {getFieldDecorator('memoryPlace', {
-              initialValue: memoryPlace,
+          <FormItem {...formItemLayout} label="选择重大危险源范围">
+            {getFieldDecorator('dangerSourceList', {
+              // initialValue: dangerSourceList,
               rules: [
                 {
                   required: true,
-                  message: '请选择生产存储场所产权',
+                  message: '请选择重大危险源范围',
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择生产存储场所产权">
-                {memoryPlaceList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
+              <Fragment>
+                <div {...itemStyles}>
+                  <span className={styles.label}>
+                    {tankAreaList.map(item => (
+                      <Tag key={item.id}>{item.areaName}</Tag>
+                    ))}
+                    {wareHouseAreaList.map(item => (
+                      <Tag key={item.id}>{item.name}</Tag>
+                    ))}
+                    {gasHolderManageList.map(item => (
+                      <Tag key={item.id}>{item.gasholderName}</Tag>
+                    ))}
+                    {productList.map(item => (
+                      <Tag key={item.id}>{item.name}</Tag>
+                    ))}
+                  </span>
+                  <Button type="primary" size="small" onClick={this.handleDangerModal}>
+                    选择
+                  </Button>
+                </div>
+              </Fragment>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="备案日期">
+            {getFieldDecorator('recordDate', {
+              initialValue: useDate ? moment(+useDate) : undefined,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择备案日期',
+                },
+              ],
+            })(
+              <DatePicker
+                {...itemStyles}
+                showToday={false}
+                format="YYYY-MM-DD"
+                placeholder="请选择备案日期"
+              />
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="重大危险源责任人">
+            {getFieldDecorator('dangerPerson', {
+              initialValue: dangerTechnology,
+              rules: [
+                {
+                  required: true,
+                  message: '请输入重大危险源责任人',
+                },
+              ],
+            })(
+              <Fragment>
+                <TextArea
+                  {...itemStyles}
+                  placeholder="请选择重大危险源责任人"
+                  rows={3}
+                  disabled
+                  maxLength="2000"
+                />
+                <Button type="primary" size="small" onClick={this.handlePersonModal}>
+                  选择
+                </Button>
+              </Fragment>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="防雷防静电设施是否定期接受检测">
@@ -654,100 +779,24 @@ export default class MajorHazardEdit extends PureComponent {
               />
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="R值">
-            {getFieldDecorator('r', {
-              initialValue: r,
+          <FormItem {...formItemLayout} label="重大危险源周边安全间距">
+            {getFieldDecorator('safetyDistance', {
+              initialValue: safetyDistance,
               getValueFromEvent: this.handleTrim,
+            })(<Input {...itemStyles} placeholder="请填入专家评估算出的距离" maxLength={10} />)}
+          </FormItem>
+          <FormItem {...formItemLayout} label="周边500米内常住人口数量">
+            {getFieldDecorator('safetyDistance', {
               rules: [
                 {
                   required: true,
-                  message: '请输入R值',
+                  message: '请填入周边500米内常住人口数量',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入R值" maxLength={15} />)}
-          </FormItem>
-          <FormItem {...formItemLayout} label="重大危险源等级">
-            {getFieldDecorator('dangerLevel', {
-              initialValue: dangerLevel,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择重大危险源等级',
-                },
-              ],
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择重大危险源等级">
-                {dangerTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="选择重大危险源">
-            {getFieldDecorator('dangerSourceList', {
-              // initialValue: dangerSourceList,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择重大危险源',
-                },
-              ],
-            })(
-              <Fragment>
-                <div {...itemStyles}>
-                  <span className={styles.label}>
-                    {tankAreaList.map(item => (
-                      <Tag key={item.id}>{item.areaName}</Tag>
-                    ))}
-                    {wareHouseAreaList.map(item => (
-                      <Tag key={item.id}>{item.name}</Tag>
-                    ))}
-                    {gasHolderManageList.map(item => (
-                      <Tag key={item.id}>{item.gasholderName}</Tag>
-                    ))}
-                    {productList.map(item => (
-                      <Tag key={item.id}>{item.name}</Tag>
-                    ))}
-                  </span>
-                  <Button type="primary" size="small" onClick={this.handleDangerModal}>
-                    选择
-                  </Button>
-                </div>
-              </Fragment>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="危险化学品性质">
-            {getFieldDecorator('chemiclaNature', {
-              initialValue: chemiclaNature,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择危险化学品性质',
-                },
-              ],
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择危险化学品性质">
-                {dangerChemicalsList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="所处装置或区域">
-            {getFieldDecorator('industryArea', {
-              initialValue: industryArea,
+              initialValue: safetyDistance,
               getValueFromEvent: this.handleTrim,
             })(
-              <TextArea
-                {...itemStyles}
-                placeholder="请输入所处装置或区域"
-                rows={4}
-                maxLength="2000"
-              />
+              <Input {...itemStyles} placeholder="请填入周边500米内常住人口数量" maxLength={10} />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="周边环境类型">
@@ -782,17 +831,84 @@ export default class MajorHazardEdit extends PureComponent {
               getValueFromEvent: this.handleTrim,
             })(<Input {...itemStyles} placeholder="请输入周边环境人数" />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="与危险源最近距离">
+
+          {/* <FormItem {...formItemLayout} label="生产经营活动类型">
+            {getFieldDecorator('manageType', {
+              initialValue: manageType,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择生产经营活动类型',
+                },
+              ],
+            })(
+              <Select {...itemStyles} allowClear placeholder="请选择生产经营活动类型">
+                {productTypeList.map(({ key, value }) => (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem> */}
+          {/* <FormItem {...formItemLayout} label="生产存储场所产权">
+            {getFieldDecorator('memoryPlace', {
+              initialValue: memoryPlace,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择生产存储场所产权',
+                },
+              ],
+            })(
+              <Select {...itemStyles} allowClear placeholder="请选择生产存储场所产权">
+                {memoryPlaceList.map(({ key, value }) => (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem> */}
+          {/* <FormItem {...formItemLayout} label="危险化学品性质">
+            {getFieldDecorator('chemiclaNature', {
+              initialValue: chemiclaNature,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择危险化学品性质',
+                },
+              ],
+            })(
+              <Select {...itemStyles} allowClear placeholder="请选择危险化学品性质">
+                {dangerChemicalsList.map(({ key, value }) => (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem> */}
+          {/* <FormItem {...formItemLayout} label="所处装置或区域">
+            {getFieldDecorator('industryArea', {
+              initialValue: industryArea,
+              getValueFromEvent: this.handleTrim,
+            })(
+              <TextArea
+                {...itemStyles}
+                placeholder="请输入所处装置或区域"
+                rows={4}
+                maxLength="2000"
+              />
+            )}
+          </FormItem> */}
+          <FormItem {...formItemLayout} label="周边环境与危险源最近距离">
             {getFieldDecorator('dangerDistance', {
               initialValue: dangerDistance,
               getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} placeholder="请输入与危险源最近距离" maxLength={10} />)}
-          </FormItem>
-          <FormItem {...formItemLayout} label="重大危险源周边安全间距">
-            {getFieldDecorator('safetyDistance', {
-              initialValue: safetyDistance,
-              getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} placeholder="请输入重大危险源周边安全间距" maxLength={10} />)}
+            })(
+              <Input {...itemStyles} placeholder="请输入周边环境与危险源最近距离" maxLength={10} />
+            )}
           </FormItem>
           <FormItem {...formItemLayout} label="周边环境联系人">
             {getFieldDecorator('linkman', {
@@ -829,6 +945,7 @@ export default class MajorHazardEdit extends PureComponent {
   // 渲染页面所有信息
   render() {
     const {
+      personModalLoading,
       match: {
         params: { id },
       },
@@ -836,14 +953,16 @@ export default class MajorHazardEdit extends PureComponent {
       reservoirRegion: {
         areaData: { list: areaList = [] },
         dangerResourceTypeList,
+        // personModal,
       },
       gasometer: { list: { list: gasList = [] } = {} },
       productionEquipments: {
         proData: { list: proEquipList = [] },
       },
+      account: { data: personData = {} },
     } = this.props;
 
-    const { dangerType, targetKeys } = this.state;
+    const { dangerType, targetKeys, personModalVisible } = this.state;
 
     const title = id ? editTitle : addTitle;
 
@@ -889,11 +1008,50 @@ export default class MajorHazardEdit extends PureComponent {
       },
     ];
 
+    const personFields = [
+      {
+        id: 'name',
+        render() {
+          return <Input placeholder="请输入姓名" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+    ];
+
+    const personColumns = [
+      {
+        title: '姓名',
+        dataIndex: 'userName',
+        key: 'userName',
+        align: 'center',
+      },
+      {
+        title: '手机号',
+        dataIndex: 'phoneNumber',
+        key: 'phoneNumber',
+        align: 'center',
+      },
+      {
+        title: '所属部门',
+        dataIndex: 'departmentName',
+        key: 'departmentName',
+        align: 'center',
+        render: (val, row) => {
+          const { users } = row;
+          return <span>{users.map(item => item.departmentName).join('')}</span>;
+        },
+      },
+    ];
+
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
         {this.renderFooterToolbar()}
         {this.renderModal()}
+
+        {/** 选择重大危险源 */}
         <Modal
           title="选择重大危险源"
           width={900}
@@ -915,6 +1073,24 @@ export default class MajorHazardEdit extends PureComponent {
             onTargetKeysChange={this.onTargetKeysChange}
           />
         </Modal>
+
+        {/** 选择重大危险源责任人 */}
+        <CompanyModal
+          title="选择重大危险源责任人"
+          multiSelect
+          rowKey={'loginId'}
+          rowSelection={{ type: 'checkbox' }}
+          loading={personModalLoading}
+          visible={personModalVisible}
+          modal={personData}
+          columns={personColumns}
+          field={personFields}
+          fetch={this.fetchPersonModalList}
+          onSelect={this.handlePersonModalSelect}
+          onClose={() => {
+            this.setState({ personModalVisible: false });
+          }}
+        />
       </PageHeaderLayout>
     );
   }

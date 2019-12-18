@@ -81,6 +81,10 @@ export default {
       { key: '3', value: '生产装置' },
       { key: '4', value: '气柜' },
     ],
+    personModal: {
+      list: [],
+      pagination: { total: 0, pageSize: 0, pageNum: 0 },
+    },
     // 物料数据源
     materialData: {
       list: [],
