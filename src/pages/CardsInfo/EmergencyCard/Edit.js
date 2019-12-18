@@ -259,19 +259,19 @@ export default class Edit extends PureComponent {
     //   />
     // );
     const selectButton = (
-      <div className={styles.container}>
+      // <div className={styles.container}>
         <Input
           disabled
           placeholder="请选择作业/设备名称"
           addonAfter={<Button type="primary" disabled={isDet ? true : loading} onClick={this.showModal}>选择</Button>}
         />
-      </div>
+      // </div>
     );
 
     const formItems = [
       { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isCompanyUser(+unitType) },
       { name: 'name', label: '应急卡名称' },
-      { name: 'equipmentName', label: '作业/设备名称', type: 'compt', component: selectButton },
+      { name: 'equipmentName', label: '作业/设备名称', type: 'compt', component: selectButton, wrapperClassName: styles.container },
       { name: 'riskWarning', label: '风险提示', type: 'text' },
       { name: 'emergency', label: '应急处置方法', type: 'text' },
       { name: 'needAttention', label: '注意事项', type: 'text' },
