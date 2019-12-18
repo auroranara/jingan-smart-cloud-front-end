@@ -112,7 +112,6 @@ export default class EmergencyPlanDetail extends Component {
     const isNotCompany = +unitType !== 4;
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const isDetail = window.location.href.includes('detail');
-    const historyList = approveList.reverse();
     const FIELDS = [
       ...(isNotCompany ? [{
         id: 'companyName',
@@ -299,9 +298,9 @@ export default class EmergencyPlanDetail extends Component {
             // }
             />
           </Card>
-          {isDetail && historyList && historyList.length > 0 && (
+          {isDetail && approveList && approveList.length > 0 && (
             <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
-              {historyList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
+              {approveList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
                 <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
                   <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
                   <p>一级审批人：{firstApproveBy || ''}</p>

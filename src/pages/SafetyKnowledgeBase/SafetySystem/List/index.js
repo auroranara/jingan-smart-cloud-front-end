@@ -594,7 +594,7 @@ export default class SafetySystemList extends Component {
         dataIndex: 'versionCount',
         width: 88,
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (value, data) => <span className={value > 0 ? styles.operation : undefined} onClick={value > 0 ? () => this.handleHistoryButtonClick(data) : undefined}>{value > 0 ? value : '——'}</span>,
+        render: (value, data) => <span className={value > 0 ? styles.operation : undefined} onClick={value > 0 ? () => this.handleHistoryButtonClick(data) : undefined}>{value > 0 ? value : '—'}</span>,
         align: 'center',
       },
       {

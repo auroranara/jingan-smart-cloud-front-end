@@ -3498,7 +3498,7 @@ module.exports = env => {
                   path: '/device-management/user-transmission-device/add',
                   code: 'deviceManagement.userTransmissionDevice.add',
                   name: 'add',
-                  component: './DeviceManagement/UserTransmissionDevice/TransmissionDeviceAdd',
+                  component: './DeviceManagement/UserTransmissionDevice/DeviceAdd/index',
                 },
                 {
                   path:

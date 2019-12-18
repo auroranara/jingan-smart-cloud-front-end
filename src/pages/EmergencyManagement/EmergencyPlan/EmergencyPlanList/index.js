@@ -538,9 +538,9 @@ export default class EmergencyPlanList extends Component {
         title: '历史版本',
         dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (versionCount, item) => (
-          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || '——'}</span>
-        ),
+        render: (versionCount, item) => +versionCount > 0 ? (
+          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount}</span>
+        ) : '—',
         align: 'center',
       },
     ]);
