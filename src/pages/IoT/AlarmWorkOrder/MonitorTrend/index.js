@@ -13,6 +13,7 @@ import styles from './index.less';
 
 const { Description } = DescriptionList;
 const Empty = () => <span className={styles.empty}>暂无数据</span>;
+const DEFAULT_FORMAT = 'YYYY-MM-DD';
 
 @connect((state, { route: { name, code, path } }) => {
   const { breadcrumbList } = code.split('.').reduce((result, item, index, list) => {
@@ -89,20 +90,14 @@ const Empty = () => <span className={styles.empty}>暂无数据</span>;
 export default class AlarmWorkOrderMonitorTrend extends Component {
   state = {
     date: moment().startOf('day'),
-    paramId: undefined,
+    currentIndex: undefined,
   }
 
   componentDidMount() {
-    const { getDeviceDetail, getMonitorTrend } = this.props;
-    const { date } = this.state;
-    getDeviceDetail();
-    getMonitorTrend({
-      date,
-    }, (success, paramList) => {
+    const { getDeviceDetail } = this.props;
+    getDeviceDetail({}, (success) => {
       if (success) {
-        this.setState({
-          paramId: Array.isArray(paramList) && paramList.length ? paramList[0].id : undefined,
-        });
+        this.handleCurrentIndexChange('0');
       }
     });
   }
@@ -111,10 +106,21 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
    * date的change事件
    */
   handleDateChange = (date) => {
-    const { getMonitorTrend } = this.props;
-    getMonitorTrend({
-      date,
-    });
+    const {
+      deviceDetail: {
+        allMonitorParam,
+      }={},
+      getMonitorTrend,
+    } = this.props;
+    const { currentIndex } = this.state;
+    if (allMonitorParam && allMonitorParam[currentIndex]) {
+      const { sensorId, paramCode } = allMonitorParam[currentIndex];
+      getMonitorTrend({
+        sensorId,
+        code: paramCode,
+        queryDate: date.format(DEFAULT_FORMAT),
+      });
+    }
     this.setState({
       date,
     });
@@ -123,19 +129,34 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
   /**
    * paramId的change事件（在我的想象中，获取接口会返回所有参数，paramId只控制显示哪个参数）
    */
-  handleParamIdChange = (paramId) => {
+  handleCurrentIndexChange = (currentIndex) => {
+    const {
+      deviceDetail: {
+        allMonitorParam,
+      }={},
+      getMonitorTrend,
+    } = this.props;
+    const { date } = this.state;
+    if (allMonitorParam && allMonitorParam[currentIndex]) {
+      const { sensorId, paramCode } = allMonitorParam[currentIndex];
+      getMonitorTrend({
+        sensorId,
+        code: paramCode,
+        queryDate: date.format(DEFAULT_FORMAT),
+      });
+    }
     this.setState({
-      paramId,
+      currentIndex,
     });
   }
 
   renderBasicInfo() {
     const {
       deviceDetail: {
-        monitorTypeName,
-        monitorEquipmentName,
+        equipmentTypeName,
+        name,
         areaLocation,
-        monitorObject,
+        beMonitorTargetName,
       }={},
     } = this.props;
 
@@ -143,10 +164,10 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       <Card className={styles.card}>
         <DescriptionList className={styles.descriptionList} gutter={24}>
           <Description term="监测类型">
-            {monitorTypeName || <Empty />}
+            {equipmentTypeName || <Empty />}
           </Description>
           <Description term="监测设备名称">
-            {monitorEquipmentName || <Empty />}
+            {name || <Empty />}
           </Description>
         </DescriptionList>
         <DescriptionList className={styles.descriptionList} gutter={24}>
@@ -154,7 +175,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
             {areaLocation || <Empty />}
           </Description>
           <Description term="监测对象">
-            {monitorObject || <Empty />}
+            {beMonitorTargetName || <Empty />}
           </Description>
         </DescriptionList>
       </Card>
@@ -163,29 +184,63 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
 
   renderMonitorDataTrend() {
     const {
-      monitorTrend=[],
+      deviceDetail: {
+        allMonitorParam,
+      }={},
+      monitorTrend,
       loadingMonitorTrend=false,
     } = this.props;
-    const { date, paramId } = this.state;
-    const paramList = Array.isArray(monitorTrend) ? monitorTrend : [];
-    const { history, unit, normalUpper, largeUpper, normalLower, smallLower, maxValue, minValue } = paramList.find(({ id }) => id === paramId) || {};
+    const { date, currentIndex } = this.state;
+    const tabList = (allMonitorParam || []).filter(({ fixType }) => +fixType !== 5).map(({ paramDesc }, index) => ({ key: `${index}`, tab: paramDesc }));
+    // 获取单位、范围（单位不存在的情况不知道需不需要考虑）
+    const { paramUnit: unit, paramWarnStrategyList, rangeMax: maxValue, rangeMin: minValue } = (allMonitorParam || [])[currentIndex] || {};
+    // 获取预警、告警值
+    const { normalUpper, largeUpper, normalLower, smallLower } = (paramWarnStrategyList || []).reduce((result, { condition, limitValue, warnLevel }) => {
+      if (condition === '>=') {
+        if (+warnLevel === 1) {
+          result.normalUpper = limitValue;
+        } else if (+warnLevel === 2) {
+          result.largeUpper = limitValue;
+        }
+      } else if (condition === '<=') {
+        if (+warnLevel === 1) {
+          result.normalLower = limitValue;
+        } else if (+warnLevel === 2) {
+          result.smallLower = limitValue;
+        }
+      }
+      return result;
+    }, {});
+    // 预警上限文本
     const warningUp = isNumber(normalUpper) && (isNumber(largeUpper) ? `${normalUpper}${unit}~${largeUpper}${unit}` : `≥${normalUpper}${unit}`);
+    // 预警下限文本
     const warningDown = isNumber(normalLower) && (isNumber(smallLower) ? `${normalLower}${unit}~${smallLower}${unit}` : `≤${normalLower}${unit}`);
+    // 预警文本
     const warning = [warningUp, warningDown].filter(v => v).join('，');
+    // 告警上限文本
     const alarmUp = isNumber(largeUpper) && `≥${largeUpper}${unit}`;
+    // 告警下限文本
     const alarmDown = isNumber(smallLower) && `≤${smallLower}${unit}`;
+    // 告警文本
     const alarm = [alarmUp, alarmDown].filter(v => v).join('，');
-    let { max, min } = history && history.reduce(({ max, min }, { value }) => {
-      return {
+    // 获取列表中的最大值和最小值
+    let { value: max, value: min } = (monitorTrend || []).find(({ value }) => isNumber(value)) || {};
+    ({ max, min } = monitorTrend && monitorTrend.reduce(({ max, min }, { value }) => {
+      return isNumber(value) ? {
         max: Math.max(max, value),
         min: Math.min(min, value),
+      } : {
+        max,
+        min,
       };
-    }, { max: (history[0] || {}).value, min: (history[0] || {}).value }) || {};
-    max = Math.max(isNumber(maxValue) ? maxValue : max, isNumber(normalUpper) ? normalUpper : max, isNumber(largeUpper) ? largeUpper : max, max);
-    min = Math.min(isNumber(minValue) ? minValue : min, isNumber(normalLower) ? normalLower : min, isNumber(smallLower) ? smallLower : min, min);
+    }, { max, min }) || {});
+    // 计算实际上的最大值和最小值（所有值都不是数字的情况不知道需不需要考虑）
+    max = Math.max.apply(null, [max, maxValue, largeUpper, normalUpper].filter(v => isNumber(v)));
+    min = Math.min.apply(null, [min, minValue, smallLower, normalLower].filter(v => isNumber(v)));
+    const text = [warning && `{a|预警阈值：}{b|${warning}}`, alarm && `{a|报警阈值：}{b|${alarm}}`].filter(v => v);
     const option = {
       title: {
-        text: [warning && `{a|预警阈值：}{b|${warning}}`, warning && `{a|报警阈值：}{b|${alarm}}`].filter(v => v).join('\n'),
+        text: text.join('\n'),
         textStyle: {
           fontSize: 12,
           lineHeight: 18,
@@ -210,7 +265,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         },
       },
       grid: {
-        top: 48,
+        top: 12 + 18 * text.length,
         left: 0,
         right: 20,
         bottom: 6,
@@ -251,9 +306,9 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       },
       series: [
         {
-          name: '浓度数值',
+          name: '监测数值',
           type: 'line',
-          data: history && history.map(({ time, value }) => ({
+          data: monitorTrend && monitorTrend.map(({ time, value }) => ({
             name: time,
             value: [
               time,
@@ -340,12 +395,12 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
             </div>
           </div>
         )}
-        tabList={paramList.map(({ id, name }) => ({ key: id, tab: name }))}
-        activeTabKey={paramId}
-        onTabChange={this.handleParamIdChange}
+        tabList={tabList}
+        activeTabKey={currentIndex}
+        onTabChange={this.handleCurrentIndexChange}
       >
         <Spin spinning={loadingMonitorTrend}>
-          {history && history.length ? (
+          {monitorTrend && monitorTrend.length ? (
             <Fragment>
               <ReactEcharts
                 option={option}

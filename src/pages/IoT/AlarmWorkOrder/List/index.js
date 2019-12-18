@@ -129,14 +129,14 @@ export default class AlarmWorkOrderList extends Component {
       dataIndex: 'id',
       width: 132,
       fixed: list && list.length ? 'right' : undefined,
-      render: (id, { reportType }) => (
+      render: (id, { reportType, deviceId }) => (
         <Fragment>
           <div>
             {renderDetailButton(id)}
           </div>
-          {+reportType !== 1 && (
+          {+reportType !== 1 && ( // 消防主机不显示
             <div>
-              {renderMonitorTrendButton(id)}
+              {renderMonitorTrendButton(deviceId)}
             </div>
           )}
         </Fragment>
