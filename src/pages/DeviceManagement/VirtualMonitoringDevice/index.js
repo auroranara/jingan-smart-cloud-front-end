@@ -3,8 +3,8 @@ import { Card, Form, Input, Button, Table, Row, Col, Divider, Select, message, P
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { AuthButton, AuthA, AuthLink, AuthPopConfirm } from '@/utils/customAuth';
-import codes from '@/utils/codes';
+// import { AuthButton, AuthA, AuthLink, AuthPopConfirm } from '@/utils/customAuth';
+// import codes from '@/utils/codes';
 // 选择监测设备弹窗
 import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/MonitoringDeviceModal';
 
