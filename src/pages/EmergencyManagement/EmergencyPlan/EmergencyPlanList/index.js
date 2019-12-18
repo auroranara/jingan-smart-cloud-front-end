@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from 'react';
+import { Card, Input, Select, Button, Table, Modal, Spin, message, Divider, Empty } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import classNames from 'classnames';
-import { Card, Input, Select, Button, Table, Modal, Spin, message, Divider } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import {
@@ -548,26 +548,30 @@ export default class EmergencyPlanList extends Component {
     return (
       <Card className={styles.card} bordered={false}>
         <Spin spinning={loadingList || auditing || publishing || false}>
-          <Table
-            className={styles.table}
-            dataSource={list}
-            columns={COLUMNS}
-            rowKey="id"
-            scroll={{ x: 'max-content' }}
-            pagination={{
-              current: pageNum,
-              pageSize,
-              total,
-              pageSizeOptions: ['5', '10', '15', '20'],
-              // showTotal: total => `共 ${total} 条`,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              onChange: this.handleListChange,
-              onShowSizeChange: (num, size) => {
-                this.handleListChange(1, size);
-              },
-            }}
-          />
+          {list && list.length ? (
+            <Table
+              className={styles.table}
+              dataSource={list}
+              columns={COLUMNS}
+              rowKey="id"
+              scroll={{ x: 'max-content' }}
+              pagination={{
+                current: pageNum,
+                pageSize,
+                total,
+                pageSizeOptions: ['5', '10', '15', '20'],
+                // showTotal: total => `共 ${total} 条`,
+                showQuickJumper: true,
+                showSizeChanger: true,
+                onChange: this.handleListChange,
+                onShowSizeChange: (num, size) => {
+                  this.handleListChange(1, size);
+                },
+              }}
+            />
+          ) : (
+            <Empty />
+          )}
         </Spin>
       </Card>
     );
