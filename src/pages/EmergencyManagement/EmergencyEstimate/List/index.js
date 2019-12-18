@@ -91,7 +91,7 @@ export default class EmergencyEstimateList extends PureComponent {
   renderForm = () => {
     const {
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     const fields = [
@@ -131,7 +131,7 @@ export default class EmergencyEstimateList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={fields}
+          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -200,6 +200,7 @@ export default class EmergencyEstimateList extends PureComponent {
       emergencyManagement: {
         estimate: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {}, a },
       },
+      user: { currentUser: { unitType } },
     } = this.props;
     const { currentPage, scrollX } = this.state;
 
@@ -337,7 +338,7 @@ export default class EmergencyEstimateList extends PureComponent {
             <Table
               rowKey="id"
               loading={loading}
-              columns={columns}
+              columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
               dataSource={list}
               pagination={false}
               // scroll={{ x: true }}

@@ -113,7 +113,7 @@ export default class EmergencyDrillList extends Component {
     const {
       form: { getFieldDecorator },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -159,11 +159,13 @@ export default class EmergencyDrillList extends Component {
                 {getFieldDecorator('planCode')(<Input placeholder="应急演练编码" />)}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('companyName')(<Input placeholder="单位名称" />)}
-              </FormItem>
-            </Col>
+            {unitType !== 4 && (
+              <Col {...colWrapper}>
+                <FormItem {...formItemStyle}>
+                  {getFieldDecorator('companyName')(<Input placeholder="单位名称" />)}
+                </FormItem>
+              </Col>
+            )}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('projectStatus')(
@@ -246,6 +248,9 @@ export default class EmergencyDrillList extends Component {
           pagination: { pageNum, pageSize, total },
         },
         emergencyDrill = [],
+      },
+      user: {
+        currentUser: { unitType },
       },
       loading = false,
     } = this.props;
@@ -382,7 +387,7 @@ export default class EmergencyDrillList extends Component {
         <Table
           rowKey="id"
           loading={loading}
-          columns={columns}
+          columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
           dataSource={list}
           // bordered
           scroll={{ x: 'max-content' }}
