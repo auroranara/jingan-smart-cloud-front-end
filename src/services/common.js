@@ -13,5 +13,5 @@ export async function getAreaList(params) {
 
 // 获取监测类型列表
 export async function getMonitorTypeList(params) {
-  return request(`/acloud_new/v2/monitor/monitorTypeTree?${stringify(params)}`);
+  return request(`/acloud_new/v2/monitor/equipmentType?${stringify(params)}`);
 }
