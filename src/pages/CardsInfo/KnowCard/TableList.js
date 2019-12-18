@@ -141,6 +141,7 @@ export default class TableList extends PureComponent {
         </div>
         <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null}>
           <div style={{ height: 700, backgroundImage: `url(${src})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: '50% 50%' }} />
+          {/* <iframe style={{ width: '100%', height: 700, border: 'none' }} src={src} /> */}
         </Modal>
       </PageHeaderLayout>
     );
