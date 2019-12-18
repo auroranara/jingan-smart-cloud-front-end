@@ -273,6 +273,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       },
       xAxis: {
         type: 'time',
+        min: +date,
         maxInterval: 60 * 60 * 1000,
         axisLine: {
           lineStyle: {

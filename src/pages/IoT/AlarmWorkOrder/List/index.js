@@ -19,8 +19,8 @@ const TRANSFORM = (data) => {
   const { range: [startTime, endTime]=[], ...rest } = data || {};
   return {
     ...rest,
-    queryCreateStartDate: startTime && startTime.format(DEFAULT_FORMAT),
-    queryCreateEndDate: endTime && endTime.format(DEFAULT_FORMAT),
+    queryCreateStartDate: startTime && startTime.startOf('day').format(DEFAULT_FORMAT),
+    queryCreateEndDate: endTime && endTime.endOf('day').format(DEFAULT_FORMAT),
   };
 };
 
