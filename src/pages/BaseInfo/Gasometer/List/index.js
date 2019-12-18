@@ -576,12 +576,12 @@ export default class GasometerList extends Component {
         ),
         align: 'center',
       },
-      // {
-      //   title: '构成重大危险源',
-      //   dataIndex: 'majorHazard',
-      //   render: value => <SelectOrSpan type="span" list={MAJOR_HAZARD_STATUSES} value={`${value}`} />,
-      //   align: 'center',
-      // },
+      {
+        title: '构成重大危险源',
+        dataIndex: 'majorHazard',
+        render: value => <SelectOrSpan type="span" list={MAJOR_HAZARD_STATUSES} value={`${value}`} />,
+        align: 'center',
+      },
       {
         title: '区域位置',
         dataIndex: 'regionalLocation',
