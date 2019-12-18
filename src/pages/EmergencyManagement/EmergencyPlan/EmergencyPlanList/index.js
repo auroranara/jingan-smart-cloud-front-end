@@ -407,6 +407,7 @@ export default class EmergencyPlanList extends Component {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
+        width: 300,
       },
     ] : []).concat([
       {
@@ -421,12 +422,14 @@ export default class EmergencyPlanList extends Component {
           </div>
         ),
         align: 'center',
+        width: 250,
       },
       {
         title: '有效期至',
         dataIndex: 'endDate',
         render: endDate => endDate ? moment(endDate).format('YYYY-MM-DD') : '-',
         align: 'center',
+        width: 200,
       },
       {
         title: '有效期状态',
@@ -456,10 +459,12 @@ export default class EmergencyPlanList extends Component {
           );
         },
         align: 'center',
+        width: 200,
       },
       {
         title: '备案',
         dataIndex: 'record',
+        width: 200,
         render: (_, { isRecord, recordCode, recordDate, recordCertificateList }) => isRecord > 0 ? (
           <div className={styles.multi}>
             <div>已备案</div>
@@ -479,6 +484,7 @@ export default class EmergencyPlanList extends Component {
       {
         title: '预案附件',
         dataIndex: 'emergencyFilesList',
+        width: 250,
         render: (emergencyFilesList) => (
           <Fragment>
             {emergencyFilesList && emergencyFilesList.map(({ webUrl, fileName }, index) => (
@@ -493,6 +499,7 @@ export default class EmergencyPlanList extends Component {
       {
         title: '状态',
         dataIndex: 'status',
+        width: 200,
         render: (status) => {
           status = STATUSES.filter(({ key }) => key === status)[0];
           return status && status.value;
@@ -503,8 +510,9 @@ export default class EmergencyPlanList extends Component {
         title: '操作',
         dataIndex: 'operation',
         fixed: list && list.length > 0 ? 'right' : false,
+        align: 'center',
         render: (_, { id, status }) => (
-          <Fragment>
+          <div style={{ textAlign: 'left' }}>
             <AuthA code={DETAIL_CODE} onClick={this.handleViewClick} data-id={id}>查看</AuthA>
             <Divider type="vertical" />
             <AuthA
@@ -523,16 +531,15 @@ export default class EmergencyPlanList extends Component {
                 <AuthA code={EDIT_CODE} onClick={this.handleEditClick} data-id={id}>编辑</AuthA>
               </Fragment>
             )}
-          </Fragment>
+          </div>
         ),
-        align: 'center',
       },
       {
         title: '历史版本',
         dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
         render: (versionCount, item) => (
-          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || 1}</span>
+          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || '——'}</span>
         ),
         align: 'center',
       },
@@ -546,9 +553,7 @@ export default class EmergencyPlanList extends Component {
             dataSource={list}
             columns={COLUMNS}
             rowKey="id"
-            scroll={{
-              x: true,
-            }}
+            scroll={{ x: 'max-content' }}
             pagination={{
               current: pageNum,
               pageSize,

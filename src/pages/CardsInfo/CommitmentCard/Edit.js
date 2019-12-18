@@ -6,8 +6,9 @@ import { Button, Card, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL, handleDetails } from './utils';
+import { BREADCRUMBLIST, LIST_URL, handleDetails } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
 
 @connect(({ user, cardsInfo, loading }) => ({
   user,
@@ -87,9 +88,10 @@ export default class Edit extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
+    const isComUser = isCompanyUser(+unitType);
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isCompanyUser(+unitType) },
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
       { name: 'name', label: '承诺卡名称' },
       { name: 'content', label: '承诺卡内容', type: 'text' },
       { name: 'acceptor', label: '承诺人' },

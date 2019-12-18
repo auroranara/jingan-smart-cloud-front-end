@@ -10,7 +10,7 @@ import { handleDetails } from '../CommitmentCard/utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
-
+import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
 
 const FOLDER = 'knowCard';
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -99,13 +99,14 @@ export default class Edit extends PureComponent {
   };
 
   handleUploadPhoto = info => {
+    console.log(info);
     const { form: { setFieldsValue } } = this.props
     // 限制一个文件，但有可能新文件上传失败，所以在新文件上传完成后判断，成功则只保留新的，失败，则保留原来的
     const { fileList: fList, file } = info;
     let fileList = [...fList];
 
-    if (file.status === 'done'){
-      if (file.response.code === 200)
+    if (file.status === 'done' || file.status === undefined){ // file.status === undefined 为文件被beforeUpload拦截下拉的情况
+      if (file.response && file.response.code === 200)
         fileList = [file];
       else
         fileList = fileList.slice(0, 1);
@@ -120,7 +121,7 @@ export default class Edit extends PureComponent {
     const { type } = file;
     const isImage = ['image/jpeg', 'image/jpg', 'image/png'].includes(type);
     if (!isImage)
-      message.error(`上传的附近格式为${type}，请上传图片格式的附近！`);
+      message.error('请上传图片格式(jpg, jpeg, png)的附件！');
     return isImage;
   };
 
@@ -138,6 +139,7 @@ export default class Edit extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
+    const isComUser = isCompanyUser(+unitType);
 
     const uploadBtn = (
       <Upload
@@ -156,7 +158,7 @@ export default class Edit extends PureComponent {
     );
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isCompanyUser(+unitType) },
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
       { name: 'name', label: '应知卡名称' },
       // { name: 'content', label: '应知卡内容', type: 'text' },
       { name: 'contentDetails', label: '附件', type: 'compt', component: uploadBtn },

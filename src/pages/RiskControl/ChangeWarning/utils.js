@@ -66,8 +66,10 @@ export const BREADCRUMBLIST = [
   { title: '变更预警管理', name: '变更预警管理' },
 ];
 
-export function getSearchFields(getRangeFromEvent) {
-  return [
+export function getSearchFields(getRangeFromEvent, isComUser) {
+  const span = isComUser ? 12 : 8;
+
+  const fields = [
     {
       id: 'companyId',
       label: '单位名称',
@@ -76,6 +78,7 @@ export function getSearchFields(getRangeFromEvent) {
     {
       id: 'dataType',
       label: '变更对象',
+      span,
       render: () => (
         <Select placeholder="请选择变更对象" allowClear>
           {DATA_TYPE_LIST.map(({ key, value }) => <Option key={key} value={key}>{value}</Option>)}
@@ -85,18 +88,25 @@ export function getSearchFields(getRangeFromEvent) {
     {
       id: 'userName',
       label: '操作人',
+      span,
       render: () => <Input placeholder="请输入操作人" allowClear />,
       transform: v => v.trim(),
     },
     {
       id: 'range',
       label: '操作时间',
+      span,
       render: () => <RangePicker showTime={{ format: 'HH:mm:ss' }} allowClear />,
       options: {
         getValueFromEvent: getRangeFromEvent,
       },
     },
   ];
+
+  if (isComUser)
+    fields.shift();
+
+  return fields;
 }
 
 export const COLUMNS = [

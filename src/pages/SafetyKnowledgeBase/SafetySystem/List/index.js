@@ -601,9 +601,10 @@ export default class SafetySystemList extends Component {
         title: '操作',
         dataIndex: 'id',
         width: 120,
+        align: 'center',
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
-          <Fragment>
+          <div style={{ textAlign: 'left' }}>
             <AuthA code={DETAIL_CODE} onClick={this.handleDetailButtonClick} data-id={id}>查看</AuthA>
             <Divider type="vertical" />
             <AuthA
@@ -624,9 +625,8 @@ export default class SafetySystemList extends Component {
                 <AuthA code={EDIT_CODE} onClick={this.handleEditButtonClick} data-id={id}>编辑</AuthA>
               </Fragment>
             )}
-          </Fragment>
+          </div>
         ),
-        align: 'center',
       },
     ];
 

@@ -73,8 +73,9 @@ export default class TableList extends PureComponent {
       changeWarning: { list, total },
     } = this.props;
     const { current } = this.state;
-    const fields = getSearchFields(this.getRangeFromEvent);
-    const columns = isCompanyUser(unitType) ? COLUMNS.filter(({ dataIndex }) => dataIndex !== 'companyName') : COLUMNS;
+    const isComUser = isCompanyUser(unitType);
+    const fields = getSearchFields(this.getRangeFromEvent, isComUser);
+    const columns = isComUser ? COLUMNS.filter(({ dataIndex }) => dataIndex !== 'companyName') : COLUMNS;
 
     return (
       <PageHeaderLayout
