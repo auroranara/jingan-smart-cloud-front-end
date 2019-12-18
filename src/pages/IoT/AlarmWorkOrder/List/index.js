@@ -11,16 +11,16 @@ import styles from './index.less';
 
 export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const STATUSES = [
-  { key: '0', value: '待处理' },
-  { key: '1', value: '处理中' },
-  { key: '2', value: '已处理' },
+  { key: '2', value: '待处理' },
+  { key: '0', value: '处理中' },
+  { key: '1', value: '已处理' },
 ];
 const TRANSFORM = (data) => {
   const { range: [startTime, endTime]=[], ...rest } = data || {};
   return {
     ...rest,
-    startTime: startTime && startTime.format(DEFAULT_FORMAT),
-    endTime: endTime && endTime.format(DEFAULT_FORMAT),
+    queryCreateStartDate: startTime && startTime.format(DEFAULT_FORMAT),
+    queryCreateEndDate: endTime && endTime.format(DEFAULT_FORMAT),
   };
 };
 
@@ -37,18 +37,18 @@ export default class AlarmWorkOrderList extends Component {
       },
     ] : []),
     {
-      id: 'monitorType',
+      id: 'reportType',
       label: '监测类型',
       render: () => <MonitorTypeSelect allowClear />,
     },
     {
-      id: 'monitorEquipmentName',
-      label: '监测设备名称',
+      id: 'deviceName',
+      label: '设备名称/主机编号',
       transform: value => value.trim(),
       render: ({ handleSearch }) => <Input placeholder="请输入监测设备名称" onPressEnter={handleSearch} maxLength={50} />,
     },
     {
-      id: 'monitorEquipmentAreaLocation',
+      id: 'areaLocation',
       label: '报警区域位置',
       transform: value => value.trim(),
       render: ({ handleSearch }) => <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />,
@@ -70,13 +70,13 @@ export default class AlarmWorkOrderList extends Component {
     },
   ])
 
-  getAction = ({
-    renderExportButton,
-  }) => (
-    <Fragment>
-      {renderExportButton()}
-    </Fragment>
-  )
+  // getAction = ({
+  //   renderExportButton,
+  // }) => (
+  //   <Fragment>
+  //     {renderExportButton()}
+  //   </Fragment>
+  // )
 
   getColumns = ({
     unitId,
@@ -93,12 +93,12 @@ export default class AlarmWorkOrderList extends Component {
     ] : []),
     {
       title: '监测类型',
-      dataIndex: 'monitorTypeName',
+      dataIndex: 'reportTypeName',
       align: 'center',
     },
     {
-      title: '监测设备名称',
-      dataIndex: 'monitorEquipmentName',
+      title: '设备名称/主机编号',
+      dataIndex: 'deviceName',
       align: 'center',
     },
     {
@@ -108,7 +108,7 @@ export default class AlarmWorkOrderList extends Component {
     },
     {
       title: '工单创建时间',
-      dataIndex: 'createTime',
+      dataIndex: 'createDate',
       render: (time) => time && moment(time).format(DEFAULT_FORMAT),
       align: 'center',
     },
@@ -120,7 +120,7 @@ export default class AlarmWorkOrderList extends Component {
     },
     {
       title: '工单结束时间',
-      dataIndex: 'endTime',
+      dataIndex: 'endDate',
       render: (time) => time && moment(time).format(DEFAULT_FORMAT),
       align: 'center',
     },
@@ -129,21 +129,23 @@ export default class AlarmWorkOrderList extends Component {
       dataIndex: 'id',
       width: 132,
       fixed: list && list.length ? 'right' : undefined,
-      render: (id) => (
+      render: (id, { reportType }) => (
         <Fragment>
           <div>
             {renderDetailButton(id)}
           </div>
-          <div>
-            {renderMonitorTrendButton(id)}
-          </div>
+          {+reportType !== 1 && (
+            <div>
+              {renderMonitorTrendButton(id)}
+            </div>
+          )}
         </Fragment>
       ),
       align: 'center',
     },
     {
       title: '消息通知',
-      dataIndex: 'count',
+      dataIndex: 'msgCount',
       width: 132,
       fixed: list && list.length ? 'right' : undefined,
       render: (value, { id }) => <span>已发送 <span className={classNames(styles.clickable, !+value && styles.disabled)} onClick={value > 0 ? this.handleClick : undefined} data-id={id}>{value || 0}条</span></span>,

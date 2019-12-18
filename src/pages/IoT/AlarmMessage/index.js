@@ -76,7 +76,7 @@ export default class AlarmMessage extends Component {
       },
     ] : []),
     {
-      id: 'monitorType',
+      id: 'monitorEquipmentTypes',
       label: '监测类型',
       render: () => <MonitorTypeSelect allowClear />,
     },
@@ -118,7 +118,7 @@ export default class AlarmMessage extends Component {
     ] : []),
     {
       title: '监测类型',
-      dataIndex: 'monitorTypeName',
+      dataIndex: 'monitorEquipmentTypeName',
       align: 'center',
     },
     {
@@ -136,9 +136,9 @@ export default class AlarmMessage extends Component {
     {
       title: '消息内容',
       dataIndex: 'messageContent',
-      render: (value) => value && (
-        <div style={{ textAlign: 'left' }}>
-          {value.split('\n').map(v => <div key={v}>{v}</div>)}
+      render: (value) => (
+        <div style={{ textAlign: 'left', whiteSpace: 'pre-line' }}>
+          {value}
         </div>
       ),
       align: 'center',

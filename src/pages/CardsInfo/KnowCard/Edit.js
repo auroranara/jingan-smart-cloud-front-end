@@ -120,7 +120,7 @@ export default class Edit extends PureComponent {
     const { type } = file;
     const isImage = ['image/jpeg', 'image/jpg', 'image/png'].includes(type);
     if (!isImage)
-      message.error(`上传的附近格式为${type}，请上传图片格式的附近！`);
+      message.error('请上传图片格式(jpg, jpeg, png)的附件！');
     return isImage;
   };
 
