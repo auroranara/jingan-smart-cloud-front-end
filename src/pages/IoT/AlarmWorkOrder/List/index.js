@@ -19,8 +19,8 @@ const TRANSFORM = (data) => {
   const { range: [startTime, endTime]=[], ...rest } = data || {};
   return {
     ...rest,
-    queryCreateStartDate: startTime && startTime.format(DEFAULT_FORMAT),
-    queryCreateEndDate: endTime && endTime.format(DEFAULT_FORMAT),
+    queryCreateStartDate: startTime && startTime.startOf('day').format(DEFAULT_FORMAT),
+    queryCreateEndDate: endTime && endTime.endOf('day').format(DEFAULT_FORMAT),
   };
 };
 
@@ -129,14 +129,14 @@ export default class AlarmWorkOrderList extends Component {
       dataIndex: 'id',
       width: 132,
       fixed: list && list.length ? 'right' : undefined,
-      render: (id, { reportType }) => (
+      render: (id, { reportType, deviceId }) => (
         <Fragment>
           <div>
             {renderDetailButton(id)}
           </div>
-          {+reportType !== 1 && (
+          {+reportType !== 1 && ( // 消防主机不显示
             <div>
-              {renderMonitorTrendButton(id)}
+              {renderMonitorTrendButton(deviceId)}
             </div>
           )}
         </Fragment>

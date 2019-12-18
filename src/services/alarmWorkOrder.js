@@ -16,6 +16,11 @@ export async function getDetail({ id }) {
   return request(`/acloud_new/v2/fireManage/process/${id}`);
 }
 
+// 获取设备详情
+export async function getDeviceDetail({ id }) {
+  return request(`/acloud_new/v2/monitor/monitorEquipment/${id}`);
+}
+
 // 获取监测趋势
 export async function getMonitorTrend(params) {
   return request(`/acloud_new/v2/monitor/history/date?${stringify(params)}`);

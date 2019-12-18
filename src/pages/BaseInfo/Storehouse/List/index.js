@@ -1,16 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Input,
-  Pagination,
-  Select,
-  Button,
-  Table,
-  Spin,
-  Divider,
-  message,
-} from 'antd';
+import { Card, Input, Pagination, Select, Button, Table, Spin, Divider, message } from 'antd';
 import router from 'umi/router';
 import { hasAuthority, AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
@@ -74,9 +64,9 @@ export default class StorehouseList extends PureComponent {
     selectedKeys: [], // 弹窗选择的设备key数组
   };
 
-  componentDidMount () {
+  componentDidMount() {
     this.fetchList(1);
-    // this.fetchCompanyNum();
+    this.fetchCompanyNum();
   }
 
   pageNum = 1;
@@ -97,10 +87,11 @@ export default class StorehouseList extends PureComponent {
   /**
    * 获取传感器数量和单位数量统计
    */
-  fetchCompanyNum = () => {
+  fetchCompanyNum = payload => {
     const { dispatch } = this.props;
     dispatch({
       type: 'storehouse/fetchCountCompanyNum',
+      payload,
     });
   };
 
@@ -113,28 +104,28 @@ export default class StorehouseList extends PureComponent {
     const fields = [
       {
         id: 'name',
-        render () {
+        render() {
           return <Input placeholder="请输入库房名称" />;
         },
         transform,
       },
       {
         id: 'code',
-        render () {
+        render() {
           return <Input placeholder="请输入库房编号" />;
         },
         transform,
       },
       {
         id: 'position',
-        render () {
+        render() {
           return <Input placeholder="请输入区域位置" />;
         },
         transform,
       },
       {
         id: 'dangerSource',
-        render () {
+        render() {
           const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
           return (
             <Select
@@ -158,14 +149,14 @@ export default class StorehouseList extends PureComponent {
       },
       {
         id: 'aName',
-        render () {
+        render() {
           return <Input placeholder="请输入库区名称" />;
         },
         transform,
       },
       {
         id: 'companyName',
-        render () {
+        render() {
           return <Input placeholder="请输入单位名称" />;
         },
         transform,
@@ -199,6 +190,7 @@ export default class StorehouseList extends PureComponent {
   handleSearch = values => {
     this.setState({ formData: { ...values } });
     this.fetchList(1, this.pageSize, { ...values });
+    this.fetchCompanyNum({ ...values });
   };
 
   handleReset = () => {
@@ -229,7 +221,7 @@ export default class StorehouseList extends PureComponent {
       success: () => {
         message.success('删除成功！');
         this.fetchList(this.pageNum, this.pageSize, { ...formData });
-        // this.fetchCompanyNum();
+        this.fetchCompanyNum({ ...formData });
       },
       error: msg => {
         message.error(msg);
@@ -247,7 +239,10 @@ export default class StorehouseList extends PureComponent {
   /**
    * 获取可绑定监测设备列表
    */
-  fetchMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+  fetchMonitoringDevice = ({
+    payload = { pageNum: 1, pageSize: defaultPageSize },
+    ...res
+  } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
@@ -265,7 +260,10 @@ export default class StorehouseList extends PureComponent {
   /**
    * 获取已绑定监测设备列表
    */
-  fetchBindedMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+  fetchBindedMonitoringDevice = ({
+    payload = { pageNum: 1, pageSize: defaultPageSize },
+    ...res
+  } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
@@ -338,7 +336,7 @@ export default class StorehouseList extends PureComponent {
       type: 'device/bindMonitoringDevice',
       payload: {
         targetId: detail.id, // 监测对象id（库房id）
-        bindStatus: 0,// 0 解绑
+        bindStatus: 0, // 0 解绑
         equipmentIdList: [id],
       },
       success: () => {
@@ -353,10 +351,12 @@ export default class StorehouseList extends PureComponent {
     });
   };
 
-  render () {
+  render() {
     const {
       modalLoading,
-      user: { currentUser: { unitType, permissionCodes } },
+      user: {
+        currentUser: { unitType, permissionCodes },
+      },
       loading = false,
       storehouse: {
         list,
@@ -367,7 +367,7 @@ export default class StorehouseList extends PureComponent {
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
     // 解绑权限
-    const unbindAuthority = hasAuthority(unbindSensorCode, permissionCodes)
+    const unbindAuthority = hasAuthority(unbindSensorCode, permissionCodes);
     const columns = [
       {
         title: '单位名称',
@@ -386,11 +386,26 @@ export default class StorehouseList extends PureComponent {
           const { code, number, name, area, dangerSource } = record;
           return (
             <div className={styles.multi}>
-              <div>库房编号：{code}</div>
-              <div>库房序号：{number}</div>
-              <div>库房名称：{name}</div>
-              <div>库房面积（㎡）：{area}</div>
-              <div>重大危险源：{dangerSource === '0' ? '否' : '是'}</div>
+              <div>
+                库房编号：
+                {code}
+              </div>
+              <div>
+                库房序号：
+                {number}
+              </div>
+              <div>
+                库房名称：
+                {name}
+              </div>
+              <div>
+                库房面积（㎡）：
+                {area}
+              </div>
+              <div>
+                重大危险源：
+                {dangerSource === '0' ? '否' : '是'}
+              </div>
             </div>
           );
         },
@@ -405,8 +420,15 @@ export default class StorehouseList extends PureComponent {
           const { anumber, aname } = record;
           return (
             <div className={styles.multi}>
-              <div>库区编号：{anumber}</div>
-              <div> 库区名称：{aname}</div>
+              <div>
+                库区编号：
+                {anumber}
+              </div>
+              <div>
+                {' '}
+                库区名称：
+                {aname}
+              </div>
             </div>
           );
         },
@@ -426,7 +448,9 @@ export default class StorehouseList extends PureComponent {
                 </div>
               ))}
             </div>
-          ) : (''),
+          ) : (
+            ''
+          ),
       },
       {
         title: '区域位置',
@@ -514,9 +538,13 @@ export default class StorehouseList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位数量：
-            {countCompanyNum}
-            <span style={{ marginLeft: 15 }}>
+            {unitType !== 4 && (
+              <span>
+                单位数量：
+                {countCompanyNum}
+              </span>
+            )}
+            <span style={{ marginLeft: unitType !== 4 ? 15 : 0 }}>
               库房数量：
               {total}
             </span>
@@ -545,16 +573,16 @@ export default class StorehouseList extends PureComponent {
               total={total}
               onChange={this.handleTableChange}
               onShowSizeChange={this.handleTableChange}
-            // showTotal={total => `共 ${total} 条`}
+              // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-            <Spin spinning={loading}>
-              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-                <span>暂无数据</span>
-              </Card>
-            </Spin>
-          )}
+          <Spin spinning={loading}>
+            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+              <span>暂无数据</span>
+            </Card>
+          </Spin>
+        )}
         {/* 绑定监测设备弹窗 */}
         <MonitoringDeviceModal {...bindModalProps} />
         {/* 已绑定监测设备弹窗 */}

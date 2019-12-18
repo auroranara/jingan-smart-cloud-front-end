@@ -324,6 +324,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           )}
           <FormItem label="装备名称" {...formItemLayout}>
             {getFieldDecorator('equipName', {
+              getValueFromEvent: e => e.target.value.trim(),
               rules: [{ required: true, message: '请输入装备名称' }],
             })(<Input placeholder="请输入装备名称" {...itemStyles} />)}
           </FormItem>
@@ -362,6 +363,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
           <FormItem label="规格型号" {...formItemLayout}>
             {getFieldDecorator('equipModel', {
+              getValueFromEvent: e => e.target.value.trim(),
               rules: [{ required: true, message: '请输入规格型号' }],
             })(<Input placeholder="请输入规格型号" {...itemStyles} />)}
           </FormItem>
@@ -390,10 +392,13 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="计量单位" {...formItemLayout}>
-            {getFieldDecorator('equipUnit')(<Input placeholder="请输入计量单位" {...itemStyles} />)}
+            {getFieldDecorator('equipUnit', { getValueFromEvent: e => e.target.value.trim() })(
+              <Input placeholder="请输入计量单位" {...itemStyles} />
+            )}
           </FormItem>
           <FormItem label="生产厂家" {...formItemLayout}>
             {getFieldDecorator('equipProducer', {
+              getValueFromEvent: e => e.target.value.trim(),
               rules: [{ required: true, message: '请输入生产厂家' }],
             })(<Input placeholder="请输入生产厂家" {...itemStyles} />)}
           </FormItem>
@@ -432,6 +437,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
           <FormItem label="装备用途" {...formItemLayout}>
             {getFieldDecorator('use', {
+              getValueFromEvent: e => e.target.value.trim(),
               rules: [{ required: true, message: '请输入装备用途' }],
             })(<TextArea rows={4} placeholder="请输入装备用途" maxLength="500" {...itemStyles} />)}
           </FormItem>
@@ -448,7 +454,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="装备库名称" {...formItemLayout}>
-            {getFieldDecorator('storeName')(
+            {getFieldDecorator('storeName', { getValueFromEvent: e => e.target.value.trim() })(
               <Input placeholder="请输入装备库名称" {...itemStyles} />
             )}
           </FormItem>
@@ -484,7 +490,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="备注" {...formItemLayout}>
-            {getFieldDecorator('remark')(
+            {getFieldDecorator('remark', { getValueFromEvent: e => e.target.value.trim() })(
               <TextArea rows={4} placeholder="请输入备注" maxLength="500" {...itemStyles} />
             )}
           </FormItem>

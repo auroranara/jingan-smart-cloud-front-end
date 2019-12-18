@@ -293,8 +293,14 @@ export default class EmergencyDrillHandler extends PureComponent {
           <FormItem label="上报人" {...formItemLayout}>
             {getFieldDecorator('reportBy', {
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入上报人' }],
+              // rules: [{ required: true, message: '请输入上报人' }],
             })(<Input placeholder="请输入上报人" {...itemStyles} />)}
+          </FormItem>
+          <FormItem label="演练编号" {...formItemLayout}>
+            {getFieldDecorator('planCode', {
+              getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, message: '请输入演练编号' }],
+            })(<Input placeholder="请输入演练编号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练名称" {...formItemLayout}>
             {getFieldDecorator('planName', {
@@ -332,12 +338,6 @@ export default class EmergencyDrillHandler extends PureComponent {
             {getFieldDecorator('planBack', { getValueFromEvent: this.handleTrim })(
               <Input placeholder="请输入演练背景" {...itemStyles} />
             )}
-          </FormItem>
-          <FormItem label="演练编号" {...formItemLayout}>
-            {getFieldDecorator('planCode', {
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入演练编号' }],
-            })(<Input placeholder="请输入演练编号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练地点" {...formItemLayout}>
             {getFieldDecorator('planLocation', {
