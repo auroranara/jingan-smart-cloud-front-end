@@ -248,28 +248,18 @@ export default class Edit extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
+    const isComUser = isCompanyUser(+unitType);
 
-    // const selectButton = (
-    //   <Search
-    //     // disabled={isDet ? true : loading}
-    //     disabled
-    //     placeholder="请选择作业/设备名称"
-    //     enterButton={<Button type="primary" onClick={this.showModal}>选择</Button>}
-    //     // onSearch={this.showModal}
-    //   />
-    // );
     const selectButton = (
-      // <div className={styles.container}>
-        <Input
-          disabled
-          placeholder="请选择作业/设备名称"
-          addonAfter={<Button type="primary" disabled={isDet ? true : loading} onClick={this.showModal}>选择</Button>}
-        />
-      // </div>
+      <Input
+        disabled
+        placeholder="请选择作业/设备名称"
+        addonAfter={<Button type="primary" disabled={isDet ? true : loading} onClick={this.showModal}>选择</Button>}
+      />
     );
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isCompanyUser(+unitType) },
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
       { name: 'name', label: '应急卡名称' },
       { name: 'equipmentName', label: '作业/设备名称', type: 'compt', component: selectButton, wrapperClassName: styles.container },
       { name: 'riskWarning', label: '风险提示', type: 'text' },

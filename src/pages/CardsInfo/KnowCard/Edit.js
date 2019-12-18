@@ -10,7 +10,7 @@ import { handleDetails } from '../CommitmentCard/utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
-
+import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
 
 const FOLDER = 'knowCard';
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -139,6 +139,7 @@ export default class Edit extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
+    const isComUser = isCompanyUser(+unitType);
 
     const uploadBtn = (
       <Upload
@@ -157,7 +158,7 @@ export default class Edit extends PureComponent {
     );
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isCompanyUser(+unitType) },
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
       { name: 'name', label: '应知卡名称' },
       // { name: 'content', label: '应知卡内容', type: 'text' },
       { name: 'contentDetails', label: '附件', type: 'compt', component: uploadBtn },
