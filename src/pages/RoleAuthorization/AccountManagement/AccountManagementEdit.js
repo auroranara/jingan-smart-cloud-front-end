@@ -974,7 +974,7 @@ export default class AccountManagementEdit extends PureComponent {
                       },
                     ],
                   })(
-                    <Input
+                    <Input.Password
                       placeholder="请输入密码"
                       min={6}
                       max={20}
@@ -1391,8 +1391,8 @@ export default class AccountManagementEdit extends PureComponent {
                         )}
                       </Fragment>
                     ) : (
-                        <span>暂无数据</span>
-                      )}
+                      <span>暂无数据</span>
+                    )}
                   </div>
                   <div className={styles.line}>
                     <span>分公司及其服务单位：</span>
@@ -1420,8 +1420,8 @@ export default class AccountManagementEdit extends PureComponent {
                         )}
                       </Fragment>
                     ) : (
-                        <span>暂无数据</span>
-                      )}
+                      <span>暂无数据</span>
+                    )}
                   </div>
                 </div>
               </Col>
@@ -1491,10 +1491,10 @@ export default class AccountManagementEdit extends PureComponent {
         render: txt => {
           return txt
             ? txt.split('\n').map((t, i) => (
-              <p key={i} className={styles1.example}>
-                {t}
-              </p>
-            ))
+                <p key={i} className={styles1.example}>
+                  {t}
+                </p>
+              ))
             : txt;
         },
       },

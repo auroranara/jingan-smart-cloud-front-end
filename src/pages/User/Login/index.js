@@ -343,7 +343,7 @@ export default class Login extends PureComponent {
           {getFieldDecorator('password', {
             rules: [{ required: true, message: '请输入密码!' }],
           })(
-            <Input
+            <Input.Password
               size={size}
               prefix={<Icon type="lock" className={styles.icon} />}
               type="password"
