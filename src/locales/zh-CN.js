@@ -466,6 +466,8 @@ export default {
   'menu.deviceManagement.userTransmissionDevice.deviceDetail': '详情页',
   'menu.deviceManagement.userTransmissionDevice.importPointPosition': '导入点位数据',
   'menu.deviceManagement.userTransmissionDevice.pointManagement': '导入点位',
+  'menu.deviceManagement.userTransmissionDevice.addHost': '新增消防主机',
+  'menu.deviceManagement.userTransmissionDevice.editHost': '编辑消防主机',
   'menu.deviceManagement.associateSensor': '设备关联传感',
   'menu.deviceManagement.associateSensor.listView': '设备关联传感',
   'menu.deviceManagement.associateSensor.waterSystem': '消防给水系统',
