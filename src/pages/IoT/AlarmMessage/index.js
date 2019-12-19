@@ -9,7 +9,7 @@ import moment from 'moment';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const TYPES = [
   { key: '0', value: '预警' },
-  { key: '1', value: '告警' },
+  { key: '1', value: '报警' },
   { key: '2', value: '失联' },
   { key: '3', value: '故障' },
   { key: '4', value: '报警解除' },
@@ -25,12 +25,12 @@ const TYPE_MAPPER = [
   { statusType: 2 },
   { statusType: 3 },
 ];
-const GET_TYPE_NAME = ({ statusType, warnLevel }) => {
+const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
   if (+statusType === -1) {
     if (+warnLevel === 1) {
       return '预警';
     } else if (+warnLevel === 2) {
-      return '告警';
+      return '报警';
     }
   } else if (+statusType === -2) {
     return '失联';
