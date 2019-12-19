@@ -907,6 +907,18 @@ export default class AccountManagementEdit extends PureComponent {
     this.setState({ msgs: newMsgs });
   };
 
+  // 验证密码
+  validatorPassword = (rule, value, callback) => {
+    const reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]*$/;
+    if (value) {
+      if (value.length >= 6 && reg.test(value)) {
+        callback();
+        return;
+      }
+    }
+    callback('至少6位,含有数字和字母');
+  };
+
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
@@ -971,6 +983,9 @@ export default class AccountManagementEdit extends PureComponent {
                         whitespace: true,
                         type: 'string',
                         message: '请输入密码',
+                      },
+                      {
+                        validator: this.validatorPassword,
                       },
                     ],
                   })(

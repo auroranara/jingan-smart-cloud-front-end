@@ -103,6 +103,17 @@ export default class ChangePassword extends PureComponent {
     this.setState({ checkPassStatus: '' });
   };
 
+  // 验证密码
+  validatorPassword = (rule, value, callback) => {
+    const reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]*$/;
+    if (value) {
+      if (value.length >= 6 && reg.test(value)) {
+        callback();
+        return;
+      }
+    }
+    callback('至少6位,含有数字和字母');
+  };
   render() {
     const {
       loading,
@@ -143,7 +154,10 @@ export default class ChangePassword extends PureComponent {
               {getFieldDecorator('newPassword', {
                 rules: [
                   { required: true, message: '请输入新密码', whitespace: true },
-                  { min: 6, max: 20, message: '密码长度请控制在5到15位' },
+                  //{ min: 6, max: 20, message: '密码长度请控制在5到15位' },
+                  {
+                    validator: this.validatorPassword,
+                  },
                 ],
               })(<Input.Password type="password" />)}
             </FormItem>
