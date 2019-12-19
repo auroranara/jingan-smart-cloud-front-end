@@ -424,6 +424,7 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入库区编号" maxLength={15} />)}
           </FormItem>
+
           <FormItem {...formItemLayout} label="库区名称">
             {getFieldDecorator('name', {
               initialValue: name,
@@ -436,6 +437,20 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入库区名称" maxLength={15} />)}
           </FormItem>
+
+          <FormItem {...formItemLayout} label="库区面积（㎡）">
+            {getFieldDecorator('area', {
+              initialValue: area,
+              getValueFromEvent: this.handleTrim,
+              rules: [
+                {
+                  required: true,
+                  message: '请输入库区面积（㎡）',
+                },
+              ],
+            })(<Input {...itemStyles} placeholder="请输入库区面积（㎡）" maxLength={10} />)}
+          </FormItem>
+
           <FormItem {...formItemLayout} label="区域位置">
             {getFieldDecorator('position', {
               initialValue: position,
@@ -448,6 +463,7 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入区域位置" maxLength={15} />)}
           </FormItem>
+
           <FormItem {...formItemLayout} label="所处环境功能区">
             {getFieldDecorator('environment', {
               initialValue: environment,
@@ -467,6 +483,7 @@ export default class ReservoirRegionEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
+
           <FormItem {...formItemLayout} label="周边安全防护间距（m）">
             {getFieldDecorator('safetyDistance', {
               initialValue: safetyDistance,
@@ -479,6 +496,7 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入周边安全防护间距（m）" maxLength={10} />)}
           </FormItem>
+
           <FormItem {...formItemLayout} label="与周边装置的距离">
             {getFieldDecorator('deviceDistance', {
               initialValue: deviceDistance,
@@ -491,18 +509,7 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入与周边装置的距离" maxLength={10} />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="库区面积（㎡）">
-            {getFieldDecorator('area', {
-              initialValue: area,
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入库区面积（㎡）',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入库区面积（㎡）" maxLength={10} />)}
-          </FormItem>
+
           {/* <FormItem {...formItemLayout} label="库房个数">
             {getFieldDecorator('count', {
               initialValue: count,

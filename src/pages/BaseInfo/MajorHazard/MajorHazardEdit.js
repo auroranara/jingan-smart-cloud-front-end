@@ -471,7 +471,14 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 选中责任人数据
   handlePersonModalSelect = item => {
-    console.log('item', item);
+    console.log('item', item.map(item => item.userName + '' + item.phoneNumber).join(','));
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ personModalVisible: false });
+    setFieldsValue({
+      dangerPerson: item.map(item => item.userName + '' + item.phoneNumber).join(','),
+    });
   };
 
   renderInfo() {
@@ -703,19 +710,17 @@ export default class MajorHazardEdit extends PureComponent {
                 },
               ],
             })(
-              <Fragment>
-                <TextArea
-                  {...itemStyles}
-                  placeholder="请选择重大危险源责任人"
-                  rows={3}
-                  disabled
-                  maxLength="2000"
-                />
-                <Button type="primary" size="small" onClick={this.handlePersonModal}>
-                  选择
-                </Button>
-              </Fragment>
+              <TextArea
+                {...itemStyles}
+                placeholder="请选择重大危险源责任人"
+                rows={3}
+                disabled
+                maxLength="2000"
+              />
             )}
+            <Button type="primary" size="small" onClick={this.handlePersonModal}>
+              选择
+            </Button>
           </FormItem>
           <FormItem {...formItemLayout} label="防雷防静电设施是否定期接受检测">
             {getFieldDecorator('antiStatic', {

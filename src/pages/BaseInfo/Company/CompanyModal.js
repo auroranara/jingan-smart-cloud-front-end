@@ -104,7 +104,7 @@ export default class CompanyModal extends PureComponent {
     let selectedData;
     if (multiSelect) {
       selectedData = selectedRowKeys.map(data => {
-        return list.find(item => item.id === data);
+        return list.find(item => item.id || item.loginId === data);
       });
     } else {
       selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
