@@ -1,3 +1,23 @@
+import nbEdu from './imgs/niubinEdu.png';
+import nbEngin from './imgs/niubinEngin.png';
+import wangybEdu from './imgs/wangybEdu.png';
+import wangybEngin from './imgs/wangybEngin.png';
+import zhgEdu from './imgs/zhgEdu.png';
+import zhgEngin from './imgs/zhgEngin.png';
+import zhqEdu from './imgs/zhqEdu.png';
+import zhqEngin from './imgs/zhqEngin.png';
+import zskEdu from './imgs/zskEdu.png';
+import zskEngin from './imgs/zskEngin.png';
+import zblEdu from './imgs/zblEdu.png';
+import zblEngin from './imgs/zblEngin.png';
+import per1 from './imgs/personSafety.png';
+import per2 from './imgs/perSafeSecond.png';
+import per3 from './imgs/perSafeThird.png';
+import per4 from './imgs/perSafeFourth.png';
+import per5 from './imgs/perSafeFiFth.png';
+import per6 from './imgs/perSafeSixth.png';
+
+
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
   {
@@ -21,7 +41,114 @@ export const VideoList = [
     status: 1,
   },
 ];
-export const KeyList = ['企业管理员', '企业安全员'];
+// export const KeyList = ['企业管理员', '企业安全员'];
+export const KeyList = [
+  {
+    key: '1',
+    label: '企业管理员',
+    value: '2',
+  },
+  {
+    key: '2',
+    label: '安全员',
+    value: '4',
+  },
+  {
+    key: '3',
+    label: '本科',
+    value: '1',
+  },
+  {
+    key: '4',
+    label: '专科',
+    value: '5',
+  },
+  {
+    key: '5',
+    label: '注册工程师证',
+    value: '6',
+  },
+];
+export const PersonList = [
+  {
+    id: 1,
+    name: '牛斌',
+    sex: '男',
+    age: '57',
+    phone: '15857623543',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全管理员',
+    personPic: per1,
+    eduPic: nbEdu,
+    enginPic: nbEngin,
+  },
+  {
+    id: 2,
+    name: '王银冰',
+    sex: '男',
+    age: '32',
+    phone: '13925867749',
+    education: '本科',
+    work: '化工工艺',
+    sign: '安全管理员',
+    personPic: per2,
+    eduPic: wangybEdu,
+    enginPic: wangybEngin,
+  },
+  {
+    id: 3,
+    name: '张胡根',
+    sex: '男',
+    age: '58',
+    phone: '18083412691',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    personPic: per3,
+    eduPic: zhgEdu,
+    enginPic: zhgEngin,
+  },
+  {
+    id: 4,
+    name: '张会强',
+    sex: '男',
+    age: '40',
+    phone: '13952496637',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    personPic: per4,
+    eduPic: zhqEdu,
+    enginPic: zhqEngin,
+  },
+  {
+    id: 5,
+    name: '张世凯',
+    sex: '男',
+    age: '50',
+    phone: '13677342963',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    personPic: per5,
+    eduPic: zskEdu,
+    enginPic: zskEngin,
+  },
+  {
+    id: 6,
+    name: '赵炳良',
+    sex: '男',
+    age: '41',
+    phone: '18153654961',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    personPic: per6,
+    eduPic: zblEdu,
+    enginPic: zblEngin,
+  },
+];
 export const ValueList = [
   [
     {
@@ -1024,24 +1151,24 @@ export const SpecialEquipmentList = {
       name: '空气储罐',
       number: '新容1LS1474',
       person: '孙敬权',
-      expiryDate: 1552233600000,
-      status: '1',
+      expiryDate: 1637856000000,
+      status: '0',
     },
     {
       id: 29514,
       name: '氮气缓冲罐',
       number: '11-158',
       person: '孙敬权',
-      expiryDate: 1554998400000,
-      status: '1',
+      expiryDate: 1637856000000,
+      status: '0',
     },
     {
       id: 29673,
       name: '乙基脲脱水釜',
       number: '11-160',
       person: '孙敬权',
-      expiryDate: 1568217600000,
-      status: '1',
+      expiryDate: 1637856000000,
+      status: '0',
     },
     {
       id: 29653,
@@ -1052,33 +1179,32 @@ export const SpecialEquipmentList = {
       status: '0',
     },
   ],
-  expiredList: [
+  expiredList: [],
+  unexpiredList: [
     {
       id: 29602,
       name: '空气储罐',
       number: '新容1LS1474',
       person: '孙敬权',
-      expiryDate: 1552233600000,
-      status: '1',
+      expiryDate: 1637856000000,
+      status: '0',
     },
     {
       id: 29514,
       name: '氮气缓冲罐',
       number: '11-158',
       person: '孙敬权',
-      expiryDate: 1554998400000,
-      status: '1',
+      expiryDate: 1637856000000,
+      status: '0',
     },
     {
       id: 29673,
       name: '乙基脲脱水釜',
       number: '11-160',
       person: '孙敬权',
-      expiryDate: 1568217600000,
-      status: '1',
+      expiryDate: 1637856000000,
+      status: '0',
     },
-  ],
-  unexpiredList: [
     {
       id: 29653,
       name: '搪玻璃反应釜',
@@ -1302,14 +1428,14 @@ export const MonitorList = [
   // 可燃有毒气体
   [
     {
-      title: '可燃有毒气体监测',
+      title: '可燃气体监测',
       status: 1,
-      location: '仓库-1号仓库',
+      location: '7号罐附近',
       isDanger: 1,
       monitors: [
         {
-          gaugeData: { value: 71, title: '可燃气体浓度', unit: 'mg/m³' },
-          extra: 26,
+          gaugeData: { value: 24, title: '可燃气体浓度', unit: 'mg/m³' },
+          extra: 15,
         },
         {
           gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
@@ -1317,17 +1443,22 @@ export const MonitorList = [
         },
       ],
     },
+  ],
+  // 可燃有毒气体
+  [
     {
-      title: '可燃有毒气体监测',
-      status: 2,
-      location: '仓库-3号仓库',
-      isDanger: 0,
+      title: '有毒气体监测',
+      status: 1,
+      location: '6号罐附近',
+      isDanger: 1,
       monitors: [
         {
-          gaugeData: { value: 35, title: '可燃气体浓度', unit: 'mg/m³' },
+          gaugeData: { value: 6.2, title: '可燃气体浓度', unit: 'mg/m³' },
+          extra: 6,
         },
         {
-          gaugeData: { value: 47, title: '有毒气体浓度', unit: 'mg/m³' },
+          gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
+          extra: 12,
         },
       ],
     },
@@ -1403,9 +1534,20 @@ export const MonitorFields = [
   ],
   // 可燃有毒气体
   [{ label: '监测区域名称', value: 'location' }],
+  // 可燃有毒气体
+  [{ label: '监测区域名称', value: 'location' }],
 ];
 
-export const MonitorTitles = ['罐区', '库区', '储罐', '生产装置', '库房', '气柜', '可燃有毒气体'];
+export const MonitorTitles = [
+  '罐区',
+  '库区',
+  '储罐',
+  '生产装置',
+  '库房',
+  '气柜',
+  '可燃气体',
+  '有毒气体',
+];
 
 export const MonitorDetailFields = [
   // 罐区
@@ -1484,6 +1626,8 @@ export const MonitorDetailFields = [
       },
     },
   ],
-  // 可燃有毒气体
+  // 可燃气体
+  [{ label: '监测区域名称', value: 'location' }],
+  // 有毒气体
   [{ label: '监测区域名称', value: 'location' }],
 ];

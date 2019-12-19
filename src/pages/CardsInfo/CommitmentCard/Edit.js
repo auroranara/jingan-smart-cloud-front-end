@@ -2,13 +2,16 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 // import moment from 'moment';
-import { Card, Form, message } from 'antd';
+import { Button, Card, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL, handleDetails } from './utils';
+import { BREADCRUMBLIST, LIST_URL, handleDetails } from './utils';
+import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
 
-@connect(({ cardsInfo, loading }) => ({
+@connect(({ user, cardsInfo, loading }) => ({
+  user,
   cardsInfo,
   loading: loading.models.cardsInfo,
 }))
@@ -17,8 +20,13 @@ export default class Edit extends PureComponent {
   componentDidMount() {
     const {
       match: { params: { id } },
+      form: { setFieldsValue },
+      user: { currentUser: { unitType, companyId, companyName } },
     } = this.props;
-    id && this.getDetail(id);
+    if (id)
+      this.getDetail(id);
+    else if (isCompanyUser(+unitType))
+      setFieldsValue({ companyId: { key: companyId, label: companyName } });
   }
 
   getDetail = id => {
@@ -72,6 +80,7 @@ export default class Edit extends PureComponent {
       loading,
       match: { params: { id } },
       form: { getFieldDecorator },
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const isDet = this.isDetail();
@@ -79,6 +88,16 @@ export default class Edit extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
+    const isComUser = isCompanyUser(+unitType);
+
+    const formItems = [
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
+      { name: 'name', label: '承诺卡名称' },
+      { name: 'content', label: '承诺卡内容', type: 'text' },
+      { name: 'acceptor', label: '承诺人' },
+      { name: 'time', label: '时间', type: 'datepicker' },
+      { name: 'section', label: '风险分区', type: 'select', required: false },
+  ];
 
     return (
       <PageHeaderLayout
@@ -86,7 +105,16 @@ export default class Edit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(EDIT_FORMITEMS, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          {isDet ? (
+            <Button
+              type="primary"
+              style={{ marginLeft: '45%' }}
+              onClick={e => router.push(`/cards-info/commitment-card/edit/${id}`)}
+            >
+              编辑
+            </Button>
+          ) : null}
         </Card>
       </PageHeaderLayout>
     );

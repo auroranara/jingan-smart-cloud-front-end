@@ -93,7 +93,8 @@ const drillFields = [
 ];
 
 @Form.create()
-@connect(({ emergencyManagement, company, loading }) => ({
+@connect(({ emergencyManagement, company, loading, user }) => ({
+  user,
   emergencyManagement,
   company,
   companyLoading: loading.effects['company/fetchModelList'],
@@ -199,6 +200,9 @@ export default class EmergencyEstimateHandler extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
     const { fileList, selectedDrill } = this.state;
 
@@ -213,6 +217,7 @@ export default class EmergencyEstimateHandler extends PureComponent {
         }
         const payload = {
           ...formData,
+          companyId: unitType === 4 ? companyId : formData.companyId,
           assessName: selectedDrill.projectName,
           drillReport: JSON.stringify(
             fileList.map(({ name, url, dbUrl }) => ({
@@ -282,11 +287,15 @@ export default class EmergencyEstimateHandler extends PureComponent {
   };
 
   handleViewDrillModal = () => {
+    const {
+      form: { getFieldValue },
+    } = this.props;
     this.setState({ drillModalVisible: true });
     this.fetchDrill({
       payload: {
         pageSize: 10,
         pageNum: 1,
+        companyId: getFieldValue('companyId'),
       },
     });
   };
@@ -317,30 +326,35 @@ export default class EmergencyEstimateHandler extends PureComponent {
    */
   renderForm = () => {
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const { selectedCompany, uploading, fileList, selectedDrill } = this.state;
 
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
-                </Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位名称"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
+                  </Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="演练计划名称" {...formItemLayout}>
             {getFieldDecorator('assessId', {
               rules: [{ required: true, message: '请选择演练计划名称' }],

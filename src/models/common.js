@@ -74,7 +74,7 @@ export default {
       const response = yield call(getMonitorTypeList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const monitorTypeList = transformMonitorTypeList(data.list);
+        const monitorTypeList = data.list.map(({ id, name }) => ({ key: id, value: name }));
         yield put({
           type: 'save',
           payload: {

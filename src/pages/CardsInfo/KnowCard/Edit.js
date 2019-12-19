@@ -5,15 +5,17 @@ import { Button, Card, Form, message, Upload } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL } from './utils';
+import { BREADCRUMBLIST, LIST_URL } from './utils';
 import { handleDetails } from '../CommitmentCard/utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
-
+import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
 
 const FOLDER = 'knowCard';
 const uploadAction = '/acloud_new/v2/uploadFile';
-@connect(({ cardsInfo, loading }) => ({
+@connect(({ user, cardsInfo, loading }) => ({
+  user,
   cardsInfo,
   loading: loading.models.cardsInfo,
 }))
@@ -24,8 +26,13 @@ export default class Edit extends PureComponent {
   componentDidMount() {
     const {
       match: { params: { id } },
+      form: { setFieldsValue },
+      user: { currentUser: { unitType, companyId, companyName } },
     } = this.props;
-    id && this.getDetail(id);
+    if (id)
+      this.getDetail(id);
+    else if (isCompanyUser(+unitType))
+      setFieldsValue({ companyId: { key: companyId, label: companyName } });
   }
 
   getDetail = id => {
@@ -98,15 +105,26 @@ export default class Edit extends PureComponent {
     let fileList = [...fList];
 
     if (file.status === 'done'){
-      if (file.response.code === 200)
+      if (file.response && file.response.code === 200)
         fileList = [file];
       else
         fileList = fileList.slice(0, 1);
     }
 
+    if (file.status === undefined) // file.status === undefined 为文件被beforeUpload拦截下拉的情况
+      fileList.pop();
+
     fileList = getFileList(fileList);
     this.setState({ photoList: fileList });
     setFieldsValue({ contentDetails: fileList.length ? { fileList } : null });
+  };
+
+  handleBeforeUpload = file => {
+    const { type } = file;
+    const isImage = ['image/jpeg', 'image/png'].includes(type);
+    if (!isImage)
+      message.error('请上传图片格式(jpg, png)的附件！');
+    return isImage;
   };
 
   render() {
@@ -114,6 +132,7 @@ export default class Edit extends PureComponent {
       loading,
       match: { params: { id } },
       form: { getFieldDecorator },
+      user: { currentUser: { unitType } },
     } = this.props;
     const { photoList } = this.state;
 
@@ -122,6 +141,7 @@ export default class Edit extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
+    const isComUser = isCompanyUser(+unitType);
 
     const uploadBtn = (
       <Upload
@@ -129,6 +149,7 @@ export default class Edit extends PureComponent {
         data={{ folder: FOLDER }}
         action={uploadAction}
         fileList={photoList}
+        beforeUpload={this.handleBeforeUpload}
         onChange={this.handleUploadPhoto}
         headers={{ 'JA-Token': getToken() }}
       >
@@ -139,9 +160,8 @@ export default class Edit extends PureComponent {
     );
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect' },
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
       { name: 'name', label: '应知卡名称' },
-      // { name: 'content', label: '应知卡内容', type: 'text' },
       { name: 'contentDetails', label: '附件', type: 'compt', component: uploadBtn },
       { name: 'publisher', label: '发布人员' },
       { name: 'time', label: '时间', type: 'datepicker' },
@@ -155,6 +175,15 @@ export default class Edit extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          {isDet ? (
+            <Button
+              type="primary"
+              style={{ marginLeft: '45%' }}
+              onClick={e => router.push(`/cards-info/know-card/edit/${id}`)}
+            >
+              编辑
+            </Button>
+          ) : null}
         </Card>
       </PageHeaderLayout>
     );

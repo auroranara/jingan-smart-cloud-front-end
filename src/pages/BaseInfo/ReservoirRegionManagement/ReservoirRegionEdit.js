@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import router from 'umi/router';
 import { routerRedux } from 'dva/router';
 import { Form, Input, Button, Card, Icon, Popover, Select, message } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
+import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import styles from './ReservoirRegion.less';
 
 const { Option } = Select;
@@ -14,9 +15,9 @@ const FormItem = Form.Item;
 // const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
 
 // 编辑页面标题
-const editTitle = '编辑库区';
+const editTitle = '编辑';
 // 添加页面标题
-const addTitle = '新增库区';
+const addTitle = '新增';
 
 // 表单标签
 const fieldLabels = {};
@@ -35,6 +36,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     submitting: false,
     detailList: {}, // 详情列表
     dangerVisible: false,
+    editCompanyId: '',
     dangerSourceUnitId: [],
   };
 
@@ -58,9 +60,10 @@ export default class ReservoirRegionEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          // const { dangerSource, dangerSourceMessage } = currentList;
+          const { companyId } = currentList;
           this.setState({
             detailList: currentList,
+            editCompanyId: companyId,
             // hasDangerSourse: dangerSource,
             // dangerSourceUnitId: dangerSourceMessage,
           });
@@ -95,7 +98,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           submitting: true,
         });
 
-        // const { dangerSourceUnitId } = this.state;
+        const { editCompanyId } = this.state;
 
         const {
           number,
@@ -113,7 +116,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         } = values;
 
         const payload = {
-          companyId: this.companyId || companyId,
+          companyId: this.companyId || companyId || editCompanyId,
           number,
           name,
           position,
@@ -627,14 +630,29 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 渲染底部工具栏
-  renderFooterToolbar() {
+  renderFooterToolbar(isDetail, id) {
     const { submitting } = this.state;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" size="large" loading={submitting} onClick={this.handleClickValidate}>
-          提交
-        </Button>
+        {isDetail ? (
+          <Button
+            type="primary"
+            size="large"
+            onClick={e => router.push(`/major-hazard-info/reservoir-region-management/edit/${id}`)}
+          >
+            编辑
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            size="large"
+            loading={submitting}
+            onClick={this.handleClickValidate}
+          >
+            提交
+          </Button>
+        )}
         <Button type="primary" size="large" onClick={this.goBack}>
           返回
         </Button>
@@ -648,8 +666,11 @@ export default class ReservoirRegionEdit extends PureComponent {
       match: {
         params: { id },
       },
+      route: { name },
     } = this.props;
-    const title = id ? editTitle : addTitle;
+
+    const isDetail = name === 'view';
+    const title = id ? (isDetail ? '详情' : editTitle) : addTitle;
 
     // 面包屑
     const breadcrumbList = [
@@ -676,7 +697,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
-        {this.renderFooterToolbar()}
+        {this.renderFooterToolbar(isDetail, id)}
         {this.renderModal()}
         {/* {this.renderDangerModal()} */}
       </PageHeaderLayout>

@@ -17,22 +17,53 @@ import styles from './CompanyInfo.less';
 }))
 export default class CompanyInfo extends PureComponent {
   render() {
-    const { handleClickCount } = this.props;
     const {
-      companyName = '无锡晶安智慧科技有限公司',
-      // 安全管理员
-      headOfSecurity = '张小东',
-      // 联系电话
-      headOfSecurityPhone = '18151518810',
-      // 风险点总数
-      countCheckItem = 12,
-      // 手机号是否可见
-      phoneVisible = true,
-      countCompanyUser = 10,
-      specialEquipmentCount = 4,
-      total = 4,
-      isImportant = true,
-    } = {};
+      handleClickCount,
+      unitSafety: {
+        companyMessage: {
+          companyMessage: {
+            // 企业名称
+            companyName,
+            // 安全管理员
+            headOfSecurity,
+            // 联系电话
+            headOfSecurityPhone,
+            // 风险点总数
+            countCheckItem,
+          },
+          // 是否是重点企业
+          isImportant,
+        },
+        // 安全人员
+        safetyOfficer: { valueList = [] } = {},
+        // 特种设备统计
+        specialEquipmentCount,
+        // 隐患列表
+        hiddenDangerCount: { total = 0 } = {},
+        // 安全指数
+        safetyIndex,
+        // 手机号是否可见
+        phoneVisible,
+      },
+    } = this.props;
+    // const {
+    //   companyName = '无锡晶安智慧科技有限公司',
+    //   // 安全管理员
+    //   headOfSecurity = '牛斌',
+    //   // 联系电话
+    //   headOfSecurityPhone = '15857623543',
+    //   // 风险点总数
+    //   countCheckItem = 4,
+    //   // 手机号是否可见
+    //   phoneVisible = true,
+    //   countCompanyUser = 6,
+    //   specialEquipmentCount = 4,
+    //   total = 2,
+    //   isImportant = true,
+    // } = {};
+    const countCompanyUser = (valueList || []).reduce((total, value) => {
+      return total + (value ? value.length : 0);
+    }, 0);
     const phone =
       phoneVisible || !headOfSecurityPhone
         ? headOfSecurityPhone

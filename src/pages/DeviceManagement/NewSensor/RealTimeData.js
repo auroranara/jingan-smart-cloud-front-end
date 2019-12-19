@@ -2,23 +2,12 @@ import { Component, Fragment } from 'react';
 import {
   Card,
   Form,
-  Input,
-  Select,
-  Button,
   Row,
   Col,
-  message,
-  Radio,
-  DatePicker,
-  TreeSelect,
-  Upload,
-  Icon,
-  Tooltip,
   Table,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import router from 'umi/router';
 import moment from 'moment';
 import { armStatusEnum } from '@/utils/dict';
 import styles from './RealTimeData.less';
@@ -26,13 +15,12 @@ import styles from './RealTimeData.less';
 import logoLocation from '@/assets/logo-location.svg';
 
 const title = '实时数据'
-const FormItem = Form.Item;
-
-const formItemLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
-};
-const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
+// const FormItem = Form.Item;
+// const formItemLayout = {
+//   labelCol: { span: 6 },
+//   wrapperCol: { span: 18 },
+// };
+// const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 // 图标样式
 const statusStyle = [
   {},  // 蓝色
@@ -63,14 +51,14 @@ export default class RealTimeData extends Component {
     this.timer = null
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchRealTimeData()
     this.timer = setInterval(() => {
       this.fetchRealTimeData()
     }, 5000);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearInterval(this.timer)
   }
 
@@ -175,7 +163,7 @@ export default class RealTimeData extends Component {
     ) : '暂无数据'
   }
 
-  render() {
+  render () {
     const {
       device: {
         realTimeData: {
@@ -184,7 +172,7 @@ export default class RealTimeData extends Component {
           linkStatusUpdateTime, // 失联时间
           code,
           companyName,
-          pointAreaLocation, // 地址
+          monitorEquipmentAreaLocation, // 地址
           faultStatus, // 运行状态
           faultStatusList = [], // 故障列表
           sensorMonitorParamList = [],
@@ -213,7 +201,7 @@ export default class RealTimeData extends Component {
               <h3>{code ? `${code}——` : ''}{companyName || ''}</h3>
               <Row className={styles.line}>
                 <img alt="" src={logoLocation} width="14" height="14" />
-                <span>{pointAreaLocation || '暂无点位地址'}</span>
+                <span>{monitorEquipmentAreaLocation || '暂无点位地址'}</span>
               </Row>
               <Row className={styles.line}>
                 <Col {...descWrapper}>

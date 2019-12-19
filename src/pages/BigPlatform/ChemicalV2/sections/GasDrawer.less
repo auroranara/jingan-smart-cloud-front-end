@@ -1,0 +1,123 @@
+@red: #EA2E2E;
+
+@keyframes flash {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.up {
+  color: #FFF;
+  padding: 20px;
+  border-bottom: 1px solid #586D88;
+}
+
+.section {
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.label {
+  color: #0FF;
+}
+
+.camera {
+  width: 21px;
+  height: 15px;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 18px;
+  position: relative;
+  top: 2px;
+  background-size: 100% 100%;
+  background-image: url(../imgs/camera.png);
+}
+
+.icons {
+  position: absolute;
+  top: -3px;
+  right: 40px;
+}
+
+.icon {
+  width: 22px;
+  height: 26px;
+  display: inline-block;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.sheet:extend(.icon) {
+  margin-right: 10px;
+  background-size: 19px 25px;
+  background-image: url(../imgs/sheet.png);
+}
+
+.trend:extend(.icon) {
+  background-size: 22px 21px;
+  background-image: url(../imgs/trend.png);
+}
+
+.down {
+  display: flex;
+  color: #FFF;
+  padding: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.device {
+  font-size: 18px;
+  width: 165px;
+  height: 177px;
+  position: relative;
+  background-image: url(../imgs/gas.png);
+  background-size: 100% 100%;
+}
+
+.device1:extend(.device) {
+  background-image: url(../imgs/poison.png);
+}
+
+.redDot {
+  width: 28px;
+  height: 28px;
+  background-image: url(../imgs/redDot.png);
+  background-size: 100% 100%;
+  position: absolute;
+  left: 68px;
+  top: -2px;
+  animation: flash 1s ease-in-out 0s infinite alternate;
+}
+
+.lel {
+  margin: 50px 0 0;
+  text-align: center;
+}
+
+.value {
+  margin: 0;
+  text-align: center;
+}
+
+.time {
+  margin: 0 0 6px;
+}
+
+.detail {
+  margin: 0;
+}
+
+.info {
+  padding: 10px;
+  border: 1px dashed #0FF;
+}
+
+.status {
+  color: #0FF;
+  margin-left: 10px;
+}
+
+.alarm {
+  color: @red;
+}

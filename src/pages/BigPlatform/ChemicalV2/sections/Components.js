@@ -13,7 +13,16 @@ import DangerAreaDrawer from './DangerAreaDrawer';
 import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
 import MonitorDrawer from './MonitorDrawer';
+import DangerSourceDrawer from './DangerSourceDrawer';
+import DangerSourceInfoDrawer from './DangerSourceInfoDrawer';
+import DangerSourceLvlDrawer from './DangerSourceLvlDrawer';
+import ChemicalDrawer from './ChemicalDrawer';
+import ChemicalDetailDrawer from './ChemicalDetailDrawer';
+import TechnologyDrawer from './TechnologyDrawer';
+import StorageDrawer from './StorageDrawer';
 import Messages from './Messages';
+import GasDrawer from './GasDrawer';
+import PoisonDrawer from './PoisonDrawer';
 
 export {
   Risk,
@@ -31,5 +40,14 @@ export {
   CurrentHiddenDanger,
   MonitorDrawer,
   MonitorDetailDrawer,
+  DangerSourceDrawer,
+  DangerSourceInfoDrawer,
+  DangerSourceLvlDrawer,
+  ChemicalDrawer,
+  ChemicalDetailDrawer,
+  TechnologyDrawer,
+  StorageDrawer,
   Messages,
+  GasDrawer,
+  PoisonDrawer,
 };

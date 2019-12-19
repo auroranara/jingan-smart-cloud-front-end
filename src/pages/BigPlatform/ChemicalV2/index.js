@@ -4,23 +4,29 @@ import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
+import { mapMutations } from '@/utils/utils';
 import headerBg from '@/assets/new-header-bg.png';
 import bgImg from '@/pages/BigPlatform/Chemical/imgs/bg.png';
 import menuIcon from './imgs/menu-icon.png';
 import styles from './index.less';
-import { RiskPointDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
+import {
+  RiskPointDrawer,
+  RiskPointDetailDrawer,
+} from '@/pages/BigPlatform/Safety/Company3/components';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import { VideoList, MonitorList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
+import Lightbox from 'react-images';
+import TankMonitorDrawer from './sections/TankMonitorDrawer';
 
 import {
-  Risk,
+  DangerSourceInfoDrawer,
   KeyPoints,
   SafetyOfficerDrawer,
-  Emergency,
+  DangerSourceDrawer,
   Remind,
   Tips,
   CompanyInfo,
@@ -31,7 +37,14 @@ import {
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
   MonitorDetailDrawer,
+  DangerSourceLvlDrawer,
+  ChemicalDrawer,
+  ChemicalDetailDrawer,
+  TechnologyDrawer,
+  StorageDrawer,
   Messages,
+  GasDrawer,
+  PoisonDrawer,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -43,7 +56,7 @@ const HEADER_STYLE = {
   backgroundImage: `url(${headerBg})`,
   backgroundSize: '100% 100%',
 };
-
+const DEFAULT_PAGE_SIZE = 10;
 const CONTENT_STYLE = { position: 'relative', height: '90.37037%', zIndex: 0 };
 
 const msgInfo = [
@@ -80,6 +93,7 @@ notification.config({
   duration: 30,
   bottom: 6,
 });
+const companyId = 'DccBRhlrSiu9gMV7fmvizw';
 
 @connect(({ unitSafety, bigPlatform }) => ({ unitSafety, bigPlatform }))
 export default class Chemical extends PureComponent {
@@ -101,17 +115,82 @@ export default class Chemical extends PureComponent {
       monitorDetailDrawerVisible: false,
       monitorData: {},
       msgVisible: false,
+      dangerSourceDrawerVisible: false,
+      dangerSourceInfoDrawerVisible: false,
+      dangerSourceLvlDrawerVisible: false,
+      chemicalDrawerVisible: false,
+      chemicalDetailDrawerVisible: false,
+      technologyDrawerVisible: false,
+      storageDrawerVisible: false,
+      riskPointDetailDrawerVisible: false,
+      imageFiles: [],
+      currentImage: 0,
+      modalImgVisible: false,
+      gasVisible: false,
+      poisonVisible: false,
+      tankMonitorDrawerVisible: false,
     };
+    this.itemId = 'DXx842SFToWxksqR1BhckA';
+
+    mapMutations(this, {
+      namespace: 'unitSafety',
+      types: [
+        // 获取企业信息
+        'fetchCompanyMessage',
+        // 获取特种设备数
+        'fetchSpecialEquipmentCount',
+        // 获取隐患列表
+        // 'fetchHiddenDangerList',
+        // 获取安全人员信息
+        'fetchSafetyOfficer',
+        'fetchHiddenDangerCount',
+        // 获取特种设备列表
+        'fetchSpecialEquipmentList',
+      ],
+    });
   }
 
   componentDidMount() {
-    this.fetchPoints();
-    this.fetchHiddenDangerList();
+    this.init();
   }
 
-  fetchPoints = () => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId: 'DccBRhlrSiu9gMV7fmvizw' } });
+  init = () => {
+    const {
+      // match: {
+      //   params: { companyId },
+      // },
+      dispatch,
+    } = this.props;
+    // 获取企业信息
+    this.fetchCompanyMessage({ company_id: companyId });
+    // 获取特种设备数
+    this.fetchSpecialEquipmentCount({ company_id: companyId });
+    // 获取隐患列表
+    // this.getHiddenDangerList();
+    // 获取隐患统计
+    this.fetchHiddenDangerCount({ company_id: companyId });
+    // 获取安全人员信息（安全人员信息卡片源数据）
+    this.fetchSafetyOfficer({ company_id: companyId });
+    // 获取特种设备列表
+    this.fetchSpecialEquipmentList({ companyId });
+
+    this.fetchPoints();
+    this.fetchHiddenDangerList();
+  };
+
+  getHiddenDangerList = restProps => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    this.fetchHiddenDangerList({
+      pageNum: 1,
+      pageSize: 10,
+      company_id: companyId,
+      status: 5,
+      ...restProps,
+    });
   };
 
   fetchHiddenDangerList = pageNum => {
@@ -119,7 +198,7 @@ export default class Chemical extends PureComponent {
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
-        company_id: 'DccBRhlrSiu9gMV7fmvizw',
+        company_id: companyId,
         // businessType: 2,
         // status: hdStatus,
         pageNum,
@@ -227,7 +306,8 @@ export default class Chemical extends PureComponent {
       <div
         className={styles.notificationBody}
         onClick={() =>
-          this.setDrawerVisible('monitorDetail', { monitorType: 2, monitorData: MonitorList[2][0] })
+          // this.setDrawerVisible('monitorDetail', { monitorType: 2, monitorData: MonitorList[2][0] })
+          this.setDrawerVisible('tankMonitor')
         }
       >
         <div>
@@ -236,15 +316,149 @@ export default class Chemical extends PureComponent {
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
           <span className={styles.address}>{'储罐监测发生报警'}</span>
         </div>
-        <div style={{ color: '#f83329' }}>温度为68℃，超过预警值8℃</div>
+        <div style={{ color: '#f83329' }}>压力为0.15MPa，超过告警值0.05MPa</div>
         <div>监测设备：储罐监测设备</div>
-        <div>区域位置：储罐监测点A</div>
+        <div>区域位置：东厂区1号楼危险品液体原料储罐区</div>
       </div>
     );
   };
 
   onRef = ref => {
     this.childMap = ref;
+  };
+
+  /**
+   * 获取风险点巡查列表
+   */
+  getRiskPointInspectionList = restProps => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointInspectionList',
+      payload: {
+        itemId: this.itemId,
+        pageNum: 1,
+        pageSize: DEFAULT_PAGE_SIZE,
+        ...restProps,
+      },
+    });
+  };
+
+  /**
+   * 获取风险点隐患列表
+   */
+  getRiskPointHiddenDangerList = restProps => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointHiddenDangerList',
+      payload: {
+        itemId: this.itemId,
+        pageNum: 1,
+        pageSize: DEFAULT_PAGE_SIZE,
+        ...restProps,
+      },
+    });
+  };
+
+  /**
+   * 获取风险点的隐患统计
+   */
+  getRiskPointHiddenDangerCount = restProps => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointHiddenDangerCount',
+      payload: {
+        itemId: this.itemId,
+        ...restProps,
+      },
+    });
+  };
+
+  /**
+   * 获取风险点的巡查统计
+   */
+  getRiskPointInspectionCount = restProps => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointInspectionCount',
+      payload: {
+        itemId: this.itemId,
+        ...restProps,
+      },
+    });
+  };
+
+  handleClickRiskPoint = (itemId, status) => {
+    const { dispatch } = this.props;
+    this.itemId = itemId;
+    dispatch({
+      type: 'unitSafety/fetchRiskPointCardList',
+      payload: { itemId, status },
+      callback: () => {
+        this.setDrawerVisible('riskPointDetail');
+      },
+    });
+    // 获取隐患列表
+    this.getRiskPointHiddenDangerList();
+    // 获取隐患统计
+    this.getRiskPointHiddenDangerCount();
+  };
+
+  fetchPoints = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
+  };
+
+  handleClickImgShow = images => {
+    console.log('imageFiles', images);
+
+    this.setState({
+      modalImgVisible: true,
+      currentImage: 0,
+      imageFiles: images,
+    });
+  };
+
+  handleModalImgClose = () => {
+    this.setState({
+      modalImgVisible: false,
+    });
+  };
+
+  // 上一页
+  gotoPrevious = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
+  };
+
+  // 下一页
+  gotoNext = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
+  };
+
+  // 图片点击下方缩略图
+  handleClickThumbnail = currentImage => {
+    this.setState({
+      currentImage,
+    });
+  };
+
+  handleGasOpen = () => {
+    this.setState({ gasVisible: true });
+  };
+
+  handleGasClose = () => {
+    this.setState({ gasVisible: false });
+  };
+
+  handlePoisonOpen = () => {
+    this.setState({ poisonVisible: true });
+  };
+
+  handlePoisonClose = () => {
+    this.setState({ poisonVisible: false });
   };
 
   /**
@@ -271,7 +485,23 @@ export default class Chemical extends PureComponent {
       monitorDetailDrawerVisible,
       monitorData,
       msgVisible,
+      dangerSourceDrawerVisible,
+      dangerSourceInfoDrawerVisible,
+      dangerSourceLvlDrawerVisible,
+      chemicalDrawerVisible,
+      chemicalDetailDrawerVisible,
+      riskPointDetailDrawerVisible,
+      technologyDrawerVisible,
+      storageDrawerVisible,
+      imageFiles,
+      currentImage,
+      modalImgVisible,
+      gasVisible,
+      poisonVisible,
+      tankMonitorDrawerVisible,
     } = this.state;
+    console.log('points', points);
+
     return (
       <BigPlatformLayout
         title="五位一体信息化管理平台"
@@ -304,7 +534,11 @@ export default class Chemical extends PureComponent {
               </div>
 
               <div className={styles.leftBottom}>
-                <KeyPoints setDrawerVisible={this.setDrawerVisible} />
+                <KeyPoints
+                  setDrawerVisible={this.setDrawerVisible}
+                  handleGasOpen={this.handleGasOpen}
+                  handlePoisonOpen={this.handlePoisonOpen}
+                />
               </div>
             </Col>
 
@@ -314,12 +548,14 @@ export default class Chemical extends PureComponent {
                   setDrawerVisible={this.setDrawerVisible}
                   showVideo={this.handleShowVideo}
                   onRef={this.onRef}
+                  handleClickRiskPoint={this.handleClickRiskPoint}
                 />
 
                 {msgVisible ? (
                   <Messages
                     setDrawerVisible={this.setDrawerVisible}
                     handleParentChange={this.handleParentChange}
+                    handleGasOpen={this.handleGasOpen}
                   />
                 ) : (
                   <div className={styles.msgContainer}>
@@ -347,7 +583,7 @@ export default class Chemical extends PureComponent {
           }}
           data={points}
           riskPointType={riskPointType}
-          zIndex={1066}
+          zIndex={1266}
         />
 
         {/* 当前隐患抽屉 */}
@@ -367,6 +603,8 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           handleShowImg={this.handleShowImg}
           handleShowVideo={this.handleShowVideo}
+          handleGasOpen={this.handleGasOpen}
+          handlePoisonOpen={this.handlePoisonOpen}
         />
 
         <StorageAreaDrawer
@@ -379,6 +617,7 @@ export default class Chemical extends PureComponent {
         {/* 安全人员抽屉 */}
         <SafetyOfficerDrawer
           visible={safetyOfficerDrawerVisible}
+          handleClickImgShow={this.handleClickImgShow}
           onClose={() => {
             this.setDrawerVisible('safetyOfficer');
           }}
@@ -408,6 +647,8 @@ export default class Chemical extends PureComponent {
           }}
           type={monitorType}
           setDrawerVisible={this.setDrawerVisible}
+          handleGasOpen={this.handleGasOpen}
+          handlePoisonOpen={this.handlePoisonOpen}
         />
 
         <MonitorDetailDrawer
@@ -420,7 +661,108 @@ export default class Chemical extends PureComponent {
           handleShowVideo={this.handleShowVideo}
         />
 
+        {/* 风险点详情抽屉 */}
+        <RiskPointDetailDrawer
+          visible={riskPointDetailDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('riskPointDetail');
+          }}
+          getRiskPointInspectionList={this.getRiskPointInspectionList}
+          getRiskPointHiddenDangerList={this.getRiskPointHiddenDangerList}
+          getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
+          getRiskPointInspectionCount={this.getRiskPointInspectionCount}
+        />
+
+        <DangerSourceDrawer
+          visible={dangerSourceDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('dangerSource');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <DangerSourceInfoDrawer
+          visible={dangerSourceInfoDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('dangerSourceInfo');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <DangerSourceLvlDrawer
+          visible={dangerSourceLvlDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('dangerSourceLvl');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <ChemicalDrawer
+          visible={chemicalDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('chemical');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <ChemicalDetailDrawer
+          visible={chemicalDetailDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('chemicalDetail');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <TechnologyDrawer
+          visible={technologyDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('technology');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <StorageDrawer
+          visible={storageDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('storage');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+        />
+
+        <GasDrawer
+          visible={gasVisible}
+          handleClose={this.handleGasClose}
+          handleShowVideo={this.handleShowVideo}
+        />
+
+        <PoisonDrawer
+          visible={poisonVisible}
+          handleClose={this.handlePoisonClose}
+          handleShowVideo={this.handleShowVideo}
+        />
+
+        <TankMonitorDrawer
+          id={'111'}
+          visible={tankMonitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('tankMonitor');
+          }}
+          onVideoClick={this.handleShowVideo}
+        />
+
         <ImagePreview images={images} onClose={this.handleCloseImg} />
+
+        <Lightbox
+          images={imageFiles.map(src => ({ src }))}
+          isOpen={modalImgVisible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleModalImgClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
+        />
       </BigPlatformLayout>
     );
   }

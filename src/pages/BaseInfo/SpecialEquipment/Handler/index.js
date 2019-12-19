@@ -480,9 +480,10 @@ export default class SpecialEquipment extends PureComponent {
   /**
    * 渲染表单
    */
-  renderForm = () => {
+  renderForm = (isDetail) => {
     const {
       dispatch,
+      match: { params: { id } },
       form,
       form: { getFieldDecorator, getFieldsValue },
       personnelPosition: {
@@ -824,9 +825,15 @@ export default class SpecialEquipment extends PureComponent {
           )}
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
-            提交
-          </Button>
+          {isDetail ? (
+            <Button type="primary" style={{ marginLeft: '10px' }} onClick={e => router.push(`/facility-management/special-equipment/edit/${id}`)}>
+              编辑
+            </Button>
+          ) : (
+            <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+              提交
+            </Button>
+          )}
         </Row>
       </Card>
     );
@@ -836,10 +843,13 @@ export default class SpecialEquipment extends PureComponent {
     const {
       companyLoading,
       match: { params: { id = null } = {} },
+      route: { name },
       company: { companyModal },
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? '编辑' : '新增';
+
+    const isDetail = name === 'detail';
+    const title = id ? isDetail ? '详情' : '编辑' : '新增';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '设备设施管理', name: '设备设施管理' },
@@ -848,7 +858,7 @@ export default class SpecialEquipment extends PureComponent {
     ];
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        {this.renderForm()}
+        {this.renderForm(isDetail)}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"

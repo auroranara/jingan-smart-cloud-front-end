@@ -58,6 +58,7 @@ export default {
         listView: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
         edit: 'deviceManagement.userTransmissionDevice.pointManagement.edit',
         delete: 'deviceManagement.userTransmissionDevice.pointManagement.delete',
+        add: 'deviceManagement.userTransmissionDevice.pointManagement.add',
       },
     },
     videoMonitor: {
@@ -505,6 +506,8 @@ export default {
       edit: 'majorHazardInfo.highRiskProcess.edit',
       detail: 'majorHazardInfo.highRiskProcess.detail',
       delete: 'majorHazardInfo.highRiskProcess.delete',
+      bind: 'majorHazardInfo.highRiskProcess.bind',
+      unbind: 'majorHazardInfo.highRiskProcess.unbind',
     },
     // 特种设备管理
     specialEquipment: {
@@ -672,6 +675,16 @@ export default {
       edit: 'hiddenDangerControl.dangerStandardDatabase.edit',
       delete: 'hiddenDangerControl.dangerStandardDatabase.delete',
       process: 'hiddenDangerControl.dangerStandardDatabase.process',
+    },
+  },
+  // 设备设施管理
+  facilityManagement: {
+    // 三同时审批记录
+    threeSimultaneity: {
+      list: 'facilityManagement.threeSimultaneity.listView',
+      add: 'facilityManagement.threeSimultaneity.add',
+      edit: 'facilityManagement.threeSimultaneity.edit',
+      delete: 'facilityManagement.threeSimultaneity.delete',
     },
   },
 };

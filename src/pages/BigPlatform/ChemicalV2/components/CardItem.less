@@ -1,0 +1,38 @@
+.container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border: 1px solid #0ff;
+  color: #fff;
+  line-height: 26px;
+
+  .field {
+    position: relative;
+
+    .label {
+      color: #0ff;
+    }
+  }
+
+  &+.container {
+    margin-top: 15px;
+  }
+}
+.icon {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-right: 1em;
+  width: 5em;
+  height: 6.8315em;
+  font-size: 16px;
+  color: #3697B6;
+  background: url('../imgs/icon-tank-empty.png') no-repeat center;
+  background-size: 100%;
+}
+.infoWrapper {
+  flex: 1;
+}

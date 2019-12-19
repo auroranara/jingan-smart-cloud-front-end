@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Spin, message } from 'antd';
+import { Button, Spin, message, Card } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -24,6 +24,11 @@ const ADD = 'safetySystem/add';
 const EDIT = 'safetySystem/edit';
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
+const STATUS_OPTIONS = [
+  { label: '通过', status: 2, color: '#06cb06' },
+  { label: '不通过', status: 3, color: 'red' },
+]
+
 const VERSION_TYPE_MAPPER = value => ({
   1: '创建',
   2: '修订',
@@ -39,14 +44,14 @@ const VERSION_CODE_MAPPER = value => `V${value}`;
   safetySystem,
   loading: loading.effects[GET_DETAIL],
 }), (dispatch) => ({
-  getDetail(payload, callback) {
+  getDetail (payload, callback) {
     dispatch({
       type: GET_DETAIL,
       payload,
       callback,
     });
   },
-  setDetail() {
+  setDetail () {
     dispatch({
       type: 'safetySystem/save',
       payload: {
@@ -54,14 +59,14 @@ const VERSION_CODE_MAPPER = value => `V${value}`;
       },
     });
   },
-  add(payload, callback) {
+  add (payload, callback) {
     dispatch({
       type: ADD,
       payload,
       callback,
     });
   },
-  edit(payload, callback) {
+  edit (payload, callback) {
     dispatch({
       type: EDIT,
       payload,
@@ -74,7 +79,7 @@ export default class SafetySystemOther extends Component {
     submitting: false,
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { getDetail, setDetail, match: { params: { id } } } = this.props;
     const navigation = this.getNavigation();
     setDetail();
@@ -100,7 +105,7 @@ export default class SafetySystemOther extends Component {
             company: companyId ? { key: companyId, label: companyName } : undefined,
             safetyName: safetyName || undefined,
             versionType: navigation !== 'detail' && +status === 4 ? '2' : versionType || '1',
-            versionCode: navigation !== 'detail' && +status === 4 ? (+versionCode+0.01).toFixed(2) : versionCode || '1.00',
+            versionCode: navigation !== 'detail' && +status === 4 ? (+versionCode + 0.01).toFixed(2) : versionCode || '1.00',
             compaileName: compaileName || undefined,
             telephone: telephone || undefined,
             expireDate: startDate && endDate ? [moment(startDate), moment(endDate)] : [],
@@ -113,7 +118,7 @@ export default class SafetySystemOther extends Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { setDetail } = this.props;
     setDetail();
   }
@@ -183,13 +188,13 @@ export default class SafetySystemOther extends Component {
           id,
           status,
           historyType,
-        }={},
+        } = {},
       },
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { company, expireDate: [startDate, endDate]=[], otherFile, ...rest } = values;
+        const { company, expireDate: [startDate, endDate] = [], otherFile, ...rest } = values;
         const payload = {
           id,
           companyId: +unitType !== 4 ? company.key : unitId,
@@ -238,7 +243,7 @@ export default class SafetySystemOther extends Component {
     return isJpgOrPng;
   }
 
-  render() {
+  render () {
     const {
       user: {
         currentUser: {
@@ -249,9 +254,10 @@ export default class SafetySystemOther extends Component {
       safetySystem: {
         detail: {
           status,
-        }={},
+          approveList = [],
+        } = {},
       },
-      loading=false,
+      loading = false,
     } = this.props;
     const { submitting } = this.state;
     const isNotCompany = unitType !== 4;
@@ -395,24 +401,53 @@ export default class SafetySystemOther extends Component {
         breadcrumbList={breadcrumbList}
       >
         <Spin spinning={loading}>
-          <CustomForm
-            mode="multiple"
-            fields={fields}
-            searchable={false}
-            resetable={false}
-            refresh={this.refresh}
-            action={(
-              <Fragment>
-                <Button onClick={this.handleBackButtonClick}>返回</Button>
-                {isNotDetail ? (
-                  <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
-                ) : (+status === 3 || +status === 4) && (
-                  <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
-                )}
-              </Fragment>
+          <Card title="基础信息" bordered={false}>
+            <CustomForm
+              mode="multiple"
+              fields={fields}
+              searchable={false}
+              resetable={false}
+              refresh={this.refresh}
+              // action={(
+              //   <Fragment>
+              //     <Button onClick={this.handleBackButtonClick}>返回</Button>
+              //     {isNotDetail ? (
+              //       <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+              //     ) : (+status === 3 || +status === 4) && (
+              //       <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+              //     )}
+              //   </Fragment>
+              // )}
+              ref={this.setFormReference}
+            />
+          </Card>
+          {!isNotDetail && approveList && approveList.length > 0 && (
+            <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
+              {approveList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
+                <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
+                  <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
+                  <p>一级审批人：{firstApproveBy || ''}</p>
+                  <p>二级审批人：{secondApproveBy || ''}</p>
+                  <p>三级审批人：{threeApproveBy || ''}</p>
+                  <p>经办人：{approveBy || ''}</p>
+                  <div style={{ display: 'flex' }}>
+                    <span>附件：</span>
+                    <div>{otherFileList.map(({ id, fileName, webUrl }) => (
+                      <div key={id}><a href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></div>
+                    ))}</div>
+                  </div>
+                </Card>
+              ))}
+            </Card>
+          )}
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <Button style={{ marginRight: '10px' }} onClick={this.handleBackButtonClick}>返回</Button>
+            {isNotDetail ? (
+              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+            ) : (+status === 3 || +status === 4) && (
+              <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
             )}
-            ref={this.setFormReference}
-          />
+          </div>
         </Spin>
       </PageHeaderLayout>
     );

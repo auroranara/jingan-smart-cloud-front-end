@@ -12,29 +12,30 @@ import { MonitorList } from '../utils';
 import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
 
 const riskData = [
-  { label: '红色', value: 2, color: '#FC1F02' },
-  { label: '橙色', value: 3, color: '#F17A0A' },
-  { label: '黄色', value: 3, color: '#FFE500' },
-  { label: '蓝色', value: 4, color: '#0967D3' },
+  { label: '红色', value: 1, color: '#FC1F02' },
+  { label: '橙色', value: 1, color: '#F17A0A' },
+  { label: '黄色', value: 1, color: '#FFE500' },
+  { label: '蓝色', value: 1, color: '#0967D3' },
 ];
 const hiddenDangerData = [
-  // { label: '已超期', value: 1, color: '#FC1F02' },
-  { label: '待整改', value: 1, color: '#FFE500' },
+  { label: '已超期', value: 1, color: '#FC1F02' },
+  // { label: '待整改', value: 1, color: '#FFE500' },
   { label: '待复查', value: 1, color: '#0967D3' },
 ];
 const riskSourceData = [
+  { label: '危险品液体原料储罐区' },
   // { label: '储罐区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
   // { label: '储罐监测', value: 3, tip: '液位、压力、温度' },
   // { label: '库区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
-  { label: '库房监测', value: 2, tip: '温度、湿度', type: 4 },
-  { label: '生产装置', value: 3, url: '', tip: '压力、温度', type: 3 },
-  {
-    label: '气柜',
-    value: 2,
-    url: 'major-hazard-info/gasometer/list',
-    tip: '柜容、压力、可燃气体浓度、有毒气体浓度',
-    type: 5,
-  },
+  // { label: '库房监测', value: 2, tip: '温度、湿度', type: 4 },
+  // { label: '生产装置', value: 3, url: '', tip: '压力、温度', type: 3 },
+  // {
+  //   label: '气柜',
+  //   value: 2,
+  //   url: 'major-hazard-info/gasometer/list',
+  //   tip: '柜容、压力、可燃气体浓度、有毒气体浓度',
+  //   type: 5,
+  // },
   // { label: '高危工艺', value: 2, url: 'major-hazard-info/high-risk-process/list', tip: '压力、温度'  },
 ];
 const twoListData = [
@@ -70,7 +71,14 @@ export default class KeyPoints extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, setDrawerVisible, handleShowVideo } = this.props;
+    const {
+      visible,
+      onClose,
+      setDrawerVisible,
+      handleShowVideo,
+      handlePoisonOpen,
+      handleGasOpen,
+    } = this.props;
     const { active } = this.state;
 
     return (
@@ -79,12 +87,13 @@ export default class KeyPoints extends PureComponent {
           title: '风险分区信息',
           visible,
           onClose,
+          zIndex: 1200,
         }}
       >
         <div className={styles.areaContainer}>
           <div>区域名称：生产区域</div>
-          <div>区域负责人：张三</div>
-          <div>联系电话：139123456789</div>
+          <div>区域负责人：牛斌</div>
+          <div>联系电话：15857623543</div>
           <div className={styles.areaColor} style={{ backgroundColor: '#ff4848', color: '#fff' }}>
             红
           </div>
@@ -93,7 +102,7 @@ export default class KeyPoints extends PureComponent {
         <div className={styles.wrapper}>
           <div className={styles.title}>
             风险点
-            <span className={styles.value}>({12})</span>
+            <span className={styles.value}>({4})</span>
             <div
               className={styles.extra}
               onClick={() => setDrawerVisible('riskPoint', { riskPointType: { key: 'status' } })}
@@ -120,10 +129,10 @@ export default class KeyPoints extends PureComponent {
           <div className={styles.title}>
             隐患
             <span className={styles.value}>({2})</span>
-            {/* <div className={styles.extra}>
+            <div className={styles.extra} onClick={() => setDrawerVisible('currentHiddenDanger')}>
               详情
               <span style={{ color: '#0ff' }}>>></span>
-            </div> */}
+            </div>
           </div>
           <div className={styles.content}>
             {hiddenDangerData.map((item, index) => {
@@ -159,11 +168,11 @@ export default class KeyPoints extends PureComponent {
                   key={index}
                   // onClick={() => this.handleJump(url, images)}
                   onClick={() => {
-                    setDrawerVisible('monitor', { monitorType: type });
+                    setDrawerVisible('dangerSourceInfo');
                   }}
                 >
                   {label}
-                  <span className={styles.tagValue}>({value})</span>
+                  {/* <span className={styles.tagValue}>({value})</span> */}
                   <Icon type="right" className={styles.rightIcon} />
                   <span className={styles.tip}>{tip}</span>
                 </div>
@@ -177,10 +186,27 @@ export default class KeyPoints extends PureComponent {
             className={styles.title}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              setDrawerVisible('monitorDetail', { monitorType: 6, monitorData: MonitorList[6][0] });
+              // setDrawerVisible('monitor', { monitorType: 6, monitorData: MonitorList[6][0] });
+              handleGasOpen();
             }}
           >
-            可燃有毒气体监测
+            可燃气体
+            <div className={styles.extra}>
+              <Icon type="right" className={styles.rightIcon} />
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.wrapper}>
+          <div
+            className={styles.title}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              // setDrawerVisible('monitor', { monitorType: 7, monitorData: MonitorList[7][0] });
+              handlePoisonOpen();
+            }}
+          >
+            有毒气体
             <div className={styles.extra}>
               <Icon type="right" className={styles.rightIcon} />
             </div>

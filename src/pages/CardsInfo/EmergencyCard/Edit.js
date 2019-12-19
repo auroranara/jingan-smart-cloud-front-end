@@ -8,8 +8,10 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST_URL, handleEquipmentValues } from './utils';
 import { handleDetails } from '../CommitmentCard/utils';
+import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+import styles from './TableList.less';
 
-const { Search } = Input;
+// const { Search } = Input;
 const { Option } = Select;
 
 const TABLE_PAGE_SIZE = 10;
@@ -36,7 +38,8 @@ const COLUMNS = [
   },
 ];
 
-@connect(({ cardsInfo, loading }) => ({
+@connect(({ user, cardsInfo, loading }) => ({
+  user,
   cardsInfo,
   loading: loading.models.cardsInfo,
 }))
@@ -52,8 +55,13 @@ export default class Edit extends PureComponent {
     const {
       dispatch,
       match: { params: { id } },
+      form: { setFieldsValue },
+      user: { currentUser: { unitType, companyId, companyName } },
     } = this.props;
-    id && this.getDetail(id);
+    if (id)
+      this.getDetail(id);
+    else if (isCompanyUser(+unitType))
+      setFieldsValue({ companyId: { key: companyId, label: companyName } });
     dispatch({ type: 'cardsInfo/fetchRiskTypes' });
   }
 
@@ -105,7 +113,7 @@ export default class Edit extends PureComponent {
     return url && url.includes('view');
   };
 
-  showModal = v => {
+  showModal = e => {
     this.handleReset();
     this.setState({ modalVisible: true });
   };
@@ -127,9 +135,11 @@ export default class Edit extends PureComponent {
 
     this.setState({ selectedCard: undefined });
     const companyId = getFieldValue('companyId');
-    companyId && companyId.value && dispatch({
+    if (!this.values.letterName)
+      delete this.values.letterName;
+    companyId && companyId.key && dispatch({
       type: 'cardsInfo/fetchInformCards',
-      payload: { pageNum, pageSize: TABLE_PAGE_SIZE, companyId: companyId.value, ...this.values },
+      payload: { pageNum, pageSize: TABLE_PAGE_SIZE, companyId: companyId.key, ...this.values },
     });
   };
 
@@ -157,7 +167,6 @@ export default class Edit extends PureComponent {
   };
 
   handleSelectedRowKeysChange = (selectedRowKeys, selectedRows) => {
-    // console.log(selectedRows);
     this.setState({ selectedCard: selectedRows[0] });
   };
 
@@ -231,6 +240,7 @@ export default class Edit extends PureComponent {
       loading,
       match: { params: { id } },
       form: { getFieldDecorator },
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const isDet = this.isDetail();
@@ -238,20 +248,20 @@ export default class Edit extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
+    const isComUser = isCompanyUser(+unitType);
 
     const selectButton = (
-      <Search
-        disabled={isDet ? true : loading}
+      <Input
+        disabled
         placeholder="请选择作业/设备名称"
-        enterButton="选择"
-        onSearch={this.showModal}
+        addonAfter={<Button type="primary" disabled={isDet ? true : loading} onClick={this.showModal}>选择</Button>}
       />
     );
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect' },
+      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
       { name: 'name', label: '应急卡名称' },
-      { name: 'equipmentName', label: '作业/设备名称', type: 'compt', component: selectButton },
+      { name: 'equipmentName', label: '作业/设备名称', type: 'compt', component: selectButton, wrapperClassName: styles.container },
       { name: 'riskWarning', label: '风险提示', type: 'text' },
       { name: 'emergency', label: '应急处置方法', type: 'text' },
       { name: 'needAttention', label: '注意事项', type: 'text' },
@@ -271,6 +281,15 @@ export default class Edit extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          {isDet ? (
+            <Button
+              type="primary"
+              style={{ marginLeft: '45%' }}
+              onClick={e => router.push(`/cards-info/emergency-card/edit/${id}`)}
+            >
+              编辑
+            </Button>
+          ) : null}
         </Card>
         {this.renderModal()}
       </PageHeaderLayout>

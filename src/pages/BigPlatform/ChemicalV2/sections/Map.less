@@ -3,6 +3,46 @@
   height: 100%;
   border: 1px solid #0ff;
 
+  .controlContainer {
+    position: absolute;
+    top: 26px;
+    left: 70px;
+    color: #E4E6E6;
+    // color: #0ff;
+    cursor: pointer;
+
+    .controlItem {
+      float: left;
+
+      &+.controlItem {
+        margin-left: 20px;
+      }
+
+      .icon {
+        width: 24px;
+        height: 24px;
+        display: inline-block;
+        margin-right: 6px;
+      }
+    }
+
+    .active {
+      color: #116fda;
+    }
+
+    .positionBtn {
+      position: absolute;
+      left: -60px;
+      top: -10px;
+      height: 42px;
+      width: 42px;
+      padding: 0px;
+      cursor: pointer;
+      box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 3px;
+      border-radius: 2px;
+    }
+  }
+
   .dotIcon {
     display: block;
     width: 45px;
@@ -63,6 +103,11 @@
 
     .amap-info-close {
       display: none;
+    }
+
+    .fm-control-popmarker {
+      color: #000;
+      padding: 10px 15px !important;
     }
   }
 }

@@ -67,10 +67,16 @@ const expirationStatusList = [
   { key: '2', label: '已过期' },
 ]
 const defaultPageSize = 10;
+const paststatusVal = {
+  0: '未到期',
+  1: '即将到期',
+  2: '已过期',
+};
 
 @Form.create()
-@connect(({ baseInfo, loading }) => ({
+@connect(({ baseInfo, user, loading }) => ({
   baseInfo,
+  user,
   tableLoading: loading.effects['baseInfo/fetchSpecialWorkPerson'],
 }))
 export default class specialOperationPermitList extends PureComponent {
@@ -143,7 +149,8 @@ export default class specialOperationPermitList extends PureComponent {
     })
   }
 
-  formateTime = timestramp => moment(timestramp).format('YYYY-MM-DD')
+  // 格式化日期
+  formateTime = timestramp => timestramp ? moment(timestramp).format('YYYY-MM-DD') : '暂无数据';
 
   // 删除数据
   handleDelete = (id) => {
@@ -159,12 +166,26 @@ export default class specialOperationPermitList extends PureComponent {
     })
   }
 
+  getColorVal(status) {
+    switch (+status) {
+      case 0:
+        return 'rgba(0, 0, 0, 0.65)';
+      case 1:
+        return 'rgb(250, 173, 20)';
+      case 2:
+        return '#f5222d';
+      default:
+        return;
+    }
+  };
+
   /**
    * 渲染筛选栏
    */
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
+      user: { isCompany },
     } = this.props;
     const { operationCategory } = this.state;
     return (
@@ -208,13 +229,15 @@ export default class specialOperationPermitList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('companyName')(
-                  <Input placeholder="单位名称" />
-                )}
-              </FormItem>
-            </Col>
+            {!isCompany && (
+              <Col {...colWrapper}>
+                <FormItem {...formItemStyle}>
+                  {getFieldDecorator('companyName')(
+                    <Input placeholder="单位名称" />
+                  )}
+                </FormItem>
+              </Col>
+            )}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
@@ -240,14 +263,15 @@ export default class specialOperationPermitList extends PureComponent {
           pagination: { total = 0, pageNum = 1, pageSize = 10 },
         },
       },
+      user: { isCompany },
     } = this.props
     const columns = [
-      {
+      ...isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      },
+      }],
       {
         title: '基本信息',
         key: '基本信息',
@@ -275,12 +299,23 @@ export default class specialOperationPermitList extends PureComponent {
         width: 300,
         render: (val, { paststatus, certificateNumber, firstDate, reviewDate, startDate, endDate }) => (
           <div style={{ textAlign: 'left' }}>
-            {!isNaN(paststatus) && [1, 2].includes(+paststatus) && (<div style={{ color: 'red' }}>{expirationStatusList[+paststatus].label}</div>)}
+            {/* {!isNaN(paststatus) && [1, 2].includes(+paststatus) && (<div style={{ color: 'red' }}>{expirationStatusList[+paststatus].label}</div>)} */}
             <div>证号：{certificateNumber}</div>
             <div>初领日期：{this.formateTime(firstDate)}</div>
             <div>有效日期：{`${this.formateTime(startDate)}~${this.formateTime(endDate)}`}</div>
             <div>复审日期：{this.formateTime(reviewDate)}</div>
           </div>
+        ),
+      },
+      {
+        title: '操作证状态',
+        dataIndex: 'paststatus',
+        width: 120,
+        align: 'center',
+        render: pastStatus => (
+          <span style={{ color: this.getColorVal(pastStatus) }}>
+            {paststatusVal[pastStatus]}
+          </span>
         ),
       },
       {

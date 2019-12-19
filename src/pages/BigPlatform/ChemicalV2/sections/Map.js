@@ -3,33 +3,51 @@ import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 // 引入样式文件
 import styles from './Map.less';
 import moment from 'moment';
+import classnames from 'classnames';
 import monitor from '../imgs/monitor.png';
 import riskPoint from '../imgs/risk-point.png';
 import video from '../imgs/video.png';
 import mapDot from '@/pages/BigPlatform/NewFireControl/img/mapDot.png';
 import { MonitorList } from '../utils';
+import monitorActive from '../imgs/monitor-active.png';
+import monitorGray from '../imgs/monitor-gray.png';
+import riskPointActive from '../imgs/risk-point-active.png';
+import riskPointGray from '../imgs/risk-point-gray.png';
+import videoActive from '../imgs/video-active.png';
+import videoGray from '../imgs/video-gray.png';
+import position from '../imgs/position.png';
+import monitorAlarm from '../imgs/monitor-alarm.png';
 
 const fengMap = fengmap; // eslint-disable-line
+const COLOR = {
+  blue: 'rgb(30, 96, 255)',
+  orange: 'rgb(241, 122, 10)',
+  yellow: 'rgb(251, 247, 25)',
+  red: 'rgb(255, 72, 72)',
+};
 let map;
 const fmapID = '100';
 const riskPointData = [
-  // { x: 13224085.195, y: 3771561.4 },
-  // { x: 13224102.075, y: 3771523.09 },
-  // { x: 13224092.86, y: 3771511.045 },
-  { x: 13224101.001990594, y: 3771533.1014921553 },
+  { x: 13224080.80175761, y: 3771554.9751555184, itemId: 'xoderg7d9w_mm40m', status: 2 },
+  { x: 13224106.708094861, y: 3771522.2904702066, itemId: '3j6vtq7_dolqfgy7', status: 4 },
+  { x: 13224076.644961352, y: 3771543.500124462, itemId: 'o0lmmj6eupouatni', status: 2 },
+  { x: 13224087.328251136, y: 3771529.231526666, itemId: 'mog_zz27sbvr2o3t', status: 1 },
 ].map(item => ({ ...item, url: riskPoint, iconType: 0 }));
 const monitorData = [
-  // { x: 13224071.03, y: 3771548.44 },
-  // { x: 13224116.835, y: 3771518.5149999997 },
-  // { x: 13224101.82, y: 3771541.99 },
-  { x: 13224092.070077084, y: 3771519.1187018724 },
-].map(item => ({ ...item, url: monitor, iconType: 1 }));
-const videoData = [
-  // { x: 13224089.8, y: 3771556.13 },
-  // { x: 13224091.81, y: 3771525.2 },
-  // { x: 13224087.335, y: 3771518.49 },
-  { x: 13224080.80175761, y: 3771554.9751555184 },
-].map(item => ({ ...item, url: video, iconType: 2 }));
+  { x: 13224079.889752572, y: 3771535.0431545274 },
+  // { x: 13224088.911112975, y: 3771542.825565829 },
+  { x: 13224097.540287659, y: 3771516.5485505313 },
+  { x: 13224087.917599482, y: 3771520.8262529834 },
+].map(item => ({
+  ...item,
+  url: monitor,
+  iconType: 1,
+}));
+const videoData = [{ x: 13224097.846242769, y: 3771544.420560548 }].map(item => ({
+  ...item,
+  url: video,
+  iconType: 2,
+}));
 
 const polygon = [
   { x: 13224092.737655401, y: 3771528.058833545, z: 5 },
@@ -237,7 +255,6 @@ const isPointInPolygon = (point, polygon) => {
     return true;
   }
 };
-
 const alarmIds = [
   164,
   162,
@@ -269,50 +286,59 @@ const alarmIds = [
   269,
   271,
 ];
+const controls = [
+  { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive },
+  { label: '视频监控', icon: videoGray, activeIcon: videoActive },
+  { label: '监测设备', icon: monitorGray, activeIcon: monitorActive },
+];
 
 export default class Map extends PureComponent {
   state = {
-    gdMapVisible: true,
+    gdMapVisible: false,
+    visibles: [true, true, true],
   };
 
   ids = [];
-
   polygonArray = [];
   markerArray = [];
+  lastTime = 0;
 
   componentDidMount() {
-    // this.initMap();
+    this.initMap();
     const { onRef } = this.props;
     onRef && onRef(this);
   }
 
   /* eslint-disable*/
   handleUpdateMap = () => {
-    if (!map) return;
-    this.polygonArray[0].setColor('rgb(255, 72, 72)');
-    const models = map.getDatasByAlias(1, 'model');
-    models.forEach(item => {
-      if (item.ID && alarmIds.includes(item.ID)) {
-        item.setColor('rgb(255, 72, 72)', 1);
-      }
-    });
-    this.markerArray[2].jump({ times: 0, duration: 2, height: 2, delay: 0 });
+    console.log('map', map);
+
+    if (!map || !this.markerArray.length) return;
+    // this.polygonArray[0].setColor('rgb(255, 72, 72)');
+    // const models = map.getDatasByAlias(1, 'model');
+    // models.forEach(item => {
+    //   if (item.ID && alarmIds.includes(item.ID)) {
+    //     item.setColor('rgb(255, 72, 72)', 1);
+    //   }
+    // });
+    this.markerArray[5].url = monitorAlarm;
+    this.markerArray[5].jump({ times: 0, duration: 2, height: 2, delay: 0 });
   };
 
-  addMarkers = (x, y, url, iconType) => {
-    const groupID = 1;
-    const groupLayer = map.getFMGroup(groupID);
-    const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
-    groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
+  addMarkers = (markerProps, layer) => {
+    let markerLayer = layer;
+    if (!layer) {
+      const groupID = 1;
+      const groupLayer = map.getFMGroup(groupID);
+      const newLayer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+      groupLayer.addLayer(newLayer); //添加图片标注层到模型层。否则地图上不会显示
+    }
     const im = new fengmap.FMImageMarker({
-      x,
-      y,
-      url, //设置图片路径
       size: 50, //设置图片显示尺寸
       height: 3, //标注高度，大于model的高度
-      iconType,
+      ...markerProps,
     });
-    layer.addMarker(im); //图片标注层添加图片Marker
+    markerLayer.addMarker(im); //图片标注层添加图片Marker
     im.alwaysShow();
     this.markerArray.push(im);
   };
@@ -370,6 +396,7 @@ export default class Map extends PureComponent {
       init2D: false, //初始化2D模式
       groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
       position: fengmap.controlPositon.LEFT_TOP,
+      offset: { x: 0, y: 40 },
       //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
       clickCallBack: function(type, value) {
         // console.log(type,value);
@@ -384,35 +411,63 @@ export default class Map extends PureComponent {
       map.mapScaleLevel = 21;
       //显示按钮
       // document.getElementById('btnsGroup').style.display = 'block';
-      [...riskPointData, ...videoData, ...monitorData].forEach(element => {
-        const { x, y, url, iconType } = element;
-        this.addMarkers(x, y, url, iconType);
+      // [...riskPointData, ...videoData, ...monitorData].forEach(element => {
+      //   const { x, y, url, ...rest } = element;
+      //   this.addMarkers(x, y, url, rest);
+      // });
+
+      [riskPointData, videoData, monitorData].forEach(element => {
+        const groupID = 1;
+        const groupLayer = map.getFMGroup(groupID);
+        const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+        groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
+        element.forEach(item => {
+          this.addMarkers(item, layer);
+        });
       });
 
-      this.addPolygon(polygon, 'rgb(241, 122, 10)');
-      this.addPolygon(polygon2, 'rgb(241, 122, 10)');
-      this.addPolygon(polygon3, 'rgb(241, 122, 10)');
-      this.addPolygon(polygon4, 'rgb(30, 96, 255)');
-      this.addPolygon(polygon5, 'rgb(251, 247, 25)');
-      this.addPolygon(polygon6, 'rgb(255, 72, 72)'); //红色
-      console.log('fengmap', fengmap);
-      console.log('fengmap.FMNodeType', fengmap.FMNodeType);
+      const ctlOpt = new fengmap.controlOptions({
+        mapCoord: {
+          //设置弹框的x轴
+          x: 13224086.641383199,
+          //设置弹框的y轴
+          y: 3771557.878213551,
+          //设置弹框位于的楼层
+          groupID: 1,
+          height: 2,
+        },
+        //设置弹框的宽度
+        width: 240,
+        //设置弹框的高度
+        height: 90,
+        marginTop: 10,
+        //设置弹框的内容
+        content: '该区域新增了碳九解聚装置设施，请对该区域重新风险评价',
+      });
+      const popMarker = new fengmap.FMPopInfoWindow(map, ctlOpt);
+
+      this.addPolygon(polygon, COLOR.red); // 罐区4
+      this.addPolygon(polygon2, COLOR.red); // 罐区4 1 2
+      this.addPolygon(polygon3, COLOR.orange);
+      this.addPolygon(polygon4, COLOR.blue);
+      this.addPolygon(polygon5, COLOR.yellow);
+      this.addPolygon(polygon6, COLOR.orange); // 厂房装置区
       console.log('getDatasByAlias', map.getDatasByAlias(1, 'model'));
       // storeModels
       const models = map.getDatasByAlias(1, 'model');
       models.forEach(item => {
         if (item.ID && alarmIds.includes(item.ID)) {
-          // orange
-          item.setColor('rgb(241, 122, 10)', 1);
+          // 储罐 3 4
+          item.setColor(COLOR.red, 1);
         } else if (orangeIds.includes(item.ID)) {
-          // orange
-          item.setColor('rgb(241, 122, 10)', 1);
+          // orange 储罐 1 2
+          item.setColor(COLOR.red, 1);
         } else if (yellowIds.includes(item.ID)) {
-          // red
-          item.setColor('rgb(255, 72, 72)', 1);
+          // 最大区域
+          item.setColor(COLOR.orange, 1);
         } else if (blueIds.includes(item.ID)) {
           // blue
-          item.setColor('rgb(30, 96, 255)', 1);
+          item.setColor(COLOR.blue, 1);
         } else if (yellowIds2.includes(item.ID)) {
           item.setColor('rgb(251, 247, 25)', 1);
         }
@@ -420,11 +475,13 @@ export default class Map extends PureComponent {
     });
 
     map.on('mapClickNode', event => {
+      const { handleClickRiskPoint } = this.props;
       const clickedObj = event.target;
       console.log('clickedObj', clickedObj);
-      // console.log('time', moment().valueOf());
-      // isPointInPolygon
-
+      console.log('time', moment().valueOf());
+      const thisTime = moment().valueOf();
+      if (thisTime - this.lastTime < 300) return;
+      this.lastTime = thisTime;
       if (!clickedObj) return;
       const {
         ID,
@@ -434,6 +491,7 @@ export default class Map extends PureComponent {
       // this.ids.push({ x, y });
       // this.ids.push(ID);
       // console.log('IDS', JSON.stringify(this.ids));
+
       if (
         [
           // fengmap.FMNodeType.FLOOR,
@@ -445,29 +503,24 @@ export default class Map extends PureComponent {
       )
         return;
       const { eventInfo: { coord } = {} } = clickedObj;
-      if (coord && isPointInPolygon(coord, polygon6)) setDrawerVisible('dangerArea');
+      if (coord && isPointInPolygon(coord, polygon)) setDrawerVisible('dangerArea');
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
         const {
-          opts_: { iconType },
+          opts_: { iconType, itemId, status },
         } = clickedObj;
-        console.log('iconType', iconType);
+        // console.log('iconType', iconType);
+        console.log('itemId', itemId);
+
         if (iconType === 2) showVideo();
-        // else if (iconType === 0) setDrawerVisible('dangerArea');
+        else if (iconType === 0) handleClickRiskPoint(itemId, status);
         else if (iconType === 1)
-          setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
+          // setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
+          setDrawerVisible('tankMonitor');
       }
       // this.addMarkers(x, y, riskPoint, 0);
 
       // this.ids.push(ID);
       // console.log('IDS', JSON.stringify(this.ids));
-      // clickedObj.setColorToDefault();
-      // clickedObj.setColor('rgb(212,214,215)', 0.9);
-      // if (ID && (ID >= 158 && ID <= 171)) {
-      //   setDrawerVisible('storageArea');
-      // } else if (ID && [18, 22, 23, 45, 24, 26, 25].includes(ID)) {
-      //   setDrawerVisible('dangerArea');
-      // }
-      // this.addMarkers(x, y, riskPoint, 0);
 
       // switch (clickedObj.nodeType) {
       //   case fengmap.FMNodeType.FLOOR:
@@ -492,6 +545,10 @@ export default class Map extends PureComponent {
   handleClickMap = () => {
     this.setState({ gdMapVisible: false });
     this.initMap();
+  };
+
+  handlePosition = () => {
+    window.open(`${window.publicPath}#/big-platform/personnel-position/index`, `_blank`);
   };
 
   renderMarkers = () => {
@@ -524,8 +581,19 @@ export default class Map extends PureComponent {
     );
   };
 
+  handleClickControl = index => {
+    const { visibles } = this.state;
+    const copy = [...visibles];
+    copy[index] = !visibles[index];
+    this.setState({ visibles: copy });
+    const groupLayer = map.getFMGroup(1);
+    const layers = groupLayer.getLayer('imageMarker');
+    console.log('layers', layers);
+    layers[index].show = !visibles[index];
+  };
+
   render() {
-    const { gdMapVisible } = this.state;
+    const { gdMapVisible, visibles } = this.state;
     return (
       <div className={styles.container} id="fengMap">
         {gdMapVisible && (
@@ -556,6 +624,41 @@ export default class Map extends PureComponent {
             {this.renderMarkers()}
             {/* <MapTypeBar /> */}
           </GDMap>
+        )}
+        {!gdMapVisible && (
+          <div className={styles.controlContainer}>
+            {controls.map((item, index) => {
+              const { label, icon, activeIcon } = item;
+              const itemStyles = classnames(styles.controlItem, {
+                [styles.active]: visibles[index],
+              });
+              return (
+                // onClick={()=>this.setState({visibles: !visibles[index]})}
+                <div
+                  className={itemStyles}
+                  key={index}
+                  onClick={() => this.handleClickControl(index)}
+                >
+                  <span
+                    className={styles.icon}
+                    style={{
+                      background: `url(${
+                        visibles[index] ? activeIcon : icon
+                      }) center center / auto 100% no-repeat`,
+                    }}
+                  />
+                  {label}
+                </div>
+              );
+            })}
+            <div
+              className={styles.positionBtn}
+              style={{
+                background: `url(${position}) center center / auto 80% no-repeat #fff`,
+              }}
+              onClick={this.handlePosition}
+            />
+          </div>
         )}
       </div>
     );

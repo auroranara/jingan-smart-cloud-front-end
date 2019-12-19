@@ -121,11 +121,17 @@ module.exports = env => {
         //   path: '/big-platform/video',
         //   component: './BigPlatform/Video',
         // },
+        // {
+        //   path: '/big-platform/position/:companyId',
+        //   code: 'dashboard.personnelPositioningView',
+        //   name: 'personnelPositioning',
+        //   component: './BigPlatform/Position/index',
+        // },
         {
-          path: '/big-platform/position/:companyId',
+          path: '/big-platform/personnel-position/:companyId',
           code: 'dashboard.personnelPositioningView',
           name: 'personnelPositioning',
-          component: './BigPlatform/Position/index',
+          component: './BigPlatform/PersonnelPosition/index',
         },
         // {
         //   path: '/big-platform/position/:companyId/history/:id',
@@ -731,6 +737,12 @@ module.exports = env => {
                   component: './BaseInfo/StorageManagement/StorageList',
                 },
                 {
+                  name: 'view',
+                  code: 'majorHazardInfo.storageAreaManagement.listView',
+                  path: '/major-hazard-info/storage-management/view/:id',
+                  component: './BaseInfo/StorageManagement/StorageEdit',
+                },
+                {
                   name: 'add',
                   code: 'majorHazardInfo.storageAreaManagement.add',
                   path: '/major-hazard-info/storage-management/add',
@@ -760,6 +772,12 @@ module.exports = env => {
                   code: 'majorHazardInfo.reservoirRegionManagement.listView',
                   path: '/major-hazard-info/reservoir-region-management/list',
                   component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionList',
+                },
+                {
+                  name: 'view',
+                  code: 'majorHazardInfo.reservoirRegionManagement.listView',
+                  path: '/major-hazard-info/reservoir-region-management/view/:id',
+                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
                 },
                 {
                   name: 'add',
@@ -852,6 +870,7 @@ module.exports = env => {
               path: '/major-hazard-info/high-risk-process', // 高危工艺流程
               code: 'majorHazardInfo.highRiskProcess',
               name: 'highRiskProcess',
+              developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -881,43 +900,44 @@ module.exports = env => {
                   path: '/major-hazard-info/high-risk-process/detail/:id',
                   code: 'majorHazardInfo.highRiskProcess.detail',
                   name: 'detail',
-                  component: './BaseInfo/HighRiskProcess/Detail/index',
+                  component: './BaseInfo/HighRiskProcess/Handler/index',
                 },
               ],
             },
             {
-              "name": "productionEquipments",
-              "code": "majorHazardInfo.productionEquipments",
-              "path": "/major-hazard-info/production-equipments",
-              "hideChildrenInMenu": true,
-              "routes": [
+              name: 'productionEquipments', // 生产装置
+              code: 'majorHazardInfo.productionEquipments',
+              path: '/major-hazard-info/production-equipments',
+              developing: true,
+              hideChildrenInMenu: true,
+              routes: [
                 {
-                  "name": "list",
-                  "path": "/major-hazard-info/production-equipments",
-                  "redirect": "/major-hazard-info/production-equipments/list",
+                  name: 'list',
+                  path: '/major-hazard-info/production-equipments',
+                  redirect: '/major-hazard-info/production-equipments/list',
                 },
                 {
-                  "name": "list",
-                  "code": "majorHazardInfo.productionEquipments.list",
-                  "path": "/major-hazard-info/production-equipments/list",
+                  name: 'list',
+                  code: 'majorHazardInfo.productionEquipments.list',
+                  path: '/major-hazard-info/production-equipments/list',
                   // "component": "./MajorHazardInfo/ProductionEquipments/TableList",
                 },
                 {
-                  "name": "view",
-                  "code": "majorHazardInfo.productionEquipments.view",
-                  "path": "/major-hazard-info/production-equipments/view/:id",
+                  name: 'view',
+                  code: 'majorHazardInfo.productionEquipments.view',
+                  path: '/major-hazard-info/production-equipments/view/:id',
                   // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
                 },
                 {
-                  "name": "add",
-                  "code": "majorHazardInfo.productionEquipments.add",
-                  "path": "/major-hazard-info/production-equipments/add",
+                  name: 'add',
+                  code: 'majorHazardInfo.productionEquipments.add',
+                  path: '/major-hazard-info/production-equipments/add',
                   // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
                 },
                 {
-                  "name": "edit",
-                  "code": "majorHazardInfo.productionEquipments.edit",
-                  "path": "/major-hazard-info/production-equipments/edit/:id",
+                  name: 'edit',
+                  code: 'majorHazardInfo.productionEquipments.edit',
+                  path: '/major-hazard-info/production-equipments/edit/:id',
                   // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
                 },
               ],
@@ -1135,9 +1155,7 @@ module.exports = env => {
               name: 'realtimeMonitor', // 可燃有毒气体实时监测
               code: 'gasIot.realtimeMonitor',
               path: '/gas-iot/realtime-monitor',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
+              component: './IoT/MajorHazard/Gas/RealTime',
             },
             {
               name: 'monitorReport', // 可燃有毒气体监测报表
@@ -1227,35 +1245,36 @@ module.exports = env => {
               name: 'fourColorImage', // 风险四色图管理
               code: 'riskControl.fourColorImage',
               path: '/risk-control/four-color-image',
+              developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
-                  "name": "list",
-                  "path": "/risk-control/four-color-image",
-                  "redirect": "/risk-control/four-color-image/list",
+                  name: 'list',
+                  path: '/risk-control/four-color-image',
+                  redirect: '/risk-control/four-color-image/list',
                 },
                 {
-                  "name": "list",
-                  "code": "riskControl.fourColorImage.list",
-                  "path": "/risk-control/four-color-image/list",
-                  "component": "./RiskControl/FourColorImage/TableList",
+                  name: 'list',
+                  code: 'riskControl.fourColorImage.list',
+                  path: '/risk-control/four-color-image/list',
+                  component: './RiskControl/FourColorImage/TableList',
                 },
                 {
-                  "name": "view",
-                  "code": "riskControl.fourColorImage.view",
-                  "path": "/risk-control/four-color-image/view/:id",
+                  name: 'view',
+                  code: 'riskControl.fourColorImage.view',
+                  path: '/risk-control/four-color-image/view/:id',
                   // "component": "./RiskControl/FourColorImage/Edit",
                 },
                 {
-                  "name": "add",
-                  "code": "riskControl.fourColorImage.add",
-                  "path": "/risk-control/four-color-image/add",
+                  name: 'add',
+                  code: 'riskControl.fourColorImage.add',
+                  path: '/risk-control/four-color-image/add',
                   // "component": "./RiskControl/FourColorImage/Edit",
                 },
                 {
-                  "name": "edit",
-                  "code": "riskControl.fourColorImage.edit",
-                  "path": "/risk-control/four-color-image/edit/:id",
+                  name: 'edit',
+                  code: 'riskControl.fourColorImage.edit',
+                  path: '/risk-control/four-color-image/edit/:id',
                   // "component": "./RiskControl/FourColorImage/Edit",
                 },
               ],
@@ -1280,9 +1299,20 @@ module.exports = env => {
               name: 'changeWarning', // 变更预警管理
               code: 'riskControl.changeWarning',
               path: '/risk-control/change-warning',
-              developing: true,
+              // developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/risk-control/change-warning',
+                  redirect: '/risk-control/change-warning/list',
+                },
+                {
+                  path: '/risk-control/change-warning/list',
+                  code: 'riskControl.changeWarning.list',
+                  name: 'list',
+                  component: './RiskControl/ChangeWarning/TableList',
+                },
+              ],
             },
           ],
         },
@@ -2178,6 +2208,12 @@ module.exports = env => {
                   component: './BaseInfo/RegisteredEngineerManagement/index',
                 },
                 {
+                  name: 'view',
+                  code: 'baseInfo.registeredEngineerManagement.listView',
+                  path: '/base-info/registered-engineer-management/view/:id',
+                  component: './BaseInfo/RegisteredEngineerManagement/Handle',
+                },
+                {
                   name: 'add',
                   code: 'baseInfo.registeredEngineerManagement.add',
                   path: '/base-info/registered-engineer-management/add',
@@ -2343,7 +2379,7 @@ module.exports = env => {
                   path: '/facility-management/special-equipment/detail/:id',
                   code: 'facilityManagement.specialEquipment.detail',
                   name: 'detail',
-                  component: './BaseInfo/SpecialEquipment/Detail/index',
+                  component: './BaseInfo/SpecialEquipment/Handler/index',
                 },
               ],
             },
@@ -2388,6 +2424,7 @@ module.exports = env => {
               name: 'operationRecord', // 设备设施运维记录
               code: 'facilityManagement.operationRecord',
               path: '/facility-management/operation-record',
+              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -2950,7 +2987,7 @@ module.exports = env => {
                   name: 'view',
                   code: 'safetyRiskControl.promise.view',
                   path: '/safety-risk-control/promise/view/:id',
-                  component: './AnnouncementManagement/Promise/Edit',
+                  component: './AnnouncementManagement/Promise/detail',
                 },
                 {
                   name: 'add',
@@ -3062,6 +3099,12 @@ module.exports = env => {
                   component: './BaseInfo/SpecialOperationPermit/List',
                 },
                 {
+                  path: '/operation-safety/special-operation-permit/view/:id',
+                  name: 'view',
+                  code: 'operationSafety.specialOperationPermit.listView',
+                  component: './BaseInfo/SpecialOperationPermit/Handle',
+                },
+                {
                   path: '/operation-safety/special-operation-permit/add',
                   name: 'add',
                   code: 'operationSafety.specialOperationPermit.add',
@@ -3091,6 +3134,12 @@ module.exports = env => {
                   name: 'list',
                   code: 'operationSafety.specialEquipmentOperators.listView',
                   component: './BaseInfo/SpecialEquipmentOperators/List',
+                },
+                {
+                  path: '/operation-safety/special-equipment-operators/view/:id',
+                  name: 'view',
+                  code: 'operationSafety.specialEquipmentOperators.listView',
+                  component: './BaseInfo/SpecialEquipmentOperators/Handle',
                 },
                 {
                   path: '/operation-safety/special-equipment-operators/add',
@@ -3425,38 +3474,53 @@ module.exports = env => {
                   name: 'userTransmissionDevice',
                   redirect: '/device-management/user-transmission-device/list',
                 },
-                {
+                { // 企业列表
                   path: '/device-management/user-transmission-device/list',
                   code: 'deviceManagement.userTransmissionDevice.listView',
                   name: 'list',
                   component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDevice',
                 },
-                {
+                { // 用户传输装置列表
                   path: '/device-management/user-transmission-device/:companyId/detail',
                   code: 'deviceManagement.userTransmissionDevice.view',
                   name: 'deviceDetail',
-                  component:
-                    './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
+                  component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
                 },
                 {
-                  path:
-                    '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
+                  path: '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
                   code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
                   name: 'importPointPosition',
                   component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
                 },
-                {
+                { // 用户传输装置新增
                   path: '/device-management/user-transmission-device/add',
                   code: 'deviceManagement.userTransmissionDevice.add',
                   name: 'add',
-                  component: './DeviceManagement/UserTransmissionDevice/TransmissionDeviceAdd',
+                  component: './DeviceManagement/UserTransmissionDevice/TransmissionHandle',
+                },
+                { // 用户传输装置编辑
+                  path: '/device-management/user-transmission-device/edit/:id',
+                  code: 'deviceManagement.userTransmissionDevice.edit',
+                  name: 'edit',
+                  component: './DeviceManagement/UserTransmissionDevice/TransmissionHandle',
                 },
                 {
-                  path:
-                    '/device-management/user-transmission-device/:companyId/point-managament/:hostId',
+                  path: '/device-management/user-transmission-device/:companyId/point-managament/:hostId',
                   code: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
                   name: 'pointManagement',
                   component: './DeviceManagement/UserTransmissionDevice/PointManagement',
+                },
+                { // 消防主机新增
+                  path: '/device-management/user-transmission-device/host/:type/add',
+                  code: 'deviceManagement.userTransmissionDevice.host.add',
+                  name: 'addHost',
+                  component: './DeviceManagement/DataProcessingEquipment/AddEquipment',
+                },
+                { // 消防主机编辑
+                  path: '/device-management/user-transmission-device/host/:type/edit/:id',
+                  code: 'deviceManagement.userTransmissionDevice.host.edit',
+                  name: 'editHost',
+                  component: './DeviceManagement/DataProcessingEquipment/AddEquipment',
                 },
               ],
             },
@@ -3635,9 +3699,31 @@ module.exports = env => {
               name: 'alarmWorkOrder', // 报警工单管理
               code: 'companyIot.alarmWorkOrder',
               path: '/company-iot/alarm-work-order',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/company-iot/alarm-work-order',
+                  redirect: '/company-iot/alarm-work-order/list',
+                },
+                {
+                  name: 'list',
+                  code: 'companyIot.alarmWorkOrder.list',
+                  path: '/company-iot/alarm-work-order/list',
+                  component: './IoT/AlarmWorkOrder/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'companyIot.alarmWorkOrder.detail',
+                  path: '/company-iot/alarm-work-order/detail/:id',
+                  component: './IoT/AlarmWorkOrder/Detail',
+                },
+                {
+                  name: 'monitorTrend',
+                  code: 'companyIot.alarmWorkOrder.monitorTrend',
+                  path: '/company-iot/alarm-work-order/monitor-trend/:id',
+                  component: './IoT/AlarmWorkOrder/MonitorTrend',
+                },
+              ],
             },
             {
               name: 'alarmMessage', // 报警消息

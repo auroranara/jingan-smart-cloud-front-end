@@ -45,11 +45,13 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const getRootChild = () => document.querySelector('#root>div');
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+const BTN_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
-@connect(({ baseInfo, sensor, loading }) => ({
+@connect(({ baseInfo, sensor, user, loading }) => ({
   baseInfo,
   sensor,
+  user,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 export default class SpecialEquipmentOperatorsHandle extends PureComponent {
@@ -71,6 +73,10 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: {
+        isCompany, // 是否企业账号
+        currentUser,
+      },
     } = this.props;
     // 获取作业项目
     this.fetchDict({
@@ -109,6 +115,11 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
           setFieldsValue({ companyId });
         },
       })
+    } else if (isCompany) {
+      // 如果企业账号
+      const { companyId, companyName } = currentUser;
+      this.setState({ selectedCompany: { id: companyId, name: companyName } });
+      // setFieldsValue({ companyId });
     }
   }
 
@@ -178,13 +189,14 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       form: { validateFields },
       match: { params: { id } },
     } = this.props;
-    const { frontPhotoList, backPhotoList } = this.state;
+    const { frontPhotoList, backPhotoList, selectedCompany } = this.state;
     validateFields((err, values) => {
       if (err) return;
       const { effectiveDate, birthday, firstDate, reviewDate, ...resValues } = values;
       const [startDate, endDate] = effectiveDate;
       const payload = {
         ...resValues,
+        companyId: selectedCompany.id,
         startDate: this.getTime(startDate),
         endDate: endDate ? endDate.endOf('day').unix() * 1000 : endDate,
         birthday: this.getTime(birthday),
@@ -313,7 +325,8 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
     const {
       match: { params: { id } },
       form: { getFieldDecorator },
-    } = this.props
+      user: { isCompany },
+    } = this.props;
     const {
       frontPhotoList,
       backPhotoList,
@@ -323,20 +336,22 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       detail,
       workProjectOptions,
       workTypeOptions,
-    } = this.state
+    } = this.state;
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位' }],
-            })(
-              <Fragment>
-                <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择" />
-                <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {!isCompany && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位' }],
+              })(
+                <Fragment>
+                  <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择" />
+                  <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="姓名" {...formItemLayout}>
             {getFieldDecorator('name', {
               initialValue: id ? detail.name : undefined,
@@ -420,7 +435,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
           </FormItem>
           <FormItem label="作业人员证证号" {...formItemLayout}>
             {getFieldDecorator('operapersonNumber', {
-              initialValue: id ? detail.mustholdProject : undefined,
+              initialValue: id ? detail.operapersonNumber : undefined,
               rules: [{ required: true, message: '请输入作业人员证证号' }],
             })(
               <Input placeholder="请输入" {...itemStyles} />
@@ -505,10 +520,12 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
     const {
       companyLoading,
       match: { params: { id } },
+      route: { name },
       sensor: { companyModal }, // companyModal { list , pagination:{} }
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? "编辑特种设备作业人员" : "新增特种设备作业人员"
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : "编辑" : "新增";
     const breadcrumbList = [
       {
         title: homeTitle,
@@ -535,7 +552,15 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         {this.renderForm()}
-        <Button style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }} type="primary" onClick={this.handleSubmit}>提交</Button>
+        {isDetail ? (
+          <Button type="primary" style={BTN_STYLE} onClick={e => router.push(`/operation-safety/special-equipment-operators/edit/${id}`)}>
+            编辑
+          </Button>
+        ) : (
+            <Button type="primary" style={BTN_STYLE} onClick={this.handleSubmit}>
+              提交
+          </Button>
+          )}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"

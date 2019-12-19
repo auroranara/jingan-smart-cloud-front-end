@@ -2,7 +2,7 @@ import { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { Table, Card, Form, Row, Col, Input, Select, Button, Divider, Spin, message, Popconfirm, Modal } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { AuthA, hasAuthority } from '@/utils/customAuth';
+import { AuthA, hasAuthority, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import styles from './PointManagement.less';
 
@@ -23,6 +23,7 @@ const {
       point: {
         edit: editCode,
         delete: deleteCode,
+        add: addCode,
       },
     },
   },
@@ -41,7 +42,7 @@ export default class PointManagement extends Component {
     pointId: null,  // 编辑时保存id
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { dispatch } = this.props
     // 获取设施类型、部件类型下拉列表
     dispatch({ type: 'transmission/fetchDictList' })
@@ -276,7 +277,7 @@ export default class PointManagement extends Component {
               <FormItem {...formItemStyle} >
                 <Button type="primary" style={{ marginRight: '10px' }} onClick={() => this.handleSearch()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" onClick={this.handleToAdd}>新增</Button>
+                <AuthButton code={addCode} type="primary" onClick={this.handleToAdd}>新增</AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -421,7 +422,7 @@ export default class PointManagement extends Component {
     )
   }
 
-  render() {
+  render () {
     const {
       loading,
       match: { params: { companyId } },

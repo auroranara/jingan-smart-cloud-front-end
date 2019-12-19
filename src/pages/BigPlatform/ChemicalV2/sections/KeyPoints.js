@@ -17,11 +17,36 @@ import iconStorehouse from '../imgs/icon-storehouse.png';
 import iconChemical from '../imgs/icon-chemical.png';
 import iconDangerSource from '../imgs/icon-dangerSource.png';
 
-const LABELS = ['实时监测', '两重点一重大'];
+// const LABELS = ['监测对象', 'IOT监测', '两重点一重大'];
+const LABELS = ['监测对象', '两重点一重大'];
 const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 
 // iot/major-hazard/index
 const monitorData = [
+  {
+    icon: iconStorage,
+    label: '储罐监测',
+    value: 1,
+    total: 11,
+    url: 'iot/major-hazard/tank/real-time',
+    type: 2,
+  },
+  {
+    icon: iconHigh,
+    label: '可燃气体',
+    value: 1,
+    total: 1,
+    url: 'gas-iot/monitor-report',
+    type: 6,
+  },
+  {
+    icon: iconPoison,
+    label: '有毒气体',
+    value: 1,
+    total: 1,
+    url: 'gas-iot/monitor-report',
+    type: 7,
+  },
   {
     icon: iconStorageArea,
     label: '罐区监测',
@@ -38,14 +63,6 @@ const monitorData = [
     url: 'iot/major-hazard/storage-area/real-time',
     type: 1,
   },
-  {
-    icon: iconStorage,
-    label: '储罐监测',
-    value: 2,
-    total: 3,
-    url: 'iot/major-hazard/tank/real-time',
-    type: 2,
-  },
   { icon: iconProduce, label: '生产装置监测', value: 1, total: 3, type: 3 },
   {
     icon: iconStorehouse,
@@ -56,20 +73,17 @@ const monitorData = [
     type: 4,
   },
   { icon: iconGas, label: '气柜监测', value: 1, total: 2, type: 5 },
-  {
-    icon: iconPoison,
-    label: '可燃有毒气体',
-    value: 1,
-    total: 2,
-    url: 'gas-iot/monitor-report',
-    type: 6,
-  },
-  { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
+  // { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
 ];
-const keyPointsData = [
+const keyPointsData1 = [
   { icon: iconDangerSource, label: '重大危险源', value: 2 },
   { icon: iconChemical, label: '危险化学品', value: 2 },
   { icon: iconHigh, label: '高危工艺', value: 2 },
+];
+const keyPointsData = [
+  { icon: iconDangerSource, label: '重大危险源', value: 2 },
+  { icon: iconChemical, label: '重点监管危险化学品', value: 3 },
+  { icon: iconHigh, label: '重点监管危险化工工艺', value: 2 },
 ];
 
 export default class KeyPoints extends PureComponent {
@@ -79,12 +93,24 @@ export default class KeyPoints extends PureComponent {
     this.setState({ active: i });
   };
 
-  handleClick = type => {
-    const { setDrawerVisible } = this.props;
+  handleClickMonitor = type => {
+    const { setDrawerVisible, handleGasOpen, handlePoisonOpen } = this.props;
     if (type || type === 0) {
+      if (type === 2 || type === 6 || type === 7) {
+        type === 2 && setDrawerVisible('storage');
+        type === 6 && handleGasOpen();
+        type === 7 && handlePoisonOpen();
+        return;
+      }
       setDrawerVisible('monitor', { monitorType: type });
     }
     // window.open(`${window.publicPath}#/${url}`, `_blank`);
+  };
+
+  handleClickKey = index => {
+    const { setDrawerVisible } = this.props;
+    const drawers = ['dangerSource', 'chemical', 'technology'];
+    setDrawerVisible(drawers[index]);
   };
 
   render() {
@@ -101,7 +127,7 @@ export default class KeyPoints extends PureComponent {
           />
           <div className={styles.scroll}>
             <Row>
-              {[monitorData, keyPointsData][active].map((item, index) => {
+              {[monitorData, keyPointsData, keyPointsData][active].map((item, index) => {
                 const { icon, label, value, total, type } = item;
                 return (
                   <Col span={12} key={index}>
@@ -109,10 +135,12 @@ export default class KeyPoints extends PureComponent {
                       className={styles.item}
                       style={{
                         background: `url(${icon}) 3em center / 3em 3em no-repeat`,
-                        cursor: type || type === 0 ? 'pointer' : 'default',
+                        // cursor: type || type === 0 ? 'pointer' : 'default',
+                        cursor: 'pointer',
                       }}
                       onClick={() => {
-                        this.handleClick(type);
+                        active === 0 && this.handleClickMonitor(type);
+                        active === 1 && this.handleClickKey(index);
                       }}
                     >
                       <div className={styles.countLabel}>
@@ -120,7 +148,12 @@ export default class KeyPoints extends PureComponent {
                       </div>
                       <div className={styles.countValue}>
                         <div>
-                          <span className={styles.value}>{value}</span>
+                          <span
+                            className={styles.value}
+                            style={{ color: total ? '#ff4848' : '#fff' }}
+                          >
+                            {value}
+                          </span>
                           {total && `/${total}`}
                         </div>
                       </div>

@@ -88,6 +88,7 @@ const HandleModal = Form.create()(props => {
           {getFieldDecorator('objectTitle', {
             rules: [{ required: true, message: '请输入检查项名称' }],
             initialValue: objectId ? detail.objectTitle : undefined,
+            getValueFromEvent: e => e.target.value.trim(),
           })(
             <Input placeholder="请输入" />
           )}
@@ -147,13 +148,34 @@ const HandleModal = Form.create()(props => {
 }))
 export default class StandardDatabase extends Component {
 
-  state = {
-    detail: {},
-    handleModalVisible: false, // 新增/编辑弹窗是否显示
+  constructor(props) {
+    super(props);
+    this.modalRef = null;
+    this.state = {
+      detail: {},
+      handleModalVisible: false, // 新增/编辑弹窗是否显示
+    }
   }
 
   componentDidMount () {
-    this.handleQuery()
+    const {
+      form: { setFieldsValue },
+      hiddenDangerControl: {
+        // 隐患标准管理数据库——保存查询信息
+        standardDatabaseQueryInfo = {},
+      },
+    } = this.props;
+    setFieldsValue(standardDatabaseQueryInfo);
+    this.handleQuery();
+  }
+
+  // 保存隐患标准管理数据库——保存查询信息
+  saveStandardDatabaseQueryInfo = actions => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'hiddenDangerControl/saveStandardDatabaseQueryInfo',
+      ...actions,
+    })
   }
 
   // 查询数据
@@ -167,6 +189,7 @@ export default class StandardDatabase extends Component {
       type: 'hiddenDangerControl/fetchHiddenDangerStandardList',
       payload: { ...values, pageNum, pageSize },
     })
+    this.saveStandardDatabaseQueryInfo({ payload: values })
   }
 
   // 重置筛选
