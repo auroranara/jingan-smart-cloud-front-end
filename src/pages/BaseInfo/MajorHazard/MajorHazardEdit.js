@@ -444,7 +444,7 @@ export default class MajorHazardEdit extends PureComponent {
     const { editCompanyId } = this.state;
     const fixedCompanyId = this.companyId || editCompanyId || companyId;
     if (fixedCompanyId) {
-      this.fetchPersonModalList({ companyId: fixedCompanyId });
+      this.fetchPersonModalList({ unitId: fixedCompanyId });
       this.setState({ personModalVisible: true });
     } else {
       message.warning('请先选择单位！');
@@ -452,19 +452,14 @@ export default class MajorHazardEdit extends PureComponent {
   };
 
   // 获取责任人列表
-  fetchPersonModalList = () => {
-    const {
-      dispatch,
-      user: {
-        currentUser: { companyId },
-      },
-    } = this.props;
+  fetchPersonModalList = ({ ...payload }) => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'account/fetch',
       payload: {
-        unitId: this.companyId || companyId,
         pageSize: 10,
         pageNum: 1,
+        ...payload,
       },
     });
   };

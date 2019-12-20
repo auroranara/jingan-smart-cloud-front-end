@@ -348,6 +348,27 @@ export default class Edit extends PureComponent {
             </div>
           </FormItem>
 
+          <FormItem label="设计压力（KPa）" {...formItemLayout}>
+            {getFieldDecorator('pressure', {
+              initialValue: pressure,
+              getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, message: '请输入' }],
+            })(<Input placeholder="请输入" {...itemStyles} />)}
+          </FormItem>
+
+          <FormItem label="装置状态" {...formItemLayout}>
+            {getFieldDecorator('deviceStatus', {
+              initialValue: deviceStatus ? +deviceStatus : undefined,
+              rules: [{ required: true, message: '请选择' }],
+            })(
+              <Radio.Group>
+                <Radio value={1}>正常</Radio>
+                <Radio value={2}>维检</Radio>
+                <Radio value={3}>报废</Radio>
+              </Radio.Group>
+            )}
+          </FormItem>
+
           <FormItem label="所属危险化工工艺" {...formItemLayout}>
             {getFieldDecorator('dangerTechnologyName', {
               initialValue: dangerTechnologyList
@@ -384,35 +405,6 @@ export default class Edit extends PureComponent {
             )}
           </FormItem>
 
-          <FormItem label="周围环境" {...formItemLayout}>
-            {getFieldDecorator('environment', {
-              initialValue: environment,
-              rules: [{ required: true, message: '请输入' }],
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="装置功能" {...formItemLayout}>
-            {getFieldDecorator('deviceFunction', {
-              initialValue: deviceFunction,
-              rules: [{ required: true, message: '请输入' }],
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="装置状态" {...formItemLayout}>
-            {getFieldDecorator('deviceStatus', {
-              initialValue: deviceStatus ? +deviceStatus : undefined,
-              rules: [{ required: true, message: '请选择' }],
-            })(
-              <Radio.Group>
-                <Radio value={1}>正常</Radio>
-                <Radio value={2}>维检</Radio>
-                <Radio value={3}>报废</Radio>
-              </Radio.Group>
-            )}
-          </FormItem>
-
           <FormItem label="装置生产能力" {...formItemLayout}>
             {getFieldDecorator('deviceProduct', {
               initialValue: deviceProduct,
@@ -437,14 +429,6 @@ export default class Edit extends PureComponent {
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
 
-          <FormItem label="设计压力" {...formItemLayout}>
-            {getFieldDecorator('pressure', {
-              initialValue: pressure,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
           <FormItem label="自动化控制方式" {...formItemLayout}>
             {getFieldDecorator('automaticControl', {
               initialValue: automaticControl,
@@ -457,6 +441,22 @@ export default class Edit extends PureComponent {
                 ))}
               </Select>
             )}
+          </FormItem>
+
+          <FormItem label="装置功能" {...formItemLayout}>
+            {getFieldDecorator('deviceFunction', {
+              initialValue: deviceFunction,
+              rules: [{ required: true, message: '请输入' }],
+              getValueFromEvent: this.handleTrim,
+            })(<Input placeholder="请输入" {...itemStyles} />)}
+          </FormItem>
+
+          <FormItem label="周围环境" {...formItemLayout}>
+            {getFieldDecorator('environment', {
+              initialValue: environment,
+              rules: [{ required: true, message: '请输入' }],
+              getValueFromEvent: this.handleTrim,
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
         </Form>
       </Card>

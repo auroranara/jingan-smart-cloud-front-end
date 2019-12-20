@@ -10,8 +10,7 @@ import styles from './ReservoirRegion.less';
 
 const { Option } = Select;
 const FormItem = Form.Item;
-
-// const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
+const { TextArea } = Input;
 
 // 编辑页面标题
 const editTitle = '编辑库区';
@@ -21,21 +20,22 @@ const addTitle = '新增库区';
 // 表单标签
 const fieldLabels = {};
 
-@connect(({ loading, reservoirRegion, user, videoMonitor }) => ({
+@connect(({ loading, reservoirRegion, storehouse, user, videoMonitor }) => ({
   reservoirRegion,
   videoMonitor,
+  storehouse,
   user,
   loading: loading.models.reservoirRegion,
+  storeHouseLoading: loading.effects['storehouse/fetchStorehouseList'],
 }))
 @Form.create()
 export default class ReservoirRegionEdit extends PureComponent {
   state = {
-    companyVisible: false,
+    companyVisible: false, // 单位弹框是否可见
     hasDangerSourse: '', // 选择更换
-    submitting: false,
+    submitting: false, // 提交状态
     detailList: {}, // 详情列表
-    dangerVisible: false,
-    dangerSourceUnitId: [],
+    storeHouseVisible: false, // 库房弹框是否可见
   };
 
   // 挂载后
@@ -62,8 +62,6 @@ export default class ReservoirRegionEdit extends PureComponent {
           this.setState({
             detailList: currentList,
             editCompanyId: companyId,
-            // hasDangerSourse: dangerSource,
-            // dangerSourceUnitId: dangerSourceMessage,
           });
         },
       });
@@ -106,11 +104,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           safetyDistance,
           deviceDistance,
           area,
-          // count,
           spaceBetween,
-          // dangerSource,
-          // dangerSourceUnit,
-          // unitCode,
         } = values;
 
         const payload = {
@@ -122,14 +116,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           safetyDistance,
           deviceDistance,
           area,
-          // count,
           spaceBetween,
-          // dangerSource,
-          // dangerSourceUnit:
-          //   dangerSourceUnitId && dangerSourceUnitId.length > 0
-          //     ? dangerSourceUnitId.map(item => item.id).join(',')
-          //     : undefined,
-          // unitCode: +dangerSource === 1 ? unitCode : '',
         };
 
         const success = () => {
@@ -219,139 +206,45 @@ export default class ReservoirRegionEdit extends PureComponent {
     );
   }
 
-  // 显示重大危险源弹框
-  // handleShowDangerSource = () => {
-  //   const { detailList } = this.state;
-  //   const { companyId } = detailList;
-  //   this.setState({ dangerVisible: true });
-  //   if (this.companyId || companyId) {
-  //     const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId || companyId };
-  //     this.fetchDangerSourseList({ payload });
-  //   }
-  // };
+  // 显示库房弹框
+  handleShowModal = () => {
+    const {
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+    const { editCompanyId } = this.state;
+    const fixedCompanyId = this.companyId || editCompanyId || companyId;
+    if (fixedCompanyId) {
+      this.fetchStoreHouseList({ companyId: fixedCompanyId });
+      this.setState({ storeHouseVisible: true });
+    } else {
+      message.warning('请先选择单位！');
+    }
+  };
 
-  // 获取危险源列表
-  // fetchDangerSourseList = ({ payload }) => {
-  //   const { dispatch } = this.props;
-  //   const { detailList } = this.state;
-  //   const { companyId } = detailList;
-  //   dispatch({
-  //     type: 'reservoirRegion/fetchSourceList',
-  //     payload: { ...payload, companyId: this.companyId || companyId },
-  //   });
-  // };
+  // 获取库房列表
+  fetchStoreHouseList = ({ ...payload }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'storehouse/fetchStorehouseList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        ...payload,
+      },
+    });
+  };
 
-  // handleSelectDSList = item => {
-  //   const {
-  //     form: { setFieldsValue },
-  //   } = this.props;
-  //   setFieldsValue({
-  //     dangerSourceUnit: item.map(item => item.name).join(','),
-  //     unitCode: item.map(item => item.code).join(','),
-  //   });
-  //   this.setState({ dangerSourceUnitId: item });
-  //   this.handleDSListClose();
-  // };
-
-  // 选择变化
-  // onChangeDanger = i => {
-  //   const {
-  //     form: { setFieldsValue },
-  //   } = this.props;
-  //   this.setState({ hasDangerSourse: +i === 1 ? 1 : 2, dangerSourceUnitId: [] });
-  //   setFieldsValue({
-  //     unitCode: undefined,
-  //   });
-  // };
-
-  // handleDSListClose = () => {
-  //   this.setState({ dangerVisible: false });
-  // };
-
-  // 渲染危险源模态框
-  // renderDangerModal() {
-  //   const {
-  //     reservoirRegion: { sourceData },
-  //     loading,
-  //   } = this.props;
-
-  //   const { dangerVisible } = this.state;
-  //   const spanStyle = { md: 8, sm: 12, xs: 24 };
-  //   const FIELD = [
-  //     {
-  //       id: 'code',
-  //       span: spanStyle,
-  //       render() {
-  //         return <Input placeholder="请输统一编码" />;
-  //       },
-  //       transform(value) {
-  //         return value.trim();
-  //       },
-  //     },
-  //     {
-  //       id: 'name',
-  //       render() {
-  //         return <Input placeholder="请输危险源名称" />;
-  //       },
-  //       transform(value) {
-  //         return value.trim();
-  //       },
-  //     },
-  //   ];
-
-  //   const COLUMNS = [
-  //     {
-  //       title: '统一编码',
-  //       dataIndex: 'code',
-  //       key: 'code',
-  //       align: 'center',
-  //       width: 120,
-  //     },
-  //     {
-  //       title: '危险源名称',
-  //       dataIndex: 'name',
-  //       key: 'name',
-  //       align: 'center',
-  //       width: 90,
-  //     },
-  //     {
-  //       title: '重大危险源等级',
-  //       dataIndex: 'dangerLevel',
-  //       key: 'dangerLevel',
-  //       align: 'center',
-  //       width: 150,
-  //     },
-  //     {
-  //       title: '单元内涉及的危险化学品',
-  //       dataIndex: 'unitChemiclaNumDetail',
-  //       key: 'unitChemiclaNumDetail',
-  //       align: 'center',
-  //       width: 200,
-  //       render: val => {
-  //         return val
-  //           .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
-  //           .join(',')
-  //           .replace(/null+/g, '');
-  //       },
-  //     },
-  //   ];
-
-  //   return (
-  //     <CompanyModal
-  //       title="选择重大危险源"
-  //       loading={loading}
-  //       visible={dangerVisible}
-  //       columns={COLUMNS}
-  //       field={FIELD}
-  //       modal={sourceData}
-  //       fetch={this.fetchDangerSourseList}
-  //       onSelect={this.handleSelectDSList}
-  //       onClose={this.handleDSListClose}
-  //       rowSelection={{ type: 'checkbox ' }}
-  //       multiSelect={true}
-  //     />
-  //   );
-  // }
+  // 选择库房
+  handleStoreHouseSelect = item => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    console.log('item', item);
+    this.setState({ storeHouseVisible: false });
+    setFieldsValue({ includeArea: item.map(item => item.name).join(',') });
+  };
 
   renderInfo() {
     const {
@@ -374,8 +267,6 @@ export default class ReservoirRegionEdit extends PureComponent {
       deviceDistance,
       area,
       spaceBetween,
-      // dangerSourceUnit,
-      // unitCode,
     } = detailList;
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -484,6 +375,36 @@ export default class ReservoirRegionEdit extends PureComponent {
             )}
           </FormItem>
 
+          <FormItem {...formItemLayout} label="选择包含的库房">
+            {getFieldDecorator('includeArea', {
+              initialValue: position,
+            })(
+              <TextArea
+                {...itemStyles}
+                placeholder="请选择选择包含的库房"
+                rows={3}
+                disabled
+                maxLength="2000"
+              />
+            )}
+            <Button type="primary" size="small" onClick={this.handleShowModal}>
+              选择
+            </Button>
+          </FormItem>
+
+          <FormItem {...formItemLayout} label="相邻库房最小间距（m）">
+            {getFieldDecorator('spaceBetween', {
+              initialValue: spaceBetween,
+              getValueFromEvent: this.handleTrim,
+              rules: [
+                {
+                  required: true,
+                  message: '请输入相邻库房最小间距（m）',
+                },
+              ],
+            })(<Input {...itemStyles} placeholder="请输入相邻库房最小间距（m）" maxLength={10} />)}
+          </FormItem>
+
           <FormItem {...formItemLayout} label="周边安全防护间距（m）">
             {getFieldDecorator('safetyDistance', {
               initialValue: safetyDistance,
@@ -509,82 +430,6 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入与周边装置的距离" maxLength={10} />)}
           </FormItem>
-
-          {/* <FormItem {...formItemLayout} label="库房个数">
-            {getFieldDecorator('count', {
-              initialValue: count,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入库房个数',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入库房个数" maxLength={10} />)}
-          </FormItem> */}
-          <FormItem {...formItemLayout} label="相邻库房最小间距（m）">
-            {getFieldDecorator('spaceBetween', {
-              initialValue: spaceBetween,
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入相邻库房最小间距（m）',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入相邻库房最小间距（m）" maxLength={10} />)}
-          </FormItem>
-          {/* <FormItem {...formItemLayout} label="是否构成重大危险源">
-            {getFieldDecorator('dangerSource', {
-              initialValue: dangerSource,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择是否构成重大危险源',
-                },
-              ],
-            })(
-              <Select
-                {...itemStyles}
-                allowClear
-                placeholder="请选择是否构成重大危险源"
-                onChange={this.onChangeDanger}
-              >
-                {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem> */}
-          {/* {+hasDangerSourse === 1 && (
-            <FormItem {...formItemLayout} label="所属危险化学品重大危险源单元">
-              {getFieldDecorator('dangerSourceUnit', {
-                initialValue:
-                  dangerSourceUnitId && dangerSourceUnitId.length > 0
-                    ? dangerSourceUnitId.map(item => item.name).join(',')
-                    : undefined,
-                getValueFromEvent: this.handleTrim,
-              })(
-                <Input
-                  {...itemStyles}
-                  placeholder="请选择所属危险化学品重大危险源单元"
-                  maxLength={15}
-                  disabled
-                />
-              )}
-              <Button type="primary" onClick={this.handleShowDangerSource}>
-                {' '}
-                选择
-              </Button>
-            </FormItem> */}
-          {/* )}
-          <FormItem {...formItemLayout} label="所属重大危险源单元编号">
-            {getFieldDecorator('unitCode', {
-              initialValue: unitCode,
-              getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} disabled />)}
-          </FormItem> */}
         </Form>
       </Card>
     );
@@ -653,10 +498,15 @@ export default class ReservoirRegionEdit extends PureComponent {
   // 渲染页面所有信息
   render() {
     const {
+      storeHouseLoading,
       match: {
         params: { id },
       },
+      storehouse,
     } = this.props;
+
+    const { storeHouseVisible } = this.state;
+
     const title = id ? editTitle : addTitle;
 
     // 面包屑
@@ -681,12 +531,75 @@ export default class ReservoirRegionEdit extends PureComponent {
       },
     ];
 
+    const shColumns = [
+      {
+        title: '库房编码',
+        dataIndex: 'code',
+        key: 'code',
+        align: 'center',
+      },
+      {
+        title: '库房序号',
+        dataIndex: 'number',
+        key: 'number',
+        align: 'center',
+      },
+      {
+        title: '库房名称',
+        dataIndex: 'name',
+        key: 'name',
+        align: 'center',
+      },
+      {
+        title: '区域位置',
+        dataIndex: 'position',
+        key: 'position',
+        align: 'center',
+      },
+    ];
+
+    const shFields = [
+      {
+        id: 'name',
+        render() {
+          return <Input placeholder="请输入库房名称" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+      {
+        id: 'code',
+        render() {
+          return <Input placeholder="请输入库房编号" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+    ];
+
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
         {this.renderFooterToolbar()}
         {this.renderModal()}
-        {/* {this.renderDangerModal()} */}
+
+        <CompanyModal
+          title="选择包含的库房"
+          multiSelect
+          rowSelection={{ type: 'checkbox' }}
+          loading={storeHouseLoading}
+          visible={storeHouseVisible}
+          modal={storehouse}
+          columns={shColumns}
+          field={shFields}
+          fetch={this.fetchStoreHouseList}
+          onSelect={this.handleStoreHouseSelect}
+          onClose={() => {
+            this.setState({ storeHouseVisible: false });
+          }}
+        />
       </PageHeaderLayout>
     );
   }
