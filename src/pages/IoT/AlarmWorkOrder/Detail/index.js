@@ -435,7 +435,7 @@ export default class AlarmWorkOrderDetail extends Component {
 
     return (
       <NewVideoPlay
-        style={{ zIndex: 9999 }}
+        style={{ zIndex: 9999, position: 'fixed' }}
         videoList={videoList}
         visible={videoVisible}
         showList={true}
