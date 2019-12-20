@@ -54,15 +54,15 @@ export default class Map extends React.Component {
     map.openMapById(fmapID);
 
     //2D、3D控件配置
-    // var toolControl = new fengMap.toolControl(map, {
-    //   init2D: true, //初始化2D模式
-    //   groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
-    //   position: fengMap.controlPositon.LEFT_TOP,
-    //   //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-    //   clickCallBack: function(type, value) {
-    //     console.log(type, value);
-    //   },
-    // });
+    var toolControl = new fengMap.toolControl(map, {
+      init2D: true, //初始化2D模式
+      groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
+      position: fengMap.controlPositon.LEFT_TOP,
+      //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
+      clickCallBack: function(type, value) {
+        console.log(type, value);
+      },
+    });
 
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
@@ -116,6 +116,15 @@ export default class Map extends React.Component {
     layer.addMarker(polygonMarker);
   }
 
+  // 设置model的颜色
+  setModelColor(points, color) {
+    // 默认gid为1
+    const models = map.getDatasByAlias(1, 'model');
+    models
+      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
+      .map(model => model.setColor(color));
+    // console.log(models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points)));
+  }
   //绘制线图层
   drawLines(
     points,
@@ -148,6 +157,8 @@ export default class Map extends React.Component {
     if (!isDrawing && points.length > 0) {
       // doDraw
       this.drawPolygon(points, COLOR.blue);
+      // 建筑物上色
+      this.setModelColor(points, COLOR.blue);
       map.clearLineMark();
       points = [];
     }
