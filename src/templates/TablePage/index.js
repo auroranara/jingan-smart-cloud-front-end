@@ -10,6 +10,10 @@ import { kebabCase } from 'lodash';
 import locales from '@/locales/zh-CN';
 import styles from './index.less';
 
+const GET_METHOD_NAME = (targetName, result, after=2) => {
+  return result[targetName] ? GET_METHOD_NAME(`${targetName}${after}`, result, after + 1) : targetName;
+};
+
 /**
  * 表格页
  */
@@ -110,16 +114,17 @@ import styles from './index.less';
     goToAdd() {
       router.push(path.replace(new RegExp(`${name}.*`), 'add'));
     },
-    goToEdit(id) {
-      router.push(path.replace(new RegExp(`${name}.*`), `edit/${id}`));
+    goToEdit(data) {
+      router.push(path.replace(new RegExp(`${name}.*`), `edit/${data && data.id || data}`));
     },
-    goToDetail(id) {
-      router.push(path.replace(new RegExp(`${name}.*`), `detail/${id}`));
+    goToDetail(data) {
+      router.push(path.replace(new RegExp(`${name}.*`), `detail/${data && data.id || data}`));
     },
     ...(otherOperation && otherOperation.reduce((result, { code: codeName, onClick }) => {
       return onClick ? result : {
         ...result,
-        [`goTo${codeName[0].toUpperCase()}${codeName.slice(1)}`](id) {
+        [`goTo${codeName[0].toUpperCase()}${codeName.slice(1)}`](data) {
+          const id = data && data.id || data;
           router.push(path.replace(new RegExp(`${name}.*`), `${kebabCase(codeName)}${id ? `/${id}` : ''}`));
         },
       };
@@ -341,16 +346,18 @@ export default class TablePage extends Component {
       renderDetailButton: this.renderDetailButton,
       renderEditButton: this.renderEditButton,
       renderDeleteButton: this.renderDeleteButton,
-      ...(otherOperation && otherOperation.reduce((result, { code, name, onClick }) => {
+      ...(otherOperation && otherOperation.reduce((result, { code, name, onClick, disabled }) => {
         const upperCode = `${code[0].toUpperCase()}${code.slice(1)}`;
         const hasAuthority = this.props[`has${upperCode}Authority`];
+        const methodName = GET_METHOD_NAME(`render${upperCode}Button`, result);
         return {
           ...result,
-          [`render${upperCode}Button`]: (id) => {
+          [methodName]: (id) => {
+            const enabled = hasAuthority && !(typeof disabled === 'function' ? disabled(id) : disabled);
             return (
-              <span className={classNames(styles.operation, !hasAuthority && styles.disabled)} onClick={hasAuthority ? (
+              <span className={classNames(styles.operation, !enabled && styles.disabled)} onClick={enabled ? (
                 onClick ? () => onClick(id) : () => this.props[`goTo${upperCode}`](id)
-              ) : undefined}>{name}</span>
+              ) : undefined}>{typeof name === 'function' ? name(id) : name}</span>
             );
           },
         };

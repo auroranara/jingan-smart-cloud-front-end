@@ -113,8 +113,9 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       getMonitorTrend,
     } = this.props;
     const { currentIndex } = this.state;
-    if (allMonitorParam && allMonitorParam[currentIndex]) {
-      const { sensorId, paramCode } = allMonitorParam[currentIndex];
+    const list = (allMonitorParam || []).filter(({ fixType }) => +fixType !== 5);
+    if (list[currentIndex]) {
+      const { sensorId, paramCode } = list[currentIndex];
       getMonitorTrend({
         sensorId,
         code: paramCode,
@@ -137,8 +138,9 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       getMonitorTrend,
     } = this.props;
     const { date } = this.state;
-    if (allMonitorParam && allMonitorParam[currentIndex]) {
-      const { sensorId, paramCode } = allMonitorParam[currentIndex];
+    const list = (allMonitorParam || []).filter(({ fixType }) => +fixType !== 5);
+    if (list[currentIndex]) {
+      const { sensorId, paramCode } = list[currentIndex];
       getMonitorTrend({
         sensorId,
         code: paramCode,
@@ -214,7 +216,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
     // 预警上限文本
     const warningUp = isNumber(normalUpper) && (isNumber(largeUpper) ? `${normalUpper}${unit}~${largeUpper}${unit}` : `≥${normalUpper}${unit}`);
     // 预警下限文本
-    const warningDown = isNumber(normalLower) && (isNumber(smallLower) ? `${normalLower}${unit}~${smallLower}${unit}` : `≤${normalLower}${unit}`);
+    const warningDown = isNumber(normalLower) && (isNumber(smallLower) ? `${smallLower}${unit}~${normalLower}${unit}` : `≤${normalLower}${unit}`);
     // 预警文本
     const warning = [warningUp, warningDown].filter(v => v).join('，');
     // 告警上限文本

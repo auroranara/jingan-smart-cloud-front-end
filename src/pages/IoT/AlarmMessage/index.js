@@ -143,6 +143,16 @@ export default class AlarmMessage extends Component {
       ),
       align: 'center',
     },
+    {
+      title: '接收人',
+      dataIndex: 'mailAcceptUsers',
+      render: (value) => (
+        <div style={{ textAlign: 'left', maxWidth: 512, whiteSpace: 'normal' }}>
+          站内信：{value && value.map(({ accept_user_name, status }) => `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`).join('，')}
+        </div>
+      ),
+      align: 'center',
+    },
   ])
 
   render() {
