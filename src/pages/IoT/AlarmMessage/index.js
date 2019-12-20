@@ -31,7 +31,11 @@ const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
     if (+warnLevel === 1) {
       return '预警';
     } else if (+warnLevel === 2) {
-      return '报警';
+      if (+fixType === 5) {
+        return '火警';
+      } else {
+        return '告警';
+      }
     }
   } else if (+statusType === -2) {
     return '失联';

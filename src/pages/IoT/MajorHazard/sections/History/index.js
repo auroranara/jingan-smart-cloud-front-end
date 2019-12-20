@@ -700,7 +700,7 @@ export default class History extends Component {
         render: (_, { normalUpper, largeUpper, normalLower, smallLower, unit }) => [isNumber(normalUpper) && (isNumber(largeUpper) ? `${normalUpper}${unit}~${largeUpper}${unit}` : `≥${normalUpper}${unit}`), isNumber(normalLower) && (isNumber(smallLower) ? `${normalLower}${unit}~${smallLower}${unit}` : `≤${normalLower}${unit}`)].filter(v => v).join('，'),
       },
       {
-        title: '报警范围',
+        title: '告警范围',
         dataIndex: 'alarm',
         align: 'center',
         sorter: true,
