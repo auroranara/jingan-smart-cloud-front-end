@@ -17,7 +17,6 @@ import per4 from './imgs/perSafeFourth.png';
 import per5 from './imgs/perSafeFiFth.png';
 import per6 from './imgs/perSafeSixth.png';
 
-
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
   {
@@ -1143,78 +1142,6 @@ export const DataList = [
     risk_level_name: null,
   },
 ];
-
-export const SpecialEquipmentList = {
-  allList: [
-    {
-      id: 29602,
-      name: '空气储罐',
-      number: '新容1LS1474',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-    {
-      id: 29514,
-      name: '氮气缓冲罐',
-      number: '11-158',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-    {
-      id: 29673,
-      name: '乙基脲脱水釜',
-      number: '11-160',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-    {
-      id: 29653,
-      name: '搪玻璃反应釜',
-      number: '11-357',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-  ],
-  expiredList: [],
-  unexpiredList: [
-    {
-      id: 29602,
-      name: '空气储罐',
-      number: '新容1LS1474',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-    {
-      id: 29514,
-      name: '氮气缓冲罐',
-      number: '11-158',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-    {
-      id: 29673,
-      name: '乙基脲脱水釜',
-      number: '11-160',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-    {
-      id: 29653,
-      name: '搪玻璃反应釜',
-      number: '11-357',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-  ],
-};
 
 export const MonitorList = [
   // 罐区

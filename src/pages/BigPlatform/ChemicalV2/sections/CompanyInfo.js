@@ -46,28 +46,13 @@ export default class CompanyInfo extends PureComponent {
         phoneVisible,
       },
     } = this.props;
-    // const {
-    //   companyName = '无锡晶安智慧科技有限公司',
-    //   // 安全管理员
-    //   headOfSecurity = '牛斌',
-    //   // 联系电话
-    //   headOfSecurityPhone = '15857623543',
-    //   // 风险点总数
-    //   countCheckItem = 4,
-    //   // 手机号是否可见
-    //   phoneVisible = true,
-    //   countCompanyUser = 6,
-    //   specialEquipmentCount = 4,
-    //   total = 2,
-    //   isImportant = true,
-    // } = {};
     const countCompanyUser = (valueList || []).reduce((total, value) => {
       return total + (value ? value.length : 0);
     }, 0);
-    const phone =
-      phoneVisible || !headOfSecurityPhone
-        ? headOfSecurityPhone
-        : `${headOfSecurityPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+    const phone = headOfSecurityPhone;
+    // phoneVisible || !headOfSecurityPhone
+    //   ? headOfSecurityPhone
+    //   : `${headOfSecurityPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
 
     return (
       <Section extra={isImportant && <div className={styles.importantUnit}>重点单位</div>}>
@@ -122,7 +107,7 @@ export default class CompanyInfo extends PureComponent {
               className={styles.hoverable}
               style={{ backgroundImage: `url(${currentHiddenDangerIcon})` }}
               onClick={() => {
-                handleClickCount('currentHiddenDanger');
+                total && handleClickCount('currentHiddenDanger');
               }}
             >
               <div className={styles.countLabel}>

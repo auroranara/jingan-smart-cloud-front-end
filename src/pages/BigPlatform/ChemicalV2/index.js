@@ -93,9 +93,13 @@ notification.config({
   duration: 30,
   bottom: 6,
 });
-const companyId = 'DccBRhlrSiu9gMV7fmvizw';
+// const companyId = 'DccBRhlrSiu9gMV7fmvizw';
 
-@connect(({ unitSafety, bigPlatform }) => ({ unitSafety, bigPlatform }))
+@connect(({ unitSafety, bigPlatform, loading }) => ({
+  unitSafety,
+  bigPlatform,
+  hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
+}))
 export default class Chemical extends PureComponent {
   constructor(props) {
     super(props);
@@ -129,6 +133,7 @@ export default class Chemical extends PureComponent {
       gasVisible: false,
       poisonVisible: false,
       tankMonitorDrawerVisible: false,
+      hdStatus: 5,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
 
@@ -156,17 +161,15 @@ export default class Chemical extends PureComponent {
 
   init = () => {
     const {
-      // match: {
-      //   params: { companyId },
-      // },
+      match: {
+        params: { unitId: companyId },
+      },
       dispatch,
     } = this.props;
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
     this.fetchSpecialEquipmentCount({ company_id: companyId });
-    // 获取隐患列表
-    // this.getHiddenDangerList();
     // 获取隐患统计
     this.fetchHiddenDangerCount({ company_id: companyId });
     // 获取安全人员信息（安全人员信息卡片源数据）
@@ -178,30 +181,44 @@ export default class Chemical extends PureComponent {
     this.fetchHiddenDangerList();
   };
 
-  getHiddenDangerList = restProps => {
+  fetchHiddenDangerList = (pageNum = 1) => {
     const {
       match: {
-        params: { companyId },
+        params: { unitId: companyId },
       },
+      dispatch,
     } = this.props;
-    this.fetchHiddenDangerList({
-      pageNum: 1,
-      pageSize: 10,
-      company_id: companyId,
-      status: 5,
-      ...restProps,
-    });
-  };
-
-  fetchHiddenDangerList = pageNum => {
-    const { dispatch } = this.props;
+    const { hdStatus } = this.state;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
         company_id: companyId,
         // businessType: 2,
-        // status: hdStatus,
+        status: hdStatus,
         pageNum,
+        pageSize: 10,
+      },
+    });
+  };
+
+  // 点击当前隐患图表进行筛选
+  handleFilterCurrentDanger = ({ dataIndex }, callback = null) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const status =
+      (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || 5;
+    this.setState({ hdStatus: status });
+    // 获取当前隐患列表
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerListForPage',
+      payload: {
+        company_id: companyId,
+        status,
+        pageNum: 1,
         pageSize: 10,
       },
     });
@@ -404,13 +421,16 @@ export default class Chemical extends PureComponent {
   };
 
   fetchPoints = () => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
   };
 
   handleClickImgShow = images => {
-    console.log('imageFiles', images);
-
     this.setState({
       modalImgVisible: true,
       currentImage: 0,
@@ -468,6 +488,8 @@ export default class Chemical extends PureComponent {
     const {
       unitSafety: { points },
       bigPlatform: { hiddenDangerList },
+      hiddenDangerLoading,
+      unitSafety: { hiddenDangerCount },
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -500,7 +522,6 @@ export default class Chemical extends PureComponent {
       poisonVisible,
       tankMonitorDrawerVisible,
     } = this.state;
-    console.log('points', points);
 
     return (
       <BigPlatformLayout
@@ -593,6 +614,10 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('currentHiddenDanger');
           }}
           hiddenDangerList={hiddenDangerList}
+          fetchHiddenDangerList={this.fetchHiddenDangerList}
+          onClickChat={this.handleFilterCurrentDanger}
+          loading={hiddenDangerLoading}
+          {...hiddenDangerCount}
         />
 
         <DangerAreaDrawer
