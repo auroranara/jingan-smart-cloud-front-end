@@ -66,9 +66,10 @@ const dspItems = [
 const Sources = ['国配', '自购', '社会装备'];
 const Statuss = ['正常', '维检', '报废', '使用中'];
 
-@connect(({ emergencyManagement, loading }) => ({
+@connect(({ emergencyManagement, loading, user }) => ({
   emergencyManagement,
   loading: loading.models.emergencyManagement,
+  user,
 }))
 export default class EmergencyEquipmentDetail extends Component {
   componentDidMount() {
@@ -103,6 +104,10 @@ export default class EmergencyEquipmentDetail extends Component {
     const {
       emergencyManagement: {
         equipment: { list = [{}] },
+        emergencyOutfit = [],
+      },
+      user: {
+        currentUser: { unitType },
       },
       loading,
     } = this.props;
@@ -117,6 +122,20 @@ export default class EmergencyEquipmentDetail extends Component {
         renderItem = <span>{data ? moment(data).format('YYYY-MM-DD') : NO_DATA}</span>;
       } else if (id === 'status') {
         renderItem = <span>{Statuss[data - 1] || NO_DATA}</span>;
+      } else if (id === 'equipType') {
+        let treeData = emergencyOutfit;
+        const string =
+          emergencyOutfit.length > 0
+            ? data
+                .split(',')
+                .map(id => {
+                  const val = treeData.find(item => item.id === id) || {};
+                  treeData = val.children;
+                  return val.label;
+                })
+                .join('/')
+            : '';
+        renderItem = <span>{string || NO_DATA}</span>;
       } else if (id === 'fileList') {
         renderItem = (
           <div>
@@ -155,7 +174,7 @@ export default class EmergencyEquipmentDetail extends Component {
             <CustomForm
               buttonWrapperSpan={BUTTON_WRAPPER_SPAN}
               buttonWrapperStyle={{ textAlign: 'center' }}
-              fields={fields}
+              fields={unitType === 4 ? fields.slice(1, fields.length) : fields}
               searchable={false}
               resetable={false}
               action={

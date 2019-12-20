@@ -93,8 +93,8 @@ export default class EmergencyEquipmentHandler extends PureComponent {
     if (id) {
       // 获取详情
       dispatch({
-        type: 'emergencyManagement/fetchEquipmentDetail',
-        payload: { id },
+        type: 'emergencyManagement/fetchEquipList',
+        payload: { id, pageNum: 1, pageSize: 10 },
         callback: response => {
           const {
             companyId,
@@ -119,7 +119,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             dayMaintSpace,
             remark,
             fileList,
-          } = response.data;
+          } = response.data.list[0];
           setFieldsValue({
             companyId,
             equipName,
@@ -133,7 +133,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             equipProducer,
             produceDate: produceDate && moment(+produceDate),
             limitYear,
-            buyDate: buyDate && moment(+buyDate),
+            buyDate: buyDate ? moment(+buyDate) : undefined,
             use,
             status,
             storeName,
