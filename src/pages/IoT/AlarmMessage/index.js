@@ -3,6 +3,7 @@ import { Input } from 'antd';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
+import Ellipsis from '@/components/Ellipsis';
 import TablePage from '@/templates/TablePage';
 import moment from 'moment';
 
@@ -147,8 +148,11 @@ export default class AlarmMessage extends Component {
       title: '接收人',
       dataIndex: 'mailAcceptUsers',
       render: (value) => (
-        <div style={{ textAlign: 'left', maxWidth: 512, whiteSpace: 'normal' }}>
-          站内信：{value && value.map(({ accept_user_name, status }) => `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`).join('，')}
+        <div style={{ textAlign: 'left' }}>
+          站内信：
+          <Ellipsis length={20} tooltip>
+            {value && value.map(({ accept_user_name, status }) => `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`).join('，')}
+          </Ellipsis>
         </div>
       ),
       align: 'center',

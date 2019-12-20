@@ -209,17 +209,17 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         </DescriptionList>
         <DescriptionList className={styles.descriptionList} gutter={24}>
           {isHost && (
-            <Fragment>
-              <Description term="部件类型">
-                {unitTypeName || <EmptyData />}
-              </Description>
-              <Description term="回路号">
-                <div className={styles.nameWrapper}>
-                  <div className={styles.name}>{loopNumber || partNumber ? `${loopNumber ? `${loopNumber}回路` : ''}${partNumber ? `${partNumber}号` : ''}` : <EmptyData />}</div>
-                  {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
-                </div>
-              </Description>
-            </Fragment>
+            <Description term="部件类型">
+              {unitTypeName || <EmptyData />}
+            </Description>
+          )}
+          {isHost && (
+            <Description term="回路号">
+              <div className={styles.nameWrapper}>
+                <div className={styles.name}>{loopNumber || partNumber ? `${loopNumber ? `${loopNumber}回路` : ''}${partNumber ? `${partNumber}号` : ''}` : <EmptyData />}</div>
+                {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
+              </div>
+            </Description>
           )}
           <Description term="区域位置">
             {areaLocation || <EmptyData />}
@@ -271,6 +271,10 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       const warningUp = isNumber(normalUpper) && (isNumber(largeUpper) ? `${normalUpper}${unit}~${largeUpper}${unit}` : `≥${normalUpper}${unit}`);
       // 预警下限文本
       const warningDown = isNumber(normalLower) && (isNumber(smallLower) ? `${smallLower}${unit}~${normalLower}${unit}` : `≤${normalLower}${unit}`);
+      // // 预警上限文本
+      // const warningUp = isNumber(normalUpper) && `≥${normalUpper}${unit}`;
+      // // 预警下限文本
+      // const warningDown = isNumber(normalLower) && `≤${normalLower}${unit}`;
       // 预警文本
       const warning = [warningUp, warningDown].filter(v => v).join('，');
       // 告警上限文本
@@ -293,7 +297,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       // 计算实际上的最大值和最小值（所有值都不是数字的情况不知道需不需要考虑）
       max = Math.max.apply(null, [max, maxValue, largeUpper, normalUpper].filter(v => isNumber(v)));
       min = Math.min.apply(null, [min, minValue, smallLower, normalLower].filter(v => isNumber(v)));
-      const text = [warning && `{a|预警阈值：}{b|${warning}}`, alarm && `{a|报警阈值：}{b|${alarm}}`].filter(v => v);
+      const text = [warning && `{a|预警范围：}{b|${warning}}`, alarm && `{a|告警范围：}{b|${alarm}}`].filter(v => v);
       option = {
         title: {
           text: text.join('\n'),
@@ -444,7 +448,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
           backgroundColor: 'rgba(0, 0, 0, 0.75)',
           formatter(params) {
             const { seriesName, marker, value: [time, value] } = params[params.length - 1];
-            return `${moment(time).format('HH:mm')}<br />${marker}${seriesName}：${+value ? '报警' : '正常'}`;
+            return `${moment(time).format('HH:mm')}<br />${marker}${seriesName}：${+value ? '告警' : '正常'}`;
           },
         },
         grid: {
@@ -483,7 +487,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
           axisLabel: {
             color: 'rgba(0, 0, 0, 0.65)',
             formatter(value) {
-              return +value ? '报警' : '正常';
+              return +value ? '告警' : '正常';
             },
           },
           splitLine: {
@@ -549,7 +553,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
                   </div>
                   <div className={styles.legend}>
                     <div className={styles.legendIcon} />
-                    <div className={styles.legendLabel}>报警数值区</div>
+                    <div className={styles.legendLabel}>告警数值区</div>
                   </div>
                   <div className={styles.legend}>
                     <div className={styles.legendIcon2}>

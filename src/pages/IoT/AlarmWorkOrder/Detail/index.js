@@ -275,14 +275,14 @@ export default class AlarmWorkOrderDetail extends Component {
             </Description>
           )}
           {isHost && !isFinished && (
-            <Fragment>
-              <Description term="消防主机">
-                {deviceName || <EmptyData />}
-              </Description>
-              <Description term="部件类型">
-                {unitTypeName || <EmptyData />}
-              </Description>
-            </Fragment>
+            <Description term="消防主机">
+              {deviceName || <EmptyData />}
+            </Description>
+          )}
+          {isHost && !isFinished && (
+            <Description term="部件类型">
+              {unitTypeName || <EmptyData />}
+            </Description>
           )}
         </DescriptionList>
         <DescriptionList className={styles.descriptionList} gutter={24}>
