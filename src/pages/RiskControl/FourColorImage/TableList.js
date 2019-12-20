@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Modal, Button, Row, Col, Table, Card, Divider, Tag } from 'antd';
+import styles from './TableList.less';
 import Map from './Map';
 
 const columns = [
@@ -81,6 +82,7 @@ export default class TableList extends React.Component {
     super(props);
     this.state = {
       isDrawing: false,
+      isReset: false,
     };
   }
 
@@ -89,29 +91,48 @@ export default class TableList extends React.Component {
   renderDrawButton = () => {
     const { isDrawing } = this.state;
     return (
-      <Button
-        onClick={() => {
-          this.setState({ isDrawing: !isDrawing });
-        }}
-      >
-        {!isDrawing ? '开始画' : '结束画'}
-      </Button>
+      <Fragment>
+        <Button
+          onClick={() => {
+            this.setState({ isDrawing: !isDrawing });
+          }}
+        >
+          {!isDrawing ? '开始画' : '结束画'}
+        </Button>
+        <Button
+          style={{ marginLeft: 10 }}
+          onClick={() => {
+            this.setState({ isReset: true });
+          }}
+        >
+          重置
+        </Button>
+      </Fragment>
     );
   };
 
   render() {
-    const { isDrawing } = this.state;
+    const { isDrawing, isReset } = this.state;
     return (
       <div>
         <Row gutter={[8, 8]}>
           <Col span={12}>
             <Card title="地图" bordered={false}>
               {this.renderDrawButton()}
-              <Map isDrawing={isDrawing} />
+              <Map isDrawing={isDrawing} isReset={isReset} />
             </Card>
           </Col>
           <Col span={12}>
-            <Card title="区域列表" bordered={false}>
+            <Card
+              title="区域列表"
+              bordered={false}
+              className={styles.cardList}
+              extra={
+                <Button type="primary" href={'#/risk-control/four-color-image/add'}>
+                  新增
+                </Button>
+              }
+            >
               <Table columns={columns} dataSource={data} />
             </Card>
           </Col>

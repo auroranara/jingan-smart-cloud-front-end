@@ -1269,7 +1269,7 @@ module.exports = env => {
                   name: 'add',
                   code: 'riskControl.fourColorImage.add',
                   path: '/risk-control/four-color-image/add',
-                  // "component": "./RiskControl/FourColorImage/Edit",
+                  component: "./RiskControl/FourColorImage/Edit",
                 },
                 {
                   name: 'edit',
