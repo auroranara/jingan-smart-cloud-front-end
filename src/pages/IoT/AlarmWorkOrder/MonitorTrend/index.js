@@ -321,7 +321,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
           backgroundColor: 'rgba(0, 0, 0, 0.75)',
           formatter(params) {
             const { seriesName, marker, value: [time, value] } = params[params.length - 1];
-            return `${moment(time).format('HH:mm')}<br />${marker}${seriesName}：${value}${unit}`;
+            return `${moment(time).format('HH:mm:ss')}<br />${marker}${seriesName}：${value}${unit}`;
           },
         },
         grid: {
@@ -333,8 +333,8 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         },
         xAxis: {
           type: 'time',
-          min: +date,
-          max: +moment(),
+          min: +moment(date).startOf('day'),
+          max: Math.min(+moment(date).endOf('day'), +moment()),
           maxInterval: 60 * 60 * 1000,
           axisLine: {
             lineStyle: {
@@ -441,6 +441,33 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         ],
       };
     } else {
+      const data = monitorTrend && monitorTrend.map(({ time, value }) => ({
+        name: time,
+        value: [
+          time,
+          value,
+        ],
+      }));
+      if (data) {
+        if (data[0] && data[0].name !== +moment(date).startOf('day')) { // 实际上应该不需要考虑这个
+          data.unshift({
+            name: +moment(date).startOf('day').subtract(1, 'days'),
+            value: [
+              +moment(date).startOf('day').subtract(1, 'days'),
+              +!data[0].value[1],
+            ],
+          });
+        }
+        if(data[data.length - 1] && data[data.length - 1].name !== +moment(date).endOf('day')) {
+          data.push({
+            name: +moment(date).endOf('day').add(1, 'days'),
+            value: [
+              +moment(date).endOf('day').add(1, 'days'),
+              +!data[data.length - 1].value[1],
+            ],
+          });
+        }
+      }
       option = {
         color: ['#720EBC'],
         tooltip : {
@@ -448,7 +475,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
           backgroundColor: 'rgba(0, 0, 0, 0.75)',
           formatter(params) {
             const { seriesName, marker, value: [time, value] } = params[params.length - 1];
-            return `${moment(time).format('HH:mm')}<br />${marker}${seriesName}：${+value ? '告警' : '正常'}`;
+            return `${moment(time).format('HH:mm')}<br />${marker}${seriesName}：${+value ? '火警' : '正常'}`;
           },
         },
         grid: {
@@ -460,8 +487,8 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         },
         xAxis: {
           type: 'time',
-          min: +date,
-          max: +moment(),
+          min: +moment(date).startOf('day'),
+          max: Math.min(+moment(date).endOf('day'), +moment()),
           maxInterval: 60 * 60 * 1000,
           axisLine: {
             lineStyle: {
@@ -487,7 +514,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
           axisLabel: {
             color: 'rgba(0, 0, 0, 0.65)',
             formatter(value) {
-              return +value ? '告警' : '正常';
+              return +value ? '火警' : '正常';
             },
           },
           splitLine: {
@@ -502,13 +529,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
             name: '状态',
             type: 'line',
             step: 'end',
-            data: monitorTrend && monitorTrend.map(({ time, value }) => ({
-              name: time,
-              value: [
-                time,
-                value,
-              ],
-            })),
+            data,
           },
         ],
       };
@@ -535,7 +556,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         onTabChange={this.handleCurrentIndexChange}
       >
         <Spin spinning={loadingMonitorTrend}>
-          {monitorTrend && monitorTrend.length ? (
+          {paramDesc && monitorTrend && monitorTrend.length ? (
             <Fragment>
               <ReactEcharts
                 key={paramDesc}
