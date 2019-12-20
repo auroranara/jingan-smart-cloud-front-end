@@ -1075,8 +1075,8 @@ export default class AssociatedUnit extends PureComponent {
     const gridList = treeData(grids);
 
     return (
-      <Card title="账号基本信息" className={styles.card} bordered={false}>
-        <Form layout="vertical">
+      <Form layout="vertical">
+        <Card title="账号基本信息" className={styles.card} bordered={false}>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.loginName}>
@@ -1123,6 +1123,10 @@ export default class AssociatedUnit extends PureComponent {
                 })(<Input disabled={true} placeholder="请输入手机号" min={11} max={11} />)}
               </Form.Item>
             </Col>
+          </Row>
+        </Card>
+        <Card title="关联单位账号信息" className={styles.card} bordered={false}>
+          <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
@@ -1317,8 +1321,8 @@ export default class AssociatedUnit extends PureComponent {
                 </Col>
               )}
           </Row>
-        </Form>
-      </Card>
+        </Card>
+      </Form>
     );
   }
 

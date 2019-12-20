@@ -2,6 +2,7 @@ import React from 'react';
 import { Tree, TreeSelect } from 'antd';
 
 import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
+import { getFileList } from '@/pages/BaseInfo/utils';
 
 const initRouters = require('../../../../config/router.config');
 const routes = initRouters(process.env.PROJECT_ENV);
@@ -25,9 +26,15 @@ export const FIELD_LABELS = {
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
   regulatoryClassification: '业务分类',
+  sex: '性别',
+  birthday: '生日',
+  degree: '学历',
+  attached: '学历附件',
 };
 
 export const DEFAULT_PAGE_SIZE = 20;
+export const FOLDER = 'accountDegree';
+export const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
 
 export const SUPERVISIONS = [
   { id: '1', label: '安全生产' },
@@ -37,6 +44,23 @@ export const SUPERVISIONS = [
 ];
 
 export const SUPERVISIONS_ALL = SUPERVISIONS.map(({ id }) => id);
+
+export const SEXES = ['男', '女'];
+export const DEGREES = ['初中', '高中', '中专', '大专', '本科', '硕士', '博士'];
+
+export function getInitPhotoList(list) {
+  if (!Array.isArray(list))
+    return [];
+  return list.map(({ id, fileName, webUrl, dbUrl }) => ({ uid: id, name: fileName, url: webUrl, dbUrl, response: { code: 200 } }));
+}
+
+export function getSubmitPhotoList(list) {
+  return list.map(({ uid, name, url, dbUrl }) => ({ id: uid, fileName: name, webUrl: url, dbUrl }));
+}
+
+export function handleFileList(list) {
+  return getFileList(list).filter(({ response }) => response && response.code === 200);
+}
 
 export function renderSearchedTreeNodes(data, searchValue){
   return data.map((item) => {
