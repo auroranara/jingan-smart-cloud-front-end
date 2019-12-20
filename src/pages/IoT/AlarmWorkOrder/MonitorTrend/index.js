@@ -475,7 +475,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
           backgroundColor: 'rgba(0, 0, 0, 0.75)',
           formatter(params) {
             const { seriesName, marker, value: [time, value] } = params[params.length - 1];
-            return `${moment(time).format('HH:mm')}<br />${marker}${seriesName}：${+value ? '火警' : '正常'}`;
+            return `${moment(time).format('HH:mm:ss')}<br />${marker}${seriesName}：${+value ? '火警' : '正常'}`;
           },
         },
         grid: {
