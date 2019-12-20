@@ -43,14 +43,13 @@ export default class SpecialEquipmentDrawer extends PureComponent {
    * 选择状态
    */
   renderStatusSelect() {
-    // const {
-    //   unitSafety: {
-    //     specialEquipmentList: { allList = [], expiredList = [], unexpiredList = [] } = {},
-    //   },
-    // } = this.props;
+    const {
+      unitSafety: {
+        specialEquipmentList: { allList = [], expiredList = [], unexpiredList = [] } = {},
+      },
+    } = this.props;
     const { selectedStatus } = this.state;
 
-    const { allList = [], expiredList = [], unexpiredList = [] } = SpecialEquipmentList;
     return (
       <div className={styles.statusList}>
         <div className={styles.statusItemWrapper}>
@@ -99,11 +98,10 @@ export default class SpecialEquipmentDrawer extends PureComponent {
       visible,
       // 关闭函数
       onClose,
-      // unitSafety: {
-      //   specialEquipmentList: { allList = [], expiredList = [], unexpiredList = [] } = {},
-      // },
+      unitSafety: {
+        specialEquipmentList: { allList = [], expiredList = [], unexpiredList = [] } = {},
+      },
     } = this.props;
-    const { allList = [], expiredList = [], unexpiredList = [] } = SpecialEquipmentList;
     const { selectedStatus } = this.state;
     let list;
     if (selectedStatus === '1') {
