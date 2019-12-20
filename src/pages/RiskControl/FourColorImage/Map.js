@@ -12,19 +12,6 @@ const COLOR = {
 };
 const defaultPolygonMarkerHeight = 5;
 //配置线型、线宽、透明度等
-const lineStyle = {
-  //设置线的宽度
-  lineWidth: 4,
-  //设置线的透明度
-  alpha: 0.8,
-
-  // offsetHeight 默认的高度为 1, (离楼板1米的高度)
-  height: defaultPolygonMarkerHeight,
-  //设置线的类型为导航线
-  lineType: fengMap.FMLineType.FMARROW,
-  //设置线动画,false为动画
-  noAnimate: true,
-};
 
 let map;
 let points = [];
