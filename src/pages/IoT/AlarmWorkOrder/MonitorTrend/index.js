@@ -246,7 +246,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
     const tabList = (allMonitorParam || []).map(({ paramDesc }, index) => ({ key: `${index}`, tab: paramDesc }));
     const { fixType, paramDesc } = (allMonitorParam || [])[currentIndex] || {};
     const isNotFire = +fixType !== 5;
-    let option;
+    let option, visible = monitorTrend && monitorTrend.length > 0;
     if (isNotFire) {
       // 获取单位、范围（单位不存在的情况不知道需不需要考虑）
       const { paramUnit: unit, paramWarnStrategyList, rangeMax: maxValue, rangeMin: minValue } = (allMonitorParam || [])[currentIndex] || {};
@@ -441,41 +441,59 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         ],
       };
     } else {
-      const data = monitorTrend && monitorTrend.map(({ time, value }) => ({
-        name: time,
-        value: [
-          time,
-          value,
-        ],
-      }));
-      if (data) {
-        if (data[0] && data[0].name !== +moment(date).startOf('day')) { // 实际上应该不需要考虑这个
-          data.unshift({
-            name: +moment(date).startOf('day').subtract(1, 'days'),
-            value: [
-              +moment(date).startOf('day').subtract(1, 'days'),
-              +!data[0].value[1],
-            ],
-          });
+      const start = +moment(date).startOf('day');
+      const end = +moment(date).endOf('day');
+      const { data, hasValue, hasPoint } = monitorTrend && monitorTrend.reduce((result, { time, value }, index) => {
+        result.data.push({
+          name: time,
+          value: [
+            time,
+            value,
+          ],
+        });
+        if (time < start) {
+          if (isNumber(value)) {
+            const next = monitorTrend[index + 1];
+            if (!next || next.time !== start) { // 极限情况
+              result.hasValue = true;
+            }
+          }
+        } else if (time >= start && time <= end) {
+          if (isNumber(value)) {
+            result.hasValue = true;
+            result.hasPoint = true;
+          }
         }
-        if(data[data.length - 1] && data[data.length - 1].name !== +moment(date).endOf('day')) {
+        return result;
+      }, {
+        data: [],
+        hasValue: false,
+        hasPoint: false,
+      });
+      visible = hasValue;
+      console.log(data);
+      console.log(hasValue);
+      console.log(hasPoint);
+      if (data) {
+        const last = data[data.length - 1];
+        if(last && last.name <= end) { //这里很乱，理不清
           data.push({
-            name: +moment(date).endOf('day').add(1, 'days'),
+            name: +moment(end).add(1, 'days'),
             value: [
-              +moment(date).endOf('day').add(1, 'days'),
-              +!data[data.length - 1].value[1],
+              +moment(end).add(1, 'days'),
+              last.value[1],
             ],
           });
         }
       }
       option = {
         color: ['#720EBC'],
-        tooltip : {
+        tooltip: {
           trigger: 'axis',
           backgroundColor: 'rgba(0, 0, 0, 0.75)',
           formatter(params) {
             const { seriesName, marker, value: [time, value] } = params[params.length - 1];
-            return `${moment(time).format('HH:mm:ss')}<br />${marker}${seriesName}：${+value ? '火警' : '正常'}`;
+            return `${!hasPoint ? date.format('YYYY-MM-DD') : moment(time).format('HH:mm:ss')}<br />${marker}${seriesName}：${+value ? '火警' : '正常'}`;
           },
         },
         grid: {
@@ -556,7 +574,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         onTabChange={this.handleCurrentIndexChange}
       >
         <Spin spinning={loadingMonitorTrend}>
-          {paramDesc && monitorTrend && monitorTrend.length ? (
+          {paramDesc && visible ? (
             <Fragment>
               <ReactEcharts
                 key={paramDesc}

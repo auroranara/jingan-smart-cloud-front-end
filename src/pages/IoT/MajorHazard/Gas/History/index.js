@@ -387,7 +387,7 @@ export default class GasHistory extends Component {
           },
         },
         left: 'right',
-        padding: 0,
+        padding: 5,
         itemGap: 0,
       },
       grid: {
