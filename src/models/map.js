@@ -6,7 +6,8 @@ import {
   fetchGridPoints,
   updateGridPoints,
   fetchOtherGridPoints,
-} from '../services/map/map.js';
+  fetchMapList,
+} from '@/services/map/map.js';
 
 export default {
   namespace: 'map',
@@ -21,7 +22,7 @@ export default {
   },
 
   effects: {
-    *fetch({ payload, success, error }, { call, put }) {
+    *fetch ({ payload, success, error }, { call, put }) {
       const response = yield call(queryMapCount, payload);
       // console.log('response', response);
       if (response.code === 200) {
@@ -36,7 +37,7 @@ export default {
         error();
       }
     },
-    *fetchUsers({ payload, success, error }, { call, put }) {
+    *fetchUsers ({ payload, success, error }, { call, put }) {
       const response = yield call(queryAroundUsers, payload);
       if (response.code === 200) {
         yield put({
@@ -50,7 +51,7 @@ export default {
         error();
       }
     },
-    *fetchVideos({ payload, success, error }, { call, put }) {
+    *fetchVideos ({ payload, success, error }, { call, put }) {
       const response = yield call(queryAroundVideos, payload);
       if (response.code === 200) {
         yield put({
@@ -64,7 +65,7 @@ export default {
         error();
       }
     },
-    *fetchVideoUrl({ payload, success, error }, { call, put }) {
+    *fetchVideoUrl ({ payload, success, error }, { call, put }) {
       const response = yield call(queryVideoUrl, payload);
       if (response.code === 200) {
         yield put({
@@ -78,53 +79,61 @@ export default {
         error();
       }
     },
-    *fetchGridPoints({ payload, callback }, { call, put }) {
+    *fetchGridPoints ({ payload, callback }, { call, put }) {
       const response = yield call(fetchGridPoints, payload);
       if (response && response.code === 200 && response.data) {
         if (callback) callback(response.data || []);
       }
     },
-    *updateGridPoints({ payload, success, error }, { call }) {
+    *updateGridPoints ({ payload, success, error }, { call }) {
       const response = yield call(updateGridPoints, payload);
       if (response && response.code === 200) {
         if (success) success();
       } else if (error) error();
     },
-    *fetchOtherGridPoints({ payload, callback }, { call, put }) {
+    *fetchOtherGridPoints ({ payload, callback }, { call, put }) {
       const response = yield call(fetchOtherGridPoints, payload);
       if (response && response.code === 200 && response.data) {
         if (callback) callback(response.data.list || []);
       }
     },
+    // 获取地图列表
+    *fetchMapList ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchMapList, payload);
+      if (res && res.code === 200) {
+        const list = res.data.list;
+        callback && callback(list && list.length ? list[0] : {});
+      }
+    },
   },
 
   reducers: {
-    save(state, { payload }) {
+    save (state, { payload }) {
       return {
         ...state,
         ...payload,
         videoUrl: null,
       };
     },
-    saveUsers(state, { payload }) {
+    saveUsers (state, { payload }) {
       return {
         ...state,
         userList: payload,
       };
     },
-    saveVideos(state, { payload }) {
+    saveVideos (state, { payload }) {
       return {
         ...state,
         videoList: payload,
       };
     },
-    saveVideoUrl(state, { payload }) {
+    saveVideoUrl (state, { payload }) {
       return {
         ...state,
         videoUrl: payload,
       };
     },
-    deleteVideoUrl(state) {
+    deleteVideoUrl (state) {
       return {
         ...state,
         videoUrl: null,
