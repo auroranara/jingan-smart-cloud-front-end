@@ -1,0 +1,124 @@
+.standardContainer {
+  padding: 0 1em;
+  font-size: 14px;
+  // overflow-y: auto;
+
+  // &::-webkit-scrollbar {
+  //   background-color: transparent;
+  // }
+
+  // &::-webkit-scrollbar-thumb {
+  //   background-color: transparent;
+  // }
+
+  // &::-webkit-scrollbar-track {
+  //   background-color: transparent;
+  // }
+
+  // &::-webkit-scrollbar-corner {
+  //   background-color: transparent;
+  // }
+
+  // &::-webkit-resizer {
+  //   background-color: transparent;
+  // }
+
+  :global {
+    .ant-collapse {
+      background: transparent;
+    }
+
+    .ant-collapse>.ant-collapse-item>.ant-collapse-header {
+      color: #fff;
+      padding: 7px 60px;
+      padding-left: 8px;
+    }
+
+    .ant-collapse-icon-position-right>.ant-collapse-item>.ant-collapse-header .ant-collapse-arrow {
+      font-size: 20px;
+    }
+
+    .ant-collapse-item {
+      border-bottom-color: transparent;
+    }
+
+    .ant-collapse-content>.ant-collapse-content-box {
+      padding: 4px 0 0 0;
+    }
+  }
+
+  .collapse {
+    .header {
+      padding: 12px 16px;
+      padding-right: 40px;
+      font-size: 15px;
+    }
+  }
+
+  .content {
+    padding: 0 0 0 16px;
+    color: #fff;
+
+    .titleLine {
+      line-height: 1;
+      margin-bottom: 7px;
+      overflow: hidden;
+
+      span:nth-child(1) {
+        padding-left: 0.625em;
+        border-left: 3px solid #00ffff;
+        padding-right: 1em;
+      }
+
+      span:nth-child(2) {
+        color: gray;
+        font-size: 13px;
+      }
+    }
+  }
+
+  .textContent {
+    padding: 0 5px 0 30px;
+    color: #fff;
+  }
+
+  .alarmLogo {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    padding: 0 10px;
+  }
+
+  .title {
+    font-size: 15px;
+  }
+}
+
+.divider {
+  overflow: hidden;
+  width: 99%;
+  margin: 10px 0;
+  height: 1px;
+
+  &::before {
+    content: '';
+    display: block;
+    width: 99%;
+    height: 100%;
+    border-top: 1px dashed #00ffff;
+    transform: scale(2, 0.5);
+    opacity: 0.8;
+  }
+}
+
+.borderIcon {
+  display: inline-block;
+  color: #00ffff;
+  display: inline-block;
+  line-height: 1;
+  border: 1px solid #00ffff;
+  border-radius: 100%;
+  padding: 3px;
+  margin-right: 5px;
+  transform: scale(0.83);
+}
