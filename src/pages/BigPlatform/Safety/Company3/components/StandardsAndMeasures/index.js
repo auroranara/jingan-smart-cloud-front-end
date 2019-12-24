@@ -88,15 +88,13 @@ const StandardsAndMeasures = (props) => {
       >
         {standardsAndMeasuresList.slice(1).map(({ title, detailInfo }, index) => title ? (
           <Panel header={renderTitle(title)} key={index} style={customPanelStyle}>
-            {title === '警示标志' ? (
-              detailInfo.map(({ webUrl }) => webUrl && webUrl.length ? (
-                <img className={styles.alarmLogo} src={webUrl[0]} alt="logo" />
-              ) : null)
-            ) : (
-                <div className={styles.textContent}>
-                  {detailInfo.filter(info => !!info.value).map((val, index) => InfoItem(val.value, index))}
-                </div>
-              )}
+            <div className={styles.textContent}>
+              {title === '警示标志' ? (
+                detailInfo.map(({ webUrl }, index) => webUrl && webUrl.length ? webUrl.map((val, i) => val ? (
+                  <img key={`${index}-${i}`} className={styles.alarmLogo} src={val} alt="logo" />
+                ) : null) : null)
+              ) : detailInfo.filter(info => !!info.value).map((val, index) => InfoItem(val.value, index))}
+            </div>
           </Panel>
         ) : null)}
       </Collapse>
