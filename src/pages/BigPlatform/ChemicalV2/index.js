@@ -151,11 +151,15 @@ export default class Chemical extends PureComponent {
         'fetchHiddenDangerCount',
         // 获取特种设备列表
         'fetchSpecialEquipmentList',
+        // 获取标准及措施
+        'fetchStandardsAndMeasuresList',
+        // 获取点位检查标准
+        'fetchpointInspectionStandards',
       ],
     });
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.init();
   }
 
@@ -481,10 +485,21 @@ export default class Chemical extends PureComponent {
     this.setState({ poisonVisible: false });
   };
 
+  // 获取标准及措施列表
+  getStandardsAndMeasures = () => {
+    this.fetchStandardsAndMeasuresList({
+      itemId: this.itemId,
+      needStandards: 1,
+    });
+    this.fetchpointInspectionStandards({
+      item_id: this.itemId,
+    })
+  }
+
   /**
    * 渲染
    */
-  render() {
+  render () {
     const {
       unitSafety: { points },
       bigPlatform: { hiddenDangerList },
@@ -579,16 +594,16 @@ export default class Chemical extends PureComponent {
                     handleGasOpen={this.handleGasOpen}
                   />
                 ) : (
-                  <div className={styles.msgContainer}>
-                    {/* <Badge count={3}> */}
-                    <Icon
-                      type="message"
-                      className={styles.msgIcon}
-                      onClick={() => this.setState({ msgVisible: true })}
-                    />
-                    {/* </Badge> */}
-                  </div>
-                )}
+                    <div className={styles.msgContainer}>
+                      {/* <Badge count={3}> */}
+                      <Icon
+                        type="message"
+                        className={styles.msgIcon}
+                        onClick={() => this.setState({ msgVisible: true })}
+                      />
+                      {/* </Badge> */}
+                    </div>
+                  )}
 
                 <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
               </div>
@@ -696,6 +711,7 @@ export default class Chemical extends PureComponent {
           getRiskPointHiddenDangerList={this.getRiskPointHiddenDangerList}
           getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
           getRiskPointInspectionCount={this.getRiskPointInspectionCount}
+          getStandardsAndMeasures={this.getStandardsAndMeasures}
         />
 
         <DangerSourceDrawer

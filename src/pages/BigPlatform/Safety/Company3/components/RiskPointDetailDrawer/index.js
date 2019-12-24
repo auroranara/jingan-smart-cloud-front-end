@@ -61,6 +61,8 @@ const INSPECTION_FIELDNAMES = {
   loading2: loading.effects['unitSafety/fetchRiskPointInspectionList'],
   loading3: loading.effects['unitSafety/fetchRiskPointHiddenDangerCount'],
   loading4: loading.effects['unitSafety/fetchRiskPointInspectionCount'],
+  // 标准及措施
+  loading5: loading.effects['unitSafety/fetchStandardsAndMeasuresList'] || loading.effects['unitSafety/fetchpointInspectionStandards'],
 }))
 export default class RiskPointDetailDrawer extends PureComponent {
   state = {
@@ -258,6 +260,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
       loading2,
       loading3,
       loading4,
+      loading5,
     } = this.props;
     const { tabKey, subTabKey } = this.state;
     let subTabs, Item, list, fieldNames, key, restProps, backgroundImage, pageSize, pageNum, total;
@@ -350,7 +353,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
           refScroll: this.setScrollReference,
           scrollProps: { className: tabKey === 'standard' ? null : styles.scrollContainer },
           spinProps: {
-            loading: loading1 || loading2 || loading3 || loading4 || false,
+            loading: loading1 || loading2 || loading3 || loading4 || loading5 || false,
             wrapperClassName: tabKey === 'standard' ? styles.spinContainer : null,
           },
           fixedContent: (
