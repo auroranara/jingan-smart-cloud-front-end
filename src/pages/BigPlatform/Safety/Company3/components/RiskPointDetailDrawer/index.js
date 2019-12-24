@@ -10,6 +10,7 @@ import InspectionCard from '@/jingan-components/InspectionCard'; // 巡查卡片
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import SectionDrawer from '../SectionDrawer';
 import RiskCard from '../RiskCard';
+import StandardsAndMeasures from '@/pages/BigPlatform/Safety/Company3/components/StandardsAndMeasures';
 // 暂无隐患图片
 import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
 // 暂无巡查图片
@@ -46,7 +47,7 @@ const INSPECTION_FIELDNAMES = {
   source: 'report_source', // 巡查来源
   person: 'check_user_names', // 巡查人
   status: 'status', // 巡查结果
-  result({ data: { overTimeId = [], rectifyId = [], reviewId = [], finishId = [] } = {} }) {
+  result ({ data: { overTimeId = [], rectifyId = [], reviewId = [], finishId = [] } = {} }) {
     return [overTimeId.length, rectifyId.length, reviewId.length, finishId.length];
   }, // 处理结果
 };
@@ -68,7 +69,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
     currentImage: 0,
   };
 
-  componentDidUpdate({ visible: prevVisible }, { subTabKey: prevSubTabKey, tabKey: prevTabKey }) {
+  componentDidUpdate ({ visible: prevVisible }, { subTabKey: prevSubTabKey, tabKey: prevTabKey }) {
     const { visible } = this.props;
     const { subTabKey, tabKey } = this.state;
     if (!prevVisible && visible) {
@@ -122,6 +123,9 @@ export default class RiskPointDetailDrawer extends PureComponent {
       } else if (tabKey === 'inspection') {
         const { getRiskPointInspectionList } = this.props;
         getRiskPointInspectionList({ checkStatus: subTabKey });
+      } else if (tabKey === 'standard') {
+        const { getStandardsAndMeasures } = this.props;
+        getStandardsAndMeasures()
       }
     }
   };
@@ -200,7 +204,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
   /**
    * 图片详情
    */
-  renderImageDetail() {
+  renderImageDetail () {
     const { images, currentImage } = this.state;
     return (
       images &&
@@ -221,7 +225,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       // 抽屉是否可见
       visible,
@@ -244,6 +248,11 @@ export default class RiskPointDetailDrawer extends PureComponent {
           inspectionList: { list: inspectionList = [], pagination: inspectionPagination = {} } = {},
           inspectionCount: { total: inspectionTotal = 0, normal = 0, abnormal = 0 },
         } = {},
+        // 标准及措施列表
+        standardsAndMeasuresList = [],
+        // 点位检查标准列表
+        pointInspectionStandardsList = [],
+        itemName,
       },
       loading1,
       loading2,
@@ -339,8 +348,11 @@ export default class RiskPointDetailDrawer extends PureComponent {
         }}
         sectionProps={{
           refScroll: this.setScrollReference,
-          scrollProps: { className: styles.scrollContainer },
-          spinProps: { loading: loading1 || loading2 || loading3 || loading4 || false },
+          scrollProps: { className: tabKey === 'standard' ? null : styles.scrollContainer },
+          spinProps: {
+            loading: loading1 || loading2 || loading3 || loading4 || false,
+            wrapperClassName: tabKey === 'standard' ? styles.spinContainer : null,
+          },
           fixedContent: (
             <Fragment>
               <div className={styles.titleWrapper}>
@@ -360,13 +372,13 @@ export default class RiskPointDetailDrawer extends PureComponent {
                     ))}
                   </CustomCarousel>
                 ) : (
-                  <Empty
-                    image={defaultCard}
+                    <Empty
+                      image={defaultCard}
                     // imageStyle={{
                     //   height: 60,
                     // }}
-                  />
-                )}
+                    />
+                  )}
               </div>
               <div className={styles.tabList}>
                 <div
@@ -430,11 +442,11 @@ export default class RiskPointDetailDrawer extends PureComponent {
                 />
               ))
             ) : (
-              <div
-                className={styles.defaultHiddenDanger}
-                style={{ backgroundImage: `url(${backgroundImage})` }}
-              />
-            )}
+                <div
+                  className={styles.defaultHiddenDanger}
+                  style={{ backgroundImage: `url(${backgroundImage})` }}
+                />
+              )}
             {pageNum * pageSize < total && (
               <div className={styles.loadMoreWrapper}>
                 <Tooltip placement="top" title="加载更多">
@@ -445,8 +457,14 @@ export default class RiskPointDetailDrawer extends PureComponent {
             {this.renderImageDetail()}
           </div>
         ) : (
-          <div className={styles.container}>标准及措施</div>
-        )}
+            <div style={{ padding: '1em 0' }}>
+              <StandardsAndMeasures
+                standardsAndMeasuresList={standardsAndMeasuresList}
+                pointInspectionStandardsList={pointInspectionStandardsList}
+                itemName={itemName}
+              />
+            </div>
+          )}
       </SectionDrawer>
     );
   }
