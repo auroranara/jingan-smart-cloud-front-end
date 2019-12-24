@@ -63,8 +63,9 @@ const dspItems = [
 
 const Statuss = ['未执行', '已执行'];
 
-@connect(({ emergencyManagement, loading }) => ({
+@connect(({ emergencyManagement, loading, user }) => ({
   emergencyManagement,
+  user,
   loading: loading.models.emergencyManagement,
 }))
 export default class EmergencyDrillDetail extends Component {
@@ -104,6 +105,9 @@ export default class EmergencyDrillDetail extends Component {
         emergencyDrill = [],
       },
       loading,
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const detail = list[0] || {};
     const fields = dspItems.map(item => {
@@ -144,7 +148,7 @@ export default class EmergencyDrillDetail extends Component {
             <CustomForm
               buttonWrapperSpan={BUTTON_WRAPPER_SPAN}
               buttonWrapperStyle={{ textAlign: 'center' }}
-              fields={fields}
+              fields={unitType === 4 ? fields.slice(1, fields.length) : fields}
               searchable={false}
               resetable={false}
               action={

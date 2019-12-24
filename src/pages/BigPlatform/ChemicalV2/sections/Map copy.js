@@ -25,7 +25,6 @@ const COLOR = {
   yellow: 'rgb(251, 247, 25)',
   red: 'rgb(255, 72, 72)',
 };
-const COLORS = ['rgb(30, 96, 255)', 'rgb(241, 122, 10)', 'rgb(251, 247, 25)', 'rgb(255, 72, 72)'];
 let map;
 const fmapID = '100';
 const riskPointData = [
