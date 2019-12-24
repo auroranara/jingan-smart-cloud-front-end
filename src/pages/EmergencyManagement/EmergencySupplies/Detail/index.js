@@ -63,8 +63,9 @@ const SuppliesCodes = [
 ];
 const LvlCodes = ['01 国家级', '02 社会力量', '99 其他'];
 
-@connect(({ emergencyManagement, loading }) => ({
+@connect(({ emergencyManagement, loading, user }) => ({
   emergencyManagement,
+  user,
   loading: loading.models.emergencyManagement,
 }))
 export default class EmergencySuppliesDetail extends Component {
@@ -81,13 +82,15 @@ export default class EmergencySuppliesDetail extends Component {
   getDetail = () => {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
+      match: { params: { id = null } = {} },
     } = this.props;
     dispatch({
-      type: 'emergencyManagement/fetchSuppliesDetail',
-      payload: { id },
+      type: 'emergencyManagement/fetchSuppliesList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        id,
+      },
     });
   };
 
@@ -98,11 +101,15 @@ export default class EmergencySuppliesDetail extends Component {
   render() {
     const {
       emergencyManagement: {
-        supplies: { detail = {} },
+        supplies: { list = [{}] },
         emergencyEquip = [],
+      },
+      user: {
+        currentUser: { unitType },
       },
       loading,
     } = this.props;
+    const detail = list[0] || {};
     const fields = dspItems.map(item => {
       const { id } = item;
       const data = detail[id];
@@ -142,7 +149,7 @@ export default class EmergencySuppliesDetail extends Component {
             <CustomForm
               buttonWrapperSpan={BUTTON_WRAPPER_SPAN}
               buttonWrapperStyle={{ textAlign: 'center' }}
-              fields={fields}
+              fields={unitType === 4 ? fields.slice(1, fields.length) : fields}
               searchable={false}
               resetable={false}
               action={

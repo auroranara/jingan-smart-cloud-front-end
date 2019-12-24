@@ -161,6 +161,7 @@ export default class AlarmWorkOrderDetail extends Component {
         executeType,
         startDate,
         startUserName,
+        status,
       }={},
     } = this.props;
     let current = 0;
@@ -170,27 +171,34 @@ export default class AlarmWorkOrderDetail extends Component {
         title: '工单创建',
         description: (
           <Fragment>
-            <div>{createUserName}</div>
-            <div>{moment(createDate).format(DEFAULT_FORMAT)}</div>
+            {/* <div>{createUserName}</div> */}
+            <div>{createDate && moment(createDate).format(DEFAULT_FORMAT)}</div>
           </Fragment>
         ),
       },
     ];
-    if (+executeType !== 2 && startDate) {
-      current += 1;
-      steps.push({
-        id: '确认警情',
-        title: '确认警情',
-        description: (
-          <Fragment>
-            <div>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>
-            <div>{startUserName}</div>
-            <div>{moment(startDate).format(DEFAULT_FORMAT)}</div>
-          </Fragment>
-        ),
-      });
+    if (+executeType !== 2) { // 不是自动处理的情况下再显示
+      if (+status === 0) {
+        current += 1;
+        steps.push({
+          id: '确认警情',
+          title: '确认警情',
+          description: (
+            <Fragment>
+              <div>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>
+              <div>{startUserName}</div>
+              <div>{moment(startDate).format(DEFAULT_FORMAT)}</div>
+            </Fragment>
+          ),
+        });
+      } else {
+        steps.push({
+          id: '确认警情',
+          title: '确认警情',
+        });
+      }
     }
-    if (endDate) {
+    if (+status === 1) {
       current += 1;
       steps.push({
         id: '完成工单',
@@ -201,6 +209,11 @@ export default class AlarmWorkOrderDetail extends Component {
             <div>{moment(endDate).format(DEFAULT_FORMAT)}</div>
           </Fragment>
         ),
+      });
+    } else {
+      steps.push({
+        id: '完成工单',
+        title: '完成工单',
       });
     }
 
@@ -225,12 +238,17 @@ export default class AlarmWorkOrderDetail extends Component {
         spendTime,
         targetName,
         deviceName,
+        unitTypeName,
+        reportType,
         reportTypeName,
         areaLocation,
         reportPhotoList,
         reportDesc,
+        loopNumber,
+        partNumber,
       }={},
     } = this.props;
+    const isHost = +reportType === 1;
     const isFinished = +status === 1;
 
     return (
@@ -251,17 +269,48 @@ export default class AlarmWorkOrderDetail extends Component {
               {isNumber(spendTime) ? getTransformedTime(spendTime) : <EmptyData />}
             </Description>
           )}
-          <Description term="监测对象">
-            {targetName || <EmptyData />}
-          </Description>
+          {!isHost && (
+            <Description term="监测对象">
+              {targetName || <EmptyData />}
+            </Description>
+          )}
+          {isHost && !isFinished && (
+            <Description term="消防主机">
+              {deviceName || <EmptyData />}
+            </Description>
+          )}
+          {isHost && !isFinished && (
+            <Description term="部件类型">
+              {unitTypeName || <EmptyData />}
+            </Description>
+          )}
         </DescriptionList>
         <DescriptionList className={styles.descriptionList} gutter={24}>
-          <Description term="设备名称/主机编号">
-            <div className={styles.nameWrapper}>
-              <div className={styles.name}>{deviceName || <EmptyData />}</div>
-              {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
-            </div>
-          </Description>
+          {isHost && isFinished && (
+            <Description term="消防主机">
+              {deviceName || <EmptyData />}
+            </Description>
+          )}
+          {!isHost ? (
+            <Description term="监测设备名称">
+              <div className={styles.nameWrapper}>
+                <div className={styles.name}>{deviceName || <EmptyData />}</div>
+                {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
+              </div>
+            </Description>
+          ) : (
+            <Description term="回路号">
+              <div className={styles.nameWrapper}>
+                <div className={styles.name}>{loopNumber || partNumber ? `${loopNumber ? `${loopNumber}回路` : ''}${partNumber ? `${partNumber}号` : ''}` : <EmptyData />}</div>
+                {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
+              </div>
+            </Description>
+          )}
+          {isHost && isFinished && (
+            <Description term="部件类型">
+              {unitTypeName || <EmptyData />}
+            </Description>
+          )}
           <Description term="监测类型">
             {reportTypeName || <EmptyData />}
           </Description>
@@ -309,56 +358,58 @@ export default class AlarmWorkOrderDetail extends Component {
 
     return (
       <Card className={styles.card} title={<Fragment>消息通知<span className={styles.total}>（共{(messageList || []).length}条）</span></Fragment>}>
-        <Collapse className={styles.collapse} bordered={false} activeKey={collapseActiveKey} onChange={this.handleCollapseChange}>
-          {messageList && messageList.length ? messageList.map(({ msg_id, add_time, msg_content, acceptUserList }) => {
-            const { content, readCount, unreadCount } = acceptUserList && acceptUserList.length ? acceptUserList.reduce((result, { accept_user_id, accept_user_name, accept_user_phone, status }) => {
-              if (+status) {
-                result.unreadCount += 1;
-              } else {
-                result.readCount += 1;
-              }
-              result.content.push((
-                <Col span={6} key={accept_user_id}>
-                  <div className={styles.receiverWrapper}>
-                    <Avatar className={styles.avatar}>
-                      {accept_user_name[0]}
-                    </Avatar>
-                    <div className={styles.receiverInfoWrapper}>
-                      <div className={styles.receiverInfo}>
-                        <div className={styles.receiverName}>{accept_user_name}</div>
-                        <div className={styles.receiverPhone}>{accept_user_phone}</div>
+        {messageList && messageList.length ? (
+          <Collapse className={styles.collapse} bordered={false} activeKey={collapseActiveKey} onChange={this.handleCollapseChange}>
+            {messageList.map(({ msg_id, add_time, msg_content, acceptUserList }) => {
+              const { content, readCount, unreadCount } = acceptUserList && acceptUserList.length ? acceptUserList.reduce((result, { accept_user_id, accept_user_name, accept_user_phone, status }) => {
+                if (+status) {
+                  result.unreadCount += 1;
+                } else {
+                  result.readCount += 1;
+                }
+                result.content.push((
+                  <Col span={6} key={accept_user_id}>
+                    <div className={styles.receiverWrapper}>
+                      <Avatar className={styles.avatar}>
+                        {accept_user_name[0]}
+                      </Avatar>
+                      <div className={styles.receiverInfoWrapper}>
+                        <div className={styles.receiverInfo}>
+                          <div className={styles.receiverName}>{accept_user_name}</div>
+                          <div className={styles.receiverPhone}>{accept_user_phone}</div>
+                        </div>
+                        <div className={styles.receiverStatus}>{`站内信${+status ? '未读' : '已读'}`}</div>
                       </div>
-                      <div className={styles.receiverStatus}>{`站内信${+status ? '未读' : '已读'}`}</div>
                     </div>
+                  </Col>
+                ));
+                return result;
+              }, {
+                content: [],
+                readCount: 0,
+                unreadCount: 0,
+              }) : {
+                content: <Empty />,
+                readCount: 0,
+                unreadCount: 0,
+              };
+              return (
+                <Panel header={
+                  <div className={styles.message}>
+                    <div className={styles.messageLeft}>{moment(add_time).format(DEFAULT_FORMAT)}&nbsp;&nbsp;{msg_content}</div>
+                    <div className={styles.messageRight}>站内信：{`${readCount}人已读，${unreadCount}人未读`}</div>
                   </div>
-                </Col>
-              ));
-              return result;
-            }, {
-              content: [],
-              readCount: 0,
-              unreadCount: 0,
-            }) : {
-              content: <Empty />,
-              readCount: 0,
-              unreadCount: 0,
-            };
-            return (
-              <Panel header={
-                <div className={styles.message}>
-                  <div className={styles.messageLeft}>{moment(add_time).format(DEFAULT_FORMAT)}&nbsp;&nbsp;{msg_content}</div>
-                  <div className={styles.messageRight}>站内信：{`${readCount}人已读，${unreadCount}人未读`}</div>
-                </div>
-              } key={msg_id}>
-                <Row gutter={24} className={styles.row}>
-                  {content}
-                </Row>
-              </Panel>
-            );
-          }) : (
-            <Empty />
-          )}
-        </Collapse>
+                } key={msg_id}>
+                  <Row gutter={24} className={styles.row}>
+                    {content}
+                  </Row>
+                </Panel>
+              );
+            })}
+          </Collapse>
+        ) : (
+          <Empty />
+        )}
       </Card>
     );
   }
@@ -384,7 +435,7 @@ export default class AlarmWorkOrderDetail extends Component {
 
     return (
       <NewVideoPlay
-        style={{ zIndex: 9999 }}
+        style={{ zIndex: 9999, position: 'fixed' }}
         videoList={videoList}
         visible={videoVisible}
         showList={true}

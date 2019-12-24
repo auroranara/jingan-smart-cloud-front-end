@@ -405,7 +405,6 @@ export default class Map extends PureComponent {
 
     // 地图加载完成事件
     map.on('loadComplete', () => {
-      console.log('地图加载完成！');
       map.tiltAngle = 50;
       map.rotateAngle = 60;
       map.mapScaleLevel = 21;
@@ -452,7 +451,7 @@ export default class Map extends PureComponent {
       this.addPolygon(polygon4, COLOR.blue);
       this.addPolygon(polygon5, COLOR.yellow);
       this.addPolygon(polygon6, COLOR.orange); // 厂房装置区
-      console.log('getDatasByAlias', map.getDatasByAlias(1, 'model'));
+      // console.log('getDatasByAlias', map.getDatasByAlias(1, 'model'));
       // storeModels
       const models = map.getDatasByAlias(1, 'model');
       models.forEach(item => {

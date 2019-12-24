@@ -5,7 +5,7 @@ import moment from 'moment';
 import { getToken } from 'utils/authority';
 import { Card, Form, message, Upload, Button, Icon, Input, Cascader } from 'antd';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import { getFileList, getImageSize } from '../../BaseInfo/utils';
+import { getFileList, getImageSize } from '@/pages/BaseInfo/utils';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST, LIST_URL } from './utils';

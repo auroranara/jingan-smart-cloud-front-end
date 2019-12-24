@@ -108,9 +108,11 @@ export const filterBigPlatform = (array, model) => {
     // 处理路径path
     if (['electricityMonitor', 'gas', 'smoke'].includes(name)) {
       item.path = `${path}${grids.length ? grids[0].value : 'index'}`
+    } else if (['chemical'].includes(name)) {
+      item.path = path + (companyId || 'DccBRhlrSiu9gMV7fmvizw'); // temp
     } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
       item.path = path + (companyId || 'index');
-    } else if (['governmentSafety', 'newFireControl', 'chemical'].includes(name)) {
+    } else if (['governmentSafety', 'newFireControl'].includes(name)) {
       item.path = path + 'index';
     } else item.path = path;
 

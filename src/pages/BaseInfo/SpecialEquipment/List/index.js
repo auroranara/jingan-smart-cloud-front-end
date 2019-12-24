@@ -428,6 +428,7 @@ export default class SpecialEquipmentList extends PureComponent {
         key: 'certificateNumber',
         align: 'center',
         width: 200,
+        render: val => val || '-',
       },
       {
         title: '有效期至',
@@ -436,28 +437,19 @@ export default class SpecialEquipmentList extends PureComponent {
         align: 'center',
         width: 250,
         render: (endDate, row) => {
-          // const { endDate } = row;
+          const { paststatus } = row;
           return endDate ? (
             <div>
               {/* <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
                 {val && ['未到期', '即将到期', '已过期'][+val]}
               </div> */}
-              <div>{endDate && moment(endDate).format('YYYY年MM月DD日')}</div>
+              {paststatus !== '0' && (
+                <div style={{ color: getColorVal(paststatus) }}>{paststatusVal[paststatus]}</div>
+              )}
+              <div>{moment(endDate).format('YYYY年MM月DD日')}</div>
             </div>
-          ) : '-';
-        },
-      },
-      {
-        title: '有效期状态',
-        dataIndex: 'paststatus',
-        key: 'paststatus',
-        align: 'center',
-        width: 120,
-        render: (status, { endDate }) => {
-          return (
-            <span style={{ color: getColorVal(status) }}>
-              {endDate ? paststatusVal[status] : '-'}
-            </span>
+          ) : (
+            '-'
           );
         },
       },
@@ -469,6 +461,22 @@ export default class SpecialEquipmentList extends PureComponent {
         width: 120,
         render: (val, row) => {
           return 0;
+        },
+      },
+      {
+        title: '检验报告详情',
+        dataIndex: 'detectReportFile',
+        key: 'detectReportFile',
+        align: 'center',
+        width: 120,
+        render: (val, row) => {
+          if (val.length === 0) return '-';
+          const { fileName, webUrl, id } = val[0];
+          return (
+            <a href={webUrl} target="_blank" rel="noopener noreferrer">
+              检验报告
+            </a>
+          );
         },
       },
       {

@@ -14,16 +14,30 @@ import {
   Tooltip,
   Icon,
   Cascader,
+  Upload,
 } from 'antd';
 import { connect } from 'dva';
+import { getToken } from 'utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import moment from 'moment';
 import { AuthButton } from '@/utils/customAuth';
+import { getFileList } from '@/pages/BaseInfo/utils';
 import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import codesMap from '@/utils/codes';
 
+// 上传文件地址
+const uploadAction = '/acloud_new/v2/uploadFile';
+// 上传文件夹
+const folder = 'emergency';
+const defaultUploadProps = {
+  name: 'files',
+  data: { folder },
+  multiple: true,
+  action: uploadAction,
+  headers: { 'JA-Token': getToken() },
+};
 const FormItem = Form.Item;
 const Option = Select.Option;
 /* root下的div */
@@ -74,6 +88,7 @@ export default class SpecialEquipment extends PureComponent {
       imgIdCurrent: '',
       code: '',
       userSettingVisible: false,
+      fileList: [],
     };
   }
 
@@ -123,6 +138,10 @@ export default class SpecialEquipment extends PureComponent {
             location,
             paststatus, //到期状态  0：未到期 1：即将到期 2：已过期
             pointFixInfoList,
+            registrationNumber,
+            detectUnit,
+            detectReport,
+            detectReportFile,
           },
         ],
       } = res.data;
@@ -145,6 +164,9 @@ export default class SpecialEquipment extends PureComponent {
         usePeriod: usePeriod || undefined, //使用期限
         locationType,
         paststatus, //到期状态  0：未到期 1：即将到期 2：已过期
+        registrationNumber,
+        detectUnit,
+        detectReport,
       });
       this.fetchModel({ ...brandPayload, brand });
       if (unitType !== 4) {
@@ -159,6 +181,14 @@ export default class SpecialEquipment extends PureComponent {
           code,
           pointFixInfoList,
           userSettingVisible: locationType === 1,
+          fileList: detectReportFile.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+            uid: id || index,
+            fileName,
+            status: 'done',
+            name: fileName,
+            url: webUrl,
+            dbUrl,
+          })),
         },
         () => {
           setFieldsValue({
@@ -196,7 +226,7 @@ export default class SpecialEquipment extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { code, pointFixInfoList } = this.state;
+    const { code, pointFixInfoList, fileList } = this.state;
 
     validateFields((error, formData) => {
       if (!error) {
@@ -208,6 +238,14 @@ export default class SpecialEquipment extends PureComponent {
           area: +formData.locationType === 1 ? formData.area : '',
           pointFixInfoList,
           usePeriod: formData.usePeriod || 0,
+          detectReport: JSON.stringify(
+            fileList.map(({ name, url, dbUrl }) => ({
+              fileName: name,
+              webUrl: url,
+              dbUrl,
+              name,
+            }))
+          ),
         };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
@@ -420,10 +458,7 @@ export default class SpecialEquipment extends PureComponent {
    * 跳转到建筑物管理页面
    */
   jumpToBuildingManagement = () => {
-    const win = window.open(
-      `${window.publicPath}#/base-info/buildings-info/list`,
-      '_blank'
-    );
+    const win = window.open(`${window.publicPath}#/base-info/buildings-info/list`, '_blank');
     win.focus();
   };
 
@@ -477,13 +512,36 @@ export default class SpecialEquipment extends PureComponent {
     this.handleRefreshBuilding();
   };
 
+  handleFileChange = ({ fileList, file }) => {
+    if (file.status === 'done') {
+      let fList = [...fileList];
+      if (file.response.code === 200) {
+        // if (fList.length > 1) fList.splice(0, 1);
+        message.success('上传成功');
+      } else {
+        message.error('上传失败');
+        fList.splice(-1, 1);
+      }
+      fList = getFileList(fList);
+      this.setState({ fileList: fList, uploading: false });
+    } else {
+      if (file.status === 'uploading') this.setState({ uploading: true });
+      // 其他情况，直接用原文件数组
+      fileList = getFileList(fileList);
+      this.setState({ fileList });
+    }
+    return fileList;
+  };
+
   /**
    * 渲染表单
    */
-  renderForm = (isDetail) => {
+  renderForm = isDetail => {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form,
       form: { getFieldDecorator, getFieldsValue },
       personnelPosition: {
@@ -513,6 +571,7 @@ export default class SpecialEquipment extends PureComponent {
       imgIdCurrent,
       code,
       userSettingVisible,
+      fileList,
     } = this.state;
     const companyId = selectedCompany.id;
     const { locationType, brand } = getFieldsValue();
@@ -662,6 +721,26 @@ export default class SpecialEquipment extends PureComponent {
               <Input placeholder="请输入使用证编号" {...itemStyles} />
             )}
           </FormItem>
+          <FormItem label="注册登记号" {...formItemLayout}>
+            {getFieldDecorator('registrationNumber', { getValueFromEvent: this.handleTrim })(
+              <Input placeholder="请输入注册登记号" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="检测单位" {...formItemLayout}>
+            {getFieldDecorator('detectUnit', { getValueFromEvent: this.handleTrim })(
+              <Input placeholder="请输入检测单位" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="检验报告" {...formItemLayout}>
+            {getFieldDecorator('detectReport')(
+              <Upload {...defaultUploadProps} fileList={fileList} onChange={this.handleFileChange}>
+                <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <div style={{ marginTop: '8px' }}>点击上传</div>
+                </Button>
+              </Upload>
+            )}
+          </FormItem>
           <FormItem label="使用部位" {...formItemLayout}>
             {getFieldDecorator('usePart', { getValueFromEvent: this.handleTrim })(
               <Input placeholder="请输入使用部位" {...itemStyles} />
@@ -728,86 +807,89 @@ export default class SpecialEquipment extends PureComponent {
               </Radio.Group>
             )}
           </FormItem>
-          {companyId && !userSettingVisible ? (
-            <Fragment>
-              <FormItem label="所属建筑物楼层" {...formItemLayout}>
-                {getFieldDecorator('buildingFloor', {
-                  rules: [{ required: true, validator: this.validateBuildingFloor }],
-                })(
-                  <Fragment>
-                    <Col span={5} style={{ marginRight: '10px' }}>
-                      {getFieldDecorator('buildingId')(
-                        <Select
-                          placeholder="建筑物"
-                          style={{ width: '100%' }}
-                          onChange={this.handleSelectBuilding}
-                          allowClear
+          {companyId &&
+            locationType === 0 && (
+              <Fragment>
+                <FormItem label="所属建筑物楼层" {...formItemLayout}>
+                  {getFieldDecorator('buildingFloor', {
+                    rules: [{ required: true, validator: this.validateBuildingFloor }],
+                  })(
+                    <Fragment>
+                      <Col span={5} style={{ marginRight: '10px' }}>
+                        {getFieldDecorator('buildingId')(
+                          <Select
+                            placeholder="建筑物"
+                            style={{ width: '100%' }}
+                            onChange={this.handleSelectBuilding}
+                            allowClear
+                          >
+                            {buildings.map((item, i) => (
+                              <Select.Option key={i} value={item.id}>
+                                {item.buildingName}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Col>
+                      <Col span={5} style={{ marginRight: '10px' }}>
+                        {getFieldDecorator('floorId')(
+                          <Select
+                            placeholder="楼层"
+                            style={{ width: '100%' }}
+                            onChange={() => this.changeFlatPicBuildingNum()}
+                            allowClear
+                          >
+                            {floors.map((item, i) => (
+                              <Select.Option key={i} value={item.id}>
+                                {item.floorName}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Col>
+                      <Tooltip title="刷新建筑物楼层">
+                        <Button
+                          onClick={() => this.handleRefreshBuilding(true)}
+                          style={{ marginRight: 10 }}
                         >
-                          {buildings.map((item, i) => (
-                            <Select.Option key={i} value={item.id}>
-                              {item.buildingName}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      )}
-                    </Col>
-                    <Col span={5} style={{ marginRight: '10px' }}>
-                      {getFieldDecorator('floorId')(
-                        <Select
-                          placeholder="楼层"
-                          style={{ width: '100%' }}
-                          onChange={() => this.changeFlatPicBuildingNum()}
-                          allowClear
-                        >
-                          {floors.map((item, i) => (
-                            <Select.Option key={i} value={item.id}>
-                              {item.floorName}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      )}
-                    </Col>
-                    <Tooltip title="刷新建筑物楼层">
-                      <Button
-                        onClick={() => this.handleRefreshBuilding(true)}
-                        style={{ marginRight: 10 }}
+                          <Icon type="reload" />
+                        </Button>
+                      </Tooltip>
+                      <AuthButton
+                        onClick={this.jumpToBuildingManagement}
+                        code={codesMap.company.buildingsInfo.add}
+                        type="primary"
                       >
-                        <Icon type="reload" />
-                      </Button>
-                    </Tooltip>
-                    <AuthButton
-                      onClick={this.jumpToBuildingManagement}
-                      code={codesMap.company.buildingsInfo.add}
-                      type="primary"
-                    >
-                      新增建筑物楼层
-                    </AuthButton>
-                  </Fragment>
-                )}
-              </FormItem>
-              <FormItem label="详细位置" {...formItemLayout}>
-                {getFieldDecorator('location', {
-                  getValueFromEvent: this.handleTrim,
-                  // initialValue: id ? detail.location : undefined,
-                })(<Input placeholder="请输入详细位置" {...itemStyles} />)}
-              </FormItem>
-            </Fragment>
-          ) : (
-            <Fragment>
-              <FormItem label="所在区域" {...formItemLayout}>
-                {getFieldDecorator('area', {
-                  getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入所在区域' }],
-                })(<Input placeholder="请输入所在区域" {...itemStyles} />)}
-              </FormItem>
-              <FormItem label="位置详情" {...formItemLayout}>
-                {getFieldDecorator('location', {
-                  getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入位置详情' }],
-                })(<Input placeholder="请输入位置详情" {...itemStyles} />)}
-              </FormItem>
-            </Fragment>
-          )}
+                        新增建筑物楼层
+                      </AuthButton>
+                    </Fragment>
+                  )}
+                </FormItem>
+                <FormItem label="详细位置" {...formItemLayout}>
+                  {getFieldDecorator('location', {
+                    getValueFromEvent: this.handleTrim,
+                    // initialValue: id ? detail.location : undefined,
+                  })(<Input placeholder="请输入详细位置" {...itemStyles} />)}
+                </FormItem>
+              </Fragment>
+            )}
+          {companyId &&
+            userSettingVisible && (
+              <Fragment>
+                <FormItem label="所在区域" {...formItemLayout}>
+                  {getFieldDecorator('area', {
+                    getValueFromEvent: this.handleTrim,
+                    rules: [{ required: true, message: '请输入所在区域' }],
+                  })(<Input placeholder="请输入所在区域" {...itemStyles} />)}
+                </FormItem>
+                <FormItem label="位置详情" {...formItemLayout}>
+                  {getFieldDecorator('location', {
+                    getValueFromEvent: this.handleTrim,
+                    rules: [{ required: true, message: '请输入位置详情' }],
+                  })(<Input placeholder="请输入位置详情" {...itemStyles} />)}
+                </FormItem>
+              </Fragment>
+            )}
           {companyId && (
             <FormItem label="平面图标注" {...formItemLayout}>
               <Button
@@ -826,7 +908,11 @@ export default class SpecialEquipment extends PureComponent {
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
           {isDetail ? (
-            <Button type="primary" style={{ marginLeft: '10px' }} onClick={e => router.push(`/facility-management/special-equipment/edit/${id}`)}>
+            <Button
+              type="primary"
+              style={{ marginLeft: '10px' }}
+              onClick={e => router.push(`/facility-management/special-equipment/edit/${id}`)}
+            >
               编辑
             </Button>
           ) : (
@@ -849,7 +935,7 @@ export default class SpecialEquipment extends PureComponent {
     const { companyModalVisible } = this.state;
 
     const isDetail = name === 'detail';
-    const title = id ? isDetail ? '详情' : '编辑' : '新增';
+    const title = id ? (isDetail ? '详情' : '编辑') : '新增';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '设备设施管理', name: '设备设施管理' },

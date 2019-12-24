@@ -3,13 +3,14 @@ import { Input } from 'antd';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
+import Ellipsis from '@/components/Ellipsis';
 import TablePage from '@/templates/TablePage';
 import moment from 'moment';
 
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const TYPES = [
   { key: '0', value: '预警' },
-  { key: '1', value: '告警' },
+  { key: '1', value: '报警' },
   { key: '2', value: '失联' },
   { key: '3', value: '故障' },
   { key: '4', value: '报警解除' },
@@ -25,12 +26,16 @@ const TYPE_MAPPER = [
   { statusType: 2 },
   { statusType: 3 },
 ];
-const GET_TYPE_NAME = ({ statusType, warnLevel }) => {
+const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
   if (+statusType === -1) {
     if (+warnLevel === 1) {
       return '预警';
     } else if (+warnLevel === 2) {
-      return '告警';
+      if (+fixType === 5) {
+        return '火警';
+      } else {
+        return '告警';
+      }
     }
   } else if (+statusType === -2) {
     return '失联';
@@ -139,6 +144,19 @@ export default class AlarmMessage extends Component {
       render: (value) => (
         <div style={{ textAlign: 'left', whiteSpace: 'pre-line' }}>
           {value}
+        </div>
+      ),
+      align: 'center',
+    },
+    {
+      title: '接收人',
+      dataIndex: 'mailAcceptUsers',
+      render: (value) => (
+        <div style={{ textAlign: 'left' }}>
+          站内信：
+          <Ellipsis length={20} tooltip>
+            {value && value.map(({ accept_user_name, status }) => `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`).join('，')}
+          </Ellipsis>
         </div>
       ),
       align: 'center',
