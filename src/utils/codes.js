@@ -405,6 +405,13 @@ export default {
       delete: 'riskControl.gridPointManage.delete',
       detailView: 'riskControl.gridPointManage.detailView',
     },
+    fourColorImage: {
+      listView: 'riskControl.fourColorImage.listView',
+      view: 'riskControl.fourColorImage.view',
+      add: 'riskControl.fourColorImage.add',
+      edit: 'riskControl.fourColorImage.edit',
+      delete: 'riskControl.fourColorImage.delete',
+    },
   },
 
   /** 安防管理 */

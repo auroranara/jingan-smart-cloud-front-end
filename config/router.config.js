@@ -1275,7 +1275,7 @@ module.exports = env => {
                   name: 'edit',
                   code: 'riskControl.fourColorImage.edit',
                   path: '/risk-control/four-color-image/edit/:id',
-                  // "component": "./RiskControl/FourColorImage/Edit",
+                  component: "./RiskControl/FourColorImage/Edit",
                 },
               ],
             },

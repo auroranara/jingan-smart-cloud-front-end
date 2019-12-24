@@ -58,6 +58,7 @@ export default class Map extends React.Component {
       init2D: true, //初始化2D模式
       groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
       position: fengMap.controlPositon.LEFT_TOP,
+      offset: { x: 0, y: 40 },
       //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
       clickCallBack: function(type, value) {
         console.log(type, value);
@@ -125,6 +126,7 @@ export default class Map extends React.Component {
       .map(model => model.setColor(color));
     // console.log(models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points)));
   }
+
   //绘制线图层
   drawLines(
     points,
@@ -133,7 +135,6 @@ export default class Map extends React.Component {
       lineWidth: 4,
       //设置线的透明度
       alpha: 0.8,
-
       // offsetHeight 默认的高度为 1, (离楼板1米的高度)
       height: defaultPolygonMarkerHeight,
       //设置线的类型为导航线
@@ -150,6 +151,7 @@ export default class Map extends React.Component {
     line.addSegment(seg);
     var lineObject = map.drawLineMark(line, lineStyle);
     naviLines.push(lineObject);
+    this.props.getPoints(points);
   }
 
   render() {

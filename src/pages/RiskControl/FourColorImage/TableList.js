@@ -1,143 +1,307 @@
 import React, { Fragment } from 'react';
-import { Modal, Button, Row, Col, Table, Card, Divider, Tag } from 'antd';
+import { connect } from 'dva';
+import { Form, Button, Row, Col, Table, Card, Divider, message, Input } from 'antd';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+import { AuthA, AuthPopConfirm } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+
 import styles from './TableList.less';
 import Map from './Map';
 
-const columns = [
+const title = '风险四色图管理';
+
+//面包屑
+const breadcrumbList = [
   {
-    title: '区域名称',
-    dataIndex: 'name',
-    key: 'name',
-    render: text => <a>{text}</a>,
+    title: '首页',
+    name: '首页',
+    href: '/',
   },
   {
-    title: '负责人',
-    dataIndex: 'age',
-    key: 'age',
+    title: '风险分级管控',
+    name: '风险分级管控',
   },
   {
-    title: '风险分级',
-    dataIndex: 'address',
-    key: 'address',
-  },
-  {
-    title: '复评周期',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: tags => (
-      <span>
-        {tags.map(tag => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </span>
-    ),
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    render: (text, record) => (
-      <span>
-        <a>编辑</a>
-        <Divider type="vertical" />
-        <a>删除</a>
-      </span>
-    ),
+    title,
+    name: '风险四色图管理',
   },
 ];
 
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
+// 权限
+const {
+  riskControl: {
+    fourColorImage: { add: addCode, edit: editCode, delete: deleteCode },
   },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
+} = codes;
 
+const getRiskLevel = {
+  1: '红',
+  2: '橙',
+  3: '黄',
+  4: '蓝',
+};
+
+const getRiskColor = {
+  1: 'rgb(252, 31, 2)',
+  2: 'rgb(237, 126, 17)',
+  3: 'rgb(251, 247, 24)',
+  4: 'rgb(30, 96, 255)',
+};
+@Form.create()
+@connect(({ resourceManagement, fourColorImage, user, loading }) => ({
+  fourColorImage,
+  resourceManagement,
+  user,
+  loading: loading.models.fourColorImage,
+  companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
+}))
 export default class TableList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isDrawing: false,
       isReset: false,
+      company: undefined, // 左上角选择的单位信息
+      visible: false, // 控制选择单位弹窗显示
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+    const payload = {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    this.fetchList({ ...payload, companyId });
+  }
 
-  renderDrawButton = () => {
-    const { isDrawing } = this.state;
-    return (
-      <Fragment>
-        <Button
-          onClick={() => {
-            this.setState({ isDrawing: !isDrawing });
-          }}
-        >
-          {!isDrawing ? '开始画' : '结束画'}
-        </Button>
-        <Button
-          style={{ marginLeft: 10 }}
-          onClick={() => {
-            this.setState({ isReset: true });
-          }}
-        >
-          重置
-        </Button>
-      </Fragment>
-    );
+  // 获取列表
+  fetchList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fourColorImage/fetchList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+  };
+
+  handlePageChange = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+
+    const payload = {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    dispatch({
+      type: 'fourColorImage/fetchList',
+      payload: {
+        ...payload,
+        pageSize,
+        pageNum,
+      },
+    });
+  };
+
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fourColorImage/fetchDelete',
+      payload: { ids: id },
+      success: () => {
+        this.fetchList();
+        message.success('删除成功！');
+      },
+      error: () => {
+        message.error('删除失败!');
+      },
+    });
+  };
+
+  // 获取单位列表
+  fetchCompanyList = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'resourceManagement/fetchCompanyList', ...action });
+  };
+
+  handleComapnyModal = () => {
+    this.fetchCompanyList({
+      payload: { pageNum: 1, pageSize: 10 },
+      callback: () => {
+        this.setState({ visible: true });
+      },
+    });
+  };
+
+  handleSelectCompany = company => {
+    const { dispatch } = this.props;
+    this.setState({ company, visible: false });
+    // 获取列表
+    this.fetchList({ companyId: company.id });
+    // 保存企业信息，方便返回该页面显示
+    dispatch({
+      type: 'resourceManagement/saveSearchInfo',
+      payload: company,
+    });
   };
 
   render() {
-    const { isDrawing, isReset } = this.state;
-    return (
-      <div>
-        <Row gutter={[8, 8]}>
-          <Col span={12}>
-            <Card title="地图" bordered={false}>
-              {this.renderDrawButton()}
-              <Map isDrawing={isDrawing} isReset={isReset} />
-            </Card>
-          </Col>
-          <Col span={12}>
-            <Card
-              title="区域列表"
-              bordered={false}
-              className={styles.cardList}
-              extra={
-                <Button type="primary" href={'#/risk-control/four-color-image/add'}>
-                  新增
-                </Button>
-              }
+    const {
+      loading,
+      companyLoading,
+      resourceManagement: { companyList },
+      fourColorImage: {
+        data: {
+          list = [],
+          pagination: { pageNum, pageSize, total },
+        },
+      },
+      user: {
+        currentUser: { unitType },
+      },
+    } = this.props;
+    const { isDrawing, company = {}, visible } = this.state;
+
+    const columns = [
+      {
+        title: '区域名称',
+        dataIndex: 'zoneName',
+        key: 'zoneName',
+        align: 'center',
+        // render: text => <a>{text}</a>,
+      },
+      {
+        title: '负责人',
+        dataIndex: 'zoneCharger',
+        key: 'zoneCharger',
+        align: 'center',
+      },
+      {
+        title: '风险分级',
+        dataIndex: 'zoneLevel',
+        key: 'zoneLevel',
+        align: 'center',
+        render: val => {
+          return <span style={{ color: getRiskColor[val] }}>{getRiskLevel[val]}</span>;
+        },
+      },
+      {
+        title: '复评周期',
+        key: 'checkCircle',
+        dataIndex: 'checkCircle',
+        align: 'center',
+      },
+      {
+        title: '操作',
+        key: 'action',
+        align: 'center',
+        render: (val, record) => (
+          <span>
+            <AuthA code={editCode} href={`#/risk-control/four-color-image/edit/${record.id}`}>
+              编辑
+            </AuthA>
+            <Divider type="vertical" />
+            <AuthPopConfirm
+              title="确认要删除数据吗？"
+              code={deleteCode}
+              onConfirm={() => this.handleDelete(record.id)}
             >
-              <Table columns={columns} dataSource={data} />
-            </Card>
-          </Col>
-        </Row>
-      </div>
+              删除
+            </AuthPopConfirm>
+          </span>
+        ),
+      },
+    ];
+
+    return (
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+        content={
+          unitType !== 4 && (
+            <Fragment>
+              <Input
+                disabled
+                style={{ width: '300px' }}
+                placeholder={'请选择单位'}
+                value={company.name}
+              />
+              <Button
+                type="primary"
+                style={{ marginLeft: '5px' }}
+                onClick={this.handleComapnyModal}
+              >
+                选择单位
+              </Button>
+            </Fragment>
+          )
+        }
+      >
+        {company.id ? (
+          <Row gutter={[8, 8]}>
+            <Col span={12}>
+              <Card title="地图" bordered={false}>
+                {/* {this.renderDrawButton()} */}
+                <Map isDrawing={isDrawing} />
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card
+                title="区域列表"
+                bordered={false}
+                className={styles.cardList}
+                extra={
+                  <Button
+                    type="primary"
+                    disabled={!addCode}
+                    href={'#/risk-control/four-color-image/add'}
+                  >
+                    新增
+                  </Button>
+                }
+              >
+                <Table
+                  rowKey="id"
+                  loading={loading}
+                  columns={columns}
+                  dataSource={list}
+                  pagination={{
+                    current: pageNum,
+                    pageSize,
+                    total,
+                    showQuickJumper: true,
+                    showSizeChanger: true,
+                    pageSizeOptions: ['5', '10', '15', '20'],
+                    onChange: this.handlePageChange,
+                    onShowSizeChange: (num, size) => {
+                      this.handlePageChange(1, size);
+                    },
+                  }}
+                />
+              </Card>
+            </Col>
+          </Row>
+        ) : (
+          <div style={{ textAlign: 'center' }}>请先选择单位</div>
+        )}
+
+        <CompanyModal
+          title="选择单位"
+          loading={companyLoading}
+          visible={visible}
+          modal={companyList}
+          fetch={this.fetchCompanyList}
+          onSelect={this.handleSelectCompany}
+          onClose={this.handleModalCLose}
+        />
+      </PageHeaderLayout>
     );
   }
 }
