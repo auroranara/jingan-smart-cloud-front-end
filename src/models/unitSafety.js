@@ -53,14 +53,18 @@ import {
   getHumiturePointTrend,
   // 获取隐患记录
   getHiddenDangerRecordList,
-} from '../services/unitSafety';
+  // 获取标准及措施列表
+  fetchStandardsAndMeasuresList,
+  // 获取点位检查标准
+  fetchpointInspectionStandards,
+} from '@/services/unitSafety';
 import moment from 'moment';
 import { message } from 'antd';
-function error(msg) {
+function error (msg) {
   message.error(msg);
 }
 
-function handleRiskList(response) {
+function handleRiskList (response) {
   if (!response) return [];
 
   const result = ['supervision', 'red', 'orange', 'yellow', 'blue', 'notRated']
@@ -77,7 +81,7 @@ function handleRiskList(response) {
 const WATER_SYSTEM = ['消火栓系统', '喷淋系统', '水池/水箱'];
 // 消防主机
 const FIRE_ENGINE = '消防主机监测';
-function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
+function handleMonitorList ({ lossDevice, abnormalDevice, faultDevice }) {
   const alarm = Array.isArray(abnormalDevice)
     ? abnormalDevice.map(
       ({ deviceId, deviceName, relationDeviceId, area, location, unormalParams, typeName, statusTime, boxNo, componentType, loopNumber, partNumber }) => ({
@@ -137,85 +141,85 @@ function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
   return { alarm, loss }
 }
 
-function handleSafeList(list) {
+function handleSafeList (list) {
   const now = moment().startOf('day');
   const result = list.reduce((prev, { key, list }) => {
     if (!Array.isArray(list)) {
       return prev;
     }
-    switch(key) {
+    switch (key) {
       case 'special_equipment': // 特种设备
-      list.forEach(({ recheck_date, data_true_name, special_equipment_id }) => {
-        const expiredDays = now.diff(recheck_date, 'days');
-        if (expiredDays > 0) {
-          prev.push({
-            id: special_equipment_id,
-            infoType: '特种设备',
-            name: data_true_name,
-            expiredType: '检验日期',
-            expireDate: recheck_date,
-            expiredDays,
-          });
-        }
-      });
-      break;
+        list.forEach(({ recheck_date, data_true_name, special_equipment_id }) => {
+          const expiredDays = now.diff(recheck_date, 'days');
+          if (expiredDays > 0) {
+            prev.push({
+              id: special_equipment_id,
+              infoType: '特种设备',
+              name: data_true_name,
+              expiredType: '检验日期',
+              expireDate: recheck_date,
+              expiredDays,
+            });
+          }
+        });
+        break;
       case 'emergency_material': // 应急物资
-      list.forEach(({ end_time, emergency_equipment_name, emergency_id }) => {
-        const expiredDays = now.diff(end_time, 'days');
-        if (expiredDays > 0) {
-          prev.push({
-            id: emergency_id,
-            infoType: '应急物资',
-            name: emergency_equipment_name,
-            expiredType: '检验日期',
-            expireDate: end_time,
-            expiredDays,
-          });
-        }
-      });
-      break;
+        list.forEach(({ end_time, emergency_equipment_name, emergency_id }) => {
+          const expiredDays = now.diff(end_time, 'days');
+          if (expiredDays > 0) {
+            prev.push({
+              id: emergency_id,
+              infoType: '应急物资',
+              name: emergency_equipment_name,
+              expiredType: '检验日期',
+              expireDate: end_time,
+              expiredDays,
+            });
+          }
+        });
+        break;
       case 'special_people': // 特种作业操作证人员
-      list.forEach(({ endDate, nextDate, name, id }) => {
-        const expiredDays = now.diff(endDate, 'days');
-        const expiredDays2 = now.diff(nextDate, 'days');
-        if (expiredDays > 0) {
-          prev.push({
-            id,
-            infoType: '特种作业操作证人员',
-            name,
-            expiredType: '有效期',
-            expireDate: endDate,
-            expiredDays,
-          });
-        } else if (expiredDays2 > 0) {
-          prev.push({
-            id,
-            infoType: '特种作业操作证人员',
-            name,
-            expiredType: '复审日期',
-            expireDate: nextDate,
-            expiredDays: expiredDays2,
-          });
-        }
-      });
-      break;
+        list.forEach(({ endDate, nextDate, name, id }) => {
+          const expiredDays = now.diff(endDate, 'days');
+          const expiredDays2 = now.diff(nextDate, 'days');
+          if (expiredDays > 0) {
+            prev.push({
+              id,
+              infoType: '特种作业操作证人员',
+              name,
+              expiredType: '有效期',
+              expireDate: endDate,
+              expiredDays,
+            });
+          } else if (expiredDays2 > 0) {
+            prev.push({
+              id,
+              infoType: '特种作业操作证人员',
+              name,
+              expiredType: '复审日期',
+              expireDate: nextDate,
+              expiredDays: expiredDays2,
+            });
+          }
+        });
+        break;
       case 'company_training': // 企业安全培训信息
-      list.forEach(({ nextDate, traineeName, id }) => {
-        const expiredDays = now.diff(nextDate, 'days');
-        if (expiredDays > 0) {
-          prev.push({
-            id,
-            infoType: '企业安全培训信息',
-            name: traineeName,
-            expiredType: '培训日期',
-            expireDate: nextDate,
-            expiredDays,
-          });
-        }
-      });
-      break;
+        list.forEach(({ nextDate, traineeName, id }) => {
+          const expiredDays = now.diff(nextDate, 'days');
+          if (expiredDays > 0) {
+            prev.push({
+              id,
+              infoType: '企业安全培训信息',
+              name: traineeName,
+              expiredType: '培训日期',
+              expireDate: nextDate,
+              expiredDays,
+            });
+          }
+        });
+        break;
       default:
-      break;
+        break;
     }
     return prev;
   }, []);
@@ -265,7 +269,7 @@ const formatDynamicMonitorData = list => {
   return data;
 };
 // 判断消防主机状态
-function getFireEngineStatus(label) {
+function getFireEngineStatus (label) {
   if (label.includes('火警')) {
     return 2;
   } else if (label.includes('故障')) {
@@ -277,7 +281,7 @@ function getFireEngineStatus(label) {
   }
 }
 // 格式化设备统计列表
-function formatDeviceCountList(list) {
+function formatDeviceCountList (list) {
   return list.map(({
     deviceId,
     deviceName,
@@ -418,11 +422,16 @@ export default {
     humiturePointTrend: {},
     // 隐患记录
     hiddenDangerRecordList: [],
+    // 标准及措施列表
+    standardsAndMeasuresList: [],
+    // 点位检查标准列表
+    pointInspectionStandardsList: [],
+    itemName: '',
   },
 
   effects: {
     // 获取企业信息
-    *fetchCompanyMessage({ payload, callback }, { call, put }) {
+    *fetchCompanyMessage ({ payload, callback }, { call, put }) {
       const response = yield call(getCompanyMessage, payload);
       const companyMessage = {
         ...response,
@@ -443,7 +452,7 @@ export default {
       }
     },
     // 特种设备统计
-    *fetchSpecialEquipmentCount({ payload, callback }, { call, put }) {
+    *fetchSpecialEquipmentCount ({ payload, callback }, { call, put }) {
       const response = yield call(getSpecialEquipmentCount, payload);
       yield put({
         type: 'save',
@@ -454,7 +463,7 @@ export default {
       }
     },
     // 获取隐患列表
-    *fetchHiddenDangerList({ payload, callback }, { call, put }) {
+    *fetchHiddenDangerList ({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
       const {
         code,
@@ -473,7 +482,7 @@ export default {
       callback && callback(response);
     },
     // 获取隐患列表
-    *fetchDangerList({ payload, callback }, { call, put }) {
+    *fetchDangerList ({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
       const {
         code,
@@ -492,19 +501,19 @@ export default {
       callback && callback(response);
     },
     // 获取视频列表
-    *fetchVideoList({ payload, callback }, { call, put }) {
+    *fetchVideoList ({ payload, callback }, { call, put }) {
       const response = yield call(getVideoList, payload);
       yield put({ type: 'save', payload: { videoList: (response.list || []).filter(({ x_num, y_num }) => x_num && y_num) } });
       if (callback) callback(response.list);
     },
     // 获取视频树
-    *fetchVideoTree({ payload, callback }, { call, put }) {
+    *fetchVideoTree ({ payload, callback }, { call, put }) {
       const response = yield call(fetchVideoTree, payload);
       yield put({ type: 'save', payload: { videoTree: response.list } });
       if (callback) callback(response.list);
     },
     // 获取监控球数据
-    *fetchMonitorData({ payload, callback }, { call, put }) {
+    *fetchMonitorData ({ payload, callback }, { call, put }) {
       const response = yield call(getMonitorData, payload);
       if (response.code === 200) {
         yield put({
@@ -519,7 +528,7 @@ export default {
       }
     },
     // 获取四色风险点
-    *fetchCountDangerLocation({ payload, callback }, { call, put }) {
+    *fetchCountDangerLocation ({ payload, callback }, { call, put }) {
       const response = yield call(getCountDangerLocation, payload);
       const {
         countDangerLocation: [count],
@@ -592,7 +601,7 @@ export default {
       }
     },
     // 巡查人员列表
-    *fetchStaffList({ payload, callback }, { call, put }) {
+    *fetchStaffList ({ payload, callback }, { call, put }) {
       const response = yield call(getStaffList, payload);
       yield put({
         type: 'save',
@@ -603,7 +612,7 @@ export default {
       }
     },
     // 巡查人员列表
-    *fetchStaffRecords({ payload, callback }, { call, put }) {
+    *fetchStaffRecords ({ payload, callback }, { call, put }) {
       const response = yield call(getStaffRecords, payload);
       if (response.code === 200) {
         yield put({
@@ -618,16 +627,18 @@ export default {
       }
     },
     // 安全人员
-    *fetchSafetyOfficer({ payload, callback }, { call, put }) {
+    *fetchSafetyOfficer ({ payload, callback }, { call, put }) {
       const response = yield call(getSafetyOfficer, payload);
       if (response.code === 200) {
         yield put({
           type: 'save',
-          payload: { safetyOfficer: Object.entries(response.data.roleMap || {}).reduce((result, [key, value]) => {
-            result.keyList.push(key);
-            result.valueList.push(value || []);
-            return result;
-          }, { keyList: [], valueList: [] }) },
+          payload: {
+            safetyOfficer: Object.entries(response.data.roleMap || {}).reduce((result, [key, value]) => {
+              result.keyList.push(key);
+              result.valueList.push(value || []);
+              return result;
+            }, { keyList: [], valueList: [] }),
+          },
         });
       }
       if (callback) {
@@ -635,7 +646,7 @@ export default {
       }
     },
     // 获取巡查记录数据
-    *fetchInspectionPointData({ payload, callback }, { call, put }) {
+    *fetchInspectionPointData ({ payload, callback }, { call, put }) {
       const response = yield call(getInspectionPointData, payload);
       if (response.code === 200) {
         yield put({
@@ -650,7 +661,7 @@ export default {
       }
     },
     // 获取巡查记录对应的隐患列表
-    *fetchInspectionRecordData({ payload, callback }, { call, put }) {
+    *fetchInspectionRecordData ({ payload, callback }, { call, put }) {
       const response = yield call(getInspectionPointData, payload);
       if (response.code === 200) {
         yield put({
@@ -665,7 +676,7 @@ export default {
       }
     },
     // 获取安全指数
-    *fetchSafetyIndex({ payload, callback }, { call, put }) {
+    *fetchSafetyIndex ({ payload, callback }, { call, put }) {
       const response = yield call(getSafetyIndex, payload);
       if (response && response.code === 200) {
         const allIndex = response.data || {};
@@ -690,7 +701,7 @@ export default {
       }
     },
     // 获取动态监测
-    *fetchMonitorList({ payload, callback }, { call, put }) {
+    *fetchMonitorList ({ payload, callback }, { call, put }) {
       let response = yield call(getMonitorList, payload);
       response = response || {};
       const { code = 500, data } = response;
@@ -699,7 +710,7 @@ export default {
       if (code === 200) yield put({ type: 'save', payload: { monitorList: handleMonitorList(data || {}) } });
     },
     // 获取安全档案
-    *fetchSafeFiles({ payload, callback }, { call, put }) {
+    *fetchSafeFiles ({ payload, callback }, { call, put }) {
       let response = yield call(getSafeFiles, payload);
       response = response || {};
       const { code = 500, data } = response;
@@ -707,7 +718,7 @@ export default {
         yield put({ type: 'saveSafeFiles', payload: handleSafeList(data.list) });
     },
     // 获取动态监测
-    *fetchDynamicMonitorData({ payload, callback }, { call, put }) {
+    *fetchDynamicMonitorData ({ payload, callback }, { call, put }) {
       let response = yield call(getDynamicMonitorData, payload);
       response = response || {};
       const { code, data } = response;
@@ -720,7 +731,7 @@ export default {
       callback && callback(response);
     },
     // 获取风险点的风险告知卡列表
-    *fetchRiskPointCardList({ payload, callback }, { call, put }) {
+    *fetchRiskPointCardList ({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointCardList, payload);
       if (response.code === 200) {
         yield put({ type: 'saveRiskPointAttr', payload: { cardList: response.data.list } });
@@ -728,7 +739,7 @@ export default {
       callback && callback(response);
     },
     // 获取风险点的隐患列表
-    *fetchRiskPointHiddenDangerList({ payload, callback }, { call, put }) {
+    *fetchRiskPointHiddenDangerList ({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointHiddenDangerList, payload);
       if (response.code === 200) {
         yield put({
@@ -747,7 +758,7 @@ export default {
       callback && callback(response);
     },
     // 获取风险点的巡查列表
-    *fetchRiskPointInspectionList({ payload, callback }, { call, put }) {
+    *fetchRiskPointInspectionList ({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointInspectionList, payload);
       if (response.code === 200) {
         yield put({
@@ -766,7 +777,7 @@ export default {
       callback && callback(response);
     },
     // 获取风险点的隐患统计
-    *fetchRiskPointHiddenDangerCount({ payload, callback }, { call, put }) {
+    *fetchRiskPointHiddenDangerCount ({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointHiddenDangerCount, payload);
       if (response.code === 200) {
         yield put({ type: 'saveRiskPointAttr', payload: { hiddenDangerCount: response.data } });
@@ -774,32 +785,32 @@ export default {
       callback && callback(response);
     },
     // 获取风险点的巡查统计
-    *fetchRiskPointInspectionCount({ payload, callback }, { call, put }) {
+    *fetchRiskPointInspectionCount ({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointInspectionCount, payload);
       if (response.code === 200) {
         yield put({ type: 'saveRiskPointAttr', payload: { inspectionCount: response.data } });
       }
       callback && callback(response);
     },
-    *fetchSafetyCheckList({ payload, callback }, { call, put }) {
+    *fetchSafetyCheckList ({ payload, callback }, { call, put }) {
       const response = yield call(getPoints, payload);
-      const { code=500, data, msg='获取安全巡查数据失败，请稍后重试！' } = response || {};
+      const { code = 500, data, msg = '获取安全巡查数据失败，请稍后重试！' } = response || {};
       if (code === 200) {
         let safetyCheckList = data && data.pointInfo ? data.pointInfo : [];
         safetyCheckList = safetyCheckList
           .filter(({ status }) => +status === 4)
           .map(({ x_mum: x_num, y_mum: y_num, ...point }) => ({ ...point, x_num, y_num }))
           .sort(({ nextCheckDate: a }, { nextCheckDate: b }) => a - b);
-          yield put({
-            type: 'save',
-            payload: { safetyCheckList },
-          });
+        yield put({
+          type: 'save',
+          payload: { safetyCheckList },
+        });
       } else {
         error(msg);
       }
     },
     // 获取点位
-    *fetchPoints({ payload, callback }, { call, put }) {
+    *fetchPoints ({ payload, callback }, { call, put }) {
       const response = yield call(getPoints, payload);
       const {
         code,
@@ -891,7 +902,7 @@ export default {
       callback && callback(response);
     },
     // 获取隐患统计
-    *fetchHiddenDangerCount({ payload, callback }, { call, put, all }) {
+    *fetchHiddenDangerCount ({ payload, callback }, { call, put, all }) {
       const [
         {
           data: {
@@ -926,32 +937,32 @@ export default {
     },
 
     // 获取特种设备列表
-    *fetchSpecialEquipmentList({ payload, success, error }, { call, put }) {
+    *fetchSpecialEquipmentList ({ payload, success, error }, { call, put }) {
       const response = yield call(getSpecialEquipmentList, payload);
       if (response.code === 200) {
         yield put({
           type: 'save',
           payload: {
             specialEquipmentList: (response.data.list || [])
-            .sort(({ recheck_date: a }, { recheck_date: b }) => a - b)
-            .reduce((result, { checkStatus, recheck_date, data_true_name, linkman, factory_number, special_equipment_id }) => {
-              const { allList, expiredList, unexpiredList } = result;
-              const item = {
-                id: special_equipment_id,
-                name: data_true_name,
-                number: factory_number,
-                person: linkman,
-                expiryDate: recheck_date,
-                status: checkStatus,
-              };
-              allList.push(item);
-              if (+checkStatus === 1) {
-                expiredList.push(item);
-              } else {
-                unexpiredList.push(item);
-              }
-              return result;
-            }, { allList: [], expiredList: [], unexpiredList: [] }),
+              .sort(({ recheck_date: a }, { recheck_date: b }) => a - b)
+              .reduce((result, { checkStatus, recheck_date, data_true_name, linkman, factory_number, special_equipment_id }) => {
+                const { allList, expiredList, unexpiredList } = result;
+                const item = {
+                  id: special_equipment_id,
+                  name: data_true_name,
+                  number: factory_number,
+                  person: linkman,
+                  expiryDate: recheck_date,
+                  status: checkStatus,
+                };
+                allList.push(item);
+                if (+checkStatus === 1) {
+                  expiredList.push(item);
+                } else {
+                  unexpiredList.push(item);
+                }
+                return result;
+              }, { allList: [], expiredList: [], unexpiredList: [] }),
           },
         });
         if (success) {
@@ -962,9 +973,9 @@ export default {
       }
     },
     // 获取设备统计列表
-    *fetchDeviceCountList({ payload, callback }, { call, put }) {
+    *fetchDeviceCountList ({ payload, callback }, { call, put }) {
       const response = yield call(getDeviceCountList, payload);
-      const { code=500, data, msg='获取设备统计失败，请稍后重试！' } = response || {};
+      const { code = 500, data, msg = '获取设备统计失败，请稍后重试！' } = response || {};
       if (code === 200) {
         const deviceCountList = data && data.list ? data.list : [];
         yield put({
@@ -979,9 +990,9 @@ export default {
       }
     },
     // 获取温湿度监测点列表
-    *fetchHumiturePointList({ payload, callback }, { call, put }) {
+    *fetchHumiturePointList ({ payload, callback }, { call, put }) {
       const response = yield call(getHumiturePointList, payload);
-      const { code, data, msg='获取温湿度监测点列表失败，请稍后重试！' } = response || {};
+      const { code, data, msg = '获取温湿度监测点列表失败，请稍后重试！' } = response || {};
       if (code === 200 && data) {
         yield put({
           type: 'saveHumiturePointList',
@@ -993,7 +1004,7 @@ export default {
       }
     },
     // 获取温湿度监测点统计
-    *fetchHumiturePointCount({ payload, callback }, { call, put, all }) {
+    *fetchHumiturePointCount ({ payload, callback }, { call, put, all }) {
       const responseList = yield all([
         call(getHumiturePointList, payload),
         call(getHumiturePointList, { ...payload, status: 0 }),
@@ -1020,9 +1031,9 @@ export default {
       }
     },
     // 获取温湿度监测点详情
-    *fetchHumiturePointDetail({ payload, callback }, { call, put }) {
+    *fetchHumiturePointDetail ({ payload, callback }, { call, put }) {
       const response = yield call(getHumiturePointDetail, payload);
-      const { code, data, msg='获取温湿度监测点详情失败，请稍后重试！' } = response || {};
+      const { code, data, msg = '获取温湿度监测点详情失败，请稍后重试！' } = response || {};
       if (code === 200 && data) {
         yield put({
           type: 'save',
@@ -1036,7 +1047,7 @@ export default {
       }
     },
     // 获取温湿度监测点监测趋势
-    *fetchHumiturePointTrend({ payload: { temperatureId, temperatureCode, humidityId, humidityCode, queryDate, historyDataType }, callback }, { call, put, all }) {
+    *fetchHumiturePointTrend ({ payload: { temperatureId, temperatureCode, humidityId, humidityCode, queryDate, historyDataType }, callback }, { call, put, all }) {
       const responseList = yield all([
         call(getHumiturePointTrend, { deviceId: temperatureId || humidityId, queryDate, historyDataType, code: temperatureCode }),
         call(getHumiturePointTrend, { deviceId: humidityId || temperatureId, queryDate, historyDataType, code: humidityCode }),
@@ -1059,7 +1070,7 @@ export default {
       }
     },
     // 获取隐患记录
-    *fetchHiddenDangerRecordList({ payload, callback }, { call, put }) {
+    *fetchHiddenDangerRecordList ({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerRecordList, payload);
       const { code, data } = response;
       if (code === 200 && data && data.list) {
@@ -1075,20 +1086,43 @@ export default {
         error('获取隐患记录失败，请稍后重试！');
       }
     },
+    // 获取标准及措施列表
+    *fetchStandardsAndMeasuresList ({ payload }, { call, put }) {
+      const res = yield call(fetchStandardsAndMeasuresList, payload);
+      if (res && res.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { standardsAndMeasuresList: res.data.list || [] },
+        })
+      }
+    },
+    // 获取点位检查标准
+    *fetchpointInspectionStandards ({ payload }, { call, put }) {
+      const res = yield call(fetchpointInspectionStandards, payload);
+      if (res && res.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            pointInspectionStandardsList: res.data.list || [],
+            itemName: res.data.itemName || '',
+          },
+        })
+      }
+    },
   },
 
   reducers: {
     // 保存
-    save(state, { payload }) {
+    save (state, { payload }) {
       return {
         ...state,
         ...payload,
       };
     },
-    saveRiskList(state, action) {
+    saveRiskList (state, action) {
       return { ...state, riskList: action.payload };
     },
-    saveDangerList(state, { payload, append }) {
+    saveDangerList (state, { payload, append }) {
       if (append) {
         return {
           ...state,
@@ -1103,13 +1137,13 @@ export default {
         dangerList: payload,
       };
     },
-    saveSafeFiles(state, action) {
+    saveSafeFiles (state, action) {
       return { ...state, safeList: action.payload };
     },
-    saveSafeIndexes(state, action) {
+    saveSafeIndexes (state, action) {
       return { ...state, safetyIndexes: action.payload };
     },
-    saveRiskPointAttr(state, { payload }) {
+    saveRiskPointAttr (state, { payload }) {
       return {
         ...state,
         riskPointDetail: {
@@ -1118,7 +1152,7 @@ export default {
         },
       };
     },
-    saveRiskPointHiddenDangerList(state, { payload, append }) {
+    saveRiskPointHiddenDangerList (state, { payload, append }) {
       if (append) {
         return {
           ...state,
@@ -1139,7 +1173,7 @@ export default {
         },
       };
     },
-    saveRiskPointInspectionList(state, { payload, append }) {
+    saveRiskPointInspectionList (state, { payload, append }) {
       if (append) {
         return {
           ...state,
@@ -1161,7 +1195,7 @@ export default {
       };
     },
     // 保存隐患列表
-    saveHiddenDangerList(state, { payload, append }) {
+    saveHiddenDangerList (state, { payload, append }) {
       if (append) {
         return {
           ...state,
@@ -1177,7 +1211,7 @@ export default {
       };
     },
     // 保存手机是否显示配置
-    savePhoneVisible(state, { payload: { phoneVisible }={} }) {
+    savePhoneVisible (state, { payload: { phoneVisible } = {} }) {
       if (phoneVisible !== undefined) {
         localStorage.setItem('phoneVisible', JSON.stringify(phoneVisible));
       } else {
@@ -1192,7 +1226,7 @@ export default {
       };
     },
     // 保存温湿度监测列表
-    saveHumiturePointList(state, { payload: { list, pagination } }) {
+    saveHumiturePointList (state, { payload: { list, pagination } }) {
       const { pageNum } = pagination;
       return {
         ...state,
