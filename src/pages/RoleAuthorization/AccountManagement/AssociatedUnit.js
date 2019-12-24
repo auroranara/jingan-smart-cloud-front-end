@@ -4,6 +4,7 @@ import {
   Form,
   Card,
   Button,
+  DatePicker,
   Row,
   Col,
   Input,
@@ -19,6 +20,7 @@ import {
   Table,
   Tabs,
 } from 'antd';
+import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
@@ -32,6 +34,8 @@ import {
   DEFAULT_PAGE_SIZE as defaultPageSize,
   SUPERVISIONS,
   SUPERVISIONS_ALL,
+  SEXES,
+  DEGREES,
   renderSearchedTreeNodes,
   getInitParentKeys,
   getParentKeys,
@@ -475,7 +479,7 @@ export default class AssociatedUnit extends PureComponent {
       },
       account: {
         detail: {
-          data: { loginId, active },
+          data: { loginId, active, educationFileList },
         },
       },
     } = this.props;
@@ -490,6 +494,10 @@ export default class AssociatedUnit extends PureComponent {
           accountStatus,
           userName,
           phoneNumber,
+          sex,
+          birthday,
+          degree,
+          major,
           unitType,
           unitId,
           treeIds,
@@ -516,6 +524,10 @@ export default class AssociatedUnit extends PureComponent {
             accountStatus,
             userName,
             phoneNumber,
+            sex,
+            birth: +birthday,
+            education: degree,
+            educationFileList,
             unitType,
             unitId: unitId ? (unitTypeChecked === GOV ? unitId.value : unitId.key) : '',
             treeIds: treeIds ? treeIds.key : null,
@@ -1043,6 +1055,11 @@ export default class AssociatedUnit extends PureComponent {
             loginName,
             userName,
             phoneNumber,
+            sex,
+            birth,
+            education,
+            educationFileList,
+            major,
             unitType,
             accountStatus,
             unitId,
@@ -1108,6 +1125,42 @@ export default class AssociatedUnit extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+              <Form.Item label={fieldLabels.sex}>
+                {getFieldDecorator('sex', {
+                  initialValue: sex,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择性别',
+                    },
+                  ],
+                })(
+                  <Select disabled placeholder="请选择性别" allowClear>
+                    {SEXES.map(({ key, label }) => (
+                      <Option value={key} key={key}>
+                        {label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+              <Form.Item label={fieldLabels.birthday}>
+                {getFieldDecorator('birthday', {
+                  initialValue: moment(birth),
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择生日',
+                    },
+                  ],
+                })(
+                  <DatePicker disabled placeholder="请选择生日" allowClear />
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.phoneNumber}>
                 {getFieldDecorator('phoneNumber', {
                   initialValue: phoneNumber,
@@ -1120,9 +1173,53 @@ export default class AssociatedUnit extends PureComponent {
                       message: '请输入手机号',
                     },
                   ],
-                })(<Input disabled={true} placeholder="请输入手机号" min={11} max={11} />)}
+                })(<Input disabled placeholder="请输入手机号" min={11} max={11} />)}
               </Form.Item>
             </Col>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+              <Form.Item label={fieldLabels.degree}>
+                {getFieldDecorator('degree', {
+                  initialValue: education,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择学历',
+                    },
+                  ],
+                })(
+                  <Select disabled placeholder="请选择学历" allowClear>
+                    {DEGREES.map(({ key, label }) => (
+                      <Option value={key} key={key}>
+                        {label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+              <Form.Item label={fieldLabels.major}>
+                {getFieldDecorator('major', {
+                  initialValue: major,
+                  getValueFromEvent: this.handleClearSpace,
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'string',
+                      message: '请输入专业名称',
+                    },
+                  ],
+                })(<Input disabled placeholder="请输入专业名称" min={1} max={20} />)}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Form.Item label={fieldLabels.attached}>
+              {Array.isArray(educationFileList) && educationFileList.length
+                ? educationFileList.map(({ id, fileName, webUrl }) => <a key={id} href={webUrl} style={{ marginRight: 10 }} target="_blank" rel="noopener noreferrer">{fileName}</a>)
+                : '暂无附件'}
+            </Form.Item>
           </Row>
         </Card>
         <Card title="关联单位账号信息" className={styles.card} bordered={false}>

@@ -30,6 +30,7 @@ export const FIELD_LABELS = {
   birthday: '生日',
   degree: '学历',
   attached: '学历附件',
+  major: '专业',
 };
 
 export const DEFAULT_PAGE_SIZE = 20;
@@ -45,8 +46,19 @@ export const SUPERVISIONS = [
 
 export const SUPERVISIONS_ALL = SUPERVISIONS.map(({ id }) => id);
 
-export const SEXES = ['男', '女'];
-export const DEGREES = ['初中', '高中', '中专', '大专', '本科', '硕士', '博士'];
+export const SEXES = [
+  { key: '0', label: '男' },
+  { key: '1', label: '女' },
+];
+export const DEGREES = [
+  {key: '0', label: '初中'},
+  {key: '1', label: '高中'},
+  {key: '2', label: '中专'},
+  {key: '3', label: '大专'},
+  {key: '4', label: '本科'},
+  {key: '5', label: '硕士'},
+  {key: '6', label: '博士'},
+];
 
 export function getInitPhotoList(list) {
   if (!Array.isArray(list))

@@ -21,6 +21,7 @@ import {
   Tabs,
   Upload,
 } from 'antd';
+import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 import FooterToolbar from '@/components/FooterToolbar';
@@ -252,6 +253,9 @@ export default class AccountManagementEdit extends PureComponent {
         payload: {
           id,
         },
+        success: ({ educationFileList }) => {
+          this.setState({ photoList: getInitPhotoList(educationFileList) });
+        },
         error: () => {
           goToException();
         },
@@ -372,6 +376,10 @@ export default class AccountManagementEdit extends PureComponent {
           accountStatus,
           userName,
           phoneNumber,
+          sex,
+          birthday,
+          degree,
+          major,
           unitType,
           unitId,
           treeIds,
@@ -390,6 +398,8 @@ export default class AccountManagementEdit extends PureComponent {
           isCheckAll,
         }
       ) => {
+        const { photoList } = this.state;
+
         if (!error) {
           const success = () => {
             const msg = id ? '编辑成功！' : '新增成功！';
@@ -411,6 +421,11 @@ export default class AccountManagementEdit extends PureComponent {
                 userName,
                 phoneNumber,
                 accountStatus,
+                sex,
+                birth: +birthday,
+                education: degree,
+                educationFileList: getSubmitPhotoList(photoList),
+                major,
               },
               success,
               error,
@@ -424,6 +439,11 @@ export default class AccountManagementEdit extends PureComponent {
               accountStatus,
               userName,
               phoneNumber,
+              sex,
+              birth: +birthday,
+              education: degree,
+              educationFileList: getSubmitPhotoList(photoList),
+              major,
               unitType,
               unitId: unitId ? (unitTypeChecked === GOV ? unitId.value : unitId.key) : null,
               treeIds: treeIds ? treeIds.key : null,
@@ -920,9 +940,12 @@ export default class AccountManagementEdit extends PureComponent {
 
   handleUploadPhoto = info => {
     const { fileList, file } = info;
+    let fList = fileList;
     if (file.status === 'done' || file.status === undefined){ // file.status === undefined 为文件被beforeUpload拦截下拉的情况
-      this.setState({ photoList: handleFileList(fileList) });
+      fList = handleFileList(fileList);
     }
+
+    this.setState({ photoList: fList });
   };
 
   handleBeforeUpload = file => {
@@ -944,8 +967,9 @@ export default class AccountManagementEdit extends PureComponent {
             phoneNumber,
             accountStatus,
             sex,
-            birthday,
-            degree,
+            birth,
+            education,
+            major,
           },
         },
         unitTypes,
@@ -1069,15 +1093,13 @@ export default class AccountManagementEdit extends PureComponent {
                   rules: [
                     {
                       required: true,
-                      whitespace: true,
-                      type: 'integer',
                       message: '请选择性别',
                     },
                   ],
                 })(
                   <Select placeholder="请选择性别" allowClear>
-                    {SEXES.map((label, i) => (
-                      <Option value={i} key={i}>
+                    {SEXES.map(({ key, label }) => (
+                      <Option value={key} key={key}>
                         {label}
                       </Option>
                     ))}
@@ -1088,7 +1110,7 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.birthday}>
                 {getFieldDecorator('birthday', {
-                  initialValue: id ? birthday : undefined,
+                  initialValue: id ? moment(birth) : undefined,
                   rules: [
                     {
                       required: true,
@@ -1120,24 +1142,38 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.degree}>
                 {getFieldDecorator('degree', {
-                  initialValue: id ? degree : undefined,
+                  initialValue: id ? education : undefined,
                   rules: [
                     {
                       required: true,
-                      whitespace: true,
-                      type: 'integer',
                       message: '请选择学历',
                     },
                   ],
                 })(
                   <Select placeholder="请选择学历" allowClear>
-                    {DEGREES.map((label, i) => (
-                      <Option value={i} key={i}>
+                    {DEGREES.map(({ key, label }) => (
+                      <Option value={key} key={key}>
                         {label}
                       </Option>
                     ))}
                   </Select>
                 )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.major}>
+                {getFieldDecorator('major', {
+                  initialValue: id ? major : undefined,
+                  getValueFromEvent: this.handleClearSpace,
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'string',
+                      message: '请输入专业名称',
+                    },
+                  ],
+                })(<Input placeholder="请输入专业名称" min={1} max={20} />)}
               </Form.Item>
             </Col>
           </Row>
@@ -1148,7 +1184,7 @@ export default class AccountManagementEdit extends PureComponent {
                 data={{ folder: FOLDER }}
                 action={UPLOAD_ACTION}
                 fileList={photoList}
-                beforeUpload={this.handleBeforeUpload}
+                // beforeUpload={this.handleBeforeUpload}
                 onChange={this.handleUploadPhoto}
                 headers={{ 'JA-Token': getToken() }}
               >
