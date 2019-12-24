@@ -12,19 +12,6 @@ const COLOR = {
 };
 const defaultPolygonMarkerHeight = 5;
 //配置线型、线宽、透明度等
-const lineStyle = {
-  //设置线的宽度
-  lineWidth: 4,
-  //设置线的透明度
-  alpha: 0.8,
-
-  // offsetHeight 默认的高度为 1, (离楼板1米的高度)
-  height: defaultPolygonMarkerHeight,
-  //设置线的类型为导航线
-  lineType: fengMap.FMLineType.FMARROW,
-  //设置线动画,false为动画
-  noAnimate: true,
-};
 
 let map;
 let points = [];
@@ -67,15 +54,16 @@ export default class Map extends React.Component {
     map.openMapById(fmapID);
 
     //2D、3D控件配置
-    // var toolControl = new fengMap.toolControl(map, {
-    //   init2D: true, //初始化2D模式
-    //   groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
-    //   position: fengMap.controlPositon.LEFT_TOP,
-    //   //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-    //   clickCallBack: function(type, value) {
-    //     console.log(type, value);
-    //   },
-    // });
+    var toolControl = new fengMap.toolControl(map, {
+      init2D: true, //初始化2D模式
+      groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
+      position: fengMap.controlPositon.LEFT_TOP,
+      offset: { x: 0, y: 40 },
+      //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
+      clickCallBack: function(type, value) {
+        console.log(type, value);
+      },
+    });
 
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
@@ -129,6 +117,16 @@ export default class Map extends React.Component {
     layer.addMarker(polygonMarker);
   }
 
+  // 设置model的颜色
+  setModelColor(points, color) {
+    // 默认gid为1
+    const models = map.getDatasByAlias(1, 'model');
+    models
+      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
+      .map(model => model.setColor(color));
+    // console.log(models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points)));
+  }
+
   //绘制线图层
   drawLines(
     points,
@@ -137,7 +135,6 @@ export default class Map extends React.Component {
       lineWidth: 4,
       //设置线的透明度
       alpha: 0.8,
-
       // offsetHeight 默认的高度为 1, (离楼板1米的高度)
       height: defaultPolygonMarkerHeight,
       //设置线的类型为导航线
@@ -154,6 +151,7 @@ export default class Map extends React.Component {
     line.addSegment(seg);
     var lineObject = map.drawLineMark(line, lineStyle);
     naviLines.push(lineObject);
+    this.props.getPoints(points);
   }
 
   render() {
@@ -161,6 +159,8 @@ export default class Map extends React.Component {
     if (!isDrawing && points.length > 0) {
       // doDraw
       this.drawPolygon(points, COLOR.blue);
+      // 建筑物上色
+      this.setModelColor(points, COLOR.blue);
       map.clearLineMark();
       points = [];
     }
