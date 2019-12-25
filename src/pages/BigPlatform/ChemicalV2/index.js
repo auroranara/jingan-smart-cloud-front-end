@@ -95,9 +95,10 @@ notification.config({
 });
 // const companyId = 'DccBRhlrSiu9gMV7fmvizw';
 
-@connect(({ unitSafety, bigPlatform, loading }) => ({
+@connect(({ unitSafety, bigPlatform, loading, fourColorImage }) => ({
   unitSafety,
   bigPlatform,
+  fourColorImage,
   hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
 }))
 export default class Chemical extends PureComponent {
@@ -159,7 +160,7 @@ export default class Chemical extends PureComponent {
     });
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.init();
   }
 
@@ -183,6 +184,25 @@ export default class Chemical extends PureComponent {
 
     this.fetchPoints();
     this.fetchHiddenDangerList();
+    // 四色图分区
+    this.fetchFourColorPolygons();
+  };
+
+  fetchFourColorPolygons = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'fourColorImage/fetchList',
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 0,
+      },
+    });
   };
 
   fetchHiddenDangerList = (pageNum = 1) => {
@@ -493,18 +513,21 @@ export default class Chemical extends PureComponent {
     });
     this.fetchpointInspectionStandards({
       item_id: this.itemId,
-    })
-  }
+    });
+  };
 
   /**
    * 渲染
    */
-  render () {
+  render() {
     const {
       unitSafety: { points },
       bigPlatform: { hiddenDangerList },
       hiddenDangerLoading,
       unitSafety: { hiddenDangerCount },
+      fourColorImage: {
+        data: { list: polygons },
+      },
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -585,6 +608,7 @@ export default class Chemical extends PureComponent {
                   showVideo={this.handleShowVideo}
                   onRef={this.onRef}
                   handleClickRiskPoint={this.handleClickRiskPoint}
+                  polygons={polygons}
                 />
 
                 {msgVisible ? (
@@ -594,16 +618,16 @@ export default class Chemical extends PureComponent {
                     handleGasOpen={this.handleGasOpen}
                   />
                 ) : (
-                    <div className={styles.msgContainer}>
-                      {/* <Badge count={3}> */}
-                      <Icon
-                        type="message"
-                        className={styles.msgIcon}
-                        onClick={() => this.setState({ msgVisible: true })}
-                      />
-                      {/* </Badge> */}
-                    </div>
-                  )}
+                  <div className={styles.msgContainer}>
+                    {/* <Badge count={3}> */}
+                    <Icon
+                      type="message"
+                      className={styles.msgIcon}
+                      onClick={() => this.setState({ msgVisible: true })}
+                    />
+                    {/* </Badge> */}
+                  </div>
+                )}
 
                 <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
               </div>
