@@ -676,32 +676,34 @@ export default class SpecialEquipment extends PureComponent {
             {getFieldDecorator('brand', {
               rules: [{ required: true, message: '请选择品牌' }],
             })(
-              <Select
-                placeholder="请选择品牌"
-                {...itemStyles}
-                onChange={this.handleBrandChange}
-                allowClear
-              >
-                {brandList.map(({ id, name }) => (
-                  <Option key={id} value={id}>
-                    {name}
-                  </Option>
-                ))}
-              </Select>
+              // <Select
+              //   placeholder="请选择品牌"
+              //   {...itemStyles}
+              //   onChange={this.handleBrandChange}
+              //   allowClear
+              // >
+              //   {brandList.map(({ id, name }) => (
+              //     <Option key={id} value={id}>
+              //       {name}
+              //     </Option>
+              //   ))}
+              // </Select>
+              <Input placeholder="请输入品牌" style={{ width: '70%' }} allowClear />
             )}
           </FormItem>
           <FormItem label="规格型号" {...formItemLayout}>
             {getFieldDecorator('specification', {
               rules: [{ required: true, message: '请选择规格型号' }],
             })(
-              <Select placeholder="请选择规格型号" {...itemStyles} allowClear>
-                {brand &&
-                  modelList.map(({ id, name }) => (
-                    <Option key={id} value={id}>
-                      {name}
-                    </Option>
-                  ))}
-              </Select>
+              // <Select placeholder="请选择规格型号" {...itemStyles} allowClear>
+              //   {brand &&
+              //     modelList.map(({ id, name }) => (
+              //       <Option key={id} value={id}>
+              //         {name}
+              //       </Option>
+              //     ))}
+              // </Select>
+              <Input placeholder="请输入规格型号" style={{ width: '70%' }} allowClear />
             )}
           </FormItem>
           <FormItem label="出厂编号" {...formItemLayout}>

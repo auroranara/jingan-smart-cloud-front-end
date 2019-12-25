@@ -44,8 +44,9 @@ const limitDecimals = value => {
 };
 
 @Form.create()
-@connect(({ emergencyManagement, loading, company }) => ({
+@connect(({ emergencyManagement, loading, company, user }) => ({
   emergencyManagement,
+  user,
   company,
   companyLoading: loading.effects['company/fetchModelList'],
 }))
@@ -147,6 +148,9 @@ export default class EmergencyDrillHandler extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
     const { typeCode } = this.state;
 
@@ -154,7 +158,12 @@ export default class EmergencyDrillHandler extends PureComponent {
       console.log('formData', formData);
 
       if (!error) {
-        const payload = { ...formData, planType: formData.planType.join(','), typeCode };
+        const payload = {
+          ...formData,
+          planType: formData.planType.join(','),
+          typeCode,
+          companyId: unitType === 4 ? companyId : formData.companyId,
+        };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           router.push(listUrl);
@@ -231,29 +240,34 @@ export default class EmergencyDrillHandler extends PureComponent {
     const {
       form: { getFieldDecorator, getFieldValue },
       emergencyManagement: { emergencyDrill = [] },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const { selectedCompany, typeCode } = this.state;
 
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
-                </Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位名称"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
+                  </Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="计划名称" {...formItemLayout}>
             {getFieldDecorator('projectName', {
               getValueFromEvent: this.handleTrim,
