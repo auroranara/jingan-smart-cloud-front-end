@@ -14,9 +14,9 @@ import styles from './index.less';
 
 const GET_REAL_TIME_LIST = 'gasMonitor/getRealTimeList';
 const TAB_LIST = [
-  { key: '0', tab: '全部监测点' },
-  { key: '1', tab: '报警监测点' },
-  { key: '2', tab: '正常监测点' },
+  { key: '0', tab: '全部监测设备' },
+  { key: '1', tab: '报警监测设备' },
+  { key: '2', tab: '正常监测设备' },
 ];
 const WARN_STATUS_MAPPER = {
   1: -1,
@@ -287,14 +287,14 @@ export default class GasRealTime extends Component {
                 <div className={styles.top}>
                   <div className={styles.basicInfoWrapper} style={{ backgroundImage: `url(${equipmentTypeLogoWebUrl})` }}>
                     <div className={styles.nameWrapper}>
-                      <div className={styles.nameLabel}>监测点名称：</div>
+                      <div className={styles.nameLabel}>监测设备名称：</div>
                       <div className={styles.nameValue}>
                         {name}
                         {+warnStatus === -1 && <div className={styles.isAlarm} />}
                       </div>
                     </div>
                     <div className={styles.addressWrapper}>
-                      <Icon type="environment" className={styles.addressIcon} title="监测点地址" />
+                      <Icon type="environment" className={styles.addressIcon} title="监测设备地址" />
                       <div className={styles.addressValue}>
                         {areaLocation}
                         {videoList && videoList.length > 0 && <div className={styles.video} onClick={() => this.showVideo(videoList)} />}
