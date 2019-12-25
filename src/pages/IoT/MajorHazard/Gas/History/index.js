@@ -20,7 +20,7 @@ import {
 import {
   getTransformedTime,
 } from '@/pages/IoT/AlarmWorkOrder/Detail';
-import iconMajorHazard from '../../imgs/icon-major-hazard.png';
+import iconDevice from '../../imgs/icon-device.png';
 import styles from './index.less';
 const { Option } = Select;
 
@@ -444,7 +444,7 @@ export default class GasHistory extends Component {
       <Card className={styles.card}>
         <div className={styles.countContainer}>
           <div>
-            <div className={styles.countItem} style={{ backgroundImage: `url(${iconMajorHazard})` }}>
+            <div className={styles.countItem} style={{ backgroundImage: `url(${iconDevice})` }}>
               <div className={styles.countLabel}>监测设备（个）</div>
               <div className={styles.countValue}>{equipmentCount || 0}</div>
             </div>

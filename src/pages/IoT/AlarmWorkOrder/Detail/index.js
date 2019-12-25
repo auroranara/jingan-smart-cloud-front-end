@@ -22,14 +22,15 @@ const EmptyData = () => <span className={styles.empty}>暂无数据</span>;
 export const getTransformedTime = (time) => {
   if (time < 1000) {
     return `${time}ms`;
-  } else if (time < 60 * 1000) {
-    return `${Math.round(time / 1000)}s`;
-  } else if (time < 60 * 60 * 1000) {
-    return `${Math.round(time / (60 * 1000))}min`;
-  } else if (time < 24 * 60 * 60 * 1000) {
-    return `${Math.floor(time / (60 * 60 * 1000))}h${Math.round(time % (60 * 60 * 1000) / (60 * 1000))}min`;
   } else {
-    return `${Math.floor(time / (24 * 60 * 60 * 1000))}d${Math.floor(time % (24 * 60 * 60 * 1000) / (60 * 60 * 1000))}h${Math.round(time % (60 * 60 * 1000) / (60 * 1000))}min`;
+    const day = Math.floor(time / (24 * 60 * 60 * 1000));
+    time %= 24 * 60 * 60 * 1000;
+    const hour = Math.floor(time / (60 * 60 * 1000));
+    time %= 60 * 60 * 1000;
+    const minute = Math.floor(time / (60 * 1000));
+    time %= 60 * 1000;
+    const second = Math.floor(time / 1000);
+    return [day && `${day}d`, hour && `${hour}h`, minute && `${minute}min`, second && `${second}s`].filter(v => v).join('');
   }
 };
 
@@ -178,7 +179,7 @@ export default class AlarmWorkOrderDetail extends Component {
       },
     ];
     if (+executeType !== 2) { // 不是自动处理的情况下再显示
-      if (+status === 0) {
+      if (+status === 0 || +status === 1) {
         current += 1;
         steps.push({
           id: '确认警情',
@@ -216,7 +217,6 @@ export default class AlarmWorkOrderDetail extends Component {
         title: '完成工单',
       });
     }
-
 
     return (
       <Card className={styles.card} title="工单流程">
@@ -260,7 +260,8 @@ export default class AlarmWorkOrderDetail extends Component {
                 <div className={styles.status}>
                   <SelectOrSpan list={STATUSES} value={`${status}`} type="span" />
                 </div>
-                {+type === 2 && <div className={styles.realAlarm}>真实警情</div>}
+                {/* {+type === 2 && <div className={styles.realAlarm}>真实警情</div>} */}
+                {<div className={styles.realAlarm}>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>}
               </div>
             ) : <EmptyData />}
           </Description>

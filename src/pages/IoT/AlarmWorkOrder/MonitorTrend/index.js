@@ -471,9 +471,6 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         hasPoint: false,
       });
       visible = hasValue;
-      console.log(data);
-      console.log(hasValue);
-      console.log(hasPoint);
       if (data) {
         const last = data[data.length - 1];
         if(last && last.name <= end) { //这里很乱，理不清
