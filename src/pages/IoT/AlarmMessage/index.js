@@ -7,26 +7,28 @@ import Ellipsis from '@/components/Ellipsis';
 import TablePage from '@/templates/TablePage';
 import moment from 'moment';
 
-const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const TYPES = [
+export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+export const STATUSES = [
   { key: '0', value: '预警' },
-  { key: '1', value: '报警' },
+  { key: '1', value: '告警' },
+  { key: '7', value: '火警' },
   { key: '2', value: '失联' },
   { key: '3', value: '故障' },
   { key: '4', value: '报警解除' },
   { key: '5', value: '恢复在线' },
   { key: '6', value: '故障消除' },
 ];
-const TYPE_MAPPER = [
+export const STATUS_MAPPER = [
   { statusType: -1, warnLevel: 1 },
-  { statusType: -1, warnLevel: 2 },
+  { statusType: -1, warnLevel: 2, fixType: -1 },
   { statusType: -2 },
   { statusType: -3 },
   { statusType: 1 },
   { statusType: 2 },
   { statusType: 3 },
+  { statusType: -1, fixType: 5 },
 ];
-const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
+export const GET_STATUS_NAME = ({ statusType, warnLevel, fixType }) => {
   if (+statusType === -1) {
     if (+warnLevel === 1) {
       return '预警';
@@ -53,7 +55,7 @@ const TRANSFORM = (data) => {
   const { statusType, range: [startTime, endTime]=[], ...rest } = data || {};
   return {
     ...rest,
-    ...TYPE_MAPPER[statusType],
+    ...STATUS_MAPPER[statusType],
     startTime: startTime && startTime.format(DEFAULT_FORMAT),
     endTime: endTime && endTime.format(DEFAULT_FORMAT),
   };
@@ -107,7 +109,7 @@ export default class AlarmMessage extends Component {
     {
       id: 'statusType',
       label: '消息类型',
-      render: () => <SelectOrSpan placeholder="请选择消息类型" list={TYPES} allowClear />,
+      render: () => <SelectOrSpan placeholder="请选择消息类型" list={STATUSES} allowClear />,
     },
   ])
 
@@ -129,7 +131,7 @@ export default class AlarmMessage extends Component {
     {
       title: '消息类型',
       dataIndex: 'statusType',
-      render: (_, data) => GET_TYPE_NAME(data),
+      render: (_, data) => GET_STATUS_NAME(data),
       align: 'center',
     },
     {

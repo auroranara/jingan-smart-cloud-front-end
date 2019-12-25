@@ -19,7 +19,7 @@ const { Step } = Steps;
 const { Description } = DescriptionList;
 const { Panel } = Collapse;
 const EmptyData = () => <span className={styles.empty}>暂无数据</span>;
-const getTransformedTime = (time) => {
+export const getTransformedTime = (time) => {
   if (time < 1000) {
     return `${time}ms`;
   } else if (time < 60 * 1000) {

@@ -10,50 +10,29 @@ import { connect } from 'dva';
 import { toFixed, isNumber, getPageSize, setPageSize } from '@/utils/utils';
 import {
   TYPES,
-  NUMBER_TYPES,
-  STATUSES,
 } from '../../const';
+import {
+  DEFAULT_FORMAT,
+  STATUSES,
+  STATUS_MAPPER,
+  GET_STATUS_NAME,
+} from '@/pages/IoT/AlarmMessage';
+import {
+  getTransformedTime,
+} from '@/pages/IoT/AlarmWorkOrder/Detail';
 import iconMajorHazard from '../../imgs/icon-major-hazard.png';
 import styles from './index.less';
 const { Option } = Select;
 
-export const COLUMNS = [
-  {
-    title: '',
-    dataIndex: 'index',
-    width: 26,
-    render: (value, data, index) => <Badge count={index+1} style={{ backgroundColor: index < 3 ? '#faad14' : '#d9d9d9' }} />,
-  },
-  {
-    title: '监测对象名称',
-    dataIndex: 'name',
-    render: (value) => value && <Ellipsis length={6} tooltip>{value}</Ellipsis>,
-  },
-  {
-    title: '监测点位置',
-    dataIndex: 'address',
-    render: (value) => value && <Ellipsis length={5} tooltip>{value}</Ellipsis>,
-  },
-  {
-    title: '预警次数',
-    dataIndex: 'warningCount',
-    render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
-    sorter: (a, b) => a.warningCount - b.warningCount,
-    sortDirections: ['descend'],
-  },
-  {
-    title: '报警次数',
-    dataIndex: 'alarmCount',
-    render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
-    sorter: (a, b) => a.alarmCount - b.alarmCount,
-    sortDirections: ['descend'],
-  },
-];
-const GET_HISTORY = 'gasMonitor/getHistory';
-const GET_LIST = 'gasMonitor/getList';
+const GET_HISTORY_DETAIL = 'gasMonitor/getHistoryDetail';
+const GET_HISTORY_LIST = 'gasMonitor/getHistoryList';
 const GET_MONITOR_OBJECT_TYPE_LIST = 'gasMonitor/getMonitorObjectTypeList';
 const GET_MONITOR_OBJECT_LIST = 'gasMonitor/getMonitorObjectList';
 const GET_MONITOR_POINT_LIST = 'gasMonitor/getMonitorPointList';
+const GET_DURATION = 'gasMonitor/getDuration';
+const GET_COUNT_TREND = 'gasMonitor/getCountTrend';
+const GET_ALARM_TREND = 'gasMonitor/getAlarmTrend';
+const GET_RANK = 'gasMonitor/getRank';
 const EXPORT_DATA = 'gasMonitor/exportData';
 const TITLE = '可燃有毒气体监测报表';
 const BREADCRUMB_LIST = [
@@ -69,18 +48,46 @@ const BREADCRUMB_LIST = [
 }) => ({
   user,
   gasMonitor,
-  loading: loading.effects[GET_HISTORY] || loading.effects[GET_LIST] || false,
+  loading: loading.effects[GET_HISTORY_DETAIL] || loading.effects[GET_HISTORY_LIST] || false,
 }), dispatch => ({
-  getHistory(payload, callback) {
+  getHistoryDetail(payload, callback) {
     dispatch({
-      type: GET_HISTORY,
+      type: GET_HISTORY_DETAIL,
       payload,
       callback,
     });
   },
-  getList(payload, callback) {
+  getHistoryList(payload, callback) {
     dispatch({
-      type: GET_LIST,
+      type: GET_HISTORY_LIST,
+      payload,
+      callback,
+    });
+  },
+  getDuration(payload, callback) {
+    dispatch({
+      type: GET_DURATION,
+      payload,
+      callback,
+    });
+  },
+  getCountTrend(payload, callback) {
+    dispatch({
+      type: GET_COUNT_TREND,
+      payload,
+      callback,
+    });
+  },
+  getAlarmTrend(payload, callback) {
+    dispatch({
+      type: GET_ALARM_TREND,
+      payload,
+      callback,
+    });
+  },
+  getRank(payload, callback) {
+    dispatch({
+      type: GET_RANK,
       payload,
       callback,
     });
@@ -88,7 +95,10 @@ const BREADCRUMB_LIST = [
   getMonitorObjectTypeList(payload, callback) {
     dispatch({
       type: GET_MONITOR_OBJECT_TYPE_LIST,
-      payload,
+      payload: {
+        monitorEquipmentTypes: '405,406',
+        ...payload,
+      },
       callback,
     });
   },
@@ -118,12 +128,12 @@ export default class GasHistory extends Component {
   state = {
     range: undefined, // 时间范围
     type: TYPES[0].key, // 类型，['图表', '列表']
-    numberType: NUMBER_TYPES[0].key, // 数值类型，['绝对值', '百分比']
     status: undefined, // 安全状态
     monitorObjectTypeId: undefined, // 监测对象类型
     monitorObjectId: undefined, // 监测对象
     monitorPointId: undefined, // 监测点位
     selectedRowKeys: [], // 选中的
+    rankTableSort: 1, // 1是报警排序，3是误报排序
   }
 
   componentDidMount() {
@@ -131,33 +141,125 @@ export default class GasHistory extends Component {
     getMonitorObjectTypeList();
   }
 
-  getHistory = () => {
-    const { getHistory } = this.props;
-    const { range: [startDate, endDate]=[] } = this.state;
-    getHistory({
-      startDate,
-      endDate,
+  getHistoryDetail = () => {
+    const {
+      user: {
+        currentUser: {
+          unitId,
+        },
+      },
+      getHistoryDetail,
+    } = this.props;
+    const { range: [startTime, endTime]=[] } = this.state;
+    getHistoryDetail({
+      companyId: unitId,
+      startTime: startTime && startTime.format(DEFAULT_FORMAT),
+      endTime: endTime && endTime.format(DEFAULT_FORMAT),
+      equipmentTypes: '405,406',
     });
   }
 
-  getList = ({ pageNum=1, pageSize=getPageSize() }={}) => {
-    const { getList } = this.props;
+  getDuration = () => {
     const {
-      range: [startDate, endDate]=[],
+      user: {
+        currentUser: {
+          unitId,
+        },
+      },
+      getDuration,
+    } = this.props;
+    const { range: [startTime, endTime]=[] } = this.state;
+    getDuration({
+      companyId: unitId,
+      startTime: startTime && startTime.format(DEFAULT_FORMAT),
+      endTime: endTime && endTime.format(DEFAULT_FORMAT),
+      equipmentTypes: '405,406',
+    });
+  }
+
+  getCountTrend = () => {
+    const {
+      user: {
+        currentUser: {
+          unitId,
+        },
+      },
+      getCountTrend,
+    } = this.props;
+    const { range: [startTime, endTime]=[] } = this.state;
+    getCountTrend({
+      companyId: unitId,
+      startTime: startTime && startTime.format(DEFAULT_FORMAT),
+      endTime: endTime && endTime.format(DEFAULT_FORMAT),
+      equipmentTypes: '405,406',
+    });
+  }
+
+  getAlarmTrend = () => {
+    const {
+      user: {
+        currentUser: {
+          unitId,
+        },
+      },
+      getAlarmTrend,
+    } = this.props;
+    const { range: [startTime, endTime]=[] } = this.state;
+    getAlarmTrend({
+      companyId: unitId,
+      startTime: startTime && startTime.format(DEFAULT_FORMAT),
+      endTime: endTime && endTime.format(DEFAULT_FORMAT),
+      equipmentTypes: '405,406',
+    });
+  }
+
+  getRank = () => {
+    const {
+      user: {
+        currentUser: {
+          unitId,
+        },
+      },
+      getRank,
+    } = this.props;
+    const { range: [startTime, endTime]=[], rankTableSort } = this.state;
+    getRank({
+      companyId: unitId,
+      startTime: startTime && startTime.format(DEFAULT_FORMAT),
+      endTime: endTime && endTime.format(DEFAULT_FORMAT),
+      equipmentTypes: '405,406',
+      sortType: rankTableSort,
+    });
+  }
+
+  getHistoryList = ({ pageNum=1, pageSize=getPageSize() }={}) => {
+    const {
+      user: {
+        currentUser: {
+          unitId,
+        },
+      },
+      getHistoryList,
+    } = this.props;
+    const {
+      range: [startTime, endTime]=[],
       status,
       monitorObjectTypeId,
       monitorObjectId,
       monitorPointId,
     } = this.state;
-    getList({
+    getHistoryList({
       pageNum,
       pageSize,
-      startDate,
-      endDate,
-      status,
-      monitorObjectTypeId,
-      monitorObjectId,
-      monitorPointId,
+      companyId: unitId,
+      startTime: startTime && startTime.format(DEFAULT_FORMAT),
+      endTime: endTime && endTime.format(DEFAULT_FORMAT),
+      monitorEquipmentTypes: '405,406',
+      beMonitorTargetType: monitorObjectTypeId,
+      beMonitorTargetId: monitorObjectId,
+      monitorEquipmentId: monitorPointId,
+      statusType: -1,
+      ...STATUS_MAPPER[status],
     });
   }
 
@@ -167,9 +269,13 @@ export default class GasHistory extends Component {
     }, () => {
       const { type } = this.state;
       if (type === TYPES[0].key) {
-        this.getHistory();
+        this.getHistoryDetail();
+        this.getDuration();
+        this.getCountTrend();
+        this.getAlarmTrend();
+        this.getRank();
       } else {
-        this.getList();
+        this.getHistoryList();
       }
     });
   }
@@ -184,55 +290,65 @@ export default class GasHistory extends Component {
         monitorPointId: undefined,
         selectedRowKeys: [],
       } : {
-        numberType: NUMBER_TYPES[0].key,
+        rankTableSort: 1,
       }),
     });
     if (type === TYPES[0].key) {
-      this.getHistory();
+      this.getHistoryDetail();
+      this.getDuration();
+      this.getCountTrend();
+      this.getAlarmTrend();
+      this.getRank();
     } else {
-      this.getList();
+      this.getHistoryList();
     }
-  }
-
-  handleNumberTypeChange = ({ target: { value: numberType } }) => {
-    this.setState({
-      numberType,
-    });
   }
 
   handleStatusChange = (status) => {
     this.setState({
       status,
-    }, this.getList);
+    }, this.getHistoryList);
   }
 
   handleMonitorObjectTypeIdChange = (monitorObjectTypeId) => {
     if (monitorObjectTypeId) {
-      const { getMonitorObjectList } = this.props;
-      getMonitorObjectList();
+      const {
+        user: {
+          currentUser: {
+            unitId,
+          },
+        },
+        getMonitorObjectList,
+      } = this.props;
+      getMonitorObjectList({
+        type: monitorObjectTypeId,
+        companyId: unitId,
+      });
     }
     this.setState({
       monitorObjectTypeId,
       monitorObjectId: undefined,
       monitorPointId: undefined,
-    }, this.getList);
+    }, this.getHistoryList);
   }
 
   handleMonitorObjectIdChange = (monitorObjectId) => {
     if (monitorObjectId) {
       const { getMonitorPointList } = this.props;
-      getMonitorPointList();
+      getMonitorPointList({
+        targetId: monitorObjectId,
+      });
     }
     this.setState({
       monitorObjectId,
       monitorPointId: undefined,
-    }, this.getList);
+    }, this.getHistoryList);
   }
 
   handleMonitorPointIdChange = (monitorPointId) => {
     this.setState({
       monitorPointId,
-    }, this.getList);
+    }, this.getHistoryList);
   }
 
   handleExportButtonClick = () => {
@@ -250,31 +366,34 @@ export default class GasHistory extends Component {
     });
   }
 
-  handleTableChange = ({ current, pageSize }, _, { field }) => {
+  handleTableChange = ({ current, pageSize }) => {
     const {
       gasMonitor: {
-        list: {
+        historyList: {
           pagination: {
-            pageSize: prevPageSize=pageSize,
-            field: prevField,
+            pageSize: prevPageSize=getPageSize(),
           }={},
         }={},
       },
     } = this.props;
-    let pageNum;
-    if (prevPageSize !== pageSize) {
-      pageNum = 1;
-      setPageSize(pageSize);
-    } else if (prevField !== field) {
-      pageNum = 1;
-    } else {
-      pageNum = current;
-    }
-    this.getList({
-      pageNum,
+    this.getHistoryList({
+      pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
-      field,
     });
+    prevPageSize !== pageSize && setPageSize(pageSize);
+  }
+
+  // 排名表格change
+  handleRankTableChange = (a, b, { field, order }) => {
+    if (field === 'warningCount' && order === 'descend') {
+      this.setState({
+        rankTableSort: 1,
+      }, this.getRank);
+    } else if (field === 'falseWarningCount' && order === 'descend') {
+      this.setState({
+        rankTableSort: 3,
+      }, this.getRank);
+    }
   }
 
   /**
@@ -307,46 +426,49 @@ export default class GasHistory extends Component {
   renderCount() {
     const {
       gasMonitor: {
-        history: {
-          majorHazard=0,
-          monitorHazard=0,
-          alertRate=0,
-          alerts=0,
-          alarmTime=0,
-          completeRate=1,
+        historyDetail: {
+          equipmentCount,
+          warningCount,
+          trueWarningCount,
+          falseWarningCount,
+          endProcessPercent,
+          waitProcessCount,
+          ingProcessCount,
+          endProcessCount,
         }={},
       },
     } = this.props;
+    const total = (waitProcessCount || 0) + (ingProcessCount || 0) + (endProcessCount || 0);
 
     return (
       <Card className={styles.card}>
         <div className={styles.countContainer}>
           <div>
             <div className={styles.countItem} style={{ backgroundImage: `url(${iconMajorHazard})` }}>
-              <div className={styles.countLabel}>重大危险源</div>
-              <div className={styles.countValue}>{majorHazard}</div>
+              <div className={styles.countLabel}>监测设备（个）</div>
+              <div className={styles.countValue}>{equipmentCount || 0}</div>
             </div>
           </div>
           <div>
             <div className={styles.countItem}>
-              <div className={styles.countLabel}>监测危险源（个）</div>
-              <div className={styles.countValue}>{monitorHazard}</div>
+              <div className={styles.countLabel}>报警（次）</div>
+              <div className={styles.countValue}>{warningCount || 0}</div>
             </div>
             <div className={styles.countItem}>
-              <div className={styles.countLabel}>报警率</div>
-              <div className={styles.countValue}>{`${toFixed(alertRate * 100)}%`}</div>
+              <div className={styles.countLabel}>真实警情（次）</div>
+              <div className={styles.countValue}>{trueWarningCount || 0}</div>
             </div>
             <div className={styles.countItem}>
-              <div className={styles.countLabel}>报警次数（次）</div>
-              <div className={styles.countValue}>{alerts}</div>
+              <div className={styles.countLabel}>误报警情（次）</div>
+              <div className={styles.countValue}>{falseWarningCount || 0}</div>
             </div>
             <div className={styles.countItem}>
-              <div className={styles.countLabel}>报警时长（h）</div>
-              <div className={styles.countValue}>{alarmTime}</div>
+              <div className={styles.countLabel}>工单总数（张）</div>
+              <div className={styles.countValue}>{total}</div>
             </div>
             <div className={styles.countItem}>
               <div className={styles.countLabel}>工单完成率</div>
-              <div className={styles.countValue}>{`${toFixed(completeRate * 100)}%`}</div>
+              <div className={styles.countValue}>{`${toFixed(endProcessPercent || 0)}%`}</div>
             </div>
           </div>
         </div>
@@ -360,15 +482,23 @@ export default class GasHistory extends Component {
   renderDurationChart() {
     const {
       gasMonitor: {
-        history: {
-          durations=[],
+        duration: {
+          '≤6min': d1,
+          '6~12min': d2,
+          '12~18min': d3,
+          '18~1d': d4,
+          '>1d': d5,
+          avgTime,
+        }={},
+        historyDetail: {
+          endProcessCount,
         }={},
       },
     } = this.props;
-
+    const t = getTransformedTime((avgTime || 0) * 1000).replace(/(\d+)|([a-z]+)/g, '{a|$1} {b|$2}');
     const option = {
       title: {
-        text: `{c|工单平均处理时长：}{a|${20}}{b|min}`,
+        text: `${t}   {c|工单平均处理时长}    {a|${endProcessCount || 0}} {b|张}   {c|已处理工单}`,
         textStyle: {
           fontSize: 12,
           lineHeight: 20,
@@ -387,8 +517,6 @@ export default class GasHistory extends Component {
           },
         },
         left: 'right',
-        padding: 5,
-        itemGap: 0,
       },
       grid: {
         top: 30,
@@ -417,7 +545,7 @@ export default class GasHistory extends Component {
         splitLine: {
           show: false,
         },
-        data: durations.map(({ name }) => name),
+        data: ['≤6min','6~12min','12~18min','18~1d','>1d'],
       },
       yAxis: {
         minInterval: 1,
@@ -438,7 +566,7 @@ export default class GasHistory extends Component {
           name: '报警工单处理数量',
           type: 'bar',
           barWidth: '50%',
-          data: durations.map(({ value }) => value),
+          data: [d1 || 0,d2 || 0,d3 || 0,d4 || 0,d5 || 0],
         },
       ],
     };
@@ -447,7 +575,7 @@ export default class GasHistory extends Component {
       <Card className={styles.card}>
         <div className={styles.cardTitle}>报警工单处理时效</div>
         <div className={styles.cardContent}>
-          {durations && durations.length ? (
+          {option ? (
             <ReactEcharts
               style={{ height: '100%' }}
               option={option}
@@ -461,156 +589,24 @@ export default class GasHistory extends Component {
   }
 
   /**
-   * 报警工单处理趋势
+   * 监测设备报警趋势
    */
   renderTrendChart() {
     const {
       gasMonitor: {
-        history: {
-          dateList,
-          pendingList=[],
-          processingList=[],
-          processedList=[],
-          pendingPercentList=[],
-          processingPercentList=[],
-          processedPercentList=[],
-        }={},
-      },
-    } = this.props;
-    const { numberType } = this.state;
-    const isPercent = numberType === NUMBER_TYPES[1].key;
-
-    const option = {
-      color: ['#FFB650', '#60B3FF', '#8BD068'],
-      tooltip : {
-        trigger: 'axis',
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        formatter: isPercent ? (params) => `${params[0].name}<br/>${params.map(({ marker, seriesName, value }) => `${marker}${seriesName}：${value}%`).join('<br />')}` : undefined,
-      },
-      legend: {
-        itemWidth: 8,
-        itemHeight: 8,
-        bottom: 0,
-        left: 'center',
-        icon: 'circle',
-        textStyle: {
-          color: 'rgba(0, 0, 0, 0.45)',
-        },
-      },
-      grid: {
-        top: 16,
-        left: 0,
-        right: 20,
-        bottom: 24,
-        containLabel: true,
-      },
-      xAxis: {
-        boundaryGap: false,
-        axisLine: {
-          lineStyle: {
-            color: 'rgba(0, 0, 0, 0.45)',
-          },
-        },
-        axisLabel: {
-          color: 'rgba(0, 0, 0, 0.65)',
-        },
-        splitLine: {
-          show: false,
-        },
-        data: dateList,
-      },
-      yAxis: {
-        minInterval: 1,
-        axisLine: {
-          lineStyle: {
-            color: 'rgba(0, 0, 0, 0.45)',
-          },
-        },
-        axisLabel: {
-          color: 'rgba(0, 0, 0, 0.65)',
-          formatter: isPercent ? '{value}%' : undefined,
-        },
-        splitLine: {
-          show: false,
-        },
-      },
-      series: [
-        {
-          name: '待处理工单',
-          type: 'line',
-          stack: isPercent ? '工单' : undefined,
-          areaStyle: {
-            opacity: 0.5,
-          },
-          data: isPercent ? pendingPercentList : pendingList,
-        },
-        {
-          name: '处理中工单',
-          type: 'line',
-          stack: isPercent ? '工单' : undefined,
-          areaStyle: {
-            opacity: 0.5,
-          },
-          data: isPercent ? processingPercentList : processingList,
-        },
-        {
-          name: '已处理工单',
-          type: 'line',
-          stack: isPercent ? '工单' : undefined,
-          areaStyle: {
-            opacity: 0.5,
-          },
-          data: isPercent ? processedPercentList : processedList,
-        },
-      ],
-    };
-
-    return (
-      <Card className={styles.card}>
-        <div className={styles.cardTitle}>
-          报警工单处理趋势
-          <Radio.Group
-            className={styles.numberType}
-            value={numberType}
-            onChange={this.handleNumberTypeChange}
-            buttonStyle="solid"
-          >
-            {NUMBER_TYPES.map(({ key, value }) => <Radio.Button value={key} key={key}>{value}</Radio.Button>)}
-          </Radio.Group>
-        </div>
-        <div className={styles.cardContent}>
-          {dateList && dateList.length ? (
-            <ReactEcharts
-              style={{ height: '100%' }}
-              option={option}
-            />
-          ) : (
-            <CustomEmpty />
-          )}
-        </div>
-      </Card>
-    );
-  }
-
-  /**
-   * 预警/报警次数趋势
-   */
-  renderTrend2Chart() {
-    const {
-      gasMonitor: {
-        history: {
-          dateList,
-          warningList=[],
-          alarmList=[],
-        }={},
+        alarmTrend=[],
       },
     } = this.props;
 
-    const option = {
-      color: ['#faad14', '#f5222d'],
+    const option = alarmTrend && alarmTrend.length > 0 && {
+      color: ['#f5222d'],
       tooltip : {
         trigger: 'axis',
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        formatter: (params) => {
+          const date = params[0].name;
+          return `${date}<br />${params.map(({ marker, seriesName, value: [date, value] }) => `${marker}${seriesName}：${value}`).join('<br />')}`;
+        },
       },
       legend: {
         itemWidth: 8,
@@ -630,6 +626,7 @@ export default class GasHistory extends Component {
         containLabel: true,
       },
       xAxis: {
+        type: 'time',
         boundaryGap: false,
         axisLine: {
           lineStyle: {
@@ -638,11 +635,13 @@ export default class GasHistory extends Component {
         },
         axisLabel: {
           color: 'rgba(0, 0, 0, 0.65)',
+          formatter: time => moment(time).format('MM-DD'),
         },
         splitLine: {
           show: false,
         },
-        data: dateList,
+        minInterval: 24 * 60 * 60 * 1000,
+        splitNumber: 7,
       },
       yAxis: {
         axisLine: {
@@ -656,26 +655,34 @@ export default class GasHistory extends Component {
         splitLine: {
           show: false,
         },
+        minInterval: 1,
       },
       series: [
         {
-          name: '预警次数',
+          name: '监测设备数量',
           type: 'line',
-          data: warningList,
-        },
-        {
-          name: '报警次数',
-          type: 'line',
-          data: alarmList,
+          data: alarmTrend.map(({ happenTime, equipmentCount }) => ({
+            name: happenTime,
+            value: [
+              happenTime,
+              equipmentCount,
+            ],
+          })),
+          smooth: true,
+          areaStyle: {
+            opacity: 0.5,
+          },
         },
       ],
     };
 
     return (
       <Card className={styles.card}>
-        <div className={styles.cardTitle}>预警/报警次数趋势</div>
+        <div className={styles.cardTitle}>
+          监测设备报警趋势
+        </div>
         <div className={styles.cardContent}>
-          {dateList && dateList.length ? (
+          {option ? (
             <ReactEcharts
               style={{ height: '100%' }}
               option={option}
@@ -689,28 +696,185 @@ export default class GasHistory extends Component {
   }
 
   /**
-   * 监测点报警/预警排名
+   * 预警/告警次数趋势
+   */
+  renderTrend2Chart() {
+    const {
+      gasMonitor: {
+        countTrend=[],
+      },
+    } = this.props;
+
+    const { warning, alarm } = (countTrend || []).reduce((result, { happenTime, redCount, yellowCount }) => {
+      result.warning.push({
+        name: happenTime,
+        value: [
+          happenTime,
+          yellowCount,
+        ],
+      });
+      result.alarm.push({
+        name: happenTime,
+        value: [
+          happenTime,
+          redCount,
+        ],
+      });
+      return result;
+    }, {
+      warning: [],
+      alarm: [],
+    });
+
+    const option = {
+      color: ['#faad14', '#f5222d'],
+      tooltip : {
+        trigger: 'axis',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        formatter: (params) => {
+          const date = params[0].name;
+          return `${date}<br />${params.map(({ marker, seriesName, value: [date, value] }) => `${marker}${seriesName}：${value}`).join('<br />')}`;
+        },
+      },
+      legend: {
+        itemWidth: 8,
+        itemHeight: 8,
+        bottom: 0,
+        left: 'center',
+        icon: 'circle',
+        textStyle: {
+          color: 'rgba(0, 0, 0, 0.45)',
+        },
+      },
+      grid: {
+        top: 10,
+        left: 0,
+        right: 20,
+        bottom: 24,
+        containLabel: true,
+      },
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+        axisLine: {
+          lineStyle: {
+            color: 'rgba(0, 0, 0, 0.45)',
+          },
+        },
+        axisLabel: {
+          color: 'rgba(0, 0, 0, 0.65)',
+          formatter: time => moment(time).format('MM-DD'),
+        },
+        splitLine: {
+          show: false,
+        },
+        minInterval: 24 * 60 * 60 * 1000,
+        splitNumber: 7,
+      },
+      yAxis: {
+        axisLine: {
+          lineStyle: {
+            color: 'rgba(0, 0, 0, 0.45)',
+          },
+        },
+        axisLabel: {
+          color: 'rgba(0, 0, 0, 0.65)',
+        },
+        splitLine: {
+          show: false,
+        },
+        minInterval: 1,
+      },
+      series: [
+        {
+          name: '预警次数',
+          type: 'line',
+          data: warning,
+        },
+        {
+          name: '告警次数',
+          type: 'line',
+          data: alarm,
+        },
+      ],
+    };
+
+    return (
+      <Card className={styles.card}>
+        <div className={styles.cardTitle}>预警/告警次数趋势</div>
+        <div className={styles.cardContent}>
+          {countTrend && countTrend.length ? (
+            <ReactEcharts
+              style={{ height: '100%' }}
+              option={option}
+            />
+          ) : (
+            <CustomEmpty />
+          )}
+        </div>
+      </Card>
+    );
+  }
+
+  /**
+   * 监测设备报警/误报排名
    */
   renderRankingTable() {
     const {
       gasMonitor: {
-        history: {
-          rankList=[],
-        }={},
+        rank,
       },
     } = this.props;
+    const { rankTableSort } = this.state;
+    const list = (rank || []).slice(0, 6);
+
+    const columns = [
+      {
+        title: '',
+        dataIndex: 'index',
+        width: 26,
+        render: (value, data, index) => <Badge count={index+1} style={{ backgroundColor: index < 3 ? '#faad14' : '#d9d9d9' }} />,
+      },
+      {
+        title: '监测设备名称',
+        dataIndex: 'equipmentName',
+        render: (value) => value && <Ellipsis length={6} tooltip>{value}</Ellipsis>,
+      },
+      {
+        title: '监测设备位置',
+        dataIndex: 'areaLocation',
+        render: (value) => value && <Ellipsis length={5} tooltip>{value}</Ellipsis>,
+      },
+      {
+        title: '报警次数',
+        dataIndex: 'warningCount',
+        render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
+        sorter: true,
+        sortOrder: rankTableSort === 1 ? 'descend' : false,
+        sortDirections: ['descend'],
+      },
+      {
+        title: '误报次数',
+        dataIndex: 'falseWarningCount',
+        render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
+        sorter: true,
+        sortOrder: rankTableSort === 3 ? 'descend' : false,
+        sortDirections: ['descend'],
+      },
+    ];
 
     return (
       <Card className={styles.card}>
-        <div className={styles.cardTitle}>监测点报警/预警排名</div>
+        <div className={styles.cardTitle}>监测设备报警/误报排名</div>
         <div className={styles.cardContent}>
-          {rankList && rankList.length ? (
+          {list.length ? (
             <Table
               className={styles.table}
-              columns={COLUMNS}
-              dataSource={rankList}
+              columns={columns}
+              dataSource={list}
               rowKey="id"
               pagination={false}
+              onChange={this.handleRankTableChange}
             />
           ) : (
             <CustomEmpty />
@@ -726,7 +890,7 @@ export default class GasHistory extends Component {
   renderTable() {
     const {
       gasMonitor: {
-        list: {
+        historyList: {
           list=[],
           pagination: {
             total,
@@ -743,52 +907,44 @@ export default class GasHistory extends Component {
     const columns = [
       {
         title: '监测对象类型',
-        dataIndex: 'monitorObjectType',
+        dataIndex: 'beMonitorTargetTypeName',
         align: 'center',
       },
       {
         title: '监测对象名称',
-        dataIndex: 'monitorObjectName',
+        dataIndex: 'beMonitorTargetName',
         align: 'center',
       },
       {
-        title: '监测点位名称',
-        dataIndex: 'monitorPointName',
+        title: '监测设备名称',
+        dataIndex: 'monitorEquipmentName',
         align: 'center',
       },
       {
-        title: '监测点位置',
-        dataIndex: 'address',
+        title: '监测设备位置',
+        dataIndex: 'monitorEquipmentAreaLocation',
         align: 'center',
       },
       {
         title: '监测参数',
-        dataIndex: 'paramName',
+        dataIndex: 'paramDesc',
         align: 'center',
       },
       {
         title: '监测数值',
-        dataIndex: 'value',
+        dataIndex: 'monitorValue',
         align: 'center',
-        render: (value, { unit, status }) => isNumber(value) && <Badge status={status > 0 ? 'error' : 'success'} text={`${value}${unit}`} />,
+        render: (value, { paramUnit, statusType }) => isNumber(value) && <Badge status={+statusType === -1 ? 'error' : 'success'} text={`${value}${paramUnit}`} />,
       },
       {
-        title: '预警阈值',
-        dataIndex: 'warning',
-        align: 'center',
-        sorter: true,
-        render: (_, { normalUpper, largeUpper, normalLower, smallLower, unit }) => [isNumber(normalUpper) && (isNumber(largeUpper) ? `${normalUpper}${unit}~${largeUpper}${unit}` : `≥${normalUpper}${unit}`), isNumber(normalLower) && (isNumber(smallLower) ? `${normalLower}${unit}~${smallLower}${unit}` : `≤${normalLower}${unit}`)].filter(v => v).join('，'),
-      },
-      {
-        title: '报警阈值',
+        title: '报警原因',
         dataIndex: 'alarm',
         align: 'center',
-        sorter: true,
-        render: (_, { largeUpper, smallLower, unit }) => [isNumber(largeUpper) && `≥${largeUpper}${unit}`, isNumber(smallLower) && `≤${smallLower}${unit}`].filter(v => v).join('，'),
+        render: (_, { paramUnit, condition, warnLevel, limitValue, monitorValue, statusType }) => +statusType === -1 && `超过${+warnLevel === 1 ? '预警' : '告警'}值${toFixed(Math.abs(limitValue - monitorValue))}${paramUnit}（${+warnLevel === 1 ? '预警' : '告警'}${condition === '>=' ? '上限' : '下限'}为${limitValue}${paramUnit}）`,
       },
       {
-        title: '数据更新时间',
-        dataIndex: 'updateTime',
+        title: '发生时间',
+        dataIndex: 'happenTime',
         align: 'center',
         render: (time) => time && moment(time).format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -799,7 +955,7 @@ export default class GasHistory extends Component {
         <Row className={styles.controlRow} gutter={24}>
           <Col xs={24} sm={12} md={8}>
             <Select className={styles.select} placeholder="请选择安全状态" value={status} onChange={this.handleStatusChange} allowClear>
-              {STATUSES.map(({ key, value }) => (
+              {STATUSES.slice(0, 2).map(({ key, value }) => (
                 <Option key={key}>{value}</Option>
               ))}
             </Select>
@@ -829,33 +985,39 @@ export default class GasHistory extends Component {
               </Select>
             </Col>
           )}
-          <Col xs={24} sm={12} md={8}>
+          {/* <Col xs={24} sm={12} md={8}>
             <Button type="primary" onClick={this.handleExportButtonClick} disabled={!selectedRowKeys.length}>导出明细</Button>
-          </Col>
+          </Col> */}
           <Col span={24}>
-            <Table
-              className={styles.table2}
-              dataSource={list}
-              columns={columns}
-              rowKey="id"
-              scroll={{
-                x: true,
-              }}
-              onChange={this.handleTableChange}
-              pagination={{
-                current: pageNum,
-                pageSize,
-                total,
-                pageSizeOptions: ['5', '10', '15', '20'],
-                showTotal: total => `共计 ${total} 条数据`,
-                showQuickJumper: true,
-                showSizeChanger: true,
-              }}
-              rowSelection={{
-                selectedRowKeys,
-                onChange: this.handleSelectedRowKeysChange,
-              }}
-            />
+            {list.length ? (
+              <Table
+                className={styles.table2}
+                dataSource={list}
+                columns={columns}
+                rowKey="id"
+                scroll={{
+                  x: true,
+                }}
+                onChange={this.handleTableChange}
+                pagination={{
+                  current: pageNum,
+                  pageSize,
+                  total,
+                  pageSizeOptions: ['5', '10', '15', '20'],
+                  showTotal: total => `共计 ${total} 条数据`,
+                  showQuickJumper: true,
+                  showSizeChanger: true,
+                }}
+                // rowSelection={{
+                //   selectedRowKeys,
+                //   onChange: this.handleSelectedRowKeysChange,
+                // }}
+              />
+            ) : (  
+              <div className={styles.cardContent}>
+                <CustomEmpty />
+              </div>
+            )}
           </Col>
         </Row>
       </Card>
