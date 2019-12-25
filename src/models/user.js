@@ -8,6 +8,8 @@ import {
   updatePwd,
 } from '../services/user';
 import { getGrids } from '../services/bigPlatform/gridSelect';
+import { queryAccountList } from '@/services/accountManagement';
+import { getList } from '@/utils/service';
 
 export default {
   namespace: 'user',
@@ -19,6 +21,7 @@ export default {
     systemType: 0,
     menuData: [], // 放在model里是为了防菜单置空闪烁
     isCompany: false, // 是否企业账号
+    userList: [], // 用户列表
   },
 
   effects: {
@@ -79,6 +82,12 @@ export default {
         callback && callback(response);
       }
     },
+    *fetchUserList({ payload, callback }, { call, put }) {
+      const response = yield call(queryAccountList, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveUserList', payload: getList(data) });
+    },
   },
 
   reducers: {
@@ -114,6 +123,9 @@ export default {
     },
     saveIsCompany (state, action) {
       return { ...state, isCompany: action.payload || false }
+    },
+    saveUserList(state, action) {
+      return { ...state, userList: action.payload };
     },
   },
 };
