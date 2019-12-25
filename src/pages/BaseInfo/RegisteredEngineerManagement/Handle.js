@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import { PureComponent, useImperativeHandle } from 'react';
 import { connect } from 'dva';
 import { Card, Button, Form, Input, Select, Upload, DatePicker, Icon, message } from 'antd';
 import router from 'umi/router';
@@ -53,6 +53,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       match: {
         params: { id },
       },
+      form: { setFieldsValue },
     } = this.props;
 
     if (id) {
@@ -66,6 +67,9 @@ export default class RegSafetyEngEdit extends PureComponent {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
           const { companyId, requirementsFilesList, regFilesList } = currentList;
+          const { companyName } = currentList;
+          setFieldsValue({ companyId: companyName });
+
           this.setState({
             editCompanyId: companyId,
             detailList: currentList,
@@ -112,7 +116,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       if (!errors) {
         const { requireFilesList, regFilesList, editCompanyId } = this.state;
         const {
-          name,
+          user,
           sex,
           birth,
           phone,
@@ -123,9 +127,12 @@ export default class RegSafetyEngEdit extends PureComponent {
           regCode,
           period: [startTime, endTime],
         } = values;
+
+        const { key: userId, label: name } = user || {};
         const payload = {
           id,
           companyId: this.companyId || companyId || editCompanyId,
+          userId,
           name,
           sex,
           birth: birth.format('YYYY-MM-DD'),
@@ -199,9 +206,11 @@ export default class RegSafetyEngEdit extends PureComponent {
     const { id, name } = item;
     setFieldsValue({
       companyId: name,
+      user: undefined,
     });
     this.companyId = id;
     this.handleClose();
+    this.getUserList();
   };
 
   // 渲染企业模态框
@@ -376,6 +385,7 @@ export default class RegSafetyEngEdit extends PureComponent {
 
     const {
       companyName,
+      userId,
       name,
       sex,
       birth,
@@ -389,12 +399,12 @@ export default class RegSafetyEngEdit extends PureComponent {
       endDate,
     } = detailList;
 
-    console.log(engineerLevelList);
     // const nameInput = <Input placeholder="请输入姓名" {...itemStyles} />;
     const nameInput = (
       <SearchSelect
         allowClear
-        disabled={!this.getCompanyId()}
+        labelInValue
+        // disabled={!this.getCompanyId()}
         showArrow={false}
         style= {{ width: '70%' }}
         loading={listLoading}
@@ -432,8 +442,8 @@ export default class RegSafetyEngEdit extends PureComponent {
           )}
 
           <FormItem label="姓名" {...formItemLayout}>
-            {getFieldDecorator('name', {
-              initialValue: name,
+            {getFieldDecorator('user', {
+              initialValue: userId ? { key: userId, label: name } : undefined,
               rules: [{ required: true, message: '请选择人员姓名' }],
             })(nameInput)}
           </FormItem>
@@ -451,11 +461,11 @@ export default class RegSafetyEngEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem label="出生年月" {...formItemLayout}>
+          <FormItem label="生日" {...formItemLayout}>
             {getFieldDecorator('birth', {
               initialValue: birth ? moment(+birth) : undefined,
-              rules: [{ required: true, message: '请选择出生年月' }],
-            })(<DatePicker placeholder="请选择出生年月" format="YYYY-MM-DD" {...itemStyles} />)}
+              rules: [{ required: true, message: '请选择生日' }],
+            })(<DatePicker placeholder="请选择生日" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
           <FormItem label="联系电话" {...formItemLayout}>
             {getFieldDecorator('phone', {
@@ -480,7 +490,7 @@ export default class RegSafetyEngEdit extends PureComponent {
           <FormItem label="专业类别" {...formItemLayout}>
             {getFieldDecorator('category', {
               initialValue: category,
-              rules: [{ required: true, message: '请输入专业类别' }],
+              rules: [{ required: true, message: '请选择专业类别' }],
             })(
               <Select placeholder="请选择专业类别" {...itemStyles}>
                 {specialityList.map(({ key, value }) => (

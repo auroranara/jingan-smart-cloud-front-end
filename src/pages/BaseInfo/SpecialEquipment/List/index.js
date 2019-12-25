@@ -368,7 +368,7 @@ export default class SpecialEquipmentList extends PureComponent {
         align: 'center',
         width: 250,
         render: (val, row) => {
-          const { equipName, factoryNumber, brandName, specificationName } = row;
+          const { equipName, factoryNumber, brand, specification } = row;
           return (
             <div className={styles.multi}>
               <div>
@@ -381,11 +381,11 @@ export default class SpecialEquipmentList extends PureComponent {
               </div>
               <div>
                 品牌：
-                {brandName || NO_DATA}
+                {brand || NO_DATA}
               </div>
               <div>
                 型号：
-                {specificationName || NO_DATA}
+                {specification || NO_DATA}
               </div>
             </div>
           );
