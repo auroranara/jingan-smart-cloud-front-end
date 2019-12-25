@@ -55,3 +55,8 @@ export async function fetchOtherGridPoints (params) {
 export async function fetchMapList (params) {
   return request(`/acloud_new/v2/ThreedMap/threedMap?${stringify(params)}`)
 }
+
+// 获取地图区域列表
+export async function fetchMapAreaList (params) {
+  return request(`/acloud_new/v2/ci/zone/zoneForPage?${stringify(params)}`)
+}

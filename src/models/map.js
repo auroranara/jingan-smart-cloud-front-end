@@ -7,6 +7,7 @@ import {
   updateGridPoints,
   fetchOtherGridPoints,
   fetchMapList,
+  fetchMapAreaList,
 } from '@/services/map/map.js';
 
 export default {
@@ -19,6 +20,12 @@ export default {
     userList: [],
     videoList: [],
     videoUrl: null,
+    // 地图
+    mapInfo: {},
+    // 地图区域
+    mapArea: {
+      list: [],
+    },
   },
 
   effects: {
@@ -102,7 +109,23 @@ export default {
       const res = yield call(fetchMapList, payload);
       if (res && res.code === 200) {
         const list = res.data.list;
-        callback && callback(list && list.length ? list[0] : {});
+        const mapInfo = list && list.length ? list[0] : {};
+        yield put({
+          type: 'save',
+          payload: { mapInfo },
+        });
+        callback && callback(mapInfo);
+      }
+    },
+    // 获取地图区域列表 （pageNum:1 pageSize:0 不分页）
+    *fetchMapAreaList ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchMapAreaList, payload);
+      if (res && res.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { mapArea: res.data },
+        });
+        callback && callback(res.data)
       }
     },
   },

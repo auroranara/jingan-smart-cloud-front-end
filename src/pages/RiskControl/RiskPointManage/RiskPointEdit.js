@@ -19,6 +19,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Coordinate from './Coordinate/index';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import CheckModal from '../../LawEnforcement/Illegal/checkModal';
+import MarkerFengMap from '@/pages/RiskControl/RiskPointManage/MarkerFengMap';
 import styles from './RiskPointEdit.less';
 
 const fengMap = fengmap; // eslint-disable-line
@@ -135,8 +136,6 @@ export default class RiskPointEdit extends PureComponent {
     isImgSelect: true,
     imgTypes: [],
     imgIndex: '',
-    coord: null, // 地图定位坐标对象
-    groupId: null, // 地图定位坐标楼层id
   };
 
   // 返回到列表页面
@@ -161,12 +160,9 @@ export default class RiskPointEdit extends PureComponent {
   componentDidMount () {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
-      location: {
-        query: { companyId },
-      },
+      match: { params: { id } },
+      location: { query: { companyId } },
+      form: { setFieldsValue },
     } = this.props;
     const payload = { pageSize: PageSize, pageNum: 1 };
     if (!id) {
@@ -209,25 +205,10 @@ export default class RiskPointEdit extends PureComponent {
 
           this.setState({ flowList: itemFlowList });
           if (pointFixInfoList && pointFixInfoList.length) {
-            let { xnum, ynum, znum, groupId } = pointFixInfoList[0];
+            let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
             const coord = { x: +xnum, y: +ynum, z: +znum };
             groupId = +groupId;
-            this.setState({ groupId, coord });
-            // 获取地图列表
-            dispatch({
-              type: 'map/fetchMapList',
-              payload: { companyId },
-              callback: (data) => {
-                this.initMap({
-                  ...data,
-                  initialGroupId: groupId,
-                  initialMarker: groupId ? {
-                    groupId,
-                    coord,
-                  } : null,
-                })
-              },
-            })
+            setFieldsValue({ mapLocation: { groupId, coord, areaId } })
           }
           flow_id = itemFlowList.map(d => {
             return { flow_id_data: d.flow_id_data, flow_id: d.flow_id };
@@ -286,121 +267,7 @@ export default class RiskPointEdit extends PureComponent {
       dispatch({
         type: 'riskPointManage/clearDetail',
       });
-      // 获取地图列表
-      dispatch({
-        type: 'map/fetchMapList',
-        payload: { companyId },
-        callback: (data) => {
-          this.initMap(data);
-        },
-      })
     };
-  }
-
-  // 初始化地图定位
-  initMap = ({ appName, key, mapId, initialMarker = null, initialGroupId = null }) => {
-    const mapOptions = {
-      //必要，地图容器
-      container: document.getElementById('fengMap'),
-      //地图数据位置
-      mapServerURL: './data/' + mapId,
-      defaultViewMode: fengMap.FMViewMode.MODE_2D,
-      //主题数据位置
-      // mapThemeURL: './data/theme',
-      //设置主题
-      defaultThemeName: '2001',
-      modelSelectedEffect: false,
-      //默认背景颜色,十六进制颜色值或CSS颜色样式 0xff00ff, '#00ff00'
-      // defaultBackgroundColor: '#f7f4f4',
-      //必要，地图应用名称，通过蜂鸟云后台创建
-      appName,
-      //必要，地图应用密钥，通过蜂鸟云后台获取
-      key,
-    };
-
-    //初始化地图对象
-    map = new fengMap.FMMap(mapOptions);
-    //打开Fengmap服务器的地图数据和主题
-    map.openMapById(mapId);
-
-    map.on('mapClickNode', event => {
-      var clickedObj = event.target;
-      if (!clickedObj || !clickedObj.eventInfo) return;
-      const { coord } = clickedObj.eventInfo;
-      // console.log('clickedObj', clickedObj)
-      const groupId = clickedObj.groupID;
-      // 清除之前的坐标
-      this.handleResetMapLocation();
-      this.addImgMarker({ groupId, coord });
-      this.setState({ coord, groupId })
-    });
-    //地图加载完回调事件
-    map.on('loadComplete', event => {
-      //加载按钮型楼层切换控件
-      this.loadBtnFloorCtrl(initialGroupId);
-      initialMarker && this.addImgMarker(initialMarker);
-    });
-  }
-
-  //加载按钮型楼层切换控件
-  loadBtnFloorCtrl = (initialGroupId = 1) => {
-    //楼层控制控件配置参数
-    const btnFloorCtlOpt = new fengMap.controlOptions({
-      //默认在右下角
-      position: fengMap.controlPositon.RIGHT_TOP,
-      //初始楼层按钮显示个数配置。默认显示5层,其他的隐藏，可滚动查看
-      showBtnCount: 6,
-      //初始是否是多层显示，默认单层显示
-      allLayer: false,
-      //位置x,y的偏移量
-      offset: {
-        x: -20,
-        y: 20,
-      },
-    });
-    //不带单/双层楼层控制按钮,初始时只有1个按钮,点击后可弹出其他楼层按钮
-    let btnFloorControl = new fengMap.buttonGroupsControl(map, btnFloorCtlOpt);
-    //楼层切换
-    btnFloorControl.onChange(function (groups, allLayer) {
-      //groups 表示当前要切换的楼层ID数组,
-      //allLayer表示当前楼层是单层状态还是多层状态。
-      // console.log('当前切换楼层：' + groups);
-    });
-    //切换楼层,changeFocusGroup(目标层groupID,是否多层状态)
-    //btnFloorControl.changeFocusGroup(2, true);
-    //默认是否展开楼层列表，true为展开，false为不展开
-    btnFloorControl.expand = true;
-    //楼层控件是否可点击，默认为true
-    btnFloorControl.enableExpand = true;
-    btnFloorControl.changeFocusGroup(initialGroupId);
-  }
-
-  //在点击的位置添加图片标注
-  addImgMarker ({ groupId, coord }) {
-    const group = map.getFMGroup(groupId);
-    //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
-    const layer = group.getOrCreateLayer('imageMarker');
-    var im = new fengMap.FMImageMarker({
-      x: coord.x,
-      y: coord.y,
-      url: 'https://webapi.amap.com/images/dd-via.png',
-      height: 3, //defaultPolygonMarkerHeight,
-      size: 10,
-      callback: function () {
-        im.alwaysShow();
-      },
-    });
-    layer.addMarker(im);
-  }
-
-  // 重置地图定位标注的点
-  handleResetMapLocation = () => {
-    const { groupId } = this.state;
-    if (!groupId) return;
-    const group = map.getFMGroup(groupId);
-    const layer = group.getOrCreateLayer('imageMarker');
-    layer.removeAll();
-    this.setState({ coord: null, groupId: null });
   }
 
   // 点击提交按钮验证表单信息
@@ -417,7 +284,7 @@ export default class RiskPointEdit extends PureComponent {
       riskPointManage: { checkCycleData },
     } = this.props;
 
-    const { picList, isDisabled, coord, groupId } = this.state;
+    const { picList, isDisabled } = this.state;
 
     if (isDisabled === true) {
       return message.error('请先保存平面图定位信息！');
@@ -437,6 +304,7 @@ export default class RiskPointEdit extends PureComponent {
           recommendCycle,
           cycleType,
           itemCode,
+          mapLocation,
         } = values;
         if (+cycleType === 1 && checkCycleData === null) {
           return (
@@ -450,7 +318,7 @@ export default class RiskPointEdit extends PureComponent {
         if (+cycleType === 2 && checkCycle === null) {
           return message.error('自定义检查周期不能为空！');
         }
-        const payload = {
+        let payload = {
           id,
           companyId,
           objectTitle,
@@ -461,8 +329,12 @@ export default class RiskPointEdit extends PureComponent {
           nfcCode,
           itemCode,
           itemFlowList: flow_id,
-          pointFixInfoList: groupId ? [{ imgType: 5, groupId, xnum: coord.x, ynum: coord.y, znum: coord.z }] : [],
+          pointFixInfoList: [],
         };
+        if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+          const { coord, ...resMap } = mapLocation;
+          payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+        }
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
           message.success(msg, 1, this.goBack());
@@ -1349,6 +1221,8 @@ export default class RiskPointEdit extends PureComponent {
   // 渲染信息
   renderInfo () {
     const {
+      location: { query: { companyId } },
+      form,
       form: { getFieldDecorator },
       riskPointManage: {
         checkCycleList,
@@ -1357,8 +1231,10 @@ export default class RiskPointEdit extends PureComponent {
         detail: { data = {} },
       },
     } = this.props;
-
-    const { isDisabled } = this.state;
+    let { xnum, ynum, znum, groupId } = data.pointFixInfoList ? data.pointFixInfoList[0] : {};
+    const coord = { x: +xnum, y: +ynum, z: +znum };
+    groupId = +groupId;
+    // const { isDisabled, groupId, coord } = this.state;
 
     const formItemLayout = {
       labelCol: {
@@ -1369,6 +1245,15 @@ export default class RiskPointEdit extends PureComponent {
         xs: { span: 24 },
         sm: { span: 20 },
         md: { span: 20 },
+      },
+    };
+    const fengMapProps = {
+      id: 'mapLocation',
+      form,
+      companyId,
+      initialData: {
+        groupId,
+        coord,
       },
     };
     return (
@@ -1497,10 +1382,13 @@ export default class RiskPointEdit extends PureComponent {
           </Form.Item>
           {this.renderPicInfo()} */}
           <Form.Item {...formItemLayout} label={fieldLabels.mapLocation}>
-            <div style={{ display: 'flex' }}>
+            {/* <div style={{ display: 'flex' }}>
               <div className={styles.mapLocation} id="fengMap"></div>
               <Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>
-            </div>
+            </div> */}
+            <MarkerFengMap
+              {...fengMapProps}
+            />
           </Form.Item>
         </Form>
 
