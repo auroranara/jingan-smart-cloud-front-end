@@ -287,39 +287,6 @@ export default class accountManagementDetail extends PureComponent {
     );
   }
 
-  /* 渲染角色权限信息 */
-  renderRolePermission() {
-    const {
-      account: {
-        detail: {
-          data: { treeNames, roleNames },
-        },
-      },
-    } = this.props;
-
-    return (
-      <Card title="系统角色权限配置" className={styles.card} bordered={false}>
-        <DescriptionList layout="vertical">
-          <Description term={fieldLabels.roleIds}>
-            <div style={{ paddingTop: 8 }}>
-              {roleNames
-                ? roleNames.split(',').map(roleName => (
-                    <p key={roleName} style={{ margin: 0, padding: 0 }}>
-                      {roleName}
-                    </p>
-                  ))
-                : getEmptyData()}
-            </div>
-          </Description>
-          <Description term={fieldLabels.treeIds}>
-            <div style={{ paddingTop: 8 }}>{treeNames || getEmptyData()}</div>
-          </Description>
-          <p style={{ fontSize: 12 }}>包括该组织下的所有数据</p>
-        </DescriptionList>
-      </Card>
-    );
-  }
-
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
     const {
@@ -408,7 +375,6 @@ export default class accountManagementDetail extends PureComponent {
         wrapperClassName={styles.advancedForm}
       >
         {this.renderBasicInfo()}
-        {/* {this.renderRolePermission()} */}
         {this.renderFooterToolbar()}
       </PageHeaderLayout>
     );
