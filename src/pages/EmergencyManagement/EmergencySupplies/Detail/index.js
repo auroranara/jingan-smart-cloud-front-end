@@ -125,7 +125,7 @@ export default class EmergencySuppliesDetail extends Component {
           .split(',')
           .map(id => {
             const val = treeData.find(item => item.id === id) || {};
-            treeData = val.children;
+            treeData = val.children || [];
             return val.label;
           })
           .join('/');

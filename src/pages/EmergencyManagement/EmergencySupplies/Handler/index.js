@@ -204,7 +204,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
     let treeData = emergencyEquip;
     const typeCodes = value.map(id => {
       const val = treeData.find(item => item.id === id) || {};
-      treeData = val.children;
+      treeData = val.children || [];
       return val.value;
     });
     setFieldsValue({ materialCode: typeCodes[typeCodes.length - 1] });
