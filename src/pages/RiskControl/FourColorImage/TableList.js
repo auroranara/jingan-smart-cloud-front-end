@@ -72,12 +72,15 @@ export default class TableList extends React.Component {
       user: {
         currentUser: { companyId },
       },
+      resourceManagement: { searchInfo = {} },
     } = this.props;
+    const company = { id: searchInfo.id, name: searchInfo.name };
     const payload = {
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 24,
     };
-    this.fetchList({ ...payload, companyId });
+    this.fetchList({ ...payload, companyId: companyId || searchInfo.id });
+    this.setState({ company });
   }
 
   // 获取列表
@@ -88,24 +91,7 @@ export default class TableList extends React.Component {
       payload: {
         ...params,
         pageNum: 1,
-        pageSize: 10,
-      },
-    });
-  };
-
-  handlePageChange = (pageNum, pageSize) => {
-    const { dispatch } = this.props;
-
-    const payload = {
-      pageNum: 1,
-      pageSize: 10,
-    };
-    dispatch({
-      type: 'fourColorImage/fetchList',
-      payload: {
-        ...payload,
-        pageSize,
-        pageNum,
+        pageSize: 24,
       },
     });
   };
@@ -160,13 +146,14 @@ export default class TableList extends React.Component {
       fourColorImage: {
         data: {
           list = [],
-          pagination: { pageNum, pageSize, total },
+          // pagination: { pageNum, pageSize, total },
         },
       },
       user: {
-        currentUser: { unitType },
+        currentUser: { unitType, companyId },
       },
     } = this.props;
+
     const { isDrawing, company = {}, visible } = this.state;
 
     const columns = [
@@ -204,7 +191,11 @@ export default class TableList extends React.Component {
         align: 'center',
         render: (val, record) => (
           <span>
-            <AuthA code={editCode} href={`#/risk-control/four-color-image/edit/${record.id}`}>
+            <AuthA
+              code={editCode}
+              href={`#/risk-control/four-color-image/edit/${record.id}?companyId=${company.id ||
+                companyId}`}
+            >
               编辑
             </AuthA>
             <Divider type="vertical" />
@@ -244,12 +235,12 @@ export default class TableList extends React.Component {
           )
         }
       >
-        {company.id ? (
-          <Row gutter={[8, 8]}>
+        {company.id || companyId ? (
+          <Row>
             <Col span={12}>
               <Card title="地图" bordered={false}>
                 {/* {this.renderDrawButton()} */}
-                <Map isDrawing={isDrawing} />
+                <Map isDrawing={isDrawing} pointList={list} />
               </Card>
             </Col>
             <Col span={12}>
@@ -261,7 +252,8 @@ export default class TableList extends React.Component {
                   <Button
                     type="primary"
                     disabled={!addCode}
-                    href={'#/risk-control/four-color-image/add'}
+                    href={`#/risk-control/four-color-image/add?companyId=${company.id ||
+                      companyId}`}
                   >
                     新增
                   </Button>
@@ -272,18 +264,7 @@ export default class TableList extends React.Component {
                   loading={loading}
                   columns={columns}
                   dataSource={list}
-                  pagination={{
-                    current: pageNum,
-                    pageSize,
-                    total,
-                    showQuickJumper: true,
-                    showSizeChanger: true,
-                    pageSizeOptions: ['5', '10', '15', '20'],
-                    onChange: this.handlePageChange,
-                    onShowSizeChange: (num, size) => {
-                      this.handlePageChange(1, size);
-                    },
-                  }}
+                  pagination={false}
                 />
               </Card>
             </Col>

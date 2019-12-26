@@ -10,6 +10,14 @@ const COLOR = {
   red: 'rgb(255, 72, 72)',
   blue: 'rgb(30, 96, 255)',
 };
+
+const COLORS = {
+  1: 'rgb(252, 31, 2)',
+  2: 'rgb(237, 126, 17)',
+  3: 'rgb(251, 247, 24)',
+  4: 'rgb(30, 96, 255)',
+};
+
 const defaultPolygonMarkerHeight = 5;
 //配置线型、线宽、透明度等
 
@@ -24,7 +32,26 @@ export default class Map extends React.Component {
   }
 
   componentDidMount() {
+    const { onRef } = this.props;
+    onRef && onRef(this);
     this.initMap();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { pointList: prevPointList } = prevProps;
+    console.log('prevPointList', prevPointList);
+    if (JSON.stringify(prevPointList) !== JSON.stringify(this.props.pointList)) {
+      map &&
+        map.on('loadComplete', () => {
+          this.props.pointList.map(item => {
+            const { zoneLevel, coordinateList } = item;
+            const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+            this.drawPolygon(points, COLORS[zoneLevel]);
+            this.setModelColor(points, COLORS[zoneLevel]);
+            return null;
+          });
+        });
+    }
   }
 
   initMap() {
@@ -71,7 +98,6 @@ export default class Map extends React.Component {
       if (!clickedObj || !clickedObj.eventInfo) return;
 
       var { coord } = clickedObj.eventInfo;
-
       if (this.props.isDrawing) {
         // 默认第一张地图
         this.addPoint(1, coord);
@@ -85,10 +111,8 @@ export default class Map extends React.Component {
   //在点击的位置添加图片标注
   addPoint(gid, coord) {
     var group = map.getFMGroup(gid);
-
     //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
     var layer = group.getOrCreateLayer('imageMarker');
-
     var im = new fengMap.FMImageMarker({
       x: coord.x,
       y: coord.y,
@@ -101,6 +125,17 @@ export default class Map extends React.Component {
     });
     layer.addMarker(im);
   }
+
+  setRestMap = () => {
+    const group = map.getFMGroup(1);
+    var layerImg = group.getOrCreateLayer('imageMarker');
+    const layerPolygon = group.getOrCreateLayer('polygonMarker');
+    group.removeLayer(layerImg);
+    group.removeLayer(layerPolygon);
+    const models = map.getDatasByAlias(1, 'model');
+    models.map(model => model.setColorToDefault());
+    map.clearLineMark();
+  };
 
   drawPolygon(points, color) {
     var groupLayer = map.getFMGroup(1);

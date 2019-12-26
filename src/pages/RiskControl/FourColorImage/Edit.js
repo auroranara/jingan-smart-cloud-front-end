@@ -50,7 +50,9 @@ export default class TableList extends React.Component {
     super(props);
     this.state = {
       isDrawing: false,
+      isRest: false,
       detailList: {},
+      pointList: [],
       points: [],
     };
   }
@@ -74,13 +76,20 @@ export default class TableList extends React.Component {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          this.setState({ detailList: currentList });
+          const pointList = list.filter(item => item.id === id) || [];
+          this.setState({ detailList: currentList, pointList });
         },
       });
     }
   }
 
-  handleReset = e => {};
+  onRef = ref => {
+    this.childMap = ref;
+  };
+
+  handleReset = () => {
+    this.childMap.setRestMap();
+  };
 
   renderDrawButton = () => {
     const { isDrawing } = this.state;
@@ -94,7 +103,7 @@ export default class TableList extends React.Component {
         >
           {!isDrawing ? '开始画' : '结束画'}
         </Button>
-        <Button style={{ marginLeft: 10 }} onClick={this.handleReset}>
+        <Button style={{ marginLeft: 10 }} disabled={!!isDrawing} onClick={this.handleReset}>
           重置
         </Button>
       </Fragment>
@@ -107,8 +116,6 @@ export default class TableList extends React.Component {
 
   // 获取地图上的坐标
   getPoints = points => {
-    console.log('points', points);
-
     this.setState({ points });
   };
 
@@ -122,14 +129,22 @@ export default class TableList extends React.Component {
       user: {
         currentUser: { companyId },
       },
+      location: {
+        query: { companyId: extraCompanyId },
+      },
     } = this.props;
-    const { points } = this.state;
+
+    const { points, detailList } = this.state;
+    const { coordinateList } = detailList;
+    if (!id ? points.length === 0 : coordinateList.length === 0) {
+      return message.warning('请在地图上划分区域');
+    }
 
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const payload = {
           id,
-          companyId,
+          companyId: companyId || extraCompanyId,
           coordinate:
             points.length > 0
               ? JSON.stringify(points.map(({ x, y, z, groupID }) => ({ x, y, z, groupID })))
@@ -173,7 +188,7 @@ export default class TableList extends React.Component {
       form: { getFieldDecorator },
     } = this.props;
 
-    const { isDrawing, detailList } = this.state;
+    const { isDrawing, detailList, pointList } = this.state;
 
     const editTitle = id ? '编辑' : '新增';
 
@@ -188,11 +203,16 @@ export default class TableList extends React.Component {
     } = detailList;
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        <Row gutter={[8, 8]}>
+        <Row>
           <Col span={12}>
             <Card title="地图" bordered={false}>
               {this.renderDrawButton()}
-              <Map isDrawing={isDrawing} onRef={this.onRef} getPoints={this.getPoints} />
+              <Map
+                isDrawing={isDrawing}
+                onRef={this.onRef}
+                getPoints={this.getPoints}
+                pointList={pointList}
+              />
             </Card>
           </Col>
           <Col span={12}>
@@ -228,10 +248,18 @@ export default class TableList extends React.Component {
               </FormItem>
               <FormItem label="所属图层" {...formItemLayout}>
                 {getFieldDecorator('zoneType', {
-                  initialValue: zoneType,
+                  initialValue: zoneType ? +zoneType : undefined,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入' }],
-                })(<Input placeholder="请输入" {...itemStyles} />)}
+                  rules: [{ required: true, message: '请选择' }],
+                })(
+                  <Select placeholder="请选择" {...itemStyles} allowClear>
+                    {['风险四色图'].map((item, index) => (
+                      <Select.Option key={index} value={index}>
+                        {item}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                )}
               </FormItem>
               <FormItem label="区域负责人" {...formItemLayout}>
                 {getFieldDecorator('zoneCharger', {
