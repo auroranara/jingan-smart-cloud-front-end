@@ -48,7 +48,7 @@ export default class ChemicalDrawer extends PureComponent {
 
   render() {
     const { visible, onClose } = this.props;
-    const {} = this.state;
+    // const {} = this.state;
     return (
       <DrawerContainer
         title="重点监管危险化学品"

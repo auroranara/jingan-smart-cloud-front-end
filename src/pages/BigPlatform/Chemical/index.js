@@ -62,7 +62,7 @@ export default class Chemical extends PureComponent {
    * 渲染
    */
   render() {
-    const {} = this.state;
+    // const {} = this.state;
     return (
       <BigPlatformLayout
         title="晶安化工安全生产管理系统"

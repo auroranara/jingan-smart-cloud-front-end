@@ -44,7 +44,7 @@ export default class DangerSourceDrawer extends PureComponent {
 
   render() {
     const { visible, onClose } = this.props;
-    const {} = this.state;
+    // const {} = this.state;
     return (
       <DrawerContainer
         title="重大危险源监测"

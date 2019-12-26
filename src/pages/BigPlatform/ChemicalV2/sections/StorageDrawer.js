@@ -126,7 +126,12 @@ const list = [
   ...item,
   name: `${index + 1}号罐`,
   number: creatNum(index + 1, 4),
-  icon: <Wave frontStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.8)' }} backStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.3)' }} />,
+  icon: (
+    <Wave
+      frontStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.8)' }}
+      backStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.3)' }}
+    />
+  ),
   type: '拱顶式',
 }));
 const fields = [
@@ -190,7 +195,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
 
   render() {
     const { visible, onClose, setDrawerVisible } = this.props;
-    const {} = this.state;
+    // const {} = this.state;
 
     return (
       <DrawerContainer
