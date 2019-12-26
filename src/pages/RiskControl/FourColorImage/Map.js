@@ -39,20 +39,23 @@ export default class Map extends React.Component {
 
   componentDidUpdate(prevProps) {
     const { pointList: prevPointList } = prevProps;
-    console.log('prevPointList', prevPointList);
     if (JSON.stringify(prevPointList) !== JSON.stringify(this.props.pointList)) {
       map &&
         map.on('loadComplete', () => {
-          this.props.pointList.map(item => {
-            const { zoneLevel, coordinateList } = item;
-            const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-            this.drawPolygon(points, COLORS[zoneLevel]);
-            this.setModelColor(points, COLORS[zoneLevel]);
-            return null;
-          });
+          this.getPointList(this.props.pointList);
         });
     }
   }
+
+  getPointList = pointList => {
+    pointList.map(item => {
+      const { zoneLevel, coordinateList } = item;
+      const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+      this.drawPolygon(points, COLORS[zoneLevel]);
+      this.setModelColor(points, COLORS[zoneLevel]);
+      return null;
+    });
+  };
 
   initMap() {
     var mapOptions = {
@@ -126,11 +129,12 @@ export default class Map extends React.Component {
     layer.addMarker(im);
   }
 
+  // 重置地图
   setRestMap = () => {
     const group = map.getFMGroup(1);
-    var layerImg = group.getOrCreateLayer('imageMarker');
-    const layerPolygon = group.getOrCreateLayer('polygonMarker');
+    const layerImg = group.getOrCreateLayer('imageMarker');
     group.removeLayer(layerImg);
+    const layerPolygon = group.getOrCreateLayer('polygonMarker');
     group.removeLayer(layerPolygon);
     const models = map.getDatasByAlias(1, 'model');
     models.map(model => model.setColorToDefault());
