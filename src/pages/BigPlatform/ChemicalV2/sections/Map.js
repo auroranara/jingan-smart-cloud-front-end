@@ -60,9 +60,10 @@ export default class Map extends PureComponent {
         map.on('loadComplete', () => {
           polygons.map(polygon => {
             const { zoneLevel, coordinateList } = polygon;
-            const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-            this.addPolygon(points, COLORS[zoneLevel - 1]);
-            this.setModelColor(points, COLORS[zoneLevel - 1]);
+            const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
+            const polygonMarker = this.addPolygon(points, COLORS[zoneLevel - 1]);
+            // this.setModelColor(points, COLORS[zoneLevel - 1]);
+            this.setModelColor2(polygonMarker, COLORS[zoneLevel - 1]);
             return null;
           });
         });
@@ -82,6 +83,16 @@ export default class Map extends PureComponent {
     models
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
       .map(model => model.setColor(color));
+  }
+
+  setModelColor2(polygon, color) {
+    // 默认gid为1
+    const models = map.getDatasByAlias(1, 'model');
+    models.map(model => {
+      const { mapCoord } = model;
+      if (polygon.contain({ ...mapCoord, z: 1 })) model.setColor(color);
+      return null;
+    });
   }
 
   addMarkers = (markerProps, layer) => {
@@ -117,6 +128,7 @@ export default class Map extends PureComponent {
     layer.addMarker(polygonMarker);
     this.polygonArray.push(polygonMarker);
     this.polygonLayers.push(layer);
+    return polygonMarker;
     // polygonMarker.alwaysShow(true);
     // polygonMarker.avoid(false);
   };
