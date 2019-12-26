@@ -31,6 +31,7 @@ export const FIELD_LABELS = {
   degree: '学历',
   attached: '学历附件',
   major: '专业',
+  avatar: '头像',
 };
 
 export const DEFAULT_PAGE_SIZE = 20;
@@ -59,6 +60,11 @@ export const DEGREES = [
   {key: '5', label: '硕士'},
   {key: '6', label: '博士'},
 ];
+
+export function getLabel(key, list) {
+  const target = list.find(({ key: k }) => k === key);
+  return target ? target.label : '-';
+}
 
 export function getInitPhotoList(list) {
   if (!Array.isArray(list))

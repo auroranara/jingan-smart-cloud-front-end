@@ -479,7 +479,7 @@ export default class AssociatedUnit extends PureComponent {
       },
       account: {
         detail: {
-          data: { loginId, active, educationFileList },
+          data: { loginId, active, educationFileList, avatarFileList },
         },
       },
     } = this.props;
@@ -528,6 +528,7 @@ export default class AssociatedUnit extends PureComponent {
             birth: +birthday,
             education: degree,
             educationFileList,
+            avatarFileList,
             unitType,
             unitId: unitId ? (unitTypeChecked === GOV ? unitId.value : unitId.key) : '',
             treeIds: treeIds ? treeIds.key : null,
@@ -1059,6 +1060,7 @@ export default class AssociatedUnit extends PureComponent {
             birth,
             education,
             educationFileList,
+            avatarFileList,
             major,
             unitType,
             accountStatus,
@@ -1215,11 +1217,20 @@ export default class AssociatedUnit extends PureComponent {
             </Col>
           </Row>
           <Row>
-            <Form.Item label={fieldLabels.attached}>
-              {Array.isArray(educationFileList) && educationFileList.length
-                ? educationFileList.map(({ id, fileName, webUrl }) => <a key={id} href={webUrl} style={{ marginRight: 10 }} target="_blank" rel="noopener noreferrer">{fileName}</a>)
-                : '暂无附件'}
-            </Form.Item>
+            <Col lg={24} md={24} sm={24}>
+              <Form.Item label={fieldLabels.avatar}>
+                {Array.isArray(avatarFileList) && avatarFileList.length
+                  ? avatarFileList.map(({ id, fileName, webUrl }) => <p style={{ margin: 0 }}><a key={id} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></p>)
+                  : '暂无头像'}
+              </Form.Item>
+            </Col>
+            <Col lg={24} md={24} sm={24}>
+              <Form.Item label={fieldLabels.attached}>
+                {Array.isArray(educationFileList) && educationFileList.length
+                  ? educationFileList.map(({ id, fileName, webUrl }) => <p style={{ margin: 0 }}><a key={id} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></p>)
+                  : '暂无附件'}
+              </Form.Item>
+            </Col>
           </Row>
         </Card>
         <Card title="关联单位账号信息" className={styles.card} bordered={false}>
