@@ -202,6 +202,7 @@ export default class AccountManagementEdit extends PureComponent {
     checkedRootKey: undefined,
     msgs: {},
     photoList: [],
+    avatarList: [],
   };
 
   /* 生命周期函数 */
@@ -253,8 +254,11 @@ export default class AccountManagementEdit extends PureComponent {
         payload: {
           id,
         },
-        success: ({ educationFileList }) => {
-          this.setState({ photoList: getInitPhotoList(educationFileList) });
+        success: ({ educationFileList, avatarFileList }) => {
+          this.setState({
+            photoList: getInitPhotoList(educationFileList),
+            avatarList: getInitPhotoList(avatarFileList),
+          });
         },
         error: () => {
           goToException();
@@ -365,7 +369,7 @@ export default class AccountManagementEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { unitTypeChecked, checkedRootKey, msgs } = this.state;
+    const { unitTypeChecked, checkedRootKey, msgs, photoList, avatarList } = this.state;
 
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
@@ -398,8 +402,6 @@ export default class AccountManagementEdit extends PureComponent {
           isCheckAll,
         }
       ) => {
-        const { photoList } = this.state;
-
         if (!error) {
           const success = () => {
             const msg = id ? '编辑成功！' : '新增成功！';
@@ -425,6 +427,7 @@ export default class AccountManagementEdit extends PureComponent {
                 birth: +birthday,
                 education: degree,
                 educationFileList: getSubmitPhotoList(photoList),
+                avatarFileList: getSubmitPhotoList(avatarList),
                 major,
               },
               success,
@@ -443,6 +446,7 @@ export default class AccountManagementEdit extends PureComponent {
               birth: +birthday,
               education: degree,
               educationFileList: getSubmitPhotoList(photoList),
+              avatarFileList: getSubmitPhotoList(avatarList),
               major,
               unitType,
               unitId: unitId ? (unitTypeChecked === GOV ? unitId.value : unitId.key) : null,
@@ -960,6 +964,15 @@ export default class AccountManagementEdit extends PureComponent {
     this.setState({ photoList: fList });
   };
 
+  handleUploadAvatar= info => {
+    const { fileList, file } = info;
+    let fList = fileList;
+    if (file.status === 'done' || file.status === undefined){ // file.status === undefined 为文件被beforeUpload拦截下拉的情况
+      fList = handleFileList(fileList).slice(-1);
+    }
+
+    this.setState({ avatarList: fList });
+  };
   handleBeforeUpload = file => {
     const { type } = file;
     const isImage = ['image/jpeg', 'image/png'].includes(type);
@@ -1000,7 +1013,7 @@ export default class AccountManagementEdit extends PureComponent {
       },
       loading,
     } = this.props;
-    const { unitTypeChecked, photoList } = this.state;
+    const { unitTypeChecked, photoList, avatarList } = this.state;
 
     const isUnitUser = this.isUnitUser();
     const unitIdInitValue =
@@ -1193,22 +1206,42 @@ export default class AccountManagementEdit extends PureComponent {
             </Col>
           </Row>
           <Row>
-            <Form.Item label={fieldLabels.attached}>
-              <Upload
-                name="files"
-                data={{ folder: FOLDER }}
-                action={UPLOAD_ACTION}
-                fileList={photoList}
-                // beforeUpload={this.handleBeforeUpload}
-                onChange={this.handleUploadPhoto}
-                headers={{ 'JA-Token': getToken() }}
-              >
-                <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
-                  <div style={{ marginTop: '8px' }}>点击上传</div>
-                </Button>
-              </Upload>
-            </Form.Item>
+            <Col lg={24} md={24} sm={24}>
+              <Form.Item label={fieldLabels.avatar}>
+                <Upload
+                  name="files"
+                  data={{ folder: FOLDER }}
+                  action={UPLOAD_ACTION}
+                  fileList={avatarList}
+                  beforeUpload={this.handleBeforeUpload}
+                  onChange={this.handleUploadAvatar}
+                  headers={{ 'JA-Token': getToken() }}
+                >
+                  <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <div style={{ marginTop: '8px' }}>点击上传</div>
+                  </Button>
+                </Upload>
+              </Form.Item>
+            </Col>
+            <Col lg={24} md={24} sm={24}>
+              <Form.Item label={fieldLabels.attached}>
+                <Upload
+                  name="files"
+                  data={{ folder: FOLDER }}
+                  action={UPLOAD_ACTION}
+                  fileList={photoList}
+                  // beforeUpload={this.handleBeforeUpload}
+                  onChange={this.handleUploadPhoto}
+                  headers={{ 'JA-Token': getToken() }}
+                >
+                  <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <div style={{ marginTop: '8px' }}>点击上传</div>
+                  </Button>
+                </Upload>
+              </Form.Item>
+            </Col>
           </Row>
         </Card>
         {!id && (

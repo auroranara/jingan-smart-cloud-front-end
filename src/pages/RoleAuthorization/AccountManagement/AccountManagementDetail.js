@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import { Form, Card, Modal, Input, message, Badge } from 'antd';
 import { routerRedux } from 'dva/router';
 
@@ -11,6 +12,7 @@ import styles from './AccountManagementEdit.less';
 import { aesEncrypt } from '@/utils/utils';
 import { AuthButton } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
+import { getLabel, FIELD_LABELS as fieldLabels, SEXES, DEGREES } from './utils';
 
 const { Description } = DescriptionList;
 
@@ -34,74 +36,6 @@ const breadcrumbList = [
   {
     title,
     name: '查看账号',
-  },
-];
-
-/* 表单标签 */
-const fieldLabels = {
-  loginName: '用户名',
-  password: '密码',
-  userName: '姓名',
-  phoneNumber: '手机号',
-  unitType: '单位类型',
-  unitId: '所属单位',
-  accountStatus: '账号状态',
-  treeIds: '数据权限',
-  roleIds: '配置角色',
-  departmentId: '所属部门',
-  userType: '用户角色',
-  documentTypeId: '执法证种类',
-  execCertificateCode: '执法证编号',
-};
-const UnitTypes = ['', '维保企业', '政府机构', '平台管理', '社会单位'];
-
-/* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
-
-const UserTypes = [
-  {
-    label: '企业法人',
-    value: 'company_legal_person',
-  },
-  {
-    label: '企业安全负责人',
-    value: 'company_charger',
-  },
-  {
-    label: '企业安全管理员',
-    value: 'company_safe_manager',
-  },
-  {
-    label: '企业安全员',
-    value: 'company_safer',
-  },
-  {
-    label: '运营',
-    value: 'admin',
-  },
-];
-
-const documentTypeIds = [
-  {
-    label: '行政执法证',
-    value: '1',
-  },
-  {
-    label: '行政执法监督证',
-    value: '2',
-  },
-];
-
-const userGovTypes = [
-  {
-    id: 'gov_leader',
-    label: '政府领导',
-  },
-  {
-    id: 'gov_fulltime_worker',
-    label: '专职人员',
   },
 ];
 @connect(({ account, loading }) => ({
@@ -210,40 +144,24 @@ export default class accountManagementDetail extends PureComponent {
         detail: {
           data: {
             loginName,
+            accountStatus,
             userName,
             phoneNumber,
-            // unitType,
-            // unitName,
-            accountStatus,
-            // departmentName,
-            userType,
-            documentTypeId,
-            // execCertificateCode,
+            sex,
+            birth,
+            education,
+            major,
+            educationFileList,
+            avatarFileList,
           },
         },
       },
     } = this.props;
 
-    const { companyType, gavType } = this.state;
-
-    const userTypeObj = UserTypes.find(t => t.value === userType);
-
-    const documentTypeIdObj = documentTypeIds.find(t => t.value === documentTypeId);
-
-    const userGovTypesObj = userGovTypes.find(t => t.id === userType);
-
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
-          <Description term={fieldLabels.loginName}>{loginName || getEmptyData()}</Description>
-          <Description term={fieldLabels.userName}>{userName || getEmptyData()}</Description>
-          <Description term={fieldLabels.phoneNumber}>
-            {(phoneNumber + '').trim() || getEmptyData()}
-          </Description>
-          {/* <Description term={fieldLabels.unitType}>
-            {UnitTypes[unitType] || getEmptyData()}
-          </Description> */}
-          {/* <Description term={fieldLabels.unitId}>{unitName || getEmptyData()}</Description> */}
+          <Description term={fieldLabels.loginName}>{loginName || '-'}</Description>
           <Description term={fieldLabels.accountStatus}>
             {accountStatus === 1 ? (
               <span>
@@ -256,32 +174,28 @@ export default class accountManagementDetail extends PureComponent {
                   <Badge status="error" />
                   禁用
                 </span>
-              ) || getEmptyData()
+              ) || '-'
             )}
           </Description>
-          {/* <Description term={fieldLabels.departmentId}>
-            {departmentName || getEmptyData()}
+          <Description term={fieldLabels.userName}>{userName || '-'}</Description>
+          <Description term={fieldLabels.sex}>{getLabel(sex, SEXES)}</Description>
+          <Description term={fieldLabels.birthday}>{birth ? moment(birth).format('YYYY-MM-DD') : '-'}</Description>
+          <Description term={fieldLabels.phoneNumber}>{(phoneNumber + '').trim() || '-'}</Description>
+          <Description term={fieldLabels.degree}>{getLabel(education, DEGREES)}</Description>
+          <Description term={fieldLabels.major}>{major}</Description>
+
+        </DescriptionList>
+        <DescriptionList col={1} style={{ marginTop: 20 }}>
+          <Description term={fieldLabels.avatar}>
+          {Array.isArray(avatarFileList) && avatarFileList.length
+            ? avatarFileList.map(({ id, fileName, webUrl }) => <p style={{ margin: 0 }}><a key={id} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></p>)
+            : '暂无头像'}
           </Description>
-          {companyType && (
-            <Description term={fieldLabels.userType}>
-              {userTypeObj ? userTypeObj.label : getEmptyData()}
-            </Description>
-          )}
-          {gavType && (
-            <Description term={fieldLabels.userType}>
-              {userGovTypesObj ? userGovTypesObj.label : getEmptyData()}
-            </Description>
-          )}
-          {gavType && (
-            <Description term={fieldLabels.documentTypeId}>
-              {documentTypeIdObj ? documentTypeIdObj.label : getEmptyData()}
-            </Description>
-          )}
-          {gavType && (
-            <Description term={fieldLabels.execCertificateCode}>
-              {execCertificateCode || getEmptyData()}
-            </Description>
-          )} */}
+          <Description term={fieldLabels.attached}>
+            {Array.isArray(educationFileList) && educationFileList.length
+              ? educationFileList.map(({ id, fileName, webUrl }) => <a key={id} href={webUrl} style={{ marginRight: 20 }} target="_blank" rel="noopener noreferrer">{fileName}</a>)
+              : '暂无附件'}
+          </Description>
         </DescriptionList>
       </Card>
     );
