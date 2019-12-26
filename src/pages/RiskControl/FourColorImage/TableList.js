@@ -5,6 +5,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import { hasAuthority } from '@/utils/customAuth';
 
 import styles from './TableList.less';
 import Map from './Map';
@@ -79,12 +80,20 @@ export default class TableList extends React.Component {
       pageNum: 1,
       pageSize: 24,
     };
-    this.fetchList({ ...payload, companyId: companyId || searchInfo.id });
+    this.fetchList({ ...payload, companyId: companyId || searchInfo.id }, res => {
+      setTimeout(() => {
+        this.childMap.getPointList(res.list);
+      }, 1000);
+    });
     this.setState({ company });
   }
 
+  onRef = ref => {
+    this.childMap = ref;
+  };
+
   // 获取列表
-  fetchList = params => {
+  fetchList = (params, callback) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'fourColorImage/fetchList',
@@ -93,6 +102,7 @@ export default class TableList extends React.Component {
         pageNum: 1,
         pageSize: 24,
       },
+      callback,
     });
   };
 
@@ -102,7 +112,10 @@ export default class TableList extends React.Component {
       type: 'fourColorImage/fetchDelete',
       payload: { ids: id },
       success: () => {
-        this.fetchList();
+        this.fetchList({}, res => {
+          this.childMap.getPointList(res.list);
+          this.childMap.setRestMap();
+        });
         message.success('删除成功！');
       },
       error: () => {
@@ -150,11 +163,14 @@ export default class TableList extends React.Component {
         },
       },
       user: {
-        currentUser: { unitType, companyId },
+        currentUser: { permissionCodes, unitType, companyId },
       },
     } = this.props;
+    console.log('list', list);
 
     const { isDrawing, company = {}, visible } = this.state;
+
+    const addAuth = hasAuthority(addCode, permissionCodes);
 
     const columns = [
       {
@@ -166,8 +182,8 @@ export default class TableList extends React.Component {
       },
       {
         title: '负责人',
-        dataIndex: 'zoneCharger',
-        key: 'zoneCharger',
+        dataIndex: 'zoneChargerName',
+        key: 'zoneChargerName',
         align: 'center',
       },
       {
@@ -240,7 +256,7 @@ export default class TableList extends React.Component {
             <Col span={12}>
               <Card title="地图" bordered={false}>
                 {/* {this.renderDrawButton()} */}
-                <Map isDrawing={isDrawing} pointList={list} />
+                <Map isDrawing={isDrawing} onRef={this.onRef} pointList={list} />
               </Card>
             </Col>
             <Col span={12}>
@@ -251,7 +267,7 @@ export default class TableList extends React.Component {
                 extra={
                   <Button
                     type="primary"
-                    disabled={!addCode}
+                    disabled={!addAuth}
                     href={`#/risk-control/four-color-image/add?companyId=${company.id ||
                       companyId}`}
                   >
