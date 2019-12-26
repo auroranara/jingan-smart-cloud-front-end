@@ -307,7 +307,7 @@ export default class GasRealTime extends Component {
                     <div className={styles.addressWrapper}>
                       <Icon type="environment" className={styles.addressIcon} title="监测设备地址" />
                       <div className={styles.addressValue}>
-                        {areaLocation}
+                        {areaLocation || '暂无数据'}
                         {videoList && videoList.length > 0 && <div className={styles.video} onClick={() => this.showVideo(videoList)} />}
                       </div>
                     </div>

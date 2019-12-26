@@ -385,14 +385,29 @@ export default class GasHistory extends Component {
 
   // 排名表格change
   handleRankTableChange = (a, b, { field, order }) => {
-    if (field === 'warningCount' && order === 'descend') {
-      this.setState({
-        rankTableSort: 1,
-      }, this.getRank);
-    } else if (field === 'falseWarningCount' && order === 'descend') {
-      this.setState({
-        rankTableSort: 3,
-      }, this.getRank);
+    console.log(field);
+    console.log(order);
+    if (order) {
+      if (field === 'warningCount') {
+        this.setState({
+          rankTableSort: ({ descend: 1, ascend: 2 })[order],
+        }, this.getRank);
+      } else if (field === 'falseWarningCount') {
+        this.setState({
+          rankTableSort: ({ descend: 3, ascend: 4 })[order],
+        }, this.getRank);
+      }
+    } else {
+      const { rankTableSort } = this.state;
+      if (field === 'warningCount') {
+        this.setState({
+          rankTableSort: ({ 2: 1, 1: 2 })[rankTableSort],
+        }, this.getRank);
+      } else if (field === 'falseWarningCount') {
+        this.setState({
+          rankTableSort: ({ 4: 3, 3: 4 })[rankTableSort],
+        }, this.getRank);
+      }
     }
   }
 
@@ -850,16 +865,16 @@ export default class GasHistory extends Component {
         dataIndex: 'warningCount',
         render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
         sorter: true,
-        sortOrder: rankTableSort === 1 ? 'descend' : false,
-        sortDirections: ['descend'],
+        sortOrder: ({ 1: 'descend', 2: 'ascend' })[rankTableSort] || false,
+        sortDirections: ['ascend', 'descend'],
       },
       {
         title: '误报次数',
         dataIndex: 'falseWarningCount',
         render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
         sorter: true,
-        sortOrder: rankTableSort === 3 ? 'descend' : false,
-        sortDirections: ['descend'],
+        sortOrder: ({ 3: 'descend', 4: 'ascend' })[rankTableSort] || false,
+        sortDirections: ['ascend', 'descend'],
       },
     ];
 
