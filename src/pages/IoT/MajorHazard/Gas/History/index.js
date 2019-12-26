@@ -495,10 +495,10 @@ export default class GasHistory extends Component {
         }={},
       },
     } = this.props;
-    const t = getTransformedTime((avgTime || 0) * 1000).replace(/(\d+)|([a-z]+)/g, '{a|$1} {b|$2}');
+    const t = getTransformedTime((avgTime || 0) * 1000).replace(/(\d+)|([a-z]+)/g, '{a|$1}{b|$2}');
     const option = {
       title: {
-        text: `${t}   {c|工单平均处理时长}    {a|${endProcessCount || 0}} {b|张}   {c|已处理工单}`,
+        text: `${t}   {c|工单平均处理时长}    {a|${endProcessCount || 0}}{b|张}   {c|已处理工单}`,
         textStyle: {
           fontSize: 12,
           lineHeight: 20,
@@ -506,10 +506,10 @@ export default class GasHistory extends Component {
           fontWeight: 'normal',
           rich: {
             a: {
-              fontSize: 24,
+              fontSize: 20,
             },
             b: {
-              verticalAlign: 'bottom',
+              // verticalAlign: 'bottom',
             },
             c: {
               color: 'rgba(0, 0, 0, 0.45)',
@@ -1043,16 +1043,16 @@ export default class GasHistory extends Component {
                 <Col span={24}>
                   {this.renderCount()}
                 </Col>
-                <Col xxl={8} lg={12} sm={24} xs={24}>
+                <Col xxl={10} lg={12} sm={24} xs={24}>
                   {this.renderDurationChart()}
                 </Col>
-                <Col xxl={16} lg={12} sm={24} xs={24}>
+                <Col xxl={14} lg={12} sm={24} xs={24}>
                   {this.renderTrendChart()}
                 </Col>
-                <Col xxl={16} lg={12} sm={24} xs={24}>
+                <Col xxl={14} lg={12} sm={24} xs={24}>
                   {this.renderTrend2Chart()}
                 </Col>
-                <Col xxl={8} lg={12} sm={24} xs={24}>
+                <Col xxl={10} lg={12} sm={24} xs={24}>
                   {this.renderRankingTable()}
                 </Col>
               </Fragment>
