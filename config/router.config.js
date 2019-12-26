@@ -1253,7 +1253,7 @@ module.exports = env => {
               name: 'fourColorImage', // 风险四色图管理
               code: 'riskControl.fourColorImage',
               path: '/risk-control/four-color-image',
-              developing: true,
+              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -1277,13 +1277,13 @@ module.exports = env => {
                   name: 'add',
                   code: 'riskControl.fourColorImage.add',
                   path: '/risk-control/four-color-image/add',
-                  // "component": "./RiskControl/FourColorImage/Edit",
+                  component: "./RiskControl/FourColorImage/Edit",
                 },
                 {
                   name: 'edit',
                   code: 'riskControl.fourColorImage.edit',
                   path: '/risk-control/four-color-image/edit/:id',
-                  // "component": "./RiskControl/FourColorImage/Edit",
+                  component: "./RiskControl/FourColorImage/Edit",
                 },
               ],
             },
@@ -3482,49 +3482,58 @@ module.exports = env => {
                   name: 'userTransmissionDevice',
                   redirect: '/device-management/user-transmission-device/list',
                 },
-                { // 企业列表
+                {
+                  // 企业列表
                   path: '/device-management/user-transmission-device/list',
                   code: 'deviceManagement.userTransmissionDevice.listView',
                   name: 'list',
                   component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDevice',
                 },
-                { // 用户传输装置列表
+                {
+                  // 用户传输装置列表
                   path: '/device-management/user-transmission-device/:companyId/detail',
                   code: 'deviceManagement.userTransmissionDevice.view',
                   name: 'deviceDetail',
-                  component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
+                  component:
+                    './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
                 },
                 {
-                  path: '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
+                  path:
+                    '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
                   code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
                   name: 'importPointPosition',
                   component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
                 },
-                { // 用户传输装置新增
+                {
+                  // 用户传输装置新增
                   path: '/device-management/user-transmission-device/add',
                   code: 'deviceManagement.userTransmissionDevice.add',
                   name: 'add',
                   component: './DeviceManagement/UserTransmissionDevice/TransmissionHandle',
                 },
-                { // 用户传输装置编辑
+                {
+                  // 用户传输装置编辑
                   path: '/device-management/user-transmission-device/edit/:id',
                   code: 'deviceManagement.userTransmissionDevice.edit',
                   name: 'edit',
                   component: './DeviceManagement/UserTransmissionDevice/TransmissionHandle',
                 },
                 {
-                  path: '/device-management/user-transmission-device/:companyId/point-managament/:hostId',
+                  path:
+                    '/device-management/user-transmission-device/:companyId/point-managament/:hostId',
                   code: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
                   name: 'pointManagement',
                   component: './DeviceManagement/UserTransmissionDevice/PointManagement',
                 },
-                { // 消防主机新增
+                {
+                  // 消防主机新增
                   path: '/device-management/user-transmission-device/host/:type/add',
                   code: 'deviceManagement.userTransmissionDevice.host.add',
                   name: 'addHost',
                   component: './DeviceManagement/DataProcessingEquipment/AddEquipment',
                 },
-                { // 消防主机编辑
+                {
+                  // 消防主机编辑
                   path: '/device-management/user-transmission-device/host/:type/edit/:id',
                   code: 'deviceManagement.userTransmissionDevice.host.edit',
                   name: 'editHost',
