@@ -26,6 +26,8 @@ import { getFileList } from '@/pages/BaseInfo/utils';
 import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import codesMap from '@/utils/codes';
+// 地图定位
+import MarkerFengMap from '@/components/MarkerFengMap';
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -92,7 +94,7 @@ export default class SpecialEquipment extends PureComponent {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       form: { setFieldsValue },
       match: { params: { id = null } = {} },
@@ -197,6 +199,12 @@ export default class SpecialEquipment extends PureComponent {
             area,
             location,
           });
+          if (pointFixInfoList && pointFixInfoList.length) {
+            let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+            const coord = { x: +xnum, y: +ynum, z: +znum };
+            groupId = +groupId;
+            setFieldsValue({ mapLocation: { groupId, coord, areaId } })
+          }
         }
       );
     });
@@ -228,16 +236,16 @@ export default class SpecialEquipment extends PureComponent {
     } = this.props;
     const { code, pointFixInfoList, fileList } = this.state;
 
-    validateFields((error, formData) => {
+    validateFields((error, { mapLocation, ...resData }) => {
       if (!error) {
         const payload = {
-          ...formData,
-          companyId: unitType === 4 ? companyId : formData.companyId,
-          category: formData.category.join(','),
+          ...resData,
+          companyId: unitType === 4 ? companyId : resData.companyId,
+          category: resData.category.join(','),
           code,
-          area: +formData.locationType === 1 ? formData.area : '',
+          area: +resData.locationType === 1 ? resData.area : '',
           pointFixInfoList,
-          usePeriod: formData.usePeriod || 0,
+          usePeriod: resData.usePeriod || 0,
           detectReport: JSON.stringify(
             fileList.map(({ name, url, dbUrl }) => ({
               fileName: name,
@@ -247,6 +255,10 @@ export default class SpecialEquipment extends PureComponent {
             }))
           ),
         };
+        if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+          const { coord, ...resMap } = mapLocation;
+          payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+        }
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           router.push(listUrl);
@@ -575,29 +587,40 @@ export default class SpecialEquipment extends PureComponent {
     } = this.state;
     const companyId = selectedCompany.id;
     const { locationType, brand } = getFieldsValue();
-    const FlatPicProps = {
-      visible: picModalVisible,
-      onCancel: () => {
-        this.setState({ picModalVisible: false });
-      },
+    // const FlatPicProps = {
+    //   visible: picModalVisible,
+    //   onCancel: () => {
+    //     this.setState({ picModalVisible: false });
+    //   },
+    //   form,
+    //   buildings, // 建筑物列表
+    //   floors, // 楼层列表
+    //   imgList, // 定位图列表
+    //   pointFixInfoList, // 平面图标注列表
+    //   editingIndex,
+    //   isImgSelect,
+    //   imgIdCurrent,
+    //   flatGraphic,
+    //   setState: newState => {
+    //     this.setState(newState);
+    //   },
+    //   dispatch,
+    //   companyId,
+    //   handleBuildingChange: this.handleBuildingChange,
+    //   changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
+    // };
+    let { xnum, ynum, znum, groupId } = pointFixInfoList && pointFixInfoList.length ? pointFixInfoList[0] : {};
+    const coord = { x: +xnum, y: +ynum, z: +znum };
+    groupId = +groupId;
+    const fengMapProps = {
+      id: 'mapLocation',
       form,
-      buildings, // 建筑物列表
-      floors, // 楼层列表
-      imgList, // 定位图列表
-      pointFixInfoList, // 平面图标注列表
-      editingIndex,
-      isImgSelect,
-      imgIdCurrent,
-      flatGraphic,
-      setState: newState => {
-        this.setState(newState);
-      },
-      dispatch,
       companyId,
-      handleBuildingChange: this.handleBuildingChange,
-      changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
+      initialData: {
+        groupId,
+        coord,
+      },
     };
-
     return (
       <Card>
         <Form>
@@ -892,7 +915,7 @@ export default class SpecialEquipment extends PureComponent {
             )}
           {companyId && (
             <FormItem label="平面图标注" {...formItemLayout}>
-              <Button
+              {/* <Button
                 type="primary"
                 style={{ padding: '0 12px' }}
                 onClick={this.handleAddFlatGraphic}
@@ -902,7 +925,8 @@ export default class SpecialEquipment extends PureComponent {
               >
                 新增
               </Button>
-              <FlatPic {...FlatPicProps} />
+              <FlatPic {...FlatPicProps} /> */}
+              <MarkerFengMap {...fengMapProps} />
             </FormItem>
           )}
         </Form>
@@ -916,16 +940,16 @@ export default class SpecialEquipment extends PureComponent {
               编辑
             </Button>
           ) : (
-            <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
-              提交
+              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+                提交
             </Button>
-          )}
+            )}
         </Row>
       </Card>
     );
   };
 
-  render() {
+  render () {
     const {
       companyLoading,
       match: { params: { id = null } = {} },

@@ -19,13 +19,13 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Coordinate from './Coordinate/index';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import CheckModal from '../../LawEnforcement/Illegal/checkModal';
-import MarkerFengMap from '@/pages/RiskControl/RiskPointManage/MarkerFengMap';
+// 地图定位
+import MarkerFengMap from '@/components/MarkerFengMap';
 import styles from './RiskPointEdit.less';
 
 const fengMap = fengmap; // eslint-disable-line
 const { Option } = Select;
 let flow_id = [];
-let map;
 const PageSize = 10;
 
 //  默认分页参数
@@ -1231,7 +1231,7 @@ export default class RiskPointEdit extends PureComponent {
         detail: { data = {} },
       },
     } = this.props;
-    let { xnum, ynum, znum, groupId } = data.pointFixInfoList ? data.pointFixInfoList[0] : {};
+    let { xnum, ynum, znum, groupId } = data.pointFixInfoList && data.pointFixInfoList.length ? data.pointFixInfoList[0] : {};
     const coord = { x: +xnum, y: +ynum, z: +znum };
     groupId = +groupId;
     // const { isDisabled, groupId, coord } = this.state;
@@ -1386,9 +1386,7 @@ export default class RiskPointEdit extends PureComponent {
               <div className={styles.mapLocation} id="fengMap"></div>
               <Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>
             </div> */}
-            <MarkerFengMap
-              {...fengMapProps}
-            />
+            <MarkerFengMap {...fengMapProps} />
           </Form.Item>
         </Form>
 

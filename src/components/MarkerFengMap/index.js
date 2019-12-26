@@ -3,7 +3,7 @@ import {
   Button,
 } from 'antd';
 import { connect } from 'dva';
-import { isArray } from '@/utils/utils';
+import PropTypes from 'prop-types';
 import styles from './index.less';
 
 const fengMap = fengmap; // eslint-disable-line
@@ -12,6 +12,20 @@ const fengMap = fengmap; // eslint-disable-line
   map,
 }))
 export default class MarkerFengMap extends PureComponent {
+
+  static propTypes = {
+    id: PropTypes.string.isRequired,
+    form: PropTypes.object.isRequired,
+    companyId: PropTypes.string,
+    initialData: PropTypes.shape({
+      groupId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      coord: PropTypes.object,
+    }),
+  }
+
+  static defaultProps = {
+    initialData: {},
+  }
 
   constructor(props) {
     super(props);
@@ -130,6 +144,7 @@ export default class MarkerFengMap extends PureComponent {
     this.btnFloorControl.expand = true;
     //楼层控件是否可点击，默认为true
     this.btnFloorControl.enableExpand = true;
+    // 切换到指定楼层
     this.btnFloorControl.changeFocusGroup(groupId);
   }
 
