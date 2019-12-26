@@ -10,6 +10,9 @@ import { stringify } from 'qs';
 import router from 'umi/router';
 import classNames from 'classnames';
 import moment from 'moment';
+import {
+  GET_STATUS_NAME,
+} from '@/pages/IoT/AlarmMessage';
 import styles from './index.less';
 
 const GET_REAL_TIME_LIST = 'gasMonitor/getRealTimeList';
@@ -30,27 +33,8 @@ const options = {
   pingMsg: 'heartbeat',
 };
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
-  if (+statusType === -1) {
-    if (+warnLevel === 1) {
-      return '预警';
-    } else if (+warnLevel === 2) {
-      return '报警';
-    }
-  } else if (+statusType === -2) {
-    return '失联';
-  } else if (+statusType === -3) {
-    return '故障';
-  } else if (+statusType === 1) {
-    return '报警解除';
-  } else if (+statusType === 2) {
-    return '恢复在线';
-  } else if (+statusType === 3) {
-    return '故障消除';
-  }
-};
 
-@connect(({ user: { currentUser: { unitId } }, gasMonitor, loading }, { route: { code } }) => {
+@connect(({ user: { currentUser: { unitId } }, gasMonitor }, { route: { code } }) => {
   const { breadcrumbList } = code.split('.').reduce((result, item) => {
     const key = `${result.key}.${item}`;
     const title = locales[key];
@@ -70,12 +54,11 @@ const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
     unitId,
     breadcrumbList,
     gasMonitor,
-    loading: loading.effects[GET_REAL_TIME_LIST],
   };
 }, (dispatch) => ({
   getRealTimeList(payload, callback) {
     dispatch({
-      type:GET_REAL_TIME_LIST,
+      type: GET_REAL_TIME_LIST,
       payload,
       callback: (success, data) => {
         if (!success) {
@@ -88,11 +71,14 @@ const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
 }))
 export default class GasRealTime extends Component {
   state = {
+    loading: false,
     tabActiveKey: undefined,
     videoList: [],
     videoVisible: false,
     videoKeyId: undefined,
   }
+
+  myTimer = null
 
   componentDidMount() {
     const { unitId } = this.props;
@@ -121,8 +107,11 @@ export default class GasRealTime extends Component {
       try {
         const data = JSON.parse(e.data).data;
         console.log(data);
-        if (['405', '406'].includes(`${data.monitorEquipmentType}`) && ['1', '2'].includes(`${data.warnLevel}`)) {
-          this.showNotification(data); 
+        if (['405', '406'].includes(`${data.monitorEquipmentType}`)) {
+          this.reload();
+          if (['1', '2'].includes(`${data.warnLevel}`)) {
+            this.showNotification(data); 
+          }
         }
       } catch (error) {
         console.log('error', error);
@@ -137,12 +126,37 @@ export default class GasRealTime extends Component {
   componentWillUnmount() {
     this.ws.close();
     notification.destroy();
+    clearTimeout(this.myTimer);
+  }
+
+  reload = (callback) => {
+    const {
+      unitId,
+      getRealTimeList,
+    } = this.props;
+    const { tabActiveKey } = this.state;
+    clearTimeout(this.myTimer);
+    getRealTimeList({
+      companyId: unitId,
+      equipmentTypes: '405,406',
+      warnStatus: WARN_STATUS_MAPPER[tabActiveKey],
+    }, () => {
+      callback && callback();
+      this.setTimer();
+    });
+  }
+
+  setTimer = () => {
+    this.myTimer = setTimeout(() => {
+      this.reload();
+    }, 5 * 1000);
   }
 
   showNotification = ({
     id,
     happenTime,
     statusType,
+    fixType,
     warnLevel,
     monitorEquipmentTypeName,
     paramDesc,
@@ -153,7 +167,7 @@ export default class GasRealTime extends Component {
     monitorEquipmentName,
     faultTypeName,
   }) => {
-    const typeName = GET_TYPE_NAME({ statusType, warnLevel });
+    const typeName = GET_STATUS_NAME({ statusType, warnLevel, fixType });
     notification.open({
       key: id,
       icon: <span className={classNames(styles.notificationIcon, statusType < 0 ? styles.error : styles.success)} />,
@@ -161,7 +175,7 @@ export default class GasRealTime extends Component {
       description: (
         <Fragment>
           <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div>
-          {![-2, -3].includes(+statusType) && <div>{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${['预警', '报警'].includes(typeName) ? `，超过${typeName}值${Math.abs(monitorValue - limitValue)}${paramUnit || ''}` : ''}`}</div>}
+          {![-2, -3].includes(+statusType) && <div>{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${['预警', '告警'].includes(typeName) ? `，超过${typeName}值${Math.abs(monitorValue - limitValue)}${paramUnit || ''}` : ''}`}</div>}
           {[-3, 3].includes(+statusType) && <div>{`故障类型：${faultTypeName || ''}`}</div>}
           <div>{`监测设备：${monitorEquipmentName || ''}`}</div>
           <div>{`区域位置：${monitorEquipmentAreaLocation || ''}`}</div>
@@ -189,17 +203,15 @@ export default class GasRealTime extends Component {
   }
 
   handleTabChange = (tabActiveKey) => {
-    const {
-      unitId,
-      getRealTimeList,
-    } = this.props;
-    getRealTimeList({
-      companyId: unitId,
-      equipmentTypes: '405,406',
-      warnStatus: WARN_STATUS_MAPPER[tabActiveKey],
-    });
     this.setState({
+      loading: true,
       tabActiveKey,
+    }, () => {
+      this.reload(() => {
+        this.setState({
+          loading: false,
+        });
+      });
     });
   }
 
@@ -236,7 +248,7 @@ export default class GasRealTime extends Component {
           <div className={styles.paramTrendWrapper}>
             <Icon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
             <div className={styles.paramTrendValue}>{Math.abs(realValue - limitValue)}</div>
-            <div className={styles.paramTrendDescription}>超过报警阈值</div>
+            <div className={styles.paramTrendDescription}>超过告警阈值</div>
           </div>
         </div>
       );
@@ -264,9 +276,8 @@ export default class GasRealTime extends Component {
       gasMonitor: {
         realTimeList=[],
       },
-      loading,
     } = this.props;
-    const { tabActiveKey, videoList, videoVisible, videoKeyId } = this.state;
+    const { tabActiveKey, videoList, videoVisible, videoKeyId, loading } = this.state;
 
     return (
       <PageHeaderLayout

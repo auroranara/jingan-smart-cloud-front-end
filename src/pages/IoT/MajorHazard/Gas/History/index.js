@@ -934,7 +934,7 @@ export default class GasHistory extends Component {
         title: '监测数值',
         dataIndex: 'monitorValue',
         align: 'center',
-        render: (value, { paramUnit, statusType }) => isNumber(value) && <Badge status={+statusType === -1 ? 'error' : 'success'} text={`${value}${paramUnit}`} />,
+        render: (value, { paramUnit, statusType }) => isNumber(value) && <Badge status={+statusType === -1 ? 'error' : 'success'} text={`${value}${paramUnit || ''}`} />,
       },
       {
         title: '报警原因',
