@@ -244,8 +244,8 @@ export default class AlarmWorkOrderDetail extends Component {
         reportType,
         reportTypeName,
         areaLocation,
-        reportPhotoList,
-        reportDesc,
+        sitePhotoList,
+        disasterDesc,
         loopNumber,
         partNumber,
       }={},
@@ -325,16 +325,16 @@ export default class AlarmWorkOrderDetail extends Component {
           <Fragment>
             <DescriptionList className={styles.descriptionList} gutter={24} col={1}>
               <Description term="现场照片">
-                {reportPhotoList && reportPhotoList.length ? (
+                {sitePhotoList && sitePhotoList.length ? (
                   <div className={styles.imageContainer}>
-                    {reportPhotoList.map(({ webUrl }, index) => (
+                    {sitePhotoList.map((webUrl, index) => (
                       <div className={styles.imageWrapper} key={index}>
                         <div
                           className={styles.image}
                           style={{
                             backgroundImage: `url(${webUrl})`,
                           }}
-                          onClick={() => this.setState({ images: reportPhotoList.map(({ webUrl }) => webUrl), currentImage: index })}
+                          onClick={() => this.setState({ images: sitePhotoList.map((webUrl) => webUrl), currentImage: index })}
                         />
                       </div>
                     ))}
@@ -344,7 +344,7 @@ export default class AlarmWorkOrderDetail extends Component {
             </DescriptionList>
             <DescriptionList gutter={24} col={1}>
               <Description term="问题描述" className={styles.description}>
-                {reportDesc || <EmptyData />}
+                {disasterDesc || <EmptyData />}
               </Description>
             </DescriptionList>
           </Fragment>
