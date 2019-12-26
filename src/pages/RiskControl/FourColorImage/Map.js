@@ -10,21 +10,16 @@ const COLOR = {
   red: 'rgb(255, 72, 72)',
   blue: 'rgb(30, 96, 255)',
 };
+
+const COLORS = {
+  1: 'rgb(252, 31, 2)',
+  2: 'rgb(237, 126, 17)',
+  3: 'rgb(251, 247, 24)',
+  4: 'rgb(30, 96, 255)',
+};
+
 const defaultPolygonMarkerHeight = 5;
 //配置线型、线宽、透明度等
-const lineStyle = {
-  //设置线的宽度
-  lineWidth: 4,
-  //设置线的透明度
-  alpha: 0.8,
-
-  // offsetHeight 默认的高度为 1, (离楼板1米的高度)
-  height: defaultPolygonMarkerHeight,
-  //设置线的类型为导航线
-  lineType: fengMap.FMLineType.FMARROW,
-  //设置线动画,false为动画
-  noAnimate: true,
-};
 
 let map;
 let points = [];
@@ -37,7 +32,26 @@ export default class Map extends React.Component {
   }
 
   componentDidMount() {
+    const { onRef } = this.props;
+    onRef && onRef(this);
     this.initMap();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { pointList: prevPointList } = prevProps;
+    console.log('prevPointList', prevPointList);
+    if (JSON.stringify(prevPointList) !== JSON.stringify(this.props.pointList)) {
+      map &&
+        map.on('loadComplete', () => {
+          this.props.pointList.map(item => {
+            const { zoneLevel, coordinateList } = item;
+            const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+            this.drawPolygon(points, COLORS[zoneLevel]);
+            this.setModelColor(points, COLORS[zoneLevel]);
+            return null;
+          });
+        });
+    }
   }
 
   initMap() {
@@ -67,15 +81,16 @@ export default class Map extends React.Component {
     map.openMapById(fmapID);
 
     //2D、3D控件配置
-    // var toolControl = new fengMap.toolControl(map, {
-    //   init2D: true, //初始化2D模式
-    //   groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
-    //   position: fengMap.controlPositon.LEFT_TOP,
-    //   //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-    //   clickCallBack: function(type, value) {
-    //     console.log(type, value);
-    //   },
-    // });
+    var toolControl = new fengMap.toolControl(map, {
+      init2D: true, //初始化2D模式
+      groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
+      position: fengMap.controlPositon.LEFT_TOP,
+      offset: { x: 0, y: 40 },
+      //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
+      clickCallBack: function(type, value) {
+        console.log(type, value);
+      },
+    });
 
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
@@ -83,7 +98,6 @@ export default class Map extends React.Component {
       if (!clickedObj || !clickedObj.eventInfo) return;
 
       var { coord } = clickedObj.eventInfo;
-
       if (this.props.isDrawing) {
         // 默认第一张地图
         this.addPoint(1, coord);
@@ -97,10 +111,8 @@ export default class Map extends React.Component {
   //在点击的位置添加图片标注
   addPoint(gid, coord) {
     var group = map.getFMGroup(gid);
-
     //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
     var layer = group.getOrCreateLayer('imageMarker');
-
     var im = new fengMap.FMImageMarker({
       x: coord.x,
       y: coord.y,
@@ -113,6 +125,17 @@ export default class Map extends React.Component {
     });
     layer.addMarker(im);
   }
+
+  setRestMap = () => {
+    const group = map.getFMGroup(1);
+    var layerImg = group.getOrCreateLayer('imageMarker');
+    const layerPolygon = group.getOrCreateLayer('polygonMarker');
+    group.removeLayer(layerImg);
+    group.removeLayer(layerPolygon);
+    const models = map.getDatasByAlias(1, 'model');
+    models.map(model => model.setColorToDefault());
+    map.clearLineMark();
+  };
 
   drawPolygon(points, color) {
     var groupLayer = map.getFMGroup(1);
@@ -129,6 +152,16 @@ export default class Map extends React.Component {
     layer.addMarker(polygonMarker);
   }
 
+  // 设置model的颜色
+  setModelColor(points, color) {
+    // 默认gid为1
+    const models = map.getDatasByAlias(1, 'model');
+    models
+      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
+      .map(model => model.setColor(color));
+    // console.log(models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points)));
+  }
+
   //绘制线图层
   drawLines(
     points,
@@ -137,7 +170,6 @@ export default class Map extends React.Component {
       lineWidth: 4,
       //设置线的透明度
       alpha: 0.8,
-
       // offsetHeight 默认的高度为 1, (离楼板1米的高度)
       height: defaultPolygonMarkerHeight,
       //设置线的类型为导航线
@@ -154,6 +186,7 @@ export default class Map extends React.Component {
     line.addSegment(seg);
     var lineObject = map.drawLineMark(line, lineStyle);
     naviLines.push(lineObject);
+    this.props.getPoints(points);
   }
 
   render() {
@@ -161,6 +194,8 @@ export default class Map extends React.Component {
     if (!isDrawing && points.length > 0) {
       // doDraw
       this.drawPolygon(points, COLOR.blue);
+      // 建筑物上色
+      this.setModelColor(points, COLOR.blue);
       map.clearLineMark();
       points = [];
     }
