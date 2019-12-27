@@ -19,7 +19,7 @@ import {
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 // 地图定位
-import MarkerFengMap from '@/components/MarkerFengMap';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 
 // import { numReg } from '@/utils/validate';
 import Coordinate from '@/components/Coordinate';
@@ -984,7 +984,7 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
           {companyId && (
             <FormItem {...formItemLayout} label={fieldLabels.mapLocation}>
-              <MarkerFengMap {...fengMapProps} />
+              <MapMarkerSelect {...fengMapProps} />
             </FormItem>
           )}
         </Form>

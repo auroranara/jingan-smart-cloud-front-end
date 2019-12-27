@@ -28,7 +28,7 @@ import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 // 选择企业弹窗
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // 地图定位
-import MarkerFengMap from '@/components/MarkerFengMap';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '@/pages/DeviceManagement/NewSensor/AddSensor.less';
 
 const FormItem = Form.Item;
@@ -683,7 +683,7 @@ export default class AddMonitoringDevice extends Component {
                     新增
                   </Button>
                   <FlatPic {...FlatPicProps} /> */}
-                  <MarkerFengMap {...fengMapProps} />
+                  <MapMarkerSelect {...fengMapProps} />
                 </FormItem>
               </Form>
             </Card>

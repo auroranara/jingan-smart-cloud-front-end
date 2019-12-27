@@ -27,7 +27,7 @@ import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import codesMap from '@/utils/codes';
 // 地图定位
-import MarkerFengMap from '@/components/MarkerFengMap';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -928,7 +928,7 @@ export default class SpecialEquipment extends PureComponent {
                 新增
               </Button>
               <FlatPic {...FlatPicProps} /> */}
-              <MarkerFengMap {...fengMapProps} />
+              <MapMarkerSelect {...fengMapProps} />
             </FormItem>
           )}
         </Form>
