@@ -1,9 +1,10 @@
 import { connect } from 'dva';
 import React, { Fragment } from 'react';
-import { Button, Row, Col, Form, Input, Card, Select, message } from 'antd';
+import { Button, Row, Col, Form, Input, Card, Select, Spin, message, AutoComplete } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { phoneReg } from '@/utils/validate';
 import router from 'umi/router';
+import debounce from 'lodash/debounce';
 import styles from './TableList.less';
 import Map from './Map';
 
@@ -40,14 +41,17 @@ const itemStyles = {
   },
 };
 @Form.create()
-@connect(({ fourColorImage, user, loading }) => ({
+@connect(({ fourColorImage, user, account, loading }) => ({
   fourColorImage,
   user,
+  account,
   loading: loading.models.fourColorImage,
+  perLoading: loading.effects['account/fetch'],
 }))
 export default class TableList extends React.Component {
   constructor(props) {
     super(props);
+    this.handlePersonSearch = debounce(this.handlePersonSearch, 800);
     this.state = {
       isDrawing: false,
       isRest: false,
@@ -63,7 +67,22 @@ export default class TableList extends React.Component {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { unitType, companyId },
+      },
+      location: {
+        query: { companyId: extraCompanyId },
+      },
     } = this.props;
+
+    dispatch({
+      type: 'account/fetch',
+      payload: {
+        unitId: unitType === 4 ? companyId : extraCompanyId,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
 
     if (id) {
       dispatch({
@@ -83,6 +102,10 @@ export default class TableList extends React.Component {
     }
   }
 
+  goBack = () => {
+    router.push('/risk-control/four-color-image/list');
+  };
+
   onRef = ref => {
     this.childMap = ref;
   };
@@ -91,33 +114,44 @@ export default class TableList extends React.Component {
     this.childMap.setRestMap();
   };
 
-  renderDrawButton = () => {
-    const { isDrawing } = this.state;
-    return (
-      <Fragment>
-        <Button
-          style={{ marginLeft: 40 }}
-          onClick={() => {
-            this.setState({ isDrawing: !isDrawing });
-          }}
-        >
-          {!isDrawing ? '开始画' : '结束画'}
-        </Button>
-        <Button style={{ marginLeft: 10 }} disabled={!!isDrawing} onClick={this.handleReset}>
-          重置
-        </Button>
-      </Fragment>
-    );
+  // 模糊搜索个人列表
+  handlePersonSearch = value => {
+    const { dispatch } = this.props;
+    // 根据输入值获取列表
+    dispatch({
+      type: 'account/fetch',
+      payload: {
+        userName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 18,
+      },
+    });
   };
 
-  goBack = () => {
-    router.push('/risk-control/four-color-image/list');
+  handlePersonChange = e => {
+    const {
+      account: { list: personList = [] },
+      form: { setFieldsValue },
+    } = this.props;
+    const phnoneValue = personList
+      .filter(({ userName }) => userName === e.label)
+      .map(item => item.phoneNumber)[0];
+
+    setFieldsValue({ phoneNumber: phnoneValue });
   };
 
-  // 获取地图上的坐标
-  getPoints = points => {
-    this.setState({ points });
+  // 个人选择框失去焦点
+  handlePersonBlur = value => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    if (value.key && value.key === value.label) {
+      setFieldsValue({ zoneCharger: '' });
+    }
   };
+
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
 
   handleSubmit = () => {
     const {
@@ -142,15 +176,30 @@ export default class TableList extends React.Component {
 
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
+        const {
+          zoneCode,
+          zoneName,
+          zoneLevel,
+          zoneType,
+          zoneCharger,
+          phoneNumber,
+          checkCircle,
+        } = values;
         const payload = {
           id,
+          zoneCode,
+          zoneName,
+          zoneLevel,
+          zoneType,
+          phoneNumber,
+          checkCircle,
           companyId: companyId || extraCompanyId,
+          zoneCharger: zoneCharger.key,
           coordinate:
             points.length > 0
               ? JSON.stringify(points.map(({ x, y, z, groupID }) => ({ x, y, z, groupID })))
               : undefined,
           groupId: 1,
-          ...values,
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -180,12 +229,39 @@ export default class TableList extends React.Component {
     });
   };
 
+  // 获取地图上的坐标
+  getPoints = points => {
+    this.setState({ points });
+  };
+
+  renderDrawButton = () => {
+    const { isDrawing, points } = this.state;
+    return (
+      <Fragment>
+        <Button
+          style={{ marginLeft: 40 }}
+          onClick={() => {
+            if (!!isDrawing && points.length <= 2) return message.error('区域至少三个坐标点！');
+            this.setState({ isDrawing: !isDrawing });
+          }}
+        >
+          {!isDrawing ? '开始画' : '结束画'}
+        </Button>
+        <Button style={{ marginLeft: 10 }} disabled={!!isDrawing} onClick={this.handleReset}>
+          重置
+        </Button>
+      </Fragment>
+    );
+  };
+
   render() {
     const {
+      perLoading,
       match: {
         params: { id },
       },
       form: { getFieldDecorator },
+      account: { list: personList = [] },
     } = this.props;
 
     const { isDrawing, detailList, pointList } = this.state;
@@ -198,6 +274,7 @@ export default class TableList extends React.Component {
       zoneLevel,
       zoneType,
       zoneCharger,
+      zoneChargerName,
       phoneNumber,
       checkCircle,
     } = detailList;
@@ -222,19 +299,18 @@ export default class TableList extends React.Component {
                   initialValue: zoneCode,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入' }],
-                })(<Input placeholder="请输入" {...itemStyles} />)}
+                })(<Input placeholder="请输入" {...itemStyles} maxLength={10} />)}
               </FormItem>
               <FormItem label="区域名称" {...formItemLayout}>
                 {getFieldDecorator('zoneName', {
                   initialValue: zoneName,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入' }],
-                })(<Input placeholder="请输入" {...itemStyles} />)}
+                })(<Input placeholder="请输入" {...itemStyles} maxLength={15} />)}
               </FormItem>
               <FormItem label="风险分级" {...formItemLayout}>
                 {getFieldDecorator('zoneLevel', {
                   initialValue: zoneLevel ? +zoneLevel : undefined,
-                  getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请选择' }],
                 })(
                   <Select placeholder="请选择" {...itemStyles} allowClear>
@@ -249,7 +325,6 @@ export default class TableList extends React.Component {
               <FormItem label="所属图层" {...formItemLayout}>
                 {getFieldDecorator('zoneType', {
                   initialValue: zoneType ? +zoneType : undefined,
-                  getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请选择' }],
                 })(
                   <Select placeholder="请选择" {...itemStyles} allowClear>
@@ -263,27 +338,50 @@ export default class TableList extends React.Component {
               </FormItem>
               <FormItem label="区域负责人" {...formItemLayout}>
                 {getFieldDecorator('zoneCharger', {
-                  initialValue: zoneCharger,
-                  getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入' }],
-                })(<Input placeholder="请输入" {...itemStyles} />)}
+                  initialValue: zoneCharger
+                    ? { key: zoneCharger, label: zoneChargerName }
+                    : undefined,
+                  rules: [{ required: true, message: '请选择' }],
+                })(
+                  <AutoComplete
+                    mode="combobox"
+                    labelInValue
+                    optionLabelProp="children"
+                    placeholder="请选择"
+                    notFoundContent={perLoading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handlePersonSearch}
+                    onBlur={this.handlePersonBlur}
+                    onChange={e => this.handlePersonChange(e)}
+                    filterOption={false}
+                    {...itemStyles}
+                  >
+                    {personList.map(({ users, userName }) => (
+                      <Select.Option
+                        key={users.map(item => item.id)[0]}
+                        value={users.map(item => item.id)[0]}
+                      >
+                        {userName}
+                      </Select.Option>
+                    ))}
+                  </AutoComplete>
+                )}
               </FormItem>
               <FormItem label="联系电话" {...formItemLayout}>
                 {getFieldDecorator('phoneNumber', {
                   initialValue: phoneNumber,
                   getValueFromEvent: this.handleTrim,
                   rules: [
-                    { required: true, message: '请输入' },
+                    { required: true, message: '请选择' },
                     { pattern: phoneReg, message: '联系电话格式不正确' },
                   ],
-                })(<Input placeholder="请输入" {...itemStyles} />)}
+                })(<Input placeholder="请选择" disabled {...itemStyles} />)}
               </FormItem>
               <FormItem label="复评周期(月)" {...formItemLayout}>
                 {getFieldDecorator('checkCircle', {
                   initialValue: checkCircle,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入' }],
-                })(<Input placeholder="请输入" {...itemStyles} />)}
+                })(<Input placeholder="请输入" {...itemStyles} maxLength={4} />)}
               </FormItem>
               {/* <FormItem label="关联内容" {...formItemLayout}>
                 {getFieldDecorator('conetnt', {
