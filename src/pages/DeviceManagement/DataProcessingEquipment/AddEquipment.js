@@ -28,6 +28,8 @@ import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 import GateWayModal from '@/pages/DeviceManagement/Components/GateWayModal';
 import { dataProcessingType } from '@/utils/dict'; // 数据处理设备类型枚举
 import { stringify } from 'qs';
+// 地图定位
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '../NewSensor/AddSensor.less';
 
 const FormItem = Form.Item;
@@ -104,11 +106,15 @@ export default class AddEquipment extends Component {
         }) => {
           this.setState(
             {
-              pointFixInfoList,
+              // pointFixInfoList,
               gatewayEquipment: { id: gatewayEquipment, code: gatewayEquipmentCode },
             },
             () => {
               setFieldsValue({ buildingId, floorId, buildingFloor: { buildingId, floorId } });
+              let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+              const coord = { x: +xnum, y: +ynum, z: +znum };
+              groupId = +groupId;
+              setFieldsValue({ mapLocation: { groupId, coord, areaId } });
             }
           );
           buildingId &&
@@ -387,7 +393,7 @@ export default class AddEquipment extends Component {
     } = this.props;
     const {
       editingIndex,
-      pointFixInfoList, // 平面图标志
+      // pointFixInfoList, // 平面图标志
     } = this.state;
     // 设备类型是否是消防主机
     const isFireHost = +type === 101;
@@ -395,14 +401,18 @@ export default class AddEquipment extends Component {
       message.warning('请先保存平面图信息');
       return;
     }
-    validateFields((err, values) => {
+    validateFields((err, { mapLocation, ...resValues }) => {
       if (err) return;
       const payload = {
-        ...values,
-        pointFixInfoList, // 平面图标注列表
+        ...resValues,
+        pointFixInfoList: [], // 平面图标注列表
         companyId,
-        reset: isFireHost ? +values.reset : undefined,
+        reset: isFireHost ? +resValues.reset : undefined,
       };
+      if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+        const { coord, ...resMap } = mapLocation;
+        payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+      }
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`);
@@ -802,8 +812,8 @@ export default class AddEquipment extends Component {
               </FormItem>
             </Fragment>
           )}
-          <FormItem label="平面图标注" {...formItemLayout}>
-            <Button
+          <FormItem label="地图定位" {...formItemLayout}>
+            {/* <Button
               type="primary"
               style={{ padding: '0 12px' }}
               onClick={this.handleAddFlatGraphic}
@@ -811,7 +821,10 @@ export default class AddEquipment extends Component {
             >
               新增
             </Button>
-            <FlatPic {...FlatPicProps} />
+            <FlatPic {...FlatPicProps} /> */}
+            {getFieldDecorator('mapLocation')(
+              <MapMarkerSelect companyId={companyId} />
+            )}
           </FormItem>
           {isFireHost && (
             <FormItem wrapperCol={{ span: 18, offset: 6 }}>
