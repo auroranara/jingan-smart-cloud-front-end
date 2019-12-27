@@ -6,7 +6,7 @@ import styles from './index.less';
 // 默认图片
 import noPhotoIcon from '../../img/noPhoto.png';
 // 已关闭
-import ygbIcon from '@/assets/closed.png';
+// import ygbIcon from '@/assets/closed.png';
 // 安全
 import safety from '@/assets/safety.png';
 // 消防
@@ -16,6 +16,7 @@ import environment from '@/assets/environment.png';
 // 卫生
 import hygiene from '@/assets/hygiene.png';
 
+const ygbIcon = 'http://data.jingan-china.cn/v2/chem/assets/closed.png';
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 /* 图片地址 */

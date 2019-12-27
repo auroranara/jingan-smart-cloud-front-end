@@ -5,11 +5,13 @@ import Lightbox from 'react-images';
 import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import Section from '../Section'; // 滚动条容器
-import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
+// import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
 import { hiddenDangerCheckStatus as dict } from '@/utils/dict';
 // 引入样式文件
 import styles from './index.less';
 import selectStyles from '../../select.less';
+
+const defaultHiddenDanger = 'http://data.jingan-china.cn/v2/chem/assets/default_hidden_danger.png';
 const { Option } = Select;
 const FIELDNAMES = {
   status: 'status', // 隐患状态

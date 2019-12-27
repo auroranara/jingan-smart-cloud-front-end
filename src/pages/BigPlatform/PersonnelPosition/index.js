@@ -5,9 +5,10 @@ import { CONTENT_STYLE, HEADER_STYLE, SRC } from './utils';
 import styles from './index.less';
 import styles1 from '@/pages/BigPlatform/ChemicalV2/index.less';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-import bgImg from '@/pages/BigPlatform/Chemical/imgs/bg.png';
+// import bgImg from '@/pages/BigPlatform/ChemicalV2/imgs/bg.png';
 import menuIcon from '@/pages/BigPlatform/ChemicalV2/imgs/menu-icon.png';
 
+const bgImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/bg.png';
 export default class PersonnelPosition extends PureComponent {
   handleClickMenu = () => {
     router.push('/company-workbench/view');

@@ -5,9 +5,10 @@ import { Timeline } from 'antd';
 import styles from './MaintenanceCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
-import flowImg from '../imgs/flow_m.png';
-import flowM from '../imgs/flow_m.png';
+// import flowImg from '../imgs/flow_m.png';
+// import flowM from '../imgs/flow_m.png';
 
+const flowImg = 'http://data.jingan-china.cn/v2/chem/screen/flow_m.png';
 const ID = 'maintenance-drawer';
 
 function switchType(type) {
@@ -16,7 +17,7 @@ function switchType(type) {
     case 'alarm':
       config = {
         name: '报警',
-        img: flowM,
+        img: flowImg,
       };
       break;
     case 'fault':

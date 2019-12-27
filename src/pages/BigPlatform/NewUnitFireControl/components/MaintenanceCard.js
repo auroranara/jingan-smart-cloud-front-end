@@ -6,8 +6,9 @@ import styles from './MaintenanceCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
 import { vaguePhone } from '../utils';
-import flowImg from '../imgs/flow_m.png';
+// import flowImg from '../imgs/flow_m.png';
 
+const flowImg = 'http://data.jingan-china.cn/v2/chem/screen/flow_m.png';
 const ID = 'maintenance-drawer';
 
 const isVague = false;

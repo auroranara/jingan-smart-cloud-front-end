@@ -3,7 +3,7 @@ import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceLvlDrawer.less';
 import { CardItem } from '../components/Components';
-import storage from '../imgs/storage.png';
+// import storage from '../imgs/storage.png';
 
 const basicList = [
   {
