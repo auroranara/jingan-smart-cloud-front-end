@@ -33,3 +33,39 @@
 }
 
 // }
+
+.container {
+  height: 100%;
+
+  :global {
+    .ant-carousel {
+      height: 100%;
+
+      .slick-slider {
+        height: 100%;
+
+        .slick-list {
+          height: 100%;
+
+          .slick-track {
+            height: 100%;
+
+            .slick-slide>div {
+              height: 100%;
+
+              .ant-row {
+                height: 100%;
+              }
+            }
+          }
+        }
+
+        .slick-dots {
+          bottom: 2px;
+        }
+      }
+    }
+  }
+
+  // overflow: hidden;
+}

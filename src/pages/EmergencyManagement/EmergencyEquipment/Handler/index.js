@@ -190,8 +190,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
     const { fileList } = this.state;
 
     validateFields((error, formData) => {
-      // if (!error) {
-      if (true) {
+      if (!error) {
         const payload = {
           ...formData,
           companyId: unitType === 4 ? companyId : formData.companyId,
