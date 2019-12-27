@@ -20,10 +20,8 @@ const { Description } = DescriptionList;
 const { Panel } = Collapse;
 const EmptyData = () => <span className={styles.empty}>暂无数据</span>;
 export const getTransformedTime = (time) => {
-  if (time < 1000) {
-    return `${time}ms`;
-  } else if (time < 60 * 1000) {
-    return Math.floor(time / 1000);
+  if (time < 60 * 1000) {
+    return '小于1min';
   } else {
     const day = Math.floor(time / (24 * 60 * 60 * 1000));
     time %= 24 * 60 * 60 * 1000;
