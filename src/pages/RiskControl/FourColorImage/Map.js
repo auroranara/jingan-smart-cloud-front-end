@@ -51,13 +51,14 @@ export default class Map extends React.Component {
   // }
 
   getPointList = pointList => {
-    pointList.map(item => {
-      const { zoneLevel, coordinateList } = item;
-      const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-      this.drawPolygon(points, COLORS[zoneLevel]);
-      this.setModelColor(points, COLORS[zoneLevel]);
-      return null;
-    });
+    pointList ||
+      [].map(item => {
+        const { zoneLevel, coordinateList } = item;
+        const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+        this.drawPolygon(points, COLORS[zoneLevel]);
+        this.setModelColor(points, COLORS[zoneLevel]);
+        return null;
+      });
   };
 
   initMap = ({ appName, key, mapId }) => {

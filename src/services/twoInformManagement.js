@@ -22,6 +22,14 @@ export async function queryDangerElementDel({ ids }) {
   return request(`${URL_PREFIX}/dangerCheck/${ids}`, { method: 'DELETE' });
 }
 
+// 绑定区域
+export async function queryBindDangerCheck(params) {
+  return request(`${URL_PREFIX_EXTRA}/bindDangerCheck`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
 // 安全风险分级管控清单
 
 // 查看列表
@@ -37,6 +45,14 @@ export async function querySafeRiskSync(params) {
 // 删除
 export async function querySafeRiskDel({ ids }) {
   return request(`${URL_PREFIX}/safetyControl/${ids}`, { method: 'DELETE' });
+}
+
+// 绑定区域
+export async function queryBindSafetyControl(params) {
+  return request(`${URL_PREFIX_EXTRA}/bindSafetyControl`, {
+    method: 'PUT',
+    body: params,
+  });
 }
 
 /** 公告管理 */
