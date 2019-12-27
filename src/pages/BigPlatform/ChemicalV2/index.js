@@ -123,9 +123,10 @@ const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
   }
 };
 
-@connect(({ unitSafety, bigPlatform, loading, fourColorImage }) => ({
+@connect(({ unitSafety, bigPlatform, loading, fourColorImage, chemical }) => ({
   unitSafety,
   bigPlatform,
+  chemical,
   fourColorImage,
   hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
 }))
@@ -187,6 +188,17 @@ export default class Chemical extends PureComponent {
         'fetchpointInspectionStandards',
       ],
     });
+    mapMutations(this, {
+      namespace: 'chemical',
+      types: [
+        // 统计监测对象各个类型的数量
+        'fetchMonitorTargetCount',
+        // 到期提醒数量
+        'fetchPastStatusCount',
+        // 两重点一重大的数量
+        'fetchCountDangerSource',
+      ],
+    });
   }
 
   componentDidMount() {
@@ -217,6 +229,12 @@ export default class Chemical extends PureComponent {
     this.fetchSafetyOfficer({ company_id: companyId });
     // 获取特种设备列表
     this.fetchSpecialEquipmentList({ companyId });
+    // 统计监测对象各个类型的数量
+    this.fetchMonitorTargetCount({ companyId });
+    // 到期提醒数量
+    this.fetchPastStatusCount({ companyId });
+    // 两重点一重大的数量
+    this.fetchCountDangerSource({ companyId });
 
     this.fetchPoints();
     this.fetchHiddenDangerList();
@@ -251,8 +269,8 @@ export default class Chemical extends PureComponent {
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
-        console.log('e.data', e.data);
         const data = JSON.parse(e.data);
+        console.log('e.data', data);
         // if (
         //   ['405', '406'].includes(`${data.monitorEquipmentType}`) &&
         //   ['1', '2'].includes(`${data.warnLevel}`)
@@ -692,6 +710,7 @@ export default class Chemical extends PureComponent {
       fourColorImage: {
         data: { list: polygons },
       },
+      chemical: { monitorTargetCount, pastStatusCount, dangerSourceCount },
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -753,11 +772,13 @@ export default class Chemical extends PureComponent {
               </div>
 
               <div className={styles.leftMiddle}>
-                <Remind />
+                <Remind pastStatusCount={pastStatusCount} />
               </div>
 
               <div className={styles.leftBottom}>
                 <KeyPoints
+                  monitorList={monitorTargetCount}
+                  dangerSourceCount={dangerSourceCount}
                   setDrawerVisible={this.setDrawerVisible}
                   handleGasOpen={this.handleGasOpen}
                   handlePoisonOpen={this.handlePoisonOpen}

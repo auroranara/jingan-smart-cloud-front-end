@@ -400,14 +400,15 @@ export default class SpecialEquipmentList extends PureComponent {
         render: (val, row) => {
           const { code } = row;
           let treeData = specialEquipment;
-          const string = val
-            .split(',')
-            .map(id => {
-              const val = treeData.find(item => item.id === id) || {};
-              treeData = val.children;
-              return val.label;
-            })
-            .join('/');
+          const string = '';
+          // const string = val
+          //   .split(',')
+          //   .map(id => {
+          //     const val = treeData.find(item => item.id === id) || {};
+          //     treeData = val.children;
+          //     return val.label;
+          //   })
+          //   .join('/');
           return (
             <div className={styles.multi}>
               <div>
