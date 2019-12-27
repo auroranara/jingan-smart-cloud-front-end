@@ -1,8 +1,11 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { Row, Col, Icon, Badge, notification } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
+import WebsocketHeartbeatJs from '@/utils/heartbeat';
+import { stringify } from 'qs';
 import router from 'umi/router';
+import classNames from 'classnames';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import { mapMutations } from '@/utils/utils';
 import headerBg from '@/assets/new-header-bg.png';
@@ -93,9 +96,40 @@ notification.config({
   duration: 30,
   bottom: 6,
 });
-const companyId = 'DccBRhlrSiu9gMV7fmvizw';
+const SocketOptions = {
+  pingTimeout: 30000,
+  pongTimeout: 10000,
+  reconnectTimeout: 2000,
+  pingMsg: 'heartbeat',
+};
+const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
+  if (+statusType === -1) {
+    if (+warnLevel === 1) {
+      return '预警';
+    } else if (+warnLevel === 2) {
+      return '报警';
+    }
+  } else if (+statusType === -2) {
+    return '失联';
+  } else if (+statusType === -3) {
+    return '故障';
+  } else if (+statusType === 1) {
+    return '报警解除';
+  } else if (+statusType === 2) {
+    return '恢复在线';
+  } else if (+statusType === 3) {
+    return '故障消除';
+  }
+};
 
-@connect(({ unitSafety, bigPlatform }) => ({ unitSafety, bigPlatform }))
+@connect(({ unitSafety, bigPlatform, loading, fourColorImage, chemical }) => ({
+  unitSafety,
+  bigPlatform,
+  chemical,
+  fourColorImage,
+  hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
+}))
 export default class Chemical extends PureComponent {
   constructor(props) {
     super(props);
@@ -129,8 +163,10 @@ export default class Chemical extends PureComponent {
       gasVisible: false,
       poisonVisible: false,
       tankMonitorDrawerVisible: false,
+      hdStatus: 5,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
+    this.ws = null;
 
     mapMutations(this, {
       namespace: 'unitSafety',
@@ -146,6 +182,21 @@ export default class Chemical extends PureComponent {
         'fetchHiddenDangerCount',
         // 获取特种设备列表
         'fetchSpecialEquipmentList',
+        // 获取标准及措施
+        'fetchStandardsAndMeasuresList',
+        // 获取点位检查标准
+        'fetchpointInspectionStandards',
+      ],
+    });
+    mapMutations(this, {
+      namespace: 'chemical',
+      types: [
+        // 统计监测对象各个类型的数量
+        'fetchMonitorTargetCount',
+        // 到期提醒数量
+        'fetchPastStatusCount',
+        // 两重点一重大的数量
+        'fetchCountDangerSource',
       ],
     });
   }
@@ -154,54 +205,226 @@ export default class Chemical extends PureComponent {
     this.init();
   }
 
+  componentWillUnmount() {
+    this.ws.close();
+    notification.destroy();
+  }
+
   init = () => {
     const {
-      // match: {
-      //   params: { companyId },
-      // },
+      match: {
+        params: { unitId: companyId },
+      },
       dispatch,
     } = this.props;
+    // socket消息
+    this.handleSocket();
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
     this.fetchSpecialEquipmentCount({ company_id: companyId });
-    // 获取隐患列表
-    // this.getHiddenDangerList();
     // 获取隐患统计
     this.fetchHiddenDangerCount({ company_id: companyId });
     // 获取安全人员信息（安全人员信息卡片源数据）
     this.fetchSafetyOfficer({ company_id: companyId });
     // 获取特种设备列表
     this.fetchSpecialEquipmentList({ companyId });
+    // 统计监测对象各个类型的数量
+    this.fetchMonitorTargetCount({ companyId });
+    // 到期提醒数量
+    this.fetchPastStatusCount({ companyId });
+    // 两重点一重大的数量
+    this.fetchCountDangerSource({ companyId });
 
     this.fetchPoints();
     this.fetchHiddenDangerList();
+    // 四色图分区
+    this.fetchFourColorPolygons();
   };
 
-  getHiddenDangerList = restProps => {
+  handleSocket = () => {
     const {
       match: {
-        params: { companyId },
+        params: { unitId: companyId },
       },
     } = this.props;
-    this.fetchHiddenDangerList({
-      pageNum: 1,
-      pageSize: 10,
-      company_id: companyId,
-      status: 5,
-      ...restProps,
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    const params = {
+      companyId,
+      env: 'v2_test',
+      type: 4,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
+    // 链接webscoket
+    const ws = new WebsocketHeartbeatJs({ url, ...SocketOptions });
+    this.ws = ws;
+
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
+
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data);
+        console.log('e.data', data);
+        // if (
+        //   ['405', '406'].includes(`${data.monitorEquipmentType}`) &&
+        //   ['1', '2'].includes(`${data.warnLevel}`)
+        // ) {
+        this.showNotification(data);
+        // }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
+  };
+
+  showNotification = data => {
+    const {
+      id,
+      happenTime,
+      statusType,
+      warnLevel,
+      monitorEquipmentTypeName,
+      paramDesc,
+      paramUnit,
+      monitorValue,
+      limitValue,
+      monitorEquipmentAreaLocation,
+      monitorEquipmentName,
+      faultTypeName,
+    } = data;
+    if (statusType > 0) return;
+    const typeName = GET_TYPE_NAME({ statusType, warnLevel });
+    const style = {
+      boxShadow: `0px 0px 20px #f83329`,
+      padding: '14px 20px',
+    };
+    const styleAnimation = {
+      ...style,
+      animation: `${styles.redShadow} 2s linear 0s infinite alternate`,
+    };
+    const options = {
+      key: id,
+      className: styles.notification,
+      style: { ...style, width: screen.availWidth / 5 },
+      icon: (
+        <span
+          className={classNames(
+            styles.notificationIcon,
+            statusType < 0 ? styles.error : styles.success
+          )}
+        />
+      ),
+      message: (
+        <div
+          className={styles.notificationTitle}
+          style={{ color: '#f83329' }}
+        >{`${monitorEquipmentTypeName}发生${typeName}`}</div>
+      ),
+      description: (
+        <div className={styles.notificationBody}>
+          <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div>
+          {![-2, -3].includes(+statusType) && (
+            <div
+              className={styles.alarm}
+            >{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
+              ['预警', '报警'].includes(typeName)
+                ? `，超过${typeName}值${Math.abs(monitorValue - limitValue)}${paramUnit || ''}`
+                : ''
+            }`}</div>
+          )}
+          {[-3, 3].includes(+statusType) && (
+            <div className={styles.alarm}>{`故障类型：${faultTypeName || ''}`}</div>
+          )}
+          <div>{`监测设备：${monitorEquipmentName || ''}`}</div>
+          <div>{`区域位置：${monitorEquipmentAreaLocation || ''}`}</div>
+        </div>
+      ),
+      // duration: 30,
+    };
+    notification.open(options);
+
+    setTimeout(() => {
+      // 解决加入animation覆盖notification自身显示动效时长问题
+      notification.open({
+        ...options,
+        style: { ...styleAnimation, width: screen.availWidth / 5 },
+        onClose: () => {
+          notification.open({
+            ...options,
+          });
+          setTimeout(() => {
+            notification.close(id);
+          }, 200);
+        },
+      });
+    }, 800);
+  };
+
+  fetchFourColorPolygons = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'fourColorImage/fetchList',
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 0,
+      },
     });
   };
 
-  fetchHiddenDangerList = pageNum => {
-    const { dispatch } = this.props;
+  fetchHiddenDangerList = (pageNum = 1) => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+      dispatch,
+    } = this.props;
+    const { hdStatus } = this.state;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
         company_id: companyId,
         // businessType: 2,
-        // status: hdStatus,
+        status: hdStatus,
         pageNum,
+        pageSize: 10,
+      },
+    });
+  };
+
+  // 点击当前隐患图表进行筛选
+  handleFilterCurrentDanger = ({ dataIndex }, callback = null) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const status =
+      (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || 5;
+    this.setState({ hdStatus: status });
+    // 获取当前隐患列表
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerListForPage',
+      payload: {
+        company_id: companyId,
+        status,
+        pageNum: 1,
         pageSize: 10,
       },
     });
@@ -404,13 +627,16 @@ export default class Chemical extends PureComponent {
   };
 
   fetchPoints = () => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
   };
 
   handleClickImgShow = images => {
-    console.log('imageFiles', images);
-
     this.setState({
       modalImgVisible: true,
       currentImage: 0,
@@ -461,6 +687,17 @@ export default class Chemical extends PureComponent {
     this.setState({ poisonVisible: false });
   };
 
+  // 获取标准及措施列表
+  getStandardsAndMeasures = () => {
+    this.fetchStandardsAndMeasuresList({
+      itemId: this.itemId,
+      needStandards: 1,
+    });
+    this.fetchpointInspectionStandards({
+      item_id: this.itemId,
+    });
+  };
+
   /**
    * 渲染
    */
@@ -468,6 +705,12 @@ export default class Chemical extends PureComponent {
     const {
       unitSafety: { points },
       bigPlatform: { hiddenDangerList },
+      hiddenDangerLoading,
+      unitSafety: { hiddenDangerCount },
+      fourColorImage: {
+        data: { list: polygons },
+      },
+      chemical: { monitorTargetCount, pastStatusCount, dangerSourceCount },
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -500,7 +743,6 @@ export default class Chemical extends PureComponent {
       poisonVisible,
       tankMonitorDrawerVisible,
     } = this.state;
-    console.log('points', points);
 
     return (
       <BigPlatformLayout
@@ -530,11 +772,13 @@ export default class Chemical extends PureComponent {
               </div>
 
               <div className={styles.leftMiddle}>
-                <Remind />
+                <Remind pastStatusCount={pastStatusCount} />
               </div>
 
               <div className={styles.leftBottom}>
                 <KeyPoints
+                  monitorList={monitorTargetCount}
+                  dangerSourceCount={dangerSourceCount}
                   setDrawerVisible={this.setDrawerVisible}
                   handleGasOpen={this.handleGasOpen}
                   handlePoisonOpen={this.handlePoisonOpen}
@@ -549,6 +793,7 @@ export default class Chemical extends PureComponent {
                   showVideo={this.handleShowVideo}
                   onRef={this.onRef}
                   handleClickRiskPoint={this.handleClickRiskPoint}
+                  polygons={polygons}
                 />
 
                 {msgVisible ? (
@@ -593,6 +838,10 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('currentHiddenDanger');
           }}
           hiddenDangerList={hiddenDangerList}
+          fetchHiddenDangerList={this.fetchHiddenDangerList}
+          onClickChat={this.handleFilterCurrentDanger}
+          loading={hiddenDangerLoading}
+          {...hiddenDangerCount}
         />
 
         <DangerAreaDrawer
@@ -671,6 +920,7 @@ export default class Chemical extends PureComponent {
           getRiskPointHiddenDangerList={this.getRiskPointHiddenDangerList}
           getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
           getRiskPointInspectionCount={this.getRiskPointInspectionCount}
+          getStandardsAndMeasures={this.getStandardsAndMeasures}
         />
 
         <DangerSourceDrawer

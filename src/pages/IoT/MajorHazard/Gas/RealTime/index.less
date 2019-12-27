@@ -67,6 +67,7 @@
       height: 14px;
       background: url('../../imgs/icon-video.png') no-repeat center;
       background-size: contain;
+      cursor: pointer;
     }
   }
 }
@@ -164,5 +165,34 @@
         }
       }
     }
+  }
+}
+/* 通知框 */
+.notificationIcon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: url('../../imgs/icon-alarm2.png') no-repeat center;
+  background-size: contain;
+  vertical-align: top;
+
+  &.success {
+    background-image: url('../../imgs/icon-normal.png');
+  }
+
+  &.error {
+    background-image: url('../../imgs/icon-alarm2.png');
+  }
+}
+.clickable {
+  color: #1890ff;
+  cursor: pointer;
+
+  &:hover {
+    color: #40a9ff;
+  }
+
+  &:active {
+    color: #096dd9;
   }
 }

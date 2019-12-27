@@ -17,6 +17,7 @@ const COLORS = {
   3: 'rgb(251, 247, 24)',
   4: 'rgb(30, 96, 255)',
 };
+const selectedColor = 'rgb(255,255,255, 0.8)';
 
 const defaultPolygonMarkerHeight = 5;
 //配置线型、线宽、透明度等
@@ -29,23 +30,25 @@ export default class Map extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.polygonLayers = [];
+    this.polygonMarkers = [];
   }
 
   componentDidMount() {
     const { onRef } = this.props;
     onRef && onRef(this);
-    this.initMap();
+    // this.initMap();
   }
 
-  componentDidUpdate(prevProps) {
-    const { pointList: prevPointList } = prevProps;
-    if (JSON.stringify(prevPointList) !== JSON.stringify(this.props.pointList)) {
-      map &&
-        map.on('loadComplete', () => {
-          this.getPointList(this.props.pointList);
-        });
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   const { pointList: prevPointList } = prevProps;
+  //   if (JSON.stringify(prevPointList) !== JSON.stringify(this.props.pointList)) {
+  //     map &&
+  //       map.on('loadComplete', () => {
+  //         this.getPointList(this.props.pointList);
+  //       });
+  //   }
+  // }
 
   getPointList = pointList => {
     pointList.map(item => {
@@ -57,12 +60,12 @@ export default class Map extends React.Component {
     });
   };
 
-  initMap() {
+  initMap = ({ appName, key, mapId }) => {
     var mapOptions = {
       //必要，地图容器
       container: document.getElementById('fengMap'),
       //地图数据位置
-      mapServerURL: './data/' + fmapID,
+      mapServerURL: './data/' + mapId,
       defaultViewMode: fengMap.FMViewMode.MODE_2D,
       //主题数据位置
       // mapThemeURL: './data/theme',
@@ -72,9 +75,9 @@ export default class Map extends React.Component {
       //默认背景颜色,十六进制颜色值或CSS颜色样式 0xff00ff, '#00ff00'
       // defaultBackgroundColor: '#f7f4f4',
       //必要，地图应用名称，通过蜂鸟云后台创建
-      appName: '真趣办公室',
+      appName,
       //必要，地图应用密钥，通过蜂鸟云后台获取
-      key: 'cbb7eb159ce5b7d9300f0ce004f3a614',
+      key,
     };
 
     //初始化地图对象
@@ -109,7 +112,11 @@ export default class Map extends React.Component {
         this.drawLines(points);
       }
     });
-  }
+
+    map.on('loadComplete', () => {
+      this.getPointList(this.props.pointList);
+    });
+  };
 
   //在点击的位置添加图片标注
   addPoint(gid, coord) {
@@ -129,18 +136,6 @@ export default class Map extends React.Component {
     layer.addMarker(im);
   }
 
-  // 重置地图
-  setRestMap = () => {
-    const group = map.getFMGroup(1);
-    const layerImg = group.getOrCreateLayer('imageMarker');
-    group.removeLayer(layerImg);
-    const layerPolygon = group.getOrCreateLayer('polygonMarker');
-    group.removeLayer(layerPolygon);
-    const models = map.getDatasByAlias(1, 'model');
-    models.map(model => model.setColorToDefault());
-    map.clearLineMark();
-  };
-
   drawPolygon(points, color) {
     var groupLayer = map.getFMGroup(1);
     //创建PolygonMarkerLayer
@@ -154,6 +149,8 @@ export default class Map extends React.Component {
     });
     polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
+    this.polygonLayers.push(layer);
+    this.polygonMarkers.push(polygonMarker);
   }
 
   // 设置model的颜色
@@ -165,6 +162,57 @@ export default class Map extends React.Component {
       .map(model => model.setColor(color));
     // console.log(models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points)));
   }
+
+  removeArea = index => {
+    var groupLayer = map.getFMGroup(1);
+    groupLayer.removeLayer(this.polygonLayers[index]);
+    this.polygonLayers.splice(index, 1);
+
+    const models = map.getDatasByAlias(1, 'model');
+    models.map(model => {
+      const { mapCoord } = model;
+      if (this.polygonMarkers[index].contain({ ...mapCoord, z: 1 })) model.setColorToDefault();
+      return null;
+    });
+
+    this.polygonMarkers.splice(index, 1);
+  };
+
+  // 重置地图
+  setRestMap = () => {
+    const group = map.getFMGroup(1);
+    const layerImg = group.getOrCreateLayer('imageMarker');
+    group.removeLayer(layerImg);
+    const layerPolygon = group.getOrCreateLayer('polygonMarker');
+    group.removeLayer(layerPolygon);
+    const models = map.getDatasByAlias(1, 'model');
+    models.map(model => model.setColorToDefault());
+    map.clearLineMark();
+  };
+
+  // 高亮对应区域颜色
+  selectedModelColor = (id, fun) => {
+    const { pointList } = this.props;
+    pointList.filter(item => item.id === id).map(item => {
+      const { coordinateList } = item;
+      const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+      this.setModelColor(points, selectedColor);
+      this.drawPolygon(points, selectedColor);
+      return null;
+    });
+  };
+
+  // 恢复对应区域颜色
+  restModelColor = id => {
+    const { pointList } = this.props;
+    pointList.filter(item => item.id === id).map(item => {
+      const { coordinateList, zoneLevel } = item;
+      const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+      this.drawPolygon(points, COLORS[zoneLevel]);
+      this.setModelColor(points, COLORS[zoneLevel]);
+      return null;
+    });
+  };
 
   //绘制线图层
   drawLines(

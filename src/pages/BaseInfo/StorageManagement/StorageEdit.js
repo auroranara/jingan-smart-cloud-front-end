@@ -22,13 +22,13 @@ import { getToken } from '@/utils/authority';
 import { AuthButton } from '@/utils/customAuth';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // 平面图标注
-import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
+// import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 // 选择储罐区弹窗
 import StorageTankAreaModal from './Components/StorageTankAreaModal';
 // 选择存储介质弹窗
 import StorageMediumModal from './Components/StorageMediumModal';
-// 选择重大危险源弹窗
-import MajorHazardListModal from './Components/MajorHazardListModal';
+// 地图定位
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import codesMap from '@/utils/codes';
 import moment from 'moment';
 
@@ -186,7 +186,7 @@ export default class StorageEdit extends PureComponent {
           })
           setFieldsValue({ buildingId, floorId, pressureRate, designPressure, cofferdamArea })
           companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
-          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
+          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
         },
       })
     } else if (currentUser && currentUser.unitType === 4) {
@@ -633,7 +633,7 @@ export default class StorageEdit extends PureComponent {
     } = this.props;
     const {
       editingIndex,
-      pointFixInfoList,
+      // pointFixInfoList,
       uploadPics,
       uploadFiles,
       selectedCompany,
@@ -644,20 +644,24 @@ export default class StorageEdit extends PureComponent {
     }
     validateFields((err, values) => {
       if (err) return
-      const { designReservesAndUnit, area, pressureRate, designPressure, cofferdamArea, ...resValues } = values;
+      const { designReservesAndUnit, area, pressureRate, designPressure, cofferdamArea, mapLocation, ...resValues } = values;
       const [designReserves, designReservesUnit] = designReservesAndUnit;
-      const payload = {
+      let payload = {
         ...resValues,
         companyId: selectedCompany.id,
         designReserves,
         designReservesUnit,
-        pointFixInfoList, // 平面图标注列表
+        pointFixInfoList: [], // 平面图标注列表
         scenePhoto: uploadPics && uploadPics.length ? JSON.stringify(uploadPics) : '',
         otherFile: uploadFiles && uploadFiles.length ? JSON.stringify(uploadFiles) : '',
         area: +values.locationType === 1 ? area : '',
         pressureRate: values.pressureVessel === '1' ? pressureRate : '',
         designPressure: values.pressureVessel === '1' ? designPressure : '',
         cofferdamArea: values.cofferdam === '2' ? cofferdamArea : '',
+      }
+      if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+        const { coord, ...resMap } = mapLocation;
+        payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
       }
       const tag = id ? '编辑' : '新增';
       const success = () => {
@@ -713,7 +717,7 @@ export default class StorageEdit extends PureComponent {
     const {
       selectedCompany, // 选择的单位 { id,name }
       editingIndex, // 平面图标注--当前编辑的下标
-      pointFixInfoList,
+      // pointFixInfoList,
       picModalVisible,
       isImgSelect,
       imgIdCurrent,
@@ -728,24 +732,39 @@ export default class StorageEdit extends PureComponent {
 
     const { locationType, designReservesAndUnit, pressureVessel, cofferdam } = getFieldsValue();
     const companyId = selectedCompany.id;
-    const FlatPicProps = {
-      visible: picModalVisible,
-      onCancel: () => { this.setState({ picModalVisible: false }) },
+    // const FlatPicProps = {
+    //   visible: picModalVisible,
+    //   onCancel: () => { this.setState({ picModalVisible: false }) },
+    //   form,
+    //   buildings, // 建筑物列表
+    //   floors,      // 楼层列表
+    //   imgList,  // 定位图列表
+    //   pointFixInfoList, // 平面图标注列表
+    //   editingIndex,
+    //   isImgSelect,
+    //   imgIdCurrent,
+    //   flatGraphic,
+    //   setState: (newState) => { this.setState(newState) },
+    //   dispatch,
+    //   companyId,
+    //   handleBuildingChange: this.handleBuildingChange,
+    //   changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
+    // }
+    let { xnum, ynum, znum, groupId, areaId } = detail.pointFixInfoList && detail.pointFixInfoList.length ? detail.pointFixInfoList[0] : {};
+    const coord = { x: +xnum, y: +ynum, z: +znum };
+    groupId = +groupId;
+    const fengMapProps = {
+      id: 'mapLocation',
       form,
-      buildings, // 建筑物列表
-      floors,      // 楼层列表
-      imgList,  // 定位图列表
-      pointFixInfoList, // 平面图标注列表
-      editingIndex,
-      isImgSelect,
-      imgIdCurrent,
-      flatGraphic,
-      setState: (newState) => { this.setState(newState) },
-      dispatch,
       companyId,
-      handleBuildingChange: this.handleBuildingChange,
-      changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
-    }
+      initialData: {
+        groupId,
+        coord,
+      },
+      options: {
+        initialValue: { groupId, areaId, coord },
+      },
+    };
     return (
       <Card bordered={false}>
         <Form style={{ marginTop: 8 }}>
@@ -1321,16 +1340,19 @@ export default class StorageEdit extends PureComponent {
             </Fragment>
           )}
           {companyId && (
-            <FormItem label="平面图标注" {...formItemLayout}>
-              <Button
-                type="primary"
-                style={{ padding: '0 12px' }}
-                onClick={this.handleAddFlatGraphic}
-                disabled={!isNaN(editingIndex) || pointFixInfoList && pointFixInfoList.length >= 4}
-              >
-                新增
-              </Button>
-              <FlatPic {...FlatPicProps} />
+            // <FormItem label="平面图标注" {...formItemLayout}>
+            //   <Button
+            //     type="primary"
+            //     style={{ padding: '0 12px' }}
+            //     onClick={this.handleAddFlatGraphic}
+            //     disabled={!isNaN(editingIndex) || pointFixInfoList && pointFixInfoList.length >= 4}
+            //   >
+            //     新增
+            //   </Button>
+            //   <FlatPic {...FlatPicProps} />
+            // </FormItem>
+            <FormItem label="地图定位" {...formItemLayout}>
+              <MapMarkerSelect {...fengMapProps} />
             </FormItem>
           )}
         </Form>

@@ -3,6 +3,7 @@ import { message, Card, DatePicker, Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import DescriptionList from '@/components/DescriptionList';
 import CustomEmpty from '@/jingan-components/CustomEmpty';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ReactEcharts from 'echarts-for-react';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -12,7 +13,7 @@ import locales from '@/locales/zh-CN';
 import styles from './index.less';
 
 const { Description } = DescriptionList;
-const Empty = () => <span className={styles.empty}>暂无数据</span>;
+const EmptyData = () => <span className={styles.empty}>暂无数据</span>;
 const DEFAULT_FORMAT = 'YYYY-MM-DD';
 
 @connect((state, { route: { name, code, path } }) => {
@@ -91,6 +92,8 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
   state = {
     date: moment().startOf('day'),
     currentIndex: undefined,
+    videoVisible: false,
+    videoKeyId: undefined,
   }
 
   componentDidMount() {
@@ -99,6 +102,25 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       if (success) {
         this.handleCurrentIndexChange('0');
       }
+    });
+  }
+
+  showVideo = () => {
+    const {
+      deviceDetail: {
+        videoList=[],
+      }={},
+    } = this.props;
+
+    this.setState({
+      videoVisible: true,
+      videoKeyId: videoList[0].key_id,
+    });
+  }
+
+  hideVideo = () => {
+    this.setState({
+      videoVisible: false,
     });
   }
 
@@ -153,30 +175,60 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
   renderBasicInfo() {
     const {
       deviceDetail: {
+        equipmentType,
         equipmentTypeName,
         name,
         areaLocation,
         beMonitorTargetName,
+        videoList,
+        unitTypeName,
+        loopNumber,
+        partNumber,
       }={},
     } = this.props;
+    const isHost = +equipmentType === 1;
 
     return (
       <Card className={styles.card}>
         <DescriptionList className={styles.descriptionList} gutter={24}>
           <Description term="监测类型">
-            {equipmentTypeName || <Empty />}
+            {equipmentTypeName || <EmptyData />}
           </Description>
-          <Description term="监测设备名称">
-            {name || <Empty />}
-          </Description>
+          {isHost ? (
+            <Description term="消防主机">
+              {name || <EmptyData />}
+            </Description>
+          ) : (
+            <Description term="监测设备名称">
+              <div className={styles.nameWrapper}>
+                <div className={styles.name}>{name || <EmptyData />}</div>
+                {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
+              </div>
+            </Description>
+          )}
         </DescriptionList>
         <DescriptionList className={styles.descriptionList} gutter={24}>
+          {isHost && (
+            <Description term="部件类型">
+              {unitTypeName || <EmptyData />}
+            </Description>
+          )}
+          {isHost && (
+            <Description term="回路号">
+              <div className={styles.nameWrapper}>
+                <div className={styles.name}>{loopNumber || partNumber ? `${loopNumber ? `${loopNumber}回路` : ''}${partNumber ? `${partNumber}号` : ''}` : <EmptyData />}</div>
+                {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
+              </div>
+            </Description>
+          )}
           <Description term="区域位置">
-            {areaLocation || <Empty />}
+            {areaLocation || <EmptyData />}
           </Description>
-          <Description term="监测对象">
-            {beMonitorTargetName || <Empty />}
-          </Description>
+          {!isHost && (
+            <Description term="监测对象">
+              {beMonitorTargetName || <EmptyData />}
+            </Description>
+          )}
         </DescriptionList>
       </Card>
     );
@@ -191,194 +243,312 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
       loadingMonitorTrend=false,
     } = this.props;
     const { date, currentIndex } = this.state;
-    const tabList = (allMonitorParam || []).filter(({ fixType }) => +fixType !== 5).map(({ paramDesc }, index) => ({ key: `${index}`, tab: paramDesc }));
-    // 获取单位、范围（单位不存在的情况不知道需不需要考虑）
-    const { paramUnit: unit, paramWarnStrategyList, rangeMax: maxValue, rangeMin: minValue } = (allMonitorParam || [])[currentIndex] || {};
-    // 获取预警、告警值
-    const { normalUpper, largeUpper, normalLower, smallLower } = (paramWarnStrategyList || []).reduce((result, { condition, limitValue, warnLevel }) => {
-      if (condition === '>=') {
-        if (+warnLevel === 1) {
-          result.normalUpper = limitValue;
-        } else if (+warnLevel === 2) {
-          result.largeUpper = limitValue;
+    const tabList = (allMonitorParam || []).map(({ paramDesc }, index) => ({ key: `${index}`, tab: paramDesc }));
+    const { fixType, paramDesc } = (allMonitorParam || [])[currentIndex] || {};
+    const isNotFire = +fixType !== 5;
+    let option, visible = monitorTrend && monitorTrend.length > 0;
+    if (isNotFire) {
+      // 获取单位、范围（单位不存在的情况不知道需不需要考虑）
+      const { paramUnit: unit, paramWarnStrategyList, rangeMax: maxValue, rangeMin: minValue } = (allMonitorParam || [])[currentIndex] || {};
+      // 获取预警、告警值
+      const { normalUpper, largeUpper, normalLower, smallLower } = (paramWarnStrategyList || []).reduce((result, { condition, limitValue, warnLevel }) => {
+        if (condition === '>=') {
+          if (+warnLevel === 1) {
+            result.normalUpper = limitValue;
+          } else if (+warnLevel === 2) {
+            result.largeUpper = limitValue;
+          }
+        } else if (condition === '<=') {
+          if (+warnLevel === 1) {
+            result.normalLower = limitValue;
+          } else if (+warnLevel === 2) {
+            result.smallLower = limitValue;
+          }
         }
-      } else if (condition === '<=') {
-        if (+warnLevel === 1) {
-          result.normalLower = limitValue;
-        } else if (+warnLevel === 2) {
-          result.smallLower = limitValue;
-        }
-      }
-      return result;
-    }, {});
-    // 预警上限文本
-    const warningUp = isNumber(normalUpper) && (isNumber(largeUpper) ? `${normalUpper}${unit}~${largeUpper}${unit}` : `≥${normalUpper}${unit}`);
-    // 预警下限文本
-    const warningDown = isNumber(normalLower) && (isNumber(smallLower) ? `${normalLower}${unit}~${smallLower}${unit}` : `≤${normalLower}${unit}`);
-    // 预警文本
-    const warning = [warningUp, warningDown].filter(v => v).join('，');
-    // 告警上限文本
-    const alarmUp = isNumber(largeUpper) && `≥${largeUpper}${unit}`;
-    // 告警下限文本
-    const alarmDown = isNumber(smallLower) && `≤${smallLower}${unit}`;
-    // 告警文本
-    const alarm = [alarmUp, alarmDown].filter(v => v).join('，');
-    // 获取列表中的最大值和最小值
-    let { value: max, value: min } = (monitorTrend || []).find(({ value }) => isNumber(value)) || {};
-    ({ max, min } = monitorTrend && monitorTrend.reduce(({ max, min }, { value }) => {
-      return isNumber(value) ? {
-        max: Math.max(max, value),
-        min: Math.min(min, value),
-      } : {
-        max,
-        min,
-      };
-    }, { max, min }) || {});
-    // 计算实际上的最大值和最小值（所有值都不是数字的情况不知道需不需要考虑）
-    max = Math.max.apply(null, [max, maxValue, largeUpper, normalUpper].filter(v => isNumber(v)));
-    min = Math.min.apply(null, [min, minValue, smallLower, normalLower].filter(v => isNumber(v)));
-    const text = [warning && `{a|预警阈值：}{b|${warning}}`, alarm && `{a|报警阈值：}{b|${alarm}}`].filter(v => v);
-    const option = {
-      title: {
-        text: text.join('\n'),
-        textStyle: {
-          fontSize: 12,
-          lineHeight: 18,
-          rich: {
-            a: {
+        return result;
+      }, {});
+      // 预警上限文本
+      const warningUp = isNumber(normalUpper) && (isNumber(largeUpper) ? `${normalUpper}${unit}~${largeUpper}${unit}` : `≥${normalUpper}${unit}`);
+      // 预警下限文本
+      const warningDown = isNumber(normalLower) && (isNumber(smallLower) ? `${smallLower}${unit}~${normalLower}${unit}` : `≤${normalLower}${unit}`);
+      // // 预警上限文本
+      // const warningUp = isNumber(normalUpper) && `≥${normalUpper}${unit}`;
+      // // 预警下限文本
+      // const warningDown = isNumber(normalLower) && `≤${normalLower}${unit}`;
+      // 预警文本
+      const warning = [warningUp, warningDown].filter(v => v).join('，');
+      // 告警上限文本
+      const alarmUp = isNumber(largeUpper) && `≥${largeUpper}${unit}`;
+      // 告警下限文本
+      const alarmDown = isNumber(smallLower) && `≤${smallLower}${unit}`;
+      // 告警文本
+      const alarm = [alarmUp, alarmDown].filter(v => v).join('，');
+      // 获取列表中的最大值和最小值
+      let { value: max, value: min } = (monitorTrend || []).find(({ value }) => isNumber(value)) || {};
+      ({ max, min } = monitorTrend && monitorTrend.reduce(({ max, min }, { value }) => {
+        return isNumber(value) ? {
+          max: Math.max(max, value),
+          min: Math.min(min, value),
+        } : {
+          max,
+          min,
+        };
+      }, { max, min }) || {});
+      // 计算实际上的最大值和最小值（所有值都不是数字的情况不知道需不需要考虑）
+      max = Math.max.apply(null, [max, maxValue, largeUpper, normalUpper].filter(v => isNumber(v)));
+      min = Math.min.apply(null, [min, minValue, smallLower, normalLower].filter(v => isNumber(v)));
+      const text = [warning && `{a|预警范围：}{b|${warning}}`, alarm && `{a|告警范围：}{b|${alarm}}`].filter(v => v);
+      option = {
+        title: {
+          text: text.join('\n'),
+          textStyle: {
+            fontSize: 12,
+            lineHeight: 18,
+            rich: {
+              a: {
+                color: 'rgba(0, 0, 0, 0.45)',
+              },
+              b: {
+                color: 'rgba(0, 0, 0, 0.65)',
+              },
+            },
+          },
+          padding: 0,
+        },
+        color: ['#720EBC'],
+        tooltip : {
+          trigger: 'axis',
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          formatter(params) {
+            const { seriesName, marker, value: [time, value] } = params[params.length - 1];
+            return `${moment(time).format('HH:mm:ss')}<br />${marker}${seriesName}：${value}${unit}`;
+          },
+        },
+        grid: {
+          top: 12 + 18 * text.length,
+          left: 0,
+          right: 20,
+          bottom: 6,
+          containLabel: true,
+        },
+        xAxis: {
+          type: 'time',
+          min: +moment(date).startOf('day'),
+          max: Math.min(+moment(date).endOf('day'), +moment()),
+          maxInterval: 60 * 60 * 1000,
+          axisLine: {
+            lineStyle: {
               color: 'rgba(0, 0, 0, 0.45)',
             },
-            b: {
-              color: 'rgba(0, 0, 0, 0.65)',
+          },
+          axisLabel: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            formatter(value) {
+              return moment(value).format('HH:mm');
             },
           },
-        },
-        padding: 0,
-      },
-      color: ['#720EBC'],
-      tooltip : {
-        trigger: 'axis',
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        formatter(params) {
-          const { seriesName, marker, value: [time, value] } = params[params.length - 1];
-          return `${moment(time).format('HH:mm')}<br />${marker}${seriesName}：${value}${unit}`;
-        },
-      },
-      grid: {
-        top: 12 + 18 * text.length,
-        left: 0,
-        right: 20,
-        bottom: 6,
-        containLabel: true,
-      },
-      xAxis: {
-        type: 'time',
-        min: +date,
-        maxInterval: 60 * 60 * 1000,
-        axisLine: {
-          lineStyle: {
-            color: 'rgba(0, 0, 0, 0.45)',
+          splitLine: {
+            show: false,
           },
         },
-        axisLabel: {
-          color: 'rgba(0, 0, 0, 0.65)',
-          formatter(value) {
-            return moment(value).format('HH:mm');
+        yAxis: {
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(0, 0, 0, 0.45)',
+            },
           },
-        },
-        splitLine: {
-          show: false,
-        },
-      },
-      yAxis: {
-        axisLine: {
-          lineStyle: {
-            color: 'rgba(0, 0, 0, 0.45)',
+          axisLabel: {
+            color: 'rgba(0, 0, 0, 0.65)',
           },
+          splitLine: {
+            show: false,
+          },
+          min,
+          max,
         },
-        axisLabel: {
-          color: 'rgba(0, 0, 0, 0.65)',
-        },
-        splitLine: {
-          show: false,
-        },
-        min,
-        max,
-      },
-      series: [
-        {
-          name: '监测数值',
-          type: 'line',
-          data: monitorTrend && monitorTrend.map(({ time, value }) => ({
-            name: time,
+        series: [
+          {
+            name: '监测数值',
+            type: 'line',
+            data: monitorTrend && monitorTrend.map(({ time, value }) => ({
+              name: time,
+              value: [
+                time,
+                value,
+              ],
+            })),
+            markArea: {
+              silent: true,
+              data: [
+                isNumber(smallLower) && [
+                  {
+                    yAxis: min,
+                    itemStyle: {
+                      color: '#F5868E',
+                    },
+                  },
+                  {
+                    yAxis: smallLower,
+                  },
+                ],
+                isNumber(normalLower) && [
+                  {
+                    yAxis: isNumber(smallLower) ? smallLower : min,
+                    itemStyle: {
+                      color: '#E8B176',
+                    },
+                  },
+                  {
+                    yAxis: normalLower,
+                  },
+                ],
+                [
+                  {
+                    yAxis: Math.max(isNumber(normalLower) ? normalLower : min, isNumber(smallLower) ? smallLower : min, min),
+                    itemStyle: {
+                      color: '#8FB4F2',
+                    },
+                  },
+                  {
+                    yAxis: Math.min(isNumber(normalUpper) ? normalUpper : max, isNumber(largeUpper) ? largeUpper : max, max),
+                  },
+                ],
+                isNumber(normalUpper) && [
+                  {
+                    yAxis: normalUpper,
+                    itemStyle: {
+                      color: '#E8B176',
+                    },
+                  },
+                  {
+                    yAxis: isNumber(largeUpper) ? largeUpper : max,
+                  },
+                ],
+                isNumber(largeUpper) && [
+                  {
+                    yAxis: largeUpper,
+                    itemStyle: {
+                      color: '#F5868E',
+                    },
+                  },
+                  {
+                    yAxis: max,
+                  },
+                ],
+              ].filter(v => v),
+            },
+          },
+        ],
+      };
+    } else {
+      const start = +moment(date).startOf('day');
+      const end = +moment(date).endOf('day');
+      const { data, hasValue, hasPoint } = monitorTrend && monitorTrend.reduce((result, { time, value }, index) => {
+        result.data.push({
+          name: time,
+          value: [
+            time,
+            value,
+          ],
+        });
+        if (time < start) {
+          if (isNumber(value)) {
+            const next = monitorTrend[index + 1];
+            if (!next || next.time !== start) { // 极限情况
+              result.hasValue = true;
+            }
+          }
+        } else if (time >= start && time <= end) {
+          if (isNumber(value)) {
+            result.hasValue = true;
+            result.hasPoint = true;
+          }
+        }
+        return result;
+      }, {
+        data: [],
+        hasValue: false,
+        hasPoint: false,
+      });
+      visible = hasValue;
+      if (data) {
+        const last = data[data.length - 1];
+        if(last && last.name <= end) { //这里很乱，理不清
+          data.push({
+            name: +moment(end).add(1, 'days'),
             value: [
-              time,
-              value,
+              +moment(end).add(1, 'days'),
+              last.value[1],
             ],
-          })),
-          markArea: {
-            silent: true,
-            data: [
-              isNumber(smallLower) && [
-                {
-                  yAxis: min,
-                  itemStyle: {
-                    color: '#F5868E',
-                  },
-                },
-                {
-                  yAxis: smallLower,
-                },
-              ],
-              isNumber(normalLower) && [
-                {
-                  yAxis: isNumber(smallLower) ? smallLower : min,
-                  itemStyle: {
-                    color: '#E8B176',
-                  },
-                },
-                {
-                  yAxis: normalLower,
-                },
-              ],
-              [
-                {
-                  yAxis: Math.max(isNumber(normalLower) ? normalLower : min, isNumber(smallLower) ? smallLower : min, min),
-                  itemStyle: {
-                    color: '#8FB4F2',
-                  },
-                },
-                {
-                  yAxis: Math.min(isNumber(normalUpper) ? normalUpper : max, isNumber(largeUpper) ? largeUpper : max, max),
-                },
-              ],
-              isNumber(normalUpper) && [
-                {
-                  yAxis: normalUpper,
-                  itemStyle: {
-                    color: '#E8B176',
-                  },
-                },
-                {
-                  yAxis: isNumber(largeUpper) ? largeUpper : max,
-                },
-              ],
-              isNumber(largeUpper) && [
-                {
-                  yAxis: largeUpper,
-                  itemStyle: {
-                    color: '#F5868E',
-                  },
-                },
-                {
-                  yAxis: max,
-                },
-              ],
-            ].filter(v => v),
+          });
+        }
+      }
+      option = {
+        color: ['#720EBC'],
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          formatter(params) {
+            const { seriesName, marker, value: [time, value] } = params[params.length - 1];
+            return `${!hasPoint ? date.format('YYYY-MM-DD') : moment(time).format('HH:mm:ss')}<br />${marker}${seriesName}：${+value ? '火警' : '正常'}`;
           },
         },
-      ],
-    };
+        grid: {
+          top: 12,
+          left: 0,
+          right: 20,
+          bottom: 6,
+          containLabel: true,
+        },
+        xAxis: {
+          type: 'time',
+          min: +moment(date).startOf('day'),
+          max: Math.min(+moment(date).endOf('day'), +moment()),
+          maxInterval: 60 * 60 * 1000,
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(0, 0, 0, 0.45)',
+            },
+          },
+          axisLabel: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            formatter(value) {
+              return moment(value).format('HH:mm');
+            },
+          },
+          splitLine: {
+            show: false,
+          },
+        },
+        yAxis: {
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(0, 0, 0, 0.45)',
+            },
+          },
+          axisLabel: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            formatter(value) {
+              return +value ? '火警' : '正常';
+            },
+          },
+          splitLine: {
+            show: false,
+          },
+          min: 0,
+          max: 1,
+          minInterval: 1,
+        },
+        series: [
+          {
+            name: '状态',
+            type: 'line',
+            step: 'end',
+            data,
+          },
+        ],
+      };
+    }
 
     return (
       <Card
@@ -401,37 +571,60 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         onTabChange={this.handleCurrentIndexChange}
       >
         <Spin spinning={loadingMonitorTrend}>
-          {monitorTrend && monitorTrend.length ? (
+          {paramDesc && visible ? (
             <Fragment>
               <ReactEcharts
+                key={paramDesc}
                 option={option}
               />
-              <div className={styles.legendList}>
-                <div className={styles.legend}>
-                  <div className={styles.legendIcon} />
-                  <div className={styles.legendLabel}>安全数值区</div>
-                </div>
-                <div className={styles.legend}>
-                  <div className={styles.legendIcon} />
-                  <div className={styles.legendLabel}>预警数值区</div>
-                </div>
-                <div className={styles.legend}>
-                  <div className={styles.legendIcon} />
-                  <div className={styles.legendLabel}>报警数值区</div>
-                </div>
-                <div className={styles.legend}>
-                  <div className={styles.legendIcon2}>
-                    <div />
+              {isNotFire && (
+                <div className={styles.legendList}>
+                  <div className={styles.legend}>
+                    <div className={styles.legendIcon} />
+                    <div className={styles.legendLabel}>安全数值区</div>
                   </div>
-                  <div className={styles.legendLabel}>监测数值</div>
+                  <div className={styles.legend}>
+                    <div className={styles.legendIcon} />
+                    <div className={styles.legendLabel}>预警数值区</div>
+                  </div>
+                  <div className={styles.legend}>
+                    <div className={styles.legendIcon} />
+                    <div className={styles.legendLabel}>告警数值区</div>
+                  </div>
+                  <div className={styles.legend}>
+                    <div className={styles.legendIcon2}>
+                      <div />
+                    </div>
+                    <div className={styles.legendLabel}>监测数值</div>
+                  </div>
                 </div>
-              </div>
+              )}
             </Fragment>
           ) : (
             <CustomEmpty className={styles.customEmpty} />
           )}
         </Spin>
       </Card>
+    );
+  }
+
+  renderVideo() {
+    const {
+      deviceDetail: {
+        videoList=[],
+      }={},
+    } = this.props;
+    const { videoVisible, videoKeyId } = this.state;
+
+    return (
+      <NewVideoPlay
+        style={{ zIndex: 9999, position: 'fixed' }}
+        videoList={videoList}
+        visible={videoVisible}
+        showList={true}
+        keyId={videoKeyId}
+        handleVideoClose={this.hideVideo}
+      />
     );
   }
 
@@ -449,6 +642,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         <Spin spinning={loading}>
           {this.renderBasicInfo()}
           {this.renderMonitorDataTrend()}
+          {this.renderVideo()}
         </Spin>
       </PageHeaderLayout>
     );

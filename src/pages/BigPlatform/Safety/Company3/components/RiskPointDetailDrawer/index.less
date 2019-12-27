@@ -1,9 +1,13 @@
-
 .scrollContainer {
   height: calc(~'100% - 25.25em - 7px') !important;
 }
+
 .container {
   padding: 0 1em;
+}
+
+.spinContainer {
+  height: calc(100% - 343px) !important;
 }
 
 /* 标题 */
@@ -16,13 +20,16 @@
     border-left: 3px solid #00ffff;
   }
 }
+
 /* 轮播 */
 .carouselContainer {
   padding: 1em 1em 1.5em;
+
   :global {
     .ant-carousel {
       font-size: 1em;
     }
+
     .slick-dots {
       bottom: -16px;
     }
@@ -35,12 +42,14 @@
       line-height: 1;
       color: #4F6793;
     }
+
     .ant-empty-image {
       margin-bottom: 6px;
       height: 10em;
     }
   }
 }
+
 /* 标签 */
 .tabList {
   display: flex;
@@ -64,15 +73,18 @@
 
     &:hover {
       background-color: rgb(5, 71, 149);
+
       .tabTitle {
         color: #fff;
         border-left: 3px solid #00ffff;
       }
     }
   }
+
   .activeTab {
     background-color: rgb(5, 71, 149);
     cursor: auto;
+
     .tabTitle {
       color: #fff;
       border-left: 3px solid #00ffff;
@@ -101,18 +113,22 @@
       background-color: rgb(5, 71, 149);
     }
   }
+
   .activeSubTab {
     background-color: rgb(5, 71, 149);
     cursor: auto;
   }
 }
+
 /* 卡片 */
 .card {
   margin-bottom: 1em;
+
   &:last-of-type {
     margin-bottom: 1px;
   }
 }
+
 /* 加载更多按钮 */
 .loadMoreWrapper {
   padding-top: 1em;

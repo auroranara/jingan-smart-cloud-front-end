@@ -19,17 +19,18 @@ const { Step } = Steps;
 const { Description } = DescriptionList;
 const { Panel } = Collapse;
 const EmptyData = () => <span className={styles.empty}>暂无数据</span>;
-const getTransformedTime = (time) => {
-  if (time < 1000) {
-    return `${time}ms`;
-  } else if (time < 60 * 1000) {
-    return `${Math.round(time / 1000)}s`;
-  } else if (time < 60 * 60 * 1000) {
-    return `${Math.round(time / (60 * 1000))}min`;
-  } else if (time < 24 * 60 * 60 * 1000) {
-    return `${Math.floor(time / (60 * 60 * 1000))}h${Math.round(time % (60 * 60 * 1000) / (60 * 1000))}min`;
+export const getTransformedTime = (time) => {
+  if (time < 60 * 1000) {
+    return '小于1min';
   } else {
-    return `${Math.floor(time / (24 * 60 * 60 * 1000))}d${Math.floor(time % (24 * 60 * 60 * 1000) / (60 * 60 * 1000))}h${Math.round(time % (60 * 60 * 1000) / (60 * 1000))}min`;
+    const day = Math.floor(time / (24 * 60 * 60 * 1000));
+    time %= 24 * 60 * 60 * 1000;
+    const hour = Math.floor(time / (60 * 60 * 1000));
+    time %= 60 * 60 * 1000;
+    const minute = Math.floor(time / (60 * 1000));
+    // time %= 60 * 1000;
+    // const second = Math.floor(time / 1000);
+    return [day && `${day}d`, hour && `${hour}h`, minute && `${minute}min`/* , second && `${second}s` */].filter(v => v).join('');
   }
 };
 
@@ -161,6 +162,7 @@ export default class AlarmWorkOrderDetail extends Component {
         executeType,
         startDate,
         startUserName,
+        status,
       }={},
     } = this.props;
     let current = 0;
@@ -170,27 +172,34 @@ export default class AlarmWorkOrderDetail extends Component {
         title: '工单创建',
         description: (
           <Fragment>
-            <div>{createUserName}</div>
-            <div>{moment(createDate).format(DEFAULT_FORMAT)}</div>
+            {/* <div>{createUserName}</div> */}
+            <div>{createDate && moment(createDate).format(DEFAULT_FORMAT)}</div>
           </Fragment>
         ),
       },
     ];
-    if (+executeType !== 2 && startDate) {
-      current += 1;
-      steps.push({
-        id: '确认警情',
-        title: '确认警情',
-        description: (
-          <Fragment>
-            <div>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>
-            <div>{startUserName}</div>
-            <div>{moment(startDate).format(DEFAULT_FORMAT)}</div>
-          </Fragment>
-        ),
-      });
+    if (+executeType !== 2) { // 不是自动处理的情况下再显示
+      if (+status === 0 || +status === 1) {
+        current += 1;
+        steps.push({
+          id: '确认警情',
+          title: '确认警情',
+          description: (
+            <Fragment>
+              <div>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>
+              <div>{startUserName}</div>
+              <div>{moment(startDate).format(DEFAULT_FORMAT)}</div>
+            </Fragment>
+          ),
+        });
+      } else {
+        steps.push({
+          id: '确认警情',
+          title: '确认警情',
+        });
+      }
     }
-    if (endDate) {
+    if (+status === 1) {
       current += 1;
       steps.push({
         id: '完成工单',
@@ -202,8 +211,12 @@ export default class AlarmWorkOrderDetail extends Component {
           </Fragment>
         ),
       });
+    } else {
+      steps.push({
+        id: '完成工单',
+        title: '完成工单',
+      });
     }
-
 
     return (
       <Card className={styles.card} title="工单流程">
@@ -225,12 +238,17 @@ export default class AlarmWorkOrderDetail extends Component {
         spendTime,
         targetName,
         deviceName,
+        unitTypeName,
+        reportType,
         reportTypeName,
         areaLocation,
-        reportPhotoList,
-        reportDesc,
+        sitePhotoList,
+        disasterDesc,
+        loopNumber,
+        partNumber,
       }={},
     } = this.props;
+    const isHost = +reportType === 1;
     const isFinished = +status === 1;
 
     return (
@@ -242,7 +260,8 @@ export default class AlarmWorkOrderDetail extends Component {
                 <div className={styles.status}>
                   <SelectOrSpan list={STATUSES} value={`${status}`} type="span" />
                 </div>
-                {+type === 2 && <div className={styles.realAlarm}>真实警情</div>}
+                {/* {+type === 2 && <div className={styles.realAlarm}>真实警情</div>} */}
+                {<div className={styles.realAlarm}>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>}
               </div>
             ) : <EmptyData />}
           </Description>
@@ -251,17 +270,48 @@ export default class AlarmWorkOrderDetail extends Component {
               {isNumber(spendTime) ? getTransformedTime(spendTime) : <EmptyData />}
             </Description>
           )}
-          <Description term="监测对象">
-            {targetName || <EmptyData />}
-          </Description>
+          {!isHost && (
+            <Description term="监测对象">
+              {targetName || <EmptyData />}
+            </Description>
+          )}
+          {isHost && !isFinished && (
+            <Description term="消防主机">
+              {deviceName || <EmptyData />}
+            </Description>
+          )}
+          {isHost && !isFinished && (
+            <Description term="部件类型">
+              {unitTypeName || <EmptyData />}
+            </Description>
+          )}
         </DescriptionList>
         <DescriptionList className={styles.descriptionList} gutter={24}>
-          <Description term="设备名称/主机编号">
-            <div className={styles.nameWrapper}>
-              <div className={styles.name}>{deviceName || <EmptyData />}</div>
-              {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
-            </div>
-          </Description>
+          {isHost && isFinished && (
+            <Description term="消防主机">
+              {deviceName || <EmptyData />}
+            </Description>
+          )}
+          {!isHost ? (
+            <Description term="监测设备名称">
+              <div className={styles.nameWrapper}>
+                <div className={styles.name}>{deviceName || <EmptyData />}</div>
+                {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
+              </div>
+            </Description>
+          ) : (
+            <Description term="回路号">
+              <div className={styles.nameWrapper}>
+                <div className={styles.name}>{loopNumber || partNumber ? `${loopNumber ? `${loopNumber}回路` : ''}${partNumber ? `${partNumber}号` : ''}` : <EmptyData />}</div>
+                {videoList && videoList.length > 0 && <div className={styles.videoWrapper}><div className={styles.video} onClick={this.showVideo} /></div>}
+              </div>
+            </Description>
+          )}
+          {isHost && isFinished && (
+            <Description term="部件类型">
+              {unitTypeName || <EmptyData />}
+            </Description>
+          )}
           <Description term="监测类型">
             {reportTypeName || <EmptyData />}
           </Description>
@@ -273,16 +323,16 @@ export default class AlarmWorkOrderDetail extends Component {
           <Fragment>
             <DescriptionList className={styles.descriptionList} gutter={24} col={1}>
               <Description term="现场照片">
-                {reportPhotoList && reportPhotoList.length ? (
+                {sitePhotoList && sitePhotoList.length ? (
                   <div className={styles.imageContainer}>
-                    {reportPhotoList.map(({ webUrl }, index) => (
+                    {sitePhotoList.map((webUrl, index) => (
                       <div className={styles.imageWrapper} key={index}>
                         <div
                           className={styles.image}
                           style={{
                             backgroundImage: `url(${webUrl})`,
                           }}
-                          onClick={() => this.setState({ images: reportPhotoList.map(({ webUrl }) => webUrl), currentImage: index })}
+                          onClick={() => this.setState({ images: sitePhotoList.map((webUrl) => webUrl), currentImage: index })}
                         />
                       </div>
                     ))}
@@ -292,7 +342,7 @@ export default class AlarmWorkOrderDetail extends Component {
             </DescriptionList>
             <DescriptionList gutter={24} col={1}>
               <Description term="问题描述" className={styles.description}>
-                {reportDesc || <EmptyData />}
+                {disasterDesc || <EmptyData />}
               </Description>
             </DescriptionList>
           </Fragment>
@@ -309,56 +359,58 @@ export default class AlarmWorkOrderDetail extends Component {
 
     return (
       <Card className={styles.card} title={<Fragment>消息通知<span className={styles.total}>（共{(messageList || []).length}条）</span></Fragment>}>
-        <Collapse className={styles.collapse} bordered={false} activeKey={collapseActiveKey} onChange={this.handleCollapseChange}>
-          {messageList && messageList.length ? messageList.map(({ msg_id, add_time, msg_content, acceptUserList }) => {
-            const { content, readCount, unreadCount } = acceptUserList && acceptUserList.length ? acceptUserList.reduce((result, { accept_user_id, accept_user_name, accept_user_phone, status }) => {
-              if (+status) {
-                result.unreadCount += 1;
-              } else {
-                result.readCount += 1;
-              }
-              result.content.push((
-                <Col span={6} key={accept_user_id}>
-                  <div className={styles.receiverWrapper}>
-                    <Avatar className={styles.avatar}>
-                      {accept_user_name[0]}
-                    </Avatar>
-                    <div className={styles.receiverInfoWrapper}>
-                      <div className={styles.receiverInfo}>
-                        <div className={styles.receiverName}>{accept_user_name}</div>
-                        <div className={styles.receiverPhone}>{accept_user_phone}</div>
+        {messageList && messageList.length ? (
+          <Collapse className={styles.collapse} bordered={false} activeKey={collapseActiveKey} onChange={this.handleCollapseChange}>
+            {messageList.map(({ msg_id, add_time, msg_content, acceptUserList }) => {
+              const { content, readCount, unreadCount } = acceptUserList && acceptUserList.length ? acceptUserList.reduce((result, { accept_user_id, accept_user_name, accept_user_phone, status }) => {
+                if (+status) {
+                  result.unreadCount += 1;
+                } else {
+                  result.readCount += 1;
+                }
+                result.content.push((
+                  <Col span={6} key={accept_user_id}>
+                    <div className={styles.receiverWrapper}>
+                      <Avatar className={styles.avatar}>
+                        {accept_user_name[0]}
+                      </Avatar>
+                      <div className={styles.receiverInfoWrapper}>
+                        <div className={styles.receiverInfo}>
+                          <div className={styles.receiverName}>{accept_user_name}</div>
+                          <div className={styles.receiverPhone}>{accept_user_phone}</div>
+                        </div>
+                        <div className={styles.receiverStatus}>{`站内信${+status ? '未读' : '已读'}`}</div>
                       </div>
-                      <div className={styles.receiverStatus}>{`站内信${+status ? '未读' : '已读'}`}</div>
                     </div>
+                  </Col>
+                ));
+                return result;
+              }, {
+                content: [],
+                readCount: 0,
+                unreadCount: 0,
+              }) : {
+                content: <Empty />,
+                readCount: 0,
+                unreadCount: 0,
+              };
+              return (
+                <Panel header={
+                  <div className={styles.message}>
+                    <div className={styles.messageLeft}>{moment(add_time).format(DEFAULT_FORMAT)}&nbsp;&nbsp;{msg_content}</div>
+                    <div className={styles.messageRight}>站内信：{`${readCount}人已读，${unreadCount}人未读`}</div>
                   </div>
-                </Col>
-              ));
-              return result;
-            }, {
-              content: [],
-              readCount: 0,
-              unreadCount: 0,
-            }) : {
-              content: <Empty />,
-              readCount: 0,
-              unreadCount: 0,
-            };
-            return (
-              <Panel header={
-                <div className={styles.message}>
-                  <div className={styles.messageLeft}>{moment(add_time).format(DEFAULT_FORMAT)}&nbsp;&nbsp;{msg_content}</div>
-                  <div className={styles.messageRight}>站内信：{`${readCount}人已读，${unreadCount}人未读`}</div>
-                </div>
-              } key={msg_id}>
-                <Row gutter={24} className={styles.row}>
-                  {content}
-                </Row>
-              </Panel>
-            );
-          }) : (
-            <Empty />
-          )}
-        </Collapse>
+                } key={msg_id}>
+                  <Row gutter={24} className={styles.row}>
+                    {content}
+                  </Row>
+                </Panel>
+              );
+            })}
+          </Collapse>
+        ) : (
+          <Empty />
+        )}
       </Card>
     );
   }
@@ -384,7 +436,7 @@ export default class AlarmWorkOrderDetail extends Component {
 
     return (
       <NewVideoPlay
-        style={{ zIndex: 9999 }}
+        style={{ zIndex: 9999, position: 'fixed' }}
         videoList={videoList}
         visible={videoVisible}
         showList={true}

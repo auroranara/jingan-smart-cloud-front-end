@@ -27,6 +27,8 @@ import { getToken } from '@/utils/authority';
 import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 // 选择企业弹窗
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+// 地图定位
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '@/pages/DeviceManagement/NewSensor/AddSensor.less';
 
 const FormItem = Form.Item;
@@ -66,7 +68,7 @@ export default class AddMonitoringDevice extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -105,11 +107,11 @@ export default class AddMonitoringDevice extends Component {
               fileList:
                 fileList && fileList.length
                   ? fileList.map(item => ({
-                      ...item,
-                      uid: item.id,
-                      url: item.webUrl,
-                      name: item.fileName,
-                    }))
+                    ...item,
+                    uid: item.id,
+                    url: item.webUrl,
+                    name: item.fileName,
+                  }))
                   : [],
             },
             () => {
@@ -117,6 +119,12 @@ export default class AddMonitoringDevice extends Component {
               if (locationType === 1) {
                 setFieldsValue({ area, location });
               } else setFieldsValue({ floorId });
+              if (pointFixInfoList && pointFixInfoList.length) {
+                let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+                const coord = { x: +xnum, y: +ynum, z: +znum };
+                groupId = +groupId;
+                setFieldsValue({ mapLocation: { groupId, coord, areaId } });
+              }
             }
           );
           companyId &&
@@ -365,19 +373,23 @@ export default class AddMonitoringDevice extends Component {
     const {
       editingIndex,
       fileList, // 安装图片
-      pointFixInfoList, // 平面图标志
+      // pointFixInfoList, // 平面图标志
     } = this.state;
     if (!isNaN(editingIndex)) {
       message.warning('请先保存平面图信息');
       return;
     }
-    validateFields((err, values) => {
+    validateFields((err, { mapLocation, ...resValues }) => {
       if (err) return;
-      const payload = {
-        ...values,
+      let payload = {
+        ...resValues,
         installPhotoList: fileList, // 安装图片列表
-        pointFixInfoList, // 平面图标注列表
+        pointFixInfoList: [], // 平面图标注列表
       };
+      if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+        const { coord, ...resMap } = mapLocation;
+        payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+      }
       // console.log('payload', payload);
       const tag = id ? '编辑' : '新增';
       const success = () => {
@@ -436,7 +448,7 @@ export default class AddMonitoringDevice extends Component {
     } = this.props;
     const {
       editingIndex,
-      pointFixInfoList,
+      // pointFixInfoList,
       isImgSelect,
       imgIdCurrent,
       selectedCompany,
@@ -445,28 +457,40 @@ export default class AddMonitoringDevice extends Component {
       fileList,
     } = this.state;
     const { locationType, companyId } = getFieldsValue();
-    const FlatPicProps = {
-      visible: picModalVisible,
-      onCancel: () => {
-        this.setState({ picModalVisible: false });
-      },
+    // const FlatPicProps = {
+    //   visible: picModalVisible,
+    //   onCancel: () => {
+    //     this.setState({ picModalVisible: false });
+    //   },
+    //   form,
+    //   buildings, // 建筑物列表
+    //   floors, // 楼层列表
+    //   imgList, // 定位图列表
+    //   pointFixInfoList, // 平面图标注列表
+    //   editingIndex,
+    //   isImgSelect,
+    //   imgIdCurrent,
+    //   flatGraphic,
+    //   fetchFloors: this.fetchFloors,
+    //   setState: newState => {
+    //     this.setState(newState);
+    //   },
+    //   dispatch,
+    //   companyId,
+    //   handleBuildingChange: this.handleBuildingChange,
+    //   handleFloorIdChange: this.handleFloorIdChange,
+    // };
+    let { xnum, ynum, znum, groupId } = detail.pointFixInfoList && detail.pointFixInfoList.length ? detail.pointFixInfoList[0] : {};
+    const coord = { x: +xnum, y: +ynum, z: +znum };
+    groupId = +groupId;
+    const fengMapProps = {
+      id: 'mapLocation',
       form,
-      buildings, // 建筑物列表
-      floors, // 楼层列表
-      imgList, // 定位图列表
-      pointFixInfoList, // 平面图标注列表
-      editingIndex,
-      isImgSelect,
-      imgIdCurrent,
-      flatGraphic,
-      fetchFloors: this.fetchFloors,
-      setState: newState => {
-        this.setState(newState);
+      companyId: selectedCompany.id,
+      initialData: {
+        groupId,
+        coord,
       },
-      dispatch,
-      companyId,
-      handleBuildingChange: this.handleBuildingChange,
-      handleFloorIdChange: this.handleFloorIdChange,
     };
 
     return (
@@ -650,7 +674,7 @@ export default class AddMonitoringDevice extends Component {
             <Card className={styles.mt24}>
               <Form>
                 <FormItem label="平面图标注" {...formItemLayout}>
-                  <Button
+                  {/* <Button
                     type="primary"
                     style={{ padding: '0 12px' }}
                     onClick={this.handleAddFlatGraphic}
@@ -658,7 +682,8 @@ export default class AddMonitoringDevice extends Component {
                   >
                     新增
                   </Button>
-                  <FlatPic {...FlatPicProps} />
+                  <FlatPic {...FlatPicProps} /> */}
+                  <MapMarkerSelect {...fengMapProps} />
                 </FormItem>
               </Form>
             </Card>
@@ -681,7 +706,7 @@ export default class AddMonitoringDevice extends Component {
     );
   };
 
-  render() {
+  render () {
     const {
       companyLoading,
       sensor: { companyModal },

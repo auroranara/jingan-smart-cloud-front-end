@@ -33,7 +33,7 @@ export default class ChemicalDetailDrawer extends PureComponent {
 
   render() {
     const { visible, onClose } = this.props;
-    const {} = this.state;
+    // const {} = this.state;
 
     return (
       <DrawerContainer

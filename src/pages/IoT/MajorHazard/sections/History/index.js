@@ -693,14 +693,14 @@ export default class History extends Component {
         render: (value, { unit, status }) => isNumber(value) && <Badge status={status > 0 ? 'error' : 'success'} text={`${value}${unit}`} />,
       },
       {
-        title: '预警阈值',
+        title: '预警范围',
         dataIndex: 'warning',
         align: 'center',
         sorter: true,
         render: (_, { normalUpper, largeUpper, normalLower, smallLower, unit }) => [isNumber(normalUpper) && (isNumber(largeUpper) ? `${normalUpper}${unit}~${largeUpper}${unit}` : `≥${normalUpper}${unit}`), isNumber(normalLower) && (isNumber(smallLower) ? `${normalLower}${unit}~${smallLower}${unit}` : `≤${normalLower}${unit}`)].filter(v => v).join('，'),
       },
       {
-        title: '报警阈值',
+        title: '告警范围',
         dataIndex: 'alarm',
         align: 'center',
         sorter: true,

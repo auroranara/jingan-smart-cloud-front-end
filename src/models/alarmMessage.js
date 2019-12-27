@@ -28,7 +28,7 @@ export default {
   effects: {
     // 获取列表
     *getList({ payload, callback }, { call, put }) {
-      const response = yield call(getList, payload);
+      const response = yield call(getList, { bindMonitorEquipmentStatus: 1, ...payload });
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         const list = data;

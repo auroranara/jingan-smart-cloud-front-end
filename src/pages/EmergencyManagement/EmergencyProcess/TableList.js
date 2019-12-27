@@ -236,7 +236,7 @@ export default class TableList extends PureComponent {
             .split(',')
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};
-              treeData = val.children;
+              treeData = val.children || [];
               return val.label;
             })
             .join('/');
@@ -277,7 +277,7 @@ export default class TableList extends PureComponent {
           const string = types
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};
-              treeData = val.children;
+              treeData = val.children || [];
               return val.label;
             })
             .join('/');

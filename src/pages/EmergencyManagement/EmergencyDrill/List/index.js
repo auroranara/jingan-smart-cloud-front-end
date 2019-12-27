@@ -324,7 +324,7 @@ export default class EmergencyDrillList extends Component {
             .split(',')
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};
-              treeData = val.children;
+              treeData = val.children || [];
               return val.label;
             })
             .join('/');
@@ -361,7 +361,7 @@ export default class EmergencyDrillList extends Component {
         title: '操作',
         key: 'opration',
         align: 'center',
-        fixed: 'right',
+        fixed: unitType === 4 ? undefined : 'right',
         render: (val, row) => (
           <Fragment>
             <AuthA code={detailCode} onClick={() => this.goDetail(row.id)}>
@@ -390,7 +390,7 @@ export default class EmergencyDrillList extends Component {
           columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
           dataSource={list}
           // bordered
-          scroll={{ x: 'max-content' }}
+          scroll={unitType === 4 ? undefined : { x: 'max-content' }}
           pagination={{
             current: pageNum,
             pageSize,
@@ -422,6 +422,9 @@ export default class EmergencyDrillList extends Component {
           c,
         },
       },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
 
     return (
@@ -430,9 +433,13 @@ export default class EmergencyDrillList extends Component {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位数量：
-            {c}
-            <span style={{ marginLeft: 15 }}>
+            {unitType !== 4 && (
+              <span>
+                单位数量：
+                {c}
+              </span>
+            )}
+            <span style={{ marginLeft: unitType === 4 ? 0 : 15 }}>
               演练计划：
               {total}
             </span>

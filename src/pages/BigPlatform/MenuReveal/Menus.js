@@ -301,7 +301,7 @@ export default class NewMenuReveal extends Component {
             <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
             <div>工作台</div>
           </div>
-          <div className={styles.linkItem} onClick={() => router.push('/big-platform/chemical/index')}>
+          <div className={styles.linkItem} onClick={() => router.push('/big-platform/chemical/DccBRhlrSiu9gMV7fmvizw')}>
             <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
             <div>驾驶舱</div>
           </div>

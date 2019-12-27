@@ -185,6 +185,10 @@ export default class UnitSafety extends PureComponent {
         'fetchDeviceCountList',
         // 获取隐患记录
         'fetchHiddenDangerRecordList',
+        // 获取标准及措施
+        'fetchStandardsAndMeasuresList',
+        // 获取点位检查标准
+        'fetchpointInspectionStandards',
       ],
     });
 
@@ -194,7 +198,7 @@ export default class UnitSafety extends PureComponent {
   /**
    * 挂载后
    */
-  componentDidMount() {
+  componentDidMount () {
     const {
       match: {
         params: { companyId },
@@ -236,7 +240,7 @@ export default class UnitSafety extends PureComponent {
     this.setPollingTimer();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearTimeout(this.pollingTimer);
   }
 
@@ -380,6 +384,17 @@ export default class UnitSafety extends PureComponent {
       ...restProps,
     });
   };
+
+  // 获取标准及措施列表
+  getStandardsAndMeasures = () => {
+    this.fetchStandardsAndMeasuresList({
+      itemId: this.itemId,
+      needStandards: 1,
+    });
+    this.fetchpointInspectionStandards({
+      item_id: this.itemId,
+    })
+  }
 
   /**
    * 设置抽屉是否显示
@@ -679,7 +694,7 @@ export default class UnitSafety extends PureComponent {
   /**
    * 渲染
    */
-  render() {
+  render () {
     const {
       unitSafety,
       loadingHiddenDangerList,
@@ -843,6 +858,7 @@ export default class UnitSafety extends PureComponent {
           getRiskPointHiddenDangerList={this.getRiskPointHiddenDangerList}
           getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
           getRiskPointInspectionCount={this.getRiskPointInspectionCount}
+          getStandardsAndMeasures={this.getStandardsAndMeasures}
         />
         {/* 巡查点位详情抽屉 */}
         <InspectionDetailDrawer

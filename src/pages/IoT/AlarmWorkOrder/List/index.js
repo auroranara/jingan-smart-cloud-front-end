@@ -83,6 +83,7 @@ export default class AlarmWorkOrderList extends Component {
     list,
     renderDetailButton,
     renderMonitorTrendButton,
+    renderDetailButton2,
   }) => ([
     ...(!unitId ? [
       {
@@ -97,8 +98,21 @@ export default class AlarmWorkOrderList extends Component {
       align: 'center',
     },
     {
-      title: '设备名称/主机编号',
+      title: '设备',
       dataIndex: 'deviceName',
+      render: (_, { reportType, deviceName, unitTypeName, loopNumber, partNumber }) => (
+        <div className={styles.multiple}>
+          {+reportType === 1 ? (
+            <Fragment>
+              <div className={styles.line}>消防主机编号：<span className={styles.value}>{deviceName}</span></div>
+              <div className={styles.line}>部件类型：<span className={styles.value}>{unitTypeName}</span></div>
+              <div className={styles.line}>回路号：<span className={styles.value}>{`${loopNumber ? `${loopNumber}回路` : ''}${partNumber ? `${partNumber}号` : ''}`}</span></div>
+            </Fragment>
+          ) : (
+            <div className={styles.line}>监测设备名称：<span className={styles.value}>{deviceName}</span></div>
+          )}
+        </div>
+      ),
       align: 'center',
     },
     {
@@ -148,7 +162,7 @@ export default class AlarmWorkOrderList extends Component {
       dataIndex: 'msgCount',
       width: 132,
       fixed: list && list.length ? 'right' : undefined,
-      render: (value, { id }) => <span>已发送 <span className={classNames(styles.clickable, !+value && styles.disabled)} onClick={value > 0 ? this.handleClick : undefined} data-id={id}>{value || 0}条</span></span>,
+      render: (value, data) => <span>已发送{renderDetailButton2(data)}</span>,
       align: 'center',
     },
   ])
@@ -172,6 +186,15 @@ export default class AlarmWorkOrderList extends Component {
         {
           code: 'monitorTrend',
           name: '查看监测趋势',
+        },
+        {
+          code: 'detail',
+          name({ msgCount }) {
+            return `${msgCount || 0}条`;
+          },
+          disabled({ msgCount }) {
+            return !+msgCount;
+          },
         },
       ],
       ...this.props,

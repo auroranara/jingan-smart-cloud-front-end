@@ -121,7 +121,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
 
   render() {
     const { visible, onClose, setDrawerVisible } = this.props;
-    const {} = this.state;
+    // const {} = this.state;
     const basicFields = [
       { label: '统一编码', value: 'code' },
       { label: '重大危险源名称', value: 'name' },

@@ -78,8 +78,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
     if (id) {
       // 获取详情
       dispatch({
-        type: 'emergencyManagement/fetchSuppliesDetail',
-        payload: { id },
+        type: 'emergencyManagement/fetchSuppliesList',
+        payload: { id, pageNum: 1, pageSize: 10 },
         callback: response => {
           const {
             companyId,
@@ -91,7 +91,9 @@ export default class EmergencySuppliesHandler extends PureComponent {
             materialCount,
             remark,
             companyName,
-          } = response.data;
+            daySpace,
+            dayMaintSpace,
+          } = response.data.list[0];
           setFieldsValue({
             companyId,
             materialName,
@@ -101,6 +103,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
             materialCode,
             materialCount,
             remark,
+            daySpace,
+            dayMaintSpace,
           });
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
@@ -200,7 +204,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
     let treeData = emergencyEquip;
     const typeCodes = value.map(id => {
       const val = treeData.find(item => item.id === id) || {};
-      treeData = val.children;
+      treeData = val.children || [];
       return val.value;
     });
     setFieldsValue({ materialCode: typeCodes[typeCodes.length - 1] });
@@ -309,7 +313,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="定期检查间隔（天）" {...formItemLayout}>
-            {getFieldDecorator('materialCount', {
+            {getFieldDecorator('daySpace', {
               // rules: [{ required: true, message: '请输入定期检查间隔（天）' }],
             })(
               <InputNumber
@@ -322,7 +326,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="定期保修间隔（天）" {...formItemLayout}>
-            {getFieldDecorator('materialCount', {
+            {getFieldDecorator('dayMaintSpace', {
               // rules: [{ required: true, message: '请输入物资数量' }],
             })(
               <InputNumber

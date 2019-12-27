@@ -867,7 +867,7 @@ module.exports = env => {
               ],
             },
             {
-              path: '/major-hazard-info/high-risk-process', // 高危工艺流程
+              path: '/major-hazard-info/high-risk-process', // 工艺流程
               code: 'majorHazardInfo.highRiskProcess',
               name: 'highRiskProcess',
               developing: true,
@@ -941,6 +941,14 @@ module.exports = env => {
                   // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
                 },
               ],
+            },
+            {
+              path: '/major-hazard-info/pipeline', // 工业管道
+              code: 'majorHazardInfo.pipeline',
+              name: 'pipeline',
+              developing: true,
+              hideChildrenInMenu: true,
+              routes: [],
             },
           ],
         },

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { message, List, Card, Icon, Carousel } from 'antd';
+import React, { Component, Fragment } from 'react';
+import { message, List, Card, Icon, Carousel, notification } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import CustomEmpty from '@/jingan-components/CustomEmpty';
@@ -8,14 +8,18 @@ import { connect } from 'dva';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
 import router from 'umi/router';
+import classNames from 'classnames';
 import moment from 'moment';
+import {
+  GET_STATUS_NAME,
+} from '@/pages/IoT/AlarmMessage';
 import styles from './index.less';
 
 const GET_REAL_TIME_LIST = 'gasMonitor/getRealTimeList';
 const TAB_LIST = [
-  { key: '0', tab: '全部监测点' },
-  { key: '1', tab: '报警监测点' },
-  { key: '2', tab: '正常监测点' },
+  { key: '0', tab: '全部监测设备' },
+  { key: '1', tab: '报警监测设备' },
+  { key: '2', tab: '正常监测设备' },
 ];
 const WARN_STATUS_MAPPER = {
   1: -1,
@@ -30,7 +34,7 @@ const options = {
 };
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
-@connect(({ user: { currentUser: { unitId } }, gasMonitor, loading }, { route: { code } }) => {
+@connect(({ user: { currentUser: { unitId } }, gasMonitor }, { route: { code } }) => {
   const { breadcrumbList } = code.split('.').reduce((result, item) => {
     const key = `${result.key}.${item}`;
     const title = locales[key];
@@ -50,12 +54,11 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
     unitId,
     breadcrumbList,
     gasMonitor,
-    loading: loading.effects[GET_REAL_TIME_LIST],
   };
 }, (dispatch) => ({
   getRealTimeList(payload, callback) {
     dispatch({
-      type:GET_REAL_TIME_LIST,
+      type: GET_REAL_TIME_LIST,
       payload,
       callback: (success, data) => {
         if (!success) {
@@ -68,18 +71,19 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 }))
 export default class GasRealTime extends Component {
   state = {
+    loading: false,
     tabActiveKey: undefined,
     videoList: [],
     videoVisible: false,
     videoKeyId: undefined,
   }
 
+  myTimer = null
+
   componentDidMount() {
     const { unitId } = this.props;
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     this.handleTabChange(TAB_LIST[0].key);
-    console.log(env);
-    console.log(webscoketHost);
 
     const params = {
       companyId: unitId,
@@ -90,6 +94,7 @@ export default class GasRealTime extends Component {
 
     // 链接webscoket
     const ws = new WebsocketHeartbeatJs({ url, ...options });
+    this.ws = ws;
 
     ws.onopen = () => {
       console.log('connect success');
@@ -102,6 +107,12 @@ export default class GasRealTime extends Component {
       try {
         const data = JSON.parse(e.data).data;
         console.log(data);
+        if (['405', '406'].includes(`${data.monitorEquipmentType}`)) {
+          this.reload();
+          if (['1', '2'].includes(`${data.warnLevel}`)) {
+            this.showNotification(data); 
+          }
+        }
       } catch (error) {
         console.log('error', error);
       }
@@ -110,6 +121,71 @@ export default class GasRealTime extends Component {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+  }
+
+  componentWillUnmount() {
+    this.ws.close();
+    notification.destroy();
+    clearTimeout(this.myTimer);
+  }
+
+  reload = (callback) => {
+    const {
+      unitId,
+      getRealTimeList,
+    } = this.props;
+    const { tabActiveKey } = this.state;
+    clearTimeout(this.myTimer);
+    getRealTimeList({
+      companyId: unitId,
+      equipmentTypes: '405,406',
+      warnStatus: WARN_STATUS_MAPPER[tabActiveKey],
+    }, () => {
+      callback && callback();
+      this.setTimer();
+    });
+  }
+
+  setTimer = () => {
+    this.myTimer = setTimeout(() => {
+      this.reload();
+    }, 5 * 1000);
+  }
+
+  showNotification = ({
+    id,
+    happenTime,
+    statusType,
+    fixType,
+    warnLevel,
+    monitorEquipmentTypeName,
+    paramDesc,
+    paramUnit,
+    monitorValue,
+    limitValue,
+    monitorEquipmentAreaLocation,
+    monitorEquipmentName,
+    faultTypeName,
+  }) => {
+    const typeName = GET_STATUS_NAME({ statusType, warnLevel, fixType });
+    notification.open({
+      key: id,
+      icon: <span className={classNames(styles.notificationIcon, statusType < 0 ? styles.error : styles.success)} />,
+      message: `${monitorEquipmentTypeName}发生${typeName}`,
+      description: (
+        <Fragment>
+          <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div>
+          {![-2, -3].includes(+statusType) && <div>{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${['预警', '告警'].includes(typeName) ? `，超过${typeName}值${Math.abs(monitorValue - limitValue)}${paramUnit || ''}` : ''}`}</div>}
+          {[-3, 3].includes(+statusType) && <div>{`故障类型：${faultTypeName || ''}`}</div>}
+          <div>{`监测设备：${monitorEquipmentName || ''}`}</div>
+          <div>{`区域位置：${monitorEquipmentAreaLocation || ''}`}</div>
+        </Fragment>
+      ),
+      btn: <span className={styles.clickable} onClick={() => {
+        router.push("/company-iot/alarm-message/list");
+      }}>查看更多</span>,
+      duration: 30,
+    });
   }
 
   showVideo = (videoList) => {
@@ -127,17 +203,15 @@ export default class GasRealTime extends Component {
   }
 
   handleTabChange = (tabActiveKey) => {
-    const {
-      unitId,
-      getRealTimeList,
-    } = this.props;
-    getRealTimeList({
-      companyId: unitId,
-      equipmentTypes: '405,406',
-      warnStatus: WARN_STATUS_MAPPER[tabActiveKey],
-    });
     this.setState({
+      loading: true,
       tabActiveKey,
+    }, () => {
+      this.reload(() => {
+        this.setState({
+          loading: false,
+        });
+      });
     });
   }
 
@@ -149,7 +223,7 @@ export default class GasRealTime extends Component {
     router.push(`/company-iot/alarm-work-order/monitor-trend/${id}`);
   }
 
-  renderParamValue({ realValue, limitValue, status }) {
+  renderParamValue = ({ realValue, limitValue, status }) => {
     if (!+status) {
       return (
         <div className={styles.paramValueWrapper}>
@@ -174,14 +248,14 @@ export default class GasRealTime extends Component {
           <div className={styles.paramTrendWrapper}>
             <Icon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
             <div className={styles.paramTrendValue}>{Math.abs(realValue - limitValue)}</div>
-            <div className={styles.paramTrendDescription}>超过报警阈值</div>
+            <div className={styles.paramTrendDescription}>超过告警阈值</div>
           </div>
         </div>
       );
     }
   }
 
-  renderParam(item) {
+  renderParam = (item) => {
     const { id, linkStatus, linkStatusUpdateTime, dataUpdateTime, paramDesc, paramUnit } = item;
     const isLoss = +linkStatus === -1;
     const updateTime = isLoss ? linkStatusUpdateTime : dataUpdateTime;
@@ -202,9 +276,8 @@ export default class GasRealTime extends Component {
       gasMonitor: {
         realTimeList=[],
       },
-      loading,
     } = this.props;
-    const { tabActiveKey, videoList, videoVisible, videoKeyId } = this.state;
+    const { tabActiveKey, videoList, videoVisible, videoKeyId, loading } = this.state;
 
     return (
       <PageHeaderLayout
@@ -225,16 +298,16 @@ export default class GasRealTime extends Component {
                 <div className={styles.top}>
                   <div className={styles.basicInfoWrapper} style={{ backgroundImage: `url(${equipmentTypeLogoWebUrl})` }}>
                     <div className={styles.nameWrapper}>
-                      <div className={styles.nameLabel}>监测点名称：</div>
+                      <div className={styles.nameLabel}>监测设备名称：</div>
                       <div className={styles.nameValue}>
                         {name}
                         {+warnStatus === -1 && <div className={styles.isAlarm} />}
                       </div>
                     </div>
                     <div className={styles.addressWrapper}>
-                      <Icon type="environment" className={styles.addressIcon} title="监测点地址" />
+                      <Icon type="environment" className={styles.addressIcon} title="监测设备地址" />
                       <div className={styles.addressValue}>
-                        {areaLocation}
+                        {areaLocation || '暂无数据'}
                         {videoList && videoList.length > 0 && <div className={styles.video} onClick={() => this.showVideo(videoList)} />}
                       </div>
                     </div>

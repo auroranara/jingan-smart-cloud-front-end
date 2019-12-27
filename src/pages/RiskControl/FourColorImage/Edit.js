@@ -41,9 +41,10 @@ const itemStyles = {
   },
 };
 @Form.create()
-@connect(({ fourColorImage, user, account, loading }) => ({
+@connect(({ fourColorImage, user, map, account, loading }) => ({
   fourColorImage,
   user,
+  map,
   account,
   loading: loading.models.fourColorImage,
   perLoading: loading.effects['account/fetch'],
@@ -68,20 +69,16 @@ export default class TableList extends React.Component {
         params: { id },
       },
       user: {
-        currentUser: { unitType, companyId },
+        currentUser: { companyId },
       },
       location: {
         query: { companyId: extraCompanyId },
       },
     } = this.props;
 
-    dispatch({
-      type: 'account/fetch',
-      payload: {
-        unitId: unitType === 4 ? companyId : extraCompanyId,
-        pageSize: 10,
-        pageNum: 1,
-      },
+    this.fetchPersonList({ unitId: companyId || extraCompanyId });
+    this.fetchMap({ companyId: companyId || extraCompanyId }, mapInfo => {
+      this.childMap.initMap({ ...mapInfo });
     });
 
     if (id) {
@@ -114,6 +111,29 @@ export default class TableList extends React.Component {
     this.childMap.setRestMap();
   };
 
+  // 获取人员列表
+  fetchPersonList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'account/fetch',
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+        ...params,
+      },
+    });
+  };
+
+  // 获取地图
+  fetchMap = (params, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'map/fetchMapList',
+      payload: { ...params },
+      callback,
+    });
+  };
+
   // 模糊搜索个人列表
   handlePersonSearch = value => {
     const { dispatch } = this.props;
@@ -128,6 +148,7 @@ export default class TableList extends React.Component {
     });
   };
 
+  // 回调人员列表
   handlePersonChange = e => {
     const {
       account: { list: personList = [] },
@@ -145,10 +166,13 @@ export default class TableList extends React.Component {
     const {
       form: { setFieldsValue },
     } = this.props;
-    if (value.key && value.key === value.label) {
+    if (value && value.key && value.key === value.label) {
       setFieldsValue({ zoneCharger: '' });
     }
   };
+
+  // 去除左右两边空白
+  handleTrim = e => e.target.value.trim();
 
   handleSubmit = () => {
     const {
@@ -308,7 +332,6 @@ export default class TableList extends React.Component {
               <FormItem label="风险分级" {...formItemLayout}>
                 {getFieldDecorator('zoneLevel', {
                   initialValue: zoneLevel ? +zoneLevel : undefined,
-                  getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请选择' }],
                 })(
                   <Select placeholder="请选择" {...itemStyles} allowClear>
@@ -323,7 +346,6 @@ export default class TableList extends React.Component {
               <FormItem label="所属图层" {...formItemLayout}>
                 {getFieldDecorator('zoneType', {
                   initialValue: zoneType ? +zoneType : undefined,
-                  getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请选择' }],
                 })(
                   <Select placeholder="请选择" {...itemStyles} allowClear>

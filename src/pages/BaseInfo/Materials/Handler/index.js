@@ -539,7 +539,7 @@ export default class MaterialsHandler extends PureComponent {
             {getFieldDecorator('casNo')(<span>{selectedMsds.casNo}</span>)}
           </FormItem>
           <FormItem label="危险性类别" {...formItemLayout}>
-            {getFieldDecorator('riskCateg')(<span>{selectedMsds.riskCateg || NO_DATA}</span>)}
+            {getFieldDecorator('riskCateg')(<span>{selectedMsds.riskCateg || ''}</span>)}
           </FormItem>
           {amountVisible && (
             <Fragment>
