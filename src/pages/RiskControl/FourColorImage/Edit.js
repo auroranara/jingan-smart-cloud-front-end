@@ -150,6 +150,9 @@ export default class TableList extends React.Component {
     }
   };
 
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
+
   handleSubmit = () => {
     const {
       dispatch,
@@ -308,7 +311,6 @@ export default class TableList extends React.Component {
               <FormItem label="风险分级" {...formItemLayout}>
                 {getFieldDecorator('zoneLevel', {
                   initialValue: zoneLevel ? +zoneLevel : undefined,
-                  getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请选择' }],
                 })(
                   <Select placeholder="请选择" {...itemStyles} allowClear>
@@ -323,7 +325,6 @@ export default class TableList extends React.Component {
               <FormItem label="所属图层" {...formItemLayout}>
                 {getFieldDecorator('zoneType', {
                   initialValue: zoneType ? +zoneType : undefined,
-                  getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请选择' }],
                 })(
                   <Select placeholder="请选择" {...itemStyles} allowClear>
