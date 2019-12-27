@@ -676,7 +676,6 @@ export default class VideoMonitorEdit extends PureComponent {
           },
         },
       },
-      form,
       form: { getFieldDecorator, getFieldValue },
       match: {
         params: { id },
@@ -716,18 +715,6 @@ export default class VideoMonitorEdit extends PureComponent {
     const buildingFloor = getFieldValue('buildingFloor') || {};
     const addBuildingAuth = hasAuthority(codes.company.buildingsInfo.add, permissionCodes);
     const inheritNvr = getFieldValue('inheritNvr');
-    let { xnum, ynum, znum, groupId } = detail.pointFixInfoList && detail.pointFixInfoList.length ? detail.pointFixInfoList[0] : {};
-    const coord = { x: +xnum, y: +ynum, z: +znum };
-    groupId = +groupId;
-    const fengMapProps = {
-      id: 'mapLocation',
-      form,
-      companyId,
-      initialData: {
-        groupId,
-        coord,
-      },
-    };
     return (
       <Card className={styles.card} bordered={false}>
         <Form hideRequiredMark style={{ marginTop: 8 }}>
@@ -984,7 +971,9 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
           {companyId && (
             <FormItem {...formItemLayout} label={fieldLabels.mapLocation}>
-              <MapMarkerSelect {...fengMapProps} />
+              {getFieldDecorator('mapLocation')(
+                <MapMarkerSelect companyId={companyId} />
+              )}
             </FormItem>
           )}
         </Form>
