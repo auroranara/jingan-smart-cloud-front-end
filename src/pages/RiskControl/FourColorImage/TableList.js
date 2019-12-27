@@ -142,12 +142,7 @@ export default class TableList extends React.Component {
       payload: { ids: id },
       success: () => {
         this.childMap.removeArea(index);
-        this.fetchList(
-          { companyId: unitType === 4 ? companyId : searchInfo.id }
-          //   , res => {
-          //   this.childMap.getPointList(res.list);
-          // }
-        );
+        this.fetchList({ companyId: unitType === 4 ? companyId : searchInfo.id });
         message.success('删除成功！');
       },
       error: () => {
