@@ -6,35 +6,62 @@ import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import styles from './index.less';
 
+import defaultMarkrtIcon from '@/assets/icon-marker.png';
+
 const fengMap = fengmap; // eslint-disable-line
 
 @connect(({ map }) => ({
   map,
 }))
-export default class MarkerFengMap extends PureComponent {
+export default class MapMarkerSelect extends PureComponent {
+
+  state = {
+    show: true,// 是否显示地图
+  }
 
   static propTypes = {
-    id: PropTypes.string.isRequired,
-    form: PropTypes.object.isRequired,
+    id: PropTypes.string.isRequired, // 双向绑定id
+    form: PropTypes.object.isRequired, // Form.create()创建的form对象
     companyId: PropTypes.string,
     initialData: PropTypes.shape({
       groupId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       coord: PropTypes.object,
     }),
+    options: PropTypes.object,
   }
 
   static defaultProps = {
     initialData: {},
+    noDataLabel: '该单位暂无地图',
+    options: {},
   }
 
   constructor(props) {
     super(props);
     this.map = null;
-    this.btnFloorControl = null;
-    this.polygonMarkers = [];
+    this.btnFloorControl = null; // 楼层控件实例
+    this.polygonMarkers = []; // 保存区域实例
   }
 
   componentDidMount () {
+    this.handleUpdateMap(true)
+  }
+
+  getSnapshotBeforeUpdate (prevPros, prevState) {
+    return prevPros.companyId !== this.props.companyId
+  }
+
+  componentDidUpdate (prevPros, prevState, snapshot) {
+    if (snapshot) {
+      this.setState({ show: true }, () => { this.handleUpdateMap() })
+    }
+  }
+
+  /**
+  * 更新地图
+  * @param {boolean} isInit 是否初始化
+  **/
+  handleUpdateMap = (isInit = false) => {
     const {
       dispatch,
       companyId,
@@ -44,7 +71,8 @@ export default class MarkerFengMap extends PureComponent {
       type: 'map/fetchMapList',
       payload: { companyId },
       callback: (mapInfo) => {
-        this.initMap({ ...mapInfo }, () => {
+        this.initMap({ ...mapInfo, isInit }, () => {
+          // 获取区域列表
           dispatch({
             type: 'map/fetchMapAreaList',
             payload: { companyId, pageNum: 1, pageSize: 0 },
@@ -60,7 +88,11 @@ export default class MarkerFengMap extends PureComponent {
   }
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId }, fun) => {
+  initMap = ({ appName, key, mapId, isInit }, fun) => {
+    if (!appName || !key || !mapId) {
+      this.setState({ show: false })
+      return;
+    }
     const mapOptions = {
       //必要，地图容器
       container: document.getElementById('fengMap'),
@@ -99,11 +131,13 @@ export default class MarkerFengMap extends PureComponent {
     this.map.on('loadComplete', event => {
       const { initialData: { groupId, coord } } = this.props;
       //加载按钮型楼层切换控件
-      this.loadBtnFloorCtrl(groupId);
-      // 如果传入点信息
-      groupId && coord && this.addImgMarker({ groupId, coord });
+      this.loadBtnFloorCtrl(isInit ? groupId : 1);
+      // 如果初始化且传入点信息则画点
+      isInit && groupId && coord && this.addImgMarker({ groupId, coord });
       // 标注区域
       fun && fun();
+      // 清空之前的数据
+      !isInit && this.handleResetMapLocation();
     });
   }
 
@@ -136,15 +170,12 @@ export default class MarkerFengMap extends PureComponent {
     this.btnFloorControl.onChange(function (groups, allLayer) {
       //groups 表示当前要切换的楼层ID数组,
       //allLayer表示当前楼层是单层状态还是多层状态。
-      // console.log('当前切换楼层：' + groups);
     });
-    //切换楼层,changeFocusGroup(目标层groupID,是否多层状态)
-    //btnFloorControl.changeFocusGroup(2, true);
     //默认是否展开楼层列表，true为展开，false为不展开
     this.btnFloorControl.expand = true;
     //楼层控件是否可点击，默认为true
     this.btnFloorControl.enableExpand = true;
-    // 切换到指定楼层
+    // 切换到指定楼层(可传入两个参数：目标层groupID,是否多层状态)
     this.btnFloorControl.changeFocusGroup(groupId);
   }
 
@@ -156,9 +187,10 @@ export default class MarkerFengMap extends PureComponent {
     var im = new fengMap.FMImageMarker({
       x: coord.x,
       y: coord.y,
-      url: 'https://webapi.amap.com/images/dd-via.png',
-      height: 3, //defaultPolygonMarkerHeight,
-      size: 10,
+      // url: 'https://webapi.amap.com/images/dd-via.png',
+      url: defaultMarkrtIcon,
+      height: 6, //defaultPolygonMarkerHeight,
+      size: 20,
       callback: function () {
         im.alwaysShow();
       },
@@ -210,12 +242,15 @@ export default class MarkerFengMap extends PureComponent {
     const {
       form: { getFieldDecorator },
       id,
+      noDataLabel,
+      options,
     } = this.props;
-    return getFieldDecorator(id)(
+    const { show } = this.state;
+    return show ? getFieldDecorator(id, options)(
       <div style={{ display: 'flex' }}>
         <div className={styles.mapLocation} id="fengMap"></div>
         <Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>
       </div>
-    )
+    ) : <span>{noDataLabel}</span>
   }
 }

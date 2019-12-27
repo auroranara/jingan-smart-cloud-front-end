@@ -20,7 +20,7 @@ import Coordinate from './Coordinate/index';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import CheckModal from '../../LawEnforcement/Illegal/checkModal';
 // 地图定位
-import MarkerFengMap from '@/components/MarkerFengMap';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from './RiskPointEdit.less';
 
 const fengMap = fengmap; // eslint-disable-line
@@ -1386,7 +1386,7 @@ export default class RiskPointEdit extends PureComponent {
               <div className={styles.mapLocation} id="fengMap"></div>
               <Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>
             </div> */}
-            <MarkerFengMap {...fengMapProps} />
+            <MapMarkerSelect {...fengMapProps} />
           </Form.Item>
         </Form>
 
