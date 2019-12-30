@@ -8,7 +8,9 @@ import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
 import BuildingFloorSelect from '@/pages/DeviceManagement/Gateway/Other/BuildingFloorSelect';
-import MarkerSelect from '@/pages/DeviceManagement/Gateway/Other/MarkerSelect';
+// import MarkerSelect from '@/pages/DeviceManagement/Gateway/Other/MarkerSelect';
+// 地图定位
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '@/pages/DeviceManagement/Gateway/Other/index.less';
 
 const { Option } = Select;
@@ -96,10 +98,6 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
 }))
 export default class GatewayOther extends Component {
 
-  state = {
-    selectedCompany: {},// 选中企业
-  }
-
   componentDidMount () {
     const {
       match: { params: { id } },
@@ -119,7 +117,7 @@ export default class GatewayOther extends Component {
     getNetworkingList();
     getOperatorList();
     if (!window.location.href.includes('add')) { // 不考虑id不存在的情况，由request来跳转到500
-      getDetail && getDetail({ id }, ({ equipmentType, brand, companyId, companyName }) => {
+      getDetail && getDetail({ id }, ({ equipmentType, brand, companyId, companyName, pointFixInfoList }) => {
         isCompany && this.form.setFieldsValue({ company: { key: companyId, label: companyName } });
         getBrandList({
           equipmentType,
@@ -132,6 +130,14 @@ export default class GatewayOther extends Component {
         }, () => {
           this.refresh();
         });
+        if (pointFixInfoList && pointFixInfoList.length) {
+          let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+          const coord = { x: +xnum, y: +ynum, z: +znum };
+          groupId = +groupId;
+          setTimeout(() => {
+            this.form.setFieldsValue({ mapLocation: { groupId, coord, areaId } });
+          }, 0);
+        }
       });
     } else {
       getBrandList();
@@ -549,17 +555,18 @@ export default class GatewayOther extends Component {
           ],
         },
         {
-          title: '平面图标注',
+          title: '地图定位',
           fields: [
             {
-              id: 'marker',
-              label: '平面图标注',
+              id: 'mapLocation',
+              label: '地图定位',
               extra: isNotDetail ? '（用于在驾驶舱展示）' : undefined,
               span: SPAN,
               labelCol: LABEL_COL,
-              render: () => <MarkerSelect companyId={unitId || realCompanyId} isBuildingFloorEntryForm={isBuildingFloorEntryForm} buildingFloor={values.buildingFloor} readonly={!isNotDetail} />,
+              // render: () => <MarkerSelect companyId={unitId || realCompanyId} isBuildingFloorEntryForm={isBuildingFloorEntryForm} buildingFloor={values.buildingFloor} readonly={!isNotDetail} />,
+              render: () => (<MapMarkerSelect companyId={unitId || realCompanyId} />),
               options: {
-                initialValue: marker || [],
+                // initialValue: marker || [],
                 rules: isNotDetail ? [
                   {
                     required: true,
@@ -653,31 +660,37 @@ export default class GatewayOther extends Component {
     callback();
   }
 
+  // validateMarker = (rule, value, callback) => {
+  //   if (!value || value.length === 0) {
+  //     callback('平面图标注不能为空');
+  //     return;
+  //   } else if (value.some(({ ichnographyType }) => !ichnographyType)) {
+  //     callback('请选择平面图类型');
+  //     return;
+  //   } else if (value.some(({ ichnographyType, buildingId }) => ichnographyType === '2' && !buildingId)) {
+  //     const { getFieldValue } = this.form;
+  //     const locationType = getFieldValue('locationType');
+  //     callback(!locationType || locationType === '0' ? '请从区域-位置中选择建筑物名称' : '请选择建筑物名称');
+  //     return;
+  //   } else if (value.some(({ ichnographyType, floorId }) => ichnographyType === '2' && !floorId)) {
+  //     const { getFieldValue } = this.form;
+  //     const locationType = getFieldValue('locationType');
+  //     callback(!locationType || locationType === '0' ? '请从区域-位置中选择楼层名称' : '请选择楼层名称');
+  //     return;
+  //   } else if (value.some(({ id }) => !id)) {
+  //     callback('请获取定位坐标');
+  //     return;
+  //   } else if (value.some(({ editing }) => editing)) {
+  //     callback('请保存');
+  //     return;
+  //   }
+  //   callback();
+  // }
+
   validateMarker = (rule, value, callback) => {
-    if (!value || value.length === 0) {
-      callback('平面图标注不能为空');
-      return;
-    } else if (value.some(({ ichnographyType }) => !ichnographyType)) {
-      callback('请选择平面图类型');
-      return;
-    } else if (value.some(({ ichnographyType, buildingId }) => ichnographyType === '2' && !buildingId)) {
-      const { getFieldValue } = this.form;
-      const locationType = getFieldValue('locationType');
-      callback(!locationType || locationType === '0' ? '请从区域-位置中选择建筑物名称' : '请选择建筑物名称');
-      return;
-    } else if (value.some(({ ichnographyType, floorId }) => ichnographyType === '2' && !floorId)) {
-      const { getFieldValue } = this.form;
-      const locationType = getFieldValue('locationType');
-      callback(!locationType || locationType === '0' ? '请从区域-位置中选择楼层名称' : '请选择楼层名称');
-      return;
-    } else if (value.some(({ id }) => !id)) {
-      callback('请获取定位坐标');
-      return;
-    } else if (value.some(({ editing }) => editing)) {
-      callback('请保存');
-      return;
-    }
-    callback();
+    if (value && value.groupId && value.coord) {
+      callback()
+    } else callback('请标注地图定位')
   }
 
   handleTypeChange = (equipmentType) => {
@@ -751,7 +764,7 @@ export default class GatewayOther extends Component {
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { company, marker, buildingFloor, installDate, cardExpireDate, productDate, ...rest } = values;
+        const { company, marker, buildingFloor, installDate, cardExpireDate, productDate, mapLocation, ...rest } = values;
         const [buildingId, floorId] = buildingFloor || marker.reduce((result, { ichnographyType, buildingId, floorId }) => {
           if (ichnographyType === '2') {
             result[0] = buildingId;
@@ -760,6 +773,7 @@ export default class GatewayOther extends Component {
           return result;
         }, []);
         const payload = {
+          ...rest,
           id,
           companyId: +unitType !== 4 ? company.key : unitId,
           buildingId,
@@ -767,9 +781,13 @@ export default class GatewayOther extends Component {
           installDate: installDate ? moment(installDate).startOf('day') : undefined,
           cardExpireDate: cardExpireDate ? moment(cardExpireDate).startOf('day') : undefined,
           productDate: productDate ? moment(productDate).startOf('day') : undefined,
-          pointFixInfoList: marker.map(({ id: fixImgId, ichnographyType: imgType, xNum: xnum, yNum: ynum }) => ({ fixImgId, imgType, xnum, ynum })),
-          ...rest,
+          // pointFixInfoList: marker.map(({ id: fixImgId, ichnographyType: imgType, xNum: xnum, yNum: ynum }) => ({ fixImgId, imgType, xnum, ynum })),
+          pointFixInfoList: [],
         };
+        if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+          const { coord, ...resMap } = mapLocation;
+          payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+        }
         (id ? edit : add)(payload, (isSuccess, res) => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`);

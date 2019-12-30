@@ -30,14 +30,12 @@ export const STATUS_MAPPER = [
 ];
 export const GET_STATUS_NAME = ({ statusType, warnLevel, fixType }) => {
   if (+statusType === -1) {
-    if (+warnLevel === 1) {
+    if (+fixType === 5) {
+      return '火警';
+    } else if (+warnLevel === 1) {
       return '预警';
     } else if (+warnLevel === 2) {
-      if (+fixType === 5) {
-        return '火警';
-      } else {
-        return '告警';
-      }
+      return '告警';
     }
   } else if (+statusType === -2) {
     return '失联';
@@ -153,11 +151,11 @@ export default class AlarmMessage extends Component {
     {
       title: '接收人',
       dataIndex: 'mailAcceptUsers',
-      render: (value) => (
+      render: (value) => value && value.length > 0 && (
         <div style={{ textAlign: 'left' }}>
           站内信：
           <Ellipsis length={20} tooltip>
-            {value && value.map(({ accept_user_name, status }) => `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`).join('，')}
+            {value.map(({ accept_user_name, status }) => `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`).join('，')}
           </Ellipsis>
         </div>
       ),

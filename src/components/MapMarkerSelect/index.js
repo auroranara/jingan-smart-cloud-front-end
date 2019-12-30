@@ -20,20 +20,13 @@ export default class MapMarkerSelect extends PureComponent {
   }
 
   static propTypes = {
-    id: PropTypes.string.isRequired, // 双向绑定id
-    form: PropTypes.object.isRequired, // Form.create()创建的form对象
-    companyId: PropTypes.string,
-    initialData: PropTypes.shape({
-      groupId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      coord: PropTypes.object,
-    }),
-    options: PropTypes.object,
+    companyId: PropTypes.string.isRequired,
+    readonly: PropTypes.boolean,
   }
 
   static defaultProps = {
-    initialData: {},
-    noDataLabel: '该单位暂无地图',
-    options: {},
+    noDataContent: '该单位暂无地图',
+    readonly: false,
   }
 
   constructor(props) {
@@ -113,23 +106,21 @@ export default class MapMarkerSelect extends PureComponent {
 
     // 监听点击
     this.map.on('mapClickNode', event => {
-      const { id, form: { setFieldsValue } } = this.props;
+      const { onChange, readonly } = this.props;
       const clickedObj = event.target;
       // console.log('clickedObj', clickedObj);
-      if (!clickedObj || !clickedObj.eventInfo) return;
+      if (!clickedObj || !clickedObj.eventInfo || readonly) return;
       const { coord } = clickedObj.eventInfo;
       const groupId = clickedObj.groupID;
       // 清除之前的坐标
       this.handleResetMapLocation();
       this.addImgMarker({ groupId, coord });
-      let temp = {};
-      temp[id] = { groupId, coord, areaId: this.generateArea(coord) };
-      setFieldsValue(temp);
+      onChange && onChange({ groupId, coord, areaId: this.generateArea(coord) });
     });
 
     //地图加载完回调事件
     this.map.on('loadComplete', event => {
-      const { initialData: { groupId, coord } } = this.props;
+      const { value: { groupId, coord } = {} } = this.props;
       //加载按钮型楼层切换控件
       this.loadBtnFloorCtrl(isInit ? groupId : 1);
       // 如果初始化且传入点信息则画点
@@ -223,34 +214,27 @@ export default class MapMarkerSelect extends PureComponent {
 
   // 重置地图定位标注的点
   handleResetMapLocation = () => {
-    const {
-      id,
-      form: { setFieldsValue, getFieldValue },
-    } = this.props;
-    const value = getFieldValue(id) || {};
+    const { value = {}, onChange } = this.props;
     const groupId = value.groupId;
     if (!groupId) return;
+    // 清除地图marker
     const group = this.map.getFMGroup(groupId);
     const layer = group.getOrCreateLayer('imageMarker');
     layer.removeAll();
-    let temp = {};
-    temp[id] = { coord: null, groupId: null, areaId: null };
-    setFieldsValue(temp);
+    onChange && onChange({ coord: null, groupId: null, areaId: null });
   }
 
   render () {
     const {
-      form: { getFieldDecorator },
-      id,
-      noDataLabel,
-      options,
+      noDataContent,
+      readonly,
     } = this.props;
     const { show } = this.state;
-    return show ? getFieldDecorator(id, options)(
+    return show ? (
       <div style={{ display: 'flex' }}>
         <div className={styles.mapLocation} id="fengMap"></div>
-        <Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>
+        {!readonly && (<Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>)}
       </div>
-    ) : <span>{noDataLabel}</span>
+    ) : <span>{noDataContent}</span>
   }
 }
