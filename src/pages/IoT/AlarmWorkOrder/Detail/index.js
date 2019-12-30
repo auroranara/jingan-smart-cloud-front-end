@@ -260,7 +260,7 @@ export default class AlarmWorkOrderDetail extends Component {
       current += 1;
       steps.push({
         id: '完成工单',
-        title: '完成工单',
+        title: `完成工单${+executeType === 2 ? '（自动处理）' : ''}`,
         description: (
           <Fragment>
             {+executeType !== 2 && <div>{executorName}</div>}
@@ -303,6 +303,7 @@ export default class AlarmWorkOrderDetail extends Component {
         disasterDesc,
         loopNumber,
         partNumber,
+        executeType,
       }={},
     } = this.props;
     const isHost = +reportType === 1;
@@ -318,7 +319,7 @@ export default class AlarmWorkOrderDetail extends Component {
                   <SelectOrSpan list={STATUSES} value={`${status}`} type="span" />
                 </div>
                 {/* {+type === 2 && <div className={styles.realAlarm}>真实警情</div>} */}
-                {<div className={styles.realAlarm}>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>}
+                {<div className={styles.realAlarm}>{+executeType === 2 ? <span style={{ color: '#b823dd' }}>未知警情</span> : ({ 1: '误报警情', 2: '真实警情' })[type]}</div>}
               </div>
             ) : <EmptyData />}
           </Description>
