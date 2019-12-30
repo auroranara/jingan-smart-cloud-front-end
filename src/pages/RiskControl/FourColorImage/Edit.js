@@ -1,10 +1,23 @@
 import { connect } from 'dva';
 import React, { Fragment } from 'react';
-import { Button, Row, Col, Form, Input, Card, Select, Spin, message, AutoComplete } from 'antd';
+import {
+  Button,
+  Row,
+  Col,
+  Form,
+  Input,
+  Card,
+  Select,
+  Spin,
+  message,
+  AutoComplete,
+  DatePicker,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { phoneReg } from '@/utils/validate';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
+import moment from 'moment';
 import styles from './TableList.less';
 import Map from './Map';
 
@@ -205,6 +218,7 @@ export default class TableList extends React.Component {
           zoneCharger,
           phoneNumber,
           checkCircle,
+          createTime,
         } = values;
         const payload = {
           id,
@@ -214,6 +228,7 @@ export default class TableList extends React.Component {
           zoneType,
           phoneNumber,
           checkCircle,
+          createTime: createTime.format('YYYY-MM-DD'),
           companyId: companyId || extraCompanyId,
           zoneCharger: zoneCharger.key,
           coordinate:
@@ -298,6 +313,7 @@ export default class TableList extends React.Component {
       zoneChargerName,
       phoneNumber,
       checkCircle,
+      createTime,
     } = detailList;
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
@@ -403,6 +419,12 @@ export default class TableList extends React.Component {
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入' }],
                 })(<Input placeholder="请输入" {...itemStyles} maxLength={4} />)}
+              </FormItem>
+              <FormItem label="时间" {...formItemLayout}>
+                {getFieldDecorator('createTime', {
+                  initialValue: createTime ? moment(+createTime) : undefined,
+                  rules: [{ required: true, message: '请输入' }],
+                })(<DatePicker placeholder="请输入" format="YYYY-MM-DD" {...itemStyles} />)}
               </FormItem>
               {/* <FormItem label="关联内容" {...formItemLayout}>
                 {getFieldDecorator('conetnt', {
