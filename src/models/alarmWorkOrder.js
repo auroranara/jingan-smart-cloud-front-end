@@ -14,7 +14,7 @@ export default {
   state: {
     list: {},
     detail: {},
-    messageList: [],
+    messageList: {},
     deviceDetail: {},
     monitorTrend: [],
   },
@@ -56,10 +56,10 @@ export default {
     },
     // 获取消息列表
     *getMessageList({ payload, callback }, { call, put }) {
-      const response = yield call(getMessageList, { pageNum: 1, pageSize: 0, ...payload });
+      const response = yield call(getMessageList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const messageList = data.list;
+        const messageList = data;
         yield put({
           type: 'save',
           payload: {

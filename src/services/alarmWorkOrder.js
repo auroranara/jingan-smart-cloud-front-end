@@ -8,7 +8,7 @@ export async function getList(params) {
 
 // 获取消息列表
 export async function getMessageList(params) {
-  return request(`/acloud_new/v2/monitor/processMessage/page?${stringify(params)}`);
+  return request(`/acloud_new/v2/monitor/sensorProblemLog/page?${stringify(params)}`);
 }
 
 // 获取详情
