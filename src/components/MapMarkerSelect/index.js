@@ -21,7 +21,7 @@ export default class MapMarkerSelect extends PureComponent {
 
   static propTypes = {
     companyId: PropTypes.string.isRequired,
-    readonly: PropTypes.boolean,
+    readonly: PropTypes.bool,
   }
 
   static defaultProps = {

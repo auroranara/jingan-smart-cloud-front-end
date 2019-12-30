@@ -6,6 +6,8 @@ import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Ellipsis from '@/components/Ellipsis';
+// 地图定位
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 
 import { AuthButton } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
@@ -67,9 +69,7 @@ export default class VideoMonitorDetail extends PureComponent {
   goToEdit = id => {
     const {
       dispatch,
-      match: {
-        params: { companyId },
-      },
+      match: { params: { companyId } },
     } = this.props;
     dispatch(
       routerRedux.push(`/device-management/video-monitor/edit/${id}?companyId=${companyId}`)
@@ -79,24 +79,34 @@ export default class VideoMonitorDetail extends PureComponent {
   // 渲染单位详情
   renderUnitInfo () {
     const {
+      match: { params: { companyId } },
       videoMonitor: {
         detail: {
           data: {
             deviceId,
             keyId,
-            name,
+            // name,
             rtspAddress,
             photoAddress,
             isInspection,
-            xnum,
-            ynum,
-            xfire,
-            yfire,
+            // xnum,
+            // ynum,
+            // xfire,
+            // yfire,
+            pointFixInfoList,
           },
         },
       },
     } = this.props;
     const { buildingName, floorName } = this.state;
+    let mapLocation = {};
+    if (pointFixInfoList && pointFixInfoList.length) {
+      let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+      const coord = { x: +xnum, y: +ynum, z: +znum };
+      groupId = +groupId;
+      mapLocation = { groupId, coord, areaId };
+    }
+
     return (
       <Card title="视频设备信息详情" bordered={false}>
         <DescriptionList col={3}>
@@ -116,10 +126,13 @@ export default class VideoMonitorDetail extends PureComponent {
           <Description term="是否用于查岗">
             {isInspection === 1 ? '是' : '否' || getEmptyData()}
           </Description>
-          <Description term="四色图坐标-X">{xnum || getEmptyData()}</Description>
+          {/* <Description term="四色图坐标-X">{xnum || getEmptyData()}</Description>
           <Description term="四色图坐标-Y">{ynum || getEmptyData()}</Description>
           <Description term="消防平面图坐标-X">{xfire || getEmptyData()}</Description>
-          <Description term="消防平面图坐标-Y">{yfire || getEmptyData()}</Description>
+          <Description term="消防平面图坐标-Y">{yfire || getEmptyData()}</Description> */}
+          <Description term="地图定位" colWrapper={{ xs: 24 }} style={{ display: 'flex' }}>
+            <MapMarkerSelect value={mapLocation} readonly={true} companyId={companyId} />
+          </Description>
         </DescriptionList>
       </Card>
     );

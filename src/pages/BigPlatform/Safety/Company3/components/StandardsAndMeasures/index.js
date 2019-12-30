@@ -86,7 +86,7 @@ const StandardsAndMeasures = (props) => {
         bordered={false}
         expandIconPosition="right"
       >
-        {standardsAndMeasuresList.slice(1).map(({ title, detailInfo }, index) => title ? (
+        {standardsAndMeasuresList.map(({ title, detailInfo }, index) => title ? (
           <Panel header={renderTitle(title)} key={index} style={customPanelStyle}>
             <div className={styles.textContent}>
               {title === '警示标志' ? (
