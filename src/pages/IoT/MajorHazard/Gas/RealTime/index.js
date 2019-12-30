@@ -89,7 +89,7 @@ export default class GasRealTime extends Component {
     const params = {
       companyId: unitId,
       env: 'v2_test',
-      type: 4,
+      type: 12,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
 
@@ -172,7 +172,7 @@ export default class GasRealTime extends Component {
     notification.open({
       key: id,
       icon: <span className={classNames(styles.notificationIcon, statusType < 0 ? styles.error : styles.success)} />,
-      message: `${monitorEquipmentTypeName}发生${typeName}`,
+      message: `${monitorEquipmentTypeName}${[-1, -2, -3].includes(+statusType) ? '发生' : ''}${typeName}`,
       description: (
         <Fragment>
           <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div>

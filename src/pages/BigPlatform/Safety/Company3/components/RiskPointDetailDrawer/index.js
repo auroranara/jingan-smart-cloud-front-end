@@ -264,6 +264,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
     } = this.props;
     const { tabKey, subTabKey } = this.state;
     let subTabs, Item, list, fieldNames, key, restProps, backgroundImage, pageSize, pageNum, total;
+    const standardList = standardsAndMeasuresList.filter(item => item.headType === 'common');
     if (tabKey === 'hiddenDanger') {
       // 隐患
       subTabs = [
@@ -462,7 +463,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
         ) : (
             <div style={{ padding: '1em 0' }}>
               <StandardsAndMeasures
-                standardsAndMeasuresList={standardsAndMeasuresList}
+                standardsAndMeasuresList={standardList}
                 pointInspectionStandardsList={pointInspectionStandardsList}
                 itemName={itemName}
               />
