@@ -243,7 +243,7 @@ export default class Map extends React.Component {
   }
 
   render() {
-    const { isDrawing } = this.props;
+    const { isDrawing, height, width } = this.props;
     if (!isDrawing && points.length > 0) {
       // doDraw
       this.drawPolygon(points, COLOR.blue);
@@ -252,6 +252,6 @@ export default class Map extends React.Component {
       map.clearLineMark();
       points = [];
     }
-    return <div style={{ height: '80vh' }} id="fengMap" />;
+    return <div style={{ height: height || '80vh', width: width }} id="fengMap" />;
   }
 }

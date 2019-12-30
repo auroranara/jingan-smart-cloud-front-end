@@ -2,29 +2,44 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 // import moment from 'moment';
-import { Button, Card, Form, message } from 'antd';
+import { Button, Card, Form, Select, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST_URL, handleDetails } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
+import Map from '../../RiskControl/FourColorImage/Map';
+const { Option } = Select;
 
-@connect(({ user, cardsInfo, loading }) => ({
+@connect(({ user, cardsInfo, map, fourColorImage, loading }) => ({
   user,
   cardsInfo,
+  map,
+  fourColorImage,
   loading: loading.models.cardsInfo,
 }))
 @Form.create()
 export default class Edit extends PureComponent {
   componentDidMount() {
     const {
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { setFieldsValue },
-      user: { currentUser: { unitType, companyId, companyName } },
+      user: {
+        currentUser: { unitType, companyId, companyName },
+      },
     } = this.props;
-    if (id)
-      this.getDetail(id);
+    const payload = {
+      pageNum: 1,
+      pageSize: 24,
+    };
+    this.fetchList({ ...payload, companyId: companyId });
+    this.fetchMap({ companyId: companyId }, mapInfo => {
+      this.childMap.initMap({ ...mapInfo });
+    });
+    if (id) this.getDetail(id);
     else if (isCompanyUser(+unitType))
       setFieldsValue({ companyId: { key: companyId, label: companyName } });
   }
@@ -47,13 +62,14 @@ export default class Edit extends PureComponent {
     const {
       dispatch,
       form: { validateFields },
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
     } = this.props;
 
     e.preventDefault();
     validateFields((errors, values) => {
-      if (errors)
-        return;
+      if (errors) return;
 
       const vals = { ...values, companyId: values.companyId.key, time: +values.time };
       dispatch({
@@ -63,24 +79,60 @@ export default class Edit extends PureComponent {
           if (code === 200) {
             message.success('操作成功');
             router.push(LIST_URL);
-          } else
-            message.error(msg);
+          } else message.error(msg);
         },
       });
     });
   };
 
   isDetail = () => {
-    const { match: { url } } = this.props;
+    const {
+      match: { url },
+    } = this.props;
     return url && url.includes('view');
+  };
+
+  onRef = ref => {
+    this.childMap = ref;
+  };
+
+  // 获取地图
+  fetchMap = (params, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'map/fetchMapList',
+      payload: { ...params },
+      callback,
+    });
+  };
+
+  // 获取风险分区列表
+  fetchList = (params, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fourColorImage/fetchList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 24,
+      },
+      callback,
+    });
   };
 
   render() {
     const {
       loading,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { getFieldDecorator },
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
+      fourColorImage: {
+        data: { list = [] },
+      },
     } = this.props;
 
     const isDet = this.isDetail();
@@ -91,19 +143,48 @@ export default class Edit extends PureComponent {
     const isComUser = isCompanyUser(+unitType);
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
+      {
+        name: 'companyId',
+        label: '单位名称',
+        type: 'companyselect',
+        disabled: isComUser,
+        wrapperClassName: isComUser ? styles.disappear : undefined,
+      },
       { name: 'name', label: '承诺卡名称' },
       { name: 'content', label: '承诺卡内容', type: 'text' },
       { name: 'acceptor', label: '承诺人' },
       { name: 'time', label: '时间', type: 'datepicker' },
-      { name: 'section', label: '风险分区', type: 'select', required: false },
-  ];
+      {
+        name: 'section',
+        label: '风险分区',
+        type: 'component',
+        required: false,
+        component: (
+          <Select>
+            {list.map(({ zoneName, id }) => {
+              return (
+                <Option key={id} value={id}>
+                  {zoneName}
+                </Option>
+              );
+            })}
+          </Select>
+        ),
+      },
+      {
+        name: 'map',
+        label: '地图',
+        type: 'component',
+        component: (
+          <div className={styles.mapLoaction}>
+            <Map onRef={this.onRef} height="42vh" width="92vh" pointList={list} />
+          </div>
+        ),
+      },
+    ];
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>
           {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
           {isDet ? (

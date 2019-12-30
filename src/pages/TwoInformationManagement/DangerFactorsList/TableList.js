@@ -1,13 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, Modal, message, Popconfirm, Divider } from 'antd';
+import { Button, Card, Table, message, Popconfirm, Divider } from 'antd';
 import Link from 'umi/link';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import Map from '@/pages/RiskControl/FourColorImage/Map';
+// import Map from '@/pages/RiskControl/FourColorImage/Map';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import {
@@ -26,9 +26,8 @@ const {
   },
 } = codes;
 
-@connect(({ twoInformManagement, map, user, loading }) => ({
+@connect(({ twoInformManagement, user, loading }) => ({
   twoInformManagement,
-  map,
   user,
   loading: loading.models.twoInformManagement,
 }))
@@ -37,9 +36,6 @@ export default class TableList extends PureComponent {
     super(props);
     this.state = {
       formData: {},
-      fMapVisible: false, // 地图弹窗是否可见
-      points: [], // 地图上的坐标
-      isDrawing: false, // 地图是否开始划区域
     };
     this.pageNum = 1;
     this.pageSize = 10;
@@ -118,66 +114,6 @@ export default class TableList extends PureComponent {
     this.fetchList(pageNum, pageSize, { ...formData });
   };
 
-  onRef = ref => {
-    this.childMap = ref;
-  };
-
-  // 获取地图
-  fetchMap = (params, callback) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'map/fetchMapList',
-      payload: { ...params },
-      callback,
-    });
-  };
-
-  // 获取地图上的坐标
-  getPoints = points => {
-    this.setState({ points });
-  };
-
-  // 显示地图弹框
-  handleFengMapShow = id => {
-    this.setState({ fMapVisible: true });
-    this.fetchMap({ companyId: id }, mapInfo => {
-      this.childMap.initMap({ ...mapInfo });
-    });
-  };
-
-  // 重置地图上的区域
-  handleFMapReset = () => {
-    this.childMap.setRestMap();
-  };
-
-  handleFMapOk = () => {
-    const { dispatch } = this.props;
-    const { points } = this.state;
-    console.log('points', points);
-    this.setState({ fMapVisible: false });
-    dispatch({});
-  };
-
-  renderDrawButton = () => {
-    const { isDrawing, points } = this.state;
-    return (
-      <Fragment>
-        <Button
-          style={{ marginLeft: 40 }}
-          onClick={() => {
-            if (!!isDrawing && points.length <= 2) return message.error('区域至少三个坐标点！');
-            this.setState({ isDrawing: !isDrawing });
-          }}
-        >
-          {!isDrawing ? '开始画' : '结束画'}
-        </Button>
-        <Button style={{ marginLeft: 10 }} disabled={!!isDrawing} onClick={this.handleFMapReset}>
-          重置
-        </Button>
-      </Fragment>
-    );
-  };
-
   render() {
     const {
       loading = false,
@@ -210,7 +146,7 @@ export default class TableList extends PureComponent {
           return (
             <Fragment>
               {viewCode ? (
-                <Link to={`${ROUTER}/danger-factors-list/view/${text.id}`}>查看</Link>
+                <Link to={`${ROUTER}/danger-factors-list/view/${text.id}`}>导入数据</Link>
               ) : (
                 <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
               )}
@@ -227,8 +163,6 @@ export default class TableList extends PureComponent {
               ) : (
                 <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
               )}
-              <Divider type="vertical" />
-              <a onClick={() => this.handleFengMapShow(text.companyId)}>绑定区域</a>
             </Fragment>
           );
         },
@@ -245,7 +179,7 @@ export default class TableList extends PureComponent {
         disabled={!syncCode}
         onClick={this.handleClickSync}
       >
-        同步数据
+        下载模板
       </Button>
     );
 
@@ -283,7 +217,7 @@ export default class TableList extends PureComponent {
               }
               dataSource={list}
               onChange={this.onTableChange}
-              scroll={{ x: 1400 }} // 项目不多时注掉
+              scroll={{ x: 1440 }} // 项目不多时注掉
               pagination={{
                 current: pageNum,
                 pageSize,
@@ -303,18 +237,6 @@ export default class TableList extends PureComponent {
             </Card>
           )}
         </div>
-        <Modal
-          title="划分区域"
-          width={800}
-          visible={this.state.fMapVisible}
-          onOk={this.handleFMapOk}
-          onCancel={() => {
-            this.setState({ fMapVisible: false, isDrawing: false });
-          }}
-        >
-          {this.renderDrawButton()}
-          <Map isDrawing={this.state.isDrawing} onRef={this.onRef} getPoints={this.getPoints} />
-        </Modal>
       </PageHeaderLayout>
     );
   }

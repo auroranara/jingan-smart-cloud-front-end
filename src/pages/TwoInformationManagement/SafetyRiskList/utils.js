@@ -178,25 +178,25 @@ export const TABLE_COLUMNS_COMPANY = [
 
 export const TABLE_COLUMNS = [
   {
-    title: '作业/设备名称',
+    title: '风险分区',
     dataIndex: 'name',
     key: 'name',
     align: 'center',
-    width: 180,
+    width: 300,
   },
   {
-    title: '风险分类',
+    title: '经办人',
     dataIndex: 'riskClassifyName',
     key: 'riskClassifyName',
     align: 'center',
     width: 180,
   },
   {
-    title: '主要危险因素',
+    title: '上传时间',
     dataIndex: 'dangerFactor',
     key: 'dangerFactor',
     align: 'center',
-    width: 300,
+    width: 180,
     render: val => (
       <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
@@ -204,80 +204,13 @@ export const TABLE_COLUMNS = [
     ),
   },
   {
-    title: '易导致后果（风险）',
+    title: '附件',
     dataIndex: 'consequenceName',
     key: 'consequenceName',
     align: 'center',
     width: 180,
     render: val => (
       <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
-    ),
-  },
-  {
-    title: '作业条件危险性评价',
-    dataIndex: 'result',
-    key: 'result',
-    align: 'center',
-    children: [
-      {
-        title: 'L',
-        dataIndex: 'l',
-        key: 'l',
-        width: 90,
-        align: 'center',
-      },
-      {
-        title: 'E',
-        dataIndex: 'e',
-        key: 'e',
-        width: 90,
-        align: 'center',
-      },
-      {
-        title: 'C',
-        dataIndex: 'c',
-        key: 'c',
-        width: 90,
-        align: 'center',
-      },
-      {
-        title: 'D',
-        dataIndex: 'd',
-        key: 'd',
-        width: 90,
-        align: 'center',
-      },
-    ],
-  },
-  {
-    title: '风险等级',
-    dataIndex: 'dangerLevelName',
-    key: 'dangerLevelName',
-    align: 'center',
-    width: 120,
-  },
-  {
-    title: '风险管控措施',
-    dataIndex: 'dangerMeasure',
-    key: 'dangerMeasure',
-    align: 'center',
-    width: 300,
-    render: val => (
-      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
-    ),
-  },
-  {
-    title: '应急处置措施',
-    dataIndex: 'consequenceMeasure',
-    key: 'consequenceMeasure',
-    align: 'center',
-    width: 300,
-    render: val => (
-      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),

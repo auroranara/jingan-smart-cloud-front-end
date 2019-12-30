@@ -45,25 +45,18 @@ export const TABLE_COLUMNS_COMPANY = [
 export const TABLE_COLUMNS = [
   // modify
   {
-    title: '风险点名称',
-    dataIndex: 'name',
-    key: 'name',
-    align: 'center',
-    width: 160,
-  },
-  {
-    title: '场所/环节/部位',
+    title: '风险分区',
     dataIndex: 'space',
     key: 'space',
     align: 'center',
-    width: 160,
+    width: 200,
   },
   {
-    title: '主要危险因素',
+    title: '排查人员',
     dataIndex: 'dangerFactor',
     key: 'dangerFactor',
     align: 'center',
-    width: 300,
+    width: 200,
     render: val => (
       <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
@@ -71,18 +64,80 @@ export const TABLE_COLUMNS = [
     ),
   },
   {
-    title: '易导致后果（风险）',
+    title: '负责人',
     dataIndex: 'consequenceName',
     key: 'consequenceName',
     align: 'center',
-    width: 340,
+    width: 200,
     render: val => (
       <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),
   },
+  {
+    title: '时间',
+    dataIndex: 'creatTime',
+    key: 'creatTime',
+    align: 'center',
+    width: 160,
+    render: val => (
+      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
+  },
+  {
+    title: '附件',
+    dataIndex: 'file',
+    key: 'file',
+    align: 'center',
+    width: 240,
+    render: val => <span>查看清单</span>,
+  },
 ];
+
+// export const TABLE_COLUMNS = [
+//   // modify
+//   {
+//     title: '风险点名称',
+//     dataIndex: 'name',
+//     key: 'name',
+//     align: 'center',
+//     width: 160,
+//   },
+//   {
+//     title: '场所/环节/部位',
+//     dataIndex: 'space',
+//     key: 'space',
+//     align: 'center',
+//     width: 160,
+//   },
+//   {
+//     title: '主要危险因素',
+//     dataIndex: 'dangerFactor',
+//     key: 'dangerFactor',
+//     align: 'center',
+//     width: 300,
+//     render: val => (
+//       <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
+//         {val}
+//       </Ellipsis>
+//     ),
+//   },
+//   {
+//     title: '易导致后果（风险）',
+//     dataIndex: 'consequenceName',
+//     key: 'consequenceName',
+//     align: 'center',
+//     width: 340,
+//     render: val => (
+//       <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+//         {val}
+//       </Ellipsis>
+//     ),
+//   },
+// ];
 
 export const EDIT_FORMITEMS_COMPANY = [{ name: 'companyName', label: '单位名称', required: false }];
 
