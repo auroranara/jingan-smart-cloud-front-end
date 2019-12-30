@@ -6,11 +6,11 @@ import DrawerContainer from '../components/DrawerContainer';
 import SwitchHead from '../components/SwitchHead';
 import NewTimelineCard from '../components/NewTimelineCard';
 import { vaguePhone } from '../utils';
-import flowImg from '../../Gas/imgs/flow_alarm.png';
+// import flowImg from '../../Gas/imgs/flow_alarm.png';
 import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDrawerTop';
 
 const ID = 'gas-flow-drawer';
-
+const flowImg = 'http://data.jingan-china.cn/v2/chem/screen/flow_alarm.png';
 export default class GasFlowDrawer extends PureComponent {
   state = { index: 0 };
 
