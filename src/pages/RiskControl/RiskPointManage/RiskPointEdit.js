@@ -20,7 +20,7 @@ import Coordinate from './Coordinate/index';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import CheckModal from '../../LawEnforcement/Illegal/checkModal';
 // 地图定位
-import MarkerFengMap from '@/components/MarkerFengMap';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from './RiskPointEdit.less';
 
 const fengMap = fengmap; // eslint-disable-line
@@ -1231,9 +1231,6 @@ export default class RiskPointEdit extends PureComponent {
         detail: { data = {} },
       },
     } = this.props;
-    let { xnum, ynum, znum, groupId } = data.pointFixInfoList && data.pointFixInfoList.length ? data.pointFixInfoList[0] : {};
-    const coord = { x: +xnum, y: +ynum, z: +znum };
-    groupId = +groupId;
     // const { isDisabled, groupId, coord } = this.state;
 
     const formItemLayout = {
@@ -1245,15 +1242,6 @@ export default class RiskPointEdit extends PureComponent {
         xs: { span: 24 },
         sm: { span: 20 },
         md: { span: 20 },
-      },
-    };
-    const fengMapProps = {
-      id: 'mapLocation',
-      form,
-      companyId,
-      initialData: {
-        groupId,
-        coord,
       },
     };
     return (
@@ -1386,7 +1374,9 @@ export default class RiskPointEdit extends PureComponent {
               <div className={styles.mapLocation} id="fengMap"></div>
               <Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>
             </div> */}
-            <MarkerFengMap {...fengMapProps} />
+            {getFieldDecorator('mapLocation')(
+              <MapMarkerSelect companyId={companyId} />
+            )}
           </Form.Item>
         </Form>
 

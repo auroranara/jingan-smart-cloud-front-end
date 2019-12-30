@@ -24,11 +24,11 @@ import moment from 'moment';
 import { phoneReg } from '@/utils/validate';
 import { getToken } from '@/utils/authority';
 // 片面图标注
-import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
+// import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 // 选择企业弹窗
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // 地图定位
-import MarkerFengMap from '@/components/MarkerFengMap';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '@/pages/DeviceManagement/NewSensor/AddSensor.less';
 
 const FormItem = Form.Item;
@@ -426,7 +426,6 @@ export default class AddMonitoringDevice extends Component {
   renderForm = () => {
     const {
       dispatch,
-      form,
       form: { getFieldDecorator, getFieldsValue },
       match: {
         params: { id },
@@ -456,7 +455,8 @@ export default class AddMonitoringDevice extends Component {
       uploading,
       fileList,
     } = this.state;
-    const { locationType, companyId } = getFieldsValue();
+    const companyId = selectedCompany ? selectedCompany.id : undefined;
+    const { locationType } = getFieldsValue();
     // const FlatPicProps = {
     //   visible: picModalVisible,
     //   onCancel: () => {
@@ -480,18 +480,6 @@ export default class AddMonitoringDevice extends Component {
     //   handleBuildingChange: this.handleBuildingChange,
     //   handleFloorIdChange: this.handleFloorIdChange,
     // };
-    let { xnum, ynum, znum, groupId } = detail.pointFixInfoList && detail.pointFixInfoList.length ? detail.pointFixInfoList[0] : {};
-    const coord = { x: +xnum, y: +ynum, z: +znum };
-    groupId = +groupId;
-    const fengMapProps = {
-      id: 'mapLocation',
-      form,
-      companyId: selectedCompany.id,
-      initialData: {
-        groupId,
-        coord,
-      },
-    };
 
     return (
       <Fragment>
@@ -673,7 +661,7 @@ export default class AddMonitoringDevice extends Component {
 
             <Card className={styles.mt24}>
               <Form>
-                <FormItem label="平面图标注" {...formItemLayout}>
+                <FormItem label="地图定位" {...formItemLayout}>
                   {/* <Button
                     type="primary"
                     style={{ padding: '0 12px' }}
@@ -683,7 +671,9 @@ export default class AddMonitoringDevice extends Component {
                     新增
                   </Button>
                   <FlatPic {...FlatPicProps} /> */}
-                  <MarkerFengMap {...fengMapProps} />
+                  {getFieldDecorator('mapLocation')(
+                    <MapMarkerSelect companyId={companyId} />
+                  )}
                 </FormItem>
               </Form>
             </Card>

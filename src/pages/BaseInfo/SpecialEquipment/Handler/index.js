@@ -23,11 +23,11 @@ import router from 'umi/router';
 import moment from 'moment';
 import { AuthButton } from '@/utils/customAuth';
 import { getFileList } from '@/pages/BaseInfo/utils';
-import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
+// import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import codesMap from '@/utils/codes';
 // 地图定位
-import MarkerFengMap from '@/components/MarkerFengMap';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -609,18 +609,6 @@ export default class SpecialEquipment extends PureComponent {
     //   handleBuildingChange: this.handleBuildingChange,
     //   changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
     // };
-    let { xnum, ynum, znum, groupId } = pointFixInfoList && pointFixInfoList.length ? pointFixInfoList[0] : {};
-    const coord = { x: +xnum, y: +ynum, z: +znum };
-    groupId = +groupId;
-    const fengMapProps = {
-      id: 'mapLocation',
-      form,
-      companyId,
-      initialData: {
-        groupId,
-        coord,
-      },
-    };
     return (
       <Card>
         <Form>
@@ -916,7 +904,7 @@ export default class SpecialEquipment extends PureComponent {
               </Fragment>
             )}
           {companyId && (
-            <FormItem label="平面图标注" {...formItemLayout}>
+            <FormItem label="地图定位" {...formItemLayout}>
               {/* <Button
                 type="primary"
                 style={{ padding: '0 12px' }}
@@ -928,7 +916,9 @@ export default class SpecialEquipment extends PureComponent {
                 新增
               </Button>
               <FlatPic {...FlatPicProps} /> */}
-              <MarkerFengMap {...fengMapProps} />
+              {getFieldDecorator('mapLocation')(
+                <MapMarkerSelect companyId={companyId} />
+              )}
             </FormItem>
           )}
         </Form>

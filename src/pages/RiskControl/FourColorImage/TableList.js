@@ -50,10 +50,11 @@ const getRiskColor = {
   4: 'rgb(30, 96, 255)',
 };
 @Form.create()
-@connect(({ resourceManagement, fourColorImage, user, loading }) => ({
+@connect(({ resourceManagement, fourColorImage, map, user, loading }) => ({
   fourColorImage,
   resourceManagement,
   user,
+  map,
   loading: loading.models.fourColorImage,
   companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
@@ -71,25 +72,42 @@ export default class TableList extends React.Component {
   componentDidMount() {
     const {
       user: {
-        currentUser: { companyId },
+        currentUser: { unitType, companyId },
       },
       resourceManagement: { searchInfo = {} },
     } = this.props;
     const company = { id: searchInfo.id, name: searchInfo.name };
+
     const payload = {
       pageNum: 1,
       pageSize: 24,
     };
-    this.fetchList({ ...payload, companyId: companyId || searchInfo.id }, res => {
-      setTimeout(() => {
-        this.childMap.getPointList(res.list);
-      }, 1000);
-    });
+
+    if (unitType === 4) {
+      this.fetchMap({ companyId: companyId }, mapInfo => {
+        this.childMap.initMap({ ...mapInfo });
+      });
+    } else if (searchInfo.name) {
+      this.fetchMap({ companyId: searchInfo.id }, mapInfo => {
+        this.childMap.initMap({ ...mapInfo });
+      });
+    }
+    this.fetchList({ ...payload, companyId: unitType === 4 ? companyId : searchInfo.id });
     this.setState({ company });
   }
 
   onRef = ref => {
     this.childMap = ref;
+  };
+
+  // 获取地图
+  fetchMap = (params, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'map/fetchMapList',
+      payload: { ...params },
+      callback,
+    });
   };
 
   // 获取列表
@@ -107,15 +125,24 @@ export default class TableList extends React.Component {
   };
 
   handleDelete = id => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { unitType, companyId },
+      },
+      fourColorImage: {
+        data: { list = [] },
+      },
+      resourceManagement: { searchInfo = {} },
+    } = this.props;
+    const ids = list.map(item => item.id);
+    const index = ids.indexOf(id);
     dispatch({
       type: 'fourColorImage/fetchDelete',
       payload: { ids: id },
       success: () => {
-        this.fetchList({}, res => {
-          this.childMap.getPointList(res.list);
-          this.childMap.setRestMap();
-        });
+        this.childMap.removeArea(index);
+        this.fetchList({ companyId: unitType === 4 ? companyId : searchInfo.id });
         message.success('删除成功！');
       },
       error: () => {
@@ -142,6 +169,10 @@ export default class TableList extends React.Component {
   handleSelectCompany = company => {
     const { dispatch } = this.props;
     this.setState({ company, visible: false });
+    // 获取地图
+    this.fetchMap({ companyId: company.id }, mapInfo => {
+      this.childMap.initMap({ ...mapInfo });
+    });
     // 获取列表
     this.fetchList({ companyId: company.id });
     // 保存企业信息，方便返回该页面显示
@@ -151,23 +182,29 @@ export default class TableList extends React.Component {
     });
   };
 
+  // 点击区域名称，对应区域变色
+  handleNameClick = id => {
+    this.childMap.selectedModelColor(
+      id,
+      setTimeout(() => {
+        this.childMap.restModelColor(id);
+      }, 2000)
+    );
+  };
+
   render() {
     const {
       loading,
       companyLoading,
       resourceManagement: { companyList },
       fourColorImage: {
-        data: {
-          list = [],
-          // pagination: { pageNum, pageSize, total },
-        },
+        data: { list = [] },
       },
       user: {
         currentUser: { permissionCodes, unitType, companyId },
       },
+      // map: { mapInfo = {} },
     } = this.props;
-    console.log('list', list);
-
     const { isDrawing, company = {}, visible } = this.state;
 
     const addAuth = hasAuthority(addCode, permissionCodes);
@@ -178,7 +215,14 @@ export default class TableList extends React.Component {
         dataIndex: 'zoneName',
         key: 'zoneName',
         align: 'center',
-        // render: text => <a>{text}</a>,
+        render: (val, row) => {
+          const { id } = row;
+          return (
+            <span style={{ cursor: 'pointer' }} onClick={() => this.handleNameClick(id)}>
+              {val}
+            </span>
+          );
+        },
       },
       {
         title: '负责人',

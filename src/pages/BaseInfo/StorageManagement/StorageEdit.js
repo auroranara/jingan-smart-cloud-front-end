@@ -28,7 +28,7 @@ import StorageTankAreaModal from './Components/StorageTankAreaModal';
 // 选择存储介质弹窗
 import StorageMediumModal from './Components/StorageMediumModal';
 // 地图定位
-import MarkerFengMap from '@/components/MarkerFengMap';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 import codesMap from '@/utils/codes';
 import moment from 'moment';
 
@@ -184,15 +184,15 @@ export default class StorageEdit extends PureComponent {
               name: item.fileName,
             })) : [],
           })
-          setFieldsValue({ buildingId, floorId, pressureRate, designPressure, cofferdamArea })
-          companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
-          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+          setFieldsValue({ buildingId, floorId, pressureRate, designPressure, cofferdamArea });
           if (pointFixInfoList && pointFixInfoList.length) {
             let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
             const coord = { x: +xnum, y: +ynum, z: +znum };
             groupId = +groupId;
             setFieldsValue({ mapLocation: { groupId, coord, areaId } })
           }
+          companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
         },
       })
     } else if (currentUser && currentUser.unitType === 4) {
@@ -698,7 +698,6 @@ export default class StorageEdit extends PureComponent {
   renderInfo () {
     const {
       dispatch,
-      form,
       form: { getFieldDecorator, getFieldsValue, setFieldsValue },
       match: { params: { id } },
       baseInfo: {
@@ -756,18 +755,6 @@ export default class StorageEdit extends PureComponent {
     //   handleBuildingChange: this.handleBuildingChange,
     //   changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
     // }
-    let { xnum, ynum, znum, groupId } = detail.pointFixInfoList && detail.pointFixInfoList.length ? detail.pointFixInfoList[0] : {};
-    const coord = { x: +xnum, y: +ynum, z: +znum };
-    groupId = +groupId;
-    const fengMapProps = {
-      id: 'mapLocation',
-      form,
-      companyId,
-      initialData: {
-        groupId,
-        coord,
-      },
-    };
     return (
       <Card bordered={false}>
         <Form style={{ marginTop: 8 }}>
@@ -1355,9 +1342,9 @@ export default class StorageEdit extends PureComponent {
             //   <FlatPic {...FlatPicProps} />
             // </FormItem>
             <FormItem label="地图定位" {...formItemLayout}>
-              <MarkerFengMap
-                {...fengMapProps}
-              />
+              {getFieldDecorator('mapLocation')(
+                <MapMarkerSelect companyId={companyId} />
+              )}
             </FormItem>
           )}
         </Form>
