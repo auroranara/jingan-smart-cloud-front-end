@@ -10,6 +10,7 @@ import { stringify } from 'qs';
 import router from 'umi/router';
 import classNames from 'classnames';
 import moment from 'moment';
+import { toFixed } from '@/utils/utils';
 import {
   GET_STATUS_NAME,
 } from '@/pages/IoT/AlarmMessage';
@@ -110,7 +111,7 @@ export default class GasRealTime extends Component {
         if (['405', '406'].includes(`${data.monitorEquipmentType}`)) {
           this.reload();
           if (['1', '2'].includes(`${data.warnLevel}`)) {
-            this.showNotification(data); 
+            this.showNotification(data);
           }
         }
       } catch (error) {
@@ -236,7 +237,7 @@ export default class GasRealTime extends Component {
           <div className={styles.alarmParamValue}>{realValue}</div>
           <div className={styles.paramTrendWrapper}>
             <Icon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
-            <div className={styles.paramTrendValue}>{Math.abs(realValue - limitValue)}</div>
+            <div className={styles.paramTrendValue}>{toFixed(Math.abs(realValue - limitValue))}</div>
             <div className={styles.paramTrendDescription}>超过预警阈值</div>
           </div>
         </div>
@@ -247,7 +248,7 @@ export default class GasRealTime extends Component {
           <div className={styles.alarmParamValue}>{realValue}</div>
           <div className={styles.paramTrendWrapper}>
             <Icon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
-            <div className={styles.paramTrendValue}>{Math.abs(realValue - limitValue)}</div>
+            <div className={styles.paramTrendValue}>{toFixed(Math.abs(realValue - limitValue))}</div>
             <div className={styles.paramTrendDescription}>超过告警阈值</div>
           </div>
         </div>
