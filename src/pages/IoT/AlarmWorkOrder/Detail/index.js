@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { message, Card, Steps, Collapse, Row, Col, Avatar, Spin, Empty } from 'antd';
+import { message, Card, Steps, Collapse, Row, Col, Avatar, Spin, Empty, Pagination } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import DescriptionList from '@/components/DescriptionList';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
@@ -7,7 +7,7 @@ import ImagePreview from '@/jingan-components/ImagePreview';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { connect } from 'dva';
 import moment from 'moment';
-import { isNumber } from '@/utils/utils';
+import { isNumber, getPageSize, setPageSize, toFixed } from '@/utils/utils';
 import locales from '@/locales/zh-CN';
 import {
   DEFAULT_FORMAT,
@@ -33,6 +33,31 @@ export const getTransformedTime = (time) => {
     return [day && `${day}d`, hour && `${hour}h`, minute && `${minute}min`/* , second && `${second}s` */].filter(v => v).join('');
   }
 };
+const getMessageContent = ({ statusType, fixType, warnLevel, paramDesc, monitorValue, paramUnit, limitValue, monitorEquipmentTypeName, faultTypeName }) => {
+  if (+statusType === -1) {
+    if (+fixType === 5) {
+      return `${monitorEquipmentTypeName}发生火警`;
+    } else if (+warnLevel === 1) {
+      return `${monitorEquipmentTypeName}发生预警，${paramDesc}为${monitorValue}${paramUnit || ''}，超过预警值${toFixed(Math.abs(limitValue - monitorValue))}${paramUnit || ''}`;
+    } else if (+warnLevel === 2) {
+      return `${monitorEquipmentTypeName}发生告警，${paramDesc}为${monitorValue}${paramUnit || ''}，超过告警值${toFixed(Math.abs(limitValue - monitorValue))}${paramUnit || ''}`;
+    }
+  } else if (+statusType === -2) {
+    return `${monitorEquipmentTypeName}发生失联`;
+  } else if (+statusType === -3) {
+    return `${monitorEquipmentTypeName}发生故障（${faultTypeName}）`;
+  } else if (+statusType === 1) {
+    if (+fixType === 5) {
+      return `${monitorEquipmentTypeName}火警解除`;
+    } else {
+      return `${monitorEquipmentTypeName}报警解除（${paramDesc}）`;
+    }
+  } else if (+statusType === 2) {
+    return `${monitorEquipmentTypeName}恢复在线`;
+  } else if (+statusType === 3) {
+    return `${monitorEquipmentTypeName}故障消除（${faultTypeName}）`;
+  }
+}
 
 @connect((state, { route: { name, code, path } }) => {
   const { breadcrumbList } = code.split('.').reduce((result, item, index, list) => {
@@ -60,14 +85,15 @@ export const getTransformedTime = (time) => {
     loading: {
       effects: {
         [`${namespace}/getDetail`]: loading,
-        [`${namespace}/getMessageList`]: loading2,
+        [`${namespace}/getMessageList`]: loadingMessageList,
       },
     },
   } = state;
   return {
     detail,
     messageList,
-    loading: loading || loading2,
+    loading,
+    loadingMessageList,
     breadcrumbList,
   };
 }, (dispatch, { match: { params: { id } }, route: { code } }) => {
@@ -93,6 +119,8 @@ export const getTransformedTime = (time) => {
         type: `${namespace}/getMessageList`,
         payload: {
           processId: id,
+          pageNum: 1,
+          pageSize: getPageSize(),
           ...payload,
         },
         callback: (success, data) => {
@@ -120,7 +148,7 @@ export default class AlarmWorkOrderDetail extends Component {
     getMessageList({}, (success, messageList) => {
       if (success) {
         this.setState({
-          collapseActiveKey: messageList && messageList.length ? messageList[0].msg_id : undefined,
+          collapseActiveKey: (messageList.list[0] || {}).id,
         });
       }
     });
@@ -146,9 +174,38 @@ export default class AlarmWorkOrderDetail extends Component {
   }
 
   handleCollapseChange = (collapseActiveKey) => {
-    this.setState(({ collapseActiveKey: prevCollapseActiveKey }) => ({
-      collapseActiveKey: collapseActiveKey.filter(v => v !== prevCollapseActiveKey)[0],
-    }));
+    this.setState({
+      collapseActiveKey,
+    });
+  }
+
+  handlePaginationChange = (pageNum, pageSize) => {
+    const { getMessageList } = this.props;
+    getMessageList({
+      pageNum,
+      pageSize,
+    }, (success, messageList) => {
+      if (success) {
+        this.setState({
+          collapseActiveKey: (messageList.list[0] || {}).id,
+        });
+      }
+    });
+  }
+
+  handlePageSizeChange = (pageNum, pageSize) => {
+    const { getMessageList } = this.props;
+    getMessageList({
+      pageNum: 1,
+      pageSize,
+    }, (success, messageList) => {
+      if (success) {
+        this.setState({
+          collapseActiveKey: (messageList.list[0] || {}).id,
+        });
+      }
+    });
+    setPageSize(pageSize);
   }
 
   renderWorkOrderFlow() {
@@ -203,7 +260,7 @@ export default class AlarmWorkOrderDetail extends Component {
       current += 1;
       steps.push({
         id: '完成工单',
-        title: '完成工单',
+        title: `完成工单${+executeType === 2 ? '（自动处理）' : ''}`,
         description: (
           <Fragment>
             {+executeType !== 2 && <div>{executorName}</div>}
@@ -246,6 +303,7 @@ export default class AlarmWorkOrderDetail extends Component {
         disasterDesc,
         loopNumber,
         partNumber,
+        executeType,
       }={},
     } = this.props;
     const isHost = +reportType === 1;
@@ -261,7 +319,7 @@ export default class AlarmWorkOrderDetail extends Component {
                   <SelectOrSpan list={STATUSES} value={`${status}`} type="span" />
                 </div>
                 {/* {+type === 2 && <div className={styles.realAlarm}>真实警情</div>} */}
-                {<div className={styles.realAlarm}>{({ 1: '误报警情', 2: '真实警情' })[type]}</div>}
+                {<div className={styles.realAlarm}>{+executeType === 2 ? <span style={{ color: '#b823dd' }}>未知警情</span> : ({ 1: '误报警情', 2: '真实警情' })[type]}</div>}
               </div>
             ) : <EmptyData />}
           </Description>
@@ -353,64 +411,89 @@ export default class AlarmWorkOrderDetail extends Component {
 
   renderMessageNotification() {
     const {
-      messageList=[],
+      messageList: {
+        list,
+        pagination: {
+          total,
+          pageNum,
+          pageSize,
+        }={},
+      }={},
+      loading=false,
+      loadingMessageList=false,
     } = this.props;
     const { collapseActiveKey } = this.state;
 
     return (
-      <Card className={styles.card} title={<Fragment>消息通知<span className={styles.total}>（共{(messageList || []).length}条）</span></Fragment>}>
-        {messageList && messageList.length ? (
-          <Collapse className={styles.collapse} bordered={false} activeKey={collapseActiveKey} onChange={this.handleCollapseChange}>
-            {messageList.map(({ msg_id, add_time, msg_content, acceptUserList }) => {
-              const { content, readCount, unreadCount } = acceptUserList && acceptUserList.length ? acceptUserList.reduce((result, { accept_user_id, accept_user_name, accept_user_phone, status }) => {
-                if (+status) {
-                  result.unreadCount += 1;
-                } else {
-                  result.readCount += 1;
-                }
-                result.content.push((
-                  <Col span={6} key={accept_user_id}>
-                    <div className={styles.receiverWrapper}>
-                      <Avatar className={styles.avatar}>
-                        {accept_user_name[0]}
-                      </Avatar>
-                      <div className={styles.receiverInfoWrapper}>
-                        <div className={styles.receiverInfo}>
-                          <div className={styles.receiverName}>{accept_user_name}</div>
-                          <div className={styles.receiverPhone}>{accept_user_phone}</div>
+      <Card className={styles.card} title={<Fragment>消息通知<span className={styles.total}>（共{total || 0}条）</span></Fragment>}>
+        <Spin spinning={!loading && loadingMessageList}>
+          {list && list.length ? (
+            <Fragment>
+              <Collapse className={styles.collapse} bordered={false} activeKey={collapseActiveKey} onChange={this.handleCollapseChange} accordion>
+                {list.map((item) => {
+                  const { id, happenTime, mailAcceptUsers } = item;
+                  const { content, readCount, unreadCount } = mailAcceptUsers && mailAcceptUsers.length ? mailAcceptUsers.reduce((result, { accept_user_id, accept_user_name, accept_user_phone, status }) => {
+                    if (+status) {
+                      result.unreadCount += 1;
+                    } else {
+                      result.readCount += 1;
+                    }
+                    result.content.push((
+                      <Col span={6} key={accept_user_id}>
+                        <div className={styles.receiverWrapper}>
+                          <Avatar className={styles.avatar}>
+                            {accept_user_name[0]}
+                          </Avatar>
+                          <div className={styles.receiverInfoWrapper}>
+                            <div className={styles.receiverInfo}>
+                              <div className={styles.receiverName}>{accept_user_name}</div>
+                              <div className={styles.receiverPhone}>{accept_user_phone}</div>
+                            </div>
+                            <div className={styles.receiverStatus}>{`站内信${+status ? '未读' : '已读'}`}</div>
+                          </div>
                         </div>
-                        <div className={styles.receiverStatus}>{`站内信${+status ? '未读' : '已读'}`}</div>
+                      </Col>
+                    ));
+                    return result;
+                  }, {
+                    content: [],
+                    readCount: 0,
+                    unreadCount: 0,
+                  }) : {
+                    content: <Empty />,
+                    readCount: 0,
+                    unreadCount: 0,
+                  };
+                  return (
+                    <Panel header={
+                      <div className={styles.message}>
+                        <div className={styles.messageLeft}>{moment(happenTime).format(DEFAULT_FORMAT)}&nbsp;&nbsp;{getMessageContent(item)}</div>
+                        <div className={styles.messageRight}>站内信：{`${readCount}人已读，${unreadCount}人未读`}</div>
                       </div>
-                    </div>
-                  </Col>
-                ));
-                return result;
-              }, {
-                content: [],
-                readCount: 0,
-                unreadCount: 0,
-              }) : {
-                content: <Empty />,
-                readCount: 0,
-                unreadCount: 0,
-              };
-              return (
-                <Panel header={
-                  <div className={styles.message}>
-                    <div className={styles.messageLeft}>{moment(add_time).format(DEFAULT_FORMAT)}&nbsp;&nbsp;{msg_content}</div>
-                    <div className={styles.messageRight}>站内信：{`${readCount}人已读，${unreadCount}人未读`}</div>
-                  </div>
-                } key={msg_id}>
-                  <Row gutter={24} className={styles.row}>
-                    {content}
-                  </Row>
-                </Panel>
-              );
-            })}
-          </Collapse>
-        ) : (
-          <Empty />
-        )}
+                    } key={id}>
+                      <Row gutter={24} className={styles.row}>
+                        {content}
+                      </Row>
+                    </Panel>
+                  );
+                })}
+              </Collapse>
+            <Pagination
+              className={styles.pagination}
+              total={total}
+              current={pageNum}
+              pageSize={pageSize}
+              pageSizeOptions={['5', '10', '15', '20']}
+              showQuickJumper
+              showSizeChanger
+              onChange={this.handlePaginationChange}
+              onShowSizeChange={this.handlePageSizeChange}
+            />
+            </Fragment>
+          ) : (
+            <Empty />
+          )}
+        </Spin>
       </Card>
     );
   }

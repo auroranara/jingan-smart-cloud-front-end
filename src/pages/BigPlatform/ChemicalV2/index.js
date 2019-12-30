@@ -103,12 +103,16 @@ const SocketOptions = {
   pingMsg: 'heartbeat',
 };
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const GET_TYPE_NAME = ({ statusType, warnLevel, fixType }) => {
+const GET_STATUS_NAME = ({ statusType, warnLevel, fixType }) => {
   if (+statusType === -1) {
     if (+warnLevel === 1) {
       return '预警';
     } else if (+warnLevel === 2) {
-      return '报警';
+      if (+fixType === 5) {
+        return '火警';
+      } else {
+        return '告警';
+      }
     }
   } else if (+statusType === -2) {
     return '失联';
@@ -303,7 +307,7 @@ export default class Chemical extends PureComponent {
       faultTypeName,
     } = data;
     if (statusType > 0) return;
-    const typeName = GET_TYPE_NAME({ statusType, warnLevel });
+    const typeName = GET_STATUS_NAME({ statusType, warnLevel });
     const style = {
       boxShadow: `0px 0px 20px #f83329`,
       padding: '14px 20px',
@@ -328,17 +332,19 @@ export default class Chemical extends PureComponent {
         <div
           className={styles.notificationTitle}
           style={{ color: '#f83329' }}
-        >{`${monitorEquipmentTypeName}发生${typeName}`}</div>
+        >{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
       ),
       description: (
         <div className={styles.notificationBody}>
-          <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div>
+          {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
+          <div>{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
           {![-2, -3].includes(+statusType) && (
             <div
               className={styles.alarm}
             >{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
               ['预警', '报警'].includes(typeName)
-                ? `，超过${typeName}值${Math.abs(monitorValue - limitValue)}${paramUnit || ''}`
+                ? `，超过${typeName}值${Math.round(Math.abs(monitorValue - limitValue) * 100) /
+                    100}${paramUnit || ''}`
                 : ''
             }`}</div>
           )}

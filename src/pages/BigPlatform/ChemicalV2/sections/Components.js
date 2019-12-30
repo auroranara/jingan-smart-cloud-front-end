@@ -8,7 +8,7 @@ import CompanyInfo from './CompanyInfo';
 import StorageAreaDrawer from './StorageAreaDrawer';
 import MonitorDetailDrawer from './MonitorDetailDrawer';
 import HiddenDanger from './HiddenDanger';
-import Map from './Map';
+import Map from './Map_copy';
 import DangerAreaDrawer from './DangerAreaDrawer';
 import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
