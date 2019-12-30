@@ -5,7 +5,7 @@ import moment from 'moment';
 import router from 'umi/router';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import { mapMutations } from '@/utils/utils';
-import headerBg from '@/assets/new-header-bg.png';
+// import headerBg from '@/assets/new-header-bg.png';
 // import bgImg from '@/pages/BigPlatform/ChemicalV2/imgs/bg.png';
 import menuIcon from './imgs/menu-icon.png';
 import styles from './index.less';
@@ -47,6 +47,7 @@ import {
   PoisonDrawer,
 } from './sections/Components';
 
+const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
 const bgImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/bg.png';
 const HEADER_STYLE = {
   top: 0,

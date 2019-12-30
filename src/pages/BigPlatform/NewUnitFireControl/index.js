@@ -71,13 +71,14 @@ import { WATER_TYPES, getWaterTotal } from '../GasStation/utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
-import headerBg from '@/assets/new-header-bg.png';
+// import headerBg from '@/assets/new-header-bg.png';
 import videoBtn from '../Monitor/imgs/videoBtn.png';
 
-const { projectName } = global.PROJECT_CONFIG;
+// const { projectName } = global.PROJECT_CONFIG;
 // const DELAY = 5 * 1000;
 // const CHART_DELAY = 10 * 60 * 1000;
 
+const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
 const DRAWER_VISIBLES = [
   'fireFlowDrawerVisible',
   'smokeFlowDrawerVisible',

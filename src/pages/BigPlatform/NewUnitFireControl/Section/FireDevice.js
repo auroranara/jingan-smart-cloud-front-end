@@ -5,9 +5,10 @@ import WaterCards from '../components/WaterCards';
 import ChartGauge from '../components/ChartGauge';
 import Section from '../Section';
 import styles from './FireDevice.less';
-import waterBg from '../imgs/waterBg.png';
+// import waterBg from '../imgs/waterBg.png';
 import Ellipsis from '@/components/Ellipsis';
 
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 const waterSys = {
   '101': {
     name: '消火栓系统',

@@ -18,7 +18,9 @@ import pondAbnormal from '../imgs/pond-abnormal.png';
 import pondLoss from '../imgs/pond-loss.png';
 import pondNormal from '../imgs/pond-normal.png';
 import cameralogo from '../imgs/cameralogo.png';
-import noMonitorImg from '../imgs/no-monitor.png';
+// import noMonitorImg from '../imgs/no-monitor.png';
+
+const noMonitorImg = 'http://data.jingan-china.cn/v2/chem/screen/no-monitor.png';
 
 function title(i) {
   switch (i) {

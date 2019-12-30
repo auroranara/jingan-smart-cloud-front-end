@@ -3,10 +3,15 @@ import PropTypes from 'prop-types';
 import styles from './CheckCard.less';
 // import image from '@/assets/processing.png';
 
-import ErrorCheck from '../imgs/errorCheck.png';
-import NormalCheck from '../imgs/normalCheck.png';
-import OverTime from '../imgs/overTime.png';
-import WaitTime from '../imgs/waitTime.png';
+// import ErrorCheck from '../imgs/errorCheck.png';
+// import NormalCheck from '../imgs/normalCheck.png';
+// import OverTime from '../imgs/overTime.png';
+// import WaitTime from '../imgs/waitTime.png';
+
+const ErrorCheck = 'http://data.jingan-china.cn/v2/chem/screen/errorCheck.png';
+const NormalCheck = 'http://data.jingan-china.cn/v2/chem/screen/normalCheck.png';
+const OverTime = 'http://data.jingan-china.cn/v2/chem/screen/overTime.png';
+const WaitTime = 'http://data.jingan-china.cn/v2/chem/screen/waitTime.png';
 
 export default class CheckCard extends PureComponent {
   static propTypes = {

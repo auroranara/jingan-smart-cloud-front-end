@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import debounce from 'lodash/debounce';
 import HiddenDanger from './HiddenDanger';
-import noHiddenDanger from '../img/noHiddenDanger.png';
-
+// import noHiddenDanger from '../img/noHiddenDanger.png';
 import styles from './RiskDetail.less';
 
+const noHiddenDanger = 'http://data.jingan-china.cn/v2/chem/screen/noHiddenDanger.png';
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 /* 图片 */

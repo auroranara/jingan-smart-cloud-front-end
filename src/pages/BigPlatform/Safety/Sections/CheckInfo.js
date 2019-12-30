@@ -5,11 +5,13 @@ import moment from 'moment';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
 import styles2 from './CheckInfo.less';
-import noChecks from '../img/noChecks.png';
+// import noChecks from '../img/noChecks.png';
 
 // import styles from './DangerCompany.less';
 
 const { Option } = Select;
+
+const noChecks = 'http://data.jingan-china.cn/v2/chem/screen/noChecks.png';
 const currentMonth = moment().get('month');
 const months = [...Array(currentMonth + 1).keys()].map(month => ({
   value: moment({ month: currentMonth - month }).format('YYYY-MM'),

@@ -3,17 +3,17 @@ import { notification, Icon } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
-import moment from 'moment';
+// import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-import NewSection from '@/components/NewSection';
+// import NewSection from '@/components/NewSection';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
-import headerBg from '@/assets/new-header-bg.png';
+// import headerBg from '@/assets/new-header-bg.png';
 // 接入单位统计
 import AccessUnitStatistics from './AccessUnitStatistics';
 // 异常单位统计
 import AbnormalUnitStatistics from './AbnormalUnitStatistics';
 // 待处理业务
-import ProcessingBusiness from './ProcessingBusiness';
+// import ProcessingBusiness from './ProcessingBusiness';
 
 // 告警信息
 // import WarningMessage from './WarningMessage';
@@ -32,8 +32,9 @@ import { SettingModal, UnitDrawer, AlarmDrawer, BusinessDrawer } from './section
 import { genCardsInfo, genPendingCardsInfo, getAlarmUnits } from './utils';
 import { GridSelect } from './components/Components';
 import UnitMonitorDrawer from './sections/UnitMonitorDrawer';
-import VideoPlay from '../Monitor/sections/VideoPlay';
+// import VideoPlay from '../Monitor/sections/VideoPlay';
 
+const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
 // websocket配置
 const options = {
   pingTimeout: 30000,

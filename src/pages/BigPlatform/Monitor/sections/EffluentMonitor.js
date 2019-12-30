@@ -7,8 +7,9 @@ import ExSection from './ExSection';
 import WasteWaterWave from '../components/WasteWaterWave/index';
 
 import timeIcon from '../imgs/timeIcon.png';
-import waterBg from '../imgs/waterBg.png';
+// import waterBg from '../imgs/waterBg.png';
 
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 const Option = Select.Option;
 
 const warningColor = 'rgb(200, 70, 70)';

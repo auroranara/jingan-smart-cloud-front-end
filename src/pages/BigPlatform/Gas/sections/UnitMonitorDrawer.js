@@ -17,11 +17,12 @@ import gasLossImg from '../imgs/gas-loss.png';
 // 摄像头
 import cameraImg from '../imgs/camera.png';
 // 暂无监测数据
-import noMonitorImg from '../imgs/no-monitor.png';
+// import noMonitorImg from '../imgs/no-monitor.png';
 import styles from './UnitMonitorDrawer.less';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { findFirstVideo } from '@/utils/utils';
 
+const noMonitorImg = 'http://data.jingan-china.cn/v2/chem/screen/no-monitor.png';
 const OPTIONS = [
   { value: null, desc: '全部' },
   { value: 0, desc: '正常', img: gasNormalImg, color: '' },

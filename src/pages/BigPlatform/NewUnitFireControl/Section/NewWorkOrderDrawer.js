@@ -7,13 +7,15 @@ import { vaguePhone } from '../utils';
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import styles from './NewWorkOrderDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
-import numberBg from '../imgs/number-bg.png';
-import noData from '../imgs/noData.png';
-import bakFlag from '@/assets/bac-flag.png';
+// import numberBg from '../imgs/number-bg.png';
+// import noData from '../imgs/noData.png';
+// import bakFlag from '@/assets/bac-flag.png';
 
 const { Option } = Select;
+
+const noData = 'http://data.jingan-china.cn/v2/chem/screen/noData.png';
 const NO_DATA = '暂无信息';
-const TYPES = ['报警', '故障'];
+// const TYPES = ['报警', '故障'];
 const STATUS_MAP = ['待处理', '处理中', '已处理'];
 const LABELS = [['报警', '故障'], ['报警', '故障'], ['报警', '报警'], []];
 const statusSelector = [
