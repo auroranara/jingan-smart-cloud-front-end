@@ -6,9 +6,10 @@ import moment from 'moment';
 import videoCameraIcon from '@/assets/videoCamera.png';
 import alarmIcon from '@/assets/icon-alarm2.png';
 import lossIcon from '@/assets/icon-loss.png';
-import noTrend from '@/pages/BigPlatform/Gas/imgs/no-monitor.png';
+// import noTrend from '@/pages/BigPlatform/Gas/imgs/no-monitor.png';
 import styles from './index.less';
 
+const noTrend = 'http://data.jingan-china.cn/v2/chem/screen/no-monitor.png';
 // 温湿度监测点详情抽屉
 @connect(({ unitSafety, loading }) => ({
   unitSafety,

@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import noData from '../imgs/noData.png';
+// import noData from '../imgs/noData.png';
+
+const noData = 'http://data.jingan-china.cn/v2/chem/screen/noData.png';
 
 export default class NoData extends PureComponent {
   render() {

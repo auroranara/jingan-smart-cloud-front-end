@@ -3,9 +3,11 @@ import { Row, Col, Select, Drawer } from 'antd';
 import moment from 'moment';
 import styles from '../../Government.less';
 import styles2 from './CheckDrawer.less';
-import noChecks from '../../img/noChecks.png';
+// import noChecks from '../../img/noChecks.png';
 
 const { Option } = Select;
+
+const noChecks = 'http://data.jingan-china.cn/v2/chem/screen/noChecks.png';
 const months = [...Array(6).keys()].map(month => ({
   value: moment()
     .subtract(month, 'months')

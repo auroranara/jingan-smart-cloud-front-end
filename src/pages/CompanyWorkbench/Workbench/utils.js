@@ -16,7 +16,7 @@ import ProductWork from './image/productWork.png';
 import RiskPoint from './image/riskPoint.png';
 import CurrentDanger from './image/currentDanger.png';
 import Materical from './image/materical.png';
-import Technonlogy from './image/technonlogy.png';
+// import Technonlogy from './image/technonlogy.png';
 import MajorDanger from './image/majorDanger.png';
 import AlarmIcon from './image/alarmIcon.png';
 import NormalIcon from './image/normalIcon.png';
@@ -28,6 +28,7 @@ import Money from './image/money.png';
 import AlarmTime from './image/alarmTime.png';
 import FininshRate from './image/fininshRate.png';
 
+const Technonlogy = 'http://data.jingan-china.cn/v2/chem/assets/technonlogy.png';
 export {
   ProductWork,
   RiskPoint,

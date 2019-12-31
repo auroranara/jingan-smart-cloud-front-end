@@ -6,8 +6,9 @@ import Section from '../components/Section/Section.js';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
-import waterBg from '../images/waterBg.png';
+// import waterBg from '../images/waterBg.png';
 
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 const { Option } = Select;
 
 const tabList = [

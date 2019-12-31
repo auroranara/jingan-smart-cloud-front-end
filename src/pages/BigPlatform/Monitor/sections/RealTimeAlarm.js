@@ -5,9 +5,10 @@ import { Row, Col, Icon } from 'antd'
 import PropTypes from 'prop-types';
 import Ellipsis from '@/components/Ellipsis';
 
-import noAlarm from '@/assets/no-alarm.png'
+// import noAlarm from '@/assets/no-alarm.png'
 import videoIcon from '@/assets/videoCamera.png';
 
+const noAlarm = 'http://data.jingan-china.cn/v2/chem/assets/no-alarm.png';
 export default class RealTimeAlarm extends PureComponent {
 
   static propTypes = {

@@ -3,7 +3,7 @@ import { Row, Col } from 'antd';
 import moment from 'moment';
 import Ellipsis from 'components/Ellipsis';
 
-import { OvProgress, SearchBar } from '@/pages/BigPlatform/NewFireControl/components/Components';
+// import { OvProgress, SearchBar } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import DrawerContainer from '../components/DrawerContainer';
 import TotalInfo from '../components/TotalInfo';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
@@ -16,8 +16,9 @@ import smokeFault from '../../Smoke/imgs/smoke-fault.png';
 import smokeNormal from '../../Smoke/imgs/smoke-normal.png';
 import smokeLost from '../../Smoke/imgs/smoke-lost.png';
 import cameralogo from '../imgs/cameralogo.png';
-import noMonitorImg from '../imgs/no-monitor.png';
+// import noMonitorImg from '../imgs/no-monitor.png';
 
+const noMonitorImg = 'http://data.jingan-china.cn/v2/chem/screen/no-monitor.png';
 export default class SmokeDrawer extends PureComponent {
   state = {
     videoVisible: false, // 视频弹框是否可见

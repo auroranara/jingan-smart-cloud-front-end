@@ -5,8 +5,9 @@ import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import noPendingInfo from '../images/emptyLogo.png';
+// import noPendingInfo from '../images/emptyLogo.png';
 
+const noPendingInfo = 'http://data.jingan-china.cn/v2/chem/screen/emptyLogo.png';
 export default class InformationHistory extends PureComponent {
   static propTypes = {
     title: PropTypes.string.isRequired, // 模块标题

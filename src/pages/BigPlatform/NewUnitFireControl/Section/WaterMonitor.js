@@ -5,23 +5,24 @@ import WaterCards from '../components/WaterCards';
 import ChartGauge from '../components/ChartGauge';
 import TabSection from './TabSection';
 import styles from './WaterMonitor.less';
-import waterBg from '../imgs/waterBg.png';
+// import waterBg from '../imgs/waterBg.png';
 import Ellipsis from '@/components/Ellipsis';
 
-const waterSys = {
-  '101': {
-    name: '消火栓系统',
-    code: 'hydrant',
-  },
-  '102': {
-    name: '喷淋系统',
-    code: 'pistol',
-  },
-  '103': {
-    name: '水池/水箱',
-    code: 'pond',
-  },
-};
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
+// const waterSys = {
+//   '101': {
+//     name: '消火栓系统',
+//     code: 'hydrant',
+//   },
+//   '102': {
+//     name: '喷淋系统',
+//     code: 'pistol',
+//   },
+//   '103': {
+//     name: '水池/水箱',
+//     code: 'pond',
+//   },
+// };
 
 function TopNav(props) {
   const { list } = props;

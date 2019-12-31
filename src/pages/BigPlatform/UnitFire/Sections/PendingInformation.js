@@ -6,9 +6,10 @@ import PropTypes from 'prop-types';
 import Ellipsis from '@/components/Ellipsis';
 
 import Section from '../components/Section/Section.js';
-import noMsg from '../images/noMsg.png';
+// import noMsg from '../images/noMsg.png';
 import videoIcon from '@/assets/videoCamera.png';
 
+const noMsg = 'http://data.jingan-china.cn/v2/chem/screen/noMsg.png';
 const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
 const getPendingInfoType = (
   {

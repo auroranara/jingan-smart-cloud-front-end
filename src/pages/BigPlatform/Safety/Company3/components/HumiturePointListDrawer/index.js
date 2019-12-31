@@ -3,10 +3,11 @@ import CustomDrawer from '@/jingan-components/CustomDrawer';
 import CustomTabs from '@/jingan-components/CustomTabs';
 import LoadMore from '@/jingan-components/LoadMore';
 import HumiturePointCard from '@/jingan-components/HumiturePointCard';
-import emptyData from '@/assets/empty_data.png';
+// import emptyData from '@/assets/empty_data.png';
 import { connect } from 'dva';
 import styles from './index.less';
 
+const emptyData = 'http://data.jingan-china.cn/v2/chem/assets/empty_data.png';
 const STATUS_MAPPER = {
   '正常': 0,
   '报警': 2,

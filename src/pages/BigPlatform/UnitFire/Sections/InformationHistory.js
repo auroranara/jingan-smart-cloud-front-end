@@ -2,11 +2,11 @@ import React, { PureComponent } from 'react';
 import DrawerContainer from '../components/DrawerContainer';
 import styles from './InformationHistory.less';
 import { Icon, Row, Col, Tooltip } from 'antd';
-import Ellipsis from '@/components/Ellipsis';
-import classNames from 'classnames';
+// import Ellipsis from '@/components/Ellipsis';
+// import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import noPendingInfo from '../images/emptyLogo.png';
+// import noPendingInfo from '../images/emptyLogo.png';
 
 const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
 const getPendingInfoType = (

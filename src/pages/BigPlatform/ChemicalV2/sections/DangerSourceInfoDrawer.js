@@ -4,7 +4,7 @@ import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/D
 import styles from './DangerSourceInfoDrawer.less';
 import { CardItem } from '../components/Components';
 import Wave from '@/jingan-components/Wave';
-import storage from '../imgs/storage.png';
+// import storage from '../imgs/storage.png';
 
 const basicList = [
   {

@@ -2,9 +2,10 @@ import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
 
 import styles from './FcSection.less';
-import titleBg from '../img/title_bg.png';
+// import titleBg from '../img/title_bg.png';
 import titleDot from '../img/title_dot.png';
 
+const titleBg = 'http://data.jingan-china.cn/v2/chem/screen/title_bg.png';
 export default class FcSection extends PureComponent {
   render() {
     const {

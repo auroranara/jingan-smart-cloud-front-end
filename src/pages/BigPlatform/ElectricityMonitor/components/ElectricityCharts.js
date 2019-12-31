@@ -4,8 +4,9 @@ import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
-import waterBg from '../../Gas/imgs/no-monitor.png';
+// import waterBg from '../../Gas/imgs/no-monitor.png';
 
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/no-monitor.png';
 const tabList = [
   {
     desc: '漏电电流',

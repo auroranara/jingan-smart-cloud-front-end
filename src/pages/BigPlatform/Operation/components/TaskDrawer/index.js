@@ -6,10 +6,11 @@ import CustomSelect from '@/jingan-components/CustomSelect';
 import TaskCard from '@/jingan-components/TaskCard';
 import LoadMore from '@/jingan-components/LoadMore';
 // 引入图片文件
-import emptyDataBackground from '@/assets/noTask.png';
+// import emptyDataBackground from '@/assets/noTask.png';
 // 引入样式文件
 import styles from './index.less';
 
+const emptyDataBackground = 'http://data.jingan-china.cn/v2/chem/assets/noTask.png';
 const typeDict = {
   消防主机: 1,
   独立烟感: 4,

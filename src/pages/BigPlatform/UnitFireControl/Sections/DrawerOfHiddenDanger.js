@@ -13,8 +13,9 @@ import safety from '@/assets/safety.png';
 import fireControl from '@/assets/fire-control.png';
 import environment from '@/assets/environment.png';
 import hygiene from '@/assets/hygiene.png';
-import isEmptyImg from '../images/noHiddenDanger.png';
+// import isEmptyImg from '../images/noHiddenDanger.png';
 
+const isEmptyImg = 'http://data.jingan-china.cn/v2/chem/screen/noHiddenDanger.png';
 /**
  * 根据status获取对应的标记
  */

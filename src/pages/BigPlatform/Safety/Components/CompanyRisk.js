@@ -7,8 +7,9 @@ import safety from '@/assets/safety.png';
 import fireControl from '@/assets/fire-control.png';
 import environment from '@/assets/environment.png';
 import hygiene from '@/assets/hygiene.png';
-import ygbIcon from '@/assets/closed.png';
+// import ygbIcon from '@/assets/closed.png';
 
+const ygbIcon = 'http://data.jingan-china.cn/v2/chem/assets/closed.png';
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 const descriptionBlueIcon = `${iconPrefix}description_blue.png`;

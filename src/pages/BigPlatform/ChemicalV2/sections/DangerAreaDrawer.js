@@ -3,14 +3,19 @@ import { Row, Col, Icon } from 'antd';
 import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
 import styles from './DangerAreaDrawer.less';
 
-import dangerFactorsList from '../imgs/danger-factors-list.png';
-import safetyRiskList from '../imgs/safety-risk-list.png';
-import knowCard from '../imgs/know-card.png';
-import commitmentCard from '../imgs/commitment-card.png';
-import emergencyCard from '../imgs/emergency-card.png';
-import { MonitorList } from '../utils';
+// import dangerFactorsList from '../imgs/danger-factors-list.png';
+// import safetyRiskList from '../imgs/safety-risk-list.png';
+// import knowCard from '../imgs/know-card.png';
+// import commitmentCard from '../imgs/commitment-card.png';
+// import emergencyCard from '../imgs/emergency-card.png';
+// import { MonitorList } from '../utils';
 import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
 
+const dangerFactorsList = 'http://data.jingan-china.cn/v2/chem/chemScreen/danger-factors-list.png';
+const safetyRiskList = 'http://data.jingan-china.cn/v2/chem/chemScreen/safety-risk-list.png';
+const knowCard = 'http://data.jingan-china.cn/v2/chem/chemScreen/know-card.png';
+const commitmentCard = 'http://data.jingan-china.cn/v2/chem/chemScreen/commitment-card.png';
+const emergencyCard = 'http://data.jingan-china.cn/v2/chem/chemScreen/emergency-card.png';
 const riskData = [
   { label: '红色', value: 1, color: '#FC1F02' },
   { label: '橙色', value: 1, color: '#F17A0A' },

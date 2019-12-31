@@ -5,7 +5,7 @@ import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/D
 import Wave from '@/jingan-components/Wave';
 import styles from './StorageDrawer.less';
 import { CardItem } from '../components/Components';
-import storage from '../imgs/storage.png';
+// import storage from '../imgs/storage.png';
 import iconAlarm from '@/assets/icon-alarm.png';
 
 const creatNum = (num, m) => {

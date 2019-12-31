@@ -6,8 +6,9 @@ import { connect } from 'dva';
 
 import ExSection from './ExSection';
 import storageImg from '../imgs/storageImg.png';
-import waterBg from '../imgs/waterBg.png';
+// import waterBg from '../imgs/waterBg.png';
 
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 const hDivider = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/split_h.png';
 const divider = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/split.png';
 
