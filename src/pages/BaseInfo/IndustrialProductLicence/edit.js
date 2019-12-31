@@ -376,7 +376,7 @@ export default class IndustriallicenceEdit extends PureComponent {
                   message: '请输入证书编号',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入证书编号" maxLength={15} />)}
+            })(<Input {...itemStyles} placeholder="请输入证书编号" maxLength={30} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="证书有效期">
             {getFieldDecorator('period', {

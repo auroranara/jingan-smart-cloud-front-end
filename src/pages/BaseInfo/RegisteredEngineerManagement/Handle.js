@@ -361,7 +361,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       form: { setFieldsValue },
       user: { userList },
     } =  this.props;
-    const target = userList.find(({ loginId }) => loginId === value);
+    const target = userList.find(({ loginId }) => loginId === value.key);
     if (target) {
       const { sex, birth, phoneNumber } = target;
       setFieldsValue({ sex, birth: moment(birth), phone: phoneNumber });
