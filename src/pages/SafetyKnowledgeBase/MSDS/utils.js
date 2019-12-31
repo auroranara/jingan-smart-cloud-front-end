@@ -74,6 +74,7 @@ function genFormItem(field, getFieldDecorator) {
     label,
     disabled = false,
     placeholder,
+    onSelectChange,
     required = true,
     options,
     formItemOptions,
@@ -84,7 +85,8 @@ function genFormItem(field, getFieldDecorator) {
 
   let child = null;
 
-  if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
+  if (type === 'component') child = compt;
+  // 不经过getFieldDecorator包裹
   else {
     const formOptions = formItemOptions || {};
     const opts = getOptions(options);
@@ -112,7 +114,9 @@ function genFormItem(field, getFieldDecorator) {
         );
         break;
       case 'radio':
-        component = <RadioGroup disabled={disabled} options={getOptions(options, ['value', 'label'])} />;
+        component = (
+          <RadioGroup disabled={disabled} options={getOptions(options, ['value', 'label'])} />
+        );
         break;
       case 'datepicker':
         component = <DatePicker disabled={disabled} allowClear />;
@@ -122,11 +126,13 @@ function genFormItem(field, getFieldDecorator) {
         break;
       case 'cascader':
         placeholder = placeholder || `请选择${label}`;
-        component = <Cascader placeholder={placeholder} disabled={disabled} options={options} allowClear />;
+        component = (
+          <Cascader placeholder={placeholder} disabled={disabled} options={options} allowClear />
+        );
         break;
       case 'companyselect':
         placeholder = placeholder || `请选择${label}`;
-        component = <CompanySelect disabled={disabled} />;
+        component = <CompanySelect disabled={disabled} onChange={onSelectChange} />;
         break;
       default:
         placeholder = placeholder || `请输入${label}`;
@@ -155,7 +161,7 @@ function genFormItem(field, getFieldDecorator) {
   //     {child}
   //   </FormItem>
   // );
-return <FormItem {...props}>{child}</FormItem>;
+  return <FormItem {...props}>{child}</FormItem>;
 }
 
 function renderSection(section, index, getFieldDecorator) {
@@ -180,7 +186,13 @@ function getSections(sections) {
   return sections;
 }
 
-export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl, loading=false) {
+export function renderSections(
+  sections,
+  getFieldDecorator,
+  handleSubmit,
+  listUrl,
+  loading = false
+) {
   const secs = getSections(sections);
   const props = {};
   // const props = { ...FORMITEM_LAYOUT };

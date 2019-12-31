@@ -21,6 +21,11 @@ const { Option } = Select;
 }))
 @Form.create()
 export default class Edit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = { selectedUnitId: '', riskId: '', filterMapList: [] };
+  }
+
   componentDidMount() {
     const {
       match: {
@@ -35,10 +40,12 @@ export default class Edit extends PureComponent {
       pageNum: 1,
       pageSize: 24,
     };
-    this.fetchList({ ...payload, companyId: companyId });
-    this.fetchMap({ companyId: companyId }, mapInfo => {
-      this.childMap.initMap({ ...mapInfo });
-    });
+    if (unitType === 4) {
+      this.fetchRiskList({ ...payload, companyId: companyId });
+      this.fetchMap({ companyId: companyId }, mapInfo => {
+        this.childMap.initMap({ ...mapInfo });
+      });
+    }
     if (id) this.getDetail(id);
     else if (isCompanyUser(+unitType))
       setFieldsValue({ companyId: { key: companyId, label: companyName } });
@@ -67,11 +74,18 @@ export default class Edit extends PureComponent {
       },
     } = this.props;
 
+    const { riskId } = this.state;
+
     e.preventDefault();
     validateFields((errors, values) => {
       if (errors) return;
 
-      const vals = { ...values, companyId: values.companyId.key, time: +values.time };
+      const vals = {
+        ...values,
+        companyId: values.companyId.key,
+        time: +values.time,
+        pointFixInfoList: [{ areaId: riskId }],
+      };
       dispatch({
         type: `cardsInfo/${id ? 'edit' : 'add'}CommitCard`,
         payload: id ? { id, ...vals } : vals,
@@ -92,6 +106,25 @@ export default class Edit extends PureComponent {
     return url && url.includes('view');
   };
 
+  onSelectChange = e => {
+    this.setState({ selectedUnitId: e.key }, () => {
+      this.fetchMap({ companyId: e.key }, mapInfo => {
+        this.childMap.initMap({ ...mapInfo });
+      });
+      this.fetchRiskList({ companyId: e.key });
+    });
+  };
+
+  handleRiskChange = e => {
+    this.setState({ riskId: e });
+    this.childMap.selectedModelColor(
+      e,
+      setTimeout(() => {
+        this.childMap.restModelColor(e);
+      }, 2000)
+    );
+  };
+
   onRef = ref => {
     this.childMap = ref;
   };
@@ -107,7 +140,7 @@ export default class Edit extends PureComponent {
   };
 
   // 获取风险分区列表
-  fetchList = (params, callback) => {
+  fetchRiskList = (params, callback) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'fourColorImage/fetchList',
@@ -149,6 +182,7 @@ export default class Edit extends PureComponent {
         type: 'companyselect',
         disabled: isComUser,
         wrapperClassName: isComUser ? styles.disappear : undefined,
+        onSelectChange: e => this.onSelectChange(e),
       },
       { name: 'name', label: '承诺卡名称' },
       { name: 'content', label: '承诺卡内容', type: 'text' },
@@ -160,7 +194,7 @@ export default class Edit extends PureComponent {
         type: 'component',
         required: false,
         component: (
-          <Select>
+          <Select onChange={this.handleRiskChange}>
             {list.map(({ zoneName, id }) => {
               return (
                 <Option key={id} value={id}>
@@ -175,11 +209,14 @@ export default class Edit extends PureComponent {
         name: 'map',
         label: '地图',
         type: 'component',
-        component: (
-          <div className={styles.mapLoaction}>
-            <Map onRef={this.onRef} height="42vh" width="92vh" pointList={list} />
-          </div>
-        ),
+        component:
+          list.length > 0 ? (
+            <div className={styles.mapLoaction}>
+              <Map onRef={this.onRef} height={'42vh'} width={'92vh'} pointList={list} />
+            </div>
+          ) : (
+            <span>该单位暂无地图</span>
+          ),
       },
     ];
 
