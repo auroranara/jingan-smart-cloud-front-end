@@ -1363,31 +1363,31 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              path: '/control-measures-follow-up/hidden-danger-report', // 隐患排查报表
-              code: 'controlMeasuresFollowUp.hiddenDangerReport',
-              name: 'hiddenDangerReport',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/control-measures-follow-up/hidden-danger-report',
-                  name: 'hiddenDangerReport',
-                  redirect: '/control-measures-follow-up/hidden-danger-report/list',
-                },
-                {
-                  path: '/control-measures-follow-up/hidden-danger-report/list',
-                  code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
-                  name: 'list',
-                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportList',
-                },
-                {
-                  path: '/control-measures-follow-up/hidden-danger-report/detail/:id',
-                  code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
-                  name: 'detail',
-                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
-                },
-              ],
-            },
+            // {
+            //   path: '/control-measures-follow-up/hidden-danger-report', // 隐患排查报表
+            //   code: 'controlMeasuresFollowUp.hiddenDangerReport',
+            //   name: 'hiddenDangerReport',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/control-measures-follow-up/hidden-danger-report',
+            //       name: 'hiddenDangerReport',
+            //       redirect: '/control-measures-follow-up/hidden-danger-report/list',
+            //     },
+            //     {
+            //       path: '/control-measures-follow-up/hidden-danger-report/list',
+            //       code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
+            //       name: 'list',
+            //       component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportList',
+            //     },
+            //     {
+            //       path: '/control-measures-follow-up/hidden-danger-report/detail/:id',
+            //       code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
+            //       name: 'detail',
+            //       component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+            //     },
+            //   ],
+            // },
             {
               path: '/control-measures-follow-up/hidden-danger-count-report', // 隐患统计报表
               code: 'controlMeasuresFollowUp.hiddenDangerCountReport',
