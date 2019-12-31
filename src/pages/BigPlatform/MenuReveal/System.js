@@ -7,7 +7,7 @@ import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
 // import { filterBigPlatform } from '@/utils/customAuth';
-import { SRC_MAP, setBlocks } from './utils';
+import { SRC_MAP, setBlocks, setMenuSys } from './utils';
 import classNames from 'classnames';
 import styles from './NewMenu.less';
 // 每个模块标题左侧图
@@ -100,6 +100,7 @@ export default class NewMenuReveal extends Component {
         // 驾驶舱路由、系统路由
         const configSys = menuAll.find(item => item.path === '/');
         const menuSysAll = this.filterSysMenu(configSys.routes, 2);
+        setMenuSys(blockClassification, menuSysAll);
         const blocks = blockClassification[0].blocks;
         const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
         this.setState({ menuSys, menuSysAll });
@@ -117,11 +118,11 @@ export default class NewMenuReveal extends Component {
  * @param {String} parentLocale 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
  **/
   filterSysMenu = (array, depth = 0, parentLocale) => {
-    // const {
-    //   user: {
-    //     currentUser: { permissionCodes },
-    //   },
-    // } = this.props;
+    const {
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
     return array.reduce((arr, item) => {
       let locale = 'menu';
       if (parentLocale && item.name) {
@@ -135,9 +136,9 @@ export default class NewMenuReveal extends Component {
       if (
         item.redirect ||
         item.hideInMenu ||
-        ['/dashboard', '/company-workbench'].includes(item.path)
-        // ['/dashboard', '/company-workbench'].includes(item.path) ||
-        // !permissionCodes.includes(item.code)
+        // ['/dashboard', '/company-workbench'].includes(item.path)
+        ['/dashboard', '/company-workbench'].includes(item.path) ||
+        !permissionCodes.includes(item.code)
       ) {
         return arr;
       } else if (item.routes && item.routes.length && +depth > 1) {
@@ -200,9 +201,10 @@ export default class NewMenuReveal extends Component {
   }
 
   renderBlocks = () => {
+    console.log(blockClassification);
     return (
       <div className={styles.blocks}>
-        {blockClassification.map(({ name, splitIndex, icon }, index) => (
+        {blockClassification.map(({ name, splitIndex, icon, menuSys }, index) => menuSys && menuSys.length ? (
           <div key={index} className={styles.blockItem} onClick={() => this.handleSelectBlockClassification(index)}>
             <div className={styles.blockItemInner}>
               <img src={icon} alt="block" />
@@ -210,7 +212,7 @@ export default class NewMenuReveal extends Component {
               <div>{name.slice(splitIndex)}</div>
             </div>
           </div>
-        ))}
+        ) : null)}
       </div>
     )
   }

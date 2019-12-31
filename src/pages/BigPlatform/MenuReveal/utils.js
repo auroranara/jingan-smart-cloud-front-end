@@ -12,3 +12,11 @@ export function setBlocks(setting, routes) {
       setting[systemType].blocks.push(name);
   });
 }
+
+export function setMenuSys(blockClassification, menuSysAll) {
+  blockClassification.forEach((b, index) => {
+    const { blocks } = b;
+    b.index = index;
+    b.menuSys = menuSysAll.filter(item => blocks.includes(item.name));
+  });
+}
