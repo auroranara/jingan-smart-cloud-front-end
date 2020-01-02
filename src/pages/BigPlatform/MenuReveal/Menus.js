@@ -278,7 +278,7 @@ export default class NewMenuReveal extends Component {
     } = this.props;
     const { currentBlockClassification } = this.state;
 
-    const showWorkbench = permissionCodes.includes('companyWorkbench');
+    // const showWorkbench = permissionCodes.includes('companyWorkbench');
     const showChemical = permissionCodes && permissionCodes.includes('dashboard.chemical');
     return (
       <div className={styles.newMenuRevealContainer}>
