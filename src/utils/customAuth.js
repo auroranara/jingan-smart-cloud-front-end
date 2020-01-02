@@ -138,8 +138,9 @@ export const filterBigPlatform = (array, model) => {
       if (name === 'dynamicMonitor' && monitorService && clfcSafetyAuth) return [...arr, item]
       if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
       if (name === 'gasStation') return [...arr, item]
+      if (name === 'chemical') return [...arr, item]
     }
-    if (name === 'chemical') return [...arr, item]
+    // if (name === 'chemical') return [...arr, item]
     return arr;
   }, [])
 }
