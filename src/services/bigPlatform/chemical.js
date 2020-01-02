@@ -22,3 +22,13 @@ export async function countDangerSource(params) {
 export async function getTankList(params) {
   return request(`${URL_PREFIX}/ci/tank/tank/pageForMobile?${stringify(params)}`);
 }
+
+// 风险点列表
+export async function riskPointForPage(params) {
+  return request(`${URL_PREFIX}/pointManage/riskPointForPage?${stringify(params)}`);
+}
+
+// 监测设备列表
+export async function monitorEquipment(params) {
+  return request(`${URL_PREFIX}/monitor/monitorEquipment/page?${stringify(params)}`);
+}
