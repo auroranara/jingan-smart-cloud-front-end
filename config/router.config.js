@@ -1148,6 +1148,13 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/safety-knowledge-base/law-standard', // 法律法规标准评价
+              code: 'safetyKnowledgeBase.lawStandard',
+              name: 'lawStandard',
+              hideChildrenInMenu: true,
+              routes: [],
+            },
           ],
         },
 
