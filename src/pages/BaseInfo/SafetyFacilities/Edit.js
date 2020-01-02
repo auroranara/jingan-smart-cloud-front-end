@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Card,
@@ -30,7 +30,7 @@ const formItemLayout = {
 };
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
-
+const itemsStyle = { style: { width: 'calc(34.5%)', marginRight: '10px' } };
 // 获取根节点
 const getRootChild = () => document.querySelector('#root>div');
 
@@ -47,7 +47,7 @@ const {
 } = codes;
 
 @Form.create()
-@connect(({ safeFacilities, user, videoMonitor, loading }) => ({
+@connect(({ safeFacilities, user, baseInfo, videoMonitor, loading }) => ({
   safeFacilities,
   videoMonitor,
   user,
@@ -60,6 +60,9 @@ export default class Edit extends PureComponent {
     photoUrl: [], // 上传照片
     detailList: {},
     facNameList: [],
+    categoryList: [],
+    categoryTwoList: [],
+    facilitiesNameList: [],
   };
 
   // 挂载后
@@ -101,7 +104,22 @@ export default class Edit extends PureComponent {
         type: 'safeFacilities/clearSafeFacDetail',
       });
     }
+    this.fetchDict({
+      payload: { type: 'safeFacilities', parentId: 0 },
+      callback: list => {
+        this.setState({ categoryList: list });
+      },
+    });
   }
+
+  // 获取字典
+  fetchDict = actions => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'baseInfo/fetchDict',
+      ...actions,
+    });
+  };
 
   goBack = () => {
     router.push('/facility-management/safety-facilities/list');
@@ -128,11 +146,10 @@ export default class Edit extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
-    const { photoUrl } = this.state;
+    const { photoUrl, category, categoryTwo } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const {
-          category,
           safeFacilitiesName,
           specifications,
           processFacilitiesInvolved,
@@ -146,7 +163,7 @@ export default class Edit extends PureComponent {
         const payload = {
           id,
           companyId: this.companyId || companyId,
-          category: category.join(','),
+          category: category + ',' + categoryTwo,
           safeFacilitiesName,
           specifications,
           processFacilitiesInvolved,
@@ -290,11 +307,36 @@ export default class Edit extends PureComponent {
     }
   };
 
-  onChangeCascader = val => {
+  handleCategoryChange = val => {
     const {
-      safeFacilities: { facNameList = [] },
+      form: { setFieldsValue },
     } = this.props;
-    this.setState({ facNameList: facNameList });
+    if (val) {
+      this.fetchDict({
+        payload: { type: 'safeFacilities', parentId: val },
+        callback: list => {
+          this.setState({ categoryTwoList: list });
+        },
+      });
+    } else this.setState({ categoryList: [] });
+    this.setState({ category: val });
+    setFieldsValue({ category: val });
+  };
+
+  handleCategoryTwoChange = val => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    if (val) {
+      this.fetchDict({
+        payload: { type: 'safeFacilities', parentId: val },
+        callback: list => {
+          this.setState({ facilitiesNameList: list });
+        },
+      });
+    } else this.setState({ categoryTwoList: [] });
+    this.setState({ categoryTwo: val });
+    setFieldsValue({ category: val });
   };
 
   /**
@@ -302,17 +344,27 @@ export default class Edit extends PureComponent {
    */
   renderForm = () => {
     const {
-      form: { getFieldDecorator },
-      safeFacilities: { categoryList = [] },
+      form: { getFieldDecorator, getFieldValue },
+      // safeFacilities: { categoryList = [] },
       user: {
         currentUser: { unitType },
       },
     } = this.props;
-    const { uploading, photoUrl, detailList, facNameList } = this.state;
+    const {
+      uploading,
+      photoUrl,
+      detailList,
+      // facNameList,
+      categoryList,
+      categoryTwoList,
+      facilitiesNameList,
+    } = this.state;
+
+    const category = getFieldValue('category') || [];
 
     const {
       companyName,
-      category,
+      // category,
       safeFacilitiesName,
       specifications,
       processFacilitiesInvolved,
@@ -324,6 +376,7 @@ export default class Edit extends PureComponent {
       notes,
       // photo,
     } = detailList;
+
     return (
       <Card>
         <Form>
@@ -351,7 +404,7 @@ export default class Edit extends PureComponent {
           )}
           <FormItem label="分类" {...formItemLayout}>
             {getFieldDecorator('category', {
-              initialValue: category ? [category.split(',')[0], category.split(',')[1]] : [],
+              initialValue: category,
               rules: [
                 {
                   required: true,
@@ -359,16 +412,26 @@ export default class Edit extends PureComponent {
                 },
               ],
             })(
-              <Cascader
-                {...itemStyles}
-                placeholder="请选择"
-                options={categoryList}
-                allowClear
-                changeOnSelect
-                notFoundContent
-                onChange={this.onChangeCascader}
-                getPopupContainer={getRootChild}
-              />
+              <Fragment>
+                <Select placeholder="请选择" {...itemsStyle} onChange={this.handleCategoryChange}>
+                  {categoryList.map(({ id, label }) => (
+                    <Select.Option key={id} value={id}>
+                      {label}
+                    </Select.Option>
+                  ))}
+                </Select>
+                <Select
+                  placeholder="请选择"
+                  {...itemsStyle}
+                  onChange={this.handleCategoryTwoChange}
+                >
+                  {categoryTwoList.map(({ id, label }) => (
+                    <Select.Option key={id} value={id}>
+                      {label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Fragment>
             )}
           </FormItem>
           <FormItem label="安全设施名称" {...formItemLayout}>
@@ -377,8 +440,8 @@ export default class Edit extends PureComponent {
               rules: [{ required: true, message: '请输入安全设施名称' }],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择安全设施名称">
-                {facNameList.map(({ key, label }) => (
-                  <Select.Option key={key} value={key}>
+                {facilitiesNameList.map(({ id, label }) => (
+                  <Select.Option key={id} value={id}>
                     {label}
                   </Select.Option>
                 ))}
@@ -407,7 +470,7 @@ export default class Edit extends PureComponent {
           </FormItem>
           <FormItem label="设备状态" {...formItemLayout}>
             {getFieldDecorator('equipStatus', {
-              initialValue: +equipStatus,
+              initialValue: equipStatus ? +equipStatus : undefined,
               rules: [{ required: true, message: '请选择设备状态' }],
             })(
               <Radio.Group>
