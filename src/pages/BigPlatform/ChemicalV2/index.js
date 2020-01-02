@@ -95,7 +95,7 @@ const msgInfo = [
 ];
 notification.config({
   placement: 'bottomRight',
-  duration: 30,
+  duration: 0,
   bottom: 6,
 });
 const SocketOptions = {
@@ -129,11 +129,12 @@ const GET_STATUS_NAME = ({ statusType, warnLevel, fixType }) => {
   }
 };
 
-@connect(({ unitSafety, bigPlatform, loading, fourColorImage, chemical }) => ({
+@connect(({ unitSafety, bigPlatform, loading, fourColorImage, chemical, specialEquipment }) => ({
   unitSafety,
   bigPlatform,
   chemical,
   fourColorImage,
+  specialEquipment,
   hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
 }))
 export default class Chemical extends PureComponent {
@@ -170,6 +171,14 @@ export default class Chemical extends PureComponent {
       poisonVisible: false,
       tankMonitorDrawerVisible: false,
       hdStatus: 5,
+      tankDetail: {},
+      // 特种设备
+      specialEquip: {
+        total: 0,
+        list: [], // 全部
+        expired: [], // 已过期
+        notExpired: [], // 未过期
+      },
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -180,14 +189,14 @@ export default class Chemical extends PureComponent {
         // 获取企业信息
         'fetchCompanyMessage',
         // 获取特种设备数
-        'fetchSpecialEquipmentCount',
+        // 'fetchSpecialEquipmentCount',
         // 获取隐患列表
         // 'fetchHiddenDangerList',
         // 获取安全人员信息
         'fetchSafetyOfficer',
         'fetchHiddenDangerCount',
         // 获取特种设备列表
-        'fetchSpecialEquipmentList',
+        // 'fetchSpecialEquipmentList',
         // 获取标准及措施
         'fetchStandardsAndMeasuresList',
         // 获取点位检查标准
@@ -203,15 +212,17 @@ export default class Chemical extends PureComponent {
         'fetchPastStatusCount',
         // 两重点一重大的数量
         'fetchCountDangerSource',
+        // app储罐列表
+        'fetchTankList',
       ],
     });
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.init();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.ws.close();
     notification.destroy();
   }
@@ -228,13 +239,13 @@ export default class Chemical extends PureComponent {
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
-    this.fetchSpecialEquipmentCount({ company_id: companyId });
+    // this.fetchSpecialEquipmentCount({ company_id: companyId });
     // 获取隐患统计
     this.fetchHiddenDangerCount({ company_id: companyId });
     // 获取安全人员信息（安全人员信息卡片源数据）
     this.fetchSafetyOfficer({ company_id: companyId });
     // 获取特种设备列表
-    this.fetchSpecialEquipmentList({ companyId });
+    this.fetchAllSpecialEquipList({ companyId })
     // 统计监测对象各个类型的数量
     this.fetchMonitorTargetCount({ companyId });
     // 到期提醒数量
@@ -248,6 +259,25 @@ export default class Chemical extends PureComponent {
     this.fetchFourColorPolygons();
   };
 
+  // 获取特种设备列表（全部）
+  fetchAllSpecialEquipList = (values) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'specialEquipment/fetchSpecialEquipList',
+      payload: { pageNum: 1, pageSize: 0, ...values },
+      callback: ({ data: { pagination: { total = 0 }, list = [] } }) => {
+        this.setState({
+          specialEquip: {
+            total,
+            list,
+            expired: list.filter(item => item.paststatus === '2'), // 已过期
+            notExpired: list.filter(item => item.paststatus === '0'),
+          },
+        })
+      },
+    });
+  };
+
   handleSocket = () => {
     const {
       match: {
@@ -258,7 +288,7 @@ export default class Chemical extends PureComponent {
     const params = {
       companyId,
       env: 'v2_test',
-      type: 4,
+      type: 1,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
 
@@ -346,9 +376,9 @@ export default class Chemical extends PureComponent {
             >{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
               ['预警', '报警'].includes(typeName)
                 ? `，超过${typeName}值${Math.round(Math.abs(monitorValue - limitValue) * 100) /
-                    100}${paramUnit || ''}`
+                100}${paramUnit || ''}`
                 : ''
-            }`}</div>
+              }`}</div>
           )}
           {[-3, 3].includes(+statusType) && (
             <div className={styles.alarm}>{`故障类型：${faultTypeName || ''}`}</div>
@@ -706,10 +736,26 @@ export default class Chemical extends PureComponent {
     });
   };
 
+  // 储罐列表
+  handleClickTankMonitor = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    this.fetchTankList({ companyId, hasMonitor: true, pageSize: 10, pageNum: 0 });
+    this.setDrawerVisible('storage');
+  };
+
+  // 点击储罐查看详情
+  handleClickTank = tankDetail => {
+    this.setState({ tankDetail, tankMonitorDrawerVisible: true });
+  };
+
   /**
    * 渲染
    */
-  render() {
+  render () {
     const {
       unitSafety: { points },
       bigPlatform: { hiddenDangerList },
@@ -718,7 +764,7 @@ export default class Chemical extends PureComponent {
       fourColorImage: {
         data: { list: polygons },
       },
-      chemical: { monitorTargetCount, pastStatusCount, dangerSourceCount },
+      chemical: { monitorTargetCount, pastStatusCount, dangerSourceCount, tankList },
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -750,6 +796,8 @@ export default class Chemical extends PureComponent {
       gasVisible,
       poisonVisible,
       tankMonitorDrawerVisible,
+      tankDetail,
+      specialEquip,
     } = this.state;
 
     return (
@@ -776,7 +824,12 @@ export default class Chemical extends PureComponent {
           <Row gutter={15} className={styles.height100}>
             <Col span={6} className={styles.height100}>
               <div className={styles.leftTop}>
-                <CompanyInfo handleClickCount={this.setDrawerVisible} />
+                <CompanyInfo
+                  handleClickCount={this.setDrawerVisible}
+                  data={{
+                    specialEquipmentCount: specialEquip.total,
+                  }}
+                />
               </div>
 
               <div className={styles.leftMiddle}>
@@ -790,6 +843,7 @@ export default class Chemical extends PureComponent {
                   setDrawerVisible={this.setDrawerVisible}
                   handleGasOpen={this.handleGasOpen}
                   handlePoisonOpen={this.handlePoisonOpen}
+                  handleClickTankMonitor={this.handleClickTankMonitor}
                 />
               </div>
             </Col>
@@ -811,16 +865,16 @@ export default class Chemical extends PureComponent {
                     handleGasOpen={this.handleGasOpen}
                   />
                 ) : (
-                  <div className={styles.msgContainer}>
-                    {/* <Badge count={3}> */}
-                    <Icon
-                      type="message"
-                      className={styles.msgIcon}
-                      onClick={() => this.setState({ msgVisible: true })}
-                    />
-                    {/* </Badge> */}
-                  </div>
-                )}
+                    <div className={styles.msgContainer}>
+                      {/* <Badge count={3}> */}
+                      <Icon
+                        type="message"
+                        className={styles.msgIcon}
+                        onClick={() => this.setState({ msgVisible: true })}
+                      />
+                      {/* </Badge> */}
+                    </div>
+                  )}
 
                 <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
               </div>
@@ -886,6 +940,7 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('specialEquipment');
           }}
+          data={specialEquip}
         />
 
         <NewVideoPlay
@@ -985,6 +1040,8 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('storage');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          tankList={tankList}
+          handleClickTank={this.handleClickTank}
         />
 
         <GasDrawer
@@ -1006,6 +1063,7 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('tankMonitor');
           }}
           onVideoClick={this.handleShowVideo}
+          tankDetail={tankDetail}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

@@ -8,132 +8,13 @@ import { CardItem } from '../components/Components';
 // import storage from '../imgs/storage.png';
 import iconAlarm from '@/assets/icon-alarm.png';
 
-const creatNum = (num, m) => {
-  return (Array(m).join(0) + num).slice(-m);
-};
-const list = [
-  {
-    store: '无水乙醇',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '2t',
-    max: '16t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.15MPa',
-  },
-  {
-    store: '无水乙醇',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '10t',
-    max: '16t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.07MPa',
-  },
-  {
-    store: '丙酮',
-    type: '第3.1类  低闪点易燃液体',
-    acture: '8t',
-    max: '16t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.08MPa',
-  },
-  {
-    store: '二甲苯',
-    type: '第3.3类  高闪点易燃液体',
-    acture: '8t',
-    max: '18t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.07MPa',
-  },
-  {
-    store: '乙酸乙酯',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '8t',
-    max: '18t',
-    contain: '16t',
-    nowCotain: '2t',
-    pressure: '0.1MPa',
-    nowPressure: '0.05MPa',
-  },
-  {
-    store: '乙腈',
-    type: '第3类 易燃液体，有毒品',
-    acture: '10t',
-    max: '16t',
-    contain: '16t',
-    nowCotain: '2t',
-    pressure: '0.1MPa',
-    nowPressure: '0.08MPa',
-  },
-  {
-    store: '甲醇',
-    type: '第3.2类 中闪点一级易燃液体，有毒品',
-    acture: '10t',
-    max: '16t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.07MPa',
-  },
-  {
-    store: 'N,N二甲基甲酰胺',
-    type: '第3.3类  高闪点易燃液体',
-    acture: '12t',
-    max: '20t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.07MPa',
-  },
-  {
-    store: '乙腈',
-    type: '第3类 易燃液体，有毒品',
-    acture: '10t',
-    max: '16t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.07MPa',
-  },
-  {
-    store: '二氯甲烷',
-    type: '第6.1类  毒害品',
-    acture: '10t',
-    max: '30t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.07MPa',
-  },
-  {
-    store: '无水乙醇',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '10t',
-    max: '16t',
-    contain: '16t',
-    nowCotain: '5t',
-    pressure: '0.1MPa',
-    nowPressure: '0.07MPa',
-  },
-].map((item, index) => ({
-  ...item,
-  name: `${index + 1}号罐`,
-  number: creatNum(index + 1, 4),
-  icon: (
-    <Wave
-      frontStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.8)' }}
-      backStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.3)' }}
-    />
-  ),
-  type: '拱顶式',
-}));
+const constructList = [
+  { key: '1', value: '拱顶式' },
+  { key: '2', value: '浮顶式' },
+  { key: '3', value: '内浮顶' },
+  { key: '4', value: '卧式' },
+];
+
 const fields = [
   {
     value: 'name',
@@ -145,7 +26,7 @@ const fields = [
   { label: '存储物质', value: 'store' },
   { label: '储罐结构', value: 'type' },
   {
-    value: 'max',
+    value: 'contain',
     render: (val, row) => {
       const { contain, nowCotain } = row;
       return (
@@ -154,16 +35,16 @@ const fields = [
             <span className={styles.label}>设计储量：</span>
             {contain}
           </Col>
-          <Col span={12}>
+          {/* <Col span={12}>
             <span className={styles.label}>实时储量：</span>
             {nowCotain}
-          </Col>
+          </Col> */}
         </Row>
       );
     },
   },
   {
-    value: 'max',
+    value: 'pressure',
     render: (val, row) => {
       const { pressure, nowPressure } = row;
       return (
@@ -172,10 +53,10 @@ const fields = [
             <span className={styles.label}>设计压力：</span>
             {pressure}
           </Col>
-          <Col span={12}>
+          {/* <Col span={12}>
             <span className={styles.label}>实时压力：</span>
             {nowPressure}
-          </Col>
+          </Col> */}
         </Row>
       );
     },
@@ -194,7 +75,13 @@ export default class DangerSourceInfoDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, setDrawerVisible } = this.props;
+    const {
+      visible,
+      onClose,
+      setDrawerVisible,
+      tankList: { list },
+      handleClickTank,
+    } = this.props;
     // const {} = this.state;
 
     return (
@@ -207,30 +94,58 @@ export default class DangerSourceInfoDrawer extends PureComponent {
         zIndex={1222}
         left={
           <div className={styles.container}>
-            {list.map((item, index) => (
-              <CardItem
-                key={index}
-                data={item}
-                fields={fields}
-                extraBtn={
-                  <Fragment>
-                    {index === 0 && (
-                      <div
-                        className={styles.alarm}
-                        style={{
-                          background: `url(${iconAlarm}) center center / 100% auto no-repeat`,
-                        }}
-                      />
-                    )}
-                    {/* <div className={styles.name}>
-                      {index + 1}
-                      号罐
-                    </div> */}
-                  </Fragment>
-                }
-                onClick={() => setDrawerVisible('tankMonitor')}
-              />
-            ))}
+            {list.map((item, index) => {
+              const {
+                tankName,
+                chineName,
+                number,
+                tankStructure,
+                designReserves,
+                designReservesAndUnit,
+                designPressure,
+                warnStatus,
+              } = item;
+              const newItem = {
+                // ...item,
+                store: chineName,
+                // acture: '8t',
+                contain: designReserves + (designReservesAndUnit || ''),
+                // nowCotain: '2t',
+                pressure: designPressure + 'KPa',
+                // nowPressure: '0.05MPa',
+                name: tankName,
+                number,
+                icon: (
+                  <Wave
+                    frontStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.8)' }}
+                    backStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.3)' }}
+                  />
+                ),
+                type: constructList[tankStructure - 1].value,
+              };
+
+              return (
+                <CardItem
+                  key={index}
+                  data={newItem}
+                  fields={fields}
+                  extraBtn={
+                    <Fragment>
+                      {+warnStatus === -1 && (
+                        <div
+                          className={styles.alarm}
+                          style={{
+                            background: `url(${iconAlarm}) center center / 100% auto no-repeat`,
+                          }}
+                        />
+                      )}
+                    </Fragment>
+                  }
+                  // onClick={() => setDrawerVisible('tankMonitor')}
+                  onClick={() => handleClickTank(item)}
+                />
+              );
+            })}
           </div>
         }
       />

@@ -17,3 +17,8 @@ export async function beMonitorTargetTypeCountDto(params) {
 export async function countDangerSource(params) {
   return request(`${URL_PREFIX}/ci/sfcc/countDangerSource?${stringify(params)}`);
 }
+
+// app储罐列表
+export async function getTankList(params) {
+  return request(`${URL_PREFIX}/ci/tank/tank/pageForMobile?${stringify(params)}`);
+}

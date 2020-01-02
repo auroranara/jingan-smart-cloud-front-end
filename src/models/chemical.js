@@ -2,6 +2,7 @@ import {
   queryPastStatusCount,
   beMonitorTargetTypeCountDto,
   countDangerSource,
+  getTankList,
 } from '@/services/bigPlatform/chemical';
 
 export default {
@@ -11,6 +12,14 @@ export default {
     pastStatusCount: {},
     monitorTargetCount: [],
     dangerSourceCount: {},
+    tankList: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    },
   },
 
   effects: {
@@ -59,9 +68,31 @@ export default {
       }
       callback && callback(response);
     },
+    // app储罐列表
+    *fetchTankList({ payload, callback }, { call, put }) {
+      const response = yield call(getTankList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        yield put({
+          type: 'saveTankList',
+          payload: {
+            ...data,
+            append: payload.pageNum !== 1,
+          },
+        });
+      }
+      callback && callback(response);
+    },
   },
 
   reducers: {
     save: (state, { payload }) => ({ ...state, ...payload }),
+    saveTankList: (state, { payload, append }) => ({
+      ...state,
+      tankList: {
+        list: append?state.tankList.list.concat(payload.list): payload.list,
+        pagination: payload.pagination,
+      },
+    }),
   },
 };
