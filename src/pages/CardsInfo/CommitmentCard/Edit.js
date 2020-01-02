@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 // import moment from 'moment';
@@ -192,32 +192,35 @@ export default class Edit extends PureComponent {
         name: 'section',
         label: '风险分区',
         type: 'component',
-        required: false,
+        required: true,
         component: (
-          <Select onChange={this.handleRiskChange}>
-            {list.map(({ zoneName, id }) => {
-              return (
-                <Option key={id} value={id}>
-                  {zoneName}
-                </Option>
-              );
-            })}
-          </Select>
+          <Fragment>
+            <Select onChange={this.handleRiskChange}>
+              {list.map(({ zoneName, id }) => {
+                return (
+                  <Option key={id} value={id}>
+                    {zoneName}
+                  </Option>
+                );
+              })}
+            </Select>
+            <span>提示：如果没有做区域划分，请先到风险分区中划分区域</span>
+          </Fragment>
         ),
       },
-      {
-        name: 'map',
-        label: '地图',
-        type: 'component',
-        component:
-          list.length > 0 ? (
-            <div className={styles.mapLoaction}>
-              <Map onRef={this.onRef} height={'42vh'} width={'92vh'} pointList={list} />
-            </div>
-          ) : (
-            <span>该单位暂无地图</span>
-          ),
-      },
+      // {
+      //   name: 'map',
+      //   label: '地图',
+      //   type: 'component',
+      //   component:
+      //     list.length > 0 ? (
+      //       <div className={styles.mapLoaction}>
+      //         <Map onRef={this.onRef} height={'42vh'} width={'92vh'} pointList={list} />
+      //       </div>
+      //     ) : (
+      //       <span>该单位暂无地图</span>
+      //     ),
+      // },
     ];
 
     return (
