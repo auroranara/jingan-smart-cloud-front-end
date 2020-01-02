@@ -131,7 +131,7 @@
 
   // 更多用户
   .cardGrid {
-    padding: 20px 24px;
+    padding: 16px 24px;
     width: 100%;
     font-size: 14px;
     text-align: center;
@@ -143,10 +143,32 @@
     cursor: pointer;
 
     &:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.65);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
     }
     &:active {
       background-color: #40a9ff;
+    }
+
+    .cardGridDiv {
+      padding: 4px 0;
+    }
+  }
+
+  // 验证码
+  .codeContainer {
+    display: flex;
+    margin: 0 -4px;
+    .codeWrapper {
+      padding: 0 4px;
+      &:first-child {
+        flex: 1;
+      }
+      &:nth-child(2) {
+        flex: none;
+      }
+    }
+    .countDown {
+      width: 5em;
     }
   }
 }
@@ -160,7 +182,7 @@
     padding-bottom: 30.963vh;
     min-height: 100%;
     color: #666;
-    background-color: #E7E8EA;
+    background-color: #e7e8ea;
     overflow: hidden;
 
     // // 图标
@@ -235,7 +257,7 @@
       cursor: pointer;
 
       &:hover {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.65);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
       }
       &:active {
         background-color: #40a9ff;
@@ -253,7 +275,7 @@
       font-size: 14px;
       line-height: 38px;
       text-align: center;
-      border: 1px solid #BFBFBF;
+      border: 1px solid #bfbfbf;
       border-radius: 4px;
       cursor: pointer;
 

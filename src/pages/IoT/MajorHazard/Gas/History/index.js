@@ -8,18 +8,9 @@ import { Range } from '../../components';
 import moment from 'moment';
 import { connect } from 'dva';
 import { toFixed, isNumber, getPageSize, setPageSize } from '@/utils/utils';
-import {
-  TYPES,
-} from '../../const';
-import {
-  DEFAULT_FORMAT,
-  STATUSES,
-  STATUS_MAPPER,
-  GET_STATUS_NAME,
-} from '@/pages/IoT/AlarmMessage';
-import {
-  getTransformedTime,
-} from '@/pages/IoT/AlarmWorkOrder/Detail';
+import { TYPES } from '../../const';
+import { DEFAULT_FORMAT, STATUSES, STATUS_MAPPER, GET_STATUS_NAME } from '@/pages/IoT/AlarmMessage';
+import { getTransformedTime } from '@/pages/IoT/AlarmWorkOrder/Detail';
 import iconDevice from '../../imgs/icon-device.png';
 import styles from './index.less';
 const { Option } = Select;
@@ -41,89 +32,88 @@ const BREADCRUMB_LIST = [
   { title: TITLE, name: TITLE },
 ];
 
-@connect(({
-  user,
-  gasMonitor,
-  loading,
-}) => ({
-  user,
-  gasMonitor,
-  loading: loading.effects[GET_HISTORY_DETAIL] || loading.effects[GET_HISTORY_LIST] || false,
-}), dispatch => ({
-  getHistoryDetail(payload, callback) {
-    dispatch({
-      type: GET_HISTORY_DETAIL,
-      payload,
-      callback,
-    });
-  },
-  getHistoryList(payload, callback) {
-    dispatch({
-      type: GET_HISTORY_LIST,
-      payload,
-      callback,
-    });
-  },
-  getDuration(payload, callback) {
-    dispatch({
-      type: GET_DURATION,
-      payload,
-      callback,
-    });
-  },
-  getCountTrend(payload, callback) {
-    dispatch({
-      type: GET_COUNT_TREND,
-      payload,
-      callback,
-    });
-  },
-  getAlarmTrend(payload, callback) {
-    dispatch({
-      type: GET_ALARM_TREND,
-      payload,
-      callback,
-    });
-  },
-  getRank(payload, callback) {
-    dispatch({
-      type: GET_RANK,
-      payload,
-      callback,
-    });
-  },
-  getMonitorObjectTypeList(payload, callback) {
-    dispatch({
-      type: GET_MONITOR_OBJECT_TYPE_LIST,
-      payload: {
-        monitorEquipmentTypes: '405,406',
-        ...payload,
-      },
-      callback,
-    });
-  },
-  getMonitorObjectList(payload, callback) {
-    dispatch({
-      type: GET_MONITOR_OBJECT_LIST,
-      payload,
-      callback,
-    });
-  },
-  getMonitorPointList(payload, callback) {
-    dispatch({
-      type: GET_MONITOR_POINT_LIST,
-      payload,
-      callback,
-    });
-  },
-  exportData(payload, callback) {
-    dispatch({
-      type: EXPORT_DATA,
-      payload,
-      callback,
-    });
-  },
-}))
+@connect(
+  ({ user, gasMonitor, loading }) => ({
+    user,
+    gasMonitor,
+    loading: loading.effects[GET_HISTORY_DETAIL] || loading.effects[GET_HISTORY_LIST] || false,
+  }),
+  dispatch => ({
+    getHistoryDetail(payload, callback) {
+      dispatch({
+        type: GET_HISTORY_DETAIL,
+        payload,
+        callback,
+      });
+    },
+    getHistoryList(payload, callback) {
+      dispatch({
+        type: GET_HISTORY_LIST,
+        payload,
+        callback,
+      });
+    },
+    getDuration(payload, callback) {
+      dispatch({
+        type: GET_DURATION,
+        payload,
+        callback,
+      });
+    },
+    getCountTrend(payload, callback) {
+      dispatch({
+        type: GET_COUNT_TREND,
+        payload,
+        callback,
+      });
+    },
+    getAlarmTrend(payload, callback) {
+      dispatch({
+        type: GET_ALARM_TREND,
+        payload,
+        callback,
+      });
+    },
+    getRank(payload, callback) {
+      dispatch({
+        type: GET_RANK,
+        payload,
+        callback,
+      });
+    },
+    getMonitorObjectTypeList(payload, callback) {
+      dispatch({
+        type: GET_MONITOR_OBJECT_TYPE_LIST,
+        payload: {
+          monitorEquipmentTypes: '405,406',
+          ...payload,
+        },
+        callback,
+      });
+    },
+    getMonitorObjectList(payload, callback) {
+      dispatch({
+        type: GET_MONITOR_OBJECT_LIST,
+        payload,
+        callback,
+      });
+    },
+    getMonitorPointList(payload, callback) {
+      dispatch({
+        type: GET_MONITOR_POINT_LIST,
+        payload,
+        callback,
+      });
+    },
+    exportData(payload, callback) {
+      dispatch({
+        type: EXPORT_DATA,
+        payload,
+        callback,
+      });
+    },
+  })
+)
 export default class GasHistory extends Component {
   state = {
     range: undefined, // 时间范围
@@ -134,7 +124,7 @@ export default class GasHistory extends Component {
     monitorPointId: undefined, // 监测点位
     selectedRowKeys: [], // 选中的
     rankTableSort: 1, // 1是报警排序，3是误报排序
-  }
+  };
 
   componentDidMount() {
     const { getMonitorObjectTypeList } = this.props;
@@ -144,85 +134,75 @@ export default class GasHistory extends Component {
   getHistoryDetail = () => {
     const {
       user: {
-        currentUser: {
-          unitId,
-        },
+        currentUser: { unitId },
       },
       getHistoryDetail,
     } = this.props;
-    const { range: [startTime, endTime]=[] } = this.state;
+    const { range: [startTime, endTime] = [] } = this.state;
     getHistoryDetail({
       companyId: unitId,
       startTime: startTime && startTime.format(DEFAULT_FORMAT),
       endTime: endTime && endTime.format(DEFAULT_FORMAT),
       equipmentTypes: '405,406',
     });
-  }
+  };
 
   getDuration = () => {
     const {
       user: {
-        currentUser: {
-          unitId,
-        },
+        currentUser: { unitId },
       },
       getDuration,
     } = this.props;
-    const { range: [startTime, endTime]=[] } = this.state;
+    const { range: [startTime, endTime] = [] } = this.state;
     getDuration({
       companyId: unitId,
       startTime: startTime && startTime.format(DEFAULT_FORMAT),
       endTime: endTime && endTime.format(DEFAULT_FORMAT),
       equipmentTypes: '405,406',
     });
-  }
+  };
 
   getCountTrend = () => {
     const {
       user: {
-        currentUser: {
-          unitId,
-        },
+        currentUser: { unitId },
       },
       getCountTrend,
     } = this.props;
-    const { range: [startTime, endTime]=[] } = this.state;
+    const { range: [startTime, endTime] = [] } = this.state;
     getCountTrend({
       companyId: unitId,
       startTime: startTime && startTime.format(DEFAULT_FORMAT),
       endTime: endTime && endTime.format(DEFAULT_FORMAT),
       equipmentTypes: '405,406',
     });
-  }
+  };
 
   getAlarmTrend = () => {
     const {
       user: {
-        currentUser: {
-          unitId,
-        },
+        currentUser: { unitId },
       },
       getAlarmTrend,
     } = this.props;
-    const { range: [startTime, endTime]=[] } = this.state;
+    const { range: [startTime, endTime] = [] } = this.state;
     getAlarmTrend({
       companyId: unitId,
       startTime: startTime && startTime.format(DEFAULT_FORMAT),
       endTime: endTime && endTime.format(DEFAULT_FORMAT),
       equipmentTypes: '405,406',
     });
-  }
+  };
 
   getRank = () => {
     const {
       user: {
-        currentUser: {
-          unitId,
-        },
+        currentUser: { unitId },
       },
       getRank,
     } = this.props;
-    const { range: [startTime, endTime]=[], rankTableSort } = this.state;
+    const { range: [startTime, endTime] = [], rankTableSort } = this.state;
     getRank({
       companyId: unitId,
       startTime: startTime && startTime.format(DEFAULT_FORMAT),
@@ -230,19 +210,17 @@ export default class GasHistory extends Component {
       equipmentTypes: '405,406',
       sortType: rankTableSort,
     });
-  }
+  };
 
-  getHistoryList = ({ pageNum=1, pageSize=getPageSize() }={}) => {
+  getHistoryList = ({ pageNum = 1, pageSize = getPageSize() } = {}) => {
     const {
       user: {
-        currentUser: {
-          unitId,
-        },
+        currentUser: { unitId },
       },
       getHistoryList,
     } = this.props;
     const {
-      range: [startTime, endTime]=[],
+      range: [startTime, endTime] = [],
       status,
       monitorObjectTypeId,
       monitorObjectId,
@@ -261,37 +239,42 @@ export default class GasHistory extends Component {
       statusType: -1,
       ...STATUS_MAPPER[status],
     });
-  }
+  };
 
-  handleRangeChange = (range) => {
-    this.setState({
-      range,
-    }, () => {
-      const { type } = this.state;
-      if (type === TYPES[0].key) {
-        this.getHistoryDetail();
-        this.getDuration();
-        this.getCountTrend();
-        this.getAlarmTrend();
-        this.getRank();
-      } else {
-        this.getHistoryList();
+  handleRangeChange = range => {
+    this.setState(
+      {
+        range,
+      },
+      () => {
+        const { type } = this.state;
+        if (type === TYPES[0].key) {
+          this.getHistoryDetail();
+          this.getDuration();
+          this.getCountTrend();
+          this.getAlarmTrend();
+          this.getRank();
+        } else {
+          this.getHistoryList();
+        }
       }
-    });
-  }
+    );
+  };
 
   handleTypeChange = ({ target: { value: type } }) => {
     this.setState({
       type,
-      ...(type === TYPES[0].key ? {
-        status: undefined,
-        monitorObjectTypeId: undefined,
-        monitorObjectId: undefined,
-        monitorPointId: undefined,
-        selectedRowKeys: [],
-      } : {
-        rankTableSort: 1,
-      }),
+      ...(type === TYPES[0].key
+        ? {
+            status: undefined,
+            monitorObjectTypeId: undefined,
+            monitorObjectId: undefined,
+            monitorPointId: undefined,
+            selectedRowKeys: [],
+          }
+        : {
+            rankTableSort: 1,
+          }),
     });
     if (type === TYPES[0].key) {
       this.getHistoryDetail();
@@ -302,21 +285,22 @@ export default class GasHistory extends Component {
     } else {
       this.getHistoryList();
     }
-  }
+  };
 
-  handleStatusChange = (status) => {
-    this.setState({
-      status,
-    }, this.getHistoryList);
-  }
+  handleStatusChange = status => {
+    this.setState(
+      {
+        status,
+      },
+      this.getHistoryList
+    );
+  };
 
-  handleMonitorObjectTypeIdChange = (monitorObjectTypeId) => {
+  handleMonitorObjectTypeIdChange = monitorObjectTypeId => {
     if (monitorObjectTypeId) {
       const {
         user: {
-          currentUser: {
-            unitId,
-          },
+          currentUser: { unitId },
         },
         getMonitorObjectList,
       } = this.props;
@@ -325,31 +309,40 @@ export default class GasHistory extends Component {
         companyId: unitId,
       });
     }
-    this.setState({
-      monitorObjectTypeId,
-      monitorObjectId: undefined,
-      monitorPointId: undefined,
-    }, this.getHistoryList);
-  }
+    this.setState(
+      {
+        monitorObjectTypeId,
+        monitorObjectId: undefined,
+        monitorPointId: undefined,
+      },
+      this.getHistoryList
+    );
+  };
 
-  handleMonitorObjectIdChange = (monitorObjectId) => {
+  handleMonitorObjectIdChange = monitorObjectId => {
     if (monitorObjectId) {
       const { getMonitorPointList } = this.props;
       getMonitorPointList({
         targetId: monitorObjectId,
       });
     }
-    this.setState({
-      monitorObjectId,
-      monitorPointId: undefined,
-    }, this.getHistoryList);
-  }
+    this.setState(
+      {
+        monitorObjectId,
+        monitorPointId: undefined,
+      },
+      this.getHistoryList
+    );
+  };
 
-  handleMonitorPointIdChange = (monitorPointId) => {
-    this.setState({
-      monitorPointId,
-    }, this.getHistoryList);
-  }
+  handleMonitorPointIdChange = monitorPointId => {
+    this.setState(
+      {
+        monitorPointId,
+      },
+      this.getHistoryList
+    );
+  };
 
   handleExportButtonClick = () => {
     const { exportData } = this.props;
@@ -358,22 +351,18 @@ export default class GasHistory extends Component {
     //   ids: selectedRowKeys.join(','),
     // });
     console.log(selectedRowKeys);
-  }
+  };
 
-  handleSelectedRowKeysChange = (selectedRowKeys) => {
+  handleSelectedRowKeysChange = selectedRowKeys => {
     this.setState({
       selectedRowKeys,
     });
-  }
+  };
 
   handleTableChange = ({ current, pageSize }) => {
     const {
       gasMonitor: {
-        historyList: {
-          pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
+        historyList: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
       },
     } = this.props;
     this.getHistoryList({
@@ -381,7 +370,7 @@ export default class GasHistory extends Component {
       pageSize,
     });
     prevPageSize !== pageSize && setPageSize(pageSize);
-  }
+  };
 
   // 排名表格change
   handleRankTableChange = (a, b, { field, order }) => {
@@ -389,27 +378,39 @@ export default class GasHistory extends Component {
     console.log(order);
     if (order) {
       if (field === 'warningCount') {
-        this.setState({
-          rankTableSort: ({ descend: 1, ascend: 2 })[order],
-        }, this.getRank);
+        this.setState(
+          {
+            rankTableSort: { descend: 1, ascend: 2 }[order],
+          },
+          this.getRank
+        );
       } else if (field === 'falseWarningCount') {
-        this.setState({
-          rankTableSort: ({ descend: 3, ascend: 4 })[order],
-        }, this.getRank);
+        this.setState(
+          {
+            rankTableSort: { descend: 3, ascend: 4 }[order],
+          },
+          this.getRank
+        );
       }
     } else {
       const { rankTableSort } = this.state;
       if (field === 'warningCount') {
-        this.setState({
-          rankTableSort: ({ 2: 1, 1: 2 })[rankTableSort],
-        }, this.getRank);
+        this.setState(
+          {
+            rankTableSort: { 2: 1, 1: 2 }[rankTableSort],
+          },
+          this.getRank
+        );
       } else if (field === 'falseWarningCount') {
-        this.setState({
-          rankTableSort: ({ 4: 3, 3: 4 })[rankTableSort],
-        }, this.getRank);
+        this.setState(
+          {
+            rankTableSort: { 4: 3, 3: 4 }[rankTableSort],
+          },
+          this.getRank
+        );
       }
     }
-  }
+  };
 
   /**
    * 筛选栏
@@ -426,7 +427,9 @@ export default class GasHistory extends Component {
           <div>
             <Radio.Group value={type} buttonStyle="solid" onChange={this.handleTypeChange}>
               {TYPES.map(({ key, value }) => (
-                <Radio.Button key={key} value={key}>{value}</Radio.Button>
+                <Radio.Button key={key} value={key}>
+                  {value}
+                </Radio.Button>
               ))}
             </Radio.Group>
           </div>
@@ -450,7 +453,7 @@ export default class GasHistory extends Component {
           waitProcessCount,
           ingProcessCount,
           endProcessCount,
-        }={},
+        } = {},
       },
     } = this.props;
     const total = (waitProcessCount || 0) + (ingProcessCount || 0) + (endProcessCount || 0);
@@ -504,10 +507,8 @@ export default class GasHistory extends Component {
           '18~1d': d4,
           '>1d': d5,
           avgTime,
-        }={},
-        historyDetail: {
-          endProcessCount,
-        }={},
+        } = {},
+        historyDetail: { endProcessCount } = {},
       },
     } = this.props;
     const t = getTransformedTime((avgTime || 0) * 1000).replace(/(\d+)|([a-z]+)/g, '{a|$1}{b|$2}');
@@ -560,7 +561,7 @@ export default class GasHistory extends Component {
         splitLine: {
           show: false,
         },
-        data: ['≤6min','6~12min','12~18min','18~1d','>1d'],
+        data: ['≤6min', '6~12min', '12~18min', '18~1d', '>1d'],
       },
       yAxis: {
         minInterval: 1,
@@ -581,7 +582,7 @@ export default class GasHistory extends Component {
           name: '报警工单处理数量',
           type: 'bar',
           barWidth: '50%',
-          data: [d1 || 0,d2 || 0,d3 || 0,d4 || 0,d5 || 0],
+          data: [d1 || 0, d2 || 0, d3 || 0, d4 || 0, d5 || 0],
         },
       ],
     };
@@ -590,14 +591,7 @@ export default class GasHistory extends Component {
       <Card className={styles.card}>
         <div className={styles.cardTitle}>报警工单处理时效</div>
         <div className={styles.cardContent}>
-          {option ? (
-            <ReactEcharts
-              style={{ height: '100%' }}
-              option={option}
-            />
-          ) : (
-            <CustomEmpty />
-          )}
+          {option ? <ReactEcharts style={{ height: '100%' }} option={option} /> : <CustomEmpty />}
         </div>
       </Card>
     );
@@ -608,103 +602,94 @@ export default class GasHistory extends Component {
    */
   renderTrendChart() {
     const {
-      gasMonitor: {
-        alarmTrend=[],
-      },
+      gasMonitor: { alarmTrend = [] },
     } = this.props;
 
-    const option = alarmTrend && alarmTrend.length > 0 && {
-      color: ['#f5222d'],
-      tooltip : {
-        trigger: 'axis',
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        formatter: (params) => {
-          const date = params[0].name;
-          return `${date}<br />${params.map(({ marker, seriesName, value: [date, value] }) => `${marker}${seriesName}：${value}`).join('<br />')}`;
+    const option = alarmTrend &&
+      alarmTrend.length > 0 && {
+        color: ['#f5222d'],
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          formatter: params => {
+            const date = params[0].name;
+            return `${date}<br />${params
+              .map(
+                ({ marker, seriesName, value: [date, value] }) => `${marker}${seriesName}：${value}`
+              )
+              .join('<br />')}`;
+          },
         },
-      },
-      legend: {
-        itemWidth: 8,
-        itemHeight: 8,
-        bottom: 0,
-        left: 'center',
-        icon: 'circle',
-        textStyle: {
-          color: 'rgba(0, 0, 0, 0.45)',
-        },
-      },
-      grid: {
-        top: 10,
-        left: 0,
-        right: 20,
-        bottom: 24,
-        containLabel: true,
-      },
-      xAxis: {
-        type: 'time',
-        boundaryGap: false,
-        axisLine: {
-          lineStyle: {
+        legend: {
+          itemWidth: 8,
+          itemHeight: 8,
+          bottom: 0,
+          left: 'center',
+          icon: 'circle',
+          textStyle: {
             color: 'rgba(0, 0, 0, 0.45)',
           },
         },
-        axisLabel: {
-          color: 'rgba(0, 0, 0, 0.65)',
-          formatter: time => moment(time).format('MM-DD'),
+        grid: {
+          top: 10,
+          left: 0,
+          right: 20,
+          bottom: 24,
+          containLabel: true,
         },
-        splitLine: {
-          show: false,
-        },
-        minInterval: 24 * 60 * 60 * 1000,
-        splitNumber: 7,
-      },
-      yAxis: {
-        axisLine: {
-          lineStyle: {
-            color: 'rgba(0, 0, 0, 0.45)',
+        xAxis: {
+          type: 'time',
+          boundaryGap: false,
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(0, 0, 0, 0.45)',
+            },
           },
-        },
-        axisLabel: {
-          color: 'rgba(0, 0, 0, 0.65)',
-        },
-        splitLine: {
-          show: false,
-        },
-        minInterval: 1,
-      },
-      series: [
-        {
-          name: '监测设备数量',
-          type: 'line',
-          data: alarmTrend.map(({ happenTime, equipmentCount }) => ({
-            name: happenTime,
-            value: [
-              happenTime,
-              equipmentCount,
-            ],
-          })),
-          smooth: true,
-          areaStyle: {
-            opacity: 0.5,
+          axisLabel: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            formatter: time => moment(time).format('MM-DD'),
           },
+          splitLine: {
+            show: false,
+          },
+          minInterval: 24 * 60 * 60 * 1000,
+          splitNumber: 7,
         },
-      ],
-    };
+        yAxis: {
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(0, 0, 0, 0.45)',
+            },
+          },
+          axisLabel: {
+            color: 'rgba(0, 0, 0, 0.65)',
+          },
+          splitLine: {
+            show: false,
+          },
+          minInterval: 1,
+        },
+        series: [
+          {
+            name: '监测设备数量',
+            type: 'line',
+            data: alarmTrend.map(({ happenTime, equipmentCount }) => ({
+              name: happenTime,
+              value: [happenTime, equipmentCount],
+            })),
+            smooth: true,
+            areaStyle: {
+              opacity: 0.5,
+            },
+          },
+        ],
+      };
 
     return (
       <Card className={styles.card}>
-        <div className={styles.cardTitle}>
-          监测设备报警趋势
-        </div>
+        <div className={styles.cardTitle}>监测设备报警趋势</div>
         <div className={styles.cardContent}>
-          {option ? (
-            <ReactEcharts
-              style={{ height: '100%' }}
-              option={option}
-            />
-          ) : (
-            <CustomEmpty />
-          )}
+          {option ? <ReactEcharts style={{ height: '100%' }} option={option} /> : <CustomEmpty />}
         </div>
       </Card>
     );
@@ -715,40 +700,39 @@ export default class GasHistory extends Component {
    */
   renderTrend2Chart() {
     const {
-      gasMonitor: {
-        countTrend=[],
-      },
+      gasMonitor: { countTrend = [] },
     } = this.props;
 
-    const { warning, alarm } = (countTrend || []).reduce((result, { happenTime, redCount, yellowCount }) => {
-      result.warning.push({
-        name: happenTime,
-        value: [
-          happenTime,
-          yellowCount,
-        ],
-      });
-      result.alarm.push({
-        name: happenTime,
-        value: [
-          happenTime,
-          redCount,
-        ],
-      });
-      return result;
-    }, {
-      warning: [],
-      alarm: [],
-    });
+    const { warning, alarm } = (countTrend || []).reduce(
+      (result, { happenTime, redCount, yellowCount }) => {
+        result.warning.push({
+          name: happenTime,
+          value: [happenTime, yellowCount],
+        });
+        result.alarm.push({
+          name: happenTime,
+          value: [happenTime, redCount],
+        });
+        return result;
+      },
+      {
+        warning: [],
+        alarm: [],
+      }
+    );
 
     const option = {
       color: ['#faad14', '#f5222d'],
-      tooltip : {
+      tooltip: {
         trigger: 'axis',
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        formatter: (params) => {
+        formatter: params => {
           const date = params[0].name;
-          return `${date}<br />${params.map(({ marker, seriesName, value: [date, value] }) => `${marker}${seriesName}：${value}`).join('<br />')}`;
+          return `${date}<br />${params
+            .map(
+              ({ marker, seriesName, value: [date, value] }) => `${marker}${seriesName}：${value}`
+            )
+            .join('<br />')}`;
         },
       },
       legend: {
@@ -819,10 +803,7 @@ export default class GasHistory extends Component {
         <div className={styles.cardTitle}>预警/告警次数趋势</div>
         <div className={styles.cardContent}>
           {countTrend && countTrend.length ? (
-            <ReactEcharts
-              style={{ height: '100%' }}
-              option={option}
-            />
+            <ReactEcharts style={{ height: '100%' }} option={option} />
           ) : (
             <CustomEmpty />
           )}
@@ -836,9 +817,7 @@ export default class GasHistory extends Component {
    */
   renderRankingTable() {
     const {
-      gasMonitor: {
-        rank,
-      },
+      gasMonitor: { rank },
     } = this.props;
     const { rankTableSort } = this.state;
     const list = (rank || []).slice(0, 6);
@@ -848,32 +827,44 @@ export default class GasHistory extends Component {
         title: '',
         dataIndex: 'index',
         width: 26,
-        render: (value, data, index) => <Badge count={index+1} style={{ backgroundColor: index < 3 ? '#faad14' : '#d9d9d9' }} />,
+        render: (value, data, index) => (
+          <Badge count={index + 1} style={{ backgroundColor: index < 3 ? '#faad14' : '#d9d9d9' }} />
+        ),
       },
       {
         title: '监测设备名称',
         dataIndex: 'equipmentName',
-        render: (value) => value && <Ellipsis length={6} tooltip>{value}</Ellipsis>,
+        render: value =>
+          value && (
+            <Ellipsis length={6} tooltip>
+              {value}
+            </Ellipsis>
+          ),
       },
       {
         title: '监测设备位置',
         dataIndex: 'areaLocation',
-        render: (value) => value && <Ellipsis length={5} tooltip>{value}</Ellipsis>,
+        render: value =>
+          value && (
+            <Ellipsis length={5} tooltip>
+              {value}
+            </Ellipsis>
+          ),
       },
       {
         title: '报警次数',
         dataIndex: 'warningCount',
-        render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
+        render: value => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
         sorter: true,
-        sortOrder: ({ 1: 'descend', 2: 'ascend' })[rankTableSort] || false,
+        sortOrder: { 1: 'descend', 2: 'ascend' }[rankTableSort] || false,
         sortDirections: ['ascend', 'descend'],
       },
       {
         title: '误报次数',
         dataIndex: 'falseWarningCount',
-        render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
+        render: value => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
         sorter: true,
-        sortOrder: ({ 3: 'descend', 4: 'ascend' })[rankTableSort] || false,
+        sortOrder: { 3: 'descend', 4: 'ascend' }[rankTableSort] || false,
         sortDirections: ['ascend', 'descend'],
       },
     ];
@@ -905,20 +896,19 @@ export default class GasHistory extends Component {
   renderTable() {
     const {
       gasMonitor: {
-        historyList: {
-          list=[],
-          pagination: {
-            total,
-            pageNum,
-            pageSize,
-          }={},
-        }={},
-        monitorObjectTypeList=[],
-        monitorObjectList=[],
-        monitorPointList=[],
+        historyList: { list = [], pagination: { total, pageNum, pageSize } = {} } = {},
+        monitorObjectTypeList = [],
+        monitorObjectList = [],
+        monitorPointList = [],
       },
     } = this.props;
-    const { status, monitorObjectTypeId, monitorObjectId, monitorPointId, selectedRowKeys } = this.state;
+    const {
+      status,
+      monitorObjectTypeId,
+      monitorObjectId,
+      monitorPointId,
+      selectedRowKeys,
+    } = this.state;
     const columns = [
       {
         title: '监测对象类型',
@@ -949,19 +939,31 @@ export default class GasHistory extends Component {
         title: '监测数值',
         dataIndex: 'monitorValue',
         align: 'center',
-        render: (value, { paramUnit, statusType }) => isNumber(value) && <Badge status={+statusType === -1 ? 'error' : 'success'} text={`${value}${paramUnit || ''}`} />,
+        render: (value, { paramUnit, statusType }) =>
+          isNumber(value) && (
+            <Badge
+              status={+statusType === -1 ? 'error' : 'success'}
+              text={`${value}${paramUnit || ''}`}
+            />
+          ),
       },
       {
         title: '报警原因',
         dataIndex: 'alarm',
         align: 'center',
-        render: (_, { paramUnit, condition, warnLevel, limitValue, monitorValue, statusType }) => +statusType === -1 && `超过${+warnLevel === 1 ? '预警' : '告警'}值${toFixed(Math.abs(limitValue - monitorValue))}${paramUnit}（${+warnLevel === 1 ? '预警' : '告警'}${condition === '>=' ? '上限' : '下限'}为${limitValue}${paramUnit}）`,
+        render: (_, { paramUnit, condition, warnLevel, limitValue, monitorValue, statusType }) =>
+          +statusType === -1 &&
+          `超过${+warnLevel === 1 ? '预警' : '告警'}值${toFixed(
+            Math.abs(limitValue - monitorValue)
+          )}${paramUnit}（${+warnLevel === 1 ? '预警' : '告警'}${
+            condition === '>=' ? '上限' : '下限'
+          }为${limitValue}${paramUnit}）`,
       },
       {
         title: '发生时间',
         dataIndex: 'happenTime',
         align: 'center',
-        render: (time) => time && moment(time).format('YYYY-MM-DD HH:mm:ss'),
+        render: time => time && moment(time).format('YYYY-MM-DD HH:mm:ss'),
       },
     ];
 
@@ -969,14 +971,26 @@ export default class GasHistory extends Component {
       <Card className={styles.card}>
         <Row className={styles.controlRow} gutter={24}>
           <Col xs={24} sm={12} md={8}>
-            <Select className={styles.select} placeholder="请选择安全状态" value={status} onChange={this.handleStatusChange} allowClear>
+            <Select
+              className={styles.select}
+              placeholder="请选择安全状态"
+              value={status}
+              onChange={this.handleStatusChange}
+              allowClear
+            >
               {STATUSES.slice(0, 2).map(({ key, value }) => (
                 <Option key={key}>{value}</Option>
               ))}
             </Select>
           </Col>
           <Col xs={24} sm={12} md={8}>
-            <Select className={styles.select} placeholder="请选择监测对象类型" value={monitorObjectTypeId} onChange={this.handleMonitorObjectTypeIdChange} allowClear>
+            <Select
+              className={styles.select}
+              placeholder="请选择监测对象类型"
+              value={monitorObjectTypeId}
+              onChange={this.handleMonitorObjectTypeIdChange}
+              allowClear
+            >
               {monitorObjectTypeList.map(({ id, name }) => (
                 <Option key={id}>{name}</Option>
               ))}
@@ -984,7 +998,13 @@ export default class GasHistory extends Component {
           </Col>
           {monitorObjectTypeId && (
             <Col xs={24} sm={12} md={8}>
-              <Select className={styles.select} placeholder="请选择监测对象" value={monitorObjectId} onChange={this.handleMonitorObjectIdChange} allowClear>
+              <Select
+                className={styles.select}
+                placeholder="请选择监测对象"
+                value={monitorObjectId}
+                onChange={this.handleMonitorObjectIdChange}
+                allowClear
+              >
                 {monitorObjectList.map(({ id, name }) => (
                   <Option key={id}>{name}</Option>
                 ))}
@@ -993,7 +1013,13 @@ export default class GasHistory extends Component {
           )}
           {monitorObjectId && (
             <Col xs={24} sm={12} md={8}>
-              <Select className={styles.select} placeholder="请选择监测点位" value={monitorPointId} onChange={this.handleMonitorPointIdChange} allowClear>
+              <Select
+                className={styles.select}
+                placeholder="请选择监测设备"
+                value={monitorPointId}
+                onChange={this.handleMonitorPointIdChange}
+                allowClear
+              >
                 {monitorPointList.map(({ id, name }) => (
                   <Option key={id}>{name}</Option>
                 ))}
@@ -1028,7 +1054,7 @@ export default class GasHistory extends Component {
                 //   onChange: this.handleSelectedRowKeysChange,
                 // }}
               />
-            ) : (  
+            ) : (
               <div className={styles.cardContent}>
                 <CustomEmpty />
               </div>
@@ -1044,20 +1070,13 @@ export default class GasHistory extends Component {
     const { type } = this.state;
 
     return (
-      <PageHeaderLayout
-        title={TITLE}
-        breadcrumbList={BREADCRUMB_LIST}
-      >
+      <PageHeaderLayout title={TITLE} breadcrumbList={BREADCRUMB_LIST}>
         <Spin spinning={loading}>
           <Row className={styles.row} gutter={24}>
-            <Col span={24}>
-              {this.renderToobar()}
-            </Col>
+            <Col span={24}>{this.renderToobar()}</Col>
             {type === TYPES[0].key ? (
               <Fragment>
-                <Col span={24}>
-                  {this.renderCount()}
-                </Col>
+                <Col span={24}>{this.renderCount()}</Col>
                 <Col xxl={10} lg={12} sm={24} xs={24}>
                   {this.renderDurationChart()}
                 </Col>
@@ -1072,9 +1091,7 @@ export default class GasHistory extends Component {
                 </Col>
               </Fragment>
             ) : (
-              <Col span={24}>
-                {this.renderTable()}
-              </Col>
+              <Col span={24}>{this.renderTable()}</Col>
             )}
           </Row>
         </Spin>

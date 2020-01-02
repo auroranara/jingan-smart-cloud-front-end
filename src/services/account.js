@@ -35,5 +35,15 @@ export async function fetchFooterInfo() {
 
 // 多用户切换（右上角）
 export async function changerUser(params) {
-  return request(`/acloud_new/v2/rolePermission/user/changerUser/${params.id}`)
+  return request(`/acloud_new/v2/rolePermission/user/changerUser/${params.id}`);
+}
+
+// 获取验证码
+export async function getCode(params) {
+  return request(`/acloud_new/v2/login/sendLoginCode?${stringify(params)}`);
+}
+
+// 手机号登陆
+export async function loginByPhone(params) {
+  return request(`/acloud_new/v2/login/checkVerifyCode?${stringify(params)}`);
 }
