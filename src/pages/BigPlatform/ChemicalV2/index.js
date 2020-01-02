@@ -16,9 +16,10 @@ import {
   RiskPointDrawer,
   RiskPointDetailDrawer,
 } from '@/pages/BigPlatform/Safety/Company3/components';
+import { GET_STATUS_NAME } from '@/pages/IoT/AlarmMessage';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { VideoList, MonitorList } from './utils';
+import { VideoList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
@@ -95,7 +96,7 @@ const msgInfo = [
 ];
 notification.config({
   placement: 'bottomRight',
-  duration: 0,
+  duration: 30,
   bottom: 6,
 });
 const SocketOptions = {
@@ -105,38 +106,26 @@ const SocketOptions = {
   pingMsg: 'heartbeat',
 };
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const GET_STATUS_NAME = ({ statusType, warnLevel, fixType }) => {
-  if (+statusType === -1) {
-    if (+warnLevel === 1) {
-      return '预警';
-    } else if (+warnLevel === 2) {
-      if (+fixType === 5) {
-        return '火警';
-      } else {
-        return '告警';
-      }
-    }
-  } else if (+statusType === -2) {
-    return '失联';
-  } else if (+statusType === -3) {
-    return '故障';
-  } else if (+statusType === 1) {
-    return '报警解除';
-  } else if (+statusType === 2) {
-    return '恢复在线';
-  } else if (+statusType === 3) {
-    return '故障消除';
-  }
-};
 
-@connect(({ unitSafety, bigPlatform, loading, fourColorImage, chemical, specialEquipment }) => ({
-  unitSafety,
-  bigPlatform,
-  chemical,
-  fourColorImage,
-  specialEquipment,
-  hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
-}))
+@connect(
+  ({
+    unitSafety,
+    bigPlatform,
+    loading,
+    fourColorImage,
+    chemical,
+    specialEquipment,
+    newUnitFireControl,
+  }) => ({
+    unitSafety,
+    bigPlatform,
+    chemical,
+    fourColorImage,
+    specialEquipment,
+    newUnitFireControl,
+    hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
+  })
+)
 export default class Chemical extends PureComponent {
   constructor(props) {
     super(props);
@@ -214,15 +203,19 @@ export default class Chemical extends PureComponent {
         'fetchCountDangerSource',
         // app储罐列表
         'fetchTankList',
+        // 风险点列表
+        'fetchRiskPoint',
+        // 监测设备列表
+        'fetchMonitorEquipment',
       ],
     });
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.init();
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.ws.close();
     notification.destroy();
   }
@@ -245,27 +238,34 @@ export default class Chemical extends PureComponent {
     // 获取安全人员信息（安全人员信息卡片源数据）
     this.fetchSafetyOfficer({ company_id: companyId });
     // 获取特种设备列表
-    this.fetchAllSpecialEquipList({ companyId })
+    this.fetchAllSpecialEquipList({ companyId });
     // 统计监测对象各个类型的数量
     this.fetchMonitorTargetCount({ companyId });
     // 到期提醒数量
     this.fetchPastStatusCount({ companyId });
     // 两重点一重大的数量
     this.fetchCountDangerSource({ companyId });
+    // 消息
+    this.fetchScreenMessage();
 
     this.fetchPoints();
     this.fetchHiddenDangerList();
     // 四色图分区
-    this.fetchFourColorPolygons();
+    // this.fetchFourColorPolygons();
   };
 
   // 获取特种设备列表（全部）
-  fetchAllSpecialEquipList = (values) => {
+  fetchAllSpecialEquipList = values => {
     const { dispatch } = this.props;
     dispatch({
       type: 'specialEquipment/fetchSpecialEquipList',
       payload: { pageNum: 1, pageSize: 0, ...values },
-      callback: ({ data: { pagination: { total = 0 }, list = [] } }) => {
+      callback: ({
+        data: {
+          pagination: { total = 0 },
+          list = [],
+        },
+      }) => {
         this.setState({
           specialEquip: {
             total,
@@ -273,7 +273,7 @@ export default class Chemical extends PureComponent {
             expired: list.filter(item => item.paststatus === '2'), // 已过期
             notExpired: list.filter(item => item.paststatus === '0'),
           },
-        })
+        });
       },
     });
   };
@@ -307,12 +307,15 @@ export default class Chemical extends PureComponent {
       try {
         const data = JSON.parse(e.data);
         console.log('e.data', data);
+        const { type } = data;
         // if (
         //   ['405', '406'].includes(`${data.monitorEquipmentType}`) &&
         //   ['1', '2'].includes(`${data.warnLevel}`)
         // ) {
-        this.showNotification(data);
+        +type === 100 && this.showNotification(data);
         // }
+        this.fetchScreenMessage();
+        +type === 100 && this.fetchMonitorTargetCount({ companyId });
       } catch (error) {
         console.log('error', error);
       }
@@ -323,22 +326,42 @@ export default class Chemical extends PureComponent {
     };
   };
 
+  /**
+   * 获取大屏消息
+   */
+  fetchScreenMessage = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchScreenMessage',
+      payload: { companyId },
+      success: res => {},
+    });
+  };
+
   showNotification = data => {
     const {
-      id,
-      happenTime,
-      statusType,
-      warnLevel,
-      monitorEquipmentTypeName,
-      paramDesc,
-      paramUnit,
-      monitorValue,
-      limitValue,
-      monitorEquipmentAreaLocation,
-      monitorEquipmentName,
-      faultTypeName,
+      monitorMessageDto: {
+        id,
+        happenTime,
+        statusType,
+        warnLevel,
+        monitorEquipmentTypeName,
+        paramDesc,
+        paramUnit,
+        monitorValue,
+        limitValue,
+        monitorEquipmentAreaLocation,
+        monitorEquipmentName,
+        faultTypeName,
+        fixType,
+      },
     } = data;
-    if (statusType > 0) return;
+    if (+statusType !== -1) return;
     const typeName = GET_STATUS_NAME({ statusType, warnLevel });
     const style = {
       boxShadow: `0px 0px 20px #f83329`,
@@ -370,11 +393,22 @@ export default class Chemical extends PureComponent {
         <div className={styles.notificationBody}>
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
           <div>{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
-          {![-2, -3].includes(+statusType) && (
+          {[-1].includes(+statusType) &&
+            fixType !== 5 && (
+              <div
+                className={styles.alarm}
+              >{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
+                ['预警', '告警'].includes(typeName)
+                  ? `，超过${typeName}值${Math.round(Math.abs(monitorValue - limitValue) * 100) /
+                      100}${paramUnit || ''}`
+                  : ''
+              }`}</div>
+            )}
+          {/* {![-2, -3].includes(+statusType) && (
             <div
               className={styles.alarm}
             >{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
-              ['预警', '报警'].includes(typeName)
+              ['预警', '告警'].includes(typeName)
                 ? `，超过${typeName}值${Math.round(Math.abs(monitorValue - limitValue) * 100) /
                 100}${paramUnit || ''}`
                 : ''
@@ -382,7 +416,7 @@ export default class Chemical extends PureComponent {
           )}
           {[-3, 3].includes(+statusType) && (
             <div className={styles.alarm}>{`故障类型：${faultTypeName || ''}`}</div>
-          )}
+          )} */}
           <div>{`监测设备：${monitorEquipmentName || ''}`}</div>
           <div>{`区域位置：${monitorEquipmentAreaLocation || ''}`}</div>
         </div>
@@ -503,8 +537,8 @@ export default class Chemical extends PureComponent {
     this.setState({ images: null });
   };
 
-  handleShowVideo = () => {
-    this.setState({ videoList: VideoList, videoVisible: true });
+  handleShowVideo = videoList => {
+    this.setState({ videoList: videoList || VideoList, videoVisible: true });
   };
 
   handleParentChange = newState => {
@@ -743,7 +777,7 @@ export default class Chemical extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    this.fetchTankList({ companyId, hasMonitor: true, pageSize: 10, pageNum: 0 });
+    this.fetchTankList({ companyId, hasMonitor: true, pageSize: 0, pageNum: 1 });
     this.setDrawerVisible('storage');
   };
 
@@ -755,7 +789,7 @@ export default class Chemical extends PureComponent {
   /**
    * 渲染
    */
-  render () {
+  render() {
     const {
       unitSafety: { points },
       bigPlatform: { hiddenDangerList },
@@ -765,6 +799,10 @@ export default class Chemical extends PureComponent {
         data: { list: polygons },
       },
       chemical: { monitorTargetCount, pastStatusCount, dangerSourceCount, tankList },
+      match: {
+        params: { unitId: companyId },
+      },
+      newUnitFireControl,
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -855,7 +893,8 @@ export default class Chemical extends PureComponent {
                   showVideo={this.handleShowVideo}
                   onRef={this.onRef}
                   handleClickRiskPoint={this.handleClickRiskPoint}
-                  polygons={polygons}
+                  // polygons={polygons}
+                  companyId={companyId}
                 />
 
                 {msgVisible ? (
@@ -863,18 +902,19 @@ export default class Chemical extends PureComponent {
                     setDrawerVisible={this.setDrawerVisible}
                     handleParentChange={this.handleParentChange}
                     handleGasOpen={this.handleGasOpen}
+                    model={newUnitFireControl}
                   />
                 ) : (
-                    <div className={styles.msgContainer}>
-                      {/* <Badge count={3}> */}
-                      <Icon
-                        type="message"
-                        className={styles.msgIcon}
-                        onClick={() => this.setState({ msgVisible: true })}
-                      />
-                      {/* </Badge> */}
-                    </div>
-                  )}
+                  <div className={styles.msgContainer}>
+                    {/* <Badge count={3}> */}
+                    <Icon
+                      type="message"
+                      className={styles.msgIcon}
+                      onClick={() => this.setState({ msgVisible: true })}
+                    />
+                    {/* </Badge> */}
+                  </div>
+                )}
 
                 <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
               </div>

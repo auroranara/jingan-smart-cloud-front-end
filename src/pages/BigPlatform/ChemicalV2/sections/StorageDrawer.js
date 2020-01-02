@@ -101,7 +101,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                 number,
                 tankStructure,
                 designReserves,
-                designReservesAndUnit,
+                designReservesUnit,
                 designPressure,
                 warnStatus,
               } = item;
@@ -109,7 +109,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                 // ...item,
                 store: chineName,
                 // acture: '8t',
-                contain: designReserves + (designReservesAndUnit || ''),
+                contain: designReserves + (designReservesUnit || ''),
                 // nowCotain: '2t',
                 pressure: designPressure + 'KPa',
                 // nowPressure: '0.05MPa',
