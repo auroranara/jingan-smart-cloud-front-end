@@ -16,9 +16,13 @@ import styles from './CompanyInfo.less';
   loading: loading.effects['unitSafety/fetchSafetyIndex'],
 }))
 export default class CompanyInfo extends PureComponent {
-  render() {
+  render () {
     const {
       handleClickCount,
+      data: {
+        // 特种设备统计
+        specialEquipmentCount,
+      },
       unitSafety: {
         companyMessage: {
           companyMessage: {
@@ -37,7 +41,7 @@ export default class CompanyInfo extends PureComponent {
         // 安全人员
         safetyOfficer: { valueList = [] } = {},
         // 特种设备统计
-        specialEquipmentCount,
+        // specialEquipmentCount,
         // 隐患列表
         hiddenDangerCount: { total = 0 } = {},
         // 安全指数
