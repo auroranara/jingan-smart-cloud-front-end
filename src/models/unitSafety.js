@@ -362,7 +362,10 @@ export default {
     // 人员记录
     staffRecords: [],
     // 安全人员信息
-    safetyOfficer: {},
+    safetyOfficer: {
+      keyList: [],
+      valueList: [],
+    },
     // 巡查点位数据
     inspectionPointData: {},
     // 安全指数

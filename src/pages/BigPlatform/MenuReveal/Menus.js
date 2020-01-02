@@ -270,11 +270,16 @@ export default class NewMenuReveal extends Component {
       user: {
         currentUser: {
           userName,
+          unitType,
+          companyId,
+          permissionCodes,
         },
       },
     } = this.props;
-    // 当前选择的分类下标
     const { currentBlockClassification } = this.state;
+
+    // const showWorkbench = permissionCodes.includes('companyWorkbench');
+    const showChemical = permissionCodes && permissionCodes.includes('dashboard.chemical');
     return (
       <div className={styles.newMenuRevealContainer}>
         {/* 头部 */}
@@ -303,14 +308,22 @@ export default class NewMenuReveal extends Component {
         </Col>
         {/* 底部 */}
         <div className={styles.footer}>
+          {/* {showWorkbench && (
+            <div className={styles.linkItem} onClick={() => router.push('/company-workbench/view')}>
+              <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
+              <div>工作台</div>
+            </div>
+          )} */}
           <div className={styles.linkItem} onClick={() => router.push('/company-workbench/view')}>
-            <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
-            <div>工作台</div>
-          </div>
-          <div className={styles.linkItem} onClick={() => router.push('/big-platform/chemical/DccBRhlrSiu9gMV7fmvizw')}>
-            <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
-            <div>驾驶舱</div>
-          </div>
+              <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
+              <div>工作台</div>
+            </div>
+          {unitType === 4 && showChemical && (
+            <div className={styles.linkItem} onClick={() => router.push(`/big-platform/chemical/${companyId}`)}>
+              <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
+              <div>驾驶舱</div>
+            </div>
+          )}
         </div>
       </div>
     )
