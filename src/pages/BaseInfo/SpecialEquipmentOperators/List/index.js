@@ -10,7 +10,7 @@ import {
   Divider,
   Row,
   Col,
-  Cascader,
+  // Cascader,
   message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -70,9 +70,10 @@ const expirationStatusList = [
 ]
 
 @Form.create()
-@connect(({ baseInfo, user, loading }) => ({
+@connect(({ baseInfo, user, emergencyManagement, loading }) => ({
   baseInfo,
   user,
+  emergencyManagement,
   tableLoading: loading.effects['baseInfo/fetchSpecialEquipPerson'],
 }))
 export default class SpecialEquipmentOperatorsList extends PureComponent {
@@ -83,14 +84,23 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
   }
 
   componentDidMount () {
-    const { user: { currentUser: { unitType } } } = this.props;
+    // const { user: { currentUser: { unitType } } } = this.props;
     this.handleQuery();
-    // 获取作业项目
+    this.fetchTypeOptions()
     this.fetchDict({
-      payload: { type: 'workProject', parentId: 0 },
+      payload: { type: 'workProject' },
       callback: list => { this.setState({ workTypeOptions: list }) },
     })
   }
+
+  // 获取分类
+  fetchTypeOptions = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyManagement/fetchDicts',
+      payload: { type: 'specialEquipment' },
+    });
+  };
 
   // 获取字典
   fetchDict = actions => {
@@ -107,10 +117,15 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
-    const values = getFieldsValue();
+    const { workType, ...resValues } = getFieldsValue();
     dispatch({
       type: 'baseInfo/fetchSpecialEquipPerson',
-      payload: { ...values, pageNum, pageSize },
+      payload: {
+        ...resValues,
+        pageNum,
+        pageSize,
+        workType: Array.isArray(workType) ? workType.join(',') : undefined,
+      },
     })
   }
 
@@ -161,8 +176,9 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
     const {
       form: { getFieldDecorator },
       user: { isCompany },
+      // emergencyManagement: { specialEquipment = [] },
     } = this.props;
-    const { workTypeOptions, workProjectOptions } = this.state;
+    // const { workTypeOptions, workProjectOptions } = this.state;
     return (
       <Card>
         <Form>
@@ -192,18 +208,25 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
+            {/* <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('workType')(
-                  <Select placeholder="作业种类" allowClear onChange={this.handleWorkTypeChange}>
-                    {workTypeOptions.map(({ id, label }) => (
-                      <Select.Option key={id} value={id}>{label}</Select.Option>
-                    ))}
-                  </Select>
+                  <Cascader
+                    options={specialEquipment}
+                    fieldNames={{
+                      value: 'id',
+                      label: 'label',
+                      children: 'children',
+                      isLeaf: 'isLeaf',
+                    }}
+                    changeOnSelect
+                    placeholder="作业种类"
+                    allowClear
+                  />
                 )}
               </FormItem>
-            </Col>
-            <Col {...colWrapper}>
+            </Col> */}
+            {/* <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('workProject')(
                   <Select placeholder="作业项目" allowClear>
@@ -213,7 +236,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
                   </Select>
                 )}
               </FormItem>
-            </Col>
+            </Col> */}
             {!isCompany && (
               <Col {...colWrapper}>
                 <FormItem {...formItemStyle}>
@@ -272,19 +295,32 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
         ),
       },
       {
-        title: '作业种类',
+        title: '作业种类—作业项目',
         dataIndex: 'workTypeName',
         align: 'center',
-        width: 250,
-        render: (val, { workProjectName }) => workProjectName ? workProjectName.split('-')[0] : '暂无数据',
+        width: 300,
+        render: (val, { projectCode, workTypeName, workProjectName, choose }) => {
+          let projectCodeName = projectCode;
+          if (+choose === 0) {
+            // 如果 项目代号输入方式为选择
+            const target = this.state.workTypeOptions.find(item => item.id === projectCode);
+            projectCodeName = target ? target.value : '暂无数据';
+          }
+          return (
+            <div style={{ textAlign: 'left' }}>
+              <div>{projectCodeName}</div>
+              <div>{`${workTypeName || '暂无数据'} / ${workProjectName || '暂无数据'}`}</div>
+            </div>
+          )
+        },
       },
-      {
-        title: '作业项目',
-        dataIndex: 'workProjectName',
-        align: 'center',
-        width: 250,
-        render: (val, { workProjectName }) => workProjectName ? workProjectName.split('-')[1] : '暂无数据',
-      },
+      // {
+      //   title: '作业项目',
+      //   dataIndex: 'workProjectName',
+      //   align: 'center',
+      //   width: 250,
+      //   render: (val, { workProjectName }) => workProjectName ? workProjectName.split('-')[1] : '暂无数据',
+      // },
       {
         title: '作业人员证',
         dataIndex: 'permit',
@@ -318,7 +354,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
         title: '附件',
         key: '附件',
         align: 'center',
-        width: 250,
+        width: 300,
         render: (val, { certificatePositiveFileList, certificateReverseFileList }) => (
           <div style={{ textAlign: 'left' }}>
             <Row style={{ marginBottom: '10px' }}>

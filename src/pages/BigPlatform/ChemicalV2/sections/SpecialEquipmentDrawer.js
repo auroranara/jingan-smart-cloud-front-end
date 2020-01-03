@@ -7,7 +7,14 @@ import { SpecialEquipmentList } from '../utils';
 // 引入样式文件
 import styles from './SpecialEquipmentDrawer.less';
 
-const filterOptions = ['全部', '已过期', '未过期'];
+// 特种设备状态
+const filterOptions = ['全部', '已过期', '即将过期', '未过期'];
+
+const statusSetting = {
+  '0': { label: '未过期', color: '#1E60FF' },
+  '1': { label: '即将到期', color: 'rgb(250, 173, 20)' },
+  '2': { label: '已过期', color: '#FF4848' },
+};
 
 /**
  * 特种设备抽屉
@@ -50,9 +57,10 @@ export default class SpecialEquipmentDrawer extends PureComponent {
       //   specialEquipmentList: { allList = [], expiredList = [], unexpiredList = [] } = {},
       // },
       data: {
-        list = [],
-        expired = [],
-        notExpired = [],
+        list = [], // 全部
+        expired = [], // 已过期
+        notExpired = [], // 未过期
+        expiring = [], // 即将到期
       },
     } = this.props;
     const { selectedStatus } = this.state;
@@ -104,7 +112,7 @@ export default class SpecialEquipmentDrawer extends PureComponent {
               onClick={() => this.handleStatusChange(index)}
             >
               <span className={styles.statusItemLabel}>{item}</span>
-              <span className={styles.expiredStatusItemValue}>{([list, expired, notExpired][index]).length}</span>
+              <span className={index === 1 ? styles.expiredStatusItemValue : null}>{([list, expired, expiring, notExpired][index]).length}</span>
             </div>
           </div>
         ))}
@@ -121,7 +129,7 @@ export default class SpecialEquipmentDrawer extends PureComponent {
       // unitSafety: {
       //   specialEquipmentList: { allList = [], expiredList = [], unexpiredList = [] } = {},
       // },
-      data: { list, expired, notExpired },
+      data: { list, expired, notExpired, expiring },
     } = this.props;
     const { selectedStatus } = this.state;
     // let list;
@@ -135,7 +143,7 @@ export default class SpecialEquipmentDrawer extends PureComponent {
     //   // 全部
     //   list = allList;
     // }
-    const currentList = [list, expired, notExpired][selectedStatus];
+    const currentList = [list, expired, expiring, notExpired][selectedStatus];
     return (
       <SectionDrawer
         drawerProps={{
@@ -160,8 +168,9 @@ export default class SpecialEquipmentDrawer extends PureComponent {
                 number: 'factoryNumber', // 出厂编号
                 person: 'contact', // 负责人
                 expiryDate: 'endDate', // 有效期至
-                status: ({ paststatus }) => paststatus === '2' ? 1 : 0, // 1为已过期，0为未过期
               }}
+              statusLabel={statusSetting[item.paststatus].label}
+              statusColor={statusSetting[item.paststatus].color}
             />
           ))}
         </div>

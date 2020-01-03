@@ -44,7 +44,11 @@ export default class SpecialEquipmentCard extends BigPlatformCard {
   /**
    * 渲染状态
    */
-  renderStatus(status) {
+  renderStatus (status) {
+    const { statusLabel, statusColor = '#1E60FF' } = this.props;
+    if (statusLabel) {
+      return <div className={styles.status} style={{ backgroundColor: statusColor }}>{statusLabel}</div>
+    }
     let label, backgroundColor;
     if (+status === 1) {
       label = '已过期';
@@ -56,7 +60,7 @@ export default class SpecialEquipmentCard extends BigPlatformCard {
     return <div className={styles.status} style={{ backgroundColor }}>{label}</div>
   }
 
-  render() {
+  render () {
     const {
       className, // 容器类名
       style, // 容器样式

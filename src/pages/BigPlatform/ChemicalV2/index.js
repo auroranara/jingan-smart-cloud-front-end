@@ -178,6 +178,7 @@ export default class Chemical extends PureComponent {
         list: [], // 全部
         expired: [], // 已过期
         notExpired: [], // 未过期
+        expiring: [], // 即将到期
       },
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
@@ -270,8 +271,9 @@ export default class Chemical extends PureComponent {
           specialEquip: {
             total,
             list,
+            notExpired: list.filter(item => item.paststatus === '0'), // 未过期
+            expiring: list.filter(item => item.paststatus === '1'), // 即将过期
             expired: list.filter(item => item.paststatus === '2'), // 已过期
-            notExpired: list.filter(item => item.paststatus === '0'),
           },
         })
       },

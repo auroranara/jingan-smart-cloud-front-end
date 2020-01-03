@@ -30,6 +30,12 @@ export default class SafetyOfficerDrawer extends PureComponent {
     this.scroll = (scroll && scroll.dom) || scroll;
   };
 
+  /**
+   * 生成年龄
+   * @param {number} time 出生日期时间戳
+   **/
+  generateAge = time => time ? (new Date().getYear() - new Date(time).getYear() + 1) : '-';
+
   render () {
     let {
       // 抽屉是否可见
@@ -96,7 +102,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
                   </div>
                   <div className={styles.item}>
                     <span className={styles.label}>年龄：</span>
-                    <span className={styles.value}>{birth || '-'}</span>
+                    <span className={styles.value}>{this.generateAge(birth)}</span>
                   </div>
                   <div className={styles.item}>
                     <span className={styles.label}>手机号码：</span>
