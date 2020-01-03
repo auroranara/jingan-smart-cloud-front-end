@@ -63,6 +63,7 @@ export default function AppMenu(WrappedComponent) {
           {...this.props}
           menuData={menuData} // 也可放在basic layout中处理
           authorityFn={generateAuthFn(codes, codeMap, pathArray, ['company-workbench'])}
+          // authorityFn={generateAuthFn(codes, codeMap, pathArray)}
           currentUserLoaded={currentUserLoaded}
         />
       );

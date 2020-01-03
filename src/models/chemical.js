@@ -2,6 +2,9 @@ import {
   queryPastStatusCount,
   beMonitorTargetTypeCountDto,
   countDangerSource,
+  getTankList,
+  riskPointForPage,
+  monitorEquipment,
 } from '@/services/bigPlatform/chemical';
 
 export default {
@@ -11,6 +14,16 @@ export default {
     pastStatusCount: {},
     monitorTargetCount: [],
     dangerSourceCount: {},
+    tankList: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    },
+    monitorEquipment: [],
+    riskPoint: [],
   },
 
   effects: {
@@ -59,9 +72,61 @@ export default {
       }
       callback && callback(response);
     },
+    // app储罐列表
+    *fetchTankList({ payload, callback }, { call, put }) {
+      const response = yield call(getTankList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        yield put({
+          type: 'saveTankList',
+          payload: {
+            ...data,
+            append: payload.pageNum !== 1,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 风险点列表
+    *fetchRiskPoint({ payload, callback }, { call, put }) {
+      const response = yield call(riskPointForPage, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const riskPoint = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            riskPoint,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 监测设备列表
+    *fetchMonitorEquipment({ payload, callback }, { call, put }) {
+      const response = yield call(monitorEquipment, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const monitorEquipment = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            monitorEquipment,
+          },
+        });
+      }
+      callback && callback(response);
+    },
   },
 
   reducers: {
     save: (state, { payload }) => ({ ...state, ...payload }),
+    saveTankList: (state, { payload, append }) => ({
+      ...state,
+      tankList: {
+        list: append ? state.tankList.list.concat(payload.list) : payload.list,
+        pagination: payload.pagination,
+      },
+    }),
   },
 };

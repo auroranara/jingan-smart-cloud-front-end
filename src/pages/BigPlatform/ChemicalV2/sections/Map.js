@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 import classnames from 'classnames';
 import moment from 'moment';
+import { connect } from 'dva';
 import { isPointInPolygon } from '@/utils/map';
 // 引入样式文件
 import styles from './Map.less';
@@ -33,6 +34,10 @@ const controls = [
   { label: '监测设备', icon: monitorGray, activeIcon: monitorActive },
 ];
 
+@connect(({ map, chemical }) => ({
+  map,
+  chemical,
+}))
 export default class Map extends PureComponent {
   state = {
     gdMapVisible: false,
@@ -46,31 +51,207 @@ export default class Map extends PureComponent {
   markerLayers = [];
   lastTime = 0;
 
+  /* eslint-disable*/
   componentDidMount() {
-    this.initMap();
+    // this.initMap();
+    this.fetchMap();
     const { onRef } = this.props;
     onRef && onRef(this);
   }
 
-  componentDidUpdate(prevProps) {
-    const { polygons: prevPolygons } = prevProps;
-    const { polygons } = this.props;
-    if (JSON.stringify(prevPolygons) !== JSON.stringify(polygons)) {
-      map &&
-        map.on('loadComplete', () => {
-          polygons.map(polygon => {
-            const { zoneLevel, coordinateList } = polygon;
-            const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
-            const polygonMarker = this.addPolygon(points, COLORS[zoneLevel - 1]);
-            // this.setModelColor(points, COLORS[zoneLevel - 1]);
-            this.setModelColor2(polygonMarker, COLORS[zoneLevel - 1]);
-            return null;
-          });
-        });
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   const { polygons: prevPolygons } = prevProps;
+  //   const { polygons } = this.props;
+  //   if (JSON.stringify(prevPolygons) !== JSON.stringify(polygons)) {
+  //     map &&
+  //       map.on('loadComplete', () => {
+  //         polygons.map(polygon => {
+  //           const { zoneLevel, coordinateList } = polygon;
+  //           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
+  //           const polygonMarker = this.addPolygon(points, COLORS[zoneLevel - 1]);
+  //           // this.setModelColor(points, COLORS[zoneLevel - 1]);
+  //           this.setModelColor2(polygonMarker, COLORS[zoneLevel - 1]);
+  //           return null;
+  //         });
+  //       });
+  //   }
+  // }
 
-  /* eslint-disable*/
+  fetchMap = () => {
+    const { dispatch, companyId } = this.props;
+    // 获取地图列表
+    dispatch({
+      type: 'map/fetchMapList',
+      payload: { companyId },
+      callback: mapInfo => {
+        this.initMap({ ...mapInfo }, () => {
+          this.fetchMapAreaList();
+          // this.fetchRiskPoint();
+          this.fetchMonitorEquipment();
+        });
+      },
+    });
+  };
+
+  // 获取区域列表
+  fetchMapAreaList = () => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'map/fetchMapAreaList',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: ({ list }) => {
+        list.map(polygon => {
+          const { zoneLevel, coordinateList, groupId } = polygon;
+          const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
+          const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1]);
+          this.setModelColor2(groupId, polygonMarker, COLORS[zoneLevel - 1]);
+          return null;
+        });
+      },
+    });
+  };
+
+  renderPoints = points => {
+    if (!points.length) return;
+    points.map(item => {
+      const { groupId, xnum, ynum, znum, id, itemId } = item;
+      const groupLayer = map.getFMGroup(groupId);
+      const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+      groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
+
+      const im = new fengmap.FMImageMarker({
+        size: 50, //设置图片显示尺寸
+        height: 3, //标注高度，大于model的高度
+        ...markerProps,
+      });
+      layer.addMarker(im); //图片标注层添加图片Marker
+      im.alwaysShow();
+      this.markerArray.push(im);
+      // this.addMarkers(item, layer);
+      return null;
+    });
+  };
+
+  // 风险点
+  fetchRiskPoint = () => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/fetchRiskPoint',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: res => {
+        const pointsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
+        console.log('pointsInfo', pointsInfo);
+        if (!pointsInfo.length) return;
+        pointsInfo.map(item => {
+          const {
+            pointFixInfoList: { groupId, xnum, ynum, znum, id, itemId },
+          } = item;
+          const groupLayer = map.getFMGroup(groupId);
+          const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+          groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
+          this.addMarkers(item, layer);
+          return null;
+        });
+      },
+    });
+  };
+
+  fetchMonitorEquipment = () => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/fetchMonitorEquipment',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: res => {
+        const monitorsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
+        console.log('monitorsInfo', monitorsInfo);
+      },
+    });
+  };
+
+  // 初始化地图定位
+  initMap = ({ appName, key, mapId, isInit }, fun) => {
+    if (!appName || !key || !mapId) return;
+    const mapOptions = {
+      //必要，地图容器
+      container: document.getElementById('fengMap'),
+      //地图数据位置
+      mapServerURL: './data/' + mapId,
+      // defaultViewMode: fengMap.FMViewMode.MODE_2D,
+      //设置主题
+      defaultThemeName: '2001',
+      modelSelectedEffect: false,
+      appName,
+      key,
+    };
+
+    //初始化地图对象
+    map = new fengMap.FMMap(mapOptions);
+    //打开Fengmap服务器的地图数据和主题
+    map.openMapById(mapId);
+
+    // console.log('map.getFMGroup()', map.getFMGroup());
+
+    //2D、3D控件配置
+    const toolControl = new fengmap.toolControl(map, {
+      init2D: false, //初始化2D模式
+      groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
+      position: fengmap.controlPositon.LEFT_TOP,
+      offset: { x: 0, y: 40 },
+      //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
+      clickCallBack: function(type, value) {
+        // console.log(type,value);
+      },
+    });
+
+    // 地图加载完成事件
+    map.on('loadComplete', () => {
+      map.tiltAngle = TiltAngle;
+      map.rotateAngle = RotateAngle;
+      map.mapScaleLevel = MapScaleLevel;
+      console.log('map.getFMGroup()', map.groupIDs);
+      this.loadBtnFloorCtrl();
+      // 四色图
+      fun && fun();
+    });
+
+    map.on('mapClickNode', event => {
+      const { handleClickRiskPoint } = this.props;
+      const clickedObj = event.target;
+      console.log('clickedObj', clickedObj);
+    });
+  };
+
+  //加载按钮型楼层切换控件
+  loadBtnFloorCtrl = (groupId = 1) => {
+    //楼层控制控件配置参数
+    const btnFloorCtlOpt = new fengMap.controlOptions({
+      //默认在右下角
+      position: fengMap.controlPositon.LEFT_TOP,
+      //初始楼层按钮显示个数配置。默认显示5层,其他的隐藏，可滚动查看
+      showBtnCount: 6,
+      //初始是否是多层显示，默认单层显示
+      allLayer: false,
+      //位置x,y的偏移量
+      offset: {
+        x: 0,
+        y: 100,
+      },
+    });
+    //不带单/双层楼层控制按钮,初始时只有1个按钮,点击后可弹出其他楼层按钮
+    const btnFloorControl = new fengMap.buttonGroupsControl(map, btnFloorCtlOpt);
+    //楼层切换
+    btnFloorControl.onChange(function(groups, allLayer) {
+      //groups 表示当前要切换的楼层ID数组,
+      //allLayer表示当前楼层是单层状态还是多层状态。
+    });
+    //默认是否展开楼层列表，true为展开，false为不展开
+    btnFloorControl.expand = true;
+    //楼层控件是否可点击，默认为true
+    btnFloorControl.enableExpand = true;
+    // 切换到指定楼层(可传入两个参数：目标层groupID,是否多层状态)
+    btnFloorControl.changeFocusGroup(groupId);
+  };
+
   handleUpdateMap = () => {
     if (!map || !this.markerArray.length) return;
     this.markerArray[5].url = monitorAlarm;
@@ -85,9 +266,9 @@ export default class Map extends PureComponent {
       .map(model => model.setColor(color));
   }
 
-  setModelColor2(polygon, color) {
+  setModelColor2(groupId, polygon, color) {
     // 默认gid为1
-    const models = map.getDatasByAlias(1, 'model');
+    const models = map.getDatasByAlias(groupId, 'model');
     models.map(model => {
       const { mapCoord } = model;
       if (polygon.contain({ ...mapCoord, z: 1 })) model.setColor(color);
@@ -95,8 +276,9 @@ export default class Map extends PureComponent {
     });
   }
 
-  addMarkers = (markerProps, layer) => {
+  addMarkers = (gId, markerProps, layer) => {
     let markerLayer = layer;
+    const groupId = gId || 1;
     if (!layer) {
       const groupID = 1;
       const groupLayer = map.getFMGroup(groupID);
@@ -113,8 +295,9 @@ export default class Map extends PureComponent {
     this.markerArray.push(im);
   };
 
-  addPolygon = (points, color) => {
-    const groupLayer = map.getFMGroup(1);
+  addPolygon = (gId, points, color) => {
+    const groupId = gId || 1;
+    const groupLayer = map.getFMGroup(groupId);
     //创建PolygonMarkerLayer
     const layer = new fengmap.FMPolygonMarkerLayer();
     groupLayer.addLayer(layer);
@@ -134,7 +317,7 @@ export default class Map extends PureComponent {
   };
   /* eslint-disable*/
 
-  initMap() {
+  initMap2() {
     const { setDrawerVisible, showVideo } = this.props;
     const mapOptions = {
       //必要，地图容器
