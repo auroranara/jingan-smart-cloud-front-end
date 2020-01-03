@@ -15,8 +15,8 @@ export const STATUSES = [
   { key: '0', value: '处理中' },
   { key: '1', value: '已处理' },
 ];
-const TRANSFORM = (data) => {
-  const { range: [startTime, endTime]=[], ...rest } = data || {};
+const TRANSFORM = data => {
+  const { range: [startTime, endTime] = [], ...rest } = data || {};
   return {
     ...rest,
     queryCreateStartDate: startTime && startTime.startOf('day').format(DEFAULT_FORMAT),
@@ -25,17 +25,19 @@ const TRANSFORM = (data) => {
 };
 
 export default class AlarmWorkOrderList extends Component {
-  getFields = ({
-    unitId,
-  }) => ([
-    ...(!unitId ? [
-      {
-        id: 'companyName',
-        label: '单位名称',
-        transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
-      },
-    ] : []),
+  getFields = ({ unitId }) => [
+    ...(!unitId
+      ? [
+          {
+            id: 'companyName',
+            label: '单位名称',
+            transform: value => value.trim(),
+            render: ({ handleSearch }) => (
+              <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
+            ),
+          },
+        ]
+      : []),
     {
       id: 'reportType',
       label: '监测类型',
@@ -45,13 +47,17 @@ export default class AlarmWorkOrderList extends Component {
       id: 'deviceName',
       label: '设备名称/主机编号',
       transform: value => value.trim(),
-      render: ({ handleSearch }) => <Input placeholder="请输入监测设备名称" onPressEnter={handleSearch} maxLength={50} />,
+      render: ({ handleSearch }) => (
+        <Input placeholder="请输入监测设备名称" onPressEnter={handleSearch} maxLength={50} />
+      ),
     },
     {
       id: 'areaLocation',
       label: '报警区域位置',
       transform: value => value.trim(),
-      render: ({ handleSearch }) => <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />,
+      render: ({ handleSearch }) => (
+        <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />
+      ),
     },
     {
       id: 'range',
@@ -61,14 +67,21 @@ export default class AlarmWorkOrderList extends Component {
       //   sm: 24,
       //   xs: 24,
       // },
-      render: () => <DatePickerOrSpan placeholder={['开始时间', '结束时间']} allowClear type="RangePicker" style={{ width: '100%' }} />,
+      render: () => (
+        <DatePickerOrSpan
+          placeholder={['开始时间', '结束时间']}
+          allowClear
+          type="RangePicker"
+          style={{ width: '100%' }}
+        />
+      ),
     },
     {
       id: 'status',
       label: '处理状态',
       render: () => <SelectOrSpan placeholder="请选择处理状态" list={STATUSES} allowClear />,
     },
-  ])
+  ];
 
   // getAction = ({
   //   renderExportButton,
@@ -81,17 +94,19 @@ export default class AlarmWorkOrderList extends Component {
   getColumns = ({
     unitId,
     list,
-    renderDetailButton,
-    renderMonitorTrendButton,
     renderDetailButton2,
-  }) => ([
-    ...(!unitId ? [
-      {
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
-      },
-    ] : []),
+    renderMonitorTrendButton,
+    renderDetailButton3,
+  }) => [
+    ...(!unitId
+      ? [
+          {
+            title: '单位名称',
+            dataIndex: 'companyName',
+            align: 'center',
+          },
+        ]
+      : []),
     {
       title: '监测类型',
       dataIndex: 'reportTypeName',
@@ -104,12 +119,26 @@ export default class AlarmWorkOrderList extends Component {
         <div className={styles.multiple}>
           {+reportType === 1 ? (
             <Fragment>
-              <div className={styles.line}>消防主机编号：<span className={styles.value}>{deviceName}</span></div>
-              <div className={styles.line}>部件类型：<span className={styles.value}>{unitTypeName}</span></div>
-              <div className={styles.line}>回路号：<span className={styles.value}>{`${loopNumber ? `${loopNumber}回路` : ''}${partNumber ? `${partNumber}号` : ''}`}</span></div>
+              <div className={styles.line}>
+                消防主机编号：
+                <span className={styles.value}>{deviceName}</span>
+              </div>
+              <div className={styles.line}>
+                部件类型：
+                <span className={styles.value}>{unitTypeName}</span>
+              </div>
+              <div className={styles.line}>
+                回路号：
+                <span className={styles.value}>{`${loopNumber ? `${loopNumber}回路` : ''}${
+                  partNumber ? `${partNumber}号` : ''
+                }`}</span>
+              </div>
             </Fragment>
           ) : (
-            <div className={styles.line}>监测设备名称：<span className={styles.value}>{deviceName}</span></div>
+            <div className={styles.line}>
+              监测设备名称：
+              <span className={styles.value}>{deviceName}</span>
+            </div>
           )}
         </div>
       ),
@@ -123,19 +152,19 @@ export default class AlarmWorkOrderList extends Component {
     {
       title: '工单创建时间',
       dataIndex: 'createDate',
-      render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+      render: time => time && moment(time).format(DEFAULT_FORMAT),
       align: 'center',
     },
     {
       title: '处理状态',
       dataIndex: 'status',
-      render: (value) => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
+      render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
       align: 'center',
     },
     {
       title: '工单结束时间',
       dataIndex: 'endDate',
-      render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+      render: time => time && moment(time).format(DEFAULT_FORMAT),
       align: 'center',
     },
     {
@@ -145,14 +174,8 @@ export default class AlarmWorkOrderList extends Component {
       fixed: list && list.length ? 'right' : undefined,
       render: (id, { reportType, deviceId }) => (
         <Fragment>
-          <div>
-            {renderDetailButton(id)}
-          </div>
-          {+reportType !== 1 && ( // 消防主机不显示
-            <div>
-              {renderMonitorTrendButton(deviceId)}
-            </div>
-          )}
+          <div>{renderDetailButton2(id)}</div>
+          {+reportType !== 1 && <div>{renderMonitorTrendButton(deviceId)}</div>}
         </Fragment>
       ),
       align: 'center',
@@ -162,15 +185,26 @@ export default class AlarmWorkOrderList extends Component {
       dataIndex: 'msgCount',
       width: 132,
       fixed: list && list.length ? 'right' : undefined,
-      render: (value, data) => <span>已发送{renderDetailButton2(data)}</span>,
+      render: (value, data) => (
+        <span>
+          已发送
+          {renderDetailButton3(data)}
+        </span>
+      ),
       align: 'center',
     },
-  ])
+  ];
 
-  handleClick = ({ target: { dataset: { id } } }) => {
-    const { route: { path, name } } = this.props;
+  handleClick = ({
+    target: {
+      dataset: { id },
+    },
+  }) => {
+    const {
+      route: { path, name },
+    } = this.props;
     router.push(path.replace(new RegExp(`${name}.*`), `detail/${id}`));
-  }
+  };
 
   render() {
     const props = {
@@ -200,10 +234,6 @@ export default class AlarmWorkOrderList extends Component {
       ...this.props,
     };
 
-    return (
-      <TablePage
-        {...props}
-      />
-    );
+    return <TablePage {...props} />;
   }
 }

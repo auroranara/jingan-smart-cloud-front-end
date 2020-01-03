@@ -1,70 +1,29 @@
-import React, { Component } from 'react';
-import { Input } from 'antd';
-import SelectOrSpan from '@/jingan-components/SelectOrSpan';
-import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
-import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
+import React, { Component, Fragment } from 'react';
+import { Tooltip } from 'antd';
+import InputOrSpan from '@/jingan-components/InputOrSpan';
+import RadioOrSpan from '@/jingan-components/RadioOrSpan';
+import CustomUpload from '@/jingan-components/CustomUpload';
 import TablePage from '@/templates/TablePage';
 import moment from 'moment';
+import styles from './index.less';
 
-const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const TYPES = [
-  { key: '0', value: '预警' },
-  { key: '1', value: '告警' },
-  { key: '2', value: '失联' },
-  { key: '3', value: '故障' },
-  { key: '4', value: '报警解除' },
-  { key: '5', value: '恢复在线' },
-  { key: '6', value: '故障消除' },
-];
-const TYPE_MAPPER = [
-  { statusType: -1, warnLevel: 1 },
-  { statusType: -1, warnLevel: 2 },
-  { statusType: -2 },
-  { statusType: -3 },
-  { statusType: 1 },
-  { statusType: 2 },
-  { statusType: 3 },
-];
-const GET_TYPE_NAME = ({ statusType, warnLevel }) => {
-  if (+statusType === -1) {
-    if (+warnLevel === 1) {
-      return '预警';
-    } else if (+warnLevel === 2) {
-      return '告警';
-    }
-  } else if (+statusType === -2) {
-    return '失联';
-  } else if (+statusType === -3) {
-    return '故障';
-  } else if (+statusType === 1) {
-    return '报警解除';
-  } else if (+statusType === 2) {
-    return '恢复在线';
-  } else if (+statusType === 3) {
-    return '故障消除';
-  }
-};
-const TRANSFORM = data => {
-  const { statusType, range: [startTime, endTime] = [], ...rest } = data || {};
-  return {
-    ...rest,
-    ...TYPE_MAPPER[statusType],
-    startTime: startTime && startTime.format(DEFAULT_FORMAT),
-    endTime: endTime && endTime.format(DEFAULT_FORMAT),
-  };
-};
+export const DEFAULT_FORMAT = 'YYYY-MM-DD';
+export const RESULTS = [{ key: '1', value: '符合' }, { key: '0', value: '不符合' }];
 
 export default class AlarmMessage extends Component {
-  empty = true;
-
-  getRangeFromEvent = range => {
-    const empty = !(range && range.length);
-    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
-    this.empty = empty;
-    return result;
-  };
-
   getFields = ({ unitId }) => [
+    {
+      id: 'name',
+      label: '法律法规标准名称',
+      transform: value => value.trim(),
+      render: ({ handleSearch }) => (
+        <InputOrSpan
+          placeholder="请输入法律法规标准名称"
+          onPressEnter={handleSearch}
+          maxLength={50}
+        />
+      ),
+    },
     ...(!unitId
       ? [
           {
@@ -72,103 +31,107 @@ export default class AlarmMessage extends Component {
             label: '单位名称',
             transform: value => value.trim(),
             render: ({ handleSearch }) => (
-              <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
+              <InputOrSpan
+                placeholder="请输入单位名称"
+                onPressEnter={handleSearch}
+                maxLength={50}
+              />
             ),
           },
         ]
       : []),
-    {
-      id: 'monitorType',
-      label: '监测类型',
-      render: () => <MonitorTypeSelect allowClear />,
-    },
-    {
-      id: 'monitorEquipmentAreaLocation',
-      label: '报警区域位置',
-      transform: value => value.trim(),
-      render: ({ handleSearch }) => (
-        <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />
-      ),
-    },
-    {
-      id: 'range',
-      label: '发生时间',
-      // span: {
-      //   xl: 16,
-      //   sm: 24,
-      //   xs: 24,
-      // },
-      render: () => (
-        <DatePickerOrSpan
-          placeholder={['开始时间', '结束时间']}
-          format={DEFAULT_FORMAT}
-          showTime
-          allowClear
-          type="RangePicker"
-          style={{ width: '100%' }}
-        />
-      ),
-      options: {
-        getValueFromEvent: this.getRangeFromEvent,
-      },
-    },
-    {
-      id: 'statusType',
-      label: '消息类型',
-      render: () => <SelectOrSpan placeholder="请选择消息类型" list={TYPES} allowClear />,
-    },
   ];
 
-  getColumns = ({ unitId }) => [
-    ...(!unitId
-      ? [
-          {
-            title: '单位名称',
-            dataIndex: 'companyName',
-            align: 'center',
-          },
-        ]
-      : []),
+  getAction = ({ renderAddButton }) => <Fragment>{renderAddButton()}</Fragment>;
+
+  getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
     {
-      title: '监测类型',
-      dataIndex: 'monitorTypeName',
+      title: '法律法规标准名称',
+      dataIndex: 'name',
       align: 'center',
     },
     {
-      title: '消息类型',
-      dataIndex: 'statusType',
-      render: (_, data) => GET_TYPE_NAME(data),
+      title: '文号',
+      dataIndex: 'number',
       align: 'center',
     },
     {
-      title: '发生时间',
-      dataIndex: 'happenTime',
+      title: '公布日期',
+      dataIndex: 'publishDate',
       render: time => time && moment(time).format(DEFAULT_FORMAT),
       align: 'center',
     },
     {
-      title: '消息内容',
-      dataIndex: 'messageContent',
+      title: '实施日期',
+      dataIndex: 'implementDate',
+      render: time => time && moment(time).format(DEFAULT_FORMAT),
+      align: 'center',
+    },
+    {
+      title: '内容摘要',
+      dataIndex: 'synopsis',
       render: value =>
         value && (
-          <div style={{ textAlign: 'left' }}>
-            {value.split('\n').map(v => (
-              <div key={v}>{v}</div>
-            ))}
-          </div>
+          <Tooltip title={<div className={styles.preWrapText}>{value}</div>}>
+            <div
+              className={styles.ellipsis}
+              style={{ maxWidth: Math.min(value.split('\n')[0].length, 10) * 14 }}
+            >
+              {value}
+            </div>
+          </Tooltip>
         ),
+      align: 'center',
+    },
+    {
+      title: '对应活动',
+      dataIndex: 'activity',
+      render: value =>
+        value && (
+          <Tooltip title={<div className={styles.preWrapText}>{value}</div>}>
+            <div
+              className={styles.ellipsis}
+              style={{ maxWidth: Math.min(value.split('\n')[0].length, 10) * 14 }}
+            >
+              {value}
+            </div>
+          </Tooltip>
+        ),
+      align: 'center',
+    },
+    {
+      title: '评价结果',
+      dataIndex: 'result',
+      render: value => <RadioOrSpan type="span" list={RESULTS} value={value} />,
+      align: 'center',
+    },
+    {
+      title: '内容附件',
+      dataIndex: 'attachment',
+      render: value => <CustomUpload type="span" value={value} />,
+      align: 'center',
+    },
+    {
+      title: '操作',
+      dataIndex: '操作',
+      width: 164,
+      fixed: list && list.length > 0 ? 'right' : false,
+      render: (_, data) => (
+        <Fragment>
+          {renderDetailButton(data)}
+          {renderEditButton(data)}
+          {renderDeleteButton(data)}
+        </Fragment>
+      ),
       align: 'center',
     },
   ];
 
   render() {
     const props = {
-      addEnable: false,
-      // exportEnable: true,
-      operateEnable: false,
       fields: this.getFields,
+      action: this.getAction,
       columns: this.getColumns,
-      transform: TRANSFORM,
       ...this.props,
     };
 
