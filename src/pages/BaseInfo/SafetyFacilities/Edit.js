@@ -61,8 +61,8 @@ export default class Edit extends PureComponent {
     detailList: {},
     categoryOneId: '', // 分类一列表选中Id
     categoryTwoId: '', // 分类二列表选中Id
-    categoryOneName: '', // 分类一列表选中名称
-    categoryTwoName: '', // 分类二列表选中名称
+    categoryOneName: undefined, // 分类一列表选中名称
+    categoryTwoName: undefined, // 分类二列表选中名称
     categoryOneList: [], // 分类一列表
     categoryTwoList: [], // 分类二列表
     facilitiesNameList: [], // 安全设施名称列表
