@@ -9,13 +9,11 @@ import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST_URL, handleDetails } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
-import Map from '../../RiskControl/FourColorImage/Map';
 const { Option } = Select;
 
-@connect(({ user, cardsInfo, map, fourColorImage, loading }) => ({
+@connect(({ user, cardsInfo, fourColorImage, loading }) => ({
   user,
   cardsInfo,
-  map,
   fourColorImage,
   loading: loading.models.cardsInfo,
 }))
@@ -23,7 +21,7 @@ const { Option } = Select;
 export default class Edit extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = { selectedUnitId: '', riskId: '', filterMapList: [] };
+    this.state = { selectedUnitId: '', riskId: undefined, filterMapList: [] };
   }
 
   componentDidMount() {
@@ -36,20 +34,27 @@ export default class Edit extends PureComponent {
         currentUser: { unitType, companyId, companyName },
       },
     } = this.props;
-    const payload = {
-      pageNum: 1,
-      pageSize: 24,
-    };
-    if (unitType === 4) {
-      this.fetchRiskList({ ...payload, companyId: companyId });
-      this.fetchMap({ companyId: companyId }, mapInfo => {
-        this.childMap.initMap({ ...mapInfo });
-      });
-    }
-    if (id) this.getDetail(id);
-    else if (isCompanyUser(+unitType))
+    if (id) {
+      this.getDetail(id);
+    } else if (isCompanyUser(+unitType)) {
+      this.fetchRiskList({ companyId: companyId });
       setFieldsValue({ companyId: { key: companyId, label: companyName } });
+    }
   }
+
+  // 获取风险分区列表
+  fetchRiskList = (params, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fourColorImage/fetchList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 24,
+      },
+      callback,
+    });
+  };
 
   getDetail = id => {
     const {
@@ -61,6 +66,8 @@ export default class Edit extends PureComponent {
       payload: id,
       callback: detail => {
         setFieldsValue(handleDetails(detail));
+        this.fetchRiskList({ companyId: detail.companyId });
+        this.setState({ riskId: detail.pointFixInfoList.map(item => item.areaId).join('') });
       },
     });
   };
@@ -77,14 +84,15 @@ export default class Edit extends PureComponent {
     const { riskId } = this.state;
 
     e.preventDefault();
+    if (!riskId) return message.warning('注：风险分区不能为空！');
     validateFields((errors, values) => {
       if (errors) return;
 
       const vals = {
-        ...values,
         companyId: values.companyId.key,
         time: +values.time,
-        pointFixInfoList: [{ areaId: riskId }],
+        pointFixInfoList: [{ areaId: riskId, imgType: 5 }],
+        ...values,
       };
       dispatch({
         type: `cardsInfo/${id ? 'edit' : 'add'}CommitCard`,
@@ -107,50 +115,13 @@ export default class Edit extends PureComponent {
   };
 
   onSelectChange = e => {
-    this.setState({ selectedUnitId: e.key }, () => {
-      this.fetchMap({ companyId: e.key }, mapInfo => {
-        this.childMap.initMap({ ...mapInfo });
-      });
+    this.setState({ riskId: '', selectedUnitId: e.key }, () => {
       this.fetchRiskList({ companyId: e.key });
     });
   };
 
   handleRiskChange = e => {
     this.setState({ riskId: e });
-    this.childMap.selectedModelColor(
-      e,
-      setTimeout(() => {
-        this.childMap.restModelColor(e);
-      }, 2000)
-    );
-  };
-
-  onRef = ref => {
-    this.childMap = ref;
-  };
-
-  // 获取地图
-  fetchMap = (params, callback) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'map/fetchMapList',
-      payload: { ...params },
-      callback,
-    });
-  };
-
-  // 获取风险分区列表
-  fetchRiskList = (params, callback) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'fourColorImage/fetchList',
-      payload: {
-        ...params,
-        pageNum: 1,
-        pageSize: 24,
-      },
-      callback,
-    });
   };
 
   render() {
@@ -167,7 +138,7 @@ export default class Edit extends PureComponent {
         data: { list = [] },
       },
     } = this.props;
-
+    const { riskId } = this.state;
     const isDet = this.isDetail();
     const title = isDet ? '详情' : id ? '编辑' : '新增';
     const breadcrumbList = Array.from(BREADCRUMBLIST);
@@ -194,8 +165,8 @@ export default class Edit extends PureComponent {
         type: 'component',
         required: true,
         component: (
-          <Fragment>
-            <Select onChange={this.handleRiskChange}>
+          <div>
+            <Select onChange={this.handleRiskChange} placeholder="请选择风险分区" value={riskId}>
               {list.map(({ zoneName, id }) => {
                 return (
                   <Option key={id} value={id}>
@@ -204,25 +175,11 @@ export default class Edit extends PureComponent {
                 );
               })}
             </Select>
-            <span>提示：如果没有做区域划分，请先到风险分区中划分区域</span>
-          </Fragment>
+            <span>如果没有做区域划分，请先到风险分区中划分区域</span>
+          </div>
         ),
       },
-      // {
-      //   name: 'map',
-      //   label: '地图',
-      //   type: 'component',
-      //   component:
-      //     list.length > 0 ? (
-      //       <div className={styles.mapLoaction}>
-      //         <Map onRef={this.onRef} height={'42vh'} width={'92vh'} pointList={list} />
-      //       </div>
-      //     ) : (
-      //       <span>该单位暂无地图</span>
-      //     ),
-      // },
     ];
-
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>

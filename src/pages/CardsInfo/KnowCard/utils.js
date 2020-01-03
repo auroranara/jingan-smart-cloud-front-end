@@ -12,7 +12,8 @@ export const PAGE_SIZE = 20;
 export const ROUTER = '/cards-info/know-card'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 
-export const BREADCRUMBLIST = [ // modify
+export const BREADCRUMBLIST = [
+  // modify
   { title: '首页', name: '首页', href: '/' },
   { title: '三卡信息管理', name: '三卡信息管理' },
   { title: '应知卡', name: '应知卡', href: LIST_URL },
@@ -45,8 +46,7 @@ export function getSearchFields(unitType) {
     },
   ];
 
-  if (isCompanyUser(+unitType))
-    fields.shift();
+  if (isCompanyUser(+unitType)) fields.shift();
 
   return fields;
 }
@@ -57,6 +57,14 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       title: '单位名称',
       dataIndex: 'companyName',
       key: 'companyName',
+    },
+    {
+      title: '风险分区',
+      dataIndex: 'pointFixInfoList',
+      key: 'pointFixInfoList',
+      render: (val, row) => {
+        return <span>{val.length > 0 ? val.map(item => item.areaName).join('') : ''}</span>;
+      },
     },
     {
       title: '应知卡名称',
@@ -86,7 +94,16 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       align: 'center',
       render: (p, record) => {
         if (record && record.contentDetails && record.contentDetails.length) {
-          return <a onClick={e => { e.preventDefault(); showModal(record); }}>预览</a>;
+          return (
+            <a
+              onClick={e => {
+                e.preventDefault();
+                showModal(record);
+              }}
+            >
+              预览
+            </a>
+          );
         }
         return '预览';
       },
@@ -100,22 +117,27 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       render(id) {
         return (
           <Fragment>
-            <Link to={`${ROUTER}/view/${id}`} target="_blank">查看</Link>
-            <Link to={`${ROUTER}/edit/${id}`} target="_blank" style={{ marginLeft: 8 }}>编辑</Link>
+            <Link to={`${ROUTER}/view/${id}`} target="_blank">
+              查看
+            </Link>
+            <Link to={`${ROUTER}/edit/${id}`} target="_blank" style={{ marginLeft: 8 }}>
+              编辑
+            </Link>
             <Popconfirm
               title="确定删除当前项目？"
               onConfirm={e => handleConfirmDelete(id)}
               okText="确定"
               cancelText="取消"
-            ><span className={styles1.delete}>删除</span></Popconfirm>
+            >
+              <span className={styles1.delete}>删除</span>
+            </Popconfirm>
           </Fragment>
         );
       },
     },
   ];
 
-  if (isCompanyUser(+unitType))
-    columns.shift();
+  if (isCompanyUser(+unitType)) columns.shift();
   return columns;
 }
 

@@ -26,8 +26,9 @@ const {
   },
 } = codes;
 
-@connect(({ twoInformManagement, user, loading }) => ({
+@connect(({ twoInformManagement, fourColorImage, user, loading }) => ({
   twoInformManagement,
+  fourColorImage,
   user,
   loading: loading.models.twoInformManagement,
 }))
@@ -49,7 +50,7 @@ export default class TableList extends PureComponent {
   fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'twoInformManagement/fetchDagerList',
+      type: 'fourColorImage/fetchList',
       payload: {
         ...params,
         pageSize,
@@ -123,6 +124,9 @@ export default class TableList extends PureComponent {
           pagination: { pageNum, pageSize, total },
         },
         msgDanger,
+      },
+      fourColorImage: {
+        data: { list: riskList = [] },
       },
       user: {
         currentUser: { permissionCodes, unitType },
@@ -205,7 +209,7 @@ export default class TableList extends PureComponent {
           />
         </Card>
         <div className={styles1.container}>
-          {list.length > 0 ? (
+          {riskList.length > 0 ? (
             <Table
               bordered
               rowKey="id"
@@ -215,7 +219,7 @@ export default class TableList extends PureComponent {
                   ? [...COLUMNS, ...extraColumns]
                   : [...COMPANYCOLUMNS, ...COLUMNS, ...extraColumns]
               }
-              dataSource={list}
+              dataSource={riskList}
               onChange={this.onTableChange}
               scroll={{ x: 1440 }} // 项目不多时注掉
               pagination={{

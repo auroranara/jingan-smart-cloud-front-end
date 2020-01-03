@@ -24,7 +24,8 @@ export default class TableList extends PureComponent {
 
   getList = pageNum => {
     const { dispatch } = this.props;
-    if (!pageNum) { // pageNum不存在，则为初始化
+    if (!pageNum) {
+      // pageNum不存在，则为初始化
       pageNum = 1;
       this.setState({ current: 1 });
     }
@@ -65,9 +66,7 @@ export default class TableList extends PureComponent {
         if (code === 200) {
           message.success('删除成功');
           this.getList(current);
-        }
-        else
-          message.error(msg);
+        } else message.error(msg);
       },
     });
   };
@@ -82,13 +81,23 @@ export default class TableList extends PureComponent {
 
   renderModal() {
     const { modalVisible, modalItem } = this.state;
-    const { name, equipmentName, riskWarning, emergency, needAttention, safetyNum, telNum } = modalItem;
+    const {
+      name,
+      equipmentName,
+      riskWarning,
+      emergency,
+      needAttention,
+      safetyNum,
+      telNum,
+    } = modalItem;
 
     return (
-      <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null} >
+      <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null}>
         <table className={styles.table}>
           <tr>
-            <th colspan="2" className={styles.th}>{name}</th>
+            <th colspan="2" className={styles.th}>
+              {name}
+            </th>
           </tr>
           <tr>
             <td className={styles.td}>作业/设备名称</td>
@@ -107,7 +116,9 @@ export default class TableList extends PureComponent {
             <td>{needAttention}</td>
           </tr>
           <tr>
-            <td colspan="2" className={styles.td1}>应急联系方式</td>
+            <td colspan="2" className={styles.td1}>
+              应急联系方式
+            </td>
           </tr>
           <tr>
             <td className={styles.td}>内部</td>
@@ -125,7 +136,9 @@ export default class TableList extends PureComponent {
   render() {
     const {
       loading,
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
       cardsInfo: { emergencyList, emergencyTotal },
     } = this.props;
     const { current } = this.state;
@@ -143,11 +156,12 @@ export default class TableList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length -1].title}
+        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：{emergencyTotal}
+            共计：
+            {emergencyTotal}
           </p>
         }
       >
@@ -169,10 +183,12 @@ export default class TableList extends PureComponent {
               columns={columns}
               dataSource={list}
               onChange={this.onTableChange}
-              scroll={{ x: 1400 }} // 项目不多时注掉
+              scroll={{ x: 1800 }} // 项目不多时注掉
               pagination={{ pageSize: PAGE_SIZE, total: emergencyTotal, current }}
             />
-          ): <Empty />}
+          ) : (
+            <Empty />
+          )}
         </div>
         {this.renderModal()}
       </PageHeaderLayout>

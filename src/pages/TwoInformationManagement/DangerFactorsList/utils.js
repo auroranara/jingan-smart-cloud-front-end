@@ -1,6 +1,7 @@
 import React from 'react';
 // import Link from 'umi/link';
 import Ellipsis from '@/components/Ellipsis';
+import moment from 'moment';
 import { Input } from 'antd';
 
 export const PAGE_SIZE = 1;
@@ -46,15 +47,15 @@ export const TABLE_COLUMNS = [
   // modify
   {
     title: '风险分区',
-    dataIndex: 'space',
-    key: 'space',
+    dataIndex: 'zoneName',
+    key: 'zoneName',
     align: 'center',
     width: 200,
   },
   {
     title: '排查人员',
-    dataIndex: 'dangerFactor',
-    key: 'dangerFactor',
+    dataIndex: 'zoneChargerName',
+    key: 'zoneChargerName',
     align: 'center',
     width: 200,
     render: val => (
@@ -65,8 +66,8 @@ export const TABLE_COLUMNS = [
   },
   {
     title: '负责人',
-    dataIndex: 'consequenceName',
-    key: 'consequenceName',
+    dataIndex: 'zoneChargerName',
+    key: 'zoneChargerName',
     align: 'center',
     width: 200,
     render: val => (
@@ -77,15 +78,11 @@ export const TABLE_COLUMNS = [
   },
   {
     title: '时间',
-    dataIndex: 'creatTime',
-    key: 'creatTime',
+    dataIndex: 'createTime',
+    key: 'createTime',
     align: 'center',
     width: 160,
-    render: val => (
-      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
-    ),
+    render: val => <span>{moment(+val).format('YYYY-MM-DD')}</span>,
   },
   {
     title: '附件',
@@ -93,7 +90,7 @@ export const TABLE_COLUMNS = [
     key: 'file',
     align: 'center',
     width: 240,
-    render: val => <span>查看清单</span>,
+    render: val => <a>查看清单</a>,
   },
 ];
 
