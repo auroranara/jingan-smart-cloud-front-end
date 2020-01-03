@@ -6,8 +6,9 @@ import styles from './TimelineCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
 import { vaguePhone } from '../utils';
-import flowImg from '../imgs/flow.png';
+// import flowImg from '../imgs/flow.png';
 
+const flowImg = 'http://data.jingan-china.cn/v2/chem/screen/flow.png';
 const STATUS = { 1: '误报火警', 2: '真实火警' };
 
 const isVague = false;

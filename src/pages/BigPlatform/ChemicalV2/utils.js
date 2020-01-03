@@ -1,22 +1,40 @@
-import nbEdu from './imgs/niubinEdu.png';
-import nbEngin from './imgs/niubinEngin.png';
-import wangybEdu from './imgs/wangybEdu.png';
-import wangybEngin from './imgs/wangybEngin.png';
-import zhgEdu from './imgs/zhgEdu.png';
-import zhgEngin from './imgs/zhgEngin.png';
-import zhqEdu from './imgs/zhqEdu.png';
-import zhqEngin from './imgs/zhqEngin.png';
-import zskEdu from './imgs/zskEdu.png';
-import zskEngin from './imgs/zskEngin.png';
-import zblEdu from './imgs/zblEdu.png';
-import zblEngin from './imgs/zblEngin.png';
-import per1 from './imgs/personSafety.png';
-import per2 from './imgs/perSafeSecond.png';
-import per3 from './imgs/perSafeThird.png';
-import per4 from './imgs/perSafeFourth.png';
-import per5 from './imgs/perSafeFiFth.png';
-import per6 from './imgs/perSafeSixth.png';
+// import nbEdu from './imgs/niubinEdu.png';
+// import nbEngin from './imgs/niubinEngin.png';
+// import wangybEdu from './imgs/wangybEdu.png';
+// import wangybEngin from './imgs/wangybEngin.png';
+// import zhgEdu from './imgs/zhgEdu.png';
+// import zhgEngin from './imgs/zhgEngin.png';
+// import zhqEdu from './imgs/zhqEdu.png';
+// import zhqEngin from './imgs/zhqEngin.png';
+// import zskEdu from './imgs/zskEdu.png';
+// import zskEngin from './imgs/zskEngin.png';
+// import zblEdu from './imgs/zblEdu.png';
+// import zblEngin from './imgs/zblEngin.png';
+// import per1 from './imgs/personSafety.png';
+// import per2 from './imgs/perSafeSecond.png';
+// import per3 from './imgs/perSafeThird.png';
+// import per4 from './imgs/perSafeFourth.png';
+// import per5 from './imgs/perSafeFiFth.png';
+// import per6 from './imgs/perSafeSixth.png';
 
+const nbEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/niubinEdu.png';
+const nbEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/niubinEngin.png';
+const wangybEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/wangybEdu.png';
+const wangybEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/wangybEngin.png';
+const zhgEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/zhgEdu.png';
+const zhgEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/zhgEngin.png';
+const zhqEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/zhqEdu.png';
+const zhqEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/zhqEngin.png';
+const zskEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/zskEdu.png';
+const zskEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/zskEngin.png';
+const zblEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/zblEdu.png';
+const zblEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/zblEngin.png';
+const per1 = 'http://data.jingan-china.cn/v2/chem/chemScreen/personSafety.png';
+const per2 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeSecond.png';
+const per3 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeThird.png';
+const per4 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeFourth.png';
+const per5 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeFifth.png';
+const per6 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeSixth.png';
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
   {
@@ -1558,3 +1576,43 @@ export const MonitorDetailFields = [
   // 有毒气体
   [{ label: '监测区域名称', value: 'location' }],
 ];
+
+export const MsgShowTypes = [
+  1, // 发生监管
+  2, // 联动
+  3, // 反馈
+  4, // 屏蔽
+  7, // 主机报警
+  9, // 主机报障
+  11, // 一键报修
+  13, // 安全巡查
+  14, // 上报隐患
+  15, // 整改隐患
+  16, // 重新整改隐患
+  17, // 复查隐患
+  18, // 维保巡检
+  32, // 电气火灾报警
+  36, // 水系统报警
+  37, // 水系统恢复
+  38, // 独立烟感报警
+  39, // 可燃气体报警
+  40, // 独立烟感故障
+  42, // 电气火灾失联
+  43, // 电气火灾失联恢复
+  44, // 电气火灾报警恢复
+  45, // 燃气报警恢复
+  46, // 独立烟感失联
+  47, // 独立烟感失联恢复
+  48, // 水系统失联
+  49, // 水系统失联恢复
+  50, // 独立烟感报警恢复
+  51, // 独立烟感故障恢复
+  54, // 可燃气体失联
+  55, // 可燃气体失联恢复
+  56, // 机械臂故障
+  57, // 机械臂故障恢复
+  58, // 人脸识别报警
+  100, // 监测设备
+];
+
+export const TypeClickList = [100, 14, 15, 16, 17];

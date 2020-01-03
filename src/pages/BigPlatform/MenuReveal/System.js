@@ -7,7 +7,7 @@ import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
 // import { filterBigPlatform } from '@/utils/customAuth';
-import { SRC_MAP, setBlocks } from './utils';
+import { SRC_MAP, setBlocks, setMenuSys } from './utils';
 import classNames from 'classnames';
 import styles from './NewMenu.less';
 // 每个模块标题左侧图
@@ -100,6 +100,7 @@ export default class NewMenuReveal extends Component {
         // 驾驶舱路由、系统路由
         const configSys = menuAll.find(item => item.path === '/');
         const menuSysAll = this.filterSysMenu(configSys.routes, 2);
+        setMenuSys(blockClassification, menuSysAll);
         const blocks = blockClassification[0].blocks;
         const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
         this.setState({ menuSys, menuSysAll });
@@ -117,11 +118,11 @@ export default class NewMenuReveal extends Component {
  * @param {String} parentLocale 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
  **/
   filterSysMenu = (array, depth = 0, parentLocale) => {
-    // const {
-    //   user: {
-    //     currentUser: { permissionCodes },
-    //   },
-    // } = this.props;
+    const {
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
     return array.reduce((arr, item) => {
       let locale = 'menu';
       if (parentLocale && item.name) {
@@ -135,9 +136,9 @@ export default class NewMenuReveal extends Component {
       if (
         item.redirect ||
         item.hideInMenu ||
-        ['/dashboard', '/company-workbench'].includes(item.path)
-        // ['/dashboard', '/company-workbench'].includes(item.path) ||
-        // !permissionCodes.includes(item.code)
+        // ['/dashboard', '/company-workbench'].includes(item.path)
+        ['/dashboard', '/company-workbench'].includes(item.path) ||
+        !permissionCodes.includes(item.code)
       ) {
         return arr;
       } else if (item.routes && item.routes.length && +depth > 1) {
@@ -202,7 +203,7 @@ export default class NewMenuReveal extends Component {
   renderBlocks = () => {
     return (
       <div className={styles.blocks}>
-        {blockClassification.map(({ name, splitIndex, icon }, index) => (
+        {blockClassification.map(({ name, splitIndex, icon, menuSys }, index) => menuSys && menuSys.length ? (
           <div key={index} className={styles.blockItem} onClick={() => this.handleSelectBlockClassification(index)}>
             <div className={styles.blockItemInner}>
               <img src={icon} alt="block" />
@@ -210,7 +211,7 @@ export default class NewMenuReveal extends Component {
               <div>{name.slice(splitIndex)}</div>
             </div>
           </div>
-        ))}
+        ) : null)}
       </div>
     )
   }
@@ -258,11 +259,14 @@ export default class NewMenuReveal extends Component {
           userName,
           unitType,
           companyId,
+          permissionCodes,
         },
       },
     } = this.props;
-    // 当前选择的分类下标
     const { currentBlockClassification } = this.state;
+
+    // const showWorkbench = permissionCodes && permissionCodes.includes('companyWorkbench');
+    const showChemical = permissionCodes && permissionCodes.includes('dashboard.chemical');
     return (
       <div className={styles.newMenuRevealContainer}>
         {/* 头部 */}
@@ -291,11 +295,17 @@ export default class NewMenuReveal extends Component {
         </Col>
         {/* 底部 */}
         <div className={styles.footer}>
+          {/* {showWorkbench && (
+            <div className={styles.linkItem} onClick={() => router.push('/company-workbench/view')}>
+              <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
+              <div>工作台</div>
+            </div>
+          )} */}
           <div className={styles.linkItem} onClick={() => router.push('/company-workbench/view')}>
             <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
             <div>工作台</div>
           </div>
-          {unitType === 4 && (
+          {unitType === 4 && showChemical && (
             <div className={styles.linkItem} onClick={() => router.push(`/big-platform/chemical/${companyId}`)}>
               <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
               <div>驾驶舱</div>

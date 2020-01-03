@@ -7,7 +7,7 @@ import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import NewSection from '@/components/NewSection';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
-import headerBg from '@/assets/new-header-bg.png';
+// import headerBg from '@/assets/new-header-bg.png';
 // 接入单位统计
 import AccessUnitStatistics from './AccessUnitStatistics';
 // 实时报警统计
@@ -29,6 +29,7 @@ import { GridSelect } from './components/Components';
 
 import { genCardsInfo, getAlarmUnits } from './utils';
 
+const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
 // websocket配置
 const options = {
   pingTimeout: 30000,

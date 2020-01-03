@@ -6,7 +6,14 @@ import { setAuthority, setToken } from '../utils/authority';
 // import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
 
-import { accountLogin, accountLoginGsafe, fetchFooterInfo, changerUser } from '../services/account';
+import {
+  accountLogin,
+  accountLoginGsafe,
+  fetchFooterInfo,
+  changerUser,
+  getCode,
+  loginByPhone,
+} from '../services/account';
 
 // const FIRE_CONTROL_URL = '/fire-control/maintenance-company/list';
 
@@ -49,8 +56,18 @@ export default {
       } else error(response.msg);
     },
 
-    *loginWithUserId({ payload }, { call, put }) {
-      const response = yield call(accountLogin, payload);
+    *loginWithUserId(
+      {
+        payload: { type, ...payload },
+      },
+      { call, put }
+    ) {
+      let response;
+      if (type === '1') {
+        response = yield call(accountLogin, payload);
+      } else {
+        response = yield call(loginByPhone, payload);
+      }
       // const { unitType } = response.data;
       if (response && response.code === 200) {
         yield put({
@@ -58,7 +75,9 @@ export default {
           payload: { ...response.data },
         });
         // 登录1.0
-        yield call(accountLoginGsafe, payload);
+        if (type === '1') {
+          yield call(accountLoginGsafe, payload);
+        }
         reloadAuthorized();
         router.replace('/');
       }
@@ -107,6 +126,38 @@ export default {
         router.replace('/');
         if (success) success();
       } else if (error) error();
+    },
+    // 获取验证码
+    *getCode({ payload, callback }, { call, put }) {
+      const response = yield call(getCode, payload);
+      callback && callback(response);
+    },
+    // 手机号登录
+    *loginByPhone({ payload, handleMoreUser, success, error }, { call, put }) {
+      const response = yield call(loginByPhone, payload);
+      const { code, msg, data } = response || {};
+      if (code === 200) {
+        if (data.isMoreUser) {
+          // 如果是多用户
+          yield put({
+            type: 'saveMoreUser',
+            payload: data.moreUser,
+          });
+          if (handleMoreUser) handleMoreUser({ token: data.token });
+        } else {
+          // 如果不是多用户，直接登录进去
+          yield put({
+            type: 'changeLoginStatus',
+            payload: { ...data },
+          });
+          reloadAuthorized();
+          router.replace('/');
+        }
+        success && success();
+        yield put({ type: 'saveLogined', payload: true });
+      } else {
+        error && error(msg);
+      }
     },
   },
 

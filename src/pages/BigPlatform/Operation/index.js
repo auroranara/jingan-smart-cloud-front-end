@@ -7,7 +7,7 @@ import moment from 'moment';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
-import headerBg from '@/assets/new-header-bg.png';
+// import headerBg from '@/assets/new-header-bg.png';
 import styles from './index.less';
 import styles1 from '@/pages/BigPlatform/NewUnitFireControl/index.less';
 import {
@@ -33,6 +33,7 @@ import { redLight as iconFire } from '@/pages/BigPlatform/GasStation/imgs/links'
 import iconFault from '@/assets/icon-fault-msg.png';
 import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPlatform/NewUnitFireControl/Section/Components';
 
+const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
 const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
 const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 48, 49];

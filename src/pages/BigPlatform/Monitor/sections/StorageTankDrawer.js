@@ -5,7 +5,9 @@ import { Icon, Row, Col } from 'antd';
 import styles from './StorageTankDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import StorageLableCards from '../components/StorageLableCards';
-import waterBg from '../imgs/waterBg.png';
+// import waterBg from '../imgs/waterBg.png';
+
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 
 @connect(({ monitor, loading }) => ({
   monitor,

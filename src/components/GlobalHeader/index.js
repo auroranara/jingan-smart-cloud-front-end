@@ -41,7 +41,14 @@ export default class GlobalHeader extends PureComponent {
           <Menu.Item key={item.name}>{formatMessage({ id: item.locale })}</Menu.Item>
         )) : null}
       </Menu>
-    )
+    );
+    const dropdown = menuBigPlatform && menuBigPlatform.length ? (
+      <div className={styles.menuItem} ref={ref => { this.menuBigPlatformDom = ref }}>
+        <Dropdown overlay={menu} getPopupContainer={() => this.menuBigPlatformDom}>
+          <span>驾驶舱</span>
+        </Dropdown>
+      </div>
+    ) : null;
     return (
       <div className={styles.header}>
         {isMobile && (
@@ -56,11 +63,7 @@ export default class GlobalHeader extends PureComponent {
         />
         <div className={styles.menuItem}><span onClick={() => router.push('/company-workbench/view')}>工作台</span></div>
         <div className={styles.menuItem}><span onClick={() => router.push('/menu-reveal')}>系统菜单</span></div>
-        <div className={styles.menuItem} ref={ref => { this.menuBigPlatformDom = ref }}>
-          <Dropdown overlay={menu} getPopupContainer={() => this.menuBigPlatformDom}>
-            <span>驾驶舱</span>
-          </Dropdown>
-        </div>
+        {dropdown}
         <RightContent {...this.props} />
       </div>
     );

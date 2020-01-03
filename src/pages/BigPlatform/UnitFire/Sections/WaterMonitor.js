@@ -6,9 +6,10 @@ import styles from './WaterMonitor.less';
 import pondAbnormal from '../images/pond-abnormal.png';
 import pondNormal from '../images/pond-normal.png';
 import pondLost from '../images/pond-lost.png';
-import waterBg from '../images/waterBg.png';
+// import waterBg from '../images/waterBg.png';
 import Ellipsis from '@/components/Ellipsis';
 
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 const waterSys = {
   '101': {
     name: '消火栓系统',

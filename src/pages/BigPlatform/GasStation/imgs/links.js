@@ -2,7 +2,7 @@ import alarmIcon from './alarm.png';
 import dangerIcon from './danger.png';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
-import headerBg from '@/assets/new-header-bg.png';
+// import headerBg from '@/assets/new-header-bg.png';
 import hydrantIcon from './hydrant.png';
 import iconCompany from '@/assets/icon-company.png';
 import iconMaintenance from '@/assets/icon-maintenance.png';
@@ -55,6 +55,7 @@ export {
   waterBg,
 } from '@/pages/BigPlatform/NewUnitFireControl/imgs/links';
 
+const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
 export {
   alarmIcon,
   dangerIcon,

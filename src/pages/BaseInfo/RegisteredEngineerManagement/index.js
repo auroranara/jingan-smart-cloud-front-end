@@ -294,7 +294,7 @@ export default class RegSafetyEngList extends PureComponent {
               </p>
               <p>
                 性别:
-                {+sex === 1 ? '男生' : '女生'}
+                {+sex === 0 ? '男' : '女'}
               </p>
               <p>
                 出生年月:

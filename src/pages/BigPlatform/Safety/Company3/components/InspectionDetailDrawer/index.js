@@ -7,12 +7,14 @@ import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患�
 import SectionDrawer from '../SectionDrawer';
 import RiskCard from '../RiskCard';
 // 暂无隐患图片
-import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
+// import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
 // 暂无卡片
-import defaultCard from '@/assets/default_risk_point.png';
+// import defaultCard from '@/assets/default_risk_point.png';
 // 引入样式文件
 import styles from './index.less';
 
+const defaultHiddenDanger = 'http://data.jingan-china.cn/v2/chem/assets/default_hidden_danger.png';
+const defaultCard = 'http://data.jingan-china.cn/v2/chem/assets/default_risk_point.png';
 // 隐患字段
 const HIDDEN_DANGER_FIELDNAMES = {
   status: 'hiddenStatus', // 隐患状态

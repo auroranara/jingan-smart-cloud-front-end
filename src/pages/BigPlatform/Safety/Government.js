@@ -3,7 +3,6 @@ import { Row, Col, TreeSelect } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
-// import classNames from 'classnames';
 import styles from './Government.less';
 import Timer from './Components/Timer';
 import MapSection from './Sections/MapSection';

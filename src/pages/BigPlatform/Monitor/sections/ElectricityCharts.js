@@ -6,10 +6,11 @@ import SectionWrapper from '../components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
-import waterBg from '../imgs/waterBg.png';
+// import waterBg from '../imgs/waterBg.png';
 
 const { Option } = Select;
 
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 const tabList = [
   {
     desc: '漏电电流',

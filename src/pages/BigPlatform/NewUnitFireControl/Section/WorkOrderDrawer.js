@@ -4,10 +4,15 @@ import { Icon } from 'antd';
 
 import styles from './WorkOrderDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
-import handleIcon from '../imgs/handle.png';
-import overIcon from '../imgs/over.png';
-import handlingIcon from '../imgs/handling.png';
-import handledIcon from '../imgs/handled.png';
+// import handleIcon from '../imgs/handle.png';
+// import overIcon from '../imgs/over.png';
+// import handlingIcon from '../imgs/handling.png';
+// import handledIcon from '../imgs/handled.png';
+
+const overIcon = 'http://data.jingan-china.cn/v2/chem/screen/over.png';
+const handleIcon = 'http://data.jingan-china.cn/v2/chem/screen/handle.png';
+const handlingIcon = 'http://data.jingan-china.cn/v2/chem/screen/handling.png';
+const handledIcon = 'http://data.jingan-china.cn/v2/chem/screen/handled.png';
 
 const DAY_MS = 24 * 3600 * 1000;
 const NO_DATA = '暂无信息';

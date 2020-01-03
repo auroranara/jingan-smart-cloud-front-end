@@ -3,11 +3,12 @@ import Section from '../Section';
 import playIcon from '../img/play.png';
 import styles from './VideoSurveillance.less';
 import {findFirstVideo} from '@/utils/utils';
-import defaultMonitorCover from './assets/default-monitor-cover.png';
+// import defaultMonitorCover from './assets/default-monitor-cover.png';
 // const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/monitor/com/waterBg1.png';/
 /**
  * description: 视频监控
  */
+const defaultMonitorCover = 'http://data.jingan-china.cn/v2/chem/screen/default-monitor-cover.png';
 export default class VideoSurveillance extends PureComponent {
 
   render() {

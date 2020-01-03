@@ -946,9 +946,37 @@ module.exports = env => {
               path: '/major-hazard-info/pipeline', // 工业管道
               code: 'majorHazardInfo.pipeline',
               name: 'pipeline',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/major-hazard-info/pipeline',
+                  redirect: '/major-hazard-info/pipeline/list',
+                },
+                {
+                  name: 'list',
+                  code: 'majorHazardInfo.pipeline.list',
+                  path: '/major-hazard-info/pipeline/list',
+                  component: './MajorHazardInfo/Pipeline/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'majorHazardInfo.pipeline.detail',
+                  path: '/major-hazard-info/pipeline/detail/:id',
+                  component: './MajorHazardInfo/Pipeline/Other',
+                },
+                {
+                  name: 'add',
+                  code: 'majorHazardInfo.pipeline.add',
+                  path: '/major-hazard-info/pipeline/add',
+                  component: './MajorHazardInfo/Pipeline/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'majorHazardInfo.pipeline.edit',
+                  path: '/major-hazard-info/pipeline/edit/:id',
+                  component: './MajorHazardInfo/Pipeline/Other',
+                },
+              ],
             },
           ],
         },
@@ -1148,6 +1176,42 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/safety-knowledge-base/law-standard', // 法律法规标准评价
+              code: 'safetyKnowledgeBase.lawStandard',
+              name: 'lawStandard',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-knowledge-base/law-standard',
+                  redirect: '/safety-knowledge-base/law-standard/list',
+                },
+                {
+                  name: 'list',
+                  path: '/safety-knowledge-base/law-standard/list',
+                  code: 'safetyKnowledgeBase.lawStandard.list',
+                  component: './SafetyKnowledgeBase/LawStandard/List',
+                },
+                {
+                  name: 'detail',
+                  path: '/safety-knowledge-base/law-standard/detail/:id',
+                  code: 'safetyKnowledgeBase.lawStandard.detail',
+                  component: './SafetyKnowledgeBase/LawStandard/Other',
+                },
+                {
+                  name: 'add',
+                  path: '/safety-knowledge-base/law-standard/add',
+                  code: 'safetyKnowledgeBase.lawStandard.add',
+                  component: './SafetyKnowledgeBase/LawStandard/Other',
+                },
+                {
+                  name: 'edit',
+                  path: '/safety-knowledge-base/law-standard/edit/:id',
+                  code: 'safetyKnowledgeBase.lawStandard.edit',
+                  component: './SafetyKnowledgeBase/LawStandard/Other',
+                },
+              ],
+            },
           ],
         },
 
@@ -1277,13 +1341,13 @@ module.exports = env => {
                   name: 'add',
                   code: 'riskControl.fourColorImage.add',
                   path: '/risk-control/four-color-image/add',
-                  component: "./RiskControl/FourColorImage/Edit",
+                  component: './RiskControl/FourColorImage/Edit',
                 },
                 {
                   name: 'edit',
                   code: 'riskControl.fourColorImage.edit',
                   path: '/risk-control/four-color-image/edit/:id',
-                  component: "./RiskControl/FourColorImage/Edit",
+                  component: './RiskControl/FourColorImage/Edit',
                 },
               ],
             },
@@ -1363,31 +1427,31 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              path: '/control-measures-follow-up/hidden-danger-report', // 隐患排查报表
-              code: 'controlMeasuresFollowUp.hiddenDangerReport',
-              name: 'hiddenDangerReport',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/control-measures-follow-up/hidden-danger-report',
-                  name: 'hiddenDangerReport',
-                  redirect: '/control-measures-follow-up/hidden-danger-report/list',
-                },
-                {
-                  path: '/control-measures-follow-up/hidden-danger-report/list',
-                  code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
-                  name: 'list',
-                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportList',
-                },
-                {
-                  path: '/control-measures-follow-up/hidden-danger-report/detail/:id',
-                  code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
-                  name: 'detail',
-                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
-                },
-              ],
-            },
+            // {
+            //   path: '/control-measures-follow-up/hidden-danger-report', // 隐患排查报表
+            //   code: 'controlMeasuresFollowUp.hiddenDangerReport',
+            //   name: 'hiddenDangerReport',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/control-measures-follow-up/hidden-danger-report',
+            //       name: 'hiddenDangerReport',
+            //       redirect: '/control-measures-follow-up/hidden-danger-report/list',
+            //     },
+            //     {
+            //       path: '/control-measures-follow-up/hidden-danger-report/list',
+            //       code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
+            //       name: 'list',
+            //       component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportList',
+            //     },
+            //     {
+            //       path: '/control-measures-follow-up/hidden-danger-report/detail/:id',
+            //       code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
+            //       name: 'detail',
+            //       component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+            //     },
+            //   ],
+            // },
             {
               path: '/control-measures-follow-up/hidden-danger-count-report', // 隐患统计报表
               code: 'controlMeasuresFollowUp.hiddenDangerCountReport',

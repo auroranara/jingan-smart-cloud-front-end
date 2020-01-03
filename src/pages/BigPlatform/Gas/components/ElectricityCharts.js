@@ -4,8 +4,9 @@ import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
-import waterBg from '../imgs/waterBg.png';
+// import waterBg from '../imgs/waterBg.png';
 
+const waterBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 const tabList = [
   {
     desc: '温度',

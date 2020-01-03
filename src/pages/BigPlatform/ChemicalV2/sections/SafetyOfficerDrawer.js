@@ -2,11 +2,13 @@ import React, { PureComponent } from 'react';
 import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
 import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
-import { KeyList, ValueList, PersonList } from '../utils';
+import { getLabel, SEXES, DEGREES } from '@/pages/RoleAuthorization/AccountManagement/utils';
+// import { KeyList, ValueList, PersonList } from '../utils';
 // 引入样式文件
 import styles from './SafetyOfficerDrawer.less';
 import EduIcon from '../imgs/eduIcon.png';
 import RegisterEnginIcon from '../imgs/registerEnginIcon.png';
+import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
 
 // const borderColorList = ['#FF4848', '#C6C181', '#00A8FF', '#0967D3'];
 
@@ -17,7 +19,7 @@ import RegisterEnginIcon from '../imgs/registerEnginIcon.png';
   unitSafety,
 }))
 export default class SafetyOfficerDrawer extends PureComponent {
-  componentDidUpdate({ visible: prevVisible }) {
+  componentDidUpdate ({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
       this.scroll && this.scroll.scrollTop();
@@ -28,7 +30,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
     this.scroll = (scroll && scroll.dom) || scroll;
   };
 
-  render() {
+  render () {
     let {
       // 抽屉是否可见
       visible,
@@ -37,14 +39,13 @@ export default class SafetyOfficerDrawer extends PureComponent {
       // 抽屉关闭事件
       onClose,
       handleClickImgShow,
+      unitSafety: {
+        safetyOfficer: {
+          keyList,
+          valueList,
+        },
+      },
     } = this.props;
-
-    const {
-      // phoneVisible = true,
-      keyList = KeyList,
-      personList = PersonList,
-      // valueList = ValueList,
-    } = {};
 
     return (
       <SectionDrawer
@@ -59,65 +60,62 @@ export default class SafetyOfficerDrawer extends PureComponent {
       >
         <Row className={styles.personWrapper}>
           {keyList &&
-            keyList.map(({ label, value, key }) => (
-              <Col span={12} className={styles.person} key={key}>
-                <div className={styles.personName}>{label}</div>
-                <div className={styles.personValue}>{value}</div>
+            keyList.map((item, index) => (
+              <Col span={12} className={styles.person} key={index}>
+                <div className={styles.personName}>{item}</div>
+                <div className={styles.personValue}>{valueList[index].length || 0}</div>
               </Col>
             ))}
         </Row>
         <div className={styles.container}>
-          {personList.map(item => {
+          {valueList.reduce((all, val) => [...all, ...val], []).map(item => {
             const {
               id,
-              name,
+              role_name,
+              education, // 学历
+              major, // 专业
+              user_name,
               sex,
-              age,
-              phone,
-              education,
-              work,
-              sign,
-              personPic,
-              eduPic,
-              enginPic,
+              birth,
+              phone_number,
+              safetyFile,
+              educationFileList,
+              avatarFileList, // 头像
             } = item;
+            const avatar = avatarFileList && avatarFileList.length ? avatarFileList[0].webUrl : imgNoAvatar;
             return (
               <div className={styles.personList} key={id}>
-                <div
-                  className={styles.left}
-                  style={{
-                    background: `url(${personPic}) no-repeat center center`,
-                    backgroundSize: '77% 65% ',
-                  }}
-                />
+                <div className={styles.left}>
+                  <img src={avatar} alt="avatar" />
+                </div>
                 <div className={styles.middle}>
-                  <div className={styles.name}>{name}</div>
+                  <div className={styles.name}>{user_name}</div>
                   <div className={styles.item}>
                     <span className={styles.label}>性别：</span>
-                    <span className={styles.value}>{sex}</span>
+                    <span className={styles.value}>{getLabel(sex, SEXES)}</span>
                   </div>
                   <div className={styles.item}>
                     <span className={styles.label}>年龄：</span>
-                    <span className={styles.value}>{age}</span>
+                    <span className={styles.value}>{birth || '-'}</span>
                   </div>
                   <div className={styles.item}>
                     <span className={styles.label}>手机号码：</span>
                     <span className={styles.value}>
-                      {phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}
+                      {phone_number ? phone_number.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '-'}
                     </span>
                   </div>
                   <div className={styles.item}>
                     <span className={styles.label}>学历：</span>
-                    <span className={styles.value}>{education}</span>
+                    <span className={styles.value}>{getLabel(education, DEGREES)}</span>
                   </div>
                   <div className={styles.item}>
                     <span className={styles.label}>专业：</span>
-                    <span className={styles.value}>{work}</span>
+                    <span className={styles.value}>{major || '-'}</span>
                   </div>
                 </div>
                 <div className={styles.right}>
                   <div className={styles.sign}>
-                    <span className={styles.signName}>{sign}</span>
+                    <span className={styles.signName}>{role_name}</span>
                   </div>
                   <div className={styles.iconBtn}>
                     <Tooltip title="学历证书">
@@ -125,10 +123,10 @@ export default class SafetyOfficerDrawer extends PureComponent {
                         className={styles.icon}
                         style={{
                           background: `url(${EduIcon}) no-repeat center bottom`,
-                          backgroundSize: '38% 95%',
-                          cursor: 'pointer',
+                          backgroundSize: '100% 100%',
+                          cursor: educationFileList.length ? 'pointer' : 'default',
                         }}
-                        onClick={() => handleClickImgShow([eduPic])}
+                        onClick={() => educationFileList.length ? handleClickImgShow(educationFileList.map(item => item.webUrl)) : null}
                       />
                     </Tooltip>
                     <Tooltip title="注册安全工程师">
@@ -136,10 +134,10 @@ export default class SafetyOfficerDrawer extends PureComponent {
                         className={styles.icon}
                         style={{
                           background: `url(${RegisterEnginIcon}) no-repeat center bottom`,
-                          backgroundSize: '38%  95%',
-                          cursor: 'pointer',
+                          backgroundSize: '100%  100%',
+                          cursor: safetyFile.length ? 'pointer' : 'default',
                         }}
-                        onClick={() => handleClickImgShow([enginPic])}
+                        onClick={() => safetyFile.length ? handleClickImgShow(safetyFile.map(item => item.webUrl)) : null}
                       />
                     </Tooltip>
                   </div>

@@ -3,12 +3,13 @@ import { Select, Input } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import DeviceCard from '@/jingan-components/DeviceCard';
-import defaultBackground from '@/assets/default_dynamic_monitor.png';
+// import defaultBackground from '@/assets/default_dynamic_monitor.png';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';
 import selectStyles from '../../select.less';
 
+const defaultBackground = 'http://data.jingan-china.cn/v2/chem/assets/default_dynamic_monitor.png';
 const { Option } = Select;
 // 状态字典
 const statusDict = [

@@ -12,14 +12,17 @@ import SectionDrawer from '../SectionDrawer';
 import RiskCard from '../RiskCard';
 import StandardsAndMeasures from '@/pages/BigPlatform/Safety/Company3/components/StandardsAndMeasures';
 // 暂无隐患图片
-import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
+// import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
 // 暂无巡查图片
-import defaultInspection from '@/assets/default_inspection.png';
+// import defaultInspection from '@/assets/default_inspection.png';
 // 暂无卡片
-import defaultCard from '@/assets/default_risk_point.png';
+// import defaultCard from '@/assets/default_risk_point.png';
 // 引入样式文件
 import styles from './index.less';
 
+const defaultHiddenDanger = 'http://data.jingan-china.cn/v2/chem/assets/default_hidden_danger.png';
+const defaultInspection = 'http://data.jingan-china.cn/v2/chem/assets/default_inspection.png';
+const defaultCard = 'http://data.jingan-china.cn/v2/chem/assets/default_risk_point.png';
 // 默认state
 const DEFAULT_STATE = {
   tabKey: 'hiddenDanger',

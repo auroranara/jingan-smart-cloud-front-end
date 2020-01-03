@@ -420,11 +420,11 @@ export default class TableList extends React.Component {
                   rules: [{ required: true, message: '请输入' }],
                 })(<Input placeholder="请输入" {...itemStyles} maxLength={4} />)}
               </FormItem>
-              <FormItem label="时间" {...formItemLayout}>
+              <FormItem label="开始时间" {...formItemLayout}>
                 {getFieldDecorator('createTime', {
                   initialValue: createTime ? moment(+createTime) : undefined,
-                  rules: [{ required: true, message: '请输入' }],
-                })(<DatePicker placeholder="请输入" format="YYYY-MM-DD" {...itemStyles} />)}
+                  rules: [{ required: true, message: '请选择' }],
+                })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
               </FormItem>
               {/* <FormItem label="关联内容" {...formItemLayout}>
                 {getFieldDecorator('conetnt', {

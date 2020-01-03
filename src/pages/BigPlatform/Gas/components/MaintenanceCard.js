@@ -5,9 +5,11 @@ import { Timeline } from 'antd';
 import styles from './MaintenanceCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
-import flowImg from '../imgs/flow_m.png';
-import flowAlarm from '../imgs/flow_alarm.png';
+// import flowImg from '../imgs/flow_m.png';
+// import flowAlarm from '../imgs/flow_alarm.png';
 
+const flowImg = 'http://data.jingan-china.cn/v2/chem/screen/flow_m.png';
+const flowAlarm = 'http://data.jingan-china.cn/v2/chem/screen/flow_alarm.png';
 const ID = 'maintenance-drawer';
 
 function switchType(type) {

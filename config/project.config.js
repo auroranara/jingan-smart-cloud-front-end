@@ -5,15 +5,19 @@ import czeyLogo from '../src/assets/logo_czey.svg';
 import nanxiaoLogo from '../src/assets/logo_nanxiao.svg';
 import nanxiaoCode from '../src/assets/nanxiao_download_code.png';
 import liminLogo from '../src/assets/logo_limin.svg';
-import liminCode from '../src/assets/limin_download_code.jpg';
-import changshuCode from '../src/assets/changshu_download_code.png';
+// import liminCode from '../src/assets/limin_download_code.jpg';
+// import changshuCode from '../src/assets/changshu_download_code.png';
 import shanxiCode from '../src/assets/shanxi_download_code.png';
-import fireCode from '../src/assets/fire_download_code.jpg';
+// import fireCode from '../src/assets/fire_download_code.jpg';
 import yanshiCode from '../src/assets/yanshi_download_code.png';
 import xiaoyuanCode from '../src/assets/xiaoyuan_download_code.png';
 import xuzhouCode from '../src/assets/xuzhou_download_code.png';
 import czeyCode from '../src/assets/czey_download_code.png';
 // http://image.jingan-china.cn/v2/login/school_2.png
+
+const liminCode = 'http://data.jingan-china.cn/v2/chem/assets/limin_download_code.png';
+const changshuCode = 'http://data.jingan-china.cn/v2/chem/assets/changshu_download_code.png';
+const fireCode = 'http://data.jingan-china.cn/v2/chem/assets/fire_download_code.png';
 const defaultConfig = {
   logo,
   code,
