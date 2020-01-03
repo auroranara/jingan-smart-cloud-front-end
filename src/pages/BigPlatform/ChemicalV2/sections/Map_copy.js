@@ -360,6 +360,37 @@ export default class Map extends PureComponent {
     // polygonMarker.alwaysShow(true);
     // polygonMarker.avoid(false);
   };
+
+  //加载按钮型楼层切换控件
+  loadBtnFloorCtrl = (groupId = 1) => {
+    //楼层控制控件配置参数
+    const btnFloorCtlOpt = new fengMap.controlOptions({
+      //默认在右下角
+      position: fengMap.controlPositon.LEFT_TOP,
+      //初始楼层按钮显示个数配置。默认显示5层,其他的隐藏，可滚动查看
+      showBtnCount: 6,
+      //初始是否是多层显示，默认单层显示
+      allLayer: false,
+      //位置x,y的偏移量
+      offset: {
+        x: 0,
+        y: 100,
+      },
+    });
+    //不带单/双层楼层控制按钮,初始时只有1个按钮,点击后可弹出其他楼层按钮
+    const btnFloorControl = new fengMap.buttonGroupsControl(map, btnFloorCtlOpt);
+    //楼层切换
+    btnFloorControl.onChange(function(groups, allLayer) {
+      //groups 表示当前要切换的楼层ID数组,
+      //allLayer表示当前楼层是单层状态还是多层状态。
+    });
+    //默认是否展开楼层列表，true为展开，false为不展开
+    btnFloorControl.expand = true;
+    //楼层控件是否可点击，默认为true
+    btnFloorControl.enableExpand = true;
+    // 切换到指定楼层(可传入两个参数：目标层groupID,是否多层状态)
+    btnFloorControl.changeFocusGroup(groupId);
+  };
   /* eslint-disable*/
 
   initMap() {
@@ -408,6 +439,8 @@ export default class Map extends PureComponent {
       map.tiltAngle = 50;
       map.rotateAngle = 60;
       map.mapScaleLevel = 21;
+
+      this.loadBtnFloorCtrl();
       //显示按钮
       // document.getElementById('btnsGroup').style.display = 'block';
       // [...riskPointData, ...videoData, ...monitorData].forEach(element => {
@@ -591,6 +624,23 @@ export default class Map extends PureComponent {
     layers[index].show = !visibles[index];
   };
 
+  handleClc = () => {
+    var group = map.getFMGroup(map.focusGroupID);
+    //遍历图层
+    group.traverse(function(fm) {
+      // group.traverseByAlias(['imageMarker'], fm => {
+      // FMLabelLayer 文本标注层对象
+      if (fm instanceof fengmap.FMImageMarker) {
+        //   //地图元素的显示与隐藏，show=true/隐藏:show=false
+        //   fm.show = !checked;
+        console.log('fm', fm);
+        console.log('fm.opts_', fm.opts_);
+        if (fm.opts_.iconType === 0) fm.show = false;
+      }
+      // console.log('fm', fm);
+    });
+  };
+
   render() {
     const { gdMapVisible, visibles } = this.state;
     return (
@@ -656,6 +706,10 @@ export default class Map extends PureComponent {
                 background: `url(${position}) center center / auto 80% no-repeat #fff`,
               }}
               onClick={this.handlePosition}
+            />
+            <div
+              style={{ background: '#fff', width: '50px', height: '50px' }}
+              onClick={this.handleClc}
             />
           </div>
         )}

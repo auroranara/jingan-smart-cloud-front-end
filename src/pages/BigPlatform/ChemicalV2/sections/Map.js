@@ -29,9 +29,9 @@ const COLORS = ['rgb(255, 72, 72)', 'rgb(241, 122, 10)', 'rgb(251, 247, 25)', 'r
 let map;
 const fmapID = '100';
 const controls = [
-  { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive },
-  { label: '视频监控', icon: videoGray, activeIcon: videoActive },
-  { label: '监测设备', icon: monitorGray, activeIcon: monitorActive },
+  { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive, markerIcon: riskPoint },
+  { label: '视频监控', icon: videoGray, activeIcon: videoActive, markerIcon: video },
+  { label: '监测设备', icon: monitorGray, activeIcon: monitorActive, markerIcon: monitor },
 ];
 
 @connect(({ map, chemical }) => ({
@@ -86,8 +86,14 @@ export default class Map extends PureComponent {
       callback: mapInfo => {
         this.initMap({ ...mapInfo }, () => {
           this.fetchMapAreaList();
-          // this.fetchRiskPoint();
-          this.fetchMonitorEquipment();
+          [
+            'chemical/fetchRiskPoint',
+            'chemical/fetchVideoList',
+            'chemical/fetchMonitorEquipment',
+          ].map((type, index) => {
+            this.fetchPonits(type, index);
+            return null;
+          });
         });
       },
     });
@@ -111,59 +117,37 @@ export default class Map extends PureComponent {
     });
   };
 
-  renderPoints = points => {
-    if (!points.length) return;
-    points.map(item => {
-      const { groupId, xnum, ynum, znum, id, itemId } = item;
-      const groupLayer = map.getFMGroup(groupId);
-      const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
-      groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
-
-      const im = new fengmap.FMImageMarker({
-        size: 50, //设置图片显示尺寸
-        height: 3, //标注高度，大于model的高度
-        ...markerProps,
+  renderPoints = (pointsInfo, iconType) => {
+    if (!pointsInfo.length) return;
+    pointsInfo.map(item => {
+      const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
+      this.addMarkers(+groupId, {
+        x: +xnum,
+        y: +ynum,
+        z: +znum,
+        url: controls[iconType].markerIcon,
+        iconType,
+        markerProps: item,
       });
-      layer.addMarker(im); //图片标注层添加图片Marker
-      im.alwaysShow();
-      this.markerArray.push(im);
-      // this.addMarkers(item, layer);
       return null;
     });
   };
 
-  // 风险点
-  fetchRiskPoint = () => {
+  // 获取点位信息
+  fetchPonits = (type, iconType, payload = {}) => {
+    if (!type) return null;
     const { dispatch, companyId } = this.props;
     dispatch({
-      type: 'chemical/fetchRiskPoint',
-      payload: { companyId, pageNum: 1, pageSize: 0 },
+      type,
+      payload: { companyId, pageNum: 1, pageSize: 0, ...payload },
       callback: res => {
         const pointsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
+        // .map(item => {
+        //   return item.pointFixInfoList[0];
+        // });
         console.log('pointsInfo', pointsInfo);
-        if (!pointsInfo.length) return;
-        pointsInfo.map(item => {
-          const {
-            pointFixInfoList: { groupId, xnum, ynum, znum, id, itemId },
-          } = item;
-          const groupLayer = map.getFMGroup(groupId);
-          const layer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
-          groupLayer.addLayer(layer); //添加图片标注层到模型层。否则地图上不会显示
-          this.addMarkers(item, layer);
-          return null;
-        });
-      },
-    });
-  };
 
-  fetchMonitorEquipment = () => {
-    const { dispatch, companyId } = this.props;
-    dispatch({
-      type: 'chemical/fetchMonitorEquipment',
-      payload: { companyId, pageNum: 1, pageSize: 0 },
-      callback: res => {
-        const monitorsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
-        console.log('monitorsInfo', monitorsInfo);
+        this.renderPoints(pointsInfo, iconType);
       },
     });
   };
@@ -218,6 +202,35 @@ export default class Map extends PureComponent {
       const { handleClickRiskPoint } = this.props;
       const clickedObj = event.target;
       console.log('clickedObj', clickedObj);
+      // console.log('time', moment().valueOf());
+      const thisTime = moment().valueOf();
+      if (thisTime - this.lastTime < 300) return;
+      this.lastTime = thisTime;
+      if (!clickedObj) return;
+      const { nodeType } = clickedObj;
+
+      if (
+        [
+          // fengmap.FMNodeType.FLOOR,
+          fengmap.FMNodeType.FACILITY,
+          fengmap.FMNodeType.TEXT_MARKER,
+          fengmap.FMNodeType.LABEL,
+          fengmap.FMNodeType.NONE,
+        ].includes(nodeType)
+      )
+        return;
+      const { eventInfo: { coord } = {} } = clickedObj;
+      // if (coord && isPointInPolygon(coord, polygon)) setDrawerVisible('dangerArea');
+      if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
+        const {
+          opts_: { iconType, markerProps },
+        } = clickedObj;
+        // console.log('itemId', itemId);
+        if (iconType === 0) {
+          const { itemId, status } = markerProps;
+          handleClickRiskPoint(itemId, status);
+        }
+      }
     });
   };
 
@@ -280,16 +293,17 @@ export default class Map extends PureComponent {
     let markerLayer = layer;
     const groupId = gId || 1;
     if (!layer) {
-      const groupID = 1;
-      const groupLayer = map.getFMGroup(groupID);
+      const groupLayer = map.getFMGroup(groupId);
       const newLayer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
-      groupLayer.addLayer(newLayer); //添加图片标注层到模型层。否则地图上不会显示
+      markerLayer = newLayer;
+      groupLayer.addLayer(markerLayer); //添加图片标注层到模型层。否则地图上不会显示
     }
     const im = new fengmap.FMImageMarker({
       size: 50, //设置图片显示尺寸
       height: 3, //标注高度，大于model的高度
       ...markerProps,
     });
+
     markerLayer.addMarker(im); //图片标注层添加图片Marker
     im.alwaysShow();
     this.markerArray.push(im);
@@ -435,10 +449,18 @@ export default class Map extends PureComponent {
     const copy = [...visibles];
     copy[index] = !visibles[index];
     this.setState({ visibles: copy });
-    const groupLayer = map.getFMGroup(1);
-    const layers = groupLayer.getLayer('imageMarker');
-    if (!layers) return;
-    layers[index].show = !visibles[index];
+    map.groupIDs.map(gId => {
+      const group = map.getFMGroup(gId);
+      //遍历图层
+      group.traverse(fm => {
+        if (fm instanceof fengmap.FMImageMarker) {
+          const {
+            opts_: { iconType },
+          } = fm;
+          if (iconType === index) fm.show = copy[index];
+        }
+      });
+    });
   };
 
   render() {
