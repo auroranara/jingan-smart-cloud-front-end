@@ -244,8 +244,14 @@ export default class Edit extends PureComponent {
 
   // 显示指标弹框
   handleIndexModal = () => {
+    const {
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+    const { selectCompanyId } = this.state;
     this.setState({ indexVisible: true });
-    const payload = { pageSize: 10, pageNum: 1 };
+    const payload = { pageSize: 10, pageNum: 1, companyId: selectCompanyId || companyId };
     this.fetchIndexList({ payload });
   };
 
@@ -445,8 +451,8 @@ export default class Edit extends PureComponent {
   }
 
   // 单位名称切换，清空责任主体
-  onChangeComapny = () => {
-    this.setState({ dutyStatus: '', departmentId: '', personId: {} });
+  onChangeComapny = v => {
+    this.setState({ dutyStatus: '', departmentId: '', personId: {}, selectCompanyId: v.key });
   };
 
   // 责任主体key切换

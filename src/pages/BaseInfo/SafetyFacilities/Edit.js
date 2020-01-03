@@ -59,10 +59,14 @@ export default class Edit extends PureComponent {
     uploading: false, // 上传是否加载
     photoUrl: [], // 上传照片
     detailList: {},
-    facNameList: [],
-    categoryList: [],
-    categoryTwoList: [],
-    facilitiesNameList: [],
+    categoryOneId: '', // 分类一列表选中Id
+    categoryTwoId: '', // 分类二列表选中Id
+    categoryOneName: '', // 分类一列表选中名称
+    categoryTwoName: '', // 分类二列表选中名称
+    categoryOneList: [], // 分类一列表
+    categoryTwoList: [], // 分类二列表
+    facilitiesNameList: [], // 安全设施名称列表
+    editCompany: '',
   };
 
   // 挂载后
@@ -72,22 +76,31 @@ export default class Edit extends PureComponent {
       match: {
         params: { id },
       },
-      safeFacilities: { facNameList = [] },
+      form: { setFieldsValue },
     } = this.props;
 
     if (id) {
       dispatch({
         type: 'safeFacilities/fetchSafeFacList',
         payload: {
-          pageSize: 48,
+          id,
+          pageSize: 10,
           pageNum: 1,
         },
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { photoList } = currentList;
+          const { photoList, category, safeFacilitiesName, companyId, categoryName } = currentList;
+          const categoryArray = category ? category.split(',') : '';
+
           this.setState({
+            categoryOneName: categoryName[0],
+            categoryTwoName: categoryName[1],
+            categoryOneId: categoryArray[0],
+            categoryTwoId: categoryArray[1],
+            safeFacilitiesNameId: safeFacilitiesName,
             detailList: currentList,
+            editCompany: companyId,
             photoUrl: photoList.map(({ dbUrl, webUrl }, index) => ({
               uid: index,
               status: 'done',
@@ -96,9 +109,21 @@ export default class Edit extends PureComponent {
               dbUrl,
             })),
           });
+          setFieldsValue({ category });
+          this.fetchDict({
+            payload: { type: 'safeFacilities', parentId: categoryArray[0] },
+            callback: list => {
+              this.setState({ categoryTwoList: list });
+              this.fetchDict({
+                payload: { type: 'safeFacilities', parentId: categoryArray[1] },
+                callback: list => {
+                  this.setState({ facilitiesNameList: list });
+                },
+              });
+            },
+          });
         },
       });
-      this.setState({ facNameList: facNameList });
     } else {
       dispatch({
         type: 'safeFacilities/clearSafeFacDetail',
@@ -107,7 +132,7 @@ export default class Edit extends PureComponent {
     this.fetchDict({
       payload: { type: 'safeFacilities', parentId: 0 },
       callback: list => {
-        this.setState({ categoryList: list });
+        this.setState({ categoryOneList: list });
       },
     });
   }
@@ -146,11 +171,16 @@ export default class Edit extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
-    const { photoUrl, category, categoryTwo } = this.state;
+    const {
+      photoUrl,
+      categoryOneId,
+      safeFacilitiesNameId,
+      editCompany,
+      categoryTwoId,
+    } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const {
-          safeFacilitiesName,
           specifications,
           processFacilitiesInvolved,
           equipNumber,
@@ -162,9 +192,9 @@ export default class Edit extends PureComponent {
         } = values;
         const payload = {
           id,
-          companyId: this.companyId || companyId,
-          category: category + ',' + categoryTwo,
-          safeFacilitiesName,
+          companyId: this.companyId || companyId || editCompany,
+          category: categoryOneId + ',' + categoryTwoId,
+          safeFacilitiesName: safeFacilitiesNameId,
           specifications,
           processFacilitiesInvolved,
           equipNumber,
@@ -307,10 +337,15 @@ export default class Edit extends PureComponent {
     }
   };
 
-  handleCategoryChange = val => {
+  handleCategoryOneChange = val => {
     const {
       form: { setFieldsValue },
     } = this.props;
+
+    const { categoryOneList } = this.state;
+    const typeOneName = categoryOneList.filter(item => item.id === val).map(item => item.label);
+    this.setState({ categoryOneName: typeOneName });
+
     if (val) {
       this.fetchDict({
         payload: { type: 'safeFacilities', parentId: val },
@@ -318,8 +353,8 @@ export default class Edit extends PureComponent {
           this.setState({ categoryTwoList: list });
         },
       });
-    } else this.setState({ categoryList: [] });
-    this.setState({ category: val });
+    } else this.setState({ categoryOneList: [] });
+    this.setState({ categoryOneId: val });
     setFieldsValue({ category: val });
   };
 
@@ -327,6 +362,11 @@ export default class Edit extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
+
+    const { categoryTwoList } = this.state;
+    const typeTwoName = categoryTwoList.filter(item => item.id === val).map(item => item.label);
+    this.setState({ categoryTwoName: typeTwoName });
+
     if (val) {
       this.fetchDict({
         payload: { type: 'safeFacilities', parentId: val },
@@ -335,8 +375,34 @@ export default class Edit extends PureComponent {
         },
       });
     } else this.setState({ categoryTwoList: [] });
-    this.setState({ categoryTwo: val });
+    this.setState({ categoryTwoId: val });
     setFieldsValue({ category: val });
+  };
+
+  handleNameChange = id => {
+    this.setState({ safeFacilitiesNameId: id });
+  };
+
+  handleCategoryOneSelect = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({
+      categoryTwoId: '',
+      categoryTwoName: '',
+      safeFacilitiesNameId: '',
+    });
+    setFieldsValue({ safeFacilitiesName: '' });
+  };
+
+  handleCategoryTwoSelect = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({
+      safeFacilitiesNameId: '',
+    });
+    setFieldsValue({ safeFacilitiesName: '' });
   };
 
   /**
@@ -345,7 +411,6 @@ export default class Edit extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator, getFieldValue },
-      // safeFacilities: { categoryList = [] },
       user: {
         currentUser: { unitType },
       },
@@ -354,18 +419,18 @@ export default class Edit extends PureComponent {
       uploading,
       photoUrl,
       detailList,
-      // facNameList,
-      categoryList,
+      categoryOneList,
       categoryTwoList,
       facilitiesNameList,
+      categoryOneName,
+      categoryTwoName,
     } = this.state;
 
     const category = getFieldValue('category') || [];
 
     const {
       companyName,
-      // category,
-      safeFacilitiesName,
+      safeFacilitiesLabel,
       specifications,
       processFacilitiesInvolved,
       equipNumber,
@@ -374,7 +439,6 @@ export default class Edit extends PureComponent {
       leaveFactoryDate,
       useYear,
       notes,
-      // photo,
     } = detailList;
 
     return (
@@ -413,17 +477,25 @@ export default class Edit extends PureComponent {
               ],
             })(
               <Fragment>
-                <Select placeholder="请选择" {...itemsStyle} onChange={this.handleCategoryChange}>
-                  {categoryList.map(({ id, label }) => (
+                <Select
+                  value={categoryOneName}
+                  placeholder="请选择"
+                  {...itemsStyle}
+                  onChange={this.handleCategoryOneChange}
+                  onSelect={this.handleCategoryOneSelect}
+                >
+                  {categoryOneList.map(({ id, label }) => (
                     <Select.Option key={id} value={id}>
                       {label}
                     </Select.Option>
                   ))}
                 </Select>
                 <Select
+                  value={categoryTwoName}
                   placeholder="请选择"
                   {...itemsStyle}
                   onChange={this.handleCategoryTwoChange}
+                  onSelect={this.handleCategoryTwoSelect}
                 >
                   {categoryTwoList.map(({ id, label }) => (
                     <Select.Option key={id} value={id}>
@@ -436,10 +508,15 @@ export default class Edit extends PureComponent {
           </FormItem>
           <FormItem label="安全设施名称" {...formItemLayout}>
             {getFieldDecorator('safeFacilitiesName', {
-              initialValue: safeFacilitiesName,
-              rules: [{ required: true, message: '请输入安全设施名称' }],
+              initialValue: safeFacilitiesLabel ? safeFacilitiesLabel : undefined,
+              rules: [{ required: true, message: '请选择安全设施名称' }],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择安全设施名称">
+              <Select
+                {...itemStyles}
+                allowClear
+                placeholder="请选择"
+                onChange={this.handleNameChange}
+              >
                 {facilitiesNameList.map(({ id, label }) => (
                   <Select.Option key={id} value={id}>
                     {label}

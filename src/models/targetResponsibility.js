@@ -17,11 +17,11 @@ export default {
   state: {
     indexData: {
       list: [],
-      pagination: { total: 0, pageNum: 18, pageSize: 1 },
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
     settingData: {
       list: [],
-      pagination: { total: 0, pageNum: 18, pageSize: 1 },
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
     settingDetail: {
       data: [],

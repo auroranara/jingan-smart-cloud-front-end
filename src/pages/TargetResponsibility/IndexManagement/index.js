@@ -149,7 +149,7 @@ export default class TableList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { unitType, companyId, permissionCodes },
       },
     } = this.props;
 
@@ -207,6 +207,8 @@ export default class TableList extends PureComponent {
 
     const modalData = {
       ...this.state,
+      unitType,
+      companyId,
       handleModalClose: this.handleModalClose,
       handleModalAdd: this.handleModalAdd,
       handleModalEdit: this.handleModalEdit,
@@ -226,7 +228,7 @@ export default class TableList extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={FIELDS}
+            fields={unitType === 4 ? FIELDS.slice(1, FIELDS.length) : FIELDS}
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
@@ -239,7 +241,11 @@ export default class TableList extends PureComponent {
               bordered
               rowKey="id"
               loading={loading}
-              columns={[...COLUMNS, ...extraColumns]}
+              columns={
+                unitType === 4
+                  ? [...COLUMNS.slice(1, COLUMNS.length), ...extraColumns]
+                  : [...COLUMNS, ...extraColumns]
+              }
               dataSource={list}
               pagination={{
                 current: pageNum,

@@ -57,8 +57,9 @@ const getRootChild = () => document.querySelector('#root>div');
 /* session前缀 */
 const sessionPrefix = 'safety_fac';
 
-@connect(({ safeFacilities, user, loading }) => ({
+@connect(({ safeFacilities, emergencyManagement, user, loading }) => ({
   safeFacilities,
+  emergencyManagement,
   user,
   loading: loading.models.safeFacilities,
 }))
@@ -207,26 +208,18 @@ export default class TableList extends PureComponent {
     const columns = [
       {
         title: '分类',
-        dataIndex: 'category',
+        dataIndex: 'categoryName',
         align: 'center',
         width: 200,
-        render: (val, record) => {
-          return val ? (
-            (val.split(',').length === 2 && <span> 预防事故设施/监测、报警设施</span>) ||
-              (val.split(',').length === 1 && <span> 预防事故设施</span>)
-          ) : (
-            <span>---</span>
-          );
+        render: val => {
+          return <span>{val ? val[0] + '/' + val[1] : []}</span>;
         },
       },
       {
         title: '安全设施名称',
-        dataIndex: 'safeFacilitiesName',
+        dataIndex: 'safeFacilitiesLabel',
         align: 'center',
         width: 200,
-        render: val => {
-          return +val === 1 ? '压力表' : +val === 2 ? '温度计' : '液位仪';
-        },
       },
       {
         title: '状态',
@@ -257,7 +250,9 @@ export default class TableList extends PureComponent {
                 {paststatusVal[paststatus]}
               </span> */}
             </div>
-          ) : '-';
+          ) : (
+            '-'
+          );
         },
       },
       {
@@ -334,7 +329,6 @@ export default class TableList extends PureComponent {
     const {
       safeFacilities: {
         safeFacData: { a },
-        categoryList = [],
         facNameList = [],
       },
       user: {
@@ -358,20 +352,20 @@ export default class TableList extends PureComponent {
           </Select>
         ),
       },
-      {
-        id: 'category',
-        label: '分类：',
-        render: () => (
-          <Cascader
-            placeholder="请选择"
-            options={categoryList}
-            allowClear
-            changeOnSelect
-            notFoundContent
-            getPopupContainer={getRootChild}
-          />
-        ),
-      },
+      // {
+      //   id: 'category',
+      //   label: '分类：',
+      //   render: () => (
+      //     <Cascader
+      //       placeholder="请选择"
+      //       options={safeFacilities}
+      //       allowClear
+      //       changeOnSelect
+      //       notFoundContent
+      //       getPopupContainer={getRootChild}
+      //     />
+      //   ),
+      // },
       {
         id: 'equipStatus',
         label: '设备状态：',

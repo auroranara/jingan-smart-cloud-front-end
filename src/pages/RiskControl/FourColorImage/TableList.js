@@ -206,7 +206,6 @@ export default class TableList extends React.Component {
       // map: { mapInfo = {} },
     } = this.props;
     const { isDrawing, company = {}, visible } = this.state;
-
     const addAuth = hasAuthority(addCode, permissionCodes);
 
     const columns = [
