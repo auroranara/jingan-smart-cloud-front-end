@@ -55,6 +55,14 @@ export async function queryBindSafetyControl(params) {
   });
 }
 
+// 导入
+export async function querySafetyImport(params) {
+  return request('/acloud_new/v2/ci/doubleBill/importSafetyControl', {
+    method: 'POST',
+    body: params,
+  });
+}
+
 /** 公告管理 */
 
 const URL_PREFIX_EXTRA = '/acloud_new/v2/notice';

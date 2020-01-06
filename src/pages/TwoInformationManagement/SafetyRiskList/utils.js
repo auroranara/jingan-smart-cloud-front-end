@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 // import moment from 'moment';
 import { Input, Select } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
-
+import moment from 'moment';
 const { Option } = Select;
 
 export const PAGE_SIZE = 1;
@@ -179,34 +179,15 @@ export const TABLE_COLUMNS_COMPANY = [
 export const TABLE_COLUMNS = [
   {
     title: '风险分区',
-    dataIndex: 'name',
-    key: 'name',
+    dataIndex: 'zoneName',
+    key: 'zoneName',
     align: 'center',
     width: 300,
   },
   {
     title: '经办人',
-    dataIndex: 'riskClassifyName',
-    key: 'riskClassifyName',
-    align: 'center',
-    width: 180,
-  },
-  {
-    title: '上传时间',
-    dataIndex: 'dangerFactor',
-    key: 'dangerFactor',
-    align: 'center',
-    width: 180,
-    render: val => (
-      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
-    ),
-  },
-  {
-    title: '附件',
-    dataIndex: 'consequenceName',
-    key: 'consequenceName',
+    dataIndex: 'zoneChargerName',
+    key: 'zoneChargerName',
     align: 'center',
     width: 180,
     render: val => (
@@ -214,6 +195,22 @@ export const TABLE_COLUMNS = [
         {val}
       </Ellipsis>
     ),
+  },
+  {
+    title: '上传时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
+    align: 'center',
+    width: 180,
+    render: val => <span>{moment(+val).format('YYYY-MM-DD')}</span>,
+  },
+  {
+    title: '附件',
+    dataIndex: 'file',
+    key: 'file',
+    align: 'center',
+    width: 180,
+    render: val => <a>查看清单</a>,
   },
 ];
 

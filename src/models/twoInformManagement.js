@@ -8,6 +8,7 @@ import {
   querySafeRiskSync,
   querySafeRiskDel,
   queryBindSafetyControl,
+  querySafetyImport,
   /** 安全承诺公告 */
   querySafetyPromiseList,
   querSafetyPromiseAdd,
@@ -132,6 +133,18 @@ export default {
         }
       } else if (error) {
         error();
+      }
+    },
+
+    // 导入安全风险清单
+    *fetchDataImport({ payload, success, error }, { call }) {
+      const response = yield call(querySafetyImport, payload);
+      if (response.code === 200) {
+        if (success) {
+          success(response);
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
 

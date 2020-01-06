@@ -1,9 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, message, Popconfirm, Divider } from 'antd';
+import { Button, Card, Table, Upload, Modal, Icon, message, Form, Popconfirm, Divider } from 'antd';
 import Link from 'umi/link';
 
+import { getToken } from 'utils/authority';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
@@ -25,16 +26,25 @@ const {
   },
 } = codes;
 
-@connect(({ twoInformManagement, user, loading }) => ({
+// 上传文件地址
+const uploadAction = '/acloud_new/v2/uploadFile';
+
+@connect(({ twoInformManagement, fourColorImage, user, loading }) => ({
   twoInformManagement,
+  fourColorImage,
   user,
   loading: loading.models.twoInformManagement,
 }))
+@Form.create()
 export default class TableList extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       formData: {},
+      modalVisible: false, // 弹框是否可见
+      fileList: [], // 导入的数据列表
+      importLoading: false,
+      submittingModal: false,
     };
     this.pageNum = 1;
     this.pageSize = 10;
@@ -48,7 +58,7 @@ export default class TableList extends PureComponent {
   fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'twoInformManagement/fetchSafetyList',
+      type: 'fourColorImage/fetchList',
       payload: {
         ...params,
         pageSize,
@@ -57,16 +67,19 @@ export default class TableList extends PureComponent {
     });
   };
 
+  // 查询
   handleSearch = values => {
     this.setState({ formData: { ...values } });
     this.fetchList(1, this.pageSize, { ...values });
   };
 
+  // 重置
   handleReset = () => {
     this.setState({ formData: {} });
     this.fetchList(1, this.pageSize);
   };
 
+  // 重置
   handleDeleteClick = id => {
     const { dispatch } = this.props;
     dispatch({
@@ -82,30 +95,11 @@ export default class TableList extends PureComponent {
     });
   };
 
-  handleClickSync = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'twoInformManagement/fetchSafetySync',
-      success: () => {
-        dispatch({
-          type: 'twoInformManagement/fetchSafetyList',
-          payload: {
-            pageSize: 10,
-            pageNum: 1,
-          },
-        });
-        message.success('同步成功！');
-      },
-      error: () => {
-        message.error('同步失败！');
-      },
-    });
-  };
-
   handleAdd = () => {
     router.push(`${ROUTER}/add`);
   };
 
+  // 分页变动
   handlePageChange = (pageNum, pageSize) => {
     const { formData } = this.state;
     this.pageNum = pageNum;
@@ -113,25 +107,115 @@ export default class TableList extends PureComponent {
     this.fetchList(pageNum, pageSize, { ...formData });
   };
 
+  // 导入
+  handleImportShow = id => {
+    this.setState({ modalVisible: true, areaId: id });
+  };
+
+  handleImportChange = info => {
+    const fileList = info.fileList.slice(-1);
+    this.setState({ fileList });
+    console.log('info', info);
+
+    if (info.file.status === 'uploading') {
+      this.setState({ importLoading: true });
+    }
+    if (info.file.response) {
+      if (info.file.response.code && info.file.response.code === 200) {
+        if (info.file.response.data) {
+          this.setState({
+            importLoading: false,
+          });
+        }
+      } else {
+        this.setState({
+          importLoading: false,
+        });
+      }
+    }
+  };
+
+  // handleImportSubmit = () => {
+  //   const {
+  //     dispatch,
+  //     form: { validateFieldsAndScroll },
+  //   } = this.props;
+  //   const { fileList, areaId } = this.state;
+
+  //   const status = fileList.map(item => item.status);
+  //   const hasUploading = status.includes('uploading');
+  //   if (hasUploading === true) {
+  //     return message.warning('还在上传中，请等待！');
+  //   }
+
+  //   if (fileList.length === 0) {
+  //     return message.error('请先上传！');
+  //   }
+
+  //   validateFieldsAndScroll((errors, values) => {
+  //     if (!errors) {
+  //       const success = () => {
+  //         message.success('导入成功');
+  //         this.setState({ modalVisible: false, fileList: [], submittingModal: false });
+  //         this.fetchList(1, this.pageSize);
+  //       };
+  //       const error = () => {
+  //         message.error('导入失败');
+  //         this.setState({ modalVisible: true, submittingModal: false });
+  //       };
+
+  //       this.setState({ submittingModal: true });
+
+  //       const payload = {
+  //         areaId,
+  //         // file: fileList.map(item => item.dbUrl).join(','),
+  //       };
+
+  //       // dispatch({
+  //       //   type: 'twoInformManagement/fetchDataImport',
+  //       //   payload,
+  //       //   success,
+  //       //   error,
+  //       // });
+  //     }
+  //   });
+  // };
+
+  handleImportClose = () => {
+    this.setState({ modalVisible: false });
+  };
+
   render() {
     const {
       loading = false,
       twoInformManagement: {
         safetyData: {
-          list = [],
+          // list = [],
           pagination: { pageNum, pageSize, total },
         },
         msgSafety,
+      },
+      fourColorImage: {
+        data: { list: riskList = [] },
       },
       user: {
         currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
+    const { fileList, modalVisible, areaId, importLoading, submittingModal } = this.state;
+
     // 权限
     const viewCode = hasAuthority(viewAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
     const syncCode = hasAuthority(syncAuth, permissionCodes);
+
+    const uploadExportButton = <Icon type={importLoading ? 'loading' : 'upload'} />;
+
+    const formItemLayout = {
+      labelCol: { span: 4 },
+      wrapperCol: { span: 16 },
+    };
 
     const extraColumns = [
       {
@@ -143,6 +227,12 @@ export default class TableList extends PureComponent {
         render: (val, text) => {
           return (
             <Fragment>
+              {viewCode ? (
+                <a onClick={() => this.handleImportShow(text.id)}>导入数据</a>
+              ) : (
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
+              )}
+              <Divider type="vertical" />
               {viewCode ? (
                 <Link to={`${ROUTER}/safety-risk-list/view/${text.id}`}>查看</Link>
               ) : (
@@ -176,7 +266,7 @@ export default class TableList extends PureComponent {
         disabled={!syncCode}
         onClick={this.handleClickSync}
       >
-        同步数据
+        下载模板
       </Button>
     );
 
@@ -197,12 +287,10 @@ export default class TableList extends PureComponent {
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            // buttonStyle={{ textAlign: 'right' }}
-            // buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>
         <div className={styles1.container}>
-          {list.length > 0 ? (
+          {riskList.length > 0 ? (
             <Table
               bordered
               rowKey="id"
@@ -212,7 +300,7 @@ export default class TableList extends PureComponent {
                   ? [...COLUMNS, ...extraColumns]
                   : [...COMPANYCOLUMNS, ...COLUMNS, ...extraColumns]
               }
-              dataSource={list}
+              dataSource={riskList}
               onChange={this.onTableChange}
               scroll={{ x: 'max-content' }}
               pagination={{
@@ -234,6 +322,31 @@ export default class TableList extends PureComponent {
             </Card>
           )}
         </div>
+        <Modal
+          title="导入"
+          visible={modalVisible}
+          onCancel={this.handleImportClose}
+          onOk={this.handleImportSubmit}
+          confirmLoading={importLoading || submittingModal}
+        >
+          <Form>
+            <Form.Item {...formItemLayout} label="导入数据">
+              <Upload
+                name="file"
+                accept=".xls"
+                headers={{ 'JA-Token': getToken() }}
+                action={`/acloud_new/v2/ci/doubleBill/importSafetyControl/${areaId}`} // 上传地址
+                fileList={fileList}
+                onChange={this.handleImportChange}
+              >
+                <Button disabled={importLoading}>
+                  {uploadExportButton}
+                  点击
+                </Button>
+              </Upload>
+            </Form.Item>
+          </Form>
+        </Modal>
       </PageHeaderLayout>
     );
   }
