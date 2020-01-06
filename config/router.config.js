@@ -167,12 +167,12 @@ module.exports = env => {
           name: 'threedgis',
           component: './BigPlatform/Threedgis',
         },
-        {
-          path: '/big-platform/gas-station/:unitId',
-          code: 'dashboard.gasStation',
-          name: 'gasStation',
-          component: './BigPlatform/GasStation',
-        },
+        // {
+        //   path: '/big-platform/gas-station/:unitId',
+        //   code: 'dashboard.gasStation',
+        //   name: 'gasStation',
+        //   component: './BigPlatform/GasStation',
+        // },
       ],
     },
     // 档案分析报告
