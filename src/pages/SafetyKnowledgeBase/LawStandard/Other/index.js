@@ -80,7 +80,6 @@ export default class OperationRecordOther extends Component {
     {
       id: 'publishUnit',
       label: '发布机关',
-      required: true,
       component: 'Input',
     },
     {
