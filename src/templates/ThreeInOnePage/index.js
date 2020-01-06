@@ -276,7 +276,7 @@ export default class ThreeInOnePage extends Component {
                 className={isNotDetail ? styles.item : undefined}
                 placeholder={`请输入${label}`}
                 type={isNotDetail ? 'TextArea' : 'span'}
-                autosize={{ minRows: 3 }}
+                autosize={{ minRows: 3, maxRows: 10 }}
                 onChange={refreshEnable ? this.refresh : undefined}
                 {...props}
               />

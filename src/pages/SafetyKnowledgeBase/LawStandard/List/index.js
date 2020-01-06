@@ -4,6 +4,7 @@ import InputOrSpan from '@/jingan-components/InputOrSpan';
 import RadioOrSpan from '@/jingan-components/RadioOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import TablePage from '@/templates/TablePage';
+import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 import styles from './index.less';
 
@@ -70,33 +71,13 @@ export default class AlarmMessage extends Component {
     {
       title: '内容摘要',
       dataIndex: 'content',
-      render: value =>
-        value && (
-          <Tooltip title={<div className={styles.preWrapText}>{value}</div>}>
-            <div
-              className={styles.ellipsis}
-              style={{ maxWidth: Math.min(value.split('\n')[0].length + 1, 11) * 14 }}
-            >
-              {value}
-            </div>
-          </Tooltip>
-        ),
+      render: this.renderEllipsis,
       align: 'center',
     },
     {
       title: '对应活动',
       dataIndex: 'activity',
-      render: value =>
-        value && (
-          <Tooltip title={<div className={styles.preWrapText}>{value}</div>}>
-            <div
-              className={styles.ellipsis}
-              style={{ maxWidth: Math.min(value.split('\n')[0].length + 1, 11) * 14 }}
-            >
-              {value}
-            </div>
-          </Tooltip>
-        ),
+      render: this.renderEllipsis,
       align: 'center',
     },
     {
@@ -126,6 +107,24 @@ export default class AlarmMessage extends Component {
       align: 'center',
     },
   ];
+
+  renderEllipsis = value =>
+    value && (
+      <Tooltip
+        title={
+          <Scrollbars className={styles.tooltipContent}>
+            <div className={styles.preWrapText}>{value}</div>
+          </Scrollbars>
+        }
+      >
+        <div
+          className={styles.ellipsis}
+          style={{ maxWidth: Math.min(value.split('\n')[0].length + 1, 11) * 14 }}
+        >
+          {value}
+        </div>
+      </Tooltip>
+    );
 
   render() {
     const props = {
