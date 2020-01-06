@@ -136,7 +136,7 @@ export default class Edit extends PureComponent {
         company, // { key,label } 企业信息
         ...resValues
       } = values;
-      const [startDate, endDate] = backupRange;
+      const [startDate, endDate] = backupRange || [];
       const payload = {
         ...resValues,
         safeDate: this.getStartTime(safeDate),
