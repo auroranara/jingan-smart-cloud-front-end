@@ -8,12 +8,12 @@ import moment from 'moment';
 import styles from './index.less';
 
 export const DEFAULT_FORMAT = 'YYYY-MM-DD';
-export const RESULTS = [{ key: '1', value: '符合' }, { key: '0', value: '不符合' }];
+export const RESULTS = [{ key: '0', value: '符合' }, { key: '1', value: '不符合' }];
 
 export default class AlarmMessage extends Component {
   getFields = ({ unitId }) => [
     {
-      id: 'name',
+      id: 'lawName',
       label: '法律法规标准名称',
       transform: value => value.trim(),
       render: ({ handleSearch }) => (
@@ -47,7 +47,7 @@ export default class AlarmMessage extends Component {
   getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
     {
       title: '法律法规标准名称',
-      dataIndex: 'name',
+      dataIndex: 'lawName',
       align: 'center',
     },
     {
@@ -63,19 +63,19 @@ export default class AlarmMessage extends Component {
     },
     {
       title: '实施日期',
-      dataIndex: 'implementDate',
+      dataIndex: 'enforceDate',
       render: time => time && moment(time).format(DEFAULT_FORMAT),
       align: 'center',
     },
     {
       title: '内容摘要',
-      dataIndex: 'synopsis',
+      dataIndex: 'content',
       render: value =>
         value && (
           <Tooltip title={<div className={styles.preWrapText}>{value}</div>}>
             <div
               className={styles.ellipsis}
-              style={{ maxWidth: Math.min(value.split('\n')[0].length, 10) * 14 }}
+              style={{ maxWidth: Math.min(value.split('\n')[0].length + 1, 11) * 14 }}
             >
               {value}
             </div>
@@ -91,7 +91,7 @@ export default class AlarmMessage extends Component {
           <Tooltip title={<div className={styles.preWrapText}>{value}</div>}>
             <div
               className={styles.ellipsis}
-              style={{ maxWidth: Math.min(value.split('\n')[0].length, 10) * 14 }}
+              style={{ maxWidth: Math.min(value.split('\n')[0].length + 1, 11) * 14 }}
             >
               {value}
             </div>
@@ -101,13 +101,13 @@ export default class AlarmMessage extends Component {
     },
     {
       title: '评价结果',
-      dataIndex: 'result',
+      dataIndex: 'evaluatResult',
       render: value => <RadioOrSpan type="span" list={RESULTS} value={value} />,
       align: 'center',
     },
     {
       title: '内容附件',
-      dataIndex: 'attachment',
+      dataIndex: 'otherFileList',
       render: value => <CustomUpload type="span" value={value} />,
       align: 'center',
     },
