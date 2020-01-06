@@ -252,36 +252,36 @@ export default class Edit extends PureComponent {
       {
         title: '安全条件',
         fields: [
-          { name: 'safeType', label: '类别', type: 'radio', options: TYPE_OPTION },
-          { name: 'safeResult', label: '结论', type: 'radio', options: CONCLUSION },
-          { name: 'safeDate', label: '出具文书日期', type: 'datepicker' },
+          { name: 'safeType', label: '类别', type: 'radio', options: TYPE_OPTION, required: false },
+          { name: 'safeResult', label: '结论', type: 'radio', options: CONCLUSION, required: false },
+          { name: 'safeDate', label: '出具文书日期', type: 'datepicker', required: false },
           { name: 'safeAttached', label: '附件', type: 'component', component: this.genUpload('safe') },
         ],
       },
       {
         title: '安全设施设计',
         fields: [
-          { name: 'safeFacilitiesDesignType', label: '类别', type: 'radio', options: TYPE_OPTION },
-          { name: 'safeFacilitiesDesignResult', label: '结论', type: 'radio', options: CONCLUSION },
-          { name: 'safeFacilitiesDesignDate', label: '出具文书日期', type: 'datepicker' },
+          { name: 'safeFacilitiesDesignType', label: '类别', type: 'radio', options: TYPE_OPTION, required: false },
+          { name: 'safeFacilitiesDesignResult', label: '结论', type: 'radio', options: CONCLUSION, required: false },
+          { name: 'safeFacilitiesDesignDate', label: '出具文书日期', type: 'datepicker', required: false },
           { name: 'safeFacilitiesAttached', label: '附件', type: 'component', component: this.genUpload('safeFacilities') },
         ],
       },
       {
         title: '试生产方案备案',
         fields: [
-          { name: 'backupRange', label: '试生产日期', type: 'rangepicker' },
-          { name: 'tryProductResult', label: '结论', type: 'radio', options: CONCLUSION },
-          { name: 'tryProductdate', label: '出具文书日期', type: 'datepicker' },
+          { name: 'backupRange', label: '试生产日期', type: 'rangepicker', required: false },
+          { name: 'tryProductResult', label: '结论', type: 'radio', options: CONCLUSION, required: false },
+          { name: 'tryProductdate', label: '出具文书日期', type: 'datepicker', required: false },
           { name: 'tryAttached', label: '附件', type: 'component', component: this.genUpload('try') },
         ],
       },
       {
         title: '安全设施竣工',
         fields: [
-          { name: 'safeFacilitiesCompleteType', label: '类别', type: 'radio', options: TYPE_OPTION },
-          { name: 'safeFacilitiesCompleteResult', label: '结论', type: 'radio', options: CONCLUSION },
-          { name: 'safeFacilitiesCompleteDate', label: '出具文书日期', type: 'datepicker' },
+          { name: 'safeFacilitiesCompleteType', label: '类别', type: 'radio', options: TYPE_OPTION, required: false },
+          { name: 'safeFacilitiesCompleteResult', label: '结论', type: 'radio', options: CONCLUSION, required: false },
+          { name: 'safeFacilitiesCompleteDate', label: '出具文书日期', type: 'datepicker', required: false },
           { name: 'completeAttached', label: '附件', type: 'component', component: this.genUpload('complete') },
         ],
       },
