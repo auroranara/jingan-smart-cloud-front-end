@@ -11,7 +11,7 @@ import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
 import { queryAreaList } from '@/services/company/reservoirRegion';
 import { queryStorehouseList } from '@/services/baseInfo/storehouse';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
-// import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
+import { getList } from '@/services/gasometer';
 
 export default {
   namespace: 'chemical',
@@ -172,6 +172,10 @@ export default {
         case '311':
           // 生产装置
           callServices = getTankList;
+          break;
+        case '312':
+          // 气柜
+          callServices = getList;
           break;
         default:
           callServices = getTankList;

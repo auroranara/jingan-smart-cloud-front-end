@@ -63,24 +63,6 @@ export default class Map extends PureComponent {
     onRef && onRef(this);
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const { polygons: prevPolygons } = prevProps;
-  //   const { polygons } = this.props;
-  //   if (JSON.stringify(prevPolygons) !== JSON.stringify(polygons)) {
-  //     map &&
-  //       map.on('loadComplete', () => {
-  //         polygons.map(polygon => {
-  //           const { zoneLevel, coordinateList } = polygon;
-  //           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
-  //           const polygonMarker = this.addPolygon(points, COLORS[zoneLevel - 1]);
-  //           // this.setModelColor(points, COLORS[zoneLevel - 1]);
-  //           this.setModelColor2(polygonMarker, COLORS[zoneLevel - 1]);
-  //           return null;
-  //         });
-  //       });
-  //   }
-  // }
-
   fetchMap = () => {
     const { dispatch, companyId } = this.props;
     // 获取地图列表
@@ -114,7 +96,7 @@ export default class Map extends PureComponent {
           const { zoneLevel, coordinateList, groupId } = polygon;
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1]);
-          this.setModelColor2(groupId, polygonMarker, COLORS[zoneLevel - 1]);
+          this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
           return null;
         });
       },
@@ -167,7 +149,7 @@ export default class Map extends PureComponent {
       // defaultViewMode: fengMap.FMViewMode.MODE_2D,
       //设置主题
       defaultThemeName: '2001',
-      // modelSelectedEffect: false,
+      modelSelectedEffect: false,
       // modelHoverEffect: true,
       //支持悬停模型高亮，默认为false悬停不高亮
       modelHoverEffect: true,
@@ -181,8 +163,6 @@ export default class Map extends PureComponent {
     map = new fengMap.FMMap(mapOptions);
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
-
-    // console.log('map.getFMGroup()', map.getFMGroup());
 
     //2D、3D控件配置
     const toolControl = new fengmap.toolControl(map, {
@@ -208,6 +188,7 @@ export default class Map extends PureComponent {
     });
 
     map.on('mapHoverNode', event => {
+      // 鼠标悬停事件
       // const clickedObj = event.target;
       console.log('mapHoverNode', event);
     });
@@ -229,11 +210,11 @@ export default class Map extends PureComponent {
       console.log('clickedObj', clickedObj);
       // console.log('time', moment().valueOf());
       const thisTime = moment().valueOf();
+      // 防止点区域时也点到建筑
       if (thisTime - this.lastTime < 300) return;
       this.lastTime = thisTime;
       if (!clickedObj) return;
       const { nodeType } = clickedObj;
-
       if (
         [
           // fengmap.FMNodeType.FLOOR,
@@ -244,6 +225,7 @@ export default class Map extends PureComponent {
         ].includes(nodeType)
       )
         return;
+
       const { eventInfo: { coord } = {} } = clickedObj;
       // if (coord && isPointInPolygon(coord, polygon)) setDrawerVisible('dangerArea');
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
@@ -301,15 +283,7 @@ export default class Map extends PureComponent {
     this.markerArray[5].jump({ times: 0, duration: 2, height: 2, delay: 0 });
   };
 
-  setModelColor(points, color) {
-    // 默认gid为1
-    const models = map.getDatasByAlias(1, 'model');
-    models
-      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
-      .map(model => model.setColor(color));
-  }
-
-  setModelColor2(groupId, polygon, color) {
+  setModelColor(groupId, polygon, color) {
     // 默认gid为1
     const models = map.getDatasByAlias(groupId, 'model');
     models.map(model => {
@@ -366,6 +340,7 @@ export default class Map extends PureComponent {
     this.initMap();
   };
 
+  // 跳转到人员定位
   handlePosition = () => {
     window.open(`${window.publicPath}#/big-platform/personnel-position/index`, `_blank`);
   };
@@ -384,6 +359,7 @@ export default class Map extends PureComponent {
     );
   };
 
+  // 切换图标是否显示
   handleClickControl = index => {
     const { visibles } = this.state;
     const copy = [...visibles];

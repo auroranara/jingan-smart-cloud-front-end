@@ -1,6 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import styles from './CardItem.less';
 
+const NO_DATA = '暂无数据';
+
 export default class CardItem extends PureComponent {
   constructor(props) {
     super(props);
@@ -30,7 +32,7 @@ export default class CardItem extends PureComponent {
               <div className={styles.field} key={index}>
                 {label && <span className={styles.label}>{label}：</span>}
                 <span className={styles.value}>
-                  {render ? render(data[value], data) : data[value]}
+                  {render ? render(data[value], data) : data[value] || NO_DATA}
                 </span>
                 {extra || null}
               </div>

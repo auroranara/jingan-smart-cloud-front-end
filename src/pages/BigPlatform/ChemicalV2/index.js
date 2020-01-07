@@ -796,12 +796,44 @@ export default class Chemical extends PureComponent {
       dispatch,
     } = this.props;
     if (!MonitorConfig[monitorType]) return;
-    // const { fetchType } = MonitorConfig[monitorType];
     dispatch({
       type: 'chemical/fetchMonitorData',
-      payload: { companyId, pageSize: 0, pageNum: 1, monitorType },
+      payload: { companyId, pageSize: 0, pageNum: 1, monitorType, hasMonitor: true },
     });
     this.setState({ monitorType, monitorDrawerVisible: true });
+  };
+
+  handleClickMonitorDetail = detail => {
+    const { monitorType } = this.state;
+    switch (monitorType) {
+      case '301':
+        // 储罐区
+        break;
+      case '302':
+        // 储罐
+        this.handleClickTank(detail);
+        break;
+      case '303':
+        // 库区
+        break;
+      case '304':
+        // 库房
+        break;
+      case '305':
+        // 高危工艺
+        break;
+      case '306':
+        // 特种设备
+        break;
+      case '311':
+        // 生产装置
+        break;
+      case '312':
+        // 气柜
+        break;
+      default:
+        return null;
+    }
   };
 
   /**
@@ -1024,8 +1056,7 @@ export default class Chemical extends PureComponent {
           }}
           monitorType={monitorType}
           monitorData={monitorData}
-          tankList={tankList}
-          // dataList={}
+          handleClickMonitorDetail={this.handleClickMonitorDetail}
           setDrawerVisible={this.setDrawerVisible}
           // handleGasOpen={this.handleGasOpen}
           // handlePoisonOpen={this.handlePoisonOpen}

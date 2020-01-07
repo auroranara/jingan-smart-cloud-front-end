@@ -19,6 +19,14 @@ const per3 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeThird.png';
 const per4 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeFourth.png';
 const per5 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeFifth.png';
 const per6 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeSixth.png';
+
+const storageAreaImg = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
+const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
+const reservoirImg = 'http://data.jingan-china.cn/v2/chem/screen/reservoir.png';
+const warehouseImg = 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png';
+const gasometerImg = 'http://data.jingan-china.cn/v2/chem/screen/gasometer.png';
+const productDeviceImg = 'http://data.jingan-china.cn/v2/chem/screen/productDevice.png';
+
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
   {
@@ -1604,18 +1612,58 @@ export const TypeClickList = [100, 14, 15, 16, 17];
 export const MonitorConfig = {
   '301': {
     // 储罐区
-    fetchType: '',
+    title: '罐区监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${storageAreaImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'areaName',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '在厂区的位置', value: 'location' },
+      {
+        label: '所处环境功能区',
+        value: 'environmentArea',
+        render: val => {
+          const envirTypeList = [
+            { key: '1', value: '一类区' },
+            { key: '2', value: '二类区' },
+            { key: '3', value: '三类区' },
+          ];
+          return <span>{envirTypeList[val - 1].value}</span>;
+        },
+      },
+      { label: '储罐区面积（㎡）', value: 'spaceArea' },
+      {
+        label: '有无围堰',
+        value: 'hasCoffer',
+        render: val => (+val === 0 ? '无' : '有'),
+      },
+      { label: '罐区总容积（m³）', value: 'areaVolume' },
+      { label: '常规储量（t）', value: 'commonStore' },
+    ],
   },
   '302': {
     // 储罐
     title: '储罐监测',
     icon: ({ tankName }) => (
-      <div className={styles.iconWrapper}>
+      <div
+        className={styles.iconWrapper}
+        style={{
+          background: `url(${storageImg}) center center / 100% auto no-repeat`,
+        }}
+      >
         <Wave
           frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
           backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
         />
-        <div className={styles.iconName}>{tankName}</div>
+        <div className={styles.tankName}>{tankName}</div>
       </div>
     ),
     fields: [
@@ -1639,6 +1687,101 @@ export const MonitorConfig = {
           );
         },
       },
+    ],
+  },
+  '303': {
+    // 库区
+    title: '库区监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${reservoirImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '区域位置', value: 'position' },
+      {
+        label: '所处环境功能区',
+        value: 'environment',
+        render: val => {
+          const envirTypeList = [
+            { key: '1', value: '一类区' },
+            { key: '2', value: '二类区' },
+            { key: '3', value: '三类区' },
+          ];
+          return <span>{envirTypeList[val - 1].value}</span>;
+        },
+      },
+      { label: '库区面积（㎡）', value: 'area' },
+    ],
+  },
+  '304': {
+    // 库房
+    title: '库房监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${warehouseImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '区域位置', value: 'position' },
+      { label: '所属库区', value: 'aname' },
+      { label: '库房面积（㎡）', value: 'area' },
+    ],
+  },
+  '311': {
+    // 生产装置
+    title: '生产装置监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${productDeviceImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '区域位置', value: 'position' },
+      { label: '是否关键装置', value: 'areaName' },
+      { label: '设计压力（KPa）', value: 'designKpa' },
+    ],
+  },
+  '312': {
+    // 气柜
+    title: '气柜监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${gasometerImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'gasholderName',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '区域位置', value: 'regionalLocation' },
+      { label: '设计柜容（m³）', value: 'capacity' },
+      { label: '设计压力（KPa）', value: 'designKpa' },
     ],
   },
 };
