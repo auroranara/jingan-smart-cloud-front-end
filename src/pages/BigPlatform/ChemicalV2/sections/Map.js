@@ -154,7 +154,7 @@ export default class Map extends PureComponent {
       //支持悬停模型高亮，默认为false悬停不高亮
       modelHoverEffect: true,
       //悬停时间触发时间，默认1000
-      modelHoverTime: 500,
+      modelHoverTime: 200,
       appName,
       key,
     };
@@ -193,11 +193,19 @@ export default class Map extends PureComponent {
       console.log('mapHoverNode', event);
     });
 
+    /**
+     * 过滤不允许hover的地图元素，设置为true为允许点击，设置为false为不允许点击
+     * @param event
+     */
     map.hoverFilterFunction = event => {
       // if (event.nodeType === fengmap.FMNodeType.MODEL &&
       //         event.typeID === 300000) {
       //     return false;
       // }
+      // if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
+      //   return true;
+      // }
+      // return false;
       if (event.nodeType === fengmap.FMNodeType.FLOOR) {
         return false;
       }
@@ -327,8 +335,8 @@ export default class Map extends PureComponent {
     });
     polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
-    this.polygonArray.push(polygonMarker);
-    this.polygonLayers.push(layer);
+    // this.polygonArray.push(polygonMarker);
+    // this.polygonLayers.push(layer);
     return polygonMarker;
     // polygonMarker.alwaysShow(true);
     // polygonMarker.avoid(false);

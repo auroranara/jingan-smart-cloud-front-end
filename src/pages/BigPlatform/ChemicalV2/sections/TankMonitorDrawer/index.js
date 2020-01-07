@@ -263,7 +263,7 @@ export default class TankMonitorDrawer extends Component {
         </div>
         <div className={styles.bottom}>
           <div className={styles.bottomTitle}>
-            <div className={styles.bottomTitleIcon} />
+            {/* <div className={styles.bottomTitleIcon} /> */}
             <div className={styles.bottomTitleLabel}>应急处置措施</div>
           </div>
           <div className={styles.bottomContent}>{emergencyMeasure}</div>

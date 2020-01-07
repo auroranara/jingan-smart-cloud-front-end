@@ -1758,9 +1758,9 @@ export const MonitorConfig = {
           return <span style={{ fontSize: 16 }}>{val}</span>;
         },
       },
-      { label: '区域位置', value: 'position' },
-      { label: '是否关键装置', value: 'areaName' },
-      { label: '设计压力（KPa）', value: 'designKpa' },
+      { label: '区域位置', value: 'location' },
+      { label: '是否关键装置', value: 'keyDevice', render: val => (+val === 1 ? '是' : '否') },
+      { label: '设计压力（KPa）', value: 'pressure' },
     ],
   },
   '312': {

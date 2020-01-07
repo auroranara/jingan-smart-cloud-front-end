@@ -6,6 +6,7 @@ import {
   riskPointForPage,
   monitorEquipment,
   videoList,
+  getProductDevice,
 } from '@/services/bigPlatform/chemical';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
 import { queryAreaList } from '@/services/company/reservoirRegion';
@@ -171,7 +172,7 @@ export default {
           break;
         case '311':
           // 生产装置
-          callServices = getTankList;
+          callServices = getProductDevice;
           break;
         case '312':
           // 气柜
