@@ -13,7 +13,7 @@ const FIELDS = [
 ];
 
 @Form.create()
-export default class FireControl extends PureComponent {
+export default class ThreeDMap extends PureComponent {
   componentDidMount() {
     this.getMapList(list => {
       const { form: { setFieldsValue } } = this.props;
@@ -68,6 +68,7 @@ export default class FireControl extends PureComponent {
 
     return FIELDS.map(({ key, label }) => (
       <FormItem
+        key={key}
         label={label}
         labelCol={{ xs: { span: 24 }, sm: { span: 4 } }}
         wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }}
@@ -82,9 +83,6 @@ export default class FireControl extends PureComponent {
   }
 
   render() {
-    const {
-      data,
-    } = this.props;
     return (
       <Card className={styles.threedCard}>
         <Form
