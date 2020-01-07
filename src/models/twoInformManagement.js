@@ -3,15 +3,22 @@ import {
   queryDangerElementList,
   queryDangerElementSync,
   queryDangerElementDel,
+  queryBindDangerCheck,
   querySafeRiskList,
   querySafeRiskSync,
   querySafeRiskDel,
+  queryBindSafetyControl,
+  queryDangerExport,
+  querySafetyExport,
   /** 安全承诺公告 */
   querySafetyPromiseList,
   querSafetyPromiseAdd,
   querySafetyPromiseEdit,
   querySafetyPromiseDelete,
 } from '../services/twoInformManagement';
+
+import fileDownload from 'js-file-download';
+import moment from 'moment';
 
 export default {
   namespace: 'twoInformManagement',
@@ -30,7 +37,13 @@ export default {
       list: [],
       pagination: {},
     },
+    dangerBindData: {
+      data: [],
+    },
     safetyPromiseDetail: {
+      data: [],
+    },
+    safetyBindData: {
       data: [],
     },
   },
@@ -67,6 +80,26 @@ export default {
       }
     },
 
+    *fetchBindDangerCheck({ payload, success, error }, { call, put }) {
+      const response = yield call(queryBindDangerCheck, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveBindDangerCheck',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
+
+    *fetchDangerExport({ payload }, { call }) {
+      const blob = yield call(queryDangerExport, payload);
+      fileDownload(blob, `危险（有害）因素排查辨识清单_${moment().format('YYYYMMDD')}.xls`);
+    },
+
     *fetchSafetyList({ payload, callback }, { call, put }) {
       const response = yield call(querySafeRiskList, payload);
       if (response.code === 200) {
@@ -95,6 +128,26 @@ export default {
       } else if (error) {
         error(response.msg);
       }
+    },
+
+    *fetchBindSafetyControl({ payload, success, error }, { call, put }) {
+      const response = yield call(queryBindSafetyControl, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveBindSafetyControl',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
+
+    *fetchSafetyExport({ payload }, { call }) {
+      const blob = yield call(querySafetyExport, payload);
+      fileDownload(blob, `安全风险分级管控清单_${moment().format('YYYYMMDD')}.xls`);
     },
 
     // 安全承诺公告
@@ -188,6 +241,26 @@ export default {
         safetyData: {
           ...state.safetyData,
           list: state.safetyData.list.filter(item => item.id !== id),
+        },
+      };
+    },
+
+    saveBindDangerCheck(state, { payload }) {
+      return {
+        ...state,
+        dangerBindData: {
+          ...state.dangerBindData,
+          data: payload,
+        },
+      };
+    },
+
+    saveBindSafetyControl(state, { payload }) {
+      return {
+        ...state,
+        safetyBindData: {
+          ...state.safetyBindData,
+          data: payload,
         },
       };
     },

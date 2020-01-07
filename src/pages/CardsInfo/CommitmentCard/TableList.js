@@ -25,7 +25,8 @@ export default class TableList extends PureComponent {
 
   getList = pageNum => {
     const { dispatch } = this.props;
-    if (!pageNum) { // pageNum不存在，则为初始化
+    if (!pageNum) {
+      // pageNum不存在，则为初始化
       pageNum = 1;
       this.setState({ current: 1 });
     }
@@ -66,9 +67,7 @@ export default class TableList extends PureComponent {
         if (code === 200) {
           message.success('删除成功');
           this.getList(current);
-        }
-        else
-          message.error(msg);
+        } else message.error(msg);
       },
     });
   };
@@ -86,7 +85,7 @@ export default class TableList extends PureComponent {
     const { name, content, acceptor, time } = modalItem;
 
     return (
-      <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null} >
+      <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null}>
         <div className={styles.container}>
           <h2 className={styles.title}>{name}</h2>
           <div className={styles.content}>{content}</div>
@@ -100,7 +99,9 @@ export default class TableList extends PureComponent {
   render() {
     const {
       loading,
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
       cardsInfo: { commitList, commitTotal },
     } = this.props;
     const { current } = this.state;
@@ -118,11 +119,12 @@ export default class TableList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length -1].title}
+        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：{commitTotal}
+            共计：
+            {commitTotal}
           </p>
         }
       >
@@ -147,7 +149,9 @@ export default class TableList extends PureComponent {
               scroll={{ x: 1400 }} // 项目不多时注掉
               pagination={{ pageSize: PAGE_SIZE, total: commitTotal, current }}
             />
-          ) : <Empty />}
+          ) : (
+            <Empty />
+          )}
         </div>
         {this.renderModal()}
       </PageHeaderLayout>
