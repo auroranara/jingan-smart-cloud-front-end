@@ -1,21 +1,5 @@
-// import nbEdu from './imgs/niubinEdu.png';
-// import nbEngin from './imgs/niubinEngin.png';
-// import wangybEdu from './imgs/wangybEdu.png';
-// import wangybEngin from './imgs/wangybEngin.png';
-// import zhgEdu from './imgs/zhgEdu.png';
-// import zhgEngin from './imgs/zhgEngin.png';
-// import zhqEdu from './imgs/zhqEdu.png';
-// import zhqEngin from './imgs/zhqEngin.png';
-// import zskEdu from './imgs/zskEdu.png';
-// import zskEngin from './imgs/zskEngin.png';
-// import zblEdu from './imgs/zblEdu.png';
-// import zblEngin from './imgs/zblEngin.png';
-// import per1 from './imgs/personSafety.png';
-// import per2 from './imgs/perSafeSecond.png';
-// import per3 from './imgs/perSafeThird.png';
-// import per4 from './imgs/perSafeFourth.png';
-// import per5 from './imgs/perSafeFiFth.png';
-// import per6 from './imgs/perSafeSixth.png';
+import Wave from '@/jingan-components/Wave';
+import styles from './sections/MonitorDrawer.less';
 
 const nbEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/niubinEdu.png';
 const nbEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/niubinEngin.png';
@@ -1616,3 +1600,45 @@ export const MsgShowTypes = [
 ];
 
 export const TypeClickList = [100, 14, 15, 16, 17];
+
+export const MonitorConfig = {
+  '301': {
+    // 储罐区
+    fetchType: '',
+  },
+  '302': {
+    // 储罐
+    title: '储罐监测',
+    icon: ({ tankName }) => (
+      <div className={styles.iconWrapper}>
+        <Wave
+          frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
+          backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
+        />
+        <div className={styles.iconName}>{tankName}</div>
+      </div>
+    ),
+    fields: [
+      {
+        value: 'tankName',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '位号', value: 'number' },
+      { label: '存储物质', value: 'chineName' },
+      {
+        label: '区域位置',
+        value: 'buildingName',
+        render: (val, row) => {
+          const { buildingName, floorName, areaName } = row;
+          return (
+            <span style={{ fontSize: 16 }}>
+              {buildingName ? buildingName + (floorName || '') : areaName || '暂无'}
+            </span>
+          );
+        },
+      },
+    ],
+  },
+};

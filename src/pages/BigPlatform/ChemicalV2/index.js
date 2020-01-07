@@ -19,7 +19,7 @@ import {
 import { GET_STATUS_NAME } from '@/pages/IoT/AlarmMessage';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { VideoList } from './utils';
+import { VideoList, MonitorConfig } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
@@ -141,9 +141,9 @@ export default class Chemical extends PureComponent {
       videoList: [],
       currentHiddenDangerDrawerVisible: false,
       monitorDrawerVisible: false,
-      monitorType: 0,
+      monitorType: undefined,
       monitorDetailDrawerVisible: false,
-      monitorData: {},
+      // monitorData: {},
       msgVisible: false,
       dangerSourceDrawerVisible: false,
       dangerSourceInfoDrawerVisible: false,
@@ -788,6 +788,22 @@ export default class Chemical extends PureComponent {
     this.setState({ tankDetail, tankMonitorDrawerVisible: true });
   };
 
+  handleClickMonitor = monitorType => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+      dispatch,
+    } = this.props;
+    if (!MonitorConfig[monitorType]) return;
+    // const { fetchType } = MonitorConfig[monitorType];
+    dispatch({
+      type: 'chemical/fetchMonitorData',
+      payload: { companyId, pageSize: 0, pageNum: 1, monitorType },
+    });
+    this.setState({ monitorType, monitorDrawerVisible: true });
+  };
+
   /**
    * 渲染
    */
@@ -800,7 +816,13 @@ export default class Chemical extends PureComponent {
       fourColorImage: {
         data: { list: polygons },
       },
-      chemical: { monitorTargetCount, pastStatusCount, dangerSourceCount, tankList },
+      chemical: {
+        monitorTargetCount,
+        pastStatusCount,
+        dangerSourceCount,
+        tankList,
+        monitorData = {},
+      },
       match: {
         params: { unitId: companyId },
       },
@@ -819,8 +841,8 @@ export default class Chemical extends PureComponent {
       currentHiddenDangerDrawerVisible,
       monitorDrawerVisible,
       monitorType,
-      monitorDetailDrawerVisible,
-      monitorData,
+      // monitorDetailDrawerVisible,
+      // monitorData,
       msgVisible,
       dangerSourceDrawerVisible,
       dangerSourceInfoDrawerVisible,
@@ -884,6 +906,7 @@ export default class Chemical extends PureComponent {
                   handleGasOpen={this.handleGasOpen}
                   handlePoisonOpen={this.handlePoisonOpen}
                   handleClickTankMonitor={this.handleClickTankMonitor}
+                  handleClickMonitor={this.handleClickMonitor}
                 />
               </div>
             </Col>
@@ -895,8 +918,8 @@ export default class Chemical extends PureComponent {
                   showVideo={this.handleShowVideo}
                   onRef={this.onRef}
                   handleClickRiskPoint={this.handleClickRiskPoint}
-                  // polygons={polygons}
                   companyId={companyId}
+                  handleClickTank={this.handleClickTank}
                 />
 
                 {msgVisible ? (
@@ -999,13 +1022,26 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('monitor');
           }}
-          type={monitorType}
+          monitorType={monitorType}
+          monitorData={monitorData}
+          tankList={tankList}
+          // dataList={}
           setDrawerVisible={this.setDrawerVisible}
-          handleGasOpen={this.handleGasOpen}
-          handlePoisonOpen={this.handlePoisonOpen}
+          // handleGasOpen={this.handleGasOpen}
+          // handlePoisonOpen={this.handlePoisonOpen}
         />
 
-        <MonitorDetailDrawer
+        {/* <StorageDrawer
+          visible={storageDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('storage');
+          }}
+          setDrawerVisible={this.setDrawerVisible}
+          tankList={tankList}
+          handleClickTank={this.handleClickTank}
+        /> */}
+
+        {/* <MonitorDetailDrawer
           visible={monitorDetailDrawerVisible}
           onClose={() => {
             this.setDrawerVisible('monitorDetail');
@@ -1013,7 +1049,7 @@ export default class Chemical extends PureComponent {
           type={monitorType}
           monitorData={monitorData}
           handleShowVideo={this.handleShowVideo}
-        />
+        /> */}
 
         {/* 风险点详情抽屉 */}
         <RiskPointDetailDrawer

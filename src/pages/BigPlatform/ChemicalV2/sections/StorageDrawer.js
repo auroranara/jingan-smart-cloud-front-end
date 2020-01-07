@@ -63,14 +63,17 @@ export default class DangerSourceInfoDrawer extends PureComponent {
         left={
           <div className={styles.container}>
             {list.map((item, index) => {
-              const { warnStatus } = item;
+              const { warnStatus, tankName } = item;
               const newItem = {
                 ...item,
                 icon: (
-                  <Wave
-                    frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
-                    backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
-                  />
+                  <div className={styles.iconWrapper}>
+                    <Wave
+                      frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
+                      backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
+                    />
+                    <div className={styles.iconName}>{tankName}</div>
+                  </div>
                 ),
               };
 

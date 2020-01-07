@@ -22,12 +22,7 @@ export default class CardItem extends PureComponent {
           ...style,
         }}
       >
-        {icon && (
-          <div className={styles.icon}>
-            {icon}
-            <div className={styles.iconName}>{name}</div>
-          </div>
-        )}
+        {icon && <div className={styles.icon}>{typeof icon === 'function' ? icon() : icon}</div>}
         <div className={styles.infoWrapper}>
           {fields.map((item, index) => {
             const { label, value, render, extra } = item;

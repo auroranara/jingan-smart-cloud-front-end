@@ -1,96 +1,109 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Col, Select } from 'antd';
 import moment from 'moment';
+import { Row, Col } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
+import Wave from '@/jingan-components/Wave';
+import { CardItem } from '../components/Components';
+import { MonitorConfig } from '../utils';
 import styles from './MonitorDrawer.less';
-import { MonitorItem } from '../components/Components';
-import { MonitorList, MonitorFields, MonitorTitles } from '../utils';
+// import storage from '../imgs/storage.png';
+import iconAlarm from '@/assets/icon-alarm.png';
 
-const { Option } = Select;
-const options = [
-  { label: '全部状态', value: 0 },
-  { label: '报警', value: 1 },
-  { label: '正常', value: 2 },
-];
-export default class MonitorDrawer extends PureComponent {
+// const fields = [
+//   {
+//     value: 'tankName',
+//     render: val => {
+//       return <span style={{ fontSize: 16 }}>{val}</span>;
+//     },
+//   },
+//   { label: '位号', value: 'number' },
+//   { label: '存储物质', value: 'chineName' },
+//   {
+//     label: '区域位置',
+//     value: 'buildingName',
+//     render: (val, row) => {
+//       const { buildingName, floorName, areaName } = row;
+//       return (
+//         <span style={{ fontSize: 16 }}>
+//           {buildingName ? buildingName + (floorName || '') : areaName || '暂无'}
+//         </span>
+//       );
+//     },
+//   },
+// ];
+
+export default class DangerSourceInfoDrawer extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      selected: 0,
-    };
+    this.state = {};
   }
 
-  handleSelect = value => {
-    this.setState({ selected: value });
-  };
-
-  handleClick = data => {
-    const { setDrawerVisible, type = 0, handleGasOpen, handlePoisonOpen } = this.props;
-    if (type === 6 || type === 7) {
-      type === 6 && handleGasOpen();
-      type === 7 && handlePoisonOpen();
-      return;
-    }
-    setDrawerVisible('monitorDetail', { monitorData: data });
-  };
-
   render() {
-    // type = [0,1,2,3,4,5,6]    ['罐区', '库区', '储罐', '生产装置', '库房', '气柜', '可燃有毒气体']
-    const { visible, onClose, type = 0 } = this.props;
-    const { selected } = this.state;
+    const {
+      visible,
+      onClose,
+      setDrawerVisible,
+      // tankList: { list },
+      monitorData,
+      handleClickTank,
+      monitorType,
+    } = this.props;
+    // const {} = this.state;
+    const { title, fields, icon } = MonitorConfig[monitorType] || {};
+    console.log('monitorData', monitorData);
+
+    const list = monitorData[monitorType] || [];
+
     return (
       <DrawerContainer
-        title={`${MonitorTitles[type]}监测（${MonitorList[type].length}）`}
+        title={`${title} (${list.length})`}
         visible={visible}
-        onClose={() => {
-          onClose();
-          setTimeout(() => {
-            this.setState({ selected: 0 });
-          }, 500);
-        }}
+        onClose={onClose}
         width={535}
         destroyOnClose={true}
         zIndex={1222}
         left={
           <div className={styles.container}>
-            <Select
-              value={selected}
-              onSelect={this.handleSelect}
-              className={styles.select}
-              dropdownClassName={styles.dropDown}
-            >
-              {options.map((item, index) => {
-                const { label, value } = item;
-                return (
-                  <Option
-                    key={index}
-                    value={value}
-                    style={{
-                      color: selected === value && '#00ffff',
-                    }}
-                  >
-                    {label}
-                  </Option>
-                );
-              })}
-            </Select>
-            <div className={styles.items}>
-              {MonitorList[type]
-                .filter(item => {
-                  if (selected === 0) {
-                    return true;
+            {list.map((item, index) => {
+              const { warnStatus, tankName } = item;
+              const newItem = {
+                ...item,
+                // icon: icon()
+                // icon: (
+                //   <div className={styles.iconWrapper}>
+                //     <Wave
+                //       frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
+                //       backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
+                //     />
+                //     <div className={styles.iconName}>{tankName}</div>
+                //   </div>
+                // ),
+              };
+
+              return (
+                <CardItem
+                  key={index}
+                  data={newItem}
+                  fields={fields}
+                  extraBtn={
+                    <Fragment>
+                      {+warnStatus === -1 && (
+                        <div
+                          className={styles.alarm}
+                          style={{
+                            background: `url(${iconAlarm}) center center / 100% auto no-repeat`,
+                          }}
+                        />
+                      )}
+                      <div className={styles.detail} onClick={() => handleClickTank(item)}>
+                        监测详情>
+                      </div>
+                    </Fragment>
                   }
-                  return item.status === selected;
-                })
-                .map((item, index) => (
-                  <MonitorItem
-                    key={index}
-                    data={item}
-                    fields={MonitorFields[type]}
-                    onClick={() => this.handleClick(item)}
-                  />
-                ))}
-            </div>
+                  // onClick={() => handleClickTank(item)}
+                />
+              );
+            })}
           </div>
         }
       />

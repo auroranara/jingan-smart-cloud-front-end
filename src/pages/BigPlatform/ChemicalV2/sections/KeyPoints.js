@@ -94,16 +94,23 @@ export default class KeyPoints extends PureComponent {
   };
 
   handleClickMonitor = type => {
-    const { setDrawerVisible, handleGasOpen, handlePoisonOpen, handleClickTankMonitor } = this.props;
-    switch (type) {
-      case "302":
-        // 储罐
-        handleClickTankMonitor();
-        break;
+    const {
+      setDrawerVisible,
+      handleGasOpen,
+      handlePoisonOpen,
+      handleClickTankMonitor,
+      handleClickMonitor,
+    } = this.props;
+    handleClickMonitor(type);
+    // switch (type) {
+    //   case "302":
+    //     // 储罐
+    //     // handleClickTankMonitor();
+    //     break;
 
-      default:
-        break;
-    }
+    //   default:
+    //     break;
+    // }
     // const { setDrawerVisible, handleGasOpen, handlePoisonOpen } = this.props;
     // if (type || type === 0) {
     //   if (type === 2 || type === 6 || type === 7) {
