@@ -1780,7 +1780,7 @@ export const MonitorConfig = {
         },
       },
       { label: '区域位置', value: 'regionalLocation' },
-      { label: '设计柜容（m³）', value: 'capacity' },
+      { label: '设计柜容（m³）', value: 'designCapacity' },
       { label: '设计压力（KPa）', value: 'designKpa' },
     ],
   },
