@@ -132,7 +132,7 @@ export async function getMapList(params) {
 
 // 新增3d地图
 export async function postMap(params) {
-  return request('/acloud_new/v2v2/ThreedMap/threedMap', {
+  return request('/acloud_new/v2/ThreedMap/threedMap', {
     method: 'POST',
     body: params,
   });
@@ -140,7 +140,7 @@ export async function postMap(params) {
 
 // 编辑3d地图
 export async function putMap(params) {
-  return request('/acloud_new/v2v2/ThreedMap/threedMap', {
+  return request('/acloud_new/v2/ThreedMap/threedMap', {
     method: 'PUT',
     body: params,
   });
