@@ -86,7 +86,7 @@ export default class Map extends React.Component {
     map = new fengMap.FMMap(mapOptions);
 
     //打开Fengmap服务器的地图数据和主题
-    map.openMapById(fmapID);
+    map.openMapById(mapId);
 
     //2D、3D控件配置
     var toolControl = new fengMap.toolControl(map, {
