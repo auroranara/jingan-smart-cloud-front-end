@@ -94,7 +94,7 @@ export default class SpecialEquipment extends PureComponent {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       form: { setFieldsValue },
       match: { params: { id = null } = {} },
@@ -203,7 +203,7 @@ export default class SpecialEquipment extends PureComponent {
             let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
             const coord = { x: +xnum, y: +ynum, z: +znum };
             groupId = +groupId;
-            setFieldsValue({ mapLocation: { groupId, coord, areaId } })
+            setFieldsValue({ mapLocation: { groupId, coord, areaId } });
           }
         }
       );
@@ -257,7 +257,9 @@ export default class SpecialEquipment extends PureComponent {
         };
         if (mapLocation && mapLocation.groupId && mapLocation.coord) {
           const { coord, ...resMap } = mapLocation;
-          payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+          payload.pointFixInfoList = [
+            { imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },
+          ];
         }
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
@@ -685,7 +687,7 @@ export default class SpecialEquipment extends PureComponent {
           </FormItem> */}
           <FormItem label="品牌" {...formItemLayout}>
             {getFieldDecorator('brand', {
-              rules: [{ required: true, message: '请选择品牌' }],
+              // rules: [{ required: true, message: '请选择品牌' }],
             })(
               // <Select
               //   placeholder="请选择品牌"
@@ -916,9 +918,7 @@ export default class SpecialEquipment extends PureComponent {
                 新增
               </Button>
               <FlatPic {...FlatPicProps} /> */}
-              {getFieldDecorator('mapLocation')(
-                <MapMarkerSelect companyId={companyId} />
-              )}
+              {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
             </FormItem>
           )}
         </Form>
@@ -932,16 +932,16 @@ export default class SpecialEquipment extends PureComponent {
               编辑
             </Button>
           ) : (
-              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
-                提交
+            <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+              提交
             </Button>
-            )}
+          )}
         </Row>
       </Card>
     );
   };
 
-  render () {
+  render() {
     const {
       companyLoading,
       match: { params: { id = null } = {} },

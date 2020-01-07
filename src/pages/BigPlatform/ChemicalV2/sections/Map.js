@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import { connect } from 'dva';
 import { isPointInPolygon } from '@/utils/map';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 // 引入样式文件
 import styles from './Map.less';
 
@@ -42,6 +43,9 @@ export default class Map extends PureComponent {
   state = {
     gdMapVisible: false,
     visibles: [true, true, true],
+    videoVisible: false,
+    videoList: [],
+    keyId: undefined,
   };
 
   ids = [];
@@ -58,24 +62,6 @@ export default class Map extends PureComponent {
     const { onRef } = this.props;
     onRef && onRef(this);
   }
-
-  // componentDidUpdate(prevProps) {
-  //   const { polygons: prevPolygons } = prevProps;
-  //   const { polygons } = this.props;
-  //   if (JSON.stringify(prevPolygons) !== JSON.stringify(polygons)) {
-  //     map &&
-  //       map.on('loadComplete', () => {
-  //         polygons.map(polygon => {
-  //           const { zoneLevel, coordinateList } = polygon;
-  //           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
-  //           const polygonMarker = this.addPolygon(points, COLORS[zoneLevel - 1]);
-  //           // this.setModelColor(points, COLORS[zoneLevel - 1]);
-  //           this.setModelColor2(polygonMarker, COLORS[zoneLevel - 1]);
-  //           return null;
-  //         });
-  //       });
-  //   }
-  // }
 
   fetchMap = () => {
     const { dispatch, companyId } = this.props;
@@ -110,7 +96,7 @@ export default class Map extends PureComponent {
           const { zoneLevel, coordinateList, groupId } = polygon;
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1]);
-          this.setModelColor2(groupId, polygonMarker, COLORS[zoneLevel - 1]);
+          this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
           return null;
         });
       },
@@ -164,6 +150,11 @@ export default class Map extends PureComponent {
       //设置主题
       defaultThemeName: '2001',
       modelSelectedEffect: false,
+      // modelHoverEffect: true,
+      //支持悬停模型高亮，默认为false悬停不高亮
+      modelHoverEffect: true,
+      //悬停时间触发时间，默认1000
+      modelHoverTime: 200,
       appName,
       key,
     };
@@ -172,8 +163,6 @@ export default class Map extends PureComponent {
     map = new fengMap.FMMap(mapOptions);
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
-
-    // console.log('map.getFMGroup()', map.getFMGroup());
 
     //2D、3D控件配置
     const toolControl = new fengmap.toolControl(map, {
@@ -198,17 +187,42 @@ export default class Map extends PureComponent {
       fun && fun();
     });
 
+    map.on('mapHoverNode', event => {
+      // 鼠标悬停事件
+      // const clickedObj = event.target;
+      console.log('mapHoverNode', event);
+    });
+
+    /**
+     * 过滤不允许hover的地图元素，设置为true为允许点击，设置为false为不允许点击
+     * @param event
+     */
+    map.hoverFilterFunction = event => {
+      // if (event.nodeType === fengmap.FMNodeType.MODEL &&
+      //         event.typeID === 300000) {
+      //     return false;
+      // }
+      // if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
+      //   return true;
+      // }
+      // return false;
+      if (event.nodeType === fengmap.FMNodeType.FLOOR) {
+        return false;
+      }
+      return true;
+    };
+
     map.on('mapClickNode', event => {
       const { handleClickRiskPoint } = this.props;
       const clickedObj = event.target;
       console.log('clickedObj', clickedObj);
       // console.log('time', moment().valueOf());
       const thisTime = moment().valueOf();
+      // 防止点区域时也点到建筑
       if (thisTime - this.lastTime < 300) return;
       this.lastTime = thisTime;
       if (!clickedObj) return;
       const { nodeType } = clickedObj;
-
       if (
         [
           // fengmap.FMNodeType.FLOOR,
@@ -219,16 +233,22 @@ export default class Map extends PureComponent {
         ].includes(nodeType)
       )
         return;
+
       const { eventInfo: { coord } = {} } = clickedObj;
       // if (coord && isPointInPolygon(coord, polygon)) setDrawerVisible('dangerArea');
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
         const {
           opts_: { iconType, markerProps },
         } = clickedObj;
-        // console.log('itemId', itemId);
         if (iconType === 0) {
           const { itemId, status } = markerProps;
           handleClickRiskPoint(itemId, status);
+        } else if (iconType === 1) {
+          const { keyId } = markerProps;
+          this.handleShowVideo(keyId);
+        } else if (iconType === 2) {
+          const { equipmentType } = markerProps;
+          // this.handleShowVideo(keyId);
         }
       }
     });
@@ -271,15 +291,7 @@ export default class Map extends PureComponent {
     this.markerArray[5].jump({ times: 0, duration: 2, height: 2, delay: 0 });
   };
 
-  setModelColor(points, color) {
-    // 默认gid为1
-    const models = map.getDatasByAlias(1, 'model');
-    models
-      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
-      .map(model => model.setColor(color));
-  }
-
-  setModelColor2(groupId, polygon, color) {
+  setModelColor(groupId, polygon, color) {
     // 默认gid为1
     const models = map.getDatasByAlias(groupId, 'model');
     models.map(model => {
@@ -323,109 +335,20 @@ export default class Map extends PureComponent {
     });
     polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
-    this.polygonArray.push(polygonMarker);
-    this.polygonLayers.push(layer);
+    // this.polygonArray.push(polygonMarker);
+    // this.polygonLayers.push(layer);
     return polygonMarker;
     // polygonMarker.alwaysShow(true);
     // polygonMarker.avoid(false);
   };
   /* eslint-disable*/
 
-  initMap2() {
-    const { setDrawerVisible, showVideo } = this.props;
-    const mapOptions = {
-      //必要，地图容器
-      container: document.getElementById('fengMap'),
-      //地图数据位置
-      mapServerURL: './data/' + fmapID,
-      //主题数据位置
-      // mapThemeURL: './data/theme',
-      //设置主题
-      defaultThemeName: '2001',
-      modelSelectedEffect: false,
-      //默认背景颜色,十六进制颜色值或CSS颜色样式 0xff00ff, '#00ff00'
-      // defaultBackgroundColor: '#f7f4f4',
-      //必要，地图应用名称，通过蜂鸟云后台创建
-      appName: '真趣办公室',
-      //必要，地图应用密钥，通过蜂鸟云后台获取
-      key: 'cbb7eb159ce5b7d9300f0ce004f3a614',
-    };
-
-    //初始化地图对象
-    map = new fengMap.FMMap(mapOptions);
-
-    //打开Fengmap服务器的地图数据和主题
-    map.openMapById(fmapID, function(error) {
-      //打印错误信息
-      console.log(error);
-    });
-
-    //2D、3D控件配置
-    const toolControl = new fengmap.toolControl(map, {
-      init2D: false, //初始化2D模式
-      groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
-      position: fengmap.controlPositon.LEFT_TOP,
-      offset: { x: 0, y: 40 },
-      //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-      clickCallBack: function(type, value) {
-        // console.log(type,value);
-      },
-    });
-
-    // 地图加载完成事件
-    map.on('loadComplete', () => {
-      map.tiltAngle = TiltAngle;
-      map.rotateAngle = RotateAngle;
-      map.mapScaleLevel = MapScaleLevel;
-    });
-
-    map.on('mapClickNode', event => {
-      const { handleClickRiskPoint } = this.props;
-      const clickedObj = event.target;
-      console.log('clickedObj', clickedObj);
-      // const thisTime = moment().valueOf();
-      // // 防止点区域同时点到建筑
-      // if (thisTime - this.lastTime < 300) return;
-      // this.lastTime = thisTime;
-      // if (!clickedObj) return;
-      // const {
-      //   ID,
-      //   nodeType,
-      //   // eventInfo: { coord: { x, y } = { coord: {} } },
-      // } = clickedObj;
-      // // this.ids.push({ x, y });
-      // // this.ids.push(ID);
-      // // console.log('IDS', JSON.stringify(this.ids));
-
-      // if (
-      //   [
-      //     // fengmap.FMNodeType.FLOOR,
-      //     fengmap.FMNodeType.FACILITY,
-      //     fengmap.FMNodeType.TEXT_MARKER,
-      //     fengmap.FMNodeType.LABEL,
-      //     fengmap.FMNodeType.NONE,
-      //   ].includes(nodeType)
-      // )
-      //   return;
-      // const { eventInfo: { coord } = {} } = clickedObj;
-      // if (coord && isPointInPolygon(coord, polygon)) setDrawerVisible('dangerArea');
-      // if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
-      //   const {
-      //     opts_: { iconType, itemId, status },
-      //   } = clickedObj;
-      //   if (iconType === 2) showVideo();
-      //   else if (iconType === 0) handleClickRiskPoint(itemId, status);
-      //   else if (iconType === 1)
-      //     setDrawerVisible('tankMonitor');
-      // }
-    });
-  }
-
   handleClickMap = () => {
     this.setState({ gdMapVisible: false });
     this.initMap();
   };
 
+  // 跳转到人员定位
   handlePosition = () => {
     window.open(`${window.publicPath}#/big-platform/personnel-position/index`, `_blank`);
   };
@@ -444,6 +367,7 @@ export default class Map extends PureComponent {
     );
   };
 
+  // 切换图标是否显示
   handleClickControl = index => {
     const { visibles } = this.state;
     const copy = [...visibles];
@@ -463,8 +387,16 @@ export default class Map extends PureComponent {
     });
   };
 
+  handleShowVideo = keyId => {
+    this.setState({ videoVisible: true, keyId });
+  };
+
   render() {
-    const { gdMapVisible, visibles } = this.state;
+    const { gdMapVisible, visibles, videoVisible, keyId } = this.state;
+    const {
+      chemical: { videoList },
+    } = this.props;
+
     return (
       <div className={styles.container} id="fengMap">
         {gdMapVisible && (
@@ -529,6 +461,14 @@ export default class Map extends PureComponent {
             />
           </div>
         )}
+        <NewVideoPlay
+          showList={true}
+          videoList={videoList.map(item => ({ ...item, key_id: item.keyId }))}
+          visible={videoVisible}
+          keyId={keyId} // keyId
+          handleVideoClose={() => this.setState({ videoVisible: false })}
+          isTree={false}
+        />
       </div>
     );
   }
