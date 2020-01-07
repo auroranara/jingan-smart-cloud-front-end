@@ -621,13 +621,15 @@ export default {
       list: 'twoInformationManagement.dangerFactorsList.list',
       view: 'twoInformationManagement.dangerFactorsList.view',
       delete: 'twoInformationManagement.dangerFactorsList.delete',
-      sync: 'twoInformationManagement.dangerFactorsList.sync',
+      import: 'twoInformationManagement.dangerFactorsList.import',
+      export: 'twoInformationManagement.dangerFactorsList.export',
     },
     safetyRiskList: {
       list: 'twoInformationManagement.safetyRiskList.list',
       view: 'twoInformationManagement.safetyRiskList.view',
       delete: 'twoInformationManagement.safetyRiskList.delete',
-      sync: 'twoInformationManagement.safetyRiskList.sync',
+      import: 'twoInformationManagement.safetyRiskList.import',
+      export: 'twoInformationManagement.safetyRiskList.export',
     },
   },
 

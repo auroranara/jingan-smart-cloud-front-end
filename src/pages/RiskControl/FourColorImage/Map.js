@@ -51,13 +51,15 @@ export default class Map extends React.Component {
   // }
 
   getPointList = pointList => {
-    pointList.map(item => {
-      const { zoneLevel, coordinateList } = item;
-      const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-      this.drawPolygon(points, COLORS[zoneLevel]);
-      this.setModelColor(points, COLORS[zoneLevel]);
-      return null;
-    });
+    const newList = pointList.length > 0 ? pointList : [];
+    newList.length > 0 &&
+      pointList.map(item => {
+        const { zoneLevel, coordinateList } = item;
+        const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+        this.drawPolygon(points, COLORS[zoneLevel]);
+        this.setModelColor(points, COLORS[zoneLevel]);
+        return null;
+      });
   };
 
   initMap = ({ appName, key, mapId }) => {
@@ -84,7 +86,7 @@ export default class Map extends React.Component {
     map = new fengMap.FMMap(mapOptions);
 
     //打开Fengmap服务器的地图数据和主题
-    map.openMapById(fmapID);
+    map.openMapById(mapId);
 
     //2D、3D控件配置
     var toolControl = new fengMap.toolControl(map, {
@@ -242,7 +244,7 @@ export default class Map extends React.Component {
   }
 
   render() {
-    const { isDrawing } = this.props;
+    const { isDrawing, height, width } = this.props;
     if (!isDrawing && points.length > 0) {
       // doDraw
       this.drawPolygon(points, COLOR.blue);
@@ -251,6 +253,6 @@ export default class Map extends React.Component {
       map.clearLineMark();
       points = [];
     }
-    return <div style={{ height: '80vh' }} id="fengMap" />;
+    return <div style={{ height: height || '80vh', width: width || 'auto' }} id="fengMap" />;
   }
 }
