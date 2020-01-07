@@ -6,7 +6,7 @@ import { Card, Form, message, Button } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, EDIT_FORMITEMS_COMPANY, LIST_URL } from './utils';
+import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL } from './utils';
 
 @connect(({ twoInformManagement, user, loading }) => ({
   twoInformManagement,
@@ -97,7 +97,7 @@ export default class Edit extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>
           {renderSections(
-            unitType === 4 ? EDIT_FORMITEMS : [...EDIT_FORMITEMS_COMPANY, ...EDIT_FORMITEMS],
+            unitType === 4 ? EDIT_FORMITEMS.slice(1, EDIT_FORMITEMS.length) : EDIT_FORMITEMS,
             getFieldDecorator
           )}
         </Card>

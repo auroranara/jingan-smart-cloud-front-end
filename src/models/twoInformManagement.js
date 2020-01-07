@@ -8,13 +8,17 @@ import {
   querySafeRiskSync,
   querySafeRiskDel,
   queryBindSafetyControl,
-  querySafetyImport,
+  queryDangerExport,
+  querySafetyExport,
   /** 安全承诺公告 */
   querySafetyPromiseList,
   querSafetyPromiseAdd,
   querySafetyPromiseEdit,
   querySafetyPromiseDelete,
 } from '../services/twoInformManagement';
+
+import fileDownload from 'js-file-download';
+import moment from 'moment';
 
 export default {
   namespace: 'twoInformManagement',
@@ -91,6 +95,11 @@ export default {
       }
     },
 
+    *fetchDangerExport({ payload }, { call }) {
+      const blob = yield call(queryDangerExport, payload);
+      fileDownload(blob, `危险（有害）因素排查辨识清单_${moment().format('YYYYMMDD')}.xls`);
+    },
+
     *fetchSafetyList({ payload, callback }, { call, put }) {
       const response = yield call(querySafeRiskList, payload);
       if (response.code === 200) {
@@ -136,16 +145,9 @@ export default {
       }
     },
 
-    // 导入安全风险清单
-    *fetchDataImport({ payload, success, error }, { call }) {
-      const response = yield call(querySafetyImport, payload);
-      if (response.code === 200) {
-        if (success) {
-          success(response);
-        }
-      } else if (error) {
-        error(response.msg);
-      }
+    *fetchSafetyExport({ payload }, { call }) {
+      const blob = yield call(querySafetyExport, payload);
+      fileDownload(blob, `安全风险分级管控清单_${moment().format('YYYYMMDD')}.xls`);
     },
 
     // 安全承诺公告

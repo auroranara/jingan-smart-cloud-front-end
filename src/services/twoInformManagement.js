@@ -30,6 +30,11 @@ export async function queryBindDangerCheck(params) {
   });
 }
 
+// 导出
+export async function queryDangerExport(params) {
+  return request(`${URL_PREFIX}/exportDangerCheck?${stringify(params)}`);
+}
+
 // 安全风险分级管控清单
 
 // 查看列表
@@ -55,12 +60,9 @@ export async function queryBindSafetyControl(params) {
   });
 }
 
-// 导入
-export async function querySafetyImport(params) {
-  return request('/acloud_new/v2/ci/doubleBill/importSafetyControl', {
-    method: 'POST',
-    body: params,
-  });
+// 导出
+export async function querySafetyExport(params) {
+  return request(`${URL_PREFIX}/exportSafetyControl?${stringify(params)}`);
 }
 
 /** 公告管理 */

@@ -1,33 +1,31 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, Upload, Modal, Icon, message, Form, Popconfirm, Divider } from 'antd';
-import Link from 'umi/link';
+import { Button, Card, Table, Upload, Modal, Icon, message, Form, Divider } from 'antd';
 
 import { getToken } from 'utils/authority';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { hasAuthority } from '@/utils/customAuth';
+import { AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import {
   BREADCRUMBLIST,
   ROUTER,
   SEARCH_FIELDS as FIELDS,
-  SEARCH_FIELDS_COMPANY as COMPANYFIELDS,
   TABLE_COLUMNS as COLUMNS,
-  TABLE_COLUMNS_COMPANY as COMPANYCOLUMNS,
+  DetailModal,
 } from './utils';
 
 // 权限
 const {
   twoInformManagement: {
-    safetyRiskList: { view: viewAuth, delete: deleteAuth, sync: syncAuth },
+    safetyRiskList: { view: viewAuth, delete: deleteAuth, import: importAuth, export: exportAuth },
   },
 } = codes;
 
-// 上传文件地址
-const uploadAction = '/acloud_new/v2/uploadFile';
+const url =
+  'http://data.jingan-china.cn/v2/chem/file/%E5%AE%89%E5%85%A8%E9%A3%8E%E9%99%A9%E5%88%86%E7%BA%A7%E7%AE%A1%E6%8E%A7%E6%B8%85%E5%8D%95.xls';
 
 @connect(({ twoInformManagement, fourColorImage, user, loading }) => ({
   twoInformManagement,
@@ -41,10 +39,12 @@ export default class TableList extends PureComponent {
     super(props);
     this.state = {
       formData: {},
-      modalVisible: false, // 弹框是否可见
+      modalVisible: false, // 导入弹框是否可见
       fileList: [], // 导入的数据列表
-      importLoading: false,
-      submittingModal: false,
+      importLoading: false, // 导入状态
+      detailVisible: false, // 清单弹框是否可见
+      currentPage: 1,
+      detailId: '', // 查看清单ID
     };
     this.pageNum = 1;
     this.pageSize = 10;
@@ -54,11 +54,24 @@ export default class TableList extends PureComponent {
     this.fetchList();
   }
 
-  // 获取列表
+  // 获取风险分区列表
   fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'fourColorImage/fetchList',
+      payload: {
+        ...params,
+        pageSize,
+        pageNum,
+      },
+    });
+  };
+
+  // 获取清单列表
+  fetchSafetyList = (pageNum = 1, pageSize = 10, params = {}) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'twoInformManagement/fetchSafetyList',
       payload: {
         ...params,
         pageSize,
@@ -79,11 +92,11 @@ export default class TableList extends PureComponent {
     this.fetchList(1, this.pageSize);
   };
 
-  // 重置
+  // 删除
   handleDeleteClick = id => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'twoInformManagement/fetchSafetyDel',
+      type: 'fourColorImage/fetchDelete',
       payload: { ids: id },
       success: () => {
         this.fetchList();
@@ -108,15 +121,13 @@ export default class TableList extends PureComponent {
   };
 
   // 导入
-  handleImportShow = id => {
-    this.setState({ modalVisible: true, areaId: id });
+  handleImportShow = (id, companyId) => {
+    this.setState({ modalVisible: true, areaId: id, companyId });
   };
 
   handleImportChange = info => {
     const fileList = info.fileList.slice(-1);
     this.setState({ fileList });
-    console.log('info', info);
-
     if (info.file.status === 'uploading') {
       this.setState({ importLoading: true });
     }
@@ -135,80 +146,72 @@ export default class TableList extends PureComponent {
     }
   };
 
-  // handleImportSubmit = () => {
-  //   const {
-  //     dispatch,
-  //     form: { validateFieldsAndScroll },
-  //   } = this.props;
-  //   const { fileList, areaId } = this.state;
-
-  //   const status = fileList.map(item => item.status);
-  //   const hasUploading = status.includes('uploading');
-  //   if (hasUploading === true) {
-  //     return message.warning('还在上传中，请等待！');
-  //   }
-
-  //   if (fileList.length === 0) {
-  //     return message.error('请先上传！');
-  //   }
-
-  //   validateFieldsAndScroll((errors, values) => {
-  //     if (!errors) {
-  //       const success = () => {
-  //         message.success('导入成功');
-  //         this.setState({ modalVisible: false, fileList: [], submittingModal: false });
-  //         this.fetchList(1, this.pageSize);
-  //       };
-  //       const error = () => {
-  //         message.error('导入失败');
-  //         this.setState({ modalVisible: true, submittingModal: false });
-  //       };
-
-  //       this.setState({ submittingModal: true });
-
-  //       const payload = {
-  //         areaId,
-  //         // file: fileList.map(item => item.dbUrl).join(','),
-  //       };
-
-  //       // dispatch({
-  //       //   type: 'twoInformManagement/fetchDataImport',
-  //       //   payload,
-  //       //   success,
-  //       //   error,
-  //       // });
-  //     }
-  //   });
-  // };
-
   handleImportClose = () => {
-    this.setState({ modalVisible: false });
+    this.setState({ modalVisible: false, fileList: [] });
+  };
+
+  // 导出
+  handleExportShow = (id, companyId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'twoInformManagement/fetchSafetyExport',
+      payload: { areaId: id },
+    });
+  };
+
+  // 显示清单弹框
+  handleDetailModal = id => {
+    this.setState({ detailVisible: true, detailId: id });
+    this.fetchSafetyList(1, this.pageSize, { areaId: id });
+  };
+
+  handleTableData = (list = [], indexBase) => {
+    return list.map((item, index) => {
+      return {
+        ...item,
+        index: indexBase + index + 1,
+      };
+    });
+  };
+
+  handleDetailPageChange = (pageNum, pageSize) => {
+    const { detailId } = this.state;
+    this.pageNum = pageNum;
+    this.pageSize = pageSize;
+    this.fetchSafetyList(pageNum, pageSize, { areaId: detailId });
+  };
+
+  handleDetailClose = () => {
+    this.setState({ detailVisible: false });
   };
 
   render() {
     const {
       loading = false,
       twoInformManagement: {
-        safetyData: {
-          // list = [],
-          pagination: { pageNum, pageSize, total },
-        },
-        msgSafety,
+        safetyData: { list = [], pagination },
       },
       fourColorImage: {
-        data: { list: riskList = [] },
+        data: {
+          a: numberUnit,
+          list: riskList = [],
+          pagination: { pageNum, pageSize, total },
+        },
       },
       user: {
-        currentUser: { permissionCodes, unitType },
+        currentUser: { unitType },
       },
     } = this.props;
 
-    const { fileList, modalVisible, areaId, importLoading, submittingModal } = this.state;
-
-    // 权限
-    const viewCode = hasAuthority(viewAuth, permissionCodes);
-    const deleteCode = hasAuthority(deleteAuth, permissionCodes);
-    const syncCode = hasAuthority(syncAuth, permissionCodes);
+    const {
+      fileList,
+      modalVisible,
+      currentPage,
+      areaId,
+      companyId,
+      detailVisible,
+      importLoading,
+    } = this.state;
 
     const uploadExportButton = <Icon type={importLoading ? 'loading' : 'upload'} />;
 
@@ -219,38 +222,49 @@ export default class TableList extends PureComponent {
 
     const extraColumns = [
       {
+        title: '附件',
+        dataIndex: 'file',
+        key: 'file',
+        align: 'center',
+        render: (val, text) => {
+          return (
+            <AuthA code={viewAuth} onClick={() => this.handleDetailModal(text.id)}>
+              查看清单
+            </AuthA>
+          );
+        },
+      },
+      {
         title: '操作',
         dataIndex: 'operation',
         key: 'operation',
-        fixed: 'right',
         align: 'center',
         render: (val, text) => {
           return (
             <Fragment>
-              {viewCode ? (
-                <a onClick={() => this.handleImportShow(text.id)}>导入数据</a>
-              ) : (
-                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
-              )}
+              <AuthA
+                code={importAuth}
+                onClick={() => this.handleImportShow(text.id, text.companyId)}
+              >
+                导入数据
+              </AuthA>
               <Divider type="vertical" />
-              {viewCode ? (
-                <Link to={`${ROUTER}/safety-risk-list/view/${text.id}`}>查看</Link>
-              ) : (
-                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
-              )}
+              <AuthPopConfirm
+                code={deleteAuth}
+                title="确定删除当前该内容吗？"
+                onConfirm={() => this.handleDeleteClick(text.id)}
+                okText="确定"
+                cancelText="取消"
+              >
+                删除
+              </AuthPopConfirm>
               <Divider type="vertical" />
-              {deleteCode ? (
-                <Popconfirm
-                  title="确定删除当前该内容吗？"
-                  onConfirm={() => this.handleDeleteClick(text.id)}
-                  okText="确定"
-                  cancelText="取消"
-                >
-                  <span className={styles1.delete}>删除</span>
-                </Popconfirm>
-              ) : (
-                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
-              )}
+              <AuthA
+                code={exportAuth}
+                onClick={() => this.handleExportShow(text.id, text.companyId)}
+              >
+                导出数据
+              </AuthA>
             </Fragment>
           );
         },
@@ -259,16 +273,23 @@ export default class TableList extends PureComponent {
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
+
     const toolBarAction = (
-      <Button
-        type="primary"
-        style={{ marginTop: '8px' }}
-        disabled={!syncCode}
-        onClick={this.handleClickSync}
-      >
-        下载模板
+      <Button type="primary" style={{ marginTop: '8px' }}>
+        <a href={url}>下载模板</a>
       </Button>
     );
+
+    const modalData = {
+      detailVisible,
+      currentPage,
+      list,
+      pagination,
+      modalTitle: '查看清单',
+      handleDetailClose: this.handleDetailClose,
+      handleTableData: this.handleTableData,
+      handleDetailPageChange: this.handleDetailPageChange,
+    };
 
     return (
       <PageHeaderLayout
@@ -277,13 +298,13 @@ export default class TableList extends PureComponent {
         content={
           <p className={styles1.total}>
             单位数量：
-            {msgSafety}
+            {numberUnit}
           </p>
         }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={unitType === 4 ? [...FIELDS] : [...COMPANYFIELDS, ...FIELDS]}
+            fields={unitType === 4 ? FIELDS.slice(1, FIELDS.length) : FIELDS}
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
@@ -297,12 +318,12 @@ export default class TableList extends PureComponent {
               loading={loading}
               columns={
                 unitType === 4
-                  ? [...COLUMNS, ...extraColumns]
-                  : [...COMPANYCOLUMNS, ...COLUMNS, ...extraColumns]
+                  ? [...COLUMNS.slice(1, COLUMNS.length), ...extraColumns]
+                  : [...COLUMNS, ...extraColumns]
               }
               dataSource={riskList}
               onChange={this.onTableChange}
-              scroll={{ x: 'max-content' }}
+              // scroll={{ x: 'max-content' }}
               pagination={{
                 current: pageNum,
                 pageSize,
@@ -325,9 +346,12 @@ export default class TableList extends PureComponent {
         <Modal
           title="导入"
           visible={modalVisible}
-          onCancel={this.handleImportClose}
-          onOk={this.handleImportSubmit}
-          confirmLoading={importLoading || submittingModal}
+          closable={false}
+          footer={[
+            <Button disabled={importLoading} onClick={this.handleImportClose}>
+              返回
+            </Button>,
+          ]}
         >
           <Form>
             <Form.Item {...formItemLayout} label="导入数据">
@@ -335,7 +359,7 @@ export default class TableList extends PureComponent {
                 name="file"
                 accept=".xls"
                 headers={{ 'JA-Token': getToken() }}
-                action={`/acloud_new/v2/ci/doubleBill/importSafetyControl/${areaId}`} // 上传地址
+                action={`/acloud_new/v2/ci/doubleBill/importSafetyControl/${areaId}/${companyId}`} // 上传地址
                 fileList={fileList}
                 onChange={this.handleImportChange}
               >
@@ -347,6 +371,7 @@ export default class TableList extends PureComponent {
             </Form.Item>
           </Form>
         </Modal>
+        <DetailModal {...modalData} />
       </PageHeaderLayout>
     );
   }
