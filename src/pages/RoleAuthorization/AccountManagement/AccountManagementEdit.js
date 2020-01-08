@@ -424,7 +424,7 @@ export default class AccountManagementEdit extends PureComponent {
                 phoneNumber,
                 accountStatus,
                 sex,
-                birth: +birthday,
+                birth: birthday ? +birthday : null,
                 education: degree,
                 educationFileList: getSubmitPhotoList(photoList),
                 avatarFileList: getSubmitPhotoList(avatarList),
@@ -443,7 +443,7 @@ export default class AccountManagementEdit extends PureComponent {
               userName,
               phoneNumber,
               sex,
-              birth: +birthday,
+              birth: birthday ? +birthday : null,
               education: degree,
               educationFileList: getSubmitPhotoList(photoList),
               avatarFileList: getSubmitPhotoList(avatarList),
@@ -1138,13 +1138,13 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.birthday}>
                 {getFieldDecorator('birthday', {
-                  initialValue: id ? moment(birth) : undefined,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择生日',
-                    },
-                  ],
+                  initialValue: id && typeof birth === 'number' ? moment(birth) : undefined,
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     message: '请选择生日',
+                  //   },
+                  // ],
                 })(
                   <DatePicker placeholder="请选择生日" allowClear />
                 )}

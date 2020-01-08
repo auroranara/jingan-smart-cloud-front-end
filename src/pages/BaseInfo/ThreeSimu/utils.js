@@ -15,7 +15,7 @@ export const TYPE = ['备案', '审查'];
 export const CONCLUSION = ['通过', '不通过'];
 
 // 格式化日期
-export const formatTime = (time, formatStr = DATE_FORMAT) => time ? moment(time).format(formatStr) : '暂无数据';
+export const formatTime = (time, formatStr = DATE_FORMAT) => time ? moment(time).format(formatStr) : '-';
 
 export const BREADCRUMBLIST = [ // modify
   { title: '首页', name: '首页', href: '/' },
