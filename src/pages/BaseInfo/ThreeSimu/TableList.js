@@ -189,7 +189,7 @@ export default class TableList extends PureComponent {
         width: 300,
         render (ns, record) {
           return [
-            `类别：${TYPE[+record.safeType - 1]}`,
+            `类别：${TYPE[+record.safeType - 1] || '-'}`,
             `结论：${CONCLUSION[+record.safeResult]}`,
             `文书日期：${formatTime(record.safeDate)}`,
           ].map((n, i) => <p key={i} className={styles1.p}>{n}</p>);
@@ -201,7 +201,7 @@ export default class TableList extends PureComponent {
         width: 300,
         render (ns, record) {
           return [
-            `类别：${TYPE[+record.safeFacilitiesDesignType - 1]}`,
+            `类别：${TYPE[+record.safeFacilitiesDesignType - 1] || '-'}`,
             `结论：${CONCLUSION[+record.safeFacilitiesDesignResult]}`,
             `文书日期：${formatTime(record.safeFacilitiesDesignDate)}`,
           ].map((n, i) => <p key={i} className={styles1.p}>{n}</p>);
@@ -225,7 +225,7 @@ export default class TableList extends PureComponent {
         width: 300,
         render (ns, record) {
           return [
-            `类别：${TYPE[+record.safeFacilitiesCompleteType - 1]}`,
+            `类别：${TYPE[+record.safeFacilitiesCompleteType - 1] || '-'}`,
             `结论：${CONCLUSION[+record.safeFacilitiesCompleteResult]}`,
             `文书日期：${formatTime(record.safeFacilitiesCompleteDate)}`,
           ].map((n, i) => <p key={i} className={styles1.p}>{n}</p>);
