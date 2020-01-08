@@ -166,6 +166,10 @@ export default class TableList extends React.Component {
     });
   };
 
+  handleModalClose = () => {
+    this.setState({ visible: false });
+  };
+
   handleSelectCompany = company => {
     const { dispatch } = this.props;
     this.setState({ company, visible: false });
@@ -339,7 +343,7 @@ export default class TableList extends React.Component {
           modal={companyList}
           fetch={this.fetchCompanyList}
           onSelect={this.handleSelectCompany}
-          onClose={this.handleModalCLose}
+          onClose={this.handleModalClose}
         />
       </PageHeaderLayout>
     );
