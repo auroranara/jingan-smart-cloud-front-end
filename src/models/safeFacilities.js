@@ -3,6 +3,8 @@ import {
   querySafeFacilitiesAdd,
   querySafeFacilitiesEdit,
   querySafeFacilitiesDelete,
+  queryReportList,
+  queryReportAdd,
 } from '../services/company/reservoirRegion';
 export default {
   namespace: 'safeFacilities',
@@ -41,6 +43,13 @@ export default {
         label: '液位仪',
       },
     ],
+    reportData: {
+      list: [],
+      pagination: {},
+    },
+    reportDetail: {
+      data: [],
+    },
   },
 
   effects: {
@@ -100,6 +109,34 @@ export default {
         error(response.msg);
       }
     },
+
+    // 报告列表
+    *fetchReportList({ payload, callback }, { call, put }) {
+      const response = yield call(queryReportList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveReportList',
+          payload: response,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 报告新增
+    *fetchReportAdd({ payload, success, error }, { call, put }) {
+      const response = yield call(queryReportAdd, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveReportAdd',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
@@ -142,6 +179,21 @@ export default {
           ...state.safeFacData,
           list: state.safeFacData.list.filter(item => item.id !== id),
         },
+      };
+    },
+
+    saveReportList(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        reportData: data,
+      };
+    },
+
+    saveReportAdd(state, { payload }) {
+      return {
+        ...state,
+        reportDetail: payload,
       };
     },
   },

@@ -42,7 +42,7 @@ const ReportModal = Form.create()(props => {
     form: { getFieldDecorator, validateFields, resetFields },
     title = '新增检验报告',
     uploading,
-    photoUrl,
+    fileList,
     handleUploadChange,
     handleModalClose,
     handleModalAdd,
@@ -122,7 +122,7 @@ const ReportModal = Form.create()(props => {
               headers={{ 'JA-Token': getToken() }}
               data={{ folder }} // 附带参数
               action={uploadAction} // 上传地址
-              fileList={photoUrl}
+              fileList={fileList}
               onChange={handleUploadChange}
             >
               <Button type="dashed" style={{ width: '96px', height: '96px' }} disabled={uploading}>
@@ -148,12 +148,27 @@ export default class CheckDetail extends PureComponent {
     super(props);
     this.state = {
       modalVisible: false, // 弹窗是否可见
+      uploading: false,
+      fileList: [],
     };
-    this.pageNum = 1;
-    this.pageSize = 10;
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.fetchList();
+  }
+
+  // 获取列表
+  fetchList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'safeFacilities/fetchReportList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+  };
 
   handleModalShow = () => {
     this.setState({ modalVisible: true });
@@ -163,16 +178,77 @@ export default class CheckDetail extends PureComponent {
     this.setState({ modalVisible: false });
   };
 
-  render() {
-    const { loading = false } = this.props;
-    const { modalVisible } = this.state;
+  handleUploadChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        fileList: fileList,
+        uploading: true,
+      });
+    } else if (file.status === 'done' && file.response.code === 200) {
+      const {
+        data: {
+          list: [result],
+        },
+      } = file.response;
+      if (result) {
+        this.setState({
+          fileList: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          uploading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        fileList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        uploading: false,
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        fileList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        uploading: false,
+      });
+    }
+  };
 
-    const list = [
-      {
-        id: 1,
-        certificateNumber: '11111',
+  handleModalAdd = formData => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'safeFacilities/fetchReportAdd',
+      payload: { ...formData },
+      callback: response => {
+        if (response && response.code === 200) {
+          this.handleModalClose();
+          this.fetchList();
+          message.success('新建成功！');
+        } else message.error(response.msg);
       },
-    ];
+    });
+  };
+
+  render() {
+    const {
+      loading = false,
+      safeFacilities: {
+        reportData: { list = [] },
+      },
+    } = this.props;
+    const { modalVisible, uploading, fileList } = this.state;
 
     const columns = [
       {
@@ -201,14 +277,14 @@ export default class CheckDetail extends PureComponent {
       },
       {
         title: '上传日期',
-        dataIndex: 'date',
-        key: 'date',
+        dataIndex: 'createTime',
+        key: 'createTime',
         align: 'center',
       },
       {
         title: '上传人',
-        dataIndex: 'user',
-        key: 'user',
+        dataIndex: 'createPerson',
+        key: 'createPerson',
         align: 'center',
       },
       {
@@ -224,6 +300,9 @@ export default class CheckDetail extends PureComponent {
 
     const modalData = {
       modalVisible,
+      uploading,
+      fileList,
+      handleUploadChange: this.handleUploadChange,
       handleModalClose: this.handleModalClose,
       handleModalAdd: this.handleModalAdd,
     };
@@ -246,7 +325,7 @@ export default class CheckDetail extends PureComponent {
               loading={loading}
               columns={columns}
               dataSource={list}
-              onChange={this.onTableChange}
+              // onChange={this.onTableChange}
               pagination={false}
             />
           ) : (
