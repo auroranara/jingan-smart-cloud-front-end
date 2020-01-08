@@ -2490,6 +2490,12 @@ module.exports = env => {
                   path: '/facility-management/safety-facilities/edit/:id',
                   component: './BaseInfo/SafetyFacilities/Edit',
                 },
+                {
+                  name: 'report',
+                  code: 'facilityManagement.safetyFacilities.report',
+                  path: '/facility-management/safety-facilities/inspection-report/:id',
+                  component: './BaseInfo/SafetyFacilities/InspectionReport',
+                },
               ],
             },
             {

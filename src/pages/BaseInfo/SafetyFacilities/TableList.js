@@ -51,9 +51,6 @@ const statusVal = {
   4: '使用中',
 };
 
-// 获取根节点
-const getRootChild = () => document.querySelector('#root>div');
-
 /* session前缀 */
 const sessionPrefix = 'safety_fac';
 
@@ -293,6 +290,17 @@ export default class TableList extends PureComponent {
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
             )}
           </Fragment>
+        ),
+      },
+      {
+        title: '检验报告',
+        dataIndex: 'report',
+        width: 120,
+        align: 'center',
+        render: (val, text) => (
+          <a href={`#/facility-management/safety-facilities/inspection-report/${text.companyId}`}>
+            查看详情
+          </a>
         ),
       },
     ];
