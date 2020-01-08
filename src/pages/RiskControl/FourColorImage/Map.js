@@ -40,16 +40,6 @@ export default class Map extends React.Component {
     // this.initMap();
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const { pointList: prevPointList } = prevProps;
-  //   if (JSON.stringify(prevPointList) !== JSON.stringify(this.props.pointList)) {
-  //     map &&
-  //       map.on('loadComplete', () => {
-  //         this.getPointList(this.props.pointList);
-  //       });
-  //   }
-  // }
-
   getPointList = pointList => {
     const newList = pointList.length > 0 ? pointList : [];
     newList.length > 0 &&
@@ -60,6 +50,10 @@ export default class Map extends React.Component {
         this.setModelColor(points, COLORS[zoneLevel]);
         return null;
       });
+  };
+
+  handleDispose = () => {
+    map && map.dispose();
   };
 
   initMap = ({ appName, key, mapId }) => {
@@ -244,7 +238,7 @@ export default class Map extends React.Component {
   }
 
   render() {
-    const { isDrawing, height, width } = this.props;
+    const { isDrawing } = this.props;
     if (!isDrawing && points.length > 0) {
       // doDraw
       this.drawPolygon(points, COLOR.blue);
@@ -253,6 +247,6 @@ export default class Map extends React.Component {
       map.clearLineMark();
       points = [];
     }
-    return <div style={{ height: height || '80vh', width: width || 'auto' }} id="fengMap" />;
+    return <div style={{ height: '80vh' }} id="fengMap" />;
   }
 }
