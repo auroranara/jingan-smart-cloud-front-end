@@ -5,6 +5,7 @@ import {
   getTankList,
   riskPointForPage,
   monitorEquipment,
+  videoList,
 } from '@/services/bigPlatform/chemical';
 
 export default {
@@ -24,6 +25,7 @@ export default {
     },
     monitorEquipment: [],
     riskPoint: [],
+    videoList: [],
   },
 
   effects: {
@@ -112,6 +114,21 @@ export default {
           type: 'save',
           payload: {
             monitorEquipment,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 视频监测列表
+    *fetchVideoList({ payload, callback }, { call, put }) {
+      const response = yield call(videoList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const videoList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            videoList,
           },
         });
       }

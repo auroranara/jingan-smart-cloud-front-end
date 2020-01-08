@@ -59,58 +59,57 @@ const REMOVE = 'gasometer/remove';
 const GET_MONITOR_DEVICE_LIST = 'gasometer/getMonitorDeviceList';
 const SET_MONITOR_DEVICE_BIND_STATUS = 'gasometer/setMonitorDeviceBindStatus';
 
-@connect(({
-  gasometer,
-  user,
-  loading,
-}) => ({
-  gasometer,
-  user,
-  loading: loading.effects[GET_LIST],
-  loadingMonitorDeviceList: loading.effects[GET_MONITOR_DEVICE_LIST],
-}), dispatch => ({
-  getList(payload, callback) {
-    dispatch({
-      type: GET_LIST,
-      payload: {
-        pageNum: 1,
-        pageSize: getPageSize(),
-        ...payload,
-      },
-      callback,
-    });
-  },
-  remove(payload, callback) {
-    dispatch({
-      type: REMOVE,
-      payload,
-      callback,
-    });
-  },
-  getMonitorDeviceList(payload, callback) {
-    dispatch({
-      type: GET_MONITOR_DEVICE_LIST,
-      payload: {
-        pageNum: 1,
-        pageSize: getPageSize(),
-        ...payload,
-      },
-      callback: (success, data) => {
-        if (!success) {
-          message.error('获取监测设备列表失败，请稍后重试或联系管理人员');
-        }
-        callback && callback(success, data);
-      },
-    });
-  },
-  setMonitorDeviceBindStatus(payload, callback) {
-    dispatch({
-      type: SET_MONITOR_DEVICE_BIND_STATUS,
-      payload,
-      callback,
-    });
-  },
-}))
+@connect(
+  ({ gasometer, user, loading }) => ({
+    gasometer,
+    user,
+    loading: loading.effects[GET_LIST],
+    loadingMonitorDeviceList: loading.effects[GET_MONITOR_DEVICE_LIST],
+  }),
+  dispatch => ({
+    getList(payload, callback) {
+      dispatch({
+        type: GET_LIST,
+        payload: {
+          pageNum: 1,
+          pageSize: getPageSize(),
+          ...payload,
+        },
+        callback,
+      });
+    },
+    remove(payload, callback) {
+      dispatch({
+        type: REMOVE,
+        payload,
+        callback,
+      });
+    },
+    getMonitorDeviceList(payload, callback) {
+      dispatch({
+        type: GET_MONITOR_DEVICE_LIST,
+        payload: {
+          pageNum: 1,
+          pageSize: getPageSize(),
+          ...payload,
+        },
+        callback: (success, data) => {
+          if (!success) {
+            message.error('获取监测设备列表失败，请稍后重试或联系管理人员');
+          }
+          callback && callback(success, data);
+        },
+      });
+    },
+    setMonitorDeviceBindStatus(payload, callback) {
+      dispatch({
+        type: SET_MONITOR_DEVICE_BIND_STATUS,
+        payload,
+        callback,
+      });
+    },
+  })
+)
 export default class GasometerList extends Component {
   state = {
     type: undefined, // 0为绑定，1为已绑定
@@ -119,37 +118,28 @@ export default class GasometerList extends Component {
     bindIdList: undefined,
     binding: false,
     unbinding: false,
-  }
+  };
 
-  prevValues = {}
+  prevValues = {};
 
-  prevValues2 = {}
+  prevValues2 = {};
 
   componentDidMount() {
-    const {
-      getList,
-    } = this.props;
+    const { getList } = this.props;
     getList();
   }
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   setForm2Reference = form => {
     this.form2 = form;
-  }
+  };
 
   reload = () => {
     const {
-      gasometer: {
-        list: {
-          pagination: {
-            pageNum=1,
-            pageSize=getPageSize(),
-          }={},
-        }={},
-      },
+      gasometer: { list: { pagination: { pageNum = 1, pageSize = getPageSize() } = {} } = {} },
       getList,
     } = this.props;
     getList({
@@ -158,17 +148,12 @@ export default class GasometerList extends Component {
       pageSize,
     });
     this.form && this.form.setFieldsValue(this.prevValues);
-  }
+  };
 
   reload2 = () => {
     const {
       gasometer: {
-        monitorDeviceList: {
-          pagination: {
-            pageNum=1,
-            pageSize=getPageSize(),
-          }={},
-        }={},
+        monitorDeviceList: { pagination: { pageNum = 1, pageSize = getPageSize() } = {} } = {},
       },
       getMonitorDeviceList,
     } = this.props;
@@ -181,23 +166,17 @@ export default class GasometerList extends Component {
       targetId: data.id,
     });
     this.form2 && this.form2.setFieldsValue(this.prevValues2);
-  }
+  };
 
   // 新增按钮点击事件
   handleAddButtonClick = () => {
     router.push(ADD_PATH);
-  }
+  };
 
   // 绑定统计按钮点击事件
-  handleBindCountButtonClick = (data) => {
+  handleBindCountButtonClick = data => {
     const {
-      gasometer: {
-        monitorDeviceList: {
-          pagination: {
-            pageSize=getPageSize(),
-          }={},
-        }={},
-      },
+      gasometer: { monitorDeviceList: { pagination: { pageSize = getPageSize() } = {} } = {} },
       getMonitorDeviceList,
     } = this.props;
     getMonitorDeviceList({
@@ -206,23 +185,18 @@ export default class GasometerList extends Component {
       targetId: data.id,
     });
     this.form2 && this.form2.resetFields();
+    this.prevValues2 = {};
     this.setState({
       type: 1,
       visible: true,
       data,
     });
-  }
+  };
 
   // 绑定监测设备按钮点击事件
-  handleBindButtonClick = (data) => {
+  handleBindButtonClick = data => {
     const {
-      gasometer: {
-        monitorDeviceList: {
-          pagination: {
-            pageSize=getPageSize(),
-          }={},
-        }={},
-      },
+      gasometer: { monitorDeviceList: { pagination: { pageSize = getPageSize() } = {} } = {} },
       getMonitorDeviceList,
     } = this.props;
     getMonitorDeviceList({
@@ -232,30 +206,31 @@ export default class GasometerList extends Component {
       bindTargetStatus: 0,
     });
     this.form2 && this.form2.resetFields();
+    this.prevValues2 = {};
     this.setState({
       type: 0,
       visible: true,
       data,
       bindIdList: [],
     });
-  }
+  };
 
   // 编辑按钮点击事件
-  handleEditButtonClick = (e) => {
+  handleEditButtonClick = e => {
     const { id } = e.currentTarget.dataset;
     router.push(`${EDIT_PATH}/${id}`);
-  }
+  };
 
   // 查看按钮点击事件
-  handleDetailButtonClick = (e) => {
+  handleDetailButtonClick = e => {
     const { id } = e.currentTarget.dataset;
     router.push(`${DETAIL_PATH}/${id}`);
-  }
+  };
 
   // 删除按钮点击事件
-  handleDeleteButtonClick = (id) => {
+  handleDeleteButtonClick = id => {
     const { remove } = this.props;
-    remove({ id }, (success) => {
+    remove({ id }, success => {
       if (success) {
         message.success('删除成功');
         this.reload();
@@ -263,18 +238,12 @@ export default class GasometerList extends Component {
         message.error('删除失败，请稍后重试或联系管理人员！');
       }
     });
-  }
+  };
 
   // 查询
-  handleSearch = (values) => {
+  handleSearch = values => {
     const {
-      gasometer: {
-        list: {
-          pagination: {
-            pageSize=getPageSize(),
-          }={},
-        }={},
-      },
+      gasometer: { list: { pagination: { pageSize = getPageSize() } = {} } = {} },
       getList,
     } = this.props;
     this.prevValues = values;
@@ -282,23 +251,17 @@ export default class GasometerList extends Component {
       ...values,
       pageSize,
     });
-  }
+  };
 
   // 重置
-  handleReset = (values) => {
+  handleReset = values => {
     this.handleSearch(values);
-  }
+  };
 
   // 表格change
   handleTableChange = ({ current, pageSize }) => {
     const {
-      gasometer: {
-        list: {
-          pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
-      },
+      gasometer: { list: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {} },
       getList,
     } = this.props;
     getList({
@@ -308,18 +271,12 @@ export default class GasometerList extends Component {
     });
     this.form && this.form.setFieldsValue(this.prevValues);
     prevPageSize !== pageSize && setPageSize(pageSize);
-  }
+  };
 
   // 模态框搜索
-  handleModalSearch = (values) => {
+  handleModalSearch = values => {
     const {
-      gasometer: {
-        monitorDeviceList: {
-          pagination: {
-            pageSize=getPageSize(),
-          }={},
-        }={},
-      },
+      gasometer: { monitorDeviceList: { pagination: { pageSize = getPageSize() } = {} } = {} },
       getMonitorDeviceList,
     } = this.props;
     const { type, data } = this.state;
@@ -328,32 +285,30 @@ export default class GasometerList extends Component {
       ...values,
       pageSize,
       companyId: data.companyId,
-      ...(type ? {
-        targetId: data.id,
-      } : {
-        bindTargetId: data.id,
-        bindTargetStatus: 0,
-      }),
+      ...(type
+        ? {
+            targetId: data.id,
+          }
+        : {
+            bindTargetId: data.id,
+            bindTargetStatus: 0,
+          }),
     });
-  }
+  };
 
   // 模态框重置
-  handleModalReset = (values) => {
+  handleModalReset = values => {
     this.handleModalSearch(values);
     this.setState({
       bindIdList: [],
     });
-  }
+  };
 
   // 模态框表格change
   handleModalTableChange = ({ current, pageSize }) => {
     const {
       gasometer: {
-        monitorDeviceList: {
-          pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
+        monitorDeviceList: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
       },
       getMonitorDeviceList,
     } = this.props;
@@ -363,57 +318,54 @@ export default class GasometerList extends Component {
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
       companyId: data.companyId,
-      ...(type ? {
-        targetId: data.id,
-      } : {
-        bindTargetId: data.id,
-        bindTargetStatus: 0,
-      }),
+      ...(type
+        ? {
+            targetId: data.id,
+          }
+        : {
+            bindTargetId: data.id,
+            bindTargetStatus: 0,
+          }),
     });
     this.form2 && this.form2.setFieldsValue(this.prevValues2);
     prevPageSize !== pageSize && setPageSize(pageSize);
-  }
+  };
 
   // 模态框确定
   handleModalOk = () => {
-    const {
-      setMonitorDeviceBindStatus,
-    } = this.props;
+    const { setMonitorDeviceBindStatus } = this.props;
     const { bindIdList, data } = this.state;
     this.setState({
       binding: true,
     });
-    setMonitorDeviceBindStatus({
-      bindStatus: 1,
-      targetId: data.id,
-      equipmentIdList: bindIdList,
-    }, (success) => {
-      if (success) {
-        message.success('绑定成功！');
-        this.setState({
-          visible: false,
-          binding: false,
-        });
-        this.reload();
-      } else {
-        message.error('绑定失败！');
-        this.setState({
-          binding: false,
-        });
+    setMonitorDeviceBindStatus(
+      {
+        bindStatus: 1,
+        targetId: data.id,
+        equipmentIdList: bindIdList,
+      },
+      success => {
+        if (success) {
+          message.success('绑定成功！');
+          this.setState({
+            visible: false,
+            binding: false,
+          });
+          this.reload();
+        } else {
+          message.error('绑定失败！');
+          this.setState({
+            binding: false,
+          });
+        }
       }
-    });
-  }
+    );
+  };
 
   // 模态框取消
   handleModalCancel = () => {
     const {
-      gasometer: {
-        monitorDeviceList: {
-          pagination: {
-            total,
-          }={},
-        }={},
-      },
+      gasometer: { monitorDeviceList: { pagination: { total } = {} } = {} },
     } = this.props;
     const { type, data } = this.state;
     this.setState({
@@ -422,45 +374,45 @@ export default class GasometerList extends Component {
     if (type && total !== data.monitorEquipmentCount) {
       this.reload();
     }
-  }
+  };
 
   // 解绑按钮点击事件
-  handleUnbindButtonClick = (id) => {
+  handleUnbindButtonClick = id => {
     const { setMonitorDeviceBindStatus } = this.props;
     const { data } = this.state;
     this.setState({
       unbinding: true,
     });
-    setMonitorDeviceBindStatus({
-      bindStatus: 0,
-      targetId: data.id,
-      equipmentIdList: [id],
-    }, (success) => {
-      if (success) {
-        message.success('解绑成功！');
-        this.reload2();
-      } else {
-        message.error('解绑失败！');
+    setMonitorDeviceBindStatus(
+      {
+        bindStatus: 0,
+        targetId: data.id,
+        equipmentIdList: [id],
+      },
+      success => {
+        if (success) {
+          message.success('解绑成功！');
+          this.reload2();
+        } else {
+          message.error('解绑失败！');
+        }
+        this.setState({
+          unbinding: false,
+        });
       }
-      this.setState({
-        unbinding: false,
-      });
-    });
-  }
+    );
+  };
 
-  handleBindIdListChange = (bindIdList) => {
+  handleBindIdListChange = bindIdList => {
     this.setState({
       bindIdList,
     });
-  }
+  };
 
   renderForm() {
     const {
       user: {
-        currentUser: {
-          unitType,
-          permissionCodes,
-        },
+        currentUser: { unitType, permissionCodes },
       },
     } = this.props;
     const isNotCompany = unitType !== 4;
@@ -471,13 +423,17 @@ export default class GasometerList extends Component {
         id: 'gasholderName',
         label: '气柜名称',
         transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入气柜名称" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入气柜名称" onPressEnter={handleSearch} maxLength={50} />
+        ),
       },
       {
         id: 'unifiedCode',
         label: '统一编码',
         transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入统一编码" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入统一编码" onPressEnter={handleSearch} maxLength={50} />
+        ),
       },
       {
         id: 'gasholderType',
@@ -488,22 +444,30 @@ export default class GasometerList extends Component {
         id: 'chineName',
         label: '存储介质',
         transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入存储介质" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入存储介质" onPressEnter={handleSearch} maxLength={50} />
+        ),
       },
       {
         id: 'casNo',
         label: 'CAS号',
         transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入CAS号" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入CAS号" onPressEnter={handleSearch} maxLength={50} />
+        ),
       },
-      ...(isNotCompany ? [
-        {
-          id: 'companyName',
-          label: '单位名称',
-          transform: value => value.trim(),
-          render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
-        },
-      ] : []),
+      ...(isNotCompany
+        ? [
+            {
+              id: 'companyName',
+              label: '单位名称',
+              transform: value => value.trim(),
+              render: ({ handleSearch }) => (
+                <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
+              ),
+            },
+          ]
+        : []),
     ];
 
     return (
@@ -512,9 +476,11 @@ export default class GasometerList extends Component {
           fields={fields}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={(
-            <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>新增</Button>
-          )}
+          action={
+            <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>
+              新增
+            </Button>
+          }
           ref={this.setFormReference}
         />
       </Card>
@@ -523,23 +489,11 @@ export default class GasometerList extends Component {
 
   renderTable() {
     const {
-      gasometer: {
-        list: {
-          list=[],
-          pagination: {
-            total,
-            pageNum,
-            pageSize,
-          }={},
-        }={},
-      },
+      gasometer: { list: { list = [], pagination: { total, pageNum, pageSize } = {} } = {} },
       user: {
-        currentUser: {
-          permissionCodes,
-          unitType,
-        },
+        currentUser: { permissionCodes, unitType },
       },
-      loading=false,
+      loading = false,
     } = this.props;
     const isNotCompany = unitType !== 4;
     const hasBindAuthority = permissionCodes.includes(BIND_CODE);
@@ -547,20 +501,28 @@ export default class GasometerList extends Component {
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasDeleteAuthority = permissionCodes.includes(DELETE_CODE);
     const columns = [
-      ...(isNotCompany ? [
-        {
-          title: '单位名称',
-          dataIndex: 'companyName',
-          align: 'center',
-        },
-      ] : []),
+      ...(isNotCompany
+        ? [
+            {
+              title: '单位名称',
+              dataIndex: 'companyName',
+              align: 'center',
+            },
+          ]
+        : []),
       {
         title: '基本信息',
         dataIndex: 'basicInfo',
         render: (_, { unifiedCode, gasholderName }) => (
           <div className={styles.multi}>
-            <div><span className={styles.label}>统一编码：</span>{unifiedCode}</div>
-            <div><span className={styles.label}>气柜名称：</span>{gasholderName}</div>
+            <div>
+              <span className={styles.label}>统一编码：</span>
+              {unifiedCode}
+            </div>
+            <div>
+              <span className={styles.label}>气柜名称：</span>
+              {gasholderName}
+            </div>
           </div>
         ),
         align: 'center',
@@ -570,8 +532,14 @@ export default class GasometerList extends Component {
         dataIndex: 'storageMedium',
         render: (_, { chineName, casNo }) => (
           <div className={styles.multi}>
-            <div><span className={styles.label}>存储介质：</span>{chineName}</div>
-            <div><span className={styles.label}>CAS号：</span>{casNo}</div>
+            <div>
+              <span className={styles.label}>存储介质：</span>
+              {chineName}
+            </div>
+            <div>
+              <span className={styles.label}>CAS号：</span>
+              {casNo}
+            </div>
           </div>
         ),
         align: 'center',
@@ -579,7 +547,9 @@ export default class GasometerList extends Component {
       {
         title: '构成重大危险源',
         dataIndex: 'majorHazard',
-        render: value => <SelectOrSpan type="span" list={MAJOR_HAZARD_STATUSES} value={`${value}`} />,
+        render: value => (
+          <SelectOrSpan type="span" list={MAJOR_HAZARD_STATUSES} value={`${value}`} />
+        ),
         align: 'center',
       },
       {
@@ -592,7 +562,14 @@ export default class GasometerList extends Component {
         dataIndex: 'monitorEquipmentCount',
         width: 116,
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (value, data) => <span className={classNames(styles.operation, !+value && styles.disabled)} onClick={value > 0 ? () => this.handleBindCountButtonClick(data) : undefined}>{value || 0}</span>,
+        render: (value, data) => (
+          <span
+            className={classNames(styles.operation, !+value && styles.disabled)}
+            onClick={value > 0 ? () => this.handleBindCountButtonClick(data) : undefined}
+          >
+            {value || 0}
+          </span>
+        ),
         align: 'center',
       },
       {
@@ -602,11 +579,37 @@ export default class GasometerList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (id, data) => (
           <Fragment>
-            {<span className={classNames(styles.operation, !hasBindAuthority && styles.disabled)} onClick={hasBindAuthority ? () => this.handleBindButtonClick(data) : undefined}>绑定监测设备</span>}
-            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleDetailButtonClick : undefined} data-id={id}>查看</span>}
-            {<span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditButtonClick : undefined} data-id={id}>编辑</span>}
+            {
+              <span
+                className={classNames(styles.operation, !hasBindAuthority && styles.disabled)}
+                onClick={hasBindAuthority ? () => this.handleBindButtonClick(data) : undefined}
+              >
+                绑定监测设备
+              </span>
+            }
+            {
+              <span
+                className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)}
+                onClick={hasDetailAuthority ? this.handleDetailButtonClick : undefined}
+                data-id={id}
+              >
+                查看
+              </span>
+            }
+            {
+              <span
+                className={classNames(styles.operation, !hasEditAuthority && styles.disabled)}
+                onClick={hasEditAuthority ? this.handleEditButtonClick : undefined}
+                data-id={id}
+              >
+                编辑
+              </span>
+            }
             {hasDeleteAuthority ? (
-              <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteButtonClick(id)}>
+              <Popconfirm
+                title="你确定要删除吗?"
+                onConfirm={() => this.handleDeleteButtonClick(id)}
+              >
                 <span className={styles.operation}>删除</span>
               </Popconfirm>
             ) : (
@@ -652,16 +655,9 @@ export default class GasometerList extends Component {
   renderModal = () => {
     const {
       gasometer: {
-        monitorDeviceList: {
-          list=[],
-          pagination: {
-            total,
-            pageNum,
-            pageSize,
-          }={},
-        }={},
+        monitorDeviceList: { list = [], pagination: { total, pageNum, pageSize } = {} } = {},
       },
-      loadingMonitorDeviceList=false,
+      loadingMonitorDeviceList = false,
     } = this.props;
     const { type, visible, bindIdList, binding, unbinding } = this.state;
     const fields = [
@@ -669,13 +665,17 @@ export default class GasometerList extends Component {
         id: 'name',
         label: '监测设备名称',
         transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入监测设备名称" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入监测设备名称" onPressEnter={handleSearch} maxLength={50} />
+        ),
       },
       {
         id: 'code',
         label: '监测设备编码',
         transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入监测设备编码" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入监测设备编码" onPressEnter={handleSearch} maxLength={50} />
+        ),
       },
     ];
     const columns = [
@@ -694,18 +694,25 @@ export default class GasometerList extends Component {
         dataIndex: 'equipmentTypeName',
         align: 'center',
       },
-      ...(type ? [{
-        title: '操作',
-        dataIndex: 'id',
-        width: 88,
-        fixed: list && list.length > 0 ? 'right' : false,
-        render: (id) => (
-          <Popconfirm title="你确定要解绑吗?" onConfirm={() => this.handleUnbindButtonClick(id)}>
-            <span className={styles.operation}>解绑</span>
-          </Popconfirm>
-        ),
-        align: 'center',
-      }] : []),
+      ...(type
+        ? [
+            {
+              title: '操作',
+              dataIndex: 'id',
+              width: 88,
+              fixed: list && list.length > 0 ? 'right' : false,
+              render: id => (
+                <Popconfirm
+                  title="你确定要解绑吗?"
+                  onConfirm={() => this.handleUnbindButtonClick(id)}
+                >
+                  <span className={styles.operation}>解绑</span>
+                </Popconfirm>
+              ),
+              align: 'center',
+            },
+          ]
+        : []),
     ];
 
     return (
@@ -748,10 +755,14 @@ export default class GasometerList extends Component {
                 showQuickJumper: true,
                 showSizeChanger: true,
               }}
-              rowSelection={type ? undefined : {
-                selectedRowKeys: bindIdList,
-                onChange: this.handleBindIdListChange,
-              }}
+              rowSelection={
+                type
+                  ? undefined
+                  : {
+                      selectedRowKeys: bindIdList,
+                      onChange: this.handleBindIdListChange,
+                    }
+              }
             />
           ) : (
             <Empty />
@@ -759,23 +770,14 @@ export default class GasometerList extends Component {
         </Spin>
       </Modal>
     );
-  }
+  };
 
   render() {
     const {
       user: {
-        currentUser: {
-          unitType,
-        },
+        currentUser: { unitType },
       },
-      gasometer: {
-        list: {
-          a=0,
-          pagination: {
-            total=0,
-          }={},
-        }={},
-      },
+      gasometer: { list: { a = 0, pagination: { total = 0 } = {} } = {} },
     } = this.props;
     const isNotCompany = unitType !== 4;
 
@@ -783,13 +785,13 @@ export default class GasometerList extends Component {
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
-        content={(
+        content={
           <Fragment>
             {isNotCompany && <span className={styles.count}>{`单位数量：${a}`}</span>}
             <span className={styles.count}>{`气柜总数：${total}`}</span>
             {/* <span className={styles.count}>{`已绑传感器数：${total}`}</span> */}
           </Fragment>
-        )}
+        }
       >
         {this.renderForm()}
         {this.renderTable()}
@@ -798,4 +800,3 @@ export default class GasometerList extends Component {
     );
   }
 }
-

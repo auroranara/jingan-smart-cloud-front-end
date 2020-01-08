@@ -1,81 +1,126 @@
 import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import moment from 'moment';
-import { isNumber } from '@/utils/utils';
-
-const TYPE_LIST = [
-  { key: '0', value: '安全设施' },
-  { key: '1', value: '监控设施' },
-  { key: '2', value: '生产装置' },
-  { key: '3', value: '特种设备' },
-];
+import { DEFAULT_FORMAT, RESULTS } from '../List';
+import styles from './index.less';
 
 export default class OperationRecordOther extends Component {
-  initialize = ({ companyId, companyName, type, time, person, evaluate, otherFiles }) => ({
+  initialize = ({
+    companyId,
+    companyName,
+    lawName,
+    number,
+    publishDate,
+    enforceDate,
+    publishUnit,
+    content,
+    activity,
+    evaluatResult,
+    note,
+    otherFileList,
+  }) => ({
     company: companyId ? { key: companyId, label: companyName } : undefined,
-    type: isNumber(type) ? type : undefined,
-    time: time ? moment(time) : undefined,
-    person: person || undefined,
-    evaluate: evaluate || undefined,
-    otherFiles: otherFiles || [],
+    lawName: lawName || undefined,
+    number: number || undefined,
+    publishDate: publishDate ? moment(publishDate) : undefined,
+    enforceDate: enforceDate ? moment(enforceDate) : undefined,
+    publishUnit: publishUnit || undefined,
+    content: content || undefined,
+    activity: activity || undefined,
+    evaluatResult: evaluatResult ? `${evaluatResult}` : undefined,
+    note: note || undefined,
+    otherFileList: otherFileList || undefined,
   });
 
-  transform = ({ unitId, company, time, ...rest }) => ({
+  transform = ({ unitId, company, publishDate, enforceDate, ...rest }) => ({
     companyId: unitId || company.key,
-    time: time && time.format('YYYY-MM-DD'),
+    // publishDate: publishDate && publishDate.format(DEFAULT_FORMAT),
+    // enforceDate: enforceDate && enforceDate.format(DEFAULT_FORMAT),
+    publishDate: +publishDate,
+    enforceDate: +enforceDate,
     ...rest,
   });
 
-  render() {
-    const fields = [
-      {
-        id: 'company',
-        label: '单位名称',
-        required: true,
-        component: 'CompanySelect',
-        hidden: ({ unitId }) => unitId,
+  getFields = ({ unitId }) => [
+    ...(!unitId
+      ? [
+          {
+            id: 'company',
+            label: '单位名称',
+            required: true,
+            component: 'CompanySelect',
+            refreshEnable: true,
+          },
+        ]
+      : []),
+    {
+      id: 'lawName',
+      label: '法律法规标准名称',
+      required: true,
+      component: 'Input',
+    },
+    {
+      id: 'number',
+      label: '文号',
+      required: true,
+      component: 'Input',
+    },
+    {
+      id: 'publishDate',
+      label: '公布日期',
+      required: true,
+      component: 'DatePicker',
+    },
+    {
+      id: 'enforceDate',
+      label: '实施日期',
+      required: true,
+      component: 'DatePicker',
+    },
+    {
+      id: 'publishUnit',
+      label: '发布机关',
+      component: 'Input',
+    },
+    {
+      id: 'content',
+      label: '内容摘要',
+      component: 'TextArea',
+    },
+    {
+      id: 'activity',
+      label: '对应活动',
+      component: 'TextArea',
+    },
+    {
+      id: 'evaluatResult',
+      label: '评价结果',
+      required: true,
+      component: 'Radio',
+      props: {
+        list: RESULTS,
       },
-      {
-        id: 'type',
-        label: '设备设施类型',
-        required: true,
-        component: 'Select',
-        props: {
-          list: TYPE_LIST,
-        },
-      },
-      {
-        id: 'time',
-        label: '运维时间',
-        required: true,
-        component: 'DatePicker',
-      },
-      {
-        id: 'person',
-        label: '运维人员',
-        required: true,
-        component: 'Input',
-      },
-      {
-        id: 'evaluate',
-        label: '运维评价',
-        required: true,
-        component: 'TextArea',
-      },
-      {
-        id: 'otherFiles',
-        label: '附件',
-        component: 'CustomUpload',
-      },
-    ];
+    },
+    {
+      id: 'note',
+      label: '备注',
+      component: 'TextArea',
+    },
+    {
+      id: 'otherFileList',
+      label: '附件',
+      component: 'CustomUpload',
+    },
+  ];
 
-    return (
-      <ThreeInOnePage
-        initialize={this.initialize}
-        transform={this.transform}
-        fields={fields}
-        {...this.props}
-      />
-    );
+  render() {
+    const props = {
+      initialize: this.initialize,
+      transform: this.transform,
+      fields: this.getFields,
+      ...this.props,
+    };
+
+    return <ThreeInOnePage {...props} />;
   }
 }

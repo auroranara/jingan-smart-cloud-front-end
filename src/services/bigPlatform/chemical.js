@@ -32,3 +32,8 @@ export async function riskPointForPage(params) {
 export async function monitorEquipment(params) {
   return request(`${URL_PREFIX}/monitor/monitorEquipment/page?${stringify(params)}`);
 }
+
+// 视频监测列表
+export async function videoList({ companyId, ...params }) {
+  return request(`${URL_PREFIX}/videoDevice/company/${companyId}/videoList`);
+}

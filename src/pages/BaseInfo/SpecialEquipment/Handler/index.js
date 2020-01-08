@@ -245,7 +245,7 @@ export default class SpecialEquipment extends PureComponent {
           code,
           area: +resData.locationType === 1 ? resData.area : '',
           pointFixInfoList,
-          usePeriod: resData.usePeriod || 0,
+          usePeriod: resData.usePeriod || null,
           detectReport: JSON.stringify(
             fileList.map(({ name, url, dbUrl }) => ({
               fileName: name,

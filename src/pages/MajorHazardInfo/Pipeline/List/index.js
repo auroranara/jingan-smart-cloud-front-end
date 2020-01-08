@@ -1,70 +1,62 @@
-import React, { Component } from 'react';
-import { Input } from 'antd';
+import React, { Component, Fragment } from 'react';
+import InputOrSpan from '@/jingan-components/InputOrSpan';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
-import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
-import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
+import MonitorEquipmentBindModal from '@/jingan-components/MonitorEquipmentBindModal';
 import TablePage from '@/templates/TablePage';
-import moment from 'moment';
+import styles from './index.less';
 
-const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const TYPES = [
-  { key: '0', value: '预警' },
-  { key: '1', value: '告警' },
-  { key: '2', value: '失联' },
-  { key: '3', value: '故障' },
-  { key: '4', value: '报警解除' },
-  { key: '5', value: '恢复在线' },
-  { key: '6', value: '故障消除' },
+export const CHOICES = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
+export const STATUSES = [
+  { key: '0', value: '正常' },
+  { key: '1', value: '维检' },
+  { key: '2', value: '报废' },
 ];
-const TYPE_MAPPER = [
-  { statusType: -1, warnLevel: 1 },
-  { statusType: -1, warnLevel: 2 },
-  { statusType: -2 },
-  { statusType: -3 },
-  { statusType: 1 },
-  { statusType: 2 },
-  { statusType: 3 },
-];
-const GET_TYPE_NAME = ({ statusType, warnLevel }) => {
-  if (+statusType === -1) {
-    if (+warnLevel === 1) {
-      return '预警';
-    } else if (+warnLevel === 2) {
-      return '告警';
-    }
-  } else if (+statusType === -2) {
-    return '失联';
-  } else if (+statusType === -3) {
-    return '故障';
-  } else if (+statusType === 1) {
-    return '报警解除';
-  } else if (+statusType === 2) {
-    return '恢复在线';
-  } else if (+statusType === 3) {
-    return '故障消除';
-  }
-};
-const TRANSFORM = data => {
-  const { statusType, range: [startTime, endTime] = [], ...rest } = data || {};
-  return {
-    ...rest,
-    ...TYPE_MAPPER[statusType],
-    startTime: startTime && startTime.format(DEFAULT_FORMAT),
-    endTime: endTime && endTime.format(DEFAULT_FORMAT),
+
+export default class PipelineList extends Component {
+  state = {
+    type: undefined,
+    visible: false,
+    data: undefined,
   };
-};
 
-export default class AlarmMessage extends Component {
-  empty = true;
-
-  getRangeFromEvent = range => {
-    const empty = !(range && range.length);
-    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
-    this.empty = empty;
-    return result;
+  setPageReference = page => {
+    this.page = page && page.getWrappedInstance();
   };
 
   getFields = ({ unitId }) => [
+    {
+      id: 'name',
+      label: '管道名称',
+      render: ({ handleSearch }) => (
+        <InputOrSpan placeholder="请输入管道名称" maxLength={50} onPressEnter={handleSearch} />
+      ),
+    },
+    {
+      id: 'number',
+      label: '管道编号',
+      render: ({ handleSearch }) => (
+        <InputOrSpan placeholder="请输入管道编号" maxLength={50} onPressEnter={handleSearch} />
+      ),
+    },
+    {
+      id: 'isPress',
+      label: '是否压力管道',
+      render: () => <SelectOrSpan placeholder="请选择是否压力管道" list={CHOICES} allowClear />,
+    },
+    {
+      id: 'medium',
+      label: '存储介质',
+      render: ({ handleSearch }) => (
+        <InputOrSpan placeholder="请输入存储介质" maxLength={50} onPressEnter={handleSearch} />
+      ),
+    },
+    {
+      id: 'cas',
+      label: 'CAS号',
+      render: ({ handleSearch }) => (
+        <InputOrSpan placeholder="请输入CAS号" maxLength={50} onPressEnter={handleSearch} />
+      ),
+    },
     ...(!unitId
       ? [
           {
@@ -72,54 +64,28 @@ export default class AlarmMessage extends Component {
             label: '单位名称',
             transform: value => value.trim(),
             render: ({ handleSearch }) => (
-              <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
+              <InputOrSpan
+                placeholder="请输入单位名称"
+                onPressEnter={handleSearch}
+                maxLength={50}
+              />
             ),
           },
         ]
       : []),
-    {
-      id: 'monitorType',
-      label: '监测类型',
-      render: () => <MonitorTypeSelect allowClear />,
-    },
-    {
-      id: 'monitorEquipmentAreaLocation',
-      label: '报警区域位置',
-      transform: value => value.trim(),
-      render: ({ handleSearch }) => (
-        <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />
-      ),
-    },
-    {
-      id: 'range',
-      label: '发生时间',
-      // span: {
-      //   xl: 16,
-      //   sm: 24,
-      //   xs: 24,
-      // },
-      render: () => (
-        <DatePickerOrSpan
-          placeholder={['开始时间', '结束时间']}
-          format={DEFAULT_FORMAT}
-          showTime
-          allowClear
-          type="RangePicker"
-          style={{ width: '100%' }}
-        />
-      ),
-      options: {
-        getValueFromEvent: this.getRangeFromEvent,
-      },
-    },
-    {
-      id: 'statusType',
-      label: '消息类型',
-      render: () => <SelectOrSpan placeholder="请选择消息类型" list={TYPES} allowClear />,
-    },
   ];
 
-  getColumns = ({ unitId }) => [
+  getAction = ({ renderAddButton }) => <Fragment>{renderAddButton()}</Fragment>;
+
+  getColumns = ({
+    unitId,
+    list,
+    renderDetailButton,
+    renderEditButton,
+    renderDeleteButton,
+    renderDetailButton2: renderBindedButton,
+    renderEditButton2: renderUnbindButton,
+  }) => [
     ...(!unitId
       ? [
           {
@@ -130,48 +96,152 @@ export default class AlarmMessage extends Component {
         ]
       : []),
     {
-      title: '监测类型',
-      dataIndex: 'monitorTypeName',
+      title: '基本信息',
+      dataIndex: '基本信息',
       align: 'center',
-    },
-    {
-      title: '消息类型',
-      dataIndex: 'statusType',
-      render: (_, data) => GET_TYPE_NAME(data),
-      align: 'center',
-    },
-    {
-      title: '发生时间',
-      dataIndex: 'happenTime',
-      render: time => time && moment(time).format(DEFAULT_FORMAT),
-      align: 'center',
-    },
-    {
-      title: '消息内容',
-      dataIndex: 'messageContent',
-      render: value =>
-        value && (
-          <div style={{ textAlign: 'left' }}>
-            {value.split('\n').map(v => (
-              <div key={v}>{v}</div>
-            ))}
+      render: (_, { unifiedCode, number, name }) => (
+        <div className={styles.multi}>
+          <div className={styles.line}>
+            <span>统一编码：</span>
+            <span>{unifiedCode}</span>
           </div>
-        ),
+          <div className={styles.line}>
+            <span>管道编号：</span>
+            <span>{number}</span>
+          </div>
+          <div className={styles.line}>
+            <span>管道名称：</span>
+            <span>{name}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: '输送介质',
+      dataIndex: '输送介质',
       align: 'center',
+      render: (_, { medium, cas, seriesNumber, status, type }) => (
+        <div className={styles.multi}>
+          <div className={styles.line}>
+            <span>介质名称：</span>
+            <span>{medium.chineName}</span>
+          </div>
+          <div className={styles.line}>
+            <span>CAS号：</span>
+            <span>{cas}</span>
+          </div>
+          <div className={styles.line}>
+            <span>危险化学品目录序号：</span>
+            <span>{seriesNumber}</span>
+          </div>
+          <div className={styles.line}>
+            <span>介质状态：</span>
+            <span>{status}</span>
+          </div>
+          <div className={styles.line}>
+            <span>介质类别：</span>
+            <span>{type}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: '压力管道/危化品管道',
+      dataIndex: '压力管道/危化品管道',
+      align: 'center',
+      render: (_, { isPress, isRisk }) => `${+isPress ? '是' : '否'}/${+isRisk ? '是' : '否'}`,
+    },
+    {
+      title: '目前状态',
+      dataIndex: 'status',
+      align: 'center',
+      render: value => <SelectOrSpan type="span" value={value} list={STATUSES} />,
+    },
+    {
+      title: '已绑监测设备',
+      dataIndex: '已绑监测设备',
+      align: 'center',
+      width: 102,
+      fixed: list && list.length > 0 ? 'right' : false,
+      render: (_, data) => renderBindedButton(data),
+    },
+    {
+      title: '操作',
+      dataIndex: '操作',
+      align: 'center',
+      width: 102,
+      fixed: list && list.length > 0 ? 'right' : false,
+      render: (_, data) => (
+        <div className={styles.buttonContainer}>
+          <div>{renderUnbindButton(data)}</div>
+          <div>{renderDetailButton(data)}</div>
+          <div>{renderEditButton(data)}</div>
+          <div>{renderDeleteButton(data)}</div>
+        </div>
+      ),
     },
   ];
 
+  handleBindedButtonClick = data => {
+    this.setState({
+      type: 1,
+      visible: true,
+      data,
+    });
+  };
+
+  handleUnbindButtonClick = data => {
+    this.setState({
+      type: 0,
+      visible: true,
+      data,
+    });
+  };
+
+  handleClose = flag => {
+    this.setState({
+      visible: false,
+    });
+    if (flag) {
+      this.page.reload();
+    }
+  };
+
+  renderModal() {
+    const { type, visible, data } = this.state;
+
+    return (
+      <MonitorEquipmentBindModal
+        type={type}
+        visible={visible}
+        data={data}
+        onClose={this.handleClose}
+      />
+    );
+  }
+
   render() {
     const props = {
-      addEnable: false,
-      // exportEnable: true,
-      operateEnable: false,
       fields: this.getFields,
+      action: this.getAction,
       columns: this.getColumns,
-      transform: TRANSFORM,
+      otherOperation: [
+        {
+          code: 'detail',
+          name: ({ monitorEquipmentCount }) => +monitorEquipmentCount || 0,
+          disabled: ({ monitorEquipmentCount }) => !+monitorEquipmentCount,
+          onClick: this.handleBindedButtonClick,
+        },
+        {
+          code: 'edit',
+          name: '绑定监测设备',
+          onClick: this.handleUnbindButtonClick,
+        },
+      ],
+      ref: this.setPageReference,
       ...this.props,
     };
 
-    return <TablePage {...props} />;
+    return <TablePage {...props}>{this.renderModal()}</TablePage>;
   }
 }

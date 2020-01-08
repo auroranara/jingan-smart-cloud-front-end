@@ -16,7 +16,7 @@ import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
 import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
 // 设备故障统计
-import EquipmentStatistics from './EquipmentStatistics';
+// import EquipmentStatistics from './EquipmentStatistics';
 
 import AlarmChart from './AlarmChart';
 import ElectricityMap from './ElectricityMap';

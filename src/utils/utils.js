@@ -319,8 +319,7 @@ export function mapMutations(instance, { namespace, types }) {
         });
       };
     }
-  }
-  else if (isArray(types)) {
+  } else if (isArray(types)) {
     for (const type of types) {
       instance[type] = (payload, callback, ...restProps) => {
         dispatch({
@@ -335,17 +334,17 @@ export function mapMutations(instance, { namespace, types }) {
 }
 
 /**
-    * 返回列表中第一个视频
-    * @param {Array} tree
-    */
+ * 返回列表中第一个视频
+ * @param {Array} tree
+ */
 export function findFirstVideo(tree) {
   // type不存在为视频
-  if (tree.length === 0) return {}
-  const first = tree[0]
+  if (tree.length === 0) return {};
+  const first = tree[0];
   if (!first.type) {
-    return first
+    return first;
   } else if (first.list && first.list.length > 0) {
-    return findFirstVideo(first.list)
+    return findFirstVideo(first.list);
   }
 }
 
@@ -354,7 +353,7 @@ export function findFirstVideo(tree) {
  */
 export function generateEnum(obj) {
   return Object.entries(obj).reduce((result, [key, value]) => {
-    result[result[key] = value] = key;
+    result[(result[key] = value)] = key;
     return result;
   }, {});
 }
@@ -387,6 +386,19 @@ export function setPageSize(pageSize) {
   localStorage.setItem('PAGE_SIZE', JSON.stringify(pageSize));
 }
 
+/**
+ * 获取modal中分页数量
+ */
+export function getModalPageSize() {
+  return JSON.parse(localStorage.getItem('MODAL_PAGE_SIZE') || '5');
+}
+
+/**
+ * 设置modal中分页数量
+ */
+export function setModalPageSize(pageSize) {
+  localStorage.setItem('MODAL_PAGE_SIZE', JSON.stringify(pageSize));
+}
 
 /**
  * 判断是否为数值类型
@@ -399,6 +411,6 @@ export function isNumber(value) {
  * 保留2位有效数字
  */
 
-export function toFixed(value, digit=2) {
+export function toFixed(value, digit = 2) {
   return Number.parseFloat(value.toFixed(digit));
 }

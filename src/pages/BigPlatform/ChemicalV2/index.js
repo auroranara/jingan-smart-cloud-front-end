@@ -167,6 +167,7 @@ export default class Chemical extends PureComponent {
         list: [], // 全部
         expired: [], // 已过期
         notExpired: [], // 未过期
+        expiring: [], // 即将到期
       },
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
@@ -270,8 +271,9 @@ export default class Chemical extends PureComponent {
           specialEquip: {
             total,
             list,
+            notExpired: list.filter(item => item.paststatus === '0'), // 未过期
+            expiring: list.filter(item => item.paststatus === '1'), // 即将过期
             expired: list.filter(item => item.paststatus === '2'), // 已过期
-            notExpired: list.filter(item => item.paststatus === '0'),
           },
         });
       },
@@ -305,7 +307,7 @@ export default class Chemical extends PureComponent {
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
-        const data = JSON.parse(e.data);
+        const data = JSON.parse(e.data).data;
         console.log('e.data', data);
         const { type } = data;
         // if (
@@ -387,7 +389,7 @@ export default class Chemical extends PureComponent {
         <div
           className={styles.notificationTitle}
           style={{ color: '#f83329' }}
-        >{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
+        >{`${typeName}提示`}</div>
       ),
       description: (
         <div className={styles.notificationBody}>

@@ -124,3 +124,24 @@ export async function queryDivisionDetail({ id }) {
 export async function queryModelList(params) {
   return request(`/acloud_new/v2/baseInfo/getCompanyByUser?${stringify(params)}`);
 }
+
+// 3d地图列表
+export async function getMapList(params) {
+  return request(`/acloud_new/v2/ThreedMap/threedMapForPage?${stringify(params)}`);
+}
+
+// 新增3d地图
+export async function postMap(params) {
+  return request('/acloud_new/v2/ThreedMap/threedMap', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 编辑3d地图
+export async function putMap(params) {
+  return request('/acloud_new/v2/ThreedMap/threedMap', {
+    method: 'PUT',
+    body: params,
+  });
+}
