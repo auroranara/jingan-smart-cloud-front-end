@@ -42,3 +42,8 @@ export async function videoList({ companyId, ...params }) {
 export async function getProductDevice(params) {
   return request(`${URL_PREFIX}/ci/productDevice/productDevice/page?${stringify(params)}`);
 }
+
+// 区域信息
+export async function getZoneContent(params) {
+  return request(`${URL_PREFIX}/ci/zone/getZoneContent?${stringify(params)}`);
+}

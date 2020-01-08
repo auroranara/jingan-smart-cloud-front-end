@@ -7,6 +7,7 @@ import {
   monitorEquipment,
   videoList,
   getProductDevice,
+  getZoneContent,
 } from '@/services/bigPlatform/chemical';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
 import { queryAreaList } from '@/services/company/reservoirRegion';
@@ -136,6 +137,21 @@ export default {
           type: 'save',
           payload: {
             videoList,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 区域信息
+    *fetchZoneContent({ payload, callback }, { call, put }) {
+      const response = yield call(getZoneContent, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const zoneContent = data;
+        yield put({
+          type: 'save',
+          payload: {
+            zoneContent,
           },
         });
       }

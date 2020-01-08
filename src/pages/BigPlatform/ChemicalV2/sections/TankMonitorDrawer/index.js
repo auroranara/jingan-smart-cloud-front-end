@@ -10,6 +10,7 @@ import styles from './index.less';
 
 const API = 'xxx/getTankMonitor';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const img = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
 
 // 请把xxx替换成对应model
 @connect(
@@ -99,8 +100,6 @@ export default class TankMonitorDrawer extends Component {
       onVideoClick,
     } = this.props;
     const { videoVisible, videoKeyId } = this.state;
-    const lastTimeItem = monitorParams.sort((a, b) => b.dataUpdateTime - a.dataUpdateTime)[0] || {};
-    const updateTime = lastTimeItem.dataUpdateTime;
 
     return (
       <CustomDrawer
@@ -149,7 +148,12 @@ export default class TankMonitorDrawer extends Component {
           </div>
         </div>
         <div className={styles.middle}>
-          <div className={styles.icon}>
+          <div
+            className={styles.icon}
+            style={{
+              background: `url(${img}) center center / 100% auto no-repeat`,
+            }}
+          >
             <Wave
               frontStyle={{ height: '31.25%', color: 'rgba(178, 237, 255, 0.8)' }}
               backStyle={{ height: '31.25%', color: 'rgba(178, 237, 255, 0.3)' }}
@@ -158,16 +162,6 @@ export default class TankMonitorDrawer extends Component {
           </div>
           <div className={styles.infoWrapper}>
             <div className={styles.line}>
-              <div className={styles.label}>更新时间：</div>
-              <div className={styles.value}>
-                {updateTime ? moment(updateTime).format(DEFAULT_FORMAT) : '暂无'}
-              </div>
-            </div>
-            <div className={styles.line}>
-              <div className={styles.label}>设计压力（KPa）：</div>
-              <div className={styles.value}>{designPressure}</div>
-            </div>
-            <div className={styles.line}>
               <div className={styles.label}>
                 设计储量（
                 {designReservesUnit}
@@ -175,49 +169,43 @@ export default class TankMonitorDrawer extends Component {
               </div>
               <div className={styles.value}>{designReserves}</div>
             </div>
+            <div className={styles.line}>
+              <div className={styles.label}>设计压力（KPa）：</div>
+              <div className={styles.value}>{designPressure}</div>
+            </div>
             {monitorParams.map((param, index) => {
-              const { paramDesc, paramUnit, realValue, status } = param;
+              const { paramDesc, paramUnit, realValue, status, dataUpdateTime } = param;
               return (
-                <div className={styles.lineWrapper} key={index}>
-                  <div className={styles.line}>
-                    <div className={styles.label}>
-                      {paramDesc}（{paramUnit}
-                      ）：
+                <div className={styles.paramsWrapper} key={index}>
+                  <div className={styles.lineWrapper}>
+                    <div className={styles.line}>
+                      <div className={styles.label}>
+                        {paramDesc}（{paramUnit}
+                        ）：
+                      </div>
+                      <div className={styles.value}>{realValue}</div>
                     </div>
-                    <div className={styles.value}>{realValue}</div>
+                    <div className={styles.line}>
+                      <div className={styles.label}>状态：</div>
+                      <div
+                        className={styles.value}
+                        style={{ color: +status > 0 ? '#ff4848' : '#0ff' }}
+                      >
+                        {+status > 0 ? '报警' : '正常'}
+                      </div>
+                    </div>
                   </div>
-                  <div className={styles.line}>
-                    <div className={styles.label}>状态：</div>
-                    <div
-                      className={styles.value}
-                      style={{ color: +status > 0 ? '#ff4848' : '#0ff' }}
-                    >
-                      {+status > 0 ? '报警' : '正常'}
-                    </div>
+                  <div className={styles.updateTime}>
+                    更新时间：
+                    {dataUpdateTime ? moment(dataUpdateTime).format(DEFAULT_FORMAT) : '暂无'}
                   </div>
                 </div>
               );
             })}
-            {/* <div className={styles.lineWrapper}>
-              <div className={styles.line}>
-                <div className={styles.label}>实时储量（t）：</div>
-                <div className={styles.value}>{realTimeStore}</div>
-              </div>
-              <div className={styles.line}>
-                <div className={styles.label}>状态：</div>
-                <div
-                  className={styles.value}
-                  style={{ color: realTimeStoreStatus > 0 ? '#ff4848' : '#0ff' }}
-                >
-                  {realTimeStoreStatus > 0 ? '报警' : '正常'}
-                </div>
-              </div>
-            </div> */}
           </div>
         </div>
         <div className={styles.bottom}>
           <div className={styles.bottomTitle}>
-            {/* <div className={styles.bottomTitleIcon} /> */}
             <div className={styles.bottomTitleLabel}>应急处置措施</div>
           </div>
           <div className={styles.bottomContent}>{emergencyMeasure}</div>
