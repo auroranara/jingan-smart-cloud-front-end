@@ -10,29 +10,6 @@ import styles from './index.less';
 
 const API = 'xxx/getTankMonitor';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const VIDEO_LIST = [
-  {
-    device_id: '111',
-    company_id: 'DccBRhlrSiu9gMV7fmvizw',
-    inherit_nvr: 0,
-    key_id: '111',
-    rtsp_address: '111',
-    isInspection: '0',
-    photo: 'deviceId[111]keyId[111]非法，不能为空/有空格/中文',
-    nvr: 'ndll4s4uy537rv1m',
-    x_fire: '0.751',
-    fix_img_id: 'vpawiw6avqvvkebn',
-    plug_flow_equipment: '',
-    company_name: '无锡晶安智慧科技有限公司',
-    name: '111111',
-    y_fire: '0.816',
-    fix_fire_id: 'eua17823vls7wwf3',
-    connect_type: 1,
-    id: 'xcb82x3lww8ls7ed',
-    create_date: 1564536937853,
-    status: 1,
-  },
-];
 
 // 请把xxx替换成对应model
 @connect(
@@ -82,14 +59,6 @@ export default class TankMonitorDrawer extends Component {
     this.scroll = (scroll && scroll.dom) || scroll;
   };
 
-  showVideo = () => {
-    const { xxx: { videoList = VIDEO_LIST } = {} } = this.props;
-    this.setState({
-      videoVisible: true,
-      videoKeyId: videoList[0].key_id,
-    });
-  };
-
   hideVideo = () => {
     this.setState({
       videoVisible: false,
@@ -127,21 +96,6 @@ export default class TankMonitorDrawer extends Component {
         monitorParams = [],
         videoList = [],
       },
-      // xxx: {
-      //   name = '1号罐',
-      //   upateTime = +new Date(),
-      //   // designPressure = 0.1,
-      //   designStore = 16,
-      //   realTimeStore = 5,
-      //   realTimeStoreStatus = 0,
-      //   temperature = 30,
-      //   temperatureStatus = 0,
-      //   liquidLevel = 23,
-      //   liquidLevelStatus = 0,
-      //   pressure = 0.15,
-      //   pressureStatus = 1,
-      //   videoList = VIDEO_LIST,
-      // } = {},
       onVideoClick,
     } = this.props;
     const { videoVisible, videoKeyId } = this.state;
@@ -263,7 +217,7 @@ export default class TankMonitorDrawer extends Component {
         </div>
         <div className={styles.bottom}>
           <div className={styles.bottomTitle}>
-            <div className={styles.bottomTitleIcon} />
+            {/* <div className={styles.bottomTitleIcon} /> */}
             <div className={styles.bottomTitleLabel}>应急处置措施</div>
           </div>
           <div className={styles.bottomContent}>{emergencyMeasure}</div>

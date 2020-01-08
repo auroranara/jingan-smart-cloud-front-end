@@ -34,6 +34,7 @@ import { getCompanyType, getFileList, getImageSize, getImportantTypes } from '..
 import styles from './Company.less';
 import Safety from './Safety';
 import FireControl from './FireControl';
+import ThreeDMap from './ThreeDMap';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -110,6 +111,10 @@ const tabList = [
   {
     key: '2',
     tab: '消防信息',
+  },
+  {
+    key: '3',
+    tab: '3D地图',
   },
 ];
 // 默认选中一般企业
@@ -1719,6 +1724,13 @@ export default class CompanyDetail extends PureComponent {
               companyId={id}
               detail={this.props.company.detail.data}
               handleTabChange={this.handleTabChange}
+            />
+          </div>
+          <div style={{ display: tabActiveKey === tabList[3].key ? 'block' : 'none' }}>
+            <ThreeDMap
+              dispatch={dispatch}
+              companyId={id}
+              data={this.props.company.map}
             />
           </div>
         </Spin>

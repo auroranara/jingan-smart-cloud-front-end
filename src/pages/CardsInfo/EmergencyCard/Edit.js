@@ -38,9 +38,10 @@ const COLUMNS = [
   },
 ];
 
-@connect(({ user, cardsInfo, loading }) => ({
+@connect(({ user, cardsInfo, fourColorImage, loading }) => ({
   user,
   cardsInfo,
+  fourColorImage,
   loading: loading.models.cardsInfo,
 }))
 @Form.create()
@@ -49,23 +50,44 @@ export default class Edit extends PureComponent {
     current: 1,
     modalVisible: false,
     selectedCard: undefined,
+    selectedUnitId: '',
+    riskId: undefined,
   };
 
   componentDidMount() {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { setFieldsValue },
-      user: { currentUser: { unitType, companyId, companyName } },
+      user: {
+        currentUser: { unitType, companyId, companyName },
+      },
     } = this.props;
-    if (id)
-      this.getDetail(id);
-    else if (isCompanyUser(+unitType))
+    if (id) this.getDetail(id);
+    else if (isCompanyUser(+unitType)) {
+      this.fetchRiskList({ companyId: companyId });
       setFieldsValue({ companyId: { key: companyId, label: companyName } });
+    }
     dispatch({ type: 'cardsInfo/fetchRiskTypes' });
   }
 
   values = {};
+
+  // 获取风险分区列表
+  fetchRiskList = (params, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fourColorImage/fetchList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 24,
+      },
+      callback,
+    });
+  };
 
   getDetail = id => {
     const {
@@ -77,6 +99,8 @@ export default class Edit extends PureComponent {
       payload: id,
       callback: detail => {
         setFieldsValue(handleDetails(detail));
+        this.fetchRiskList({ companyId: detail.companyId });
+        this.setState({ riskId: detail.pointFixInfoList.map(item => item.areaId).join('') });
       },
     });
   };
@@ -85,15 +109,24 @@ export default class Edit extends PureComponent {
     const {
       dispatch,
       form: { validateFields },
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
     } = this.props;
+    const { riskId } = this.state;
 
     e.preventDefault();
-    validateFields((errors, values) => {
-      if (errors)
-        return;
+    if (!riskId) return message.warning('注：风险分区不能为空！');
 
-      const vals = { ...values, companyId: values.companyId.key, time: +values.time };
+    validateFields((errors, values) => {
+      if (errors) return;
+
+      const vals = {
+        ...values,
+        companyId: values.companyId.key,
+        time: +values.time,
+        pointFixInfoList: [{ areaId: riskId, imgType: 5 }],
+      };
       dispatch({
         type: `cardsInfo/${id ? 'edit' : 'add'}EmergencyCard`,
         payload: id ? { id, ...vals } : vals,
@@ -101,15 +134,16 @@ export default class Edit extends PureComponent {
           if (code === 200) {
             message.success('操作成功');
             router.push(LIST_URL);
-          } else
-            message.error(msg);
+          } else message.error(msg);
         },
       });
     });
   };
 
   isDetail = () => {
-    const { match: { url } } = this.props;
+    const {
+      match: { url },
+    } = this.props;
     return url && url.includes('view');
   };
 
@@ -128,19 +162,21 @@ export default class Edit extends PureComponent {
       form: { getFieldValue },
     } = this.props;
 
-    if (!pageNum) { // pageNum不传，则为初始化
+    if (!pageNum) {
+      // pageNum不传，则为初始化
       pageNum = 1;
       this.setState({ current: 1 });
     }
 
     this.setState({ selectedCard: undefined });
     const companyId = getFieldValue('companyId');
-    if (!this.values.letterName)
-      delete this.values.letterName;
-    companyId && companyId.key && dispatch({
-      type: 'cardsInfo/fetchInformCards',
-      payload: { pageNum, pageSize: TABLE_PAGE_SIZE, companyId: companyId.key, ...this.values },
-    });
+    if (!this.values.letterName) delete this.values.letterName;
+    companyId &&
+      companyId.key &&
+      dispatch({
+        type: 'cardsInfo/fetchInformCards',
+        payload: { pageNum, pageSize: TABLE_PAGE_SIZE, companyId: companyId.key, ...this.values },
+      });
   };
 
   handleSearch = values => {
@@ -154,7 +190,9 @@ export default class Edit extends PureComponent {
   };
 
   handleConfirm = () => {
-    const { form: { setFieldsValue } } = this.props;
+    const {
+      form: { setFieldsValue },
+    } = this.props;
     const { selectedCard } = this.state;
     this.hideModal();
     setFieldsValue(handleEquipmentValues(selectedCard));
@@ -189,14 +227,23 @@ export default class Edit extends PureComponent {
         label: '风险分类',
         render: () => (
           <Select placeholder="请选择风险分类" allowClear>
-            {riskTypes.map(({ value, desc }) => <Option value={value} key={value}>{desc}</Option>)}
+            {riskTypes.map(({ value, desc }) => (
+              <Option value={value} key={value}>
+                {desc}
+              </Option>
+            ))}
           </Select>
         ),
       },
     ];
 
     const toolBarAction = (
-      <Button type="primary" disabled={!selectedCard} onClick={this.handleConfirm} style={{ marginTop: '8px' }}>
+      <Button
+        type="primary"
+        disabled={!selectedCard}
+        onClick={this.handleConfirm}
+        style={{ marginTop: '8px' }}
+      >
         选择
       </Button>
     );
@@ -235,13 +282,31 @@ export default class Edit extends PureComponent {
     );
   };
 
+  onSelectChange = e => {
+    this.setState({ riskId: '', selectedUnitId: e.key }, () => {
+      this.fetchRiskList({ companyId: e.key });
+    });
+  };
+
+  handleRiskChange = e => {
+    this.setState({ riskId: e });
+  };
+
   render() {
     const {
       loading,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { getFieldDecorator },
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
+      fourColorImage: {
+        data: { list = [] },
+      },
     } = this.props;
+    const { riskId } = this.state;
 
     const isDet = this.isDetail();
     const title = isDet ? '详情' : id ? '编辑' : '新增';
@@ -254,14 +319,31 @@ export default class Edit extends PureComponent {
       <Input
         disabled
         placeholder="请选择作业/设备名称"
-        addonAfter={<Button type="primary" disabled={isDet ? true : loading} onClick={this.showModal}>选择</Button>}
+        addonAfter={
+          <Button type="primary" disabled={isDet ? true : loading} onClick={this.showModal}>
+            选择
+          </Button>
+        }
       />
     );
 
     const formItems = [
-      { name: 'companyId', label: '单位名称', type: 'companyselect', disabled: isComUser, wrapperClassName: isComUser ? styles.disappear : undefined },
+      {
+        name: 'companyId',
+        label: '单位名称',
+        type: 'companyselect',
+        disabled: isComUser,
+        wrapperClassName: isComUser ? styles.disappear : undefined,
+        onSelectChange: e => this.onSelectChange(e),
+      },
       { name: 'name', label: '应急卡名称' },
-      { name: 'equipmentName', label: '作业/设备名称', type: 'compt', component: selectButton, wrapperClassName: styles.container },
+      {
+        name: 'equipmentName',
+        label: '作业/设备名称',
+        type: 'compt',
+        component: selectButton,
+        wrapperClassName: styles.container,
+      },
       { name: 'riskWarning', label: '风险提示', type: 'text' },
       { name: 'emergency', label: '应急处置方法', type: 'text' },
       { name: 'needAttention', label: '注意事项', type: 'text' },
@@ -271,14 +353,30 @@ export default class Edit extends PureComponent {
       { name: 'emergency2', label: '应急联系方式-外部', type: 'component', component: '' },
       { name: 'fire', label: '火警', type: 'component', component: '119' },
       { name: 'rescue', label: '医疗救护', type: 'component', component: '120' },
-      { name: 'section', label: '风险分区', type: 'select', required: false },
+      {
+        name: 'section',
+        label: '风险分区',
+        type: 'component',
+        required: true,
+        component: (
+          <div>
+            <Select onChange={this.handleRiskChange} value={riskId}>
+              {list.map(({ zoneName, id }) => {
+                return (
+                  <Option key={id} value={id}>
+                    {zoneName}
+                  </Option>
+                );
+              })}
+            </Select>
+            <span>如果没有做区域划分，请先到风险分区中划分区域</span>
+          </div>
+        ),
+      },
     ];
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>
           {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
           {isDet ? (
