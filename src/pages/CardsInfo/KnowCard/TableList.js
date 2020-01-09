@@ -18,6 +18,7 @@ export default class TableList extends PureComponent {
     current: 1,
     src: '',
     modalVisible: false,
+    companyTotal: '',
   };
   values = {};
 
@@ -28,10 +29,10 @@ export default class TableList extends PureComponent {
   getList = pageNum => {
     const { dispatch } = this.props;
     const vals = { ...this.values };
-    if (vals.time)
-      vals.time = vals.time.format('YYYY-MM-DD');
+    if (vals.time) vals.time = vals.time.format('YYYY-MM-DD');
 
-    if (!pageNum) { // pageNum不存在，则为初始化
+    if (!pageNum) {
+      // pageNum不存在，则为初始化
       pageNum = 1;
       this.setState({ current: 1 });
     }
@@ -39,6 +40,9 @@ export default class TableList extends PureComponent {
     dispatch({
       type: 'cardsInfo/fetchKnowList',
       payload: { pageNum, pageSize: PAGE_SIZE, ...vals },
+      callback: (res, msg) => {
+        this.setState({ companyTotal: msg });
+      },
     });
   };
 
@@ -72,9 +76,7 @@ export default class TableList extends PureComponent {
         if (code === 200) {
           message.success('删除成功');
           this.getList(current);
-        }
-        else
-          message.error(msg);
+        } else message.error(msg);
       },
     });
   };
@@ -90,10 +92,12 @@ export default class TableList extends PureComponent {
   render() {
     const {
       loading,
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
       cardsInfo: { knowList, knowTotal },
     } = this.props;
-    const { modalVisible, current, src } = this.state;
+    const { modalVisible, current, src, companyTotal } = this.state;
 
     const list = knowList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
@@ -108,11 +112,12 @@ export default class TableList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length -1].title}
+        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：{knowTotal}
+            单位数量：
+            {companyTotal}
           </p>
         }
       >
@@ -137,10 +142,20 @@ export default class TableList extends PureComponent {
               // scroll={{ x: 1400 }} // 项目不多时注掉
               pagination={{ pageSize: PAGE_SIZE, total: knowTotal, current }}
             />
-          ) : <Empty />}
+          ) : (
+            <Empty />
+          )}
         </div>
         <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null}>
-          <div style={{ height: 700, backgroundImage: `url(${src})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: '50% 50%' }} />
+          <div
+            style={{
+              height: 700,
+              backgroundImage: `url(${src})`,
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: '50% 50%',
+            }}
+          />
           {/* <iframe style={{ width: '100%', height: 700, border: 'none' }} src={src} /> */}
         </Modal>
       </PageHeaderLayout>

@@ -61,10 +61,13 @@ const ReportModal = Form.create()(props => {
       const { certificateNumber, inspectDate, usePeriodDate, inspectUnit } = fieldsValue;
       const payload = {
         certificateNumber,
-        inspectDate: inspectDate.format('YYYY-MM-DD'),
-        usePeriodDate: usePeriodDate.format('YYYY-MM-DD'),
-        inspectUnit: inspectUnit.key,
-        reportFileList: fileList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl })),
+        inspectDate: inspectDate ? inspectDate.format('YYYY-MM-DD') : undefined,
+        usePeriodDate: usePeriodDate ? usePeriodDate.format('YYYY-MM-DD') : undefined,
+        inspectUnit: inspectUnit ? inspectUnit.key : undefined,
+        reportFileList:
+          fileList.length > 0
+            ? fileList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
+            : undefined,
       };
       if (err) return;
       resetFields();
@@ -352,6 +355,9 @@ export default class InspectionReport extends PureComponent {
         dataIndex: 'createTime',
         key: 'createTime',
         align: 'center',
+        render: val => {
+          return moment(+val).format('YYYY-MM-DD');
+        },
       },
       {
         title: '上传人',
@@ -365,7 +371,7 @@ export default class InspectionReport extends PureComponent {
         key: 'reportFileList',
         align: 'center',
         render: val => {
-          return (
+          return val.length > 0 ? (
             <a
               onClick={() => {
                 this.handleShowFile(val);
@@ -373,6 +379,8 @@ export default class InspectionReport extends PureComponent {
             >
               查看附件
             </a>
+          ) : (
+            <span>查看附件</span>
           );
         },
       },

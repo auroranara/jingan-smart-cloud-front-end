@@ -149,13 +149,15 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
 // ];
 
 export function handleDetails(values, deletedProps = ['companyName']) {
-  const { companyId, companyName, time } = values;
+  const { companyId, companyName, time, pointFixInfoList } = values;
   // const vals = { ...values };
   // deletedProps.forEach(p => delete vals[p]);
+  console.log('values', values);
 
   return {
     ...values,
     companyId: { key: companyId, label: companyName },
     time: moment(time),
+    section: pointFixInfoList.map(item => item.areaId).join(''),
   };
 }
