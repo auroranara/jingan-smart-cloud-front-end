@@ -11,14 +11,17 @@ import styles from './CompanyInfo.less';
 /**
  * description: 企业信息
  */
-@connect(({ unitSafety, loading }) => ({
+@connect(({ unitSafety, loading, chemical }) => ({
   unitSafety,
   loading: loading.effects['unitSafety/fetchSafetyIndex'],
+  chemical,
 }))
 export default class CompanyInfo extends PureComponent {
-  render () {
+  render() {
     const {
       handleClickCount,
+      handleClickHiddenDanger,
+      handleShowRiskPoint,
       data: {
         // 特种设备统计
         specialEquipmentCount,
@@ -49,6 +52,7 @@ export default class CompanyInfo extends PureComponent {
         // 手机号是否可见
         phoneVisible,
       },
+      chemical: { hiddenDangerTotal },
     } = this.props;
     const countCompanyUser = (valueList || []).reduce((total, value) => {
       return total + (value ? value.length : 0);
@@ -111,14 +115,14 @@ export default class CompanyInfo extends PureComponent {
               className={styles.hoverable}
               style={{ backgroundImage: `url(${currentHiddenDangerIcon})` }}
               onClick={() => {
-                total && handleClickCount('currentHiddenDanger');
+                hiddenDangerTotal && handleClickHiddenDanger();
               }}
             >
               <div className={styles.countLabel}>
                 <div>当前隐患</div>
               </div>
               <div className={styles.countValue}>
-                <div>{total}</div>
+                <div>{hiddenDangerTotal}</div>
               </div>
             </div>
 
@@ -141,8 +145,8 @@ export default class CompanyInfo extends PureComponent {
               className={countCheckItem ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${riskPointIcon})` }}
               onClick={() => {
-                countCheckItem &&
-                  handleClickCount('riskPoint', { riskPointType: { key: 'status' } });
+                countCheckItem && handleShowRiskPoint();
+                // handleClickCount('riskPoint', { riskPointType: { key: 'status' } });
               }}
             >
               <div className={styles.countLabel}>

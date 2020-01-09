@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
+import { Spin } from 'antd';
 import PointCard from '@/jingan-components/PointCard';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
@@ -179,7 +180,6 @@ export default class RiskPointDrawer extends PureComponent {
       visible,
       // 抽屉关闭事件
       onClose,
-      zIndex,
       // 数据
       data: {
         redNormalPointList=[],
@@ -210,6 +210,8 @@ export default class RiskPointDrawer extends PureComponent {
       },
       // 要展示的内容的类型
       riskPointType: { key, value }={},
+      loading = false,
+      ...restProps
     } = this.props;
     // 1.如果key为undefined，则显示所有的风险点
     // 2.如果key为status，则根据value值显示对应检查状态的风险点
@@ -314,7 +316,7 @@ export default class RiskPointDrawer extends PureComponent {
           ),
           visible,
           onClose,
-          zIndex,
+          ...restProps,
         }}
         sectionProps={{
           refScroll: this.refScroll,
@@ -374,35 +376,37 @@ export default class RiskPointDrawer extends PureComponent {
           ),
         }}
       >
-        <div className={styles.container}>
-          {/* {redPointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('红'), showStatus }))}
-          {orangePointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('橙'), showStatus }))}
-          {yellowPointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('黄'), showStatus }))}
-          {bluePointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('蓝'), showStatus }))}
-          {grayPointList.map(info => renderRiskPoint(info, { level: showNotRated && getLevelLabel('未评级'), showStatus }))} */}
-          {/* {red + orange + yellow + blue + gray === 0 && <div className={styles.empty} style={{ backgroundImage: `url(${defaultRiskPoint})` }} />} */}
-          {[...redPointList, ...orangePointList, ...yellowPointList, ...bluePointList, ...grayPointList].map((point) => {
-            return (
-              <PointCard
-                key={point.item_id}
-                className={styles.card}
-                data={point}
-                fieldNames={{
-                  level: 'risk_level', // 风险等级
-                  name: 'object_title', // 点位名称
-                  lastCheckPerson: 'last_check_user_name', // 上次巡查人员
-                  lastCheckTime: 'last_check_date', // 上次巡查时间
-                  nextCheckTime: 'nextCheckDate', // 下次巡查时间
-                  extendedDays: getOffsetDays, // 超期天数
-                  expiryDays: getOffsetDays, // 距到期天数
-                  status: 'status', // 检查状态
-                  cycle: ({ checkCycleCode, check_cycle, cycle_type }) => +cycle_type === 1 ? checkCycleCode : check_cycle, // 检查周期
-                  type: 'item_type', // 点位类型
-                }}
-              />
-            );
-          })}
-        </div>
+        <Spin  spinning={loading} wrapperClassName={styles.spin}>
+          <div className={styles.container}>
+            {/* {redPointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('红'), showStatus }))}
+            {orangePointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('橙'), showStatus }))}
+            {yellowPointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('黄'), showStatus }))}
+            {bluePointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('蓝'), showStatus }))}
+            {grayPointList.map(info => renderRiskPoint(info, { level: showNotRated && getLevelLabel('未评级'), showStatus }))} */}
+            {/* {red + orange + yellow + blue + gray === 0 && <div className={styles.empty} style={{ backgroundImage: `url(${defaultRiskPoint})` }} />} */}
+            {[...redPointList, ...orangePointList, ...yellowPointList, ...bluePointList, ...grayPointList].map((point) => {
+              return (
+                <PointCard
+                  key={point.item_id}
+                  className={styles.card}
+                  data={point}
+                  fieldNames={{
+                    level: 'risk_level', // 风险等级
+                    name: 'object_title', // 点位名称
+                    lastCheckPerson: 'last_check_user_name', // 上次巡查人员
+                    lastCheckTime: 'last_check_date', // 上次巡查时间
+                    nextCheckTime: 'nextCheckDate', // 下次巡查时间
+                    extendedDays: getOffsetDays, // 超期天数
+                    expiryDays: getOffsetDays, // 距到期天数
+                    status: 'status', // 检查状态
+                    cycle: ({ checkCycleCode, check_cycle, cycle_type }) => +cycle_type === 1 ? checkCycleCode : check_cycle, // 检查周期
+                    type: 'item_type', // 点位类型
+                  }}
+                />
+              );
+            })}
+          </div>
+        </Spin>
       </SectionDrawer>
     );
   }

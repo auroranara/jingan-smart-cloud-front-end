@@ -179,6 +179,7 @@ export default class CurrentHiddenDanger extends PureComponent {
       visible,
       onClose,
       onCardClick, // 点击小块查看详情
+      handleParentChange,
       ycq = 0,
       wcq = 0,
       dfc = 0,
@@ -303,7 +304,12 @@ export default class CurrentHiddenDanger extends PureComponent {
         <DrawerContainer
           title="当前隐患"
           visible={visible}
-          onClose={onClose}
+          onClose={() => {
+            onClose();
+            setTimeout(() => {
+              handleParentChange({ hdStatus: 5 });
+            }, 500);
+          }}
           width={535}
           destroyOnClose={true}
           zIndex={1333}
