@@ -16,7 +16,7 @@ import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, getSearchFields, getTableColumns } f
   loading: loading.models.cardsInfo,
 }))
 export default class TableList extends PureComponent {
-  state = { current: 1, modalVisible: false, modalItem: {} };
+  state = { companyTotal: '', current: 1, modalVisible: false, modalItem: {} };
   values = {};
 
   componentDidMount() {
@@ -34,6 +34,9 @@ export default class TableList extends PureComponent {
     dispatch({
       type: 'cardsInfo/fetchCommitList',
       payload: { pageNum, pageSize: PAGE_SIZE, ...this.values },
+      callback: (res, msg) => {
+        this.setState({ companyTotal: msg });
+      },
     });
   };
 
@@ -104,7 +107,7 @@ export default class TableList extends PureComponent {
       },
       cardsInfo: { commitList, commitTotal },
     } = this.props;
-    const { current } = this.state;
+    const { current, companyTotal } = this.state;
 
     const list = commitList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
@@ -123,8 +126,8 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：
-            {commitTotal}
+            单位数量：
+            {companyTotal}
           </p>
         }
       >

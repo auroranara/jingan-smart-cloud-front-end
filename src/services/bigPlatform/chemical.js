@@ -47,3 +47,8 @@ export async function getProductDevice(params) {
 export async function getZoneContent(params) {
   return request(`${URL_PREFIX}/ci/zone/getZoneContent?${stringify(params)}`);
 }
+
+// 公告
+export async function getNotice(params) {
+  return request(`${URL_PREFIX}/notice/companyPublicForPage?${stringify(params)}`);
+}

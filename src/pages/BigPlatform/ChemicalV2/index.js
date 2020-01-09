@@ -153,6 +153,7 @@ const SocketOptions = {
     storehouse,
     baseInfo,
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
+    riskPointLoading: loading.effects['unitSafety/fetchPoints'],
   })
 )
 export default class Chemical extends PureComponent {
@@ -249,6 +250,10 @@ export default class Chemical extends PureComponent {
         'fetchRiskPoint',
         // 监测设备列表
         'fetchMonitorEquipment',
+        // 公告
+        'fetchNotice',
+        // 当前隐患总数
+        'fetchHiddenDangerTotal',
       ],
     });
   }
@@ -269,14 +274,21 @@ export default class Chemical extends PureComponent {
       },
       dispatch,
     } = this.props;
+    // 公告
+    this.fetchNotice({ pageSize: 0, pageNum: 1, companyId });
     // socket消息
     this.handleSocket();
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
     // this.fetchSpecialEquipmentCount({ company_id: companyId });
-    // 获取隐患统计
-    this.fetchHiddenDangerCount({ company_id: companyId });
+    // 当前隐患总数
+    this.fetchHiddenDangerTotal({
+      company_id: companyId,
+      pageNum: 1,
+      pageSize: 10,
+      status: 5,
+    });
     // 获取安全人员信息（安全人员信息卡片源数据）
     this.fetchSafetyOfficer({ company_id: companyId });
     // 获取特种设备列表
@@ -290,8 +302,8 @@ export default class Chemical extends PureComponent {
     // 消息
     this.fetchScreenMessage();
 
-    this.fetchPoints();
-    this.fetchHiddenDangerList();
+    // this.fetchPoints();
+    // this.fetchHiddenDangerList();
     // 四色图分区
     // this.fetchFourColorPolygons();
   };
@@ -509,7 +521,7 @@ export default class Chemical extends PureComponent {
       },
       dispatch,
     } = this.props;
-    const { hdStatus } = this.state;
+    const { hdStatus, zoneId } = this.state;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
@@ -518,8 +530,21 @@ export default class Chemical extends PureComponent {
         status: hdStatus,
         pageNum,
         pageSize: 10,
+        zoneId,
       },
     });
+  };
+
+  handleClickHiddenDanger = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const { zoneId } = this.state;
+    this.fetchHiddenDangerCount({ company_id: companyId, zoneId });
+    this.fetchHiddenDangerList();
+    this.setDrawerVisible('currentHiddenDanger');
   };
 
   // 点击当前隐患图表进行筛选
@@ -530,6 +555,7 @@ export default class Chemical extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
+    const { zoneId } = this.state;
     const status =
       (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || 5;
     this.setState({ hdStatus: status });
@@ -541,6 +567,7 @@ export default class Chemical extends PureComponent {
         status,
         pageNum: 1,
         pageSize: 10,
+        zoneId,
       },
     });
   };
@@ -748,7 +775,13 @@ export default class Chemical extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
+    const { zoneId } = this.state;
+    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId, zoneId } });
+  };
+
+  handleShowRiskPoint = () => {
+    this.fetchPoints();
+    this.setDrawerVisible('riskPoint', { riskPointType: { key: 'status' } });
   };
 
   handleClickImgShow = images => {
@@ -837,6 +870,7 @@ export default class Chemical extends PureComponent {
     this.setState({ tankDetail, tankMonitorDrawerVisible: true });
   };
 
+  // 显示监测对象列表弹窗
   handleClickMonitor = monitorType => {
     const {
       match: {
@@ -858,7 +892,8 @@ export default class Chemical extends PureComponent {
       type: 'chemical/fetchZoneContent',
       payload: { id },
     });
-    // this.setDrawerVisible('dangerArea');
+    this.setState({ zoneId: id });
+    this.setDrawerVisible('dangerArea');
   };
 
   handleShowMonitorDetail = (detail, visible) => {
@@ -979,6 +1014,8 @@ export default class Chemical extends PureComponent {
         dangerSourceCount,
         tankList,
         monitorData = {},
+        zoneContent = {},
+        noticeList,
       },
       match: {
         params: { unitId: companyId },
@@ -986,6 +1023,7 @@ export default class Chemical extends PureComponent {
       newUnitFireControl,
       baseInfo: { storageTank: { list: tanksUnderArea } },
       storehouse: { list: storeroomList },
+      riskPointLoading,
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -1046,13 +1084,15 @@ export default class Chemical extends PureComponent {
           />
         }
       >
-        <Tips />
+        <Tips noticeList={noticeList} />
         <div className={styles.container}>
           <Row gutter={15} className={styles.height100}>
             <Col span={6} className={styles.height100}>
               <div className={styles.leftTop}>
                 <CompanyInfo
                   handleClickCount={this.setDrawerVisible}
+                  handleClickHiddenDanger={this.handleClickHiddenDanger}
+                  handleShowRiskPoint={this.handleShowRiskPoint}
                   data={{
                     specialEquipmentCount: specialEquip.total,
                   }}
@@ -1121,7 +1161,9 @@ export default class Chemical extends PureComponent {
           }}
           data={points}
           riskPointType={riskPointType}
+          loading={riskPointLoading}
           zIndex={1266}
+          width={535}
         />
 
         {/* 当前隐患抽屉 */}
@@ -1130,6 +1172,7 @@ export default class Chemical extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('currentHiddenDanger');
           }}
+          handleParentChange={this.handleParentChange}
           hiddenDangerList={hiddenDangerList}
           fetchHiddenDangerList={this.fetchHiddenDangerList}
           onClickChat={this.handleFilterCurrentDanger}
@@ -1140,13 +1183,16 @@ export default class Chemical extends PureComponent {
         <DangerAreaDrawer
           visible={dangerAreaDrawerVisible}
           onClose={() => {
-            this.setDrawerVisible('dangerArea');
+            this.setDrawerVisible('dangerArea', { zoneId: undefined });
           }}
           setDrawerVisible={this.setDrawerVisible}
           handleShowImg={this.handleShowImg}
           handleShowVideo={this.handleShowVideo}
           handleGasOpen={this.handleGasOpen}
           handlePoisonOpen={this.handlePoisonOpen}
+          zoneContent={zoneContent}
+          handleClickHiddenDanger={this.handleClickHiddenDanger}
+          handleShowRiskPoint={this.handleShowRiskPoint}
         />
 
         <StorageAreaDrawer
@@ -1308,10 +1354,7 @@ export default class Chemical extends PureComponent {
           onVideoClick={this.handleShowVideo}
           tankDetail={tankDetail}
         />
-        <MHDrawer
-          visible={mhVisible}
-          handleClose={this.handleMHClose}
-        />
+        <MHDrawer visible={mhVisible} handleClose={this.handleMHClose} />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
 

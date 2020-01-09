@@ -29,6 +29,7 @@ export default class Messages extends PureComponent {
             model={model}
             showTypes={MsgShowTypes}
             typeClickList={TypeClickList}
+            phoneVisible={true}
           />
         </div>
       </div>

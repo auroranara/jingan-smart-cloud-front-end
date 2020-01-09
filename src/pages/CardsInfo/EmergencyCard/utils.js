@@ -181,3 +181,10 @@ export function handleEquipmentValues(values) {
     needAttention: preventMeasures,
   };
 }
+
+export function handleEquipmentOtherValues(user, phone) {
+  return {
+    safetyNum: user,
+    telNum: phone,
+  };
+}
