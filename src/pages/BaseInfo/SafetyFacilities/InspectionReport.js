@@ -380,7 +380,7 @@ export default class InspectionReport extends PureComponent {
               查看附件
             </a>
           ) : (
-            <span>查看附件</span>
+            <span style={{ color: '#aaa' }}>查看附件</span>
           );
         },
       },
