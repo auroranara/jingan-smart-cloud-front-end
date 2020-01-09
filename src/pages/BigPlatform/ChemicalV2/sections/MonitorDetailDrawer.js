@@ -69,10 +69,10 @@ export default class MonitorDetailDrawer extends Component {
               </div>
             </div>
           </div>
-          {fields.slice(1, fields.length).map(field => {
+          {fields.slice(1, fields.length).map((field, index) => {
             const { label, render, value } = field;
             return (
-              <div className={styles.line}>
+              <div className={styles.line} key={index}>
                 <div className={styles.label}>{label}：</div>
                 <div className={styles.value}>
                   {render

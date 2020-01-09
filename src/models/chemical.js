@@ -8,7 +8,9 @@ import {
   videoList,
   getProductDevice,
   getZoneContent,
+  getNotice,
 } from '@/services/bigPlatform/chemical';
+import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
 import { queryAreaList } from '@/services/company/reservoirRegion';
 import { queryStorehouseList } from '@/services/baseInfo/storehouse';
@@ -34,6 +36,8 @@ export default {
     riskPoint: [],
     videoList: [],
     monitorData: {},
+    noticeList: [],
+    hiddenDangerTotal: 0,
   },
 
   effects: {
@@ -152,6 +156,38 @@ export default {
           type: 'save',
           payload: {
             zoneContent,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 区域信息
+    *fetchNotice({ payload, callback }, { call, put }) {
+      const response = yield call(getNotice, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const noticeList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            noticeList,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 隐患总数
+    *fetchHiddenDangerTotal({ payload, callback }, { call, put }) {
+      const response = yield call(getHiddenDangerListForPage, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const {
+          pagination: { total: hiddenDangerTotal },
+        } = data;
+        yield put({
+          type: 'save',
+          payload: {
+            hiddenDangerTotal,
           },
         });
       }

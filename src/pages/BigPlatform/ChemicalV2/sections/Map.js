@@ -213,7 +213,12 @@ export default class Map extends PureComponent {
     };
 
     map.on('mapClickNode', event => {
-      const { handleClickRiskPoint, setDrawerVisible, handleShowAreaDrawer } = this.props;
+      const {
+        handleClickRiskPoint,
+        setDrawerVisible,
+        handleShowAreaDrawer,
+        handleClickMonitorIcon,
+      } = this.props;
       const clickedObj = event.target;
       console.log('clickedObj', clickedObj);
       // console.log('time', moment().valueOf());
@@ -264,7 +269,8 @@ export default class Map extends PureComponent {
           this.handleShowVideo(keyId);
         } else if (iconType === 2) {
           // 监测设备
-          const { equipmentType } = markerProps;
+          const { type, targetId } = markerProps;
+          // if(type) handleClickMonitorIcon(targetId)
           // this.handleShowVideo(keyId);
         }
       }
