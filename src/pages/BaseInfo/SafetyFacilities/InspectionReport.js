@@ -1,12 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-// import router from 'umi/router';
-// import Link from 'umi/link';
 import moment from 'moment';
 import { Card, Table, message, Upload, DatePicker, Icon, Input, Modal, Button, Form } from 'antd';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import { getToken } from 'utils/authority';
-
+import Lightbox from 'react-images';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
@@ -31,6 +29,7 @@ const breadcrumbList = [
     name: title,
   },
 ];
+
 // 上传文件夹
 const folder = 'safetyFacilities';
 // 上传文件地址
@@ -59,11 +58,13 @@ const ReportModal = Form.create()(props => {
 
   const onConfirm = () => {
     validateFields((err, fieldsValue) => {
-      const { targetName, checkFrequency, companyId } = fieldsValue;
+      const { certificateNumber, inspectDate, usePeriodDate, inspectUnit } = fieldsValue;
       const payload = {
-        targetName,
-        checkFrequency,
-        companyId: companyId.key,
+        certificateNumber,
+        inspectDate: inspectDate.format('YYYY-MM-DD'),
+        usePeriodDate: usePeriodDate.format('YYYY-MM-DD'),
+        inspectUnit: inspectUnit.key,
+        reportFileList: fileList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl })),
       };
       if (err) return;
       resetFields();
@@ -75,6 +76,7 @@ const ReportModal = Form.create()(props => {
     resetFields();
     handleModalClose();
   };
+
   return (
     <Modal
       title={title}
@@ -82,6 +84,7 @@ const ReportModal = Form.create()(props => {
       visible={modalVisible}
       onCancel={handleClose}
       onOk={onConfirm}
+      confirmLoading={uploading}
     >
       <Form>
         <Form.Item {...formItemCol} label="证书编号">
@@ -138,19 +141,24 @@ const ReportModal = Form.create()(props => {
 });
 
 @Form.create()
-@connect(({ targetResponsibility, user, loading }) => ({
-  targetResponsibility,
+@connect(({ safeFacilities, user, loading }) => ({
+  safeFacilities,
   user,
-  loading: loading.models.targetResponsibility,
+  loading: loading.models.safeFacilities,
 }))
-export default class CheckDetail extends PureComponent {
+export default class InspectionReport extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       modalVisible: false, // 弹窗是否可见
       uploading: false,
       fileList: [],
+      fileVisible: false, // 附件弹窗是否可见
+      imgUrl: [], // 附件图片列表
+      currentImage: 0, // 展示附件大图下标
     };
+    this.pageNum = 1;
+    this.pageSize = 10;
   }
 
   componentDidMount() {
@@ -158,16 +166,28 @@ export default class CheckDetail extends PureComponent {
   }
 
   // 获取列表
-  fetchList = params => {
-    const { dispatch } = this.props;
+  fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     dispatch({
       type: 'safeFacilities/fetchReportList',
       payload: {
+        safeId: id,
         ...params,
-        pageNum: 1,
-        pageSize: 10,
+        pageSize,
+        pageNum,
       },
     });
+  };
+
+  handlePageChange = (pageNum, pageSize) => {
+    this.pageNum = pageNum;
+    this.pageSize = pageSize;
+    this.fetchList(pageNum, pageSize);
   };
 
   handleModalShow = () => {
@@ -227,28 +247,74 @@ export default class CheckDetail extends PureComponent {
   };
 
   handleModalAdd = formData => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     dispatch({
       type: 'safeFacilities/fetchReportAdd',
-      payload: { ...formData },
+      payload: { safeId: id, ...formData },
       callback: response => {
         if (response && response.code === 200) {
           this.handleModalClose();
           this.fetchList();
+          this.setState({ fileList: [] });
           message.success('新建成功！');
         } else message.error(response.msg);
       },
     });
   };
 
+  handleShowFile = files => {
+    const newFiles = files.map(({ webUrl }) => {
+      return {
+        src: webUrl,
+      };
+    });
+    this.setState({
+      fileVisible: true,
+      imgUrl: newFiles,
+      currentImage: 0,
+    });
+  };
+
+  handleFileClose = () => {
+    this.setState({
+      fileVisible: false,
+    });
+  };
+
+  gotoPrevious = () => {
+    let { currentImage } = this.state;
+    if (currentImage <= 0) return;
+    this.setState({ currentImage: --currentImage });
+  };
+
+  gotoNext = () => {
+    let { currentImage, imgUrl } = this.state;
+    if (currentImage >= imgUrl.length - 1) return;
+    this.setState({ currentImage: ++currentImage });
+  };
+
+  handleClickThumbnail = i => {
+    const { currentImage } = this.state;
+    if (currentImage === i) return;
+    this.setState({ currentImage: i });
+  };
+
   render() {
     const {
       loading = false,
       safeFacilities: {
-        reportData: { list = [] },
+        reportData: {
+          list = [],
+          pagination: { total, pageNum, pageSize },
+        },
       },
     } = this.props;
-    const { modalVisible, uploading, fileList } = this.state;
+    const { modalVisible, uploading, fileList, imgUrl, fileVisible, currentImage } = this.state;
 
     const columns = [
       {
@@ -262,17 +328,23 @@ export default class CheckDetail extends PureComponent {
         dataIndex: 'inspectDate',
         key: 'inspectDate',
         align: 'center',
+        render: val => {
+          return moment(+val).format('YYYY-MM-DD');
+        },
       },
       {
         title: '检验有效期至',
         dataIndex: 'usePeriodDate',
         key: 'usePeriodDate',
         align: 'center',
+        render: val => {
+          return moment(+val).format('YYYY-MM-DD');
+        },
       },
       {
         title: '检验单位',
-        dataIndex: 'inspectUnit',
-        key: 'inspectUnit',
+        dataIndex: 'companyName',
+        key: 'companyName',
         align: 'center',
       },
       {
@@ -292,8 +364,16 @@ export default class CheckDetail extends PureComponent {
         dataIndex: 'reportFileList',
         key: 'reportFileList',
         align: 'center',
-        render: () => {
-          return <a>查看附件</a>;
+        render: val => {
+          return (
+            <a
+              onClick={() => {
+                this.handleShowFile(val);
+              }}
+            >
+              查看附件
+            </a>
+          );
         },
       },
     ];
@@ -321,12 +401,22 @@ export default class CheckDetail extends PureComponent {
           {list.length > 0 ? (
             <Table
               bordered
-              rowKey="targetId"
+              rowKey="id"
               loading={loading}
               columns={columns}
               dataSource={list}
-              // onChange={this.onTableChange}
-              pagination={false}
+              pagination={{
+                current: pageNum,
+                pageSize,
+                total,
+                showQuickJumper: true,
+                showSizeChanger: true,
+                pageSizeOptions: ['5', '10', '15', '20'],
+                onChange: this.handlePageChange,
+                onShowSizeChange: (num, size) => {
+                  this.handlePageChange(1, size);
+                },
+              }}
             />
           ) : (
             <Card bordered={false} style={{ textAlign: 'center' }}>
@@ -334,11 +424,21 @@ export default class CheckDetail extends PureComponent {
             </Card>
           )}
           <div style={{ textAlign: 'right', marginTop: 20 }}>
-            <Button href={``}>返回</Button>
+            <Button href={`#/facility-management/safety-facilities/list`}>返回</Button>
           </div>
         </div>
-
         <ReportModal {...modalData} />
+        <Lightbox
+          images={imgUrl}
+          isOpen={fileVisible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleFileClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
+        />
       </PageHeaderLayout>
     );
   }

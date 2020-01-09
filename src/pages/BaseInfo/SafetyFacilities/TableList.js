@@ -10,6 +10,7 @@ import codes from '@/utils/codes';
 const { Option } = Select;
 // 标题
 const title = '安全设施';
+const itemsStyle = { style: { width: 'calc(47%)', marginRight: '10px' } };
 
 export const ROUTER = '/facility-management/safety-facilities'; // modify
 export const LIST_URL = `${ROUTER}/list`;
@@ -54,16 +55,26 @@ const statusVal = {
 /* session前缀 */
 const sessionPrefix = 'safety_fac';
 
-@connect(({ safeFacilities, emergencyManagement, user, loading }) => ({
+@connect(({ safeFacilities, baseInfo, user, loading }) => ({
   safeFacilities,
-  emergencyManagement,
+  baseInfo,
   user,
   loading: loading.models.safeFacilities,
 }))
 export default class TableList extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      categoryOneId: '', // 分类一列表选中Id
+      categoryTwoId: '', // 分类二列表选中Id
+      safeFacilitiesNameId: '', //分类三列表选中Id
+      categoryOneName: undefined, // 分类一列表选中名称
+      categoryTwoName: undefined, // 分类二列表选中名称
+      categoryThreeName: undefined, // 分类三列表选中名称
+      categoryOneList: [], // 分类一列表
+      categoryTwoList: [], // 分类二列表
+      facilitiesNameList: [], // 安全设施名称列表
+    };
   }
 
   // 挂载后
@@ -73,6 +84,12 @@ export default class TableList extends PureComponent {
         currentUser: { id },
       },
     } = this.props;
+    this.fetchDict({
+      payload: { type: 'safeFacilities', parentId: 0 },
+      callback: list => {
+        this.setState({ categoryOneList: list });
+      },
+    });
     // 从sessionStorage中获取存储的控件值
     const sessionData = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
@@ -109,8 +126,18 @@ export default class TableList extends PureComponent {
         currentUser: { id },
       },
     } = this.props;
-    const { category, ...rest } = this.form.getFieldsValue();
-    const payload = { category: category ? category.join(',') : undefined, ...rest };
+    const { categoryOneId, categoryTwoId, safeFacilitiesNameId } = this.state;
+
+    const { companyName, equipName, equipStatus, paststatus } = this.form.getFieldsValue();
+    const payload = {
+      category: categoryOneId ? categoryOneId + ',' + categoryTwoId : undefined,
+      safeFacilitiesName: safeFacilitiesNameId ? safeFacilitiesNameId : undefined,
+      companyName,
+      equipName,
+      equipStatus,
+      paststatus,
+    };
+
     this.fetchList(payload);
     sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
   };
@@ -118,6 +145,14 @@ export default class TableList extends PureComponent {
   // 重置
   handleReset = () => {
     this.fetchList();
+    this.setState({
+      categoryOneId: '',
+      categoryOneName: undefined,
+      categoryTwoId: '',
+      categoryTwoName: undefined,
+      safeFacilitiesNameId: '',
+      categoryThreeName: undefined,
+    });
     sessionStorage.clear();
   };
 
@@ -173,6 +208,72 @@ export default class TableList extends PureComponent {
     });
   };
 
+  // 获取字典
+  fetchDict = actions => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'baseInfo/fetchDict',
+      ...actions,
+    });
+  };
+
+  handleCategoryOneChange = val => {
+    const { categoryOneList } = this.state;
+    const typeOneName = categoryOneList.filter(item => item.id === val).map(item => item.label);
+    this.setState({ categoryOneName: typeOneName });
+
+    if (val) {
+      this.fetchDict({
+        payload: { type: 'safeFacilities', parentId: val },
+        callback: list => {
+          this.setState({ categoryTwoList: list });
+        },
+      });
+    } else this.setState({ categoryOneList: [] });
+    this.setState({ categoryOneId: val });
+  };
+
+  handleCategoryTwoChange = val => {
+    const { categoryTwoList } = this.state;
+    const typeTwoName = categoryTwoList.filter(item => item.id === val).map(item => item.label);
+    this.setState({ categoryTwoName: typeTwoName });
+
+    if (val) {
+      this.fetchDict({
+        payload: { type: 'safeFacilities', parentId: val },
+        callback: list => {
+          this.setState({ facilitiesNameList: list });
+        },
+      });
+    } else this.setState({ categoryTwoList: [] });
+    this.setState({ categoryTwoId: val });
+  };
+
+  handleNameChange = val => {
+    const { facilitiesNameList } = this.state;
+    const typeThreeName = facilitiesNameList
+      .filter(item => item.id === val)
+      .map(item => item.label);
+    this.setState({ categoryThreeName: typeThreeName });
+    this.setState({ safeFacilitiesNameId: val });
+  };
+
+  handleCategoryOneSelect = () => {
+    this.setState({
+      categoryTwoId: '',
+      categoryTwoName: '',
+      safeFacilitiesNameId: '',
+      categoryThreeName: '',
+    });
+  };
+
+  handleCategoryTwoSelect = () => {
+    this.setState({
+      safeFacilitiesNameId: '',
+      categoryThreeName: '',
+    });
+  };
+
   // 渲染表格
   renderTable = () => {
     const {
@@ -193,16 +294,13 @@ export default class TableList extends PureComponent {
     const editCode = hasAuthority(editAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
-    const newColumns = [
+    const columns = [
       {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
       },
-    ];
-
-    const columns = [
       {
         title: '分类',
         dataIndex: 'categoryName',
@@ -219,49 +317,60 @@ export default class TableList extends PureComponent {
         width: 200,
       },
       {
-        title: '状态',
-        dataIndex: 'equipStatus',
+        title: '编号名称',
+        dataIndex: 'info',
         align: 'center',
-        width: 200,
-        render: val => {
-          return <div>{statusVal[val]}</div>;
-        },
-      },
-      {
-        title: '数量',
-        dataIndex: 'equipNumber',
-        align: 'center',
-        width: 200,
-      },
-      {
-        title: '有效期至',
-        dataIndex: 'useYear',
-        align: 'center',
-        width: 200,
-        render: (val, record) => {
-          const { endDate, paststatus } = record;
-          return endDate ? (
+        width: 300,
+        render: (val, text) => {
+          const { specifications, leaveProductNumber, equipName } = text;
+          return (
             <div>
-              {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}
-              {/* <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
-                {paststatusVal[paststatus]}
-              </span> */}
+              <p>
+                规格型号:
+                {specifications}
+              </p>
+              <p>
+                出厂编号:
+                {leaveProductNumber}
+              </p>
+              <p>
+                设备名称:
+                {equipName}
+              </p>
             </div>
-          ) : (
-            '-'
           );
         },
       },
       {
-        title: '有效期状态',
-        dataIndex: 'paststatus',
-        width: 120,
+        title: '状态',
+        dataIndex: 'equipStatus',
         align: 'center',
-        render: (paststatus, { endDate }) => (
-          <span style={{ color: this.getColorVal(paststatus) }}>
-            {endDate ? paststatusVal[paststatus] : '-'}
-          </span>
-        ),
+        width: 200,
+        render: (val, record) => {
+          const { paststatus } = record;
+          return (
+            <div>
+              <span>{statusVal[val]}</span>
+              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+                {paststatusVal[paststatus]}
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        title: '检验有效期至',
+        dataIndex: 'useYear',
+        align: 'center',
+        width: 200,
+        render: (val, record) => {
+          const { endDate } = record;
+          return endDate ? (
+            <div>{endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}</div>
+          ) : (
+            '-'
+          );
+        },
       },
       {
         title: '操作',
@@ -298,7 +407,7 @@ export default class TableList extends PureComponent {
         width: 120,
         align: 'center',
         render: (val, text) => (
-          <a href={`#/facility-management/safety-facilities/inspection-report/${text.companyId}`}>
+          <a href={`#/facility-management/safety-facilities/inspection-report/${text.id}`}>
             查看详情
           </a>
         ),
@@ -310,7 +419,7 @@ export default class TableList extends PureComponent {
         <Table
           rowKey="id"
           loading={loading}
-          columns={unitType === 4 ? columns : [...newColumns, ...columns]}
+          columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
           dataSource={list}
           bordered
           scroll={{ x: 1400 }}
@@ -337,43 +446,85 @@ export default class TableList extends PureComponent {
     const {
       safeFacilities: {
         safeFacData: { a },
-        facNameList = [],
+        // facNameList = [],
       },
       user: {
         currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
+    const {
+      categoryOneList,
+      categoryTwoList,
+      facilitiesNameList,
+      categoryOneName,
+      categoryTwoName,
+      categoryThreeName,
+    } = this.state;
+
     const addCode = hasAuthority(addAuth, permissionCodes);
 
     const fields = [
       {
-        id: 'safeFacilitiesName',
-        label: '装备名称：',
+        id: 'equipName',
+        label: '设备名称',
+        render: () => <Input placeholder="请输入" allowClear />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'category',
+        label: '分类：',
         render: () => (
-          <Select allowClear placeholder="请选择">
-            {facNameList.map(({ key, label }) => (
-              <Select.Option key={key} value={key}>
-                {label}
-              </Select.Option>
-            ))}
-          </Select>
+          <div style={{ width: '400px' }}>
+            <Select
+              value={categoryOneName}
+              placeholder="请选择"
+              {...itemsStyle}
+              onChange={this.handleCategoryOneChange}
+              onSelect={this.handleCategoryOneSelect}
+            >
+              {categoryOneList.map(({ id, label }) => (
+                <Select.Option key={id} value={id}>
+                  {label}
+                </Select.Option>
+              ))}
+            </Select>
+            <Select
+              value={categoryTwoName}
+              {...itemsStyle}
+              placeholder="请选择"
+              onChange={this.handleCategoryTwoChange}
+              onSelect={this.handleCategoryTwoSelect}
+            >
+              {categoryTwoList.map(({ id, label }) => (
+                <Select.Option key={id} value={id}>
+                  {label}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
         ),
       },
-      // {
-      //   id: 'category',
-      //   label: '分类：',
-      //   render: () => (
-      //     <Cascader
-      //       placeholder="请选择"
-      //       options={safeFacilities}
-      //       allowClear
-      //       changeOnSelect
-      //       notFoundContent
-      //       getPopupContainer={getRootChild}
-      //     />
-      //   ),
-      // },
+      {
+        id: 'facilitiesName',
+        render: () => (
+          <div>
+            <Select
+              value={categoryThreeName}
+              onChange={this.handleNameChange}
+              allowClear
+              style={{ width: 'calc(55%)', marginLeft: '15%' }}
+              placeholder="请选择"
+            >
+              {facilitiesNameList.map(({ id, label }) => (
+                <Select.Option key={id} value={id}>
+                  {label}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+        ),
+      },
       {
         id: 'equipStatus',
         label: '设备状态：',
@@ -387,7 +538,7 @@ export default class TableList extends PureComponent {
       },
       {
         id: 'paststatus',
-        label: '到期状态：',
+        label: '检验到期状态：',
         render: () => (
           <Select placeholder="请选择" allowClear>
             {['未到期', '即将到期', '已过期'].map((r, i) => (

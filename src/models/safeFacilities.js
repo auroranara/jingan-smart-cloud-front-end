@@ -47,9 +47,6 @@ export default {
       list: [],
       pagination: {},
     },
-    reportDetail: {
-      data: [],
-    },
   },
 
   effects: {
@@ -123,19 +120,9 @@ export default {
     },
 
     // 报告新增
-    *fetchReportAdd({ payload, success, error }, { call, put }) {
+    *fetchReportAdd({ payload, callback }, { call, put }) {
       const response = yield call(queryReportAdd, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'saveReportAdd',
-          payload: response.data,
-        });
-        if (success) {
-          success();
-        }
-      } else if (error) {
-        error(response.msg);
-      }
+      if (callback) callback(response);
     },
   },
 
@@ -187,13 +174,6 @@ export default {
       return {
         ...state,
         reportData: data,
-      };
-    },
-
-    saveReportAdd(state, { payload }) {
-      return {
-        ...state,
-        reportDetail: payload,
       };
     },
   },
