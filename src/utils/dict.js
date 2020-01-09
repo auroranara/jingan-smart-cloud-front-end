@@ -225,3 +225,20 @@ export const storageMediumStatusEnum = generateEnum({
   '3': '气态',
   '4': '等离子态',
 })
+
+/*
+* 所处环境功能区
+*/
+export const envFunAreaEnum = generateEnum({
+  '1': '一类区',
+  '2': '二类区',
+  '3': '三类区',
+})
+
+/*
+* 所处环境功能区
+*/
+export const judgeEnum = generateEnum({
+  '0': '是',
+  '1': '否',
+})
