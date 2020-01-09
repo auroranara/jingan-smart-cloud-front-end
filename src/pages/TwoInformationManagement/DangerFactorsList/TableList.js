@@ -100,14 +100,13 @@ export default class TableList extends PureComponent {
   handleDeleteClick = id => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'fourColorImage/fetchDelete',
-      payload: { ids: id },
-      success: () => {
-        this.fetchList();
-        message.success('删除成功！');
-      },
-      error: () => {
-        message.error('删除失败!');
+      type: 'twoInformManagement/fetchDangerDel',
+      payload: { areaId: id },
+      callback: res => {
+        if (res && res.code === 200) {
+          this.fetchList();
+          message.success(res.data);
+        } else message.success(res.msg);
       },
     });
   };
@@ -133,6 +132,12 @@ export default class TableList extends PureComponent {
     this.setState({ fileList });
     if (info.file.status === 'uploading') {
       this.setState({ importLoading: true });
+    }
+    if (info.file.status === 'error') {
+      message.success('导入失败');
+    }
+    if (info.file.status === 'done') {
+      message.success('导入成功');
     }
     if (info.file.response) {
       if (info.file.response.code && info.file.response.code === 200) {

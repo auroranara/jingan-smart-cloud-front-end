@@ -55,11 +55,10 @@ export const TABLE_COLUMNS = [
     ),
   },
   {
-    title: '时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
+    title: '电话',
+    dataIndex: 'phoneNumber',
+    key: 'phoneNumber',
     align: 'center',
-    render: val => <span>{moment(+val).format('YYYY年MM月DD日')}</span>,
   },
 ];
 

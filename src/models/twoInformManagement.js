@@ -68,16 +68,9 @@ export default {
       } else if (error) error();
     },
 
-    *fetchDangerDel({ payload, success, error }, { call, put }) {
+    *fetchDangerDel({ payload, callback }, { call, put }) {
       const response = yield call(queryDangerElementDel, payload);
-      if (response.code === 200) {
-        yield put({ type: 'removeDanger', payload: payload.id });
-        if (success) {
-          success();
-        }
-      } else if (error) {
-        error(response.msg);
-      }
+      if (callback) callback(response);
     },
 
     *fetchBindDangerCheck({ payload, success, error }, { call, put }) {
@@ -118,16 +111,9 @@ export default {
       } else if (error) error();
     },
 
-    *fetchSafetyDel({ payload, success, error }, { call, put }) {
+    *fetchSafetyDel({ payload, callback }, { call, put }) {
       const response = yield call(querySafeRiskDel, payload);
-      if (response.code === 200) {
-        yield put({ type: 'removeSafety', payload: payload.id });
-        if (success) {
-          success();
-        }
-      } else if (error) {
-        error(response.msg);
-      }
+      if (callback) callback(response);
     },
 
     *fetchBindSafetyControl({ payload, success, error }, { call, put }) {
@@ -216,32 +202,12 @@ export default {
       };
     },
 
-    removeDanger(state, { payload: id }) {
-      return {
-        ...state,
-        dangerData: {
-          ...state.dangerData,
-          list: state.dangerData.list.filter(item => item.id !== id),
-        },
-      };
-    },
-
     saveSafetyList(state, { payload }) {
       const { data, msg } = payload;
       return {
         ...state,
         msgSafety: msg,
         safetyData: data,
-      };
-    },
-
-    removeSafety(state, { payload: id }) {
-      return {
-        ...state,
-        safetyData: {
-          ...state.safetyData,
-          list: state.safetyData.list.filter(item => item.id !== id),
-        },
       };
     },
 

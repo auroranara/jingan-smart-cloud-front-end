@@ -96,14 +96,13 @@ export default class TableList extends PureComponent {
   handleDeleteClick = id => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'fourColorImage/fetchDelete',
-      payload: { ids: id },
-      success: () => {
-        this.fetchList();
-        message.success('删除成功！');
-      },
-      error: () => {
-        message.error('删除失败!');
+      type: 'twoInformManagement/fetchSafetyDel',
+      payload: { areaId: id },
+      callback: res => {
+        if (res && res.code === 200) {
+          this.fetchList();
+          message.success(res.data);
+        } else message.success(res.msg);
       },
     });
   };
