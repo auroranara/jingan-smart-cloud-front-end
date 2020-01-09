@@ -1,0 +1,105 @@
+.container {
+  padding: 10px 4px;
+  border: 1px solid #0FF;
+  font-size: 14px;
+}
+
+.head {
+  margin-bottom: 8px;
+  position: relative;
+  padding: 0 10px;
+}
+
+.label {
+  color: #0FF;
+}
+
+.p {
+  margin: 0;
+}
+
+.camera {
+  width: 21px;
+  height: 15px;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 18px;
+  position: relative;
+  top: 2px;
+  background-size: 100% 100%;
+  background-image: url(../imgs/camera.png);
+}
+
+.icons {
+  position: absolute;
+  top: -3px;
+  right: 10px;
+}
+
+.icon {
+  width: 22px;
+  height: 26px;
+  display: inline-block;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.sheet:extend(.icon) {
+  margin-right: 10px;
+  background-size: 19px 25px;
+  background-image: url(../imgs/sheet.png);
+}
+
+.trend:extend(.icon) {
+  background-size: 22px 21px;
+  background-image: url(../imgs/trend.png);
+}
+
+.alarm {
+  width: 21px;
+  height: 21px;
+  display: inline-block;
+  margin-left: 20px;
+  background-repeat: no-repeat;
+  background-image: url(../../../../assets/icon-alarm.png);
+  background-size: 100% 100%;
+}
+
+.detail {
+  // color: #1475ED;
+  color: #0FF;
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  cursor: pointer;
+}
+
+.body {
+  padding: 10px;
+  border-top: 1px solid #586D88;
+}
+
+.h4 {
+  color: #FFF;
+}
+
+.bodyInner {
+  display: flex;
+}
+
+.imgContainer {
+  width: 40%;
+  padding: 10px;
+}
+
+.img {
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.info {
+  width: 50%;
+}
