@@ -189,6 +189,10 @@ export default class Edit extends PureComponent {
           leaveFactoryDate,
           useYear,
           notes,
+          equipName,
+          leaveProductNumber,
+          installPart,
+          useDate,
         } = values;
         const payload = {
           id,
@@ -198,7 +202,11 @@ export default class Edit extends PureComponent {
           specifications,
           processFacilitiesInvolved,
           equipNumber,
+          installPart,
           equipStatus,
+          equipName,
+          useDate: useDate ? useDate.format('YYYY-MM-DD') : undefined,
+          leaveProductNumber,
           productFactory,
           leaveFactoryDate: leaveFactoryDate ? leaveFactoryDate.format('YYYY-MM-DD') : undefined,
           useYear,
@@ -433,11 +441,14 @@ export default class Edit extends PureComponent {
       safeFacilitiesLabel,
       specifications,
       processFacilitiesInvolved,
-      equipNumber,
       equipStatus,
       productFactory,
       leaveFactoryDate,
       useYear,
+      leaveProductNumber,
+      installPart,
+      equipName,
+      useDate,
       notes,
     } = detailList;
 
@@ -532,17 +543,17 @@ export default class Edit extends PureComponent {
               rules: [{ required: true, message: '请输入规格型号' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
-          <FormItem label="涉及工艺设施" {...formItemLayout}>
-            {getFieldDecorator('processFacilitiesInvolved', {
-              initialValue: processFacilitiesInvolved,
+          <FormItem label="出厂编号" {...formItemLayout}>
+            {getFieldDecorator('leaveProductNumber', {
+              initialValue: leaveProductNumber,
               getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, message: '请输入出厂编号' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
-          <FormItem label="设备数量" {...formItemLayout}>
-            {getFieldDecorator('equipNumber', {
-              initialValue: equipNumber,
+          <FormItem label="设备名称" {...formItemLayout}>
+            {getFieldDecorator('equipName', {
+              initialValue: equipName,
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入设备数量' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="设备状态" {...formItemLayout}>
@@ -558,6 +569,18 @@ export default class Edit extends PureComponent {
               </Radio.Group>
             )}
           </FormItem>
+          <FormItem label="安装部位" {...formItemLayout}>
+            {getFieldDecorator('installPart', {
+              initialValue: installPart,
+              getValueFromEvent: this.handleTrim,
+            })(<Input placeholder="请输入" {...itemStyles} />)}
+          </FormItem>
+          <FormItem label="涉及工艺设施" {...formItemLayout}>
+            {getFieldDecorator('processFacilitiesInvolved', {
+              initialValue: processFacilitiesInvolved,
+              getValueFromEvent: this.handleTrim,
+            })(<Input placeholder="请输入" {...itemStyles} />)}
+          </FormItem>
           <FormItem label="生产厂家" {...formItemLayout}>
             {getFieldDecorator('productFactory', {
               initialValue: productFactory,
@@ -569,7 +592,12 @@ export default class Edit extends PureComponent {
               initialValue: leaveFactoryDate ? moment(+leaveFactoryDate) : undefined,
             })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
-          <FormItem label="使用年限" {...formItemLayout}>
+          <FormItem label="投入使用日期" {...formItemLayout}>
+            {getFieldDecorator('useDate', {
+              initialValue: useDate ? moment(+useDate) : undefined,
+            })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
+          </FormItem>
+          <FormItem label="使用期限（月）" {...formItemLayout}>
             {getFieldDecorator('useYear', {
               initialValue: useYear === 0 ? '' : useYear,
               getValueFromEvent: this.handleTrim,
