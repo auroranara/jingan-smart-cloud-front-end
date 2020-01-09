@@ -106,7 +106,7 @@ const SocketOptions = {
   reconnectTimeout: 2000,
   pingMsg: 'heartbeat',
 };
-const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+// const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 @connect(
   ({
@@ -160,6 +160,7 @@ export default class Chemical extends PureComponent {
       gasVisible: false,
       poisonVisible: false,
       tankMonitorDrawerVisible: false,
+      mhVisible: false,
       hdStatus: 5,
       tankDetail: {},
       // 特种设备
@@ -762,6 +763,14 @@ export default class Chemical extends PureComponent {
     this.setState({ poisonVisible: false });
   };
 
+  handleMHOpen = () => {
+    this.setState({ mhVisible: true });
+  };
+
+  handleMHClose = () => {
+    this.setState({ mhVisible: false });
+  };
+
   // 获取标准及措施列表
   getStandardsAndMeasures = () => {
     this.fetchStandardsAndMeasuresList({
@@ -893,6 +902,7 @@ export default class Chemical extends PureComponent {
       tankMonitorDrawerVisible,
       tankDetail,
       specialEquip,
+      mhVisible,
     } = this.state;
 
     return (
@@ -1175,6 +1185,10 @@ export default class Chemical extends PureComponent {
           onVideoClick={this.handleShowVideo}
           tankDetail={tankDetail}
         />
+        <MHDrawer
+          visible={mhVisible}
+          handleClose={this.handleMHClose}
+        />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
 
@@ -1188,9 +1202,6 @@ export default class Chemical extends PureComponent {
           showThumbnails
           onClickThumbnail={this.handleClickThumbnail}
           imageCountSeparator="/"
-        />
-        <MHDrawer
-          visible={true}
         />
       </BigPlatformLayout>
     );
