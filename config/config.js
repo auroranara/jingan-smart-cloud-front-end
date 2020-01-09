@@ -49,11 +49,6 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
-    '/mock': {
-      target: `http://${hosts.mock}`,
-      changeOrigin: true,
-      pathRewrite: { '^/mock': '/mock' },
-    },
     '/gsafe': {
       target: `http://${hosts.test}`,
       changeOrigin: true,
@@ -113,8 +108,7 @@ export default {
   },
   runtimePublicPath: true,
   externals: {
-    '@antv/data-set': 'DataSet',
-    rollbar: 'rollbar',
+    // rollbar: 'rollbar',
   },
   alias: {
     components: path.resolve(__dirname, '../src/components/'),
