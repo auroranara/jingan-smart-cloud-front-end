@@ -1,131 +1,139 @@
-import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Icon } from 'antd';
-import echarts from 'echarts';
-import ReactEcharts from 'echarts-for-react';
-import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
+import React, { Component } from 'react';
+import CustomDrawer from '@/jingan-components/CustomDrawer';
+import classNames from 'classnames';
 import moment from 'moment';
-import { Gauge } from '../components/Components';
-// 引入样式文件
-import styles from './MonitorDetailDrawer.less';
-import iconAlarm from '@/assets/icon-alarm.png';
-import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
-import iconList from '../imgs/icon-list.png';
-import iconChart from '../imgs/icon-chart.png';
-import { MonitorTitles, MonitorDetailFields } from '../utils';
+import styles from './TankMonitorDrawer/index.less';
+import { MonitorConfig } from '../utils';
 
-export default class MonitorDetailDrawer extends PureComponent {
-  state = {};
+const NO_DATA = '暂无数据';
+const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
+export default class MonitorDetailDrawer extends Component {
+  setScrollReference = scroll => {
+    this.scroll = (scroll && scroll.dom) || scroll;
+  };
+
+  handleWorkOrderIconClick = () => {
+    const { tankDetail: { id = 1 } = {} } = this.props;
+    window.open(`${window.publicPath}#/company-iot/alarm-work-order/detail/${id}`);
+  };
+
+  handleMonitorTrendIconClick = () => {
+    const { tankDetail: { id = 1 } = {} } = this.props;
+    window.open(`${window.publicPath}#/company-iot/alarm-work-order/monitor-trend/${id}`);
+  };
 
   render() {
-    const { visible, onClose, monitorData, handleShowVideo, type } = this.props;
-    const { title, location, number, isDanger, status, monitors = [] } = monitorData;
+    const {
+      className,
+      style,
+      visible,
+      onClose,
+      loading = false,
+      monitorType,
+      monitorDetail,
+      monitorDetail: { emergencyMeasure, monitorParams = [], videoList = [] },
+      onVideoClick,
+    } = this.props;
+    const { title = '', fields = [], icon } = MonitorConfig[monitorType] || {};
+
     return (
-      <SectionDrawer
-        drawerProps={{
-          title: `${MonitorTitles[type]}监测`,
-          visible,
-          onClose,
-          width: 535,
-          zIndex: 1777,
+      <CustomDrawer
+        className={classNames(styles.container, className)}
+        style={style}
+        title={title}
+        visible={visible}
+        onClose={onClose}
+        sectionProps={{
+          scrollProps: { ref: this.setScrollReference },
+          spinProps: { loading },
         }}
+        zIndex={1566}
+        width={535}
       >
         <div className={styles.top}>
-          {MonitorDetailFields[type].map((item, index) => {
-            const { label, value, render } = item;
+          <div className={styles.line}>
+            <div className={styles.label}>
+              {title.substr(0, title.length - 2)}
+              名称：
+            </div>
+            <div className={styles.value}>
+              {fields[0] ? monitorDetail[fields[0].value] : ''}
+              {videoList &&
+                videoList.length > 0 && (
+                  <span className={styles.video} onClick={() => onVideoClick(videoList)} />
+                )}
+              <div className={styles.jumperWrapper}>
+                <span onClick={this.handleWorkOrderIconClick} />
+                <span onClick={this.handleMonitorTrendIconClick} />
+              </div>
+            </div>
+          </div>
+          {fields.slice(1, fields.length).map(field => {
+            const { label, render, value } = field;
             return (
-              <div key={index}>
-                <span className={styles.label}>{label}：</span>
-                {render ? render(monitorData[value]) : monitorData[value]}
+              <div className={styles.line}>
+                <div className={styles.label}>{label}：</div>
+                <div className={styles.value}>
+                  {render
+                    ? render(monitorDetail[value], monitorDetail)
+                    : monitorDetail[value] || NO_DATA}
+                </div>
               </div>
             );
           })}
-          {status === 1 && (
-            <div
-              className={styles.alarm}
-              style={{
-                background: `url(${iconAlarm}) center center / 100% 100% no-repeat`,
-                top: type === 6 && '3px',
-              }}
-            />
-          )}
-        </div>
-
-        <div className={styles.monitor}>
-          <div className={styles.title}>
-            监测位置1
-            <span
-              className={styles.video}
-              style={{
-                background: `url(${cameraImg}) center center / 100% 100% no-repeat`,
-              }}
-              onClick={handleShowVideo}
-            />
-            <span className={styles.extra}>
-              <span
-                className={styles.icon}
-                style={{
-                  background: `url(${iconList}) center center / 100% 100% no-repeat`,
-                }}
-              />
-              <span
-                className={styles.icon}
-                style={{
-                  background: `url(${iconChart}) center center / 100% 100% no-repeat`,
-                }}
-              />
-            </span>
+          {/* <div className={styles.line}>
+            <div className={styles.label}>区域位置：</div>
+            <div className={styles.value}>{location || NO_DATA}</div>
           </div>
-          <Row>
-            {monitors.map((item, index) => {
-              const { gaugeData = {}, extra } = item;
-              return (
-                <Col key={index} span={12}>
-                  {/* <Gauge data={{ value: 68, title: '可燃气体浓度', unit: 'mg/m³' }} extra={extra} /> */}
-                  <Gauge data={gaugeData} extra={extra} />
-                </Col>
-              );
-            })}
-          </Row>
-        </div>
-
-        <div className={styles.monitor}>
-          <div className={styles.title}>
-            监测位置2
-            <span
-              className={styles.video}
-              style={{
-                background: `url(${cameraImg}) center center / 100% 100% no-repeat`,
-              }}
-              onClick={handleShowVideo}
-            />
-            <span className={styles.extra}>
-              <span
-                className={styles.icon}
-                style={{
-                  background: `url(${iconList}) center center / 100% 100% no-repeat`,
-                }}
-              />
-              <span
-                className={styles.icon}
-                style={{
-                  background: `url(${iconChart}) center center / 100% 100% no-repeat`,
-                }}
-              />
-            </span>
+          <div className={styles.line}>
+            <div className={styles.label}>是否关键装置：</div>
+            <div className={styles.value}>{+keyDevice === 1 ? '是' : '否'}</div>
           </div>
-          <Row>
-            {monitors.map((item, index) => {
-              const { gaugeData = {}, extra } = item;
-              return (
-                <Col key={index} span={12}>
-                  {/* <Gauge data={{ value: 68, title: '可燃气体浓度', unit: 'mg/m³' }} extra={extra} /> */}
-                  <Gauge data={gaugeData} extra={extra} />
-                </Col>
-              );
-            })}
-          </Row>
+          <div className={styles.line}>
+            <div className={styles.label}>设计压力（KPa）：</div>
+            <div className={styles.value}>{pressure || NO_DATA}</div>
+          </div> */}
         </div>
-      </SectionDrawer>
+        {monitorParams.length > 0 && (
+          <div className={styles.middle}>
+            <div className={styles.icon}>
+              {typeof icon === 'function' ? icon(monitorDetail) : icon}
+            </div>
+            <div className={styles.infoWrapper}>
+              {monitorParams.map((param, index) => {
+                const { paramDesc, paramUnit, realValue, status, dataUpdateTime } = param;
+                return (
+                  <div className={styles.paramsWrapper} key={index}>
+                    <div className={styles.lineWrapper}>
+                      <div className={styles.line}>
+                        <div className={styles.label}>
+                          {paramDesc}（{paramUnit}
+                          ）：
+                        </div>
+                        <div className={styles.value}>{realValue || NO_DATA}</div>
+                      </div>
+                      <div className={styles.line}>
+                        <div className={styles.label}>状态：</div>
+                        <div
+                          className={styles.value}
+                          style={{ color: +status > 0 ? '#ff4848' : '#0ff' }}
+                        >
+                          {+status > 0 ? '报警' : '正常'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.updateTime}>
+                      更新时间：
+                      {dataUpdateTime ? moment(dataUpdateTime).format(DEFAULT_FORMAT) : NO_DATA}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </CustomDrawer>
     );
   }
 }

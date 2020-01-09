@@ -9,7 +9,7 @@ import { getModalPageSize, setModalPageSize } from '@/utils/utils';
 import classNames from 'classnames';
 import styles from './index.less';
 
-const RISKY_CATEGORIES = RISK_CATEGORIES.map((value, index) => ({ key: `${index}`, value }));
+export const RISKY_CATEGORIES = RISK_CATEGORIES.map((value, index) => ({ key: `${index}`, value }));
 const LIST_API = 'pipeline/getMediumList';
 
 @connect(

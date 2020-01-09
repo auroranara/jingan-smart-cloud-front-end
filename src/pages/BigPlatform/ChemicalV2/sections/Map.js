@@ -95,7 +95,7 @@ export default class Map extends PureComponent {
         list.map(polygon => {
           const { zoneLevel, coordinateList, groupId } = polygon;
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
-          const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1]);
+          const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
           this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
           return null;
         });
@@ -213,7 +213,7 @@ export default class Map extends PureComponent {
     };
 
     map.on('mapClickNode', event => {
-      const { handleClickRiskPoint } = this.props;
+      const { handleClickRiskPoint, setDrawerVisible, handleShowAreaDrawer } = this.props;
       const clickedObj = event.target;
       console.log('clickedObj', clickedObj);
       // console.log('time', moment().valueOf());
@@ -235,23 +235,45 @@ export default class Map extends PureComponent {
         return;
 
       const { eventInfo: { coord } = {} } = clickedObj;
-      // if (coord && isPointInPolygon(coord, polygon)) setDrawerVisible('dangerArea');
+      if (coord) {
+        // 点击区域
+        for (let index = 0; index < this.polygonArray.length; index++) {
+          const polygon = this.polygonArray[index];
+          if (this.isPointInPolygon(coord, polygon)) {
+            console.log('polygon', polygon);
+            const {
+              polygonProps: { id },
+            } = polygon;
+            handleShowAreaDrawer(id);
+            break;
+          }
+        }
+      }
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
+        // 点击图标
         const {
           opts_: { iconType, markerProps },
         } = clickedObj;
         if (iconType === 0) {
+          // 风险点
           const { itemId, status } = markerProps;
           handleClickRiskPoint(itemId, status);
         } else if (iconType === 1) {
+          // 视频监控
           const { keyId } = markerProps;
           this.handleShowVideo(keyId);
         } else if (iconType === 2) {
+          // 监测设备
           const { equipmentType } = markerProps;
           // this.handleShowVideo(keyId);
         }
       }
     });
+  };
+
+  // 判断点是否在FMPolygonMarker区域内
+  isPointInPolygon = (point, polygon) => {
+    return polygon.contain({ ...point, z: 1 });
   };
 
   //加载按钮型楼层切换控件
@@ -292,7 +314,6 @@ export default class Map extends PureComponent {
   };
 
   setModelColor(groupId, polygon, color) {
-    // 默认gid为1
     const models = map.getDatasByAlias(groupId, 'model');
     models.map(model => {
       const { mapCoord } = model;
@@ -321,7 +342,7 @@ export default class Map extends PureComponent {
     this.markerArray.push(im);
   };
 
-  addPolygon = (gId, points, color) => {
+  addPolygon = (gId, points, color, polygonProps = {}) => {
     const groupId = gId || 1;
     const groupLayer = map.getFMGroup(groupId);
     //创建PolygonMarkerLayer
@@ -332,10 +353,11 @@ export default class Map extends PureComponent {
       lineWidth: 0, //设置边框线的宽度
       height: 1, //设置高度*/
       points, //多边形坐标点
+      polygonProps,
     });
     polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
-    // this.polygonArray.push(polygonMarker);
+    this.polygonArray.push(polygonMarker);
     // this.polygonLayers.push(layer);
     return polygonMarker;
     // polygonMarker.alwaysShow(true);
