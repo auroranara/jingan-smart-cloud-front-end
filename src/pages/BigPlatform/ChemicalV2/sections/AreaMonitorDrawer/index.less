@@ -1,0 +1,114 @@
+.areaMonitorDrawer {
+  :global {
+    .ant-tabs-content {
+      height: calc(100% - 48px);
+      overflow-y: auto;
+    }
+  }
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: #fff;
+  font-size: 15px;
+
+  .title {
+    border-left: 3px solid #04fdff;
+    padding-left: 0.7em;
+    line-height: 1em;
+    font-size: 16px;
+  }
+
+  .infoCard {
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #04fdff;
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    img {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      margin-right: 15px;
+    }
+
+    .content {
+      p {
+        margin-bottom: 0.7em;
+
+        span:nth-of-type(1) {
+          color: #04fdff;
+        }
+      }
+
+      p:nth-last-of-type(1) {
+        margin-bottom: 0;
+      }
+    }
+
+    .iconAlarm {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      background-position: center center;
+    }
+  }
+
+  .statistics {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+
+    &>div {
+      span:nth-of-type(1) {
+        color: red;
+        filter: brightness(5);
+        font-weight: 500;
+      }
+    }
+  }
+
+  .tabsContainer {
+    border-bottom: 1px solid #054795;
+    margin-bottom: 10px;
+
+    .tab,
+    .activeTab {
+      display: inline-block;
+      padding: 8px 10px;
+      margin-right: 7px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      cursor: pointer;
+      transition: color 0.2s, background 0.1s;
+    }
+
+    .tab {
+      background: #043873;
+      color: #387ABD;
+
+      &:hover {
+        background: #054795;
+        color: #fff;
+      }
+    }
+
+    .activeTab {
+      background: #054795;
+      color: #fff;
+    }
+  }
+
+  .emptyContent {
+    width: 100%;
+    min-height: 300px;
+    margin-top: 50px;
+  }
+}

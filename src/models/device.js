@@ -771,13 +771,14 @@ export default {
       }
     },
     // 获取监测设备列表（分页）
-    *fetchMonitoringDevice ({ payload }, { call, put }) {
+    *fetchMonitoringDevice ({ payload, callback }, { call, put }) {
       const res = yield call(fetchMonitoringDevice, payload)
       if (res && res.code === 200) {
         yield put({
           type: 'saveMonitoringDevice',
           payload: res.data,
-        })
+        });
+        callback && callback(res.data);
       }
     },
     // 新增监测设备
