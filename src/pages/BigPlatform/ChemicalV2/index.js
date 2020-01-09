@@ -40,7 +40,7 @@ import {
   DangerAreaDrawer,
   SpecialEquipmentDrawer,
   CurrentHiddenDanger,
-  MonitorDetailDrawer,
+  // MonitorDetailDrawer,
   DangerSourceLvlDrawer,
   ChemicalDrawer,
   ChemicalDetailDrawer,
@@ -49,6 +49,7 @@ import {
   Messages,
   GasDrawer,
   PoisonDrawer,
+  MHDrawer,
 } from './sections/Components';
 
 const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
@@ -1187,6 +1188,9 @@ export default class Chemical extends PureComponent {
           showThumbnails
           onClickThumbnail={this.handleClickThumbnail}
           imageCountSeparator="/"
+        />
+        <MHDrawer
+          visible={true}
         />
       </BigPlatformLayout>
     );
