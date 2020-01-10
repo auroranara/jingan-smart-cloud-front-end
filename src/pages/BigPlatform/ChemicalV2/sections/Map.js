@@ -28,7 +28,6 @@ const MapScaleLevel = 21;
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = ['rgb(255, 72, 72)', 'rgb(241, 122, 10)', 'rgb(251, 247, 25)', 'rgb(30, 96, 255)'];
 let map;
-const fmapID = '100';
 const controls = [
   { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive, markerIcon: riskPoint },
   { label: '视频监控', icon: videoGray, activeIcon: videoActive, markerIcon: video },
@@ -150,7 +149,6 @@ export default class Map extends PureComponent {
       //设置主题
       defaultThemeName: '2001',
       modelSelectedEffect: false,
-      // modelHoverEffect: true,
       //支持悬停模型高亮，默认为false悬停不高亮
       modelHoverEffect: true,
       //悬停时间触发时间，默认1000
@@ -189,7 +187,6 @@ export default class Map extends PureComponent {
 
     map.on('mapHoverNode', event => {
       // 鼠标悬停事件
-      // const clickedObj = event.target;
       console.log('mapHoverNode', event);
     });
 
@@ -198,14 +195,6 @@ export default class Map extends PureComponent {
      * @param event
      */
     map.hoverFilterFunction = event => {
-      // if (event.nodeType === fengmap.FMNodeType.MODEL &&
-      //         event.typeID === 300000) {
-      //     return false;
-      // }
-      // if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
-      //   return true;
-      // }
-      // return false;
       if (event.nodeType === fengmap.FMNodeType.FLOOR) {
         return false;
       }
@@ -245,7 +234,6 @@ export default class Map extends PureComponent {
         for (let index = 0; index < this.polygonArray.length; index++) {
           const polygon = this.polygonArray[index];
           if (this.isPointInPolygon(coord, polygon)) {
-            console.log('polygon', polygon);
             const {
               polygonProps: { id },
             } = polygon;
@@ -270,8 +258,7 @@ export default class Map extends PureComponent {
         } else if (iconType === 2) {
           // 监测设备
           const { type, targetId } = markerProps;
-          // if(type) handleClickMonitorIcon(targetId)
-          // this.handleShowVideo(keyId);
+          if (type) handleClickMonitorIcon(type, targetId);
         }
       }
     });
