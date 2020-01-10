@@ -26,6 +26,8 @@ let map;
 let points = [];
 let naviLines = [];
 
+let buildingId = [];
+let selectedList = [];
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
@@ -96,16 +98,18 @@ export default class Map extends React.Component {
 
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
-
       if (!clickedObj || !clickedObj.eventInfo) return;
 
       var { coord } = clickedObj.eventInfo;
+      buildingId.push(event.target.FID);
+      selectedList.push(event.target);
       if (this.props.isDrawing) {
         // 默认第一张地图
         this.addPoint(1, coord);
         points.push(coord);
         // 画线
         this.drawLines(points);
+        // 获取当前所选建筑物ID
       }
     });
 
@@ -159,6 +163,11 @@ export default class Map extends React.Component {
     // console.log(models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points)));
   }
 
+  handleModelColor = id => {
+    const cord = selectedList.filter(item => item.FID === id).map(item => item.mapCoord);
+    this.setModelColor(cord, COLOR.blue);
+  };
+
   removeArea = index => {
     var groupLayer = map.getFMGroup(1);
     groupLayer.removeLayer(this.polygonLayers[index]);
@@ -184,6 +193,7 @@ export default class Map extends React.Component {
     const models = map.getDatasByAlias(1, 'model');
     models.map(model => model.setColorToDefault());
     map.clearLineMark();
+    buildingId = [];
   };
 
   // 高亮对应区域颜色
@@ -234,7 +244,7 @@ export default class Map extends React.Component {
     line.addSegment(seg);
     var lineObject = map.drawLineMark(line, lineStyle);
     naviLines.push(lineObject);
-    this.props.getPoints(points);
+    this.props.getPoints(points, buildingId);
   }
 
   render() {
@@ -243,7 +253,7 @@ export default class Map extends React.Component {
       // doDraw
       this.drawPolygon(points, COLOR.blue);
       // 建筑物上色
-      this.setModelColor(points, COLOR.blue);
+      // this.setModelColor(points, COLOR.blue);
       map.clearLineMark();
       points = [];
     }

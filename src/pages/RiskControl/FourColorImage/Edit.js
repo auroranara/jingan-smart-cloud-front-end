@@ -9,6 +9,7 @@ import {
   Card,
   Select,
   Spin,
+  Tag,
   message,
   AutoComplete,
   DatePicker,
@@ -72,6 +73,7 @@ export default class TableList extends React.Component {
       detailList: {},
       pointList: [],
       points: [],
+      buildingId: [],
     };
   }
 
@@ -122,6 +124,7 @@ export default class TableList extends React.Component {
 
   handleReset = () => {
     this.childMap.setRestMap();
+    this.setState({ buildingId: [] });
   };
 
   // 获取人员列表
@@ -266,8 +269,26 @@ export default class TableList extends React.Component {
   };
 
   // 获取地图上的坐标
-  getPoints = points => {
-    this.setState({ points });
+  getPoints = (points, buildingId) => {
+    const idList = buildingId
+      .filter(item => item)
+      .filter((item, index, self) => self.indexOf(item) === index)
+      .map((item, index) => ({ key: index, value: item, selected: false }));
+    this.setState({ points, buildingId: idList });
+  };
+
+  handleTagClick = (i, id, s) => {
+    this.childMap.handleModelColor(id);
+    const { buildingId } = this.state;
+    // this.setState({
+    //   buildingId: buildingId.reduce((res, item) => {
+    //     console.log('111111', res, item);
+    //     if (res.key === id) {
+    //       item.selected = !item.selected;
+    //     }
+    //     return [res, ...item];
+    //   }),
+    // });
   };
 
   renderDrawButton = () => {
@@ -300,7 +321,7 @@ export default class TableList extends React.Component {
       account: { list: personList = [] },
     } = this.props;
 
-    const { isDrawing, detailList, pointList } = this.state;
+    const { isDrawing, detailList, pointList, buildingId } = this.state;
 
     const editTitle = id ? '编辑' : '新增';
 
@@ -432,7 +453,18 @@ export default class TableList extends React.Component {
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入' }],
                 })(<Input placeholder="请输入" {...itemStyles} />)}
-              </FormItem> */}
+              </FormItem> #555252*/}
+              <FormItem label="所选建筑物" {...formItemLayout}>
+                {buildingId.map(({ key, value, selected }) => (
+                  <Tag
+                    color={!selected ? '' : '#555252'}
+                    key={key}
+                    onClick={() => this.handleTagClick(key, value)}
+                  >
+                    {value}
+                  </Tag>
+                ))}
+              </FormItem>
               <FormItem {...formItemLayout}>
                 <div style={{ textAlign: 'center' }}>
                   <Button style={{ marginRight: 10 }} onClick={this.handleSubmit}>
