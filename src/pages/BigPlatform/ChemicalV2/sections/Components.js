@@ -23,6 +23,7 @@ import StorageDrawer from './StorageDrawer';
 import Messages from './Messages';
 import GasDrawer from './GasDrawer';
 import PoisonDrawer from './PoisonDrawer';
+import MHDrawer from './MHDrawer';
 
 export {
   Risk,
@@ -50,4 +51,5 @@ export {
   Messages,
   GasDrawer,
   PoisonDrawer,
+  MHDrawer,
 };

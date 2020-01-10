@@ -3,6 +3,7 @@ import InputOrSpan from '@/jingan-components/InputOrSpan';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import MonitorEquipmentBindModal from '@/jingan-components/MonitorEquipmentBindModal';
 import TablePage from '@/templates/TablePage';
+import { RISKY_CATEGORIES } from '../components/MediumModal';
 import styles from './index.less';
 
 export const CHOICES = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
@@ -10,6 +11,12 @@ export const STATUSES = [
   { key: '0', value: '正常' },
   { key: '1', value: '维检' },
   { key: '2', value: '报废' },
+];
+export const MATERIAL_STATUSES = [
+  { key: '1', value: '固态' },
+  { key: '2', value: '液态' },
+  { key: '3', value: '气态' },
+  { key: '4', value: '等离子态' },
 ];
 
 export default class PipelineList extends Component {
@@ -39,19 +46,19 @@ export default class PipelineList extends Component {
       ),
     },
     {
-      id: 'isPress',
+      id: 'pressure',
       label: '是否压力管道',
       render: () => <SelectOrSpan placeholder="请选择是否压力管道" list={CHOICES} allowClear />,
     },
     {
-      id: 'medium',
+      id: 'chineName',
       label: '存储介质',
       render: ({ handleSearch }) => (
         <InputOrSpan placeholder="请输入存储介质" maxLength={50} onPressEnter={handleSearch} />
       ),
     },
     {
-      id: 'cas',
+      id: 'casNo',
       label: 'CAS号',
       render: ({ handleSearch }) => (
         <InputOrSpan placeholder="请输入CAS号" maxLength={50} onPressEnter={handleSearch} />
@@ -99,11 +106,11 @@ export default class PipelineList extends Component {
       title: '基本信息',
       dataIndex: '基本信息',
       align: 'center',
-      render: (_, { unifiedCode, number, name }) => (
+      render: (_, { code, number, name }) => (
         <div className={styles.multi}>
           <div className={styles.line}>
             <span>统一编码：</span>
-            <span>{unifiedCode}</span>
+            <span>{code}</span>
           </div>
           <div className={styles.line}>
             <span>管道编号：</span>
@@ -120,27 +127,31 @@ export default class PipelineList extends Component {
       title: '输送介质',
       dataIndex: '输送介质',
       align: 'center',
-      render: (_, { medium, cas, seriesNumber, status, type }) => (
+      render: (_, { chineName, casNo, dangerChemcataSn, materialForm, riskCateg }) => (
         <div className={styles.multi}>
           <div className={styles.line}>
             <span>介质名称：</span>
-            <span>{medium.chineName}</span>
+            <span>{chineName}</span>
           </div>
           <div className={styles.line}>
             <span>CAS号：</span>
-            <span>{cas}</span>
+            <span>{casNo}</span>
           </div>
           <div className={styles.line}>
             <span>危险化学品目录序号：</span>
-            <span>{seriesNumber}</span>
+            <span>{dangerChemcataSn}</span>
           </div>
           <div className={styles.line}>
             <span>介质状态：</span>
-            <span>{status}</span>
+            <span>
+              <SelectOrSpan list={MATERIAL_STATUSES} value={`${materialForm}`} type="span" />
+            </span>
           </div>
           <div className={styles.line}>
             <span>介质类别：</span>
-            <span>{type}</span>
+            <span>
+              <SelectOrSpan list={RISKY_CATEGORIES} value={`${riskCateg}`} type="span" />
+            </span>
           </div>
         </div>
       ),
@@ -149,7 +160,8 @@ export default class PipelineList extends Component {
       title: '压力管道/危化品管道',
       dataIndex: '压力管道/危化品管道',
       align: 'center',
-      render: (_, { isPress, isRisk }) => `${+isPress ? '是' : '否'}/${+isRisk ? '是' : '否'}`,
+      render: (_, { pressure, dangerPipeline }) =>
+        `${+pressure ? '是' : '否'}/${+dangerPipeline ? '是' : '否'}`,
     },
     {
       title: '目前状态',

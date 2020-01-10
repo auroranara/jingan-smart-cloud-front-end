@@ -42,7 +42,10 @@ export default {
       const response = yield call(getCommitList, payload);
       const { code, data, msg } = response || {};
       if (code === 200) {
-        yield put({ type: 'saveCommitTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
+        yield put({
+          type: 'saveCommitTotal',
+          payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0,
+        });
         yield put({ type: 'saveCommitList', payload: getList(data) });
         callback && callback(code, msg);
       }
@@ -75,7 +78,10 @@ export default {
       const response = yield call(getKnowList, payload);
       const { code, data, msg } = response || {};
       if (code === 200) {
-        yield put({ type: 'saveKnowTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
+        yield put({
+          type: 'saveKnowTotal',
+          payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0,
+        });
         yield put({ type: 'saveKnowList', payload: getList(data) });
         callback && callback(code, msg);
       }
@@ -108,7 +114,10 @@ export default {
       const response = yield call(getEmergencyList, payload);
       const { code, data, msg } = response || {};
       if (code === 200) {
-        yield put({ type: 'saveEmergencyTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
+        yield put({
+          type: 'saveEmergencyTotal',
+          payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0,
+        });
         yield put({ type: 'saveEmergencyList', payload: getList(data) });
         callback && callback(code, msg);
       }
@@ -141,15 +150,18 @@ export default {
       const response = yield call(getInformCards, payload);
       const { code, data } = response || {};
       if (code === 200) {
-        yield put({ type: 'saveInformTotal', payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0 });
+        yield put({
+          type: 'saveInformTotal',
+          payload: data && data.pagination && data.pagination.total ? data.pagination.total : 0,
+        });
         yield put({ type: 'saveInformCards', payload: getList(data) });
       }
+      callback && callback(code, data);
     },
     *fetchRiskTypes({ payload }, { call, put }) {
       const response = yield call(getRiskTypes, payload);
       const { code, data } = response || {};
-      if (code === 200)
-        yield put({ type: 'saveRiskTypes', payload: getList(data) });
+      if (code === 200) yield put({ type: 'saveRiskTypes', payload: getList(data) });
     },
   },
 
@@ -191,4 +203,4 @@ export default {
       return { ...state, riskTypes: action.payload };
     },
   },
-}
+};

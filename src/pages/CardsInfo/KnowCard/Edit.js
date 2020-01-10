@@ -11,8 +11,16 @@ import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
-const { Option } = Select;
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+// const { Option } = Select;
 
+// 权限
+const {
+  cardsInfo: {
+    knowCard: { edit: editCode },
+  },
+} = codes;
 const FOLDER = 'knowCard';
 const uploadAction = '/acloud_new/v2/uploadFile';
 @connect(({ user, cardsInfo, fourColorImage, loading }) => ({
@@ -23,7 +31,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 }))
 @Form.create()
 export default class Edit extends PureComponent {
-  state = { selectedUnitId: '', riskId: undefined, photoList: [] };
+  state = { selectedUnitId: '', photoList: [] };
 
   componentDidMount() {
     const {
@@ -80,7 +88,6 @@ export default class Edit extends PureComponent {
         this.fetchRiskList({ companyId: detail.companyId });
         this.setState({
           photoList: list,
-          riskId: detail.pointFixInfoList.map(item => item.areaId).join(''),
         });
       },
     });
@@ -94,7 +101,7 @@ export default class Edit extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { photoList, riskId } = this.state;
+    const { photoList } = this.state;
 
     e.preventDefault();
     validateFields((errors, values) => {
@@ -102,7 +109,6 @@ export default class Edit extends PureComponent {
         message.error('请上传图片');
         return;
       }
-      if (!riskId) return message.warning('注：风险分区不能为空！');
 
       if (errors) return;
 
@@ -117,7 +123,7 @@ export default class Edit extends PureComponent {
           dbUrl,
         })),
         time: +time.startOf('day'),
-        pointFixInfoList: [{ areaId: riskId, imgType: 5 }],
+        pointFixInfoList: [{ areaId: values.section, imgType: 5 }],
       };
       dispatch({
         type: `cardsInfo/${id ? 'edit' : 'add'}KnowCard`,
@@ -126,7 +132,7 @@ export default class Edit extends PureComponent {
           if (code === 200) {
             message.success('操作成功');
             router.push(LIST_URL);
-          } else message.error(msg);
+          } else message.error('操作失败');
         },
       });
     });
@@ -169,13 +175,11 @@ export default class Edit extends PureComponent {
   };
 
   onSelectChange = e => {
-    this.setState({ riskId: '', selectedUnitId: e.key }, () => {
-      this.fetchRiskList({ companyId: e.key });
-    });
-  };
-
-  handleRiskChange = e => {
-    this.setState({ riskId: e });
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ section: undefined });
+    this.fetchRiskList({ companyId: e.key });
   };
 
   render() {
@@ -186,13 +190,16 @@ export default class Edit extends PureComponent {
       },
       form: { getFieldDecorator },
       user: {
-        currentUser: { unitType },
+        currentUser: { permissionCodes, unitType },
       },
       fourColorImage: {
         data: { list = [] },
       },
     } = this.props;
-    const { photoList, riskId } = this.state;
+    const { photoList } = this.state;
+    const editAuth = hasAuthority(editCode, permissionCodes);
+
+    const newRiskList = list.map(({ zoneName, id }) => ({ key: id, value: zoneName }));
 
     const isDet = this.isDetail();
     const title = isDet ? '详情' : id ? '编辑' : '新增';
@@ -231,20 +238,18 @@ export default class Edit extends PureComponent {
       {
         name: 'section',
         label: '风险分区',
+        type: 'select',
+        options: newRiskList,
+      },
+      {
+        name: 'meg',
+        label: '提示',
         type: 'component',
-        required: true,
         component: (
           <div>
-            <Select onChange={this.handleRiskChange} value={riskId}>
-              {list.map(({ zoneName, id }) => {
-                return (
-                  <Option key={id} value={id}>
-                    {zoneName}
-                  </Option>
-                );
-              })}
-            </Select>
-            <span>如果没有做区域划分，请先到风险分区中划分区域</span>
+            如果没有做区域划分，请先到
+            <a href="#/risk-control/four-color-image/list">风险分区</a>
+            中划分区域
           </div>
         ),
       },
@@ -257,6 +262,7 @@ export default class Edit extends PureComponent {
           {isDet ? (
             <Button
               type="primary"
+              disabled={!editAuth}
               style={{ marginLeft: '45%' }}
               onClick={e => router.push(`/cards-info/know-card/edit/${id}`)}
             >

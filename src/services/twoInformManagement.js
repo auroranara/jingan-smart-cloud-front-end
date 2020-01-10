@@ -18,8 +18,8 @@ export async function queryDangerElementSync(params) {
 }
 
 // 删除
-export async function queryDangerElementDel({ ids }) {
-  return request(`${URL_PREFIX}/dangerCheck/${ids}`, { method: 'DELETE' });
+export async function queryDangerElementDel({ areaId }) {
+  return request(`${URL_PREFIX}/dangerCheck/${areaId}`, { method: 'DELETE' });
 }
 
 // 绑定区域
@@ -48,8 +48,8 @@ export async function querySafeRiskSync(params) {
 }
 
 // 删除
-export async function querySafeRiskDel({ ids }) {
-  return request(`${URL_PREFIX}/safetyControl/${ids}`, { method: 'DELETE' });
+export async function querySafeRiskDel({ areaId }) {
+  return request(`${URL_PREFIX}/safetyControl/${areaId}`, { method: 'DELETE' });
 }
 
 // 绑定区域

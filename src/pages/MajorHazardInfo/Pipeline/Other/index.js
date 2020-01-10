@@ -21,46 +21,47 @@ export default class OperationRecordOther extends Component {
   initialize = ({
     companyId,
     companyName,
-    unifiedCode,
+    code,
     name,
     number,
-    ability,
+    transport,
     length,
-    material,
-    method,
-    isPress,
-    pressLevel,
-    press,
+    texture,
+    setUp,
+    pressure,
+    pressureClass,
+    designPressure,
     status,
-    medium,
-    isRisk,
-    time,
+    material,
+    dangerPipeline,
+    productDate,
+    chineName,
   }) => ({
     company: companyId ? { key: companyId, label: companyName } : undefined,
-    unifiedCode: unifiedCode || undefined,
+    code: code || undefined,
     name: name || undefined,
     number: number || undefined,
-    ability: ability || undefined,
+    transport: transport || undefined,
     length: length || undefined,
-    material: material || undefined,
-    method: method ? `${method}` : undefined,
-    isPress: isPress ? `${isPress}` : undefined,
-    pressLevel: pressLevel ? `${pressLevel}` : undefined,
-    press: press || undefined,
+    texture: texture || undefined,
+    setUp: setUp ? `${setUp}` : undefined,
+    pressure: pressure ? `${pressure}` : undefined,
+    pressureClass: pressureClass ? `${pressureClass}` : undefined,
+    designPressure: designPressure || undefined,
     status: status ? `${status}` : undefined,
-    medium: medium || undefined,
-    isRisk: isRisk ? `${isRisk}` : undefined,
-    time: time ? moment(time) : undefined,
+    material: material ? { id: material, chineName } : undefined,
+    dangerPipeline: dangerPipeline ? `${dangerPipeline}` : undefined,
+    productDate: productDate ? moment(productDate) : undefined,
   });
 
-  transform = ({ unitId, company, medium, time, ...rest }) => ({
+  transform = ({ unitId, company, material, productDate, ...rest }) => ({
     companyId: unitId || company.key,
-    mediumId: medium && medium.id,
-    time: time && time.format('YYYY-MM-DD'),
+    material: material && material.id,
+    productDate: productDate && productDate.format('YYYY-MM-DD'),
     ...rest,
   });
 
-  getFields = ({ unitId, company, isPress }) => [
+  getFields = ({ unitId, company, pressure }) => [
     ...(!unitId
       ? [
           {
@@ -73,7 +74,7 @@ export default class OperationRecordOther extends Component {
         ]
       : []),
     {
-      id: 'unifiedCode',
+      id: 'code',
       label: '统一编码',
       required: true,
       component: 'Input',
@@ -91,7 +92,7 @@ export default class OperationRecordOther extends Component {
       component: 'Input',
     },
     {
-      id: 'ability',
+      id: 'transport',
       label: '输送能力',
       required: true,
       component: 'Input',
@@ -103,13 +104,13 @@ export default class OperationRecordOther extends Component {
       component: 'Input',
     },
     {
-      id: 'material',
+      id: 'texture',
       label: '管道材质',
       required: true,
       component: 'Input',
     },
     {
-      id: 'method',
+      id: 'setUp',
       label: '架设方式',
       required: true,
       component: 'Select',
@@ -118,7 +119,7 @@ export default class OperationRecordOther extends Component {
       },
     },
     {
-      id: 'isPress',
+      id: 'pressure',
       label: '是否压力管道',
       required: true,
       component: 'Select',
@@ -127,10 +128,10 @@ export default class OperationRecordOther extends Component {
       },
       refreshEnable: true,
     },
-    ...(+isPress
+    ...(+pressure
       ? [
           {
-            id: 'pressLevel',
+            id: 'pressureClass',
             label: '压力等级',
             required: true,
             component: 'Select',
@@ -139,7 +140,7 @@ export default class OperationRecordOther extends Component {
             },
           },
           {
-            id: 'press',
+            id: 'designPressure',
             label: '设计压力（KPa）',
             required: true,
             component: 'Input',
@@ -156,7 +157,7 @@ export default class OperationRecordOther extends Component {
       },
     },
     {
-      id: 'medium',
+      id: 'material',
       label: '输送介质',
       required: true,
       component: MediumModal,
@@ -168,7 +169,7 @@ export default class OperationRecordOther extends Component {
       },
     },
     {
-      id: 'isRisk',
+      id: 'dangerPipeline',
       label: '是否危化品管道',
       required: true,
       component: 'Select',
@@ -177,7 +178,7 @@ export default class OperationRecordOther extends Component {
       },
     },
     {
-      id: 'time',
+      id: 'productDate',
       label: '投产日期',
       required: true,
       component: 'DatePicker',

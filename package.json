@@ -57,8 +57,6 @@
     "@commitlint/cli": "^7.0.0",
     "@commitlint/config-conventional": "^7.0.1",
     "antd": "^3.26.0",
-    "bizcharts": "^3.4.3",
-    "bizcharts-plugin-slider": "^2.1.1-beta.1",
     "braft-editor": "^2.1.28",
     "classnames": "^2.2.6",
     "coordtransform": "^2.1.2",
@@ -101,7 +99,6 @@
     "react-loadable": "^5.4.0",
     "react-transform-components": "^0.0.3",
     "react-visibility-sensor": "^3.11.0",
-    "rollbar": "^2.4.2",
     "setprototypeof": "^1.1.0",
     "url-polyfill": "^1.0.13",
     "video-react": "^0.13.0"

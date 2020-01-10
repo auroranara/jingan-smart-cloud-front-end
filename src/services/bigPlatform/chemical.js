@@ -30,10 +30,25 @@ export async function riskPointForPage(params) {
 
 // 监测设备列表
 export async function monitorEquipment(params) {
-  return request(`${URL_PREFIX}/monitor/monitorEquipment/page?${stringify(params)}`);
+  return request(`${URL_PREFIX}/ci/zone/monitorEquipment/page?${stringify(params)}`);
 }
 
 // 视频监测列表
 export async function videoList({ companyId, ...params }) {
   return request(`${URL_PREFIX}/videoDevice/company/${companyId}/videoList`);
+}
+
+// 生产装置列表
+export async function getProductDevice(params) {
+  return request(`${URL_PREFIX}/ci/productDevice/productDevice/page?${stringify(params)}`);
+}
+
+// 区域信息
+export async function getZoneContent(params) {
+  return request(`${URL_PREFIX}/ci/zone/getZoneContent?${stringify(params)}`);
+}
+
+// 公告
+export async function getNotice(params) {
+  return request(`${URL_PREFIX}/notice/companyPublicForPage?${stringify(params)}`);
 }

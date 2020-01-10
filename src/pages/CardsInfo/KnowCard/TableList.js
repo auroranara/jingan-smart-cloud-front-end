@@ -7,7 +7,15 @@ import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, getSearchFields, getTableColumns } from './utils';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
+// 权限
+const {
+  cardsInfo: {
+    knowCard: { add: addCode },
+  },
+} = codes;
 @connect(({ user, cardsInfo, loading }) => ({
   user,
   cardsInfo,
@@ -18,6 +26,7 @@ export default class TableList extends PureComponent {
     current: 1,
     src: '',
     modalVisible: false,
+    companyTotal: '',
   };
   values = {};
 
@@ -28,10 +37,10 @@ export default class TableList extends PureComponent {
   getList = pageNum => {
     const { dispatch } = this.props;
     const vals = { ...this.values };
-    if (vals.time)
-      vals.time = vals.time.format('YYYY-MM-DD');
+    if (vals.time) vals.time = vals.time.format('YYYY-MM-DD');
 
-    if (!pageNum) { // pageNum不存在，则为初始化
+    if (!pageNum) {
+      // pageNum不存在，则为初始化
       pageNum = 1;
       this.setState({ current: 1 });
     }
@@ -39,6 +48,9 @@ export default class TableList extends PureComponent {
     dispatch({
       type: 'cardsInfo/fetchKnowList',
       payload: { pageNum, pageSize: PAGE_SIZE, ...vals },
+      callback: (res, msg) => {
+        this.setState({ companyTotal: msg });
+      },
     });
   };
 
@@ -72,9 +84,7 @@ export default class TableList extends PureComponent {
         if (code === 200) {
           message.success('删除成功');
           this.getList(current);
-        }
-        else
-          message.error(msg);
+        } else message.error(msg);
       },
     });
   };
@@ -90,16 +100,25 @@ export default class TableList extends PureComponent {
   render() {
     const {
       loading,
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { permissionCodes, unitType },
+      },
       cardsInfo: { knowList, knowTotal },
     } = this.props;
-    const { modalVisible, current, src } = this.state;
+
+    const { modalVisible, current, src, companyTotal } = this.state;
+    const addAuth = hasAuthority(addCode, permissionCodes);
 
     const list = knowList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <Button
+        disabled={!addAuth}
+        type="primary"
+        onClick={this.handleAdd}
+        style={{ marginTop: '8px' }}
+      >
         新增
       </Button>
     );
@@ -108,11 +127,12 @@ export default class TableList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length -1].title}
+        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：{knowTotal}
+            单位数量：
+            {companyTotal}
           </p>
         }
       >
@@ -122,8 +142,6 @@ export default class TableList extends PureComponent {
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            buttonStyle={{ textAlign: 'right' }}
-            buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>
         <div className={styles1.container}>
@@ -137,10 +155,20 @@ export default class TableList extends PureComponent {
               // scroll={{ x: 1400 }} // 项目不多时注掉
               pagination={{ pageSize: PAGE_SIZE, total: knowTotal, current }}
             />
-          ) : <Empty />}
+          ) : (
+            <Empty />
+          )}
         </div>
         <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null}>
-          <div style={{ height: 700, backgroundImage: `url(${src})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: '50% 50%' }} />
+          <div
+            style={{
+              height: 700,
+              backgroundImage: `url(${src})`,
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: '50% 50%',
+            }}
+          />
           {/* <iframe style={{ width: '100%', height: 700, border: 'none' }} src={src} /> */}
         </Modal>
       </PageHeaderLayout>

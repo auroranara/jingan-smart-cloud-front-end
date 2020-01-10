@@ -525,7 +525,7 @@ export default class AssociatedUnit extends PureComponent {
             userName,
             phoneNumber,
             sex,
-            birth: +birthday,
+            birth: birthday ? +birthday : null,
             education: degree,
             educationFileList,
             avatarFileList,
@@ -1150,13 +1150,13 @@ export default class AssociatedUnit extends PureComponent {
             <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.birthday}>
                 {getFieldDecorator('birthday', {
-                  initialValue: moment(birth),
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择生日',
-                    },
-                  ],
+                  initialValue: typeof birth === 'number' ? moment(birth) : undefined,
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     message: '请选择生日',
+                  //   },
+                  // ],
                 })(
                   <DatePicker disabled placeholder="请选择生日" allowClear />
                 )}

@@ -9,14 +9,22 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './TableList.less';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, getSearchFields, getTableColumns } from './utils';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
+// 权限
+const {
+  cardsInfo: {
+    commitmentCard: { add: addCode },
+  },
+} = codes;
 @connect(({ user, cardsInfo, loading }) => ({
   user,
   cardsInfo,
   loading: loading.models.cardsInfo,
 }))
 export default class TableList extends PureComponent {
-  state = { current: 1, modalVisible: false, modalItem: {} };
+  state = { companyTotal: '', current: 1, modalVisible: false, modalItem: {} };
   values = {};
 
   componentDidMount() {
@@ -34,6 +42,9 @@ export default class TableList extends PureComponent {
     dispatch({
       type: 'cardsInfo/fetchCommitList',
       payload: { pageNum, pageSize: PAGE_SIZE, ...this.values },
+      callback: (res, msg) => {
+        this.setState({ companyTotal: msg });
+      },
     });
   };
 
@@ -100,17 +111,26 @@ export default class TableList extends PureComponent {
     const {
       loading,
       user: {
-        currentUser: { unitType },
+        currentUser: { permissionCodes, unitType },
       },
       cardsInfo: { commitList, commitTotal },
     } = this.props;
-    const { current } = this.state;
+
+    const { current, companyTotal } = this.state;
+
+    const addAuth = hasAuthority(addCode, permissionCodes);
 
     const list = commitList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
+
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <Button
+        disabled={!addAuth}
+        type="primary"
+        onClick={this.handleAdd}
+        style={{ marginTop: '8px' }}
+      >
         新增
       </Button>
     );
@@ -123,8 +143,8 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：
-            {commitTotal}
+            单位数量：
+            {companyTotal}
           </p>
         }
       >

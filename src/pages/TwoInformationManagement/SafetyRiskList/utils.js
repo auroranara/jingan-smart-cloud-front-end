@@ -90,11 +90,10 @@ export const TABLE_COLUMNS = [
     ),
   },
   {
-    title: '上传时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
+    title: '电话',
+    dataIndex: 'phoneNumber',
+    key: 'phoneNumber',
     align: 'center',
-    render: val => <span>{moment(+val).format('YYYY年MM月DD日')}</span>,
   },
 ];
 
@@ -196,31 +195,35 @@ export const DetailModal = Form.create()(props => {
 
   return (
     <Modal
-      width={1200}
+      width={1000}
       title={modalTitle}
       visible={detailVisible}
       footer={null}
       onCancel={handleDetailClose}
     >
-      <Table
-        bordered
-        rowKey="id"
-        dataSource={handleTableData(list, indexBase)}
-        scroll={{ x: 'max-content' }}
-        columns={columnsDetail}
-        pagination={{
-          current: pageNum,
-          pageSize,
-          total,
-          showQuickJumper: true,
-          showSizeChanger: true,
-          pageSizeOptions: ['5', '10', '15', '20'],
-          onChange: handleDetailPageChange,
-          onShowSizeChange: (num, size) => {
-            handleDetailPageChange(1, size);
-          },
-        }}
-      />
+      {list.length > 0 ? (
+        <Table
+          bordered
+          rowKey="id"
+          dataSource={handleTableData(list, indexBase)}
+          scroll={{ x: 'max-content' }}
+          columns={columnsDetail}
+          pagination={{
+            current: pageNum,
+            pageSize,
+            total,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '15', '20'],
+            onChange: handleDetailPageChange,
+            onShowSizeChange: (num, size) => {
+              handleDetailPageChange(1, size);
+            },
+          }}
+        />
+      ) : (
+        <div style={{ textAlign: 'center' }}>暂无数据</div>
+      )}
     </Modal>
   );
 });

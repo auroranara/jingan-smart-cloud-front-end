@@ -696,4 +696,30 @@ export default {
       delete: 'facilityManagement.threeSimultaneity.delete',
     },
   },
+  cardsInfo: {
+    // 承诺卡
+    commitmentCard: {
+      list: 'cardsInfo.commitmentCard.list',
+      view: 'cardsInfo.commitmentCard.view',
+      add: 'cardsInfo.commitmentCard.add',
+      edit: 'cardsInfo.commitmentCard.edit',
+      delete: 'cardsInfo.commitmentCard.delete',
+    },
+    // 应急卡
+    emergencyCard: {
+      list: 'cardsInfo.emergencyCard.list',
+      view: 'cardsInfo.emergencyCard.view',
+      add: 'cardsInfo.emergencyCard.add',
+      edit: 'cardsInfo.emergencyCard.edit',
+      delete: 'cardsInfo.emergencyCard.delete',
+    },
+    // 应知卡
+    knowCard: {
+      list: 'cardsInfo.knowCard.list',
+      view: 'cardsInfo.knowCard.view',
+      add: 'cardsInfo.knowCard.add',
+      edit: 'cardsInfo.knowCard.edit',
+      delete: 'cardsInfo.knowCard.delete',
+    },
+  },
 };

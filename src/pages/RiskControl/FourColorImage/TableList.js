@@ -83,17 +83,18 @@ export default class TableList extends React.Component {
       pageSize: 24,
     };
 
+    this.fetchList({ ...payload, companyId: unitType === 4 ? companyId : searchInfo.id });
+    this.setState({ company });
+
     if (unitType === 4) {
       this.fetchMap({ companyId: companyId }, mapInfo => {
         this.childMap.initMap({ ...mapInfo });
       });
-    } else if (searchInfo.name) {
+    } else if (searchInfo.id) {
       this.fetchMap({ companyId: searchInfo.id }, mapInfo => {
         this.childMap.initMap({ ...mapInfo });
       });
     }
-    this.fetchList({ ...payload, companyId: unitType === 4 ? companyId : searchInfo.id });
-    this.setState({ company });
   }
 
   onRef = ref => {
@@ -166,9 +167,15 @@ export default class TableList extends React.Component {
     });
   };
 
+  handleModalClose = () => {
+    this.setState({ visible: false });
+  };
+
   handleSelectCompany = company => {
     const { dispatch } = this.props;
-    this.setState({ company, visible: false });
+    this.setState({ company, visible: false }, () => {
+      this.childMap.handleDispose();
+    });
     // 获取地图
     this.fetchMap({ companyId: company.id }, mapInfo => {
       this.childMap.initMap({ ...mapInfo });
@@ -339,7 +346,7 @@ export default class TableList extends React.Component {
           modal={companyList}
           fetch={this.fetchCompanyList}
           onSelect={this.handleSelectCompany}
-          onClose={this.handleModalCLose}
+          onClose={this.handleModalClose}
         />
       </PageHeaderLayout>
     );
