@@ -1,16 +1,28 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Input, Select, Table, Cascader, Divider, Popconfirm, message } from 'antd';
+import {
+  Card,
+  Form,
+  Col,
+  Button,
+  Input,
+  Select,
+  Table,
+  Row,
+  Divider,
+  Popconfirm,
+  message,
+} from 'antd';
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import moment from 'moment';
-import ToolBar from '@/components/ToolBar';
+import styles from './TableList.less';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 const { Option } = Select;
 // 标题
 const title = '安全设施';
-const itemsStyle = { style: { width: 'calc(47%)', marginRight: '10px' } };
+const itemsStyle = { style: { width: 'calc(30%)', marginRight: '10px' } };
 
 export const ROUTER = '/facility-management/safety-facilities'; // modify
 export const LIST_URL = `${ROUTER}/list`;
@@ -61,6 +73,7 @@ const sessionPrefix = 'safety_fac';
   user,
   loading: loading.models.safeFacilities,
 }))
+@Form.create()
 export default class TableList extends PureComponent {
   constructor(props) {
     super(props);
@@ -83,6 +96,7 @@ export default class TableList extends PureComponent {
       user: {
         currentUser: { id },
       },
+      form: { setFieldsValue },
     } = this.props;
     this.fetchDict({
       payload: { type: 'safeFacilities', parentId: 0 },
@@ -98,7 +112,7 @@ export default class TableList extends PureComponent {
     };
     this.fetchList({ ...payload });
     if (sessionData) {
-      this.form.setFieldsValue({ ...payload });
+      setFieldsValue({ ...payload });
     }
   }
 
@@ -115,20 +129,17 @@ export default class TableList extends PureComponent {
     });
   };
 
-  setFormReference = toobar => {
-    this.form = toobar && toobar.props && toobar.props.form;
-  };
-
   // 查询
   handleSearch = () => {
     const {
       user: {
         currentUser: { id },
       },
+      form: { getFieldsValue },
     } = this.props;
     const { categoryOneId, categoryTwoId, safeFacilitiesNameId } = this.state;
 
-    const { companyName, equipName, equipStatus, paststatus } = this.form.getFieldsValue();
+    const { companyName, equipName, equipStatus, paststatus } = getFieldsValue();
     const payload = {
       category: categoryOneId ? categoryOneId + ',' + categoryTwoId : undefined,
       safeFacilitiesName: safeFacilitiesNameId ? safeFacilitiesNameId : undefined,
@@ -144,6 +155,11 @@ export default class TableList extends PureComponent {
 
   // 重置
   handleReset = () => {
+    const {
+      form: { resetFields },
+    } = this.props;
+    this.fetchList();
+    resetFields();
     this.fetchList();
     this.setState({
       categoryOneId: '',
@@ -442,16 +458,15 @@ export default class TableList extends PureComponent {
     );
   };
 
-  render() {
+  renderForm() {
     const {
-      safeFacilities: {
-        safeFacData: { a },
-        // facNameList = [],
-      },
+      form: { getFieldDecorator },
       user: {
         currentUser: { permissionCodes, unitType },
       },
     } = this.props;
+
+    const addCode = hasAuthority(addAuth, permissionCodes);
 
     const {
       categoryOneList,
@@ -462,103 +477,122 @@ export default class TableList extends PureComponent {
       categoryThreeName,
     } = this.state;
 
-    const addCode = hasAuthority(addAuth, permissionCodes);
+    return (
+      <Card className={styles.formCard}>
+        <Form className={styles.form}>
+          <Row gutter={{ md: 24 }}>
+            <Col xl={6} md={12} sm={24} xs={24}>
+              <Form.Item label={'设备名称'}>
+                {getFieldDecorator('equipName')(<Input placeholder="请输入" />)}
+              </Form.Item>
+            </Col>
+            <Col xl={18} md={18} sm={24} xs={24}>
+              <Form.Item label={'分类'}>
+                <div>
+                  <Select
+                    allowClear
+                    value={categoryOneName}
+                    placeholder="请选择"
+                    {...itemsStyle}
+                    onChange={this.handleCategoryOneChange}
+                    onSelect={this.handleCategoryOneSelect}
+                  >
+                    {categoryOneList.map(({ id, label }) => (
+                      <Option value={id} key={id}>
+                        {label}
+                      </Option>
+                    ))}
+                  </Select>
+                  <Select
+                    value={categoryTwoName}
+                    {...itemsStyle}
+                    placeholder="请选择"
+                    onChange={this.handleCategoryTwoChange}
+                    onSelect={this.handleCategoryTwoSelect}
+                  >
+                    {categoryTwoList.map(({ id, label }) => (
+                      <Select.Option key={id} value={id}>
+                        {label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  <Select
+                    {...itemsStyle}
+                    value={categoryThreeName}
+                    onChange={this.handleNameChange}
+                    allowClear
+                    placeholder="请选择"
+                  >
+                    {facilitiesNameList.map(({ id, label }) => (
+                      <Select.Option key={id} value={id}>
+                        {label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+              </Form.Item>
+            </Col>
+            <Col xl={6} md={12} sm={24} xs={24}>
+              <Form.Item label={'设备状态'}>
+                {getFieldDecorator('equipStatus')(
+                  <Select placeholder="请选择" allowClear>
+                    {['正常', '维检', '报废', '使用中'].map((r, i) => (
+                      <Option key={i + 1}>{r}</Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col xl={6} md={12} sm={24} xs={24}>
+              <Form.Item label={'检验到期状态：'}>
+                {getFieldDecorator('paststatus')(
+                  <Select placeholder="请选择" allowClear>
+                    {['未到期', '即将到期', '已过期'].map((r, i) => (
+                      <Option key={i}>{r}</Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            {unitType !== 4 && (
+              <Col xl={6} md={12} sm={24} xs={24}>
+                <Form.Item label={'单位名称：'}>
+                  {getFieldDecorator('companyName')(<Input placeholder="请输入" />)}
+                </Form.Item>
+              </Col>
+            )}
 
-    const fields = [
-      {
-        id: 'equipName',
-        label: '设备名称',
-        render: () => <Input placeholder="请输入" allowClear />,
-        transform: v => v.trim(),
-      },
-      {
-        id: 'category',
-        label: '分类：',
-        labelCol: 1,
-        wrapperCol: 11,
-        render: () => (
-          <div style={{ width: '400px' }}>
-            <Select
-              value={categoryOneName}
-              placeholder="请选择"
-              {...itemsStyle}
-              onChange={this.handleCategoryOneChange}
-              onSelect={this.handleCategoryOneSelect}
-            >
-              {categoryOneList.map(({ id, label }) => (
-                <Select.Option key={id} value={id}>
-                  {label}
-                </Select.Option>
-              ))}
-            </Select>
-            <Select
-              value={categoryTwoName}
-              {...itemsStyle}
-              placeholder="请选择"
-              onChange={this.handleCategoryTwoChange}
-              onSelect={this.handleCategoryTwoSelect}
-            >
-              {categoryTwoList.map(({ id, label }) => (
-                <Select.Option key={id} value={id}>
-                  {label}
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
-        ),
-      },
-      {
-        id: 'facilitiesName',
-        render: () => (
-          <div>
-            <Select
-              value={categoryThreeName}
-              onChange={this.handleNameChange}
-              allowClear
-              style={{ width: 'calc(55%)', marginLeft: '15%' }}
-              placeholder="请选择"
-            >
-              {facilitiesNameList.map(({ id, label }) => (
-                <Select.Option key={id} value={id}>
-                  {label}
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
-        ),
-      },
-      {
-        id: 'equipStatus',
-        label: '设备状态：',
-        render: () => (
-          <Select placeholder="请选择" allowClear>
-            {['正常', '维检', '报废', '使用中'].map((r, i) => (
-              <Option key={i + 1}>{r}</Option>
-            ))}
-          </Select>
-        ),
-      },
-      {
-        id: 'paststatus',
-        label: '检验到期状态：',
-        render: () => (
-          <Select placeholder="请选择" allowClear>
-            {['未到期', '即将到期', '已过期'].map((r, i) => (
-              <Option key={i}>{r}</Option>
-            ))}
-          </Select>
-        ),
-      },
-    ];
+            <Col xl={6} md={12} sm={24} xs={24}>
+              <Form.Item>
+                <Button type="primary" onClick={this.handleSearch}>
+                  查询
+                </Button>
+                <Button onClick={this.handleReset} style={{ marginLeft: 12 }}>
+                  重置
+                </Button>
+                <Button
+                  style={{ marginLeft: 12 }}
+                  type="primary"
+                  disabled={!addCode}
+                  href={`#${ROUTER}/add`}
+                >
+                  新增
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    );
+  }
 
-    const newFields = [
-      {
-        id: 'companyName',
-        label: '单位名称：',
-        render: () => <Input placeholder="请输入" allowClear />,
-        transform: v => v.trim(),
+  render() {
+    const {
+      safeFacilities: {
+        safeFacData: { a },
+        // facNameList = [],
       },
-    ];
+    } = this.props;
 
     return (
       <PageHeaderLayout
@@ -573,19 +607,7 @@ export default class TableList extends PureComponent {
           </div>
         }
       >
-        <Card>
-          <ToolBar
-            fields={unitType === 4 ? fields : [...fields, ...newFields]}
-            onSearch={this.handleSearch}
-            onReset={this.handleReset}
-            action={
-              <Button type="primary" disabled={!addCode} href={`#${ROUTER}/add`}>
-                新增
-              </Button>
-            }
-            wrappedComponentRef={this.setFormReference}
-          />
-        </Card>
+        {this.renderForm()}
         {this.renderTable()}
       </PageHeaderLayout>
     );
