@@ -1636,7 +1636,7 @@ export const MonitorConfig = {
             { key: '2', value: '二类区' },
             { key: '3', value: '三类区' },
           ];
-          return <span>{envirTypeList[val - 1].value}</span>;
+          return <span>{envirTypeList[val - 1] ? envirTypeList[val - 1].value : ''}</span>;
         },
       },
       { label: '储罐区面积（㎡）', value: 'spaceArea' },
@@ -1715,7 +1715,7 @@ export const MonitorConfig = {
             { key: '2', value: '二类区' },
             { key: '3', value: '三类区' },
           ];
-          return <span>{envirTypeList[val - 1].value}</span>;
+          return <span>{envirTypeList[val - 1] ? envirTypeList[val - 1].value : ''}</span>;
         },
       },
       { label: '库区面积（㎡）', value: 'area' },

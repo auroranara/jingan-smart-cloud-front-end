@@ -25,6 +25,7 @@ import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
 import Lightbox from 'react-images';
 import TankMonitorDrawer from './sections/TankMonitorDrawer';
+import AreaMonitorDrawer from './sections/AreaMonitorDrawer';
 
 import {
   DangerSourceInfoDrawer,
@@ -66,6 +67,29 @@ const HEADER_STYLE = {
 const DEFAULT_PAGE_SIZE = 10;
 const CONTENT_STYLE = { position: 'relative', height: '90.37037%', zIndex: 0 };
 
+const GAS_FIELDS = {
+  code: 'code', // 编号
+  location: 'areaLocation', // 位置
+  imgUrl: 'equipmentTypeLogoWebUrl', // 图片地址
+  monitorParams: 'allMonitorParam', // 实时监测的数据
+  status: ({ warnStatus }) => (warnStatus === -1 ? 1 : warnStatus), // 状态
+};
+const TANK_FIELDS = {
+  name: 'tankName', // 储罐名称
+  location: ({ area, location, buildingName, floorName }) =>
+    `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}`, // 位置
+  monitorParams: 'monitorParams', // 监测参数列表
+  capacity: 'designReserves', // 设计储量
+  capacityUnit: 'designReservesUnit', // 设计储量单位
+  pressure: 'designPressure', // 设计压力
+};
+const Treasury_FIELDS = {
+  name: 'name',
+  location: 'position',
+  monitorParams: 'monitorParams',
+  capacity: ({ unitChemiclaNumDetail }) =>
+    unitChemiclaNumDetail.reduce((to, { unitChemiclaNum = 0 }) => (to += +unitChemiclaNum), 0), // 设计储量
+};
 const msgInfo = [
   {
     title: '火警提示',
@@ -117,6 +141,9 @@ const SocketOptions = {
     chemical,
     specialEquipment,
     newUnitFireControl,
+    device,
+    storehouse,
+    baseInfo,
   }) => ({
     unitSafety,
     bigPlatform,
@@ -124,6 +151,9 @@ const SocketOptions = {
     fourColorImage,
     specialEquipment,
     newUnitFireControl,
+    device,
+    storehouse,
+    baseInfo,
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
     riskPointLoading: loading.effects['unitSafety/fetchPoints'],
   })
@@ -173,6 +203,16 @@ export default class Chemical extends PureComponent {
         notExpired: [], // 未过期
         expiring: [], // 即将到期
       },
+      // 罐区监测详情弹窗
+      tankAreaDrawerVisible: false,
+      // 库区监测详情弹窗
+      storehouseDrawerVisible: false,
+      // 监测对象详情
+      monitorObjectDetail: {},
+      // 可燃气体列表
+      flameGasList: [],
+      // 有毒气体列表
+      toxicGasList: [],
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -848,6 +888,31 @@ export default class Chemical extends PureComponent {
     this.setState({ monitorType, monitorDrawerVisible: true });
   };
 
+  handleClickMonitorIcon = (monitorType, id) => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+      dispatch,
+    } = this.props;
+    if (!MonitorConfig[monitorType]) return;
+    dispatch({
+      type: 'chemical/fetchMonitorData',
+      payload: { companyId, pageSize: 0, pageNum: 1, monitorType, hasMonitor: true, id },
+      callback: res => {
+        if (!res || !res.data) return;
+        const {
+          data: { list },
+        } = res;
+        const detail = list[0];
+        this.setState({ monitorType }, () => {
+          this.handleClickMonitorDetail(detail);
+        });
+      },
+    });
+  };
+
+  // 点击地图区域
   handleShowAreaDrawer = id => {
     const { dispatch } = this.props;
     dispatch({
@@ -862,11 +927,13 @@ export default class Chemical extends PureComponent {
     this.setState({ monitorDetailDrawerVisible: true, monitorDetail: detail });
   };
 
+  // 监测对象详情
   handleClickMonitorDetail = detail => {
     const { monitorType } = this.state;
     switch (monitorType) {
       case '301':
         // 储罐区
+        this.handleViewTankAreaDetail(detail);
         break;
       case '302':
         // 储罐
@@ -874,6 +941,7 @@ export default class Chemical extends PureComponent {
         break;
       case '303':
         // 库区
+        this.handleViewReservoirAreaDetail(detail);
         break;
       case '304':
         // 库房
@@ -896,6 +964,77 @@ export default class Chemical extends PureComponent {
       default:
         return null;
     }
+  };
+
+  // 查看罐区监测详情
+  handleViewTankAreaDetail = detail => {
+    // 获取已绑定监测设备
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      // monitoringDevice{list}
+      type: 'device/fetchMonitoringDevice',
+      payload: {
+        companyId,
+        targetId: detail.id,
+        pageNum: 1,
+        pageSize: 0,
+      },
+      callback: ({ list }) => {
+        this.setState({
+          flameGasList: list.filter(item => item.equipmentType === '405'),
+          toxicGasList: list.filter(item => item.equipmentType === '406'),
+        });
+      },
+    });
+    // 获取储罐区下储罐列表
+    dispatch({
+      // storageTank {list}
+      type: 'baseInfo/fetchStorageTankForPage',
+      payload: { pageNum: 1, pageSize: 0, tankArea: detail.id },
+    });
+    this.setState({ monitorObjectDetail: detail, tankAreaDrawerVisible: true });
+  };
+
+  // 查看库区监测详情
+  handleViewReservoirAreaDetail = detail => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    // 获取已绑定监测设备
+    dispatch({
+      type: 'device/fetchMonitoringDevice',
+      payload: {
+        pageNum: 1,
+        pageSize: 0,
+        companyId,
+        targetId: detail.id,
+      },
+      callback: ({ list }) => {
+        this.setState({
+          flameGasList: list.filter(item => item.equipmentType === '405'),
+          toxicGasList: list.filter(item => item.equipmentType === '406'),
+        });
+      },
+    });
+    // 获取库房列表（库房监测）
+    dispatch({
+      // state= storehouse.list
+      type: 'storehouse/fetchStorehouseList',
+      payload: {
+        pageNum: 1,
+        pageSize: 0,
+        areaId: detail.id,
+      },
+    });
+    this.setState({ monitorObjectDetail: detail, storehouseDrawerVisible: true });
   };
 
   /**
@@ -923,6 +1062,10 @@ export default class Chemical extends PureComponent {
         params: { unitId: companyId },
       },
       newUnitFireControl,
+      baseInfo: {
+        storageTank: { list: tanksUnderArea },
+      },
+      storehouse: { list: storeroomList },
       riskPointLoading,
     } = this.props;
     const {
@@ -959,8 +1102,12 @@ export default class Chemical extends PureComponent {
       tankDetail,
       specialEquip,
       mhVisible,
+      tankAreaDrawerVisible,
+      monitorObjectDetail,
+      flameGasList,
+      toxicGasList,
+      storehouseDrawerVisible,
     } = this.state;
-
     return (
       <BigPlatformLayout
         title="五位一体信息化管理平台"
@@ -1022,6 +1169,7 @@ export default class Chemical extends PureComponent {
                   companyId={companyId}
                   handleClickTank={this.handleClickTank}
                   handleShowAreaDrawer={this.handleShowAreaDrawer}
+                  handleClickMonitorIcon={this.handleClickMonitorIcon}
                 />
 
                 {msgVisible ? (
@@ -1264,6 +1412,38 @@ export default class Chemical extends PureComponent {
           showThumbnails
           onClickThumbnail={this.handleClickThumbnail}
           imageCountSeparator="/"
+        />
+
+        {/* 监测对象--罐区 详情抽屉 */}
+        <AreaMonitorDrawer
+          title="罐区监测详情"
+          visible={tankAreaDrawerVisible}
+          data={monitorObjectDetail}
+          tabs={[
+            { tab: '储罐监测', dataSourse: tanksUnderArea, fields: TANK_FIELDS },
+            { tab: '可燃气体', dataSourse: flameGasList, fields: GAS_FIELDS },
+            { tab: '有毒气体', dataSourse: toxicGasList, fields: GAS_FIELDS },
+          ]}
+          onClose={() => {
+            this.setState({ tankAreaDrawerVisible: false });
+          }}
+          onVideoClick={this.handleShowVideo}
+        />
+
+        {/* 监测对象--库区 详情抽屉 */}
+        <AreaMonitorDrawer
+          title="库区监测详情"
+          visible={storehouseDrawerVisible}
+          data={monitorObjectDetail}
+          tabs={[
+            { tab: '库房监测', dataSourse: storeroomList, fields: Treasury_FIELDS },
+            { tab: '可燃气体', dataSourse: flameGasList, fields: GAS_FIELDS },
+            { tab: '有毒气体', dataSourse: toxicGasList, fields: GAS_FIELDS },
+          ]}
+          onClose={() => {
+            this.setState({ storehouseDrawerVisible: false });
+          }}
+          onVideoClick={this.handleShowVideo}
         />
       </BigPlatformLayout>
     );
