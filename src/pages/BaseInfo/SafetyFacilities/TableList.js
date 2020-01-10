@@ -474,6 +474,8 @@ export default class TableList extends PureComponent {
       {
         id: 'category',
         label: '分类：',
+        labelCol: 1,
+        wrapperCol: 11,
         render: () => (
           <div style={{ width: '400px' }}>
             <Select

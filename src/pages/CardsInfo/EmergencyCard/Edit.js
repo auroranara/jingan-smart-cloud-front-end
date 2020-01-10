@@ -15,6 +15,15 @@ import {
 import { handleDetails } from '../CommitmentCard/utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './TableList.less';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+
+// 权限
+const {
+  cardsInfo: {
+    emergencyCard: { edit: editCode },
+  },
+} = codes;
 
 // const { Search } = Input;
 const { Option } = Select;
@@ -309,12 +318,14 @@ export default class Edit extends PureComponent {
       },
       form: { getFieldDecorator },
       user: {
-        currentUser: { unitType },
+        currentUser: { permissionCodes, unitType },
       },
       fourColorImage: {
         data: { list = [] },
       },
     } = this.props;
+
+    const editAuth = hasAuthority(editCode, permissionCodes);
 
     const newRiskList = list.map(({ zoneName, id }) => ({ key: id, value: zoneName }));
 
@@ -390,6 +401,7 @@ export default class Edit extends PureComponent {
           {isDet ? (
             <Button
               type="primary"
+              disabled={!editAuth}
               style={{ marginLeft: '45%' }}
               onClick={e => router.push(`/cards-info/emergency-card/edit/${id}`)}
             >

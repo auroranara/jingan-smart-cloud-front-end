@@ -130,14 +130,17 @@ export default class TableList extends PureComponent {
     if (info.file.status === 'uploading') {
       this.setState({ importLoading: true });
     }
-    if (info.file.status === 'error') {
-      message.success('导入失败');
-    }
-    if (info.file.status === 'done') {
-      message.success('导入成功');
+    if (info.file.status === 'removed') {
+      message.success('删除成功');
+      return;
     }
     if (info.file.response) {
       if (info.file.response.code && info.file.response.code === 200) {
+        if (info.file.response.data.faultNum === 0) {
+          message.success('导入成功');
+        } else if (info.file.response.data.faultNum > 0) {
+          message.error('导入失败！' + info.file.response.data.message);
+        }
         if (info.file.response.data) {
           this.setState({
             importLoading: false,

@@ -7,7 +7,15 @@ import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, getSearchFields, getTableColumns } from './utils';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
+// 权限
+const {
+  cardsInfo: {
+    knowCard: { add: addCode },
+  },
+} = codes;
 @connect(({ user, cardsInfo, loading }) => ({
   user,
   cardsInfo,
@@ -93,17 +101,24 @@ export default class TableList extends PureComponent {
     const {
       loading,
       user: {
-        currentUser: { unitType },
+        currentUser: { permissionCodes, unitType },
       },
       cardsInfo: { knowList, knowTotal },
     } = this.props;
+
     const { modalVisible, current, src, companyTotal } = this.state;
+    const addAuth = hasAuthority(addCode, permissionCodes);
 
     const list = knowList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <Button
+        disabled={!addAuth}
+        type="primary"
+        onClick={this.handleAdd}
+        style={{ marginTop: '8px' }}
+      >
         新增
       </Button>
     );
@@ -127,8 +142,6 @@ export default class TableList extends PureComponent {
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            buttonStyle={{ textAlign: 'right' }}
-            buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>
         <div className={styles1.container}>

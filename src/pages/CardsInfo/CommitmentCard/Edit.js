@@ -9,8 +9,16 @@ import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST_URL, handleDetails } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
-const { Option } = Select;
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+// const { Option } = Select;
 
+// 权限
+const {
+  cardsInfo: {
+    commitmentCard: { edit: editCode },
+  },
+} = codes;
 @connect(({ user, cardsInfo, fourColorImage, loading }) => ({
   user,
   cardsInfo,
@@ -129,12 +137,14 @@ export default class Edit extends PureComponent {
       },
       form: { getFieldDecorator },
       user: {
-        currentUser: { unitType },
+        currentUser: { permissionCodes, unitType },
       },
       fourColorImage: {
         data: { list = [] },
       },
     } = this.props;
+
+    const editAuth = hasAuthority(editCode, permissionCodes);
 
     const newRiskList = list.map(({ zoneName, id }) => ({ key: id, value: zoneName }));
 
@@ -184,6 +194,7 @@ export default class Edit extends PureComponent {
           {isDet ? (
             <Button
               type="primary"
+              disabled={!editAuth}
               style={{ marginLeft: '45%' }}
               onClick={e => router.push(`/cards-info/commitment-card/edit/${id}`)}
             >

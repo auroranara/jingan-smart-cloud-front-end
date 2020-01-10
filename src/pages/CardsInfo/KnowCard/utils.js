@@ -5,8 +5,17 @@ import { DatePicker, Input, message, Popconfirm, Select } from 'antd';
 
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+import codes from '@/utils/codes';
+import { AuthPopConfirm, AuthLink } from '@/utils/customAuth';
 
-const MAX_LENGTH = 20;
+// 权限
+const {
+  cardsInfo: {
+    knowCard: { view: viewCode, edit: editCode, delete: deleteCode },
+  },
+} = codes;
+
+// const MAX_LENGTH = 20;
 const DATE_FORMAT = 'YYYY-MM-DD';
 export const PAGE_SIZE = 20;
 export const ROUTER = '/cards-info/know-card'; // modify
@@ -117,20 +126,26 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       render(id) {
         return (
           <Fragment>
-            <Link to={`${ROUTER}/view/${id}`} target="_blank">
+            <AuthLink code={viewCode} to={`${ROUTER}/view/${id}`} target="_blank">
               查看
-            </Link>
-            <Link to={`${ROUTER}/edit/${id}`} target="_blank" style={{ marginLeft: 8 }}>
+            </AuthLink>
+            <AuthLink
+              code={editCode}
+              to={`${ROUTER}/edit/${id}`}
+              target="_blank"
+              style={{ marginLeft: 8 }}
+            >
               编辑
-            </Link>
-            <Popconfirm
+            </AuthLink>
+            <AuthPopConfirm
+              code={deleteCode}
               title="确定删除当前项目？"
               onConfirm={e => handleConfirmDelete(id)}
               okText="确定"
               cancelText="取消"
             >
               <span className={styles1.delete}>删除</span>
-            </Popconfirm>
+            </AuthPopConfirm>
           </Fragment>
         );
       },

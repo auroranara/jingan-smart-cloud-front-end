@@ -11,8 +11,16 @@ import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
-const { Option } = Select;
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+// const { Option } = Select;
 
+// 权限
+const {
+  cardsInfo: {
+    knowCard: { edit: editCode },
+  },
+} = codes;
 const FOLDER = 'knowCard';
 const uploadAction = '/acloud_new/v2/uploadFile';
 @connect(({ user, cardsInfo, fourColorImage, loading }) => ({
@@ -182,13 +190,15 @@ export default class Edit extends PureComponent {
       },
       form: { getFieldDecorator },
       user: {
-        currentUser: { unitType },
+        currentUser: { permissionCodes, unitType },
       },
       fourColorImage: {
         data: { list = [] },
       },
     } = this.props;
-    const { photoList, riskId } = this.state;
+    const { photoList } = this.state;
+    const editAuth = hasAuthority(editCode, permissionCodes);
+
     const newRiskList = list.map(({ zoneName, id }) => ({ key: id, value: zoneName }));
 
     const isDet = this.isDetail();
@@ -252,6 +262,7 @@ export default class Edit extends PureComponent {
           {isDet ? (
             <Button
               type="primary"
+              disabled={!editAuth}
               style={{ marginLeft: '45%' }}
               onClick={e => router.push(`/cards-info/know-card/edit/${id}`)}
             >
