@@ -125,9 +125,10 @@ export default class KeyPoints extends PureComponent {
   };
 
   handleClickKey = index => {
-    const { setDrawerVisible } = this.props;
+    const { setDrawerVisible, handleClickDangerSource } = this.props;
     const drawers = ['dangerSource', 'chemical', 'technology'];
-    setDrawerVisible(drawers[index]);
+    // setDrawerVisible(drawers[index]);
+    index === 0 && handleClickDangerSource();
   };
 
   render() {

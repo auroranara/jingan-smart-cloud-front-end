@@ -16,6 +16,7 @@ import { queryAreaList } from '@/services/company/reservoirRegion';
 import { queryStorehouseList } from '@/services/baseInfo/storehouse';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { getList } from '@/services/gasometer';
+import { queryDangerSourceList } from '../services/company/reservoirRegion';
 
 export default {
   namespace: 'chemical',
@@ -38,6 +39,7 @@ export default {
     monitorData: {},
     noticeList: [],
     hiddenDangerTotal: 0,
+    dangerSourceList: [],
   },
 
   effects: {
@@ -242,6 +244,21 @@ export default {
           payload: {
             list: data.list,
             monitorType,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 重大危险源列表
+    *fetchDangerSourceList({ payload, callback }, { call, put }) {
+      const response = yield call(queryDangerSourceList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const dangerSourceList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            dangerSourceList,
           },
         });
       }
