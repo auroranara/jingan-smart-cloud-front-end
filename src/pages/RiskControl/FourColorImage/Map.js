@@ -27,7 +27,6 @@ let points = [];
 let naviLines = [];
 
 let buildingId = [];
-let selectedList = [];
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
@@ -46,10 +45,21 @@ export default class Map extends React.Component {
     const newList = pointList.length > 0 ? pointList : [];
     newList.length > 0 &&
       pointList.map(item => {
-        const { zoneLevel, coordinateList } = item;
-        const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-        this.drawPolygon(points, COLORS[zoneLevel]);
-        this.setModelColor(points, COLORS[zoneLevel]);
+        const { zoneLevel, coordinateList, modelIds } = item;
+        const cordPoints = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+        const modeIdList = modelIds.split(',').map(Number);
+        if (modeIdList.length > 0) {
+          const models = map.getDatasByAlias(1, 'model');
+          models.forEach(item => {
+            if (item.ID && modeIdList.includes(item.ID)) {
+              item.setColor(COLORS[zoneLevel], 1);
+            }
+          });
+          this.drawPolygon(cordPoints, '');
+        } else {
+          this.drawPolygon(cordPoints, COLORS[zoneLevel]);
+          this.setModelColor(cordPoints, COLORS[zoneLevel]);
+        }
         return null;
       });
   };
@@ -101,8 +111,6 @@ export default class Map extends React.Component {
       if (!clickedObj || !clickedObj.eventInfo) return;
 
       var { coord } = clickedObj.eventInfo;
-      // buildingId.push(event.target.ID);
-      selectedList.push(event.target);
       if (this.props.isDrawing) {
         // 默认第一张地图
         this.addPoint(1, coord);
@@ -115,6 +123,18 @@ export default class Map extends React.Component {
 
     map.on('loadComplete', () => {
       this.getPointList(this.props.pointList);
+      this.props.pointList.length > 0 &&
+        this.props.pointList.map(item => {
+          const { coordinateList } = item;
+          const cordList = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
+          const models = map.getDatasByAlias(1, 'model');
+          return (
+            (buildingId = models
+              .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
+              .map(item => ({ buildingId: item.ID, points: item.mapCoord }))),
+            this.props.getBuilding && this.props.getBuilding(buildingId)
+          );
+        });
     });
   };
 
@@ -164,32 +184,42 @@ export default class Map extends React.Component {
     buildingId = models
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
       .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
-    this.props.getBuilding(buildingId);
+    this.props.getBuilding && this.props.getBuilding(buildingId);
   }
 
-  handleModelEdit = (areaId, point, selected) => {
-    // var polygonMarker = new fengMap.FMPolygonMarker({
-    //   alpha: 0.5, //设置透明度
-    //   lineWidth: 1, //设置边框线的宽度
-    //   height: 5, //设置高度*/
-    //   points, //多边形坐标点
-    // });
-    // console.log('point', point);
-    // console.log('polygonMarker.contain(point)', polygonMarker.contain(point));
+  // 切换tag
+  handleModelEdit = (points, areaId, point, selected) => {
+    const models = map.getDatasByAlias(1, 'model');
+    const orginList = models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points));
+    if (!!selected && this.polygonMarkers[0].contain({ ...point, z: 1 })) {
+      const model = orginList.find(item => item.mapCoord === point);
+      model.setColorToDefault();
+      return null;
+    }
+    if (!selected && this.polygonMarkers[0].contain({ ...point, z: 1 })) {
+      const model = orginList.find(item => item.mapCoord === point);
+      this.props.pointList.length > 0
+        ? this.props.pointList.map(item => {
+            const { zoneLevel } = item;
+            return model.setColor(COLORS[zoneLevel]);
+          })
+        : model.setColor(COLOR.blue);
+
+      return null;
+    }
   };
 
+  // 删除分区
   removeArea = index => {
-    var groupLayer = map.getFMGroup(1);
+    const groupLayer = map.getFMGroup(1);
     groupLayer.removeLayer(this.polygonLayers[index]);
     this.polygonLayers.splice(index, 1);
-
     const models = map.getDatasByAlias(1, 'model');
     models.map(model => {
       const { mapCoord } = model;
       if (this.polygonMarkers[index].contain({ ...mapCoord, z: 1 })) model.setColorToDefault();
       return null;
     });
-
     this.polygonMarkers.splice(index, 1);
   };
 

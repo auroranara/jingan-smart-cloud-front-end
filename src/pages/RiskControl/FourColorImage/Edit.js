@@ -73,7 +73,8 @@ export default class TableList extends React.Component {
       detailList: {},
       pointList: [],
       points: [],
-      buildingId: [],
+      buildingId: [], // 新增时获取的区域Id
+      modelIds: '', // 编辑时获取的区域Id
     };
   }
 
@@ -108,7 +109,17 @@ export default class TableList extends React.Component {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
           const pointList = list.filter(item => item.id === id) || [];
-          this.setState({ detailList: currentList, pointList });
+          this.setState({
+            detailList: currentList,
+            pointList,
+            modelIds: currentList.modelIds,
+            points: currentList.coordinateList.map(item => ({
+              x: +item.x,
+              y: +item.y,
+              z: +item.z,
+              groupID: 1,
+            })),
+          });
         },
       });
     }
@@ -239,9 +250,9 @@ export default class TableList extends React.Component {
               ? JSON.stringify(points.map(({ x, y, z, groupID }) => ({ x, y, z, groupID })))
               : undefined,
           groupId: 1,
-          model_ids: buildingId
+          modelIds: buildingId
             .filter(item => item.selected === true)
-            .map(item => item.value)
+            .map(item => item.areaId)
             .join(','),
         };
         const success = () => {
@@ -278,20 +289,35 @@ export default class TableList extends React.Component {
   };
 
   getBuilding = buildingId => {
-    const idList = buildingId
-      .filter(item => item)
-      // .filter((item, index, self) => self.indexOf(item) === index)
-      .map((item, index) => ({
-        key: index,
-        areaId: item.buildingId,
-        point: item.points,
-        selected: true,
-      }));
-    this.setState({ buildingId: idList });
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    const { modelIds } = this.state;
+    const modeIdList = modelIds.split(',').map(Number);
+    const areaList = buildingId.filter(item => item).map((item, index) => ({
+      key: index,
+      areaId: item.buildingId,
+      point: item.points,
+      selected: true,
+    }));
+    if (id) {
+      areaList.reduce(function(pre, cur, index, arr) {
+        if (!modeIdList.includes(cur.areaId)) {
+          cur.selected = !cur.selected;
+        }
+        return [...arr];
+      });
+      this.setState({ buildingId: areaList });
+    } else {
+      this.setState({ buildingId: areaList });
+    }
   };
 
   handleTagClick = (areaId, point, selected) => {
-    this.childMap.handleModelEdit(areaId, point, selected);
+    const { points } = this.state;
+    this.childMap.handleModelEdit(points, areaId, point, selected);
     const { buildingId } = this.state;
     this.setState({
       buildingId: buildingId.reduce(function(pre, cur, index, arr) {
@@ -334,8 +360,7 @@ export default class TableList extends React.Component {
       form: { getFieldDecorator },
       account: { list: personList = [] },
     } = this.props;
-
-    const { isDrawing, detailList, pointList, buildingId } = this.state;
+    const { isDrawing, detailList, pointList, buildingId, modelIds } = this.state;
     const editTitle = id ? '编辑' : '新增';
 
     const {
@@ -361,6 +386,7 @@ export default class TableList extends React.Component {
                 getPoints={this.getPoints}
                 getBuilding={this.getBuilding}
                 pointList={pointList}
+                modelIds={modelIds}
               />
             </Card>
           </Col>
