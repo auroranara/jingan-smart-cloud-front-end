@@ -40,9 +40,40 @@ export default class MediumModal extends Component {
   state = {
     visible: false,
     data: undefined, // 选中项
+    companyId: undefined,
   };
 
   prevValues = {};
+
+  componentDidMount() {
+    const { company } = this.props;
+    if (company && company.key !== company.label) {
+      this.setState({
+        companyId: company.key,
+      });
+    }
+  }
+
+  componentDidUpdate({ company: prevCompany }, { companyId: prevCompanyId }) {
+    const { company, value, onChange } = this.props;
+    if (prevCompany !== company) {
+      let companyId = prevCompanyId;
+      if (!company) {
+        companyId = undefined;
+        this.setState({
+          companyId,
+        });
+      } else if (company.key !== company.label) {
+        companyId = company.key;
+        this.setState({
+          companyId,
+        });
+      }
+      if (value && prevCompanyId !== companyId) {
+        onChange && onChange();
+      }
+    }
+  }
 
   setFormReference = form => {
     this.form = form;
@@ -50,7 +81,8 @@ export default class MediumModal extends Component {
 
   // 点击显示modal
   handleShowButtonClick = () => {
-    const { companyId, value, getList } = this.props;
+    const { value, getList } = this.props;
+    const { companyId } = this.state;
     this.prevValues = {};
     getList({ companyId });
     this.form && this.form.resetFields();
@@ -85,10 +117,10 @@ export default class MediumModal extends Component {
   // 查询
   handleSearch = values => {
     const {
-      companyId,
       list: { pagination: { pageSize = getModalPageSize() } = {} } = {},
       getList,
     } = this.props;
+    const { companyId } = this.state;
     this.prevValues = values;
     getList({
       ...values,
@@ -108,10 +140,10 @@ export default class MediumModal extends Component {
   // 表格change
   handleTableChange = ({ current, pageSize }) => {
     const {
-      companyId,
       list: { pagination: { pageSize: prevPageSize = getModalPageSize() } = {} } = {},
       getList,
     } = this.props;
+    const { companyId } = this.state;
     getList({
       ...this.prevValues,
       pageNum: prevPageSize !== pageSize ? 1 : current,
@@ -223,7 +255,8 @@ export default class MediumModal extends Component {
   }
 
   render() {
-    const { className, companyId, value, type } = this.props;
+    const { className, value, type } = this.props;
+    const { companyId } = this.state;
 
     return (
       <div className={classNames(styles.container, className)}>

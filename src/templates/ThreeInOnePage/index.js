@@ -153,6 +153,19 @@ export default class ThreeInOnePage extends Component {
     });
   };
 
+  generateChangeCallback = (refreshEnable, props, callback) => {
+    if (refreshEnable && props && props.onChange) {
+      return (...args) => {
+        (callback || this.refresh)(...args);
+        props.onChange(...args);
+      };
+    } else if (refreshEnable) {
+      return callback || this.refresh;
+    } else if (props && props.onChange) {
+      return props.onChange;
+    }
+  };
+
   // 返回按钮点击事件
   handleBackButtonClick = () => {
     this.props.goBack();
@@ -222,8 +235,8 @@ export default class ThreeInOnePage extends Component {
                 className={isNotDetail ? styles.item : undefined}
                 placeholder={`请输入${label}`}
                 type={isNotDetail || 'span'}
-                onChange={refreshEnable ? this.refresh : undefined}
                 {...props}
+                onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'Select') {
@@ -232,9 +245,9 @@ export default class ThreeInOnePage extends Component {
                 className={isNotDetail ? styles.item : undefined}
                 placeholder={`请选择${label}`}
                 type={isNotDetail || 'span'}
-                onChange={refreshEnable ? this.refresh : undefined}
                 allowClear={!required}
                 {...props}
+                onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'CompanySelect') {
@@ -244,8 +257,12 @@ export default class ThreeInOnePage extends Component {
                 placeholder={`请选择${label}`}
                 disabled={isEdit}
                 type={isNotDetail || 'span'}
-                onChange={refreshEnable ? this.handleCompanyChange : undefined}
                 {...props}
+                onChange={this.generateChangeCallback(
+                  refreshEnable,
+                  props,
+                  this.handleCompanyChange
+                )}
               />
             );
           } else if (component === 'DatePicker') {
@@ -255,8 +272,8 @@ export default class ThreeInOnePage extends Component {
                 placeholder={`请选择${label}`}
                 type={isNotDetail || 'span'}
                 allowClear={!required}
-                onChange={refreshEnable ? this.refresh : undefined}
                 {...props}
+                onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'RangePicker') {
@@ -266,8 +283,8 @@ export default class ThreeInOnePage extends Component {
                 placeholder={['开始时间', '结束时间']}
                 type={isNotDetail ? 'RangePicker' : 'span'}
                 allowClear={!required}
-                onChange={refreshEnable ? this.refresh : undefined}
                 {...props}
+                onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'TextArea') {
@@ -277,18 +294,24 @@ export default class ThreeInOnePage extends Component {
                 placeholder={`请输入${label}`}
                 type={isNotDetail ? 'TextArea' : 'span'}
                 autosize={{ minRows: 3, maxRows: 10 }}
-                onChange={refreshEnable ? this.refresh : undefined}
                 {...props}
+                onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'CustomUpload') {
-            return <CustomUpload type={isNotDetail || 'span'} onChange={this.refresh} {...props} />;
+            return (
+              <CustomUpload
+                type={isNotDetail || 'span'}
+                {...props}
+                onChange={this.generateChangeCallback(true, props)}
+              />
+            );
           } else if (component === 'Radio') {
             return (
               <RadioOrSpan
                 type={isNotDetail || 'span'}
-                onChange={refreshEnable ? this.refresh : undefined}
                 {...props}
+                onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'Text') {
@@ -299,8 +322,8 @@ export default class ThreeInOnePage extends Component {
               <DefaultComponent
                 className={isNotDetail ? styles.item : undefined}
                 type={isNotDetail || 'span'}
-                onChange={refreshEnable ? this.refresh : undefined}
                 {...props}
+                onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           }

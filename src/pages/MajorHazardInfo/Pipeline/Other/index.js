@@ -162,7 +162,8 @@ export default class OperationRecordOther extends Component {
       required: true,
       component: MediumModal,
       props: {
-        companyId: unitId || (company && company.key !== company.label ? company.key : undefined),
+        company: unitId ? { key: unitId } : company,
+        onChange: this.handleMeterialChange,
       },
       options: {
         rules: [{ required: true, type: 'object', message: '输送介质不能为空' }],
@@ -184,6 +185,16 @@ export default class OperationRecordOther extends Component {
       component: 'DatePicker',
     },
   ];
+
+  handleMeterialChange = material => {
+    if (material) {
+      const { form } = this.page || {};
+      form &&
+        form.setFieldsValue({
+          dangerPipeline: `${material.superviseChemicals || 0}`,
+        });
+    }
+  };
 
   render() {
     const props = {

@@ -30,6 +30,21 @@ export default class PipelineList extends Component {
     this.page = page && page.getWrappedInstance();
   };
 
+  getContent = ({ list: { pagination: { total, companyCount } = {} } = {} }) => {
+    return (
+      <div>
+        <span className={styles.contentItem}>
+          单位数量：
+          {companyCount || 0}
+        </span>
+        <span>
+          管道总数：
+          {total || 0}
+        </span>
+      </div>
+    );
+  };
+
   getFields = ({ unitId }) => [
     {
       id: 'name',
@@ -90,8 +105,8 @@ export default class PipelineList extends Component {
     renderDetailButton,
     renderEditButton,
     renderDeleteButton,
-    renderDetailButton2: renderBindedButton,
-    renderEditButton2: renderUnbindButton,
+    renderBindButton,
+    renderUnbindButton,
   }) => [
     ...(!unitId
       ? [
@@ -175,7 +190,7 @@ export default class PipelineList extends Component {
       align: 'center',
       width: 102,
       fixed: list && list.length > 0 ? 'right' : false,
-      render: (_, data) => renderBindedButton(data),
+      render: (_, data) => renderUnbindButton(data),
     },
     {
       title: '操作',
@@ -185,7 +200,7 @@ export default class PipelineList extends Component {
       fixed: list && list.length > 0 ? 'right' : false,
       render: (_, data) => (
         <div className={styles.buttonContainer}>
-          <div>{renderUnbindButton(data)}</div>
+          <div>{renderBindButton(data)}</div>
           <div>{renderDetailButton(data)}</div>
           <div>{renderEditButton(data)}</div>
           <div>{renderDeleteButton(data)}</div>
@@ -234,23 +249,25 @@ export default class PipelineList extends Component {
 
   render() {
     const props = {
+      content: this.getContent,
       fields: this.getFields,
       action: this.getAction,
       columns: this.getColumns,
       otherOperation: [
         {
-          code: 'detail',
+          code: 'unbind',
           name: ({ monitorEquipmentCount }) => +monitorEquipmentCount || 0,
           disabled: ({ monitorEquipmentCount }) => !+monitorEquipmentCount,
           onClick: this.handleBindedButtonClick,
         },
         {
-          code: 'edit',
+          code: 'bind',
           name: '绑定监测设备',
           onClick: this.handleUnbindButtonClick,
         },
       ],
       ref: this.setPageReference,
+      showTotal: false,
       ...this.props,
     };
 

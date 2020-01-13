@@ -19,7 +19,7 @@ export default class CompanySelect extends Component {
     this.getCompanyList();
   }
 
-  getCompanyList = (name) => {
+  getCompanyList = name => {
     const { dispatch } = this.props;
     dispatch({
       type: 'common/fetchCompanyList',
@@ -29,7 +29,7 @@ export default class CompanySelect extends Component {
         name: name && name.trim(),
       },
     });
-  }
+  };
 
   clearCompanyList = () => {
     const { dispatch } = this.props;
@@ -39,26 +39,27 @@ export default class CompanySelect extends Component {
         companyList: {},
       },
     });
-  }
+  };
 
-  handleSearch = (value) => {
+  handleSearch = value => {
     this.clearCompanyList();
     this.getCompanyList(value);
-  }
+  };
 
-  handleBlur = ({ key, label }={}) => {
-    if (key && key === label) {
-      const { onChange } = this.props;
-      onChange && onChange();
+  handleBlur = company => {
+    if (company) {
+      const { key, label } = company;
+      if (key === label) {
+        const { onChange } = this.props;
+        onChange && onChange();
+      }
     }
-  }
+  };
 
   render() {
     const {
       common: {
-        companyList: {
-          list=[],
-        },
+        companyList: { list = [] },
       },
       className,
       style,
@@ -66,7 +67,7 @@ export default class CompanySelect extends Component {
       value,
       onChange,
       disabled,
-      placeholder="请选择单位名称",
+      placeholder = '请选择单位名称',
       type,
     } = this.props;
 
@@ -91,6 +92,8 @@ export default class CompanySelect extends Component {
           <Option key={id}>{name}</Option>
         ))}
       </AutoComplete>
-    ) : <span>{value && value.label}</span>;
+    ) : (
+      <span>{value && value.label}</span>
+    );
   }
 }
