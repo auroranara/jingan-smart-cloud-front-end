@@ -17,6 +17,7 @@ const basicList = [
     man: '李磊 13056177523',
   },
 ];
+const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
 
 const creatNum = (num, m) => {
   return (Array(m).join(0) + num).slice(-m);
@@ -92,11 +93,19 @@ const list = [
   ...item,
   name: `${index + 1}号储罐`,
   number: creatNum(index + 1, 4),
-  icon: (
-    <Wave
-      frontStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.8)' }}
-      backStyle={{ height: '12.5%', color: 'rgba(178, 237, 255, 0.3)' }}
-    />
+  icon: ({ name }) => (
+    <div
+      className={styles.iconWrapper}
+      style={{
+        background: `url(${storageImg}) center center / 100% auto no-repeat`,
+      }}
+    >
+      <Wave
+        frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
+        backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
+      />
+      <div className={styles.iconName}>{name}</div>
+    </div>
   ),
 }));
 const fields = [
@@ -134,7 +143,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
           </span>
         ),
       },
-      { label: 'R值', value: 'RValue' },
+      // { label: 'R值', value: 'RValue' },
       { label: '区域位置', value: 'location' },
       // { label: '备案时间', value: 'time' },
       { label: '责任人', value: 'man' },

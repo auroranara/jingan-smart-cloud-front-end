@@ -256,6 +256,8 @@ export default class Chemical extends PureComponent {
         'fetchNotice',
         // 当前隐患总数
         'fetchHiddenDangerTotal',
+        // 重大危险源列表
+        'fetchDangerSourceList',
       ],
     });
   }
@@ -1037,6 +1039,17 @@ export default class Chemical extends PureComponent {
     this.setState({ monitorObjectDetail: detail, storehouseDrawerVisible: true });
   };
 
+  // 重大危险源列表
+  handleClickDangerSource = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    this.fetchDangerSourceList({ companyId, pageSize: 0, pageNum: 1 });
+    this.setDrawerVisible('dangerSource');
+  };
+
   /**
    * 渲染
    */
@@ -1057,6 +1070,7 @@ export default class Chemical extends PureComponent {
         monitorData = {},
         zoneContent = {},
         noticeList,
+        dangerSourceList,
       },
       match: {
         params: { unitId: companyId },
@@ -1155,6 +1169,7 @@ export default class Chemical extends PureComponent {
                   handlePoisonOpen={this.handlePoisonOpen}
                   handleClickTankMonitor={this.handleClickTankMonitor}
                   handleClickMonitor={this.handleClickMonitor}
+                  handleClickDangerSource={this.handleClickDangerSource}
                 />
               </div>
             </Col>
@@ -1325,6 +1340,7 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('dangerSource');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          dangerSourceList={dangerSourceList}
         />
 
         <DangerSourceInfoDrawer

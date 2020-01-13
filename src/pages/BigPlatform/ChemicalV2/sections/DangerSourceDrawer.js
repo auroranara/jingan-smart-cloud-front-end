@@ -25,7 +25,11 @@ const list = [
 const fields = [
   { label: '统一编码', value: 'code' },
   { label: '重大危险源名称', value: 'name' },
-  { label: '重大危险源等级', value: 'level' },
+  {
+    label: '重大危险源等级',
+    value: 'dangerLevel',
+    render: val => ['一级', '二级', '三级', '四级'][val - 1],
+  },
   { label: '区域位置', value: 'location' },
   { label: '备案时间', value: 'time' },
   { label: '责任人', value: 'man' },
@@ -43,8 +47,8 @@ export default class DangerSourceDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose } = this.props;
-    // const {} = this.state;
+    const { visible, onClose, dangerSourceList } = this.props;
+
     return (
       <DrawerContainer
         title="重大危险源监测"
@@ -55,7 +59,7 @@ export default class DangerSourceDrawer extends PureComponent {
         zIndex={1222}
         left={
           <div>
-            {list.map((item, index) => (
+            {dangerSourceList.map((item, index) => (
               <CardItem
                 key={index}
                 data={item}

@@ -135,7 +135,7 @@ export default class RegSafetyEngEdit extends PureComponent {
           userId,
           name,
           sex,
-          birth: birth.format('YYYY-MM-DD'),
+          birth: birth ? birth.format('YYYY-MM-DD') : null,
           phone,
           level,
           category,
@@ -364,7 +364,7 @@ export default class RegSafetyEngEdit extends PureComponent {
     const target = userList.find(({ loginId }) => loginId === value.key);
     if (target) {
       const { sex, birth, phoneNumber } = target;
-      setFieldsValue({ sex, birth: moment(birth), phone: phoneNumber });
+      setFieldsValue({ sex, birth: typeof birth === 'number' ? moment(birth) : undefined, phone: phoneNumber });
     }
   };
 
@@ -463,8 +463,8 @@ export default class RegSafetyEngEdit extends PureComponent {
           </FormItem>
           <FormItem label="生日" {...formItemLayout}>
             {getFieldDecorator('birth', {
-              initialValue: birth ? moment(+birth) : undefined,
-              rules: [{ required: true, message: '请选择生日' }],
+              initialValue: typeof birth === 'number' ? moment(+birth) : undefined,
+              // rules: [{ required: true, message: '请选择生日' }],
             })(<DatePicker placeholder="请选择生日" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
           <FormItem label="联系电话" {...formItemLayout}>
