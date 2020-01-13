@@ -3,6 +3,8 @@ import {
   addSpecialEquip,
   updateSpecialEquip,
   deleteSpecialEquip,
+  queryReportList,
+  queryReportAdd,
 } from '@/services/baseInfo/specialEquipment';
 
 import { getBrandList, getModelList } from '@/services/gateway';
@@ -20,6 +22,10 @@ export default {
     detail: {},
     brandList: [],
     modelList: [],
+    reportData: {
+      list: [],
+      pagination: {},
+    },
   },
   effects: {
     // 查询特种设备列表
@@ -101,6 +107,23 @@ export default {
         callback && callback(data.list);
       }
     },
+    // 报告列表
+    *fetchReportList({ payload, callback }, { call, put }) {
+      const response = yield call(queryReportList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveReportList',
+          payload: response,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 报告新增
+    *fetchReportAdd({ payload, callback }, { call, put }) {
+      const response = yield call(queryReportAdd, payload);
+      if (callback) callback(response);
+    },
   },
   reducers: {
     saveList(state, { payload }) {
@@ -117,5 +140,12 @@ export default {
       };
     },
     save: (state, { payload }) => ({ ...state, ...payload }),
+    saveReportList(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        reportData: data,
+      };
+    },
   },
 };

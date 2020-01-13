@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Table, message, Upload, DatePicker, Icon, Input, Modal, Button, Form } from 'antd';
+import { Card, Table, message, Upload, DatePicker, Icon, Input, Modal, Button, Form, Empty } from 'antd';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import { getToken } from 'utils/authority';
 import Lightbox from 'react-images';
@@ -20,9 +20,9 @@ const breadcrumbList = [
     name: '设备设施管理',
   },
   {
-    title: '安全设施',
-    name: '安全设施',
-    href: '/facility-management/safety-facilities/list',
+    title: '特种设备管理',
+    name: '特种设备管理',
+    href: '/facility-management/special-equipment/list',
   },
   {
     title,
@@ -31,7 +31,7 @@ const breadcrumbList = [
 ];
 
 // 上传文件夹
-const folder = 'safetyFacilities';
+const folder = 'specailEquipment';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 
@@ -144,10 +144,10 @@ const ReportModal = Form.create()(props => {
 });
 
 @Form.create()
-@connect(({ safeFacilities, user, loading }) => ({
-  safeFacilities,
+@connect(({ specialEquipment, user, loading }) => ({
+  specialEquipment,
   user,
-  loading: loading.models.safeFacilities,
+  loading: loading.models.specialEquipment,
 }))
 export default class InspectionReport extends PureComponent {
   constructor(props) {
@@ -177,9 +177,9 @@ export default class InspectionReport extends PureComponent {
       },
     } = this.props;
     dispatch({
-      type: 'safeFacilities/fetchReportList',
+      type: 'specialEquipment/fetchReportList',
       payload: {
-        safeId: id,
+        equipId: id,
         ...params,
         pageSize,
         pageNum,
@@ -257,8 +257,8 @@ export default class InspectionReport extends PureComponent {
       },
     } = this.props;
     dispatch({
-      type: 'safeFacilities/fetchReportAdd',
-      payload: { safeId: id, ...formData },
+      type: 'specialEquipment/fetchReportAdd',
+      payload: { equipId: id, ...formData },
       callback: response => {
         if (response && response.code === 200) {
           this.handleModalClose();
@@ -310,7 +310,7 @@ export default class InspectionReport extends PureComponent {
   render() {
     const {
       loading = false,
-      safeFacilities: {
+      specialEquipment: {
         reportData: {
           list = [],
           pagination: { total, pageNum, pageSize },
@@ -428,12 +428,12 @@ export default class InspectionReport extends PureComponent {
             />
           ) : (
             <Card bordered={false} style={{ textAlign: 'center' }}>
-              <span>暂无数据</span>
+              <Empty />
             </Card>
           )}
-          <div style={{ textAlign: 'right', marginTop: 20 }}>
+          {/* <div style={{ textAlign: 'right', marginTop: 20 }}>
             <Button href={`#/facility-management/safety-facilities/list`}>返回</Button>
-          </div>
+          </div> */}
         </div>
         <ReportModal {...modalData} />
         <Lightbox

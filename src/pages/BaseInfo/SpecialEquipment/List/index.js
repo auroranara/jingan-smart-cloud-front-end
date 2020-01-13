@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
+import Link from 'umi/link';
 
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
@@ -463,21 +464,32 @@ export default class SpecialEquipmentList extends PureComponent {
           return 0;
         },
       },
+      // {
+      //   title: '检验报告详情',
+      //   dataIndex: 'detectReportFile',
+      //   key: 'detectReportFile',
+      //   align: 'center',
+      //   width: 120,
+      //   render: (val, row) => {
+      //     if (val.length === 0) return '-';
+      //     const { fileName, webUrl, id } = val[0];
+      //     return (
+      //       <a href={webUrl} target="_blank" rel="noopener noreferrer">
+      //         检验报告
+      //       </a>
+      //     );
+      //   },
+      // },
       {
-        title: '检验报告详情',
-        dataIndex: 'detectReportFile',
-        key: 'detectReportFile',
-        align: 'center',
+        title: '检验报告',
+        dataIndex: 'report',
         width: 120,
-        render: (val, row) => {
-          if (val.length === 0) return '-';
-          const { fileName, webUrl, id } = val[0];
-          return (
-            <a href={webUrl} target="_blank" rel="noopener noreferrer">
-              检验报告
-            </a>
-          );
-        },
+        align: 'center',
+        render: (val, text) => (
+          <Link to={`/facility-management/special-equipment/inspection-report/${text.id}`}>
+            查看详情
+          </Link>
+        ),
       },
       {
         title: '操作',
