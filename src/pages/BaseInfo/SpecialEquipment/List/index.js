@@ -454,16 +454,16 @@ export default class SpecialEquipmentList extends PureComponent {
           );
         },
       },
-      {
-        title: '已绑传感器',
-        dataIndex: 'sensorInfo',
-        key: 'sensorInfo',
-        align: 'center',
-        width: 120,
-        render: (val, row) => {
-          return 0;
-        },
-      },
+      // {
+      //   title: '已绑传感器',
+      //   dataIndex: 'sensorInfo',
+      //   key: 'sensorInfo',
+      //   align: 'center',
+      //   width: 120,
+      //   render: (val, row) => {
+      //     return 0;
+      //   },
+      // },
       // {
       //   title: '检验报告详情',
       //   dataIndex: 'detectReportFile',
@@ -537,10 +537,10 @@ export default class SpecialEquipmentList extends PureComponent {
               设备总数：
               {total}
             </span>
-            <span style={{ marginLeft: 15 }}>
+            {/* <span style={{ marginLeft: 15 }}>
               已绑传感器数：
               {0}
-            </span>
+            </span> */}
           </div>
         }
       >
