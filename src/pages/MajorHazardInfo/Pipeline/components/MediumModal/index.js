@@ -54,7 +54,7 @@ export default class MediumModal extends Component {
     }
   }
 
-  componentDidUpdate({ company: prevCompany }, { companyId: prevCompanyId }) {
+  componentDidUpdate({ company: prevCompany, value: prevValue }, { companyId: prevCompanyId }) {
     const { company, value, onChange } = this.props;
     if (prevCompany !== company) {
       let companyId = prevCompanyId;
@@ -69,7 +69,7 @@ export default class MediumModal extends Component {
           companyId,
         });
       }
-      if (value && prevCompanyId !== companyId) {
+      if (prevCompany && value && prevCompanyId !== companyId) {
         onChange && onChange();
       }
     }

@@ -378,7 +378,7 @@ export default class ThreeInOnePage extends Component {
     } = this.props;
     const { initialValues, submitting } = this.state;
     const showEdit = typeof editEnable === 'function' ? editEnable(detail) : editEnable;
-    const values = { unitId, ...initialValues, ...(this.form && this.form.getFieldsValue()) };
+    const values = { unitId, ...initialValues, ...(this.form && this.form.getFieldsValue()) }; // 这里有问题，但是不知道怎么解决
     let Fields = typeof fields === 'function' ? fields(values) : fields;
     const uploading = Fields.reduce((result, { id, component }) => {
       if (component === 'CustomUpload') {
