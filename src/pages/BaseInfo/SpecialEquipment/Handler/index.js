@@ -746,7 +746,7 @@ export default class SpecialEquipment extends PureComponent {
               <Input placeholder="请输入检测单位" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="检验报告" {...formItemLayout}>
+          {/* <FormItem label="检验报告" {...formItemLayout}>
             {getFieldDecorator('detectReport')(
               <Upload {...defaultUploadProps} fileList={fileList} onChange={this.handleFileChange}>
                 <Button type="dashed" style={{ width: '96px', height: '96px' }}>
@@ -755,7 +755,7 @@ export default class SpecialEquipment extends PureComponent {
                 </Button>
               </Upload>
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem label="使用部位" {...formItemLayout}>
             {getFieldDecorator('usePart', { getValueFromEvent: this.handleTrim })(
               <Input placeholder="请输入使用部位" {...itemStyles} />
