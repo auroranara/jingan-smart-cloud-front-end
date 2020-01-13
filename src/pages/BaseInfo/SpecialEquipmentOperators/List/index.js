@@ -141,7 +141,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
     router.push(addUrl)
   }
 
-  formateTime = timestramp => timestramp ? moment(timestramp).format('YYYY-MM-DD') : '暂无数据'
+  formateTime = timestramp => timestramp ? moment(timestramp).format('YYYY-MM-DD') : '-'
 
   // 点击删除
   handleDelete = (id) => {
@@ -288,9 +288,9 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
         render: (val, { name, sex, birthday, telephone }) => (
           <div style={{ textAlign: 'left' }}>
             <div>姓名：{name}</div>
-            <div>性别：{(sex === '1' && '男') || (sex === '2' && '女')}</div>
-            <div>出生年月：{this.formateTime(birthday)}</div>
-            <div>联系电话：{telephone}</div>
+            {sex !== null && <div>性别：{(sex === '1' && '男') || (sex === '2' && '女')}</div>}
+            {birthday !== null && <div>出生年月：{this.formateTime(birthday)}</div>}
+            {telephone && <div>联系电话：{telephone}</div>}
           </div>
         ),
       },

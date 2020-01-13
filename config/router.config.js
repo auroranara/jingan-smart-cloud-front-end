@@ -2453,6 +2453,12 @@ module.exports = env => {
                   name: 'detail',
                   component: './BaseInfo/SpecialEquipment/Handler/index',
                 },
+                {
+                  path: '/facility-management/special-equipment/inspection-report/:id',
+                  code: 'facilityManagement.specialEquipment.detail',
+                  name: 'report',
+                  component: './BaseInfo/SpecialEquipment/InspectionReport',
+                },
               ],
             },
             {

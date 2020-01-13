@@ -205,7 +205,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
   getTime = obj => obj ? obj.startOf('day').unix() * 1000 : obj
 
   handleProjectCodeChange = (projectCode, item) => {
-    console.log('change');
+    // console.log('change');
 
     const {
       form: { setFieldsValue },
@@ -418,7 +418,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
           <FormItem label="出生年月" {...formItemLayout}>
             {getFieldDecorator('birthday', {
               initialValue: id && detail.birthday ? moment(detail.birthday) : undefined,
-              rules: [{ required: true, message: '请选择出生年月' }],
+              // rules: [{ required: true, message: '请选择出生年月' }],
             })(
               <DatePicker
                 placeholder="请选择"
@@ -430,7 +430,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
             {getFieldDecorator('telephone', {
               initialValue: id ? detail.telephone : undefined,
               rules: [
-                { required: true, message: '请输入联系电话' },
+                // { required: true, message: '请输入联系电话' },
                 { pattern: phoneReg, message: '联系电话格式不正确' },
               ],
             })(

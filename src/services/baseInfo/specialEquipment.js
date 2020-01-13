@@ -27,3 +27,16 @@ export async function deleteSpecialEquip(params) {
     method: 'DELETE',
   });
 }
+
+// 报告列表
+export async function queryReportList(params) {
+  return request(`/acloud_new/v2/ci/specialEquip/specialEquipReport/page?${stringify(params)}`);
+}
+
+// 新增
+export async function queryReportAdd(params) {
+  return request(`/acloud_new/v2/ci/specialEquip/specialEquipReport`, {
+    method: 'POST',
+    body: params,
+  });
+}

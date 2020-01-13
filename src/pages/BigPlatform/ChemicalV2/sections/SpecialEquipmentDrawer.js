@@ -169,8 +169,8 @@ export default class SpecialEquipmentDrawer extends PureComponent {
                 person: 'contact', // 负责人
                 expiryDate: 'endDate', // 有效期至
               }}
-              statusLabel={statusSetting[item.paststatus].label}
-              statusColor={statusSetting[item.paststatus].color}
+              statusLabel={statusSetting[item.paststatus] ? statusSetting[item.paststatus].label : undefined}
+              statusColor={statusSetting[item.paststatus] ? statusSetting[item.paststatus].color : undefined}
             />
           ))}
         </div>

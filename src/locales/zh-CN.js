@@ -320,6 +320,7 @@ export default {
   'menu.facilityManagement.specialEquipment.add': '新增特种设备',
   'menu.facilityManagement.specialEquipment.detail': '查看特种设备',
   'menu.facilityManagement.specialEquipment.edit': '编辑特种设备',
+  'menu.facilityManagement.specialEquipment.report': '特种设备检验报告',
   'menu.facilityManagement.safetyFacilities': '安全设施',
   'menu.facilityManagement.safetyFacilities.list': '安全设施列表',
   'menu.facilityManagement.safetyFacilities.view': '查看安全设施',
