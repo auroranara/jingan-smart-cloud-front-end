@@ -36,7 +36,13 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            list,
+            list: {
+              ...list,
+              pagination: {
+                ...list.pagination,
+                companyCount: +msg || 0,
+              },
+            },
           },
         });
         callback && callback(true, list);

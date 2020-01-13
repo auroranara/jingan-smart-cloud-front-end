@@ -49,7 +49,6 @@ export default class OperationRecordOther extends Component {
             label: '单位名称',
             required: true,
             component: 'CompanySelect',
-            refreshEnable: true,
           },
         ]
       : []),

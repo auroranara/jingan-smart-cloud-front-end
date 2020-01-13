@@ -343,6 +343,7 @@ export default class TablePage extends Component {
       loading = false,
       unitId,
       otherOperation,
+      showTotal = true,
     } = this.props;
     const { selectedRowKeys } = this.state;
 
@@ -405,7 +406,7 @@ export default class TablePage extends Component {
                 pageSize,
                 total,
                 pageSizeOptions: ['5', '10', '15', '20'],
-                showTotal: total => `共 ${total} 条`,
+                showTotal: showTotal && (total => `共 ${total} 条`),
                 showQuickJumper: true,
                 showSizeChanger: true,
               }}
@@ -427,13 +428,13 @@ export default class TablePage extends Component {
   }
 
   render() {
-    const { breadcrumbList, content, children } = this.props;
+    const { breadcrumbList, content, children, list } = this.props;
 
     return (
       <PageHeaderLayout
         title={breadcrumbList[breadcrumbList.length - 1].title}
         breadcrumbList={breadcrumbList}
-        content={content}
+        content={typeof content === 'function' ? content({ list }) : content}
       >
         {this.renderForm()}
         {this.renderTable()}
