@@ -205,7 +205,7 @@ export default class TableList extends React.Component {
       },
     } = this.props;
 
-    const { points, detailList } = this.state;
+    const { points, detailList, buildingId } = this.state;
     const { coordinateList } = detailList;
     if (!id ? points.length === 0 : coordinateList.length === 0) {
       return message.warning('请在地图上划分区域');
@@ -239,6 +239,10 @@ export default class TableList extends React.Component {
               ? JSON.stringify(points.map(({ x, y, z, groupID }) => ({ x, y, z, groupID })))
               : undefined,
           groupId: 1,
+          model_ids: buildingId
+            .filter(item => item.selected === true)
+            .map(item => item.value)
+            .join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -269,26 +273,36 @@ export default class TableList extends React.Component {
   };
 
   // 获取地图上的坐标
-  getPoints = (points, buildingId) => {
-    const idList = buildingId
-      .filter(item => item)
-      .filter((item, index, self) => self.indexOf(item) === index)
-      .map((item, index) => ({ key: index, value: item, selected: false }));
-    this.setState({ points, buildingId: idList });
+  getPoints = points => {
+    this.setState({ points });
   };
 
-  handleTagClick = (i, id, s) => {
-    this.childMap.handleModelColor(id);
+  getBuilding = buildingId => {
+    const idList = buildingId
+      .filter(item => item)
+      // .filter((item, index, self) => self.indexOf(item) === index)
+      .map((item, index) => ({
+        key: index,
+        areaId: item.buildingId,
+        point: item.points,
+        selected: true,
+      }));
+    this.setState({ buildingId: idList });
+  };
+
+  handleTagClick = (areaId, point, selected) => {
+    this.childMap.handleModelEdit(areaId, point, selected);
     const { buildingId } = this.state;
-    // this.setState({
-    //   buildingId: buildingId.reduce((res, item) => {
-    //     console.log('111111', res, item);
-    //     if (res.key === id) {
-    //       item.selected = !item.selected;
-    //     }
-    //     return [res, ...item];
-    //   }),
-    // });
+    this.setState({
+      buildingId: buildingId.reduce(function(pre, cur, index, arr) {
+        if (pre.areaId === areaId) {
+          pre.selected = !pre.selected;
+        } else if (cur.areaId === areaId) {
+          cur.selected = !cur.selected;
+        }
+        return [...arr];
+      }),
+    });
   };
 
   renderDrawButton = () => {
@@ -322,7 +336,6 @@ export default class TableList extends React.Component {
     } = this.props;
 
     const { isDrawing, detailList, pointList, buildingId } = this.state;
-
     const editTitle = id ? '编辑' : '新增';
 
     const {
@@ -346,6 +359,7 @@ export default class TableList extends React.Component {
                 isDrawing={isDrawing}
                 onRef={this.onRef}
                 getPoints={this.getPoints}
+                getBuilding={this.getBuilding}
                 pointList={pointList}
               />
             </Card>
@@ -455,13 +469,13 @@ export default class TableList extends React.Component {
                 })(<Input placeholder="请输入" {...itemStyles} />)}
               </FormItem> #555252*/}
               <FormItem label="所选建筑物" {...formItemLayout}>
-                {buildingId.map(({ key, value, selected }) => (
+                {buildingId.map(({ key, areaId, point, selected }) => (
                   <Tag
                     color={!selected ? '' : '#555252'}
                     key={key}
-                    onClick={() => this.handleTagClick(key, value)}
+                    onClick={() => this.handleTagClick(areaId, point, selected)}
                   >
-                    {value}
+                    {areaId}
                   </Tag>
                 ))}
               </FormItem>

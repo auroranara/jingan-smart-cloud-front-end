@@ -101,7 +101,7 @@ export default class Map extends React.Component {
       if (!clickedObj || !clickedObj.eventInfo) return;
 
       var { coord } = clickedObj.eventInfo;
-      buildingId.push(event.target.FID);
+      // buildingId.push(event.target.ID);
       selectedList.push(event.target);
       if (this.props.isDrawing) {
         // 默认第一张地图
@@ -160,12 +160,22 @@ export default class Map extends React.Component {
     models
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
       .map(model => model.setColor(color));
-    // console.log(models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points)));
+    // 获取当前选中区域所有ID
+    buildingId = models
+      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
+      .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
+    this.props.getBuilding(buildingId);
   }
 
-  handleModelColor = id => {
-    const cord = selectedList.filter(item => item.FID === id).map(item => item.mapCoord);
-    this.setModelColor(cord, COLOR.blue);
+  handleModelEdit = (areaId, point, selected) => {
+    // var polygonMarker = new fengMap.FMPolygonMarker({
+    //   alpha: 0.5, //设置透明度
+    //   lineWidth: 1, //设置边框线的宽度
+    //   height: 5, //设置高度*/
+    //   points, //多边形坐标点
+    // });
+    // console.log('point', point);
+    // console.log('polygonMarker.contain(point)', polygonMarker.contain(point));
   };
 
   removeArea = index => {
@@ -244,7 +254,8 @@ export default class Map extends React.Component {
     line.addSegment(seg);
     var lineObject = map.drawLineMark(line, lineStyle);
     naviLines.push(lineObject);
-    this.props.getPoints(points, buildingId);
+    // 获取选中坐标点
+    this.props.getPoints(points);
   }
 
   render() {
@@ -253,7 +264,7 @@ export default class Map extends React.Component {
       // doDraw
       this.drawPolygon(points, COLOR.blue);
       // 建筑物上色
-      // this.setModelColor(points, COLOR.blue);
+      this.setModelColor(points, COLOR.blue);
       map.clearLineMark();
       points = [];
     }
