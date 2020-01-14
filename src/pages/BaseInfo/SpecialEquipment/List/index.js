@@ -362,7 +362,7 @@ export default class SpecialEquipmentList extends PureComponent {
       user: {
         currentUser: { unitType },
       },
-      emergencyManagement: { specialEquipment },
+      emergencyManagement: { specialEquipment=[] },
     } = this.props;
 
     const columns = [
