@@ -332,7 +332,7 @@ export default class InspectionReport extends PureComponent {
         key: 'inspectDate',
         align: 'center',
         render: val => {
-          return moment(+val).format('YYYY-MM-DD');
+          return val === null ? '' : moment(+val).format('YYYY-MM-DD');
         },
       },
       {
@@ -341,7 +341,7 @@ export default class InspectionReport extends PureComponent {
         key: 'usePeriodDate',
         align: 'center',
         render: val => {
-          return moment(+val).format('YYYY-MM-DD');
+          return val === null ? '' : moment(+val).format('YYYY-MM-DD');
         },
       },
       {

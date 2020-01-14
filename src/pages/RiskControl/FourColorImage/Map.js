@@ -47,7 +47,7 @@ export default class Map extends React.Component {
       pointList.map(item => {
         const { zoneLevel, coordinateList, modelIds } = item;
         const cordPoints = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-        const modeIdList = modelIds.split(',').map(Number);
+        const modeIdList = modelIds || ''.split(',').map(Number);
         if (modeIdList.length > 0) {
           const models = map.getDatasByAlias(1, 'model');
           models.forEach(item => {
@@ -55,11 +55,12 @@ export default class Map extends React.Component {
               item.setColor(COLORS[zoneLevel], 1);
             }
           });
-          this.drawPolygon(cordPoints, '');
-        } else {
-          this.drawPolygon(cordPoints, COLORS[zoneLevel]);
-          this.setModelColor(cordPoints, COLORS[zoneLevel]);
+          this.drawPolygon(cordPoints, '', 0);
         }
+        // else {
+        //   this.drawPolygon(cordPoints, COLORS[zoneLevel]);
+        //   this.setModelColor(cordPoints, COLORS[zoneLevel]);
+        // }
         return null;
       });
   };
@@ -156,7 +157,7 @@ export default class Map extends React.Component {
     layer.addMarker(im);
   }
 
-  drawPolygon(points, color) {
+  drawPolygon(points, color, s) {
     var groupLayer = map.getFMGroup(1);
     //创建PolygonMarkerLayer
     var layer = new fengMap.FMPolygonMarkerLayer();
@@ -168,7 +169,9 @@ export default class Map extends React.Component {
       points, //多边形坐标点
     });
     polygonMarker.setColor(color);
-    layer.addMarker(polygonMarker);
+    if (s !== 0) {
+      layer.addMarker(polygonMarker);
+    }
     this.polygonLayers.push(layer);
     this.polygonMarkers.push(polygonMarker);
   }

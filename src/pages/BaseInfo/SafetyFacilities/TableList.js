@@ -47,7 +47,13 @@ const breadcrumbList = [
 // 权限
 const {
   baseInfo: {
-    safetyFacilities: { view: viewAuth, add: addAuth, edit: editAuth, delete: deleteAuth },
+    safetyFacilities: {
+      view: viewAuth,
+      add: addAuth,
+      edit: editAuth,
+      delete: deleteAuth,
+      report: reportAuth,
+    },
   },
 } = codes;
 
@@ -309,6 +315,7 @@ export default class TableList extends PureComponent {
     const viewCode = hasAuthority(viewAuth, permissionCodes);
     const editCode = hasAuthority(editAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
+    const reportCode = hasAuthority(reportAuth, permissionCodes);
 
     const columns = [
       {
@@ -363,13 +370,9 @@ export default class TableList extends PureComponent {
         align: 'center',
         width: 200,
         render: (val, record) => {
-          const { paststatus } = record;
           return (
             <div>
               <span>{statusVal[val]}</span>
-              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
-                {paststatusVal[paststatus]}
-              </span>
             </div>
           );
         },
@@ -380,9 +383,14 @@ export default class TableList extends PureComponent {
         align: 'center',
         width: 200,
         render: (val, record) => {
-          const { endDate } = record;
+          const { endDate, paststatus } = record;
           return endDate ? (
-            <div>{endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}</div>
+            <div>
+              {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}{' '}
+              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+                {paststatusVal[paststatus]}
+              </span>
+            </div>
           ) : (
             '-'
           );
@@ -422,11 +430,14 @@ export default class TableList extends PureComponent {
         dataIndex: 'report',
         width: 120,
         align: 'center',
-        render: (val, text) => (
-          <a href={`#/facility-management/safety-facilities/inspection-report/${text.id}`}>
-            查看详情
-          </a>
-        ),
+        render: (val, text) =>
+          reportCode ? (
+            <a href={`#/facility-management/safety-facilities/inspection-report/${text.id}`}>
+              查看详情
+            </a>
+          ) : (
+            <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看详情</span>
+          ),
       },
     ];
 
@@ -490,7 +501,6 @@ export default class TableList extends PureComponent {
               <Form.Item label={'分类'}>
                 <div>
                   <Select
-                    allowClear
                     value={categoryOneName}
                     placeholder="请选择"
                     {...itemsStyle}
@@ -520,7 +530,6 @@ export default class TableList extends PureComponent {
                     {...itemsStyle}
                     value={categoryThreeName}
                     onChange={this.handleNameChange}
-                    allowClear
                     placeholder="请选择"
                   >
                     {facilitiesNameList.map(({ id, label }) => (
