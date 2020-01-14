@@ -46,3 +46,21 @@
     cursor: pointer;
   }
 }
+
+.btnWrapper {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  color: #1475ED;
+  cursor: pointer;
+
+  .btnIcon {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+
+    &+.btnIcon {
+      margin-left: 12px;
+    }
+  }
+}

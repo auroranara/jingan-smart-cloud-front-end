@@ -17,6 +17,7 @@ import { queryStorehouseList } from '@/services/baseInfo/storehouse';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { getList } from '@/services/gasometer';
 import { queryDangerSourceList } from '../services/company/reservoirRegion';
+import { getList as getPipelineList } from '@/services/pipeline';
 
 export default {
   namespace: 'chemical',
@@ -231,6 +232,10 @@ export default {
         case '312':
           // 气柜
           callServices = getList;
+          break;
+        case '314':
+          // 气柜
+          callServices = getPipelineList;
           break;
         default:
           callServices = getTankList;
