@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import Section from '@/components/Section';
 import HiddenDanger from '../HiddenDanger';
-import noHiddenDanger from '../../img/noHiddenDanger.png';
-
+// import noHiddenDanger from '../../img/noHiddenDanger.png';
 import styles from './index.less';
 
 /**
  * 当前隐患
  */
+const noHiddenDanger = 'http://data.jingan-china.cn/v2/chem/screen/noHiddenDanger.png';
 export default class App extends PureComponent {
   render() {
     const {

@@ -9,9 +9,6 @@ import {
   Col,
   message,
   Radio,
-  DatePicker,
-  TreeSelect,
-  Upload,
   Icon,
   Tooltip,
 } from 'antd';
@@ -20,8 +17,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import { AuthButton } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
-import moment from 'moment';
-import { phoneReg } from '@/utils/validate';
+// import moment from 'moment';
+// import { phoneReg } from '@/utils/validate';
 import CompanySelect from '@/jingan-components/CompanySelect';
 
 const FormItem = Form.Item;
@@ -62,20 +59,21 @@ export default class HandleVirtualMonitoringDevice extends Component {
         }) => {
           setFieldsValue({ company: { key: companyId, label: companyName } });
           setTimeout(() => {
-            if (+locationType === 1) {
-              setFieldsValue({
-                area,
-                location,
-                locationType,
-              })
-            } else {
-              setFieldsValue({
-                buildingId,
-                floorId,
-                location,
-                locationType,
-              })
-            }
+            setFieldsValue({ locationType });
+            setTimeout(() => {
+              if (+locationType === 1) {
+                setFieldsValue({
+                  area,
+                  location,
+                })
+              } else {
+                setFieldsValue({
+                  buildingId,
+                  floorId,
+                  location,
+                })
+              }
+            }, 0);
           }, 0);
           companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
@@ -217,6 +215,11 @@ export default class HandleVirtualMonitoringDevice extends Component {
     })
   }
 
+  jumpToBuildingManagement = () => {
+    const win = window.open(`${window.publicPath}#/base-info/buildings-info/list`, '_blank');
+    win.focus();
+  };
+
   /**
    * 渲染表单
    */
@@ -339,11 +342,6 @@ export default class HandleVirtualMonitoringDevice extends Component {
                       </Fragment>
                     )}
                   </FormItem>
-                  <FormItem label="详细位置" {...formItemLayout}>
-                    {getFieldDecorator('location')(
-                      <Input placeholder="请输入" {...itemStyles} />
-                    )}
-                  </FormItem>
                 </Fragment>
               )}
               {locationType === 1 && (
@@ -353,13 +351,13 @@ export default class HandleVirtualMonitoringDevice extends Component {
                       <Input placeholder="请输入" {...itemStyles} />
                     )}
                   </FormItem>
-                  <FormItem label="位置详情" {...formItemLayout}>
-                    {getFieldDecorator('location')(
-                      <Input placeholder="请输入" {...itemStyles} />
-                    )}
-                  </FormItem>
                 </Fragment>
               )}
+              <FormItem label="位置详情" {...formItemLayout}>
+                {getFieldDecorator('location')(
+                  <Input placeholder="请输入" {...itemStyles} />
+                )}
+              </FormItem>
             </Fragment>
           )}
         </Card>

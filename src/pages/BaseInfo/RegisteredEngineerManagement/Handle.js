@@ -1,12 +1,16 @@
-import { PureComponent } from 'react';
+import { PureComponent, useImperativeHandle } from 'react';
 import { connect } from 'dva';
 import { Card, Button, Form, Input, Select, Upload, DatePicker, Icon, message } from 'antd';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import FooterToolbar from '@/components/FooterToolbar';
 import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
+
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import FooterToolbar from '@/components/FooterToolbar';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+import SearchSelect from '@/jingan-components/SearchSelect';
+import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+import { SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -29,6 +33,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
   videoMonitor,
   user,
   loading: loading.models.reservoirRegion,
+  listLoading: loading.effects['user/fetchUserList'],
 }))
 export default class RegSafetyEngEdit extends PureComponent {
   state = {
@@ -37,6 +42,7 @@ export default class RegSafetyEngEdit extends PureComponent {
     regFilesList: [],
     reqUploading: false, // 上传是否加载
     regUploading: false,
+    editCompanyId: '',
     detailList: {},
   };
 
@@ -47,6 +53,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       match: {
         params: { id },
       },
+      form: { setFieldsValue },
     } = this.props;
 
     if (id) {
@@ -60,7 +67,11 @@ export default class RegSafetyEngEdit extends PureComponent {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
           const { companyId, requirementsFilesList, regFilesList } = currentList;
+          const { companyName } = currentList;
+          setFieldsValue({ companyId: companyName });
+
           this.setState({
+            editCompanyId: companyId,
             detailList: currentList,
             editCompanyId: companyId,
             requireFilesList: requirementsFilesList.map(({ dbUrl, webUrl }, index) => ({
@@ -105,9 +116,9 @@ export default class RegSafetyEngEdit extends PureComponent {
     const { editCompanyId } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { requireFilesList, regFilesList } = this.state;
+        const { requireFilesList, regFilesList, editCompanyId } = this.state;
         const {
-          name,
+          user,
           sex,
           birth,
           phone,
@@ -118,12 +129,15 @@ export default class RegSafetyEngEdit extends PureComponent {
           regCode,
           period: [startTime, endTime],
         } = values;
+
+        const { key: userId, label: name } = user || {};
         const payload = {
           id,
           companyId: this.companyId || companyId || editCompanyId,
+          userId,
           name,
           sex,
-          birth: birth.format('YYYY-MM-DD'),
+          birth: birth ? birth.format('YYYY-MM-DD') : null,
           phone,
           level,
           category,
@@ -194,9 +208,11 @@ export default class RegSafetyEngEdit extends PureComponent {
     const { id, name } = item;
     setFieldsValue({
       companyId: name,
+      user: undefined,
     });
     this.companyId = id;
     this.handleClose();
+    this.getUserList();
   };
 
   // 渲染企业模态框
@@ -314,21 +330,64 @@ export default class RegSafetyEngEdit extends PureComponent {
     }
   };
 
+  getCompanyId = () => {
+    const {
+      form: { getFieldValue },
+      user: { currentUser: { unitType, companyId } },
+    } = this.props;
+    let comId = companyId;
+    if (!isCompanyUser(+unitType))
+      comId = this.companyId;
+    return comId;
+  };
+
+  getUserList = name => {
+    const {
+      dispatch,
+    } = this.props;
+
+    const companyId = this.getCompanyId();
+    companyId && dispatch({
+      type: 'user/fetchUserList',
+      payload: { pageNum: 1, pageSize: 20, unitId: companyId, userName: name },
+    });
+  };
+
+  setUserList = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'user/saveUserList', payload: [] });
+  };
+
+  handleUserSelect = (value, option) => {
+    const {
+      form: { setFieldsValue },
+      user: { userList },
+    } =  this.props;
+    const target = userList.find(({ loginId }) => loginId === value.key);
+    if (target) {
+      const { sex, birth, phoneNumber } = target;
+      setFieldsValue({ sex, birth: typeof birth === 'number' ? moment(birth) : undefined, phone: phoneNumber });
+    }
+  };
+
   /**
    * 渲染表单
    */
   renderForm = () => {
     const {
+      listLoading,
       form: { getFieldDecorator },
       reservoirRegion: { sexList, engineerLevelList, specialityList },
       user: {
         currentUser: { unitType },
+        userList,
       },
     } = this.props;
     const { reqUploading, regUploading, requireFilesList, regFilesList, detailList } = this.state;
 
     const {
       companyName,
+      userId,
       name,
       sex,
       birth,
@@ -341,6 +400,24 @@ export default class RegSafetyEngEdit extends PureComponent {
       startDate,
       endDate,
     } = detailList;
+
+    // const nameInput = <Input placeholder="请输入姓名" {...itemStyles} />;
+    const nameInput = (
+      <SearchSelect
+        allowClear
+        labelInValue
+        // disabled={!this.getCompanyId()}
+        showArrow={false}
+        style= {{ width: '70%' }}
+        loading={listLoading}
+        list={userList}
+        fieldNames={{ key: 'loginId', value: 'userName' }}
+        getList={this.getUserList}
+        setList={this.setUserList}
+        placeholder="请选择人员姓名"
+        onSelect={this.handleUserSelect}
+      />
+    );
 
     return (
       <Card>
@@ -367,10 +444,10 @@ export default class RegSafetyEngEdit extends PureComponent {
           )}
 
           <FormItem label="姓名" {...formItemLayout}>
-            {getFieldDecorator('name', {
-              initialValue: name,
-              rules: [{ required: true, message: '请输入姓名' }],
-            })(<Input placeholder="请输入姓名" {...itemStyles} />)}
+            {getFieldDecorator('user', {
+              initialValue: userId ? { key: userId, label: name } : undefined,
+              rules: [{ required: true, message: '请选择人员姓名' }],
+            })(nameInput)}
           </FormItem>
           <FormItem label="性别" {...formItemLayout}>
             {getFieldDecorator('sex', {
@@ -378,7 +455,7 @@ export default class RegSafetyEngEdit extends PureComponent {
               rules: [{ required: true, message: '请选择性别' }],
             })(
               <Select placeholder="请选择性别" {...itemStyles}>
-                {sexList.map(({ key, value }) => (
+                {SEXES.map(({ key, label: value }) => (
                   <Select.Option key={key} value={key}>
                     {value}
                   </Select.Option>
@@ -386,11 +463,11 @@ export default class RegSafetyEngEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem label="出生年月" {...formItemLayout}>
+          <FormItem label="生日" {...formItemLayout}>
             {getFieldDecorator('birth', {
-              initialValue: birth ? moment(+birth) : undefined,
-              rules: [{ required: true, message: '请选择出生年月' }],
-            })(<DatePicker placeholder="请选择出生年月" format="YYYY-MM-DD" {...itemStyles} />)}
+              initialValue: typeof birth === 'number' ? moment(+birth) : undefined,
+              // rules: [{ required: true, message: '请选择生日' }],
+            })(<DatePicker placeholder="请选择生日" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
           <FormItem label="联系电话" {...formItemLayout}>
             {getFieldDecorator('phone', {
@@ -400,7 +477,7 @@ export default class RegSafetyEngEdit extends PureComponent {
           </FormItem>
           <FormItem label="工程师级别" {...formItemLayout}>
             {getFieldDecorator('level', {
-              initialValue: level,
+              initialValue: level || '1',
               rules: [{ required: true, message: '请选择工程师级别' }],
             })(
               <Select placeholder="请选择工程师级别" {...itemStyles}>
@@ -415,7 +492,7 @@ export default class RegSafetyEngEdit extends PureComponent {
           <FormItem label="专业类别" {...formItemLayout}>
             {getFieldDecorator('category', {
               initialValue: category,
-              rules: [{ required: true, message: '请输入专业类别' }],
+              rules: [{ required: true, message: '请选择专业类别' }],
             })(
               <Select placeholder="请选择专业类别" {...itemStyles}>
                 {specialityList.map(({ key, value }) => (
@@ -506,18 +583,20 @@ export default class RegSafetyEngEdit extends PureComponent {
   };
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar() {
+  renderFooterToolbar(isDetail) {
     const { regUploading, reqUploading } = this.state;
     return (
       <FooterToolbar>
-        <Button
-          type="primary"
-          size="large"
-          loading={reqUploading || regUploading}
-          onClick={this.handleSubmit}
-        >
-          提交
-        </Button>
+        {isDetail ? null : (
+          <Button
+            type="primary"
+            size="large"
+            loading={reqUploading || regUploading}
+            onClick={this.handleSubmit}
+          >
+            提交
+          </Button>
+        )}
         <Button type="primary" size="large" onClick={this.goBack}>
           返回
         </Button>
@@ -530,8 +609,10 @@ export default class RegSafetyEngEdit extends PureComponent {
       match: {
         params: { id },
       },
+      route: { name },
     } = this.props;
-    const title = id ? '编辑人员' : '新增人员';
+    const isDetail = name === 'view';
+    const title = id ? (isDetail ? '详情' : '编辑') : '新增';
     const breadcrumbList = [
       {
         title: '首页',
@@ -556,7 +637,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
         {this.renderModal()}
-        {this.renderFooterToolbar()}{' '}
+        {this.renderFooterToolbar(isDetail)}{' '}
       </PageHeaderLayout>
     );
   }

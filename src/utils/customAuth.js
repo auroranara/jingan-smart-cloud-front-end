@@ -55,6 +55,7 @@ const clearParam = url => /\:/.test(url) ? url.split(':').shift() : url
  * @param {Array} array 需要处理的数组
  * @param {Object} model user模块
  */
+const OPE_SCREENS = ['governmentSafety', 'newFireControl', 'electricityMonitor', 'gas', 'smoke', 'operation', 'personnelPositioning'];
 export const filterBigPlatform = (array, model) => {
   const {
     currentUser: {
@@ -107,9 +108,11 @@ export const filterBigPlatform = (array, model) => {
     // 处理路径path
     if (['electricityMonitor', 'gas', 'smoke'].includes(name)) {
       item.path = `${path}${grids.length ? grids[0].value : 'index'}`
+    } else if (['chemical'].includes(name)) {
+      item.path = path + (companyId || 'DccBRhlrSiu9gMV7fmvizw'); // temp
     } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
-      item.path = path + companyId;
-    } else if (['governmentSafety', 'newFireControl', 'chemical'].includes(name)) {
+      item.path = path + (companyId || 'index');
+    } else if (['governmentSafety', 'newFireControl'].includes(name)) {
       item.path = path + 'index';
     } else item.path = path;
 
@@ -126,7 +129,7 @@ export const filterBigPlatform = (array, model) => {
       if (['electricityMonitor', 'gas', 'smoke'].includes(name)) return [...arr, item]
     } else if (unitType === 3) {
       // 运营
-      if (['governmentSafety', 'newFireControl', 'electricityMonitor', 'gas', 'smoke', 'operation'].includes(name)) return [...arr, item]
+      if (OPE_SCREENS.includes(name)) return [...arr, item]
     } else if (unitType === 4) {
       // 企事业
       if (name === 'companySafety' && safetyProduction && clfcSafetyAuth) return [...arr, item]
@@ -135,8 +138,9 @@ export const filterBigPlatform = (array, model) => {
       if (name === 'dynamicMonitor' && monitorService && clfcSafetyAuth) return [...arr, item]
       if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
       if (name === 'gasStation') return [...arr, item]
+      if (name === 'chemical') return [...arr, item]
     }
-    if (name === 'chemical') return [...arr, item]
+    // if (name === 'chemical') return [...arr, item]
     return arr;
   }, [])
 }
@@ -187,6 +191,12 @@ export function getCodeMap(menuData, codeMap, pathArray) {
   }
 }
 
+function getMenuName(path) {
+  const parts = path.split('/').filter(n => n);
+  if (parts.length)
+    return parts[0];
+};
+
 // 高阶函数，最后的返回值是个函数，来判断当前路径是否在menus中，即当前用户是否有访问权限，因为Authorized组件的authority属性要求传入的值是个函数
 export function generateAuthFn(codes, codeMap, pathArray, rootPaths=[]) {
   // console.log('codes', codes);
@@ -196,8 +206,9 @@ export function generateAuthFn(codes, codeMap, pathArray, rootPaths=[]) {
   return pathname => () => {
     // exception页面无需拦截
     // if (pathname.toLowerCase().includes('exception')) return true;
-    if (rootPaths.some(p => pathname.toLowerCase().includes(p)))
-      return true;
+    // console.log(pathname);
+    // if (rootPaths.some(p => pathname.toLowerCase().includes(p))) return true;
+    if (rootPaths.some(p => getMenuName(pathname) === p)) return true;
 
     // 为了防止出现 codeMap[undefined]的情况，所以要判断下path是否存在，不存在则是pathname对应页面不存在，直接返回true，umi会自己判断页面是否存在，并渲染对应的404页面
     const path = getPath(pathname, pathArray);

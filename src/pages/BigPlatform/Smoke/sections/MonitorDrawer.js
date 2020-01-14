@@ -14,7 +14,7 @@ import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
 import cameraIcon from '../imgs/camera.png';
-import emptyBg from '../imgs/waterBg.png';
+// import emptyBg from '../imgs/waterBg.png';
 import smokeAlarm from '../imgs/smoke-alarm.png';
 import smokeFault from '../imgs/smoke-fault.png';
 import smokeNormal from '../imgs/smoke-normal.png';
@@ -23,6 +23,7 @@ import smokeLost from '../imgs/smoke-lost.png';
 import Ellipsis from '@/components/Ellipsis';
 import { findFirstVideo } from '@/utils/utils';
 
+const emptyBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 const LABELS = ['正常', '火警', '故障', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 

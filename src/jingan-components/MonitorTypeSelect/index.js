@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { TreeSelect } from 'antd';
+// import { TreeSelect } from 'antd';
+import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import { connect} from 'dva';
 
 @connect(({
@@ -10,7 +11,10 @@ import { connect} from 'dva';
   getMonitorTypeList(payload, callback) {
     dispatch({
       type: 'common/getMonitorTypeList',
-      payload,
+      payload: {
+        type: 4,
+        ...payload,
+      },
       callback,
     });
   },
@@ -34,14 +38,14 @@ export default class MonitorTypeSelect extends Component {
     } = this.props;
 
     return (
-      <TreeSelect
+      <SelectOrSpan
         style={{ width: '100%' }}
         value={value}
         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-        treeData={monitorTypeList}
         placeholder="请选择监测类型"
         onChange={onChange}
         allowClear={allowClear}
+        list={monitorTypeList}
       />
     );
   }

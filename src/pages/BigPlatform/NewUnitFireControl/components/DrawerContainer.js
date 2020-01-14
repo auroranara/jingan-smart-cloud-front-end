@@ -11,6 +11,7 @@ const ICON_STYLE = {
   fontSize: 18,
   color: '#FFF',
   cursor: 'pointer',
+  zIndex: 66,
 };
 const WIDTH = 960;
 
@@ -43,10 +44,12 @@ export default class DrawerContainer extends PureComponent {
       >
         <div className={styles.container} id={id}>
           <Icon type="close" style={ICON_STYLE} onClick={e => onClose()} />
-          <h3 className={styles.title}>
-            <span className={styles.rect} />
-            {title}
-          </h3>
+          {title && (
+            <h3 className={styles.title}>
+              <span className={styles.rect} />
+              {title}
+            </h3>
+          )}
           <Row style={{ height: hasTitle ? 'calc(100% - 51px)' : '100%', ...rowStyle }}>
             <Col span={right ? 12 : 24} style={{ ...COL_STYLE, ...leftParStyle }}>
               {left}

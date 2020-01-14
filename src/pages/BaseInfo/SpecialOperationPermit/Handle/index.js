@@ -46,11 +46,13 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const getRootChild = () => document.querySelector('#root>div');
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+const BUTTON_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
-@connect(({ baseInfo, sensor, loading }) => ({
+@connect(({ baseInfo, sensor, user, loading }) => ({
   baseInfo,
   sensor,
+  user,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 export default class specialOperationPermitHandle extends PureComponent {
@@ -70,6 +72,7 @@ export default class specialOperationPermitHandle extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: { isCompany, currentUser },
     } = this.props
     // 获取作业类别
     this.fetchDict({
@@ -105,6 +108,11 @@ export default class specialOperationPermitHandle extends PureComponent {
           setFieldsValue({ companyId })
         },
       })
+    } else if (isCompany) {
+      // 如果企业账号
+      const { companyId, companyName } = currentUser;
+      this.setState({ selectedCompany: { id: companyId, name: companyName } })
+      // setFieldsValue({ companyId })
     }
   }
 
@@ -240,7 +248,7 @@ export default class specialOperationPermitHandle extends PureComponent {
     }
   }
 
-  getTime = obj => obj.startOf('day').unix() * 1000
+  getTime = obj => obj ? obj.startOf('day').unix() * 1000 : obj;
 
   /**
    * 提交表单
@@ -251,13 +259,14 @@ export default class specialOperationPermitHandle extends PureComponent {
       form: { validateFields },
       match: { params: { id } },
     } = this.props;
-    const { frontPhotoList, backPhotoList } = this.state;
+    const { frontPhotoList, backPhotoList, selectedCompany } = this.state;
     validateFields((err, values) => {
       if (err) return;
       const { workType, effectiveDate, birthday, firstDate, reviewDate, ...resValues } = values;
       const [startDate, endDate] = effectiveDate;
       const payload = {
         ...resValues,
+        companyId: selectedCompany.id,
         workType: workType && workType.length ? workType.join(',') : '',
         startDate: this.getTime(startDate),
         endDate: endDate.endOf('day').unix() * 1000,
@@ -317,6 +326,7 @@ export default class specialOperationPermitHandle extends PureComponent {
     const {
       match: { params: { id } },
       form: { getFieldDecorator },
+      user: { isCompany },
     } = this.props;
     const {
       frontPhotoList,
@@ -330,16 +340,18 @@ export default class specialOperationPermitHandle extends PureComponent {
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位' }],
-            })(
-              <Fragment>
-                <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择单位" />
-                <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {!isCompany && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位' }],
+              })(
+                <Fragment>
+                  <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择单位" />
+                  <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="姓名" {...formItemLayout}>
             {getFieldDecorator('name', {
               initialValue: id ? detail.name : undefined,
@@ -363,7 +375,7 @@ export default class specialOperationPermitHandle extends PureComponent {
           <FormItem label="出生年月" {...formItemLayout}>
             {getFieldDecorator('birthday', {
               initialValue: id && detail.birthday ? moment(detail.birthday) : undefined,
-              rules: [{ required: true, message: '请选择出生年月' }],
+              // rules: [{ required: true, message: '请选择出生年月' }],
             })(
               <DatePicker
                 placeholder="请选择"
@@ -375,7 +387,7 @@ export default class specialOperationPermitHandle extends PureComponent {
             {getFieldDecorator('telephone', {
               initialValue: id ? detail.telephone : undefined,
               rules: [
-                { required: true, message: '请输入联系电话' },
+                // { required: true, message: '请输入联系电话' },
                 { pattern: phoneReg, message: '联系电话格式不正确' },
               ],
             })(<Input placeholder="请输入" {...itemStyles} />)}
@@ -490,10 +502,13 @@ export default class specialOperationPermitHandle extends PureComponent {
     const {
       companyLoading,
       match: { params: { id } },
+      route: { name },
       sensor: { companyModal }, // companyModal { list , pagination:{} }
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? '编辑特种作业操作证人员' : '新增特种作业操作证人员';
+
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : '编辑' : '新增';
     const breadcrumbList = [
       {
         title: homeTitle,
@@ -517,13 +532,23 @@ export default class specialOperationPermitHandle extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
-        <Button
-          style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-          type="primary"
-          onClick={this.handleSubmit}
-        >
-          提交
-        </Button>
+        {isDetail ? (
+          <Button
+            style={BUTTON_STYLE}
+            type="primary"
+            onClick={e => router.push(`/operation-safety/special-operation-permit/edit/${id}`)}
+          >
+            编辑
+          </Button>
+        ) : (
+            <Button
+              style={BUTTON_STYLE}
+              type="primary"
+              onClick={this.handleSubmit}
+            >
+              提交
+          </Button>
+          )}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"

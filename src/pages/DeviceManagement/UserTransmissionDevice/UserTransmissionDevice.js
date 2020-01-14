@@ -40,7 +40,7 @@ export default class UserTransmissionDevice extends PureComponent {
     hasMore: true, // 数据库中是否还存在数据
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const that = this;
 
     // 不能将获取childElem放在外面，因为每次组件重新渲染后childElem都可能与原来不同，所以要每次重新获取
@@ -56,14 +56,14 @@ export default class UserTransmissionDevice extends PureComponent {
         pageSize: PAGE_SIZE,
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
-      callback(total) {
+      callback (total) {
         if (total <= PAGE_SIZE) that.setState({ hasMore: false });
         that.companyTotal = total;
       },
     });
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     document.removeEventListener('scroll', this.handleScroll);
     // body.onscroll = null;
   }
@@ -112,7 +112,7 @@ export default class UserTransmissionDevice extends PureComponent {
         practicalAddress: address,
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
-      callback(total) {
+      callback (total) {
         if (total <= PAGE_SIZE) that.setState({ hasMore: false });
       },
     });
@@ -129,7 +129,7 @@ export default class UserTransmissionDevice extends PureComponent {
         pageSize: PAGE_SIZE,
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
-      callback(total) {
+      callback (total) {
         if (total <= PAGE_SIZE) that.setState({ hasMore: false });
       },
     });
@@ -157,7 +157,7 @@ export default class UserTransmissionDevice extends PureComponent {
         name: company,
         practicalAddress: address,
       },
-      callback(total) {
+      callback (total) {
         const currentLength = that.currentpageNum * PAGE_SIZE;
         that.currentpageNum += 1;
         // that.setState({ scrollLoading: false });
@@ -187,7 +187,7 @@ export default class UserTransmissionDevice extends PureComponent {
   //   });
   // };
 
-  renderForm() {
+  renderForm () {
     const { company, address } = this.state;
     return (
       <Card className={styles.check}>
@@ -220,7 +220,7 @@ export default class UserTransmissionDevice extends PureComponent {
             <AuthButton
               code={buttonCodes.deviceManagement.transmission.add}
               type="primary"
-              onClick={e => router.push(`/device-management/gateway/add?equipmentType=201`)}
+              onClick={e => router.push(`/device-management/user-transmission-device/add?equipmentType=201`)}
             >
               新增传输装置
             </AuthButton>
@@ -230,7 +230,7 @@ export default class UserTransmissionDevice extends PureComponent {
     );
   }
 
-  renderList() {
+  renderList () {
     const {
       transmission: {
         data: { list },
@@ -305,7 +305,7 @@ export default class UserTransmissionDevice extends PureComponent {
       </div>
     );
   }
-  render() {
+  render () {
     const {
       transmission: {
         data: {

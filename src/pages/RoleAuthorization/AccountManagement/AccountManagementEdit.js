@@ -4,6 +4,7 @@ import {
   Form,
   Card,
   Button,
+  DatePicker,
   Row,
   Col,
   Input,
@@ -18,7 +19,9 @@ import {
   Checkbox,
   Table,
   Tabs,
+  Upload,
 } from 'antd';
+import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 import FooterToolbar from '@/components/FooterToolbar';
@@ -31,6 +34,10 @@ import {
   DEFAULT_PAGE_SIZE as defaultPageSize,
   SUPERVISIONS,
   SUPERVISIONS_ALL,
+  SEXES,
+  DEGREES,
+  FOLDER,
+  UPLOAD_ACTION,
   renderSearchedTreeNodes,
   getParentKeys,
   getTreeListChildrenMap,
@@ -43,6 +50,9 @@ import {
   generateUnitsTree,
   getIdMaps,
   sortTree,
+  getInitPhotoList,
+  getSubmitPhotoList,
+  handleFileList,
 } from './utils';
 import {
   MAI,
@@ -57,6 +67,7 @@ import {
 } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
 import styles1 from '../Role/Role.less';
+import { getToken } from '@/utils/authority';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -190,6 +201,8 @@ export default class AccountManagementEdit extends PureComponent {
     searchSubValue: '',
     checkedRootKey: undefined,
     msgs: {},
+    photoList: [],
+    avatarList: [],
   };
 
   /* 生命周期函数 */
@@ -240,6 +253,12 @@ export default class AccountManagementEdit extends PureComponent {
       fetchAccountDetail({
         payload: {
           id,
+        },
+        success: ({ educationFileList, avatarFileList }) => {
+          this.setState({
+            photoList: getInitPhotoList(educationFileList),
+            avatarList: getInitPhotoList(avatarFileList),
+          });
         },
         error: () => {
           goToException();
@@ -350,7 +369,7 @@ export default class AccountManagementEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { unitTypeChecked, checkedRootKey, msgs } = this.state;
+    const { unitTypeChecked, checkedRootKey, msgs, photoList, avatarList } = this.state;
 
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
@@ -361,6 +380,10 @@ export default class AccountManagementEdit extends PureComponent {
           accountStatus,
           userName,
           phoneNumber,
+          sex,
+          birthday,
+          degree,
+          major,
           unitType,
           unitId,
           treeIds,
@@ -400,6 +423,12 @@ export default class AccountManagementEdit extends PureComponent {
                 userName,
                 phoneNumber,
                 accountStatus,
+                sex,
+                birth: birthday ? +birthday : null,
+                education: degree,
+                educationFileList: getSubmitPhotoList(photoList),
+                avatarFileList: getSubmitPhotoList(avatarList),
+                major,
               },
               success,
               error,
@@ -413,6 +442,12 @@ export default class AccountManagementEdit extends PureComponent {
               accountStatus,
               userName,
               phoneNumber,
+              sex,
+              birth: birthday ? +birthday : null,
+              education: degree,
+              educationFileList: getSubmitPhotoList(photoList),
+              avatarFileList: getSubmitPhotoList(avatarList),
+              major,
               unitType,
               unitId: unitId ? (unitTypeChecked === GOV ? unitId.value : unitId.key) : null,
               treeIds: treeIds ? treeIds.key : null,
@@ -907,12 +942,60 @@ export default class AccountManagementEdit extends PureComponent {
     this.setState({ msgs: newMsgs });
   };
 
+  // 验证密码
+  validatorPassword = (rule, value, callback) => {
+    const reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]*$/;
+    if (value) {
+      if (value.length >= 6 && reg.test(value)) {
+        callback();
+        return;
+      }
+    }
+    callback('至少6位,含有数字和字母');
+  };
+
+  handleUploadPhoto = info => {
+    const { fileList, file } = info;
+    let fList = fileList;
+    if (file.status === 'done' || file.status === undefined){ // file.status === undefined 为文件被beforeUpload拦截下拉的情况
+      fList = handleFileList(fileList);
+    }
+
+    this.setState({ photoList: fList });
+  };
+
+  handleUploadAvatar= info => {
+    const { fileList, file } = info;
+    let fList = fileList;
+    if (file.status === 'done' || file.status === undefined){ // file.status === undefined 为文件被beforeUpload拦截下拉的情况
+      fList = handleFileList(fileList).slice(-1);
+    }
+
+    this.setState({ avatarList: fList });
+  };
+  handleBeforeUpload = file => {
+    const { type } = file;
+    const isImage = ['image/jpeg', 'image/png'].includes(type);
+    if (!isImage)
+      message.error('请上传图片格式(jpg, png)的附件！');
+    return isImage;
+  };
+
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
       account: {
         detail: {
-          data: { loginName, userName, phoneNumber, accountStatus },
+          data: {
+            loginName,
+            userName,
+            phoneNumber,
+            accountStatus,
+            sex,
+            birth,
+            education,
+            major,
+          },
         },
         unitTypes,
         accountStatuses,
@@ -930,7 +1013,7 @@ export default class AccountManagementEdit extends PureComponent {
       },
       loading,
     } = this.props;
-    const { unitTypeChecked } = this.state;
+    const { unitTypeChecked, photoList, avatarList } = this.state;
 
     const isUnitUser = this.isUnitUser();
     const unitIdInitValue =
@@ -940,8 +1023,8 @@ export default class AccountManagementEdit extends PureComponent {
     const gridList = treeData(grids);
 
     return (
-      <Card title="账号基本信息" className={styles.card} bordered={false}>
-        <Form layout="vertical">
+      <Form layout="vertical">
+        <Card title="账号基本信息" className={styles.card} bordered={false}>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.loginName}>
@@ -972,9 +1055,12 @@ export default class AccountManagementEdit extends PureComponent {
                         type: 'string',
                         message: '请输入密码',
                       },
+                      {
+                        validator: this.validatorPassword,
+                      },
                     ],
                   })(
-                    <Input
+                    <Input.Password
                       placeholder="请输入密码"
                       min={6}
                       max={20}
@@ -1029,6 +1115,42 @@ export default class AccountManagementEdit extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.sex}>
+                {getFieldDecorator('sex', {
+                  initialValue: id ? sex : undefined,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择性别',
+                    },
+                  ],
+                })(
+                  <Select placeholder="请选择性别" allowClear>
+                    {SEXES.map(({ key, label }) => (
+                      <Option value={key} key={key}>
+                        {label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.birthday}>
+                {getFieldDecorator('birthday', {
+                  initialValue: id && typeof birth === 'number' ? moment(birth) : undefined,
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     message: '请选择生日',
+                  //   },
+                  // ],
+                })(
+                  <DatePicker placeholder="请选择生日" allowClear />
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.phoneNumber}>
                 {getFieldDecorator('phoneNumber', {
                   initialValue: phoneNumber,
@@ -1045,7 +1167,86 @@ export default class AccountManagementEdit extends PureComponent {
                 })(<Input placeholder="请输入手机号" min={11} max={11} />)}
               </Form.Item>
             </Col>
-            {!id && (
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.degree}>
+                {getFieldDecorator('degree', {
+                  initialValue: id ? education : undefined,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择学历',
+                    },
+                  ],
+                })(
+                  <Select placeholder="请选择学历" allowClear>
+                    {DEGREES.map(({ key, label }) => (
+                      <Option value={key} key={key}>
+                        {label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.major}>
+                {getFieldDecorator('major', {
+                  initialValue: id ? major : undefined,
+                  getValueFromEvent: this.handleClearSpace,
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'string',
+                      message: '请输入专业名称',
+                    },
+                  ],
+                })(<Input placeholder="请输入专业名称" min={1} max={20} />)}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col lg={24} md={24} sm={24}>
+              <Form.Item label={fieldLabels.avatar}>
+                <Upload
+                  name="files"
+                  data={{ folder: FOLDER }}
+                  action={UPLOAD_ACTION}
+                  fileList={avatarList}
+                  beforeUpload={this.handleBeforeUpload}
+                  onChange={this.handleUploadAvatar}
+                  headers={{ 'JA-Token': getToken() }}
+                >
+                  <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <div style={{ marginTop: '8px' }}>点击上传</div>
+                  </Button>
+                </Upload>
+              </Form.Item>
+            </Col>
+            <Col lg={24} md={24} sm={24}>
+              <Form.Item label={fieldLabels.attached}>
+                <Upload
+                  name="files"
+                  data={{ folder: FOLDER }}
+                  action={UPLOAD_ACTION}
+                  fileList={photoList}
+                  // beforeUpload={this.handleBeforeUpload}
+                  onChange={this.handleUploadPhoto}
+                  headers={{ 'JA-Token': getToken() }}
+                >
+                  <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <div style={{ marginTop: '8px' }}>点击上传</div>
+                  </Button>
+                </Upload>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+        {!id && (
+          <Card title="关联单位账号信息" className={styles.card} bordered={false}>
+            <Row gutter={{ lg: 48, md: 24 }}>
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.unitType}>
                   {getFieldDecorator('unitType', {
@@ -1075,9 +1276,7 @@ export default class AccountManagementEdit extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-            )}
-            {!id &&
-              unitTypeChecked !== GOV && (
+              {unitTypeChecked !== GOV && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.unitId} className={styles.hasUnit}>
                     {getFieldDecorator('unitId', {
@@ -1112,9 +1311,7 @@ export default class AccountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-
-            {!id &&
-              unitTypeChecked === GOV && (
+              {unitTypeChecked === GOV && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.unitId}>
                     {getFieldDecorator('unitId', {
@@ -1138,13 +1335,9 @@ export default class AccountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-
-            {!id && (
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.departmentId}>
-                  {getFieldDecorator('departmentId', {
-                    // initialValue: [departmentId],
-                  })(
+                  {getFieldDecorator('departmentId')(
                     <TreeSelect
                       allowClear
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
@@ -1155,82 +1348,74 @@ export default class AccountManagementEdit extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-            )}
-            {unitTypes.length !== 0 &&
-              unitTypeChecked === COM &&
-              !id && (
-                <Col lg={8} md={12} sm={24}>
-                  <Form.Item label={fieldLabels.regulatoryClassification}>
-                    {getFieldDecorator('regulatoryClassification', {
-                      initialValue: SUPERVISIONS_ALL,
-                      rules: [{ required: true, message: '请选择业务分类' }],
-                    })(
-                      <Select mode="multiple" placeholder="请选择业务分类">
-                        {SUPERVISIONS.map(item => (
-                          <Option value={item.id} key={item.id}>
-                            {item.label}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
-                  </Form.Item>
-                </Col>
+              {unitTypes.length !== 0 &&
+                unitTypeChecked === COM && (
+                  <Col lg={8} md={12} sm={24}>
+                    <Form.Item label={fieldLabels.regulatoryClassification}>
+                      {getFieldDecorator('regulatoryClassification', {
+                        initialValue: SUPERVISIONS_ALL,
+                        rules: [{ required: true, message: '请选择业务分类' }],
+                      })(
+                        <Select mode="multiple" placeholder="请选择业务分类">
+                          {SUPERVISIONS.map(item => (
+                            <Option value={item.id} key={item.id}>
+                              {item.label}
+                            </Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Form.Item>
+                  </Col>
               )}
-            {unitTypes.length !== 0 &&
-              unitTypeChecked === GOV && (
-                <Col lg={8} md={12} sm={24}>
-                  <Form.Item label={fieldLabels.regulatoryClassification}>
-                    {getFieldDecorator('regulatoryClassification', {
-                      rules: [{ required: true, message: '请选择业务分类' }],
-                    })(
-                      <Select mode="multiple" placeholder="请选择业务分类">
-                        {SUPERVISIONS.map(item => (
-                          <Option value={item.id} key={item.id}>
-                            {item.label}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
-                  </Form.Item>
-                </Col>
+              {unitTypes.length !== 0 &&
+                unitTypeChecked === GOV && (
+                  <Col lg={8} md={12} sm={24}>
+                    <Form.Item label={fieldLabels.regulatoryClassification}>
+                      {getFieldDecorator('regulatoryClassification', {
+                        rules: [{ required: true, message: '请选择业务分类' }],
+                      })(
+                        <Select mode="multiple" placeholder="请选择业务分类">
+                          {SUPERVISIONS.map(item => (
+                            <Option value={item.id} key={item.id}>
+                              {item.label}
+                            </Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Form.Item>
+                  </Col>
               )}
-            {unitTypes.length !== 0 &&
-              unitTypeChecked === GOV &&
-              !id && (
-                <Col lg={8} md={12} sm={24}>
-                  <Form.Item label={fieldLabels.documentTypeId}>
-                    {getFieldDecorator('documentTypeId', {
-                      // initialValue: documentTypeId,
-                    })(
-                      <Select allowClear placeholder="请选择执法证种类">
-                        {documentTypeIds.map(item => (
-                          <Option value={item.value} key={item.value}>
-                            {item.label}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
-                  </Form.Item>
-                </Col>
+              {unitTypes.length !== 0 &&
+                unitTypeChecked === GOV && (
+                  <Col lg={8} md={12} sm={24}>
+                    <Form.Item label={fieldLabels.documentTypeId}>
+                      {getFieldDecorator('documentTypeId')(
+                        <Select allowClear placeholder="请选择执法证种类">
+                          {documentTypeIds.map(item => (
+                            <Option value={item.value} key={item.value}>
+                              {item.label}
+                            </Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Form.Item>
+                  </Col>
               )}
-            {unitTypes.length !== 0 &&
-              unitTypeChecked === GOV &&
-              !id && (
-                <Col lg={8} md={12} sm={24}>
-                  <Form.Item label={fieldLabels.execCertificateCode}>
-                    {getFieldDecorator('execCertificateCode', {
-                      // initialValue: execCertificateCode,
-                      rules: [
-                        {
-                          message: '请输入执法证编号',
-                        },
-                      ],
-                    })(<Input placeholder="请输入执法证编号" />)}
-                  </Form.Item>
-                </Col>
+              {unitTypes.length !== 0 &&
+                unitTypeChecked === GOV && (
+                  <Col lg={8} md={12} sm={24}>
+                    <Form.Item label={fieldLabels.execCertificateCode}>
+                      {getFieldDecorator('execCertificateCode', {
+                        rules: [
+                          {
+                            message: '请输入执法证编号',
+                          },
+                        ],
+                      })(<Input placeholder="请输入执法证编号" />)}
+                    </Form.Item>
+                  </Col>
               )}
-            {!id &&
-              unitTypeChecked === GOV && (
+              {unitTypeChecked === GOV && (
                 <Col lg={24} md={24} sm={24}>
                   <Form.Item label={fieldLabels.gridIds}>
                     {getFieldDecorator('gridIds', {
@@ -1249,9 +1434,10 @@ export default class AccountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-          </Row>
-        </Form>
-      </Card>
+            </Row>
+          </Card>
+        )}
+      </Form>
     );
   }
 
@@ -1279,7 +1465,6 @@ export default class AccountManagementEdit extends PureComponent {
 
     return (
       <TabPane tab="角色权限配置" key="1" className={styles.tabPane}>
-        {/* <Card title="角色权限配置" className={styles.card} bordered={false}> */}
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col sm={24} md={12} lg={8}>
@@ -1391,8 +1576,8 @@ export default class AccountManagementEdit extends PureComponent {
                         )}
                       </Fragment>
                     ) : (
-                        <span>暂无数据</span>
-                      )}
+                      <span>暂无数据</span>
+                    )}
                   </div>
                   <div className={styles.line}>
                     <span>分公司及其服务单位：</span>
@@ -1420,15 +1605,14 @@ export default class AccountManagementEdit extends PureComponent {
                         )}
                       </Fragment>
                     ) : (
-                        <span>暂无数据</span>
-                      )}
+                      <span>暂无数据</span>
+                    )}
                   </div>
                 </div>
               </Col>
             </Row>
           ) : null}
         </Form>
-        {/* </Card> */}
       </TabPane>
     );
   }
@@ -1491,10 +1675,10 @@ export default class AccountManagementEdit extends PureComponent {
         render: txt => {
           return txt
             ? txt.split('\n').map((t, i) => (
-              <p key={i} className={styles1.example}>
-                {t}
-              </p>
-            ))
+                <p key={i} className={styles1.example}>
+                  {t}
+                </p>
+              ))
             : txt;
         },
       },

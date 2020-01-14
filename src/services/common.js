@@ -13,5 +13,18 @@ export async function getAreaList(params) {
 
 // 获取监测类型列表
 export async function getMonitorTypeList(params) {
-  return request(`/acloud_new/v2/monitor/monitorTypeTree?${stringify(params)}`);
+  return request(`/acloud_new/v2/monitor/equipmentType?${stringify(params)}`);
+}
+
+// 获取监测设备列表
+export async function getMonitorEquipmentList(params) {
+  return request(`/acloud_new/v2/monitor/monitorEquipment/page?${stringify(params)}`);
+}
+
+// 设置监测设备绑定状态
+export async function setMonitorEquipmentBindStatus(params) {
+  return request(`/acloud_new/v2/monitor/monitorEquipment/bind`, {
+    method: 'POST',
+    body: params,
+  });
 }

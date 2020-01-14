@@ -12,8 +12,9 @@ import ElectricityCharts from '../../ElectricityMonitor/components/ElectricityCh
 import { getAlerted, getTargetAlerted, getLimit } from '../../ElectricityMonitor/utils';
 import styles from './ElectricityDrawer.less';
 import cameraIcon from '../../ElectricityMonitor/imgs/camera.png';
-import emptyBg from '../../Gas/imgs/no-monitor.png';
+// import emptyBg from '../../Gas/imgs/no-monitor.png';
 
+const emptyBg = 'http://data.jingan-china.cn/v2/chem/screen/no-monitor.png';
 const GAUGE_LABELS = ['漏电电流', '温度', '电流', '电压'];
 const CHARTS_LABELS = [
   ['漏电电流'],

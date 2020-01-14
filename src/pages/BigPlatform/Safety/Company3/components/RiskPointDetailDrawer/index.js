@@ -4,20 +4,25 @@ import { connect } from 'dva';
 import classNames from 'classnames';
 import Lightbox from 'react-images';
 import CustomCarousel from '@/components/CustomCarousel';
+import { getToken } from 'utils/authority';
 import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
 import InspectionCard from '@/jingan-components/InspectionCard'; // 巡查卡片
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import SectionDrawer from '../SectionDrawer';
 import RiskCard from '../RiskCard';
+import StandardsAndMeasures from '@/pages/BigPlatform/Safety/Company3/components/StandardsAndMeasures';
 // 暂无隐患图片
-import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
+// import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
 // 暂无巡查图片
-import defaultInspection from '@/assets/default_inspection.png';
+// import defaultInspection from '@/assets/default_inspection.png';
 // 暂无卡片
-import defaultCard from '@/assets/default_risk_point.png';
+// import defaultCard from '@/assets/default_risk_point.png';
 // 引入样式文件
 import styles from './index.less';
 
+const defaultHiddenDanger = 'http://data.jingan-china.cn/v2/chem/assets/default_hidden_danger.png';
+const defaultInspection = 'http://data.jingan-china.cn/v2/chem/assets/default_inspection.png';
+const defaultCard = 'http://data.jingan-china.cn/v2/chem/assets/default_risk_point.png';
 // 默认state
 const DEFAULT_STATE = {
   tabKey: 'hiddenDanger',
@@ -45,14 +50,7 @@ const INSPECTION_FIELDNAMES = {
   source: 'report_source', // 巡查来源
   person: 'check_user_names', // 巡查人
   status: 'status', // 巡查结果
-  result({
-    data: {
-      overTimeId=[],
-      rectifyId=[],
-      reviewId=[],
-      finishId=[],
-    }={},
-  }) {
+  result ({ data: { overTimeId = [], rectifyId = [], reviewId = [], finishId = [] } = {} }) {
     return [overTimeId.length, rectifyId.length, reviewId.length, finishId.length];
   }, // 处理结果
 };
@@ -66,15 +64,17 @@ const INSPECTION_FIELDNAMES = {
   loading2: loading.effects['unitSafety/fetchRiskPointInspectionList'],
   loading3: loading.effects['unitSafety/fetchRiskPointHiddenDangerCount'],
   loading4: loading.effects['unitSafety/fetchRiskPointInspectionCount'],
+  // 标准及措施
+  loading5: loading.effects['unitSafety/fetchStandardsAndMeasuresList'] || loading.effects['unitSafety/fetchpointInspectionStandards'],
 }))
 export default class RiskPointDetailDrawer extends PureComponent {
   state = {
     ...DEFAULT_STATE,
     images: null,
     currentImage: 0,
-  }
+  };
 
-  componentDidUpdate({ visible: prevVisible }, { subTabKey: prevSubTabKey, tabKey: prevTabKey }) {
+  componentDidUpdate ({ visible: prevVisible }, { subTabKey: prevSubTabKey, tabKey: prevTabKey }) {
     const { visible } = this.props;
     const { subTabKey, tabKey } = this.state;
     if (!prevVisible && visible) {
@@ -86,18 +86,18 @@ export default class RiskPointDetailDrawer extends PureComponent {
     }
   }
 
-  setCarouselReference = (carousel) => {
+  setCarouselReference = carousel => {
     this.carousel = carousel;
-  }
+  };
 
-  setScrollReference = (scroll) => {
-    this.scroll = scroll && scroll.dom || scroll;
-  }
+  setScrollReference = scroll => {
+    this.scroll = (scroll && scroll.dom) || scroll;
+  };
 
   /**
    * 点击标签
    */
-  handleClickTab = (tabKey) => {
+  handleClickTab = tabKey => {
     const { tabKey: prevTabKey } = this.state;
     if (prevTabKey !== tabKey) {
       this.setState({ tabKey });
@@ -105,31 +105,35 @@ export default class RiskPointDetailDrawer extends PureComponent {
       if (tabKey === 'hiddenDanger') {
         const { getRiskPointHiddenDangerCount } = this.props;
         getRiskPointHiddenDangerCount();
-      }
-      else if (tabKey === 'inspection') {
+      } else if (tabKey === 'inspection') {
         const { getRiskPointInspectionCount } = this.props;
         getRiskPointInspectionCount();
+      } else if (tabKey === 'standard') {
+        // const { getRiskPointInspectionCount } = this.props;
+        // getRiskPointInspectionCount();
       }
     }
-  }
+  };
 
   /**
    * 点击子标签
    */
-  handleClickSubTab = ({ tabKey = this.state.tabKey, subTabKey, flag }={}) => {
+  handleClickSubTab = ({ tabKey = this.state.tabKey, subTabKey, flag } = {}) => {
     const { subTabKey: prevSubTabKey } = this.state;
     if (prevSubTabKey !== subTabKey || flag) {
       this.setState({ subTabKey });
       if (tabKey === 'hiddenDanger') {
         const { getRiskPointHiddenDangerList } = this.props;
         getRiskPointHiddenDangerList({ status: subTabKey });
-      }
-      else if (tabKey === 'inspection') {
+      } else if (tabKey === 'inspection') {
         const { getRiskPointInspectionList } = this.props;
         getRiskPointInspectionList({ checkStatus: subTabKey });
+      } else if (tabKey === 'standard') {
+        const { getStandardsAndMeasures } = this.props;
+        getStandardsAndMeasures()
       }
     }
-  }
+  };
 
   /**
    * 加载更多
@@ -137,14 +141,27 @@ export default class RiskPointDetailDrawer extends PureComponent {
   handleLoadMore = () => {
     const { tabKey, subTabKey } = this.state;
     if (tabKey === 'hiddenDanger') {
-      const { getRiskPointHiddenDangerList, unitSafety: { riskPointDetail: { hiddenDangerList: { pagination: { pageNum=1 }={} } } } } = this.props;
+      const {
+        getRiskPointHiddenDangerList,
+        unitSafety: {
+          riskPointDetail: {
+            hiddenDangerList: { pagination: { pageNum = 1 } = {} },
+          },
+        },
+      } = this.props;
       getRiskPointHiddenDangerList({ status: subTabKey, pageNum: pageNum + 1 });
-    }
-    else if (tabKey === 'inspection') {
-      const { getRiskPointInspectionList, unitSafety: { riskPointDetail: { inspectionList: { pagination: { pageNum=1 }={} } } } } = this.props;
+    } else if (tabKey === 'inspection') {
+      const {
+        getRiskPointInspectionList,
+        unitSafety: {
+          riskPointDetail: {
+            inspectionList: { pagination: { pageNum = 1 } = {} },
+          },
+        },
+      } = this.props;
       getRiskPointInspectionList({ checkStatus: subTabKey, pageNum: pageNum + 1 });
     }
-  }
+  };
 
   /**
    * 关闭图片详情
@@ -158,9 +175,9 @@ export default class RiskPointDetailDrawer extends PureComponent {
   /**
    * 显示图片详情
    */
-  handleShow = (images) => {
+  handleShow = images => {
     this.setState({ images, currentImage: 0 });
-  }
+  };
 
   /**
    * 切换图片
@@ -192,24 +209,28 @@ export default class RiskPointDetailDrawer extends PureComponent {
   /**
    * 图片详情
    */
-  renderImageDetail() {
+  renderImageDetail () {
     const { images, currentImage } = this.state;
-    return images && images.length > 0 && images[0] && (
-      <Lightbox
-        images={images.map((src) => ({ src }))}
-        isOpen={true}
-        closeButtonTitle="关闭"
-        currentImage={currentImage}
-        onClickPrev={this.handlePrevImage}
-        onClickNext={this.handleNextImage}
-        onClose={this.handleClose}
-        onClickThumbnail={this.handleSwitchImage}
-        showThumbnails
-      />
+    return (
+      images &&
+      images.length > 0 &&
+      images[0] && (
+        <Lightbox
+          images={images.map(src => ({ src }))}
+          isOpen={true}
+          closeButtonTitle="关闭"
+          currentImage={currentImage}
+          onClickPrev={this.handlePrevImage}
+          onClickNext={this.handleNextImage}
+          onClose={this.handleClose}
+          onClickThumbnail={this.handleSwitchImage}
+          showThumbnails
+        />
+      )
     );
   }
 
-  render() {
+  render () {
     const {
       // 抽屉是否可见
       visible,
@@ -220,61 +241,65 @@ export default class RiskPointDetailDrawer extends PureComponent {
         riskPointDetail: {
           cardList = [],
           hiddenDangerList: {
-            list: hiddenDangerList=[],
-            pagination: hiddenDangerPagination={},
-          }={},
+            list: hiddenDangerList = [],
+            pagination: hiddenDangerPagination = {},
+          } = {},
           hiddenDangerCount: {
-            total: hiddenDangerTotal=0,
-            overTimeRectify=0,
-            review=0,
-            rectify=0,
+            total: hiddenDangerTotal = 0,
+            overTimeRectify = 0,
+            review = 0,
+            rectify = 0,
           },
-          inspectionList: {
-            list: inspectionList=[],
-            pagination: inspectionPagination={},
-          }={},
-          inspectionCount: {
-            total: inspectionTotal=0,
-            normal=0,
-            abnormal=0,
-          },
-        }={},
+          inspectionList: { list: inspectionList = [], pagination: inspectionPagination = {} } = {},
+          inspectionCount: { total: inspectionTotal = 0, normal = 0, abnormal = 0 },
+        } = {},
+        // 标准及措施列表
+        standardsAndMeasuresList = [],
+        // 点位检查标准列表
+        pointInspectionStandardsList = [],
+        itemName,
       },
       loading1,
       loading2,
       loading3,
       loading4,
+      loading5,
     } = this.props;
     const { tabKey, subTabKey } = this.state;
     let subTabs, Item, list, fieldNames, key, restProps, backgroundImage, pageSize, pageNum, total;
-    if (tabKey === 'hiddenDanger') { // 隐患
+    const standardList = standardsAndMeasuresList.filter(item => item.headType === 'common');
+    if (tabKey === 'hiddenDanger') {
+      // 隐患
       subTabs = [
         {
           label: '全部',
           value: hiddenDangerTotal,
           onClick: () => this.handleClickSubTab(),
-          className: classNames(styles.subTab, subTabKey===undefined?styles.activeSubTab:undefined),
+          className: classNames(
+            styles.subTab,
+            subTabKey === undefined ? styles.activeSubTab : undefined
+          ),
           valueStyle: { marginLeft: '0.5em' },
         },
         {
           label: '已超期',
           value: overTimeRectify,
           onClick: () => this.handleClickSubTab({ subTabKey: 7 }),
-          className: classNames(styles.subTab, subTabKey===7?styles.activeSubTab:undefined),
+          className: classNames(styles.subTab, subTabKey === 7 ? styles.activeSubTab : undefined),
           valueStyle: { marginLeft: '0.5em', color: '#f83329' },
         },
         {
           label: '未超期',
           value: rectify,
           onClick: () => this.handleClickSubTab({ subTabKey: 2 }),
-          className: classNames(styles.subTab, subTabKey===2?styles.activeSubTab:undefined),
+          className: classNames(styles.subTab, subTabKey === 2 ? styles.activeSubTab : undefined),
           valueStyle: { marginLeft: '0.5em', color: '#ffb400' },
         },
         {
           label: '待复查',
           value: review,
           onClick: () => this.handleClickSubTab({ subTabKey: 3 }),
-          className: classNames(styles.subTab, subTabKey===3?styles.activeSubTab:undefined),
+          className: classNames(styles.subTab, subTabKey === 3 ? styles.activeSubTab : undefined),
           valueStyle: { marginLeft: '0.5em', color: '#00a2f7' },
         },
       ];
@@ -284,28 +309,32 @@ export default class RiskPointDetailDrawer extends PureComponent {
       key = '_id';
       restProps = { onClickImage: this.handleShow };
       backgroundImage = defaultHiddenDanger;
-      ({pageSize, pageNum, total} = hiddenDangerPagination);
-    } else { // 巡查
+      ({ pageSize, pageNum, total } = hiddenDangerPagination);
+    } else if (tabKey === 'inspection') {
+      // 巡查
       subTabs = [
         {
           label: '全部',
           value: inspectionTotal,
           onClick: () => this.handleClickSubTab(),
-          className: classNames(styles.subTab, subTabKey===undefined?styles.activeSubTab:undefined),
+          className: classNames(
+            styles.subTab,
+            subTabKey === undefined ? styles.activeSubTab : undefined
+          ),
           valueStyle: { marginLeft: '0.5em' },
         },
         {
           label: '正常',
           value: normal,
           onClick: () => this.handleClickSubTab({ subTabKey: 1 }),
-          className: classNames(styles.subTab, subTabKey===1?styles.activeSubTab:undefined),
+          className: classNames(styles.subTab, subTabKey === 1 ? styles.activeSubTab : undefined),
           valueStyle: { marginLeft: '0.5em' },
         },
         {
           label: '异常',
           value: abnormal,
           onClick: () => this.handleClickSubTab({ subTabKey: 2 }),
-          className: classNames(styles.subTab, subTabKey===2?styles.activeSubTab:undefined),
+          className: classNames(styles.subTab, subTabKey === 2 ? styles.activeSubTab : undefined),
           valueStyle: { marginLeft: '0.5em', color: '#f83329' },
         },
       ];
@@ -314,7 +343,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
       fieldNames = INSPECTION_FIELDNAMES;
       key = 'check_id';
       backgroundImage = defaultInspection;
-      ({pageSize, pageNum, total} = inspectionPagination);
+      ({ pageSize, pageNum, total } = inspectionPagination);
     }
 
     return (
@@ -326,8 +355,11 @@ export default class RiskPointDetailDrawer extends PureComponent {
         }}
         sectionProps={{
           refScroll: this.setScrollReference,
-          scrollProps: { className: styles.scrollContainer },
-          spinProps: { loading: loading1 || loading2 || loading3 || loading4 || false },
+          scrollProps: { className: tabKey === 'standard' ? null : styles.scrollContainer },
+          spinProps: {
+            loading: loading1 || loading2 || loading3 || loading4 || loading5 || false,
+            wrapperClassName: tabKey === 'standard' ? styles.spinContainer : null,
+          },
           fixedContent: (
             <Fragment>
               <div className={styles.titleWrapper}>
@@ -343,69 +375,103 @@ export default class RiskPointDetailDrawer extends PureComponent {
                     }}
                   >
                     {cardList.map(item => (
-                      <RiskCard
-                        key={item.id || item.item_id}
-                        data={item}
-                      />
+                      <RiskCard key={item.id || item.item_id} data={item} />
                     ))}
                   </CustomCarousel>
                 ) : (
-                  <Empty
-                    image={defaultCard}
+                    <Empty
+                      image={defaultCard}
                     // imageStyle={{
                     //   height: 60,
                     // }}
-                  />
-                )}
+                    />
+                  )}
               </div>
               <div className={styles.tabList}>
                 <div
-                  className={classNames(styles.tab, tabKey==='hiddenDanger'?styles.activeTab:undefined)}
-                  onClick={() => {this.handleClickTab('hiddenDanger');}}
+                  className={classNames(
+                    styles.tab,
+                    tabKey === 'hiddenDanger' ? styles.activeTab : undefined
+                  )}
+                  onClick={() => {
+                    this.handleClickTab('hiddenDanger');
+                  }}
                 >
                   <div className={styles.tabTitle}>隐患详情</div>
                 </div>
                 <div
-                  className={classNames(styles.tab, tabKey==='inspection'?styles.activeTab:undefined)}
-                  onClick={() => {this.handleClickTab('inspection');}}
+                  className={classNames(
+                    styles.tab,
+                    tabKey === 'inspection' ? styles.activeTab : undefined
+                  )}
+                  onClick={() => {
+                    this.handleClickTab('inspection');
+                  }}
                 >
                   <div className={styles.tabTitle}>巡查详情</div>
                 </div>
+                <div
+                  className={classNames(
+                    styles.tab,
+                    tabKey === 'standard' ? styles.activeTab : undefined
+                  )}
+                  onClick={() => {
+                    this.handleClickTab('standard');
+                  }}
+                >
+                  <div className={styles.tabTitle}>标准及措施</div>
+                </div>
               </div>
-              <div className={styles.subTabList}>
-                {subTabs.map(({ className, onClick, valueStyle, label, value }) => (
-                  <div
-                    key={label}
-                    className={className}
-                    onClick={onClick}
-                  >
-                    {label}<span style={valueStyle}>{value}</span>
-                  </div>
-                ))}
-              </div>
+              {tabKey !== 'standard' && (
+                <div className={styles.subTabList}>
+                  {subTabs.map(({ className, onClick, valueStyle, label, value }) => (
+                    <div key={label} className={className} onClick={onClick}>
+                      {label}
+                      <span style={valueStyle}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </Fragment>
           ),
         }}
       >
-        <div className={styles.container}>
-          {list.length > 0 ? list.map(item => (
-            <Item
-              className={styles.card}
-              key={item[key]}
-              data={item}
-              fieldNames={fieldNames}
-              {...restProps}
-            />
-          )) : <div className={styles.defaultHiddenDanger} style={{ backgroundImage: `url(${backgroundImage})` }} />}
-          {pageNum * pageSize < total && (
-            <div className={styles.loadMoreWrapper}>
-              <Tooltip placement="top" title="加载更多">
-                <LoadMore onClick={this.handleLoadMore} />
-              </Tooltip>
+        {tabKey !== 'standard' ? (
+          <div className={styles.container}>
+            {list.length > 0 ? (
+              list.map(item => (
+                <Item
+                  className={styles.card}
+                  key={item[key]}
+                  data={item}
+                  fieldNames={fieldNames}
+                  {...restProps}
+                />
+              ))
+            ) : (
+                <div
+                  className={styles.defaultHiddenDanger}
+                  style={{ backgroundImage: `url(${backgroundImage})` }}
+                />
+              )}
+            {pageNum * pageSize < total && (
+              <div className={styles.loadMoreWrapper}>
+                <Tooltip placement="top" title="加载更多">
+                  <LoadMore onClick={this.handleLoadMore} />
+                </Tooltip>
+              </div>
+            )}
+            {this.renderImageDetail()}
+          </div>
+        ) : (
+            <div style={{ padding: '1em 0' }}>
+              <StandardsAndMeasures
+                standardsAndMeasuresList={standardList}
+                pointInspectionStandardsList={pointInspectionStandardsList}
+                itemName={itemName}
+              />
             </div>
           )}
-          {this.renderImageDetail()}
-        </div>
       </SectionDrawer>
     );
   }

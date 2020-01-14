@@ -5,6 +5,8 @@ import {
   add,
   edit,
   remove,
+  getMonitorDeviceList,
+  setMonitorDeviceBindStatus,
 } from '@/services/gasometer';
 
 export default {
@@ -14,6 +16,7 @@ export default {
     list: {},
     detail: {},
     storageMediumList: {},
+    monitorDeviceList: {},
   },
 
   effects: {
@@ -87,6 +90,29 @@ export default {
     // 删除
     *remove({ payload, callback }, { call }) {
       const response = yield call(remove, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 获取监测设备列表
+    *getMonitorDeviceList({ payload, callback }, { call, put }) {
+      const response = yield call(getMonitorDeviceList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const monitorDeviceList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            monitorDeviceList,
+          },
+        });
+        callback && callback(true, monitorDeviceList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 设置监测设备绑定状态
+    *setMonitorDeviceBindStatus({ payload, callback }, { call }) {
+      const response = yield call(setMonitorDeviceBindStatus, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },

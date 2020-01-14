@@ -7,7 +7,7 @@ import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
 // import { filterBigPlatform } from '@/utils/customAuth';
-import { SRC_MAP, setBlocks } from './utils';
+import { SRC_MAP, setBlocks, setMenuSys } from './utils';
 import classNames from 'classnames';
 import styles from './NewMenu.less';
 // 每个模块标题左侧图
@@ -114,9 +114,15 @@ export default class NewMenuReveal extends Component {
     // 驾驶舱路由、系统路由
     const configSys = menuAll.find(item => item.path === '/');
     const menuSysAll = this.filterSysMenu(configSys.routes, 2);
-    const blocks = blockClassification[0].blocks;
-    const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
-    this.setState({ currentBlockClassification: systemType, menuSys, menuSysAll }, () => this.handleSelectBlockClassification(systemType));
+    setMenuSys(blockClassification, menuSysAll);
+    // const blocks = blockClassification[0].blocks;
+    // const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
+    const classification = blockClassification.filter(({ menuSys }) => menuSys.length);
+    this.setState({
+      currentBlockClassification: systemType,
+      menuSys: classification.length ? classification[0].menuSys : [],
+      menuSysAll,
+    }, () => this.handleSelectBlockClassification(systemType));
   };
 
   /**
@@ -126,11 +132,11 @@ export default class NewMenuReveal extends Component {
  * @param {String} parentLocale 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
  **/
   filterSysMenu = (array, depth = 0, parentLocale) => {
-    // const {
-    //   user: {
-    //     currentUser: { permissionCodes },
-    //   },
-    // } = this.props;
+    const {
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
     return array.reduce((arr, item) => {
       let locale = 'menu';
       if (parentLocale && item.name) {
@@ -144,9 +150,9 @@ export default class NewMenuReveal extends Component {
       if (
         item.redirect ||
         item.hideInMenu ||
-        ['/dashboard', '/company-workbench'].includes(item.path)
-        // ['/dashboard', '/company-workbench'].includes(item.path) ||
-        // !permissionCodes.includes(item.code)
+        // ['/dashboard', '/company-workbench'].includes(item.path)
+        ['/dashboard', '/company-workbench'].includes(item.path) ||
+        !permissionCodes.includes(item.code)
       ) {
         return arr;
       } else if (item.routes && item.routes.length && +depth > 1) {
@@ -264,11 +270,16 @@ export default class NewMenuReveal extends Component {
       user: {
         currentUser: {
           userName,
+          unitType,
+          companyId,
+          permissionCodes,
         },
       },
     } = this.props;
-    // 当前选择的分类下标
     const { currentBlockClassification } = this.state;
+
+    // const showWorkbench = permissionCodes.includes('companyWorkbench');
+    const showChemical = permissionCodes && permissionCodes.includes('dashboard.chemical');
     return (
       <div className={styles.newMenuRevealContainer}>
         {/* 头部 */}
@@ -282,11 +293,11 @@ export default class NewMenuReveal extends Component {
           </div>
           {this.generateType(currentBlockClassification) === 'number' ? (
             <div className={styles.menuContainer}>
-              {blockClassification.map((item, index) => (
+              {blockClassification.map((item, index) => item.menuSys && item.menuSys.length ? (
                 <div key={index} className={this.generateMenuItemClass(index)} onClick={() => this.handleSelectBlockClassification(index)}>
                   <span>{item.name.slice(0, -2)}</span>
                 </div>
-              ))}
+              ) : null)}
               <div onClick={() => router.push('/menu-reveal/system')} className={styles.backButton}></div>
             </div>
           ) : null}
@@ -297,14 +308,22 @@ export default class NewMenuReveal extends Component {
         </Col>
         {/* 底部 */}
         <div className={styles.footer}>
+          {/* {showWorkbench && (
+            <div className={styles.linkItem} onClick={() => router.push('/company-workbench/view')}>
+              <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
+              <div>工作台</div>
+            </div>
+          )} */}
           <div className={styles.linkItem} onClick={() => router.push('/company-workbench/view')}>
-            <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
-            <div>工作台</div>
-          </div>
-          <div className={styles.linkItem} onClick={() => router.push('/big-platform/chemical/index')}>
-            <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
-            <div>驾驶舱</div>
-          </div>
+              <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
+              <div>工作台</div>
+            </div>
+          {unitType === 4 && showChemical && (
+            <div className={styles.linkItem} onClick={() => router.push(`/big-platform/chemical/${companyId}`)}>
+              <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
+              <div>驾驶舱</div>
+            </div>
+          )}
         </div>
       </div>
     )

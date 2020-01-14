@@ -71,13 +71,14 @@ import { WATER_TYPES, getWaterTotal } from '../GasStation/utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
-import headerBg from '@/assets/new-header-bg.png';
+// import headerBg from '@/assets/new-header-bg.png';
 import videoBtn from '../Monitor/imgs/videoBtn.png';
 
-const { projectName } = global.PROJECT_CONFIG;
+// const { projectName } = global.PROJECT_CONFIG;
 // const DELAY = 5 * 1000;
 // const CHART_DELAY = 10 * 60 * 1000;
 
+const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
 const DRAWER_VISIBLES = [
   'fireFlowDrawerVisible',
   'smokeFlowDrawerVisible',
@@ -291,7 +292,7 @@ export default class NewUnitFireControl extends PureComponent {
     images: null, // 预览图片
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -522,6 +523,22 @@ export default class NewUnitFireControl extends PureComponent {
       },
     });
   }
+
+  // 获取标准及措施列表
+  getStandardsAndMeasures = () => {
+    const { dispatch } = this.props;
+    const { checkItemId } = this.state;
+    // 获取标准及措施
+    dispatch({
+      type: 'unitSafety/fetchStandardsAndMeasuresList',
+      payload: { itemId: checkItemId },
+    })
+    // 获取点位检查标准
+    dispatch({
+      type: 'unitSafety/fetchpointInspectionStandards',
+      payload: { item_id: checkItemId },
+    })
+  };
 
   handleSocketMessage = result => {
     const {
@@ -957,7 +974,7 @@ export default class NewUnitFireControl extends PureComponent {
     );
   };
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearInterval(this.pollTimer);
     clearInterval(this.chartPollTimer);
   }
@@ -2117,8 +2134,8 @@ export default class NewUnitFireControl extends PureComponent {
       },
     } = this.props;
     const reportTypes = [1, 4, 3, 2];
-    console.log('occurData',occurData);
-    
+    console.log('occurData', occurData);
+
     if (occurData) {
       dispatch({
         type: 'newUnitFireControl/fetchCountNumAndTimeById',
@@ -2400,7 +2417,7 @@ export default class NewUnitFireControl extends PureComponent {
     }
   };
 
-  render() {
+  render () {
     // 从props中获取数据
     const {
       match: {
@@ -2573,6 +2590,7 @@ export default class NewUnitFireControl extends PureComponent {
               checkStatus,
               checkPointName,
             });
+            this.getStandardsAndMeasures()
           }}
           handleShowHiddenDanger={(id, hiddenDangerId) => {
             this.handleViewDangerDetail({ id: hiddenDangerId });

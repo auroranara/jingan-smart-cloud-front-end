@@ -6,9 +6,10 @@ import DrawerContainer from '../components/DrawerContainer';
 import SwitchHead from '../components/SwitchHead';
 import NewTimelineCard from '../components/NewTimelineCard';
 import { vaguePhone } from '../utils';
-import flowImg from '../imgs/flow_m.png';
+// import flowImg from '../imgs/flow_m.png';
 import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDrawerTop';
 
+const flowImg = 'http://data.jingan-china.cn/v2/chem/screen/flow_m.png';
 const ID = 'onekey-flow-drawer';
 
 export default class OnekeyFlowDrawer extends PureComponent {

@@ -10,6 +10,7 @@ import {
   DatePicker,
   Icon,
   message,
+  Radio,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
@@ -23,7 +24,7 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 
 const {
   home: homeUrl,
@@ -45,11 +46,14 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const getRootChild = () => document.querySelector('#root>div');
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+const BTN_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
-@connect(({ baseInfo, sensor, loading }) => ({
+@connect(({ baseInfo, sensor, user, emergencyManagement, loading }) => ({
   baseInfo,
   sensor,
+  user,
+  emergencyManagement,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 export default class SpecialEquipmentOperatorsHandle extends PureComponent {
@@ -64,6 +68,8 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
     detail: {}, // 详情
     workProjectOptions: [], // 作业项目选项
     workTypeOptions: [], // 作业种类
+    projectCodeOptions: [], // 项目代号选项
+    workProjectOptionsAll: [],
   }
 
   componentDidMount () {
@@ -71,12 +77,23 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: {
+        isCompany, // 是否企业账号
+        currentUser,
+      },
     } = this.props;
     // 获取作业项目
     this.fetchDict({
-      payload: { type: 'workProject', parentId: 0 },
-      callback: list => { this.setState({ workTypeOptions: list }) },
+      payload: { type: 'workProject' },
+      callback: list => {
+        this.setState({
+          workProjectOptionsAll: list,
+          projectCodeOptions: list.filter(item => item.parentId !== '0'),
+        });
+      },
     })
+    // 获取作业种类
+    // this.fetchTypeOptions();
     if (id) {
       // 如果编辑
       dispatch({
@@ -84,7 +101,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
         payload: { id, pageNum: 1, pageSize: 10 },
         callback: ({ list }) => {
           const detail = list[0] || {};
-          const { workType, companyId, companyName, certificatePositiveFileList, certificateReverseFileList } = detail;
+          const { companyId, companyName, certificatePositiveFileList, certificateReverseFileList, choose, projectCode, workTypeName, workProjectName } = detail;
           this.setState({
             detail,
             selectedCompany: { id: companyId, name: companyName },
@@ -102,15 +119,33 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
             })) : [],
           });
           // 获取作业项目选项
-          workType && this.fetchDict({
-            payload: { type: 'workProject', parentId: workType },
-            callback: list => { this.setState({ workProjectOptions: list }) },
-          });
-          setFieldsValue({ companyId });
+          // workType && this.fetchDict({
+          //   payload: { type: 'workProject', parentId: workType },
+          //   callback: list => { this.setState({ workProjectOptions: list }) },
+          // });
+          console.log('workTypeName', workTypeName)
+          setFieldsValue({ companyId, choose });
+          setTimeout(() => {
+            setFieldsValue({ projectCode, workTypeName, workProjectName });
+          }, 0);
         },
       })
+    } else if (isCompany) {
+      // 如果企业账号
+      const { companyId, companyName } = currentUser;
+      this.setState({ selectedCompany: { id: companyId, name: companyName } });
+      // setFieldsValue({ companyId });
     }
   }
+
+  // 获取分类
+  fetchTypeOptions = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyManagement/fetchDicts',
+      payload: { type: 'specialEquipment' },
+    });
+  };
 
   /**
   * 获取企业列表（弹窗）
@@ -156,18 +191,32 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
 
 
   // 作业种类改变
-  handleWorkTypeChange = (workType) => {
-    const { form: { setFieldsValue } } = this.props;
-    if (workType) {
-      this.fetchDict({
-        payload: { type: 'workProject', parentId: workType },
-        callback: list => { this.setState({ workProjectOptions: list }) },
-      })
-    } else this.setState({ workProjectOptions: [] });
-    setFieldsValue({ workProject: undefined })
-  }
+  // handleWorkTypeChange = (workType) => {
+  //   const { form: { setFieldsValue } } = this.props;
+  //   if (workType) {
+  //     this.fetchDict({
+  //       payload: { type: 'workProject', parentId: workType },
+  //       callback: list => { this.setState({ workProjectOptions: list }) },
+  //     })
+  //   } else this.setState({ workProjectOptions: [] });
+  //   setFieldsValue({ workProject: undefined })
+  // }
 
   getTime = obj => obj ? obj.startOf('day').unix() * 1000 : obj
+
+  handleProjectCodeChange = (projectCode, item) => {
+    // console.log('change');
+
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    const { parentId, label } = item.props;
+    const type = this.state.workProjectOptionsAll.find(item => item.id === parentId);
+    setFieldsValue({
+      workTypeName: type ? type.label : undefined,
+      workProjectName: label,
+    })
+  }
 
   /**
    * 提交表单
@@ -178,20 +227,22 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       form: { validateFields },
       match: { params: { id } },
     } = this.props;
-    const { frontPhotoList, backPhotoList } = this.state;
+    const { frontPhotoList, backPhotoList, selectedCompany } = this.state;
     validateFields((err, values) => {
       if (err) return;
-      const { effectiveDate, birthday, firstDate, reviewDate, ...resValues } = values;
-      const [startDate, endDate] = effectiveDate;
+      const { endDate, birthday, firstDate, reviewDate, workTypeName, workProjectName, ...resValues } = values;
       const payload = {
         ...resValues,
-        startDate: this.getTime(startDate),
+        companyId: selectedCompany.id,
+        // startDate: this.getTime(startDate),
         endDate: endDate ? endDate.endOf('day').unix() * 1000 : endDate,
         birthday: this.getTime(birthday),
         firstDate: this.getTime(firstDate),
         reviewDate: this.getTime(reviewDate),
         certificatepositiveFile: frontPhotoList && frontPhotoList.length ? JSON.stringify(frontPhotoList) : '',
         certificatereverseFile: backPhotoList && backPhotoList.length ? JSON.stringify(backPhotoList) : '',
+        workType: workTypeName,
+        workProject: workProjectName,
       };
       const tag = id ? '编辑' : '新增';
       const success = () => {
@@ -312,8 +363,10 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
   renderForm = () => {
     const {
       match: { params: { id } },
-      form: { getFieldDecorator },
-    } = this.props
+      form: { getFieldDecorator, getFieldValue, setFieldsValue },
+      user: { isCompany },
+      // emergencyManagement: { specialEquipment = [] },
+    } = this.props;
     const {
       frontPhotoList,
       backPhotoList,
@@ -321,22 +374,27 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       forntLoading,
       backLoading,
       detail,
-      workProjectOptions,
-      workTypeOptions,
-    } = this.state
+      projectCodeOptions, // 项目代号选项
+      // workProjectOptions,
+      // workTypeOptions,
+    } = this.state;
+    // 项目代号输入方式
+    const choose = getFieldValue('choose');
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位' }],
-            })(
-              <Fragment>
-                <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择" />
-                <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {!isCompany && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位' }],
+              })(
+                <Fragment>
+                  <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择" />
+                  <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="姓名" {...formItemLayout}>
             {getFieldDecorator('name', {
               initialValue: id ? detail.name : undefined,
@@ -360,7 +418,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
           <FormItem label="出生年月" {...formItemLayout}>
             {getFieldDecorator('birthday', {
               initialValue: id && detail.birthday ? moment(detail.birthday) : undefined,
-              rules: [{ required: true, message: '请选择出生年月' }],
+              // rules: [{ required: true, message: '请选择出生年月' }],
             })(
               <DatePicker
                 placeholder="请选择"
@@ -372,37 +430,85 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
             {getFieldDecorator('telephone', {
               initialValue: id ? detail.telephone : undefined,
               rules: [
-                { required: true, message: '请输入联系电话' },
+                // { required: true, message: '请输入联系电话' },
                 { pattern: phoneReg, message: '联系电话格式不正确' },
               ],
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="作业种类" {...formItemLayout}>
-            {getFieldDecorator('workType', {
-              initialValue: id ? detail.workType : undefined,
-              rules: [{ required: true, message: '请选择作业种类' }],
+          <FormItem label="项目代号输入方式" {...formItemLayout}>
+            {getFieldDecorator('choose', {
+              rules: [{ required: true, message: '请选择项目代号输入方式' }],
             })(
-              <Select placeholder="请选择" {...itemStyles} onChange={this.handleWorkTypeChange}>
-                {workTypeOptions.map(({ id, label }) => (
-                  <Select.Option key={id} value={id}>{label}</Select.Option>
-                ))}
-              </Select>
+              <Radio.Group onChange={() => { setFieldsValue({ workTypeName: undefined, workProjectName: undefined, projectCode: undefined }) }}>
+                <Radio value={'0'}>选择</Radio>
+                <Radio value={'1'}>手填</Radio>
+              </Radio.Group>
             )}
           </FormItem>
-          <FormItem label="作业项目" {...formItemLayout}>
-            {getFieldDecorator('workProject', {
-              initialValue: id ? detail.workProject : undefined,
-              rules: [{ required: true, message: '请选择作业项目' }],
-            })(
-              <Select placeholder="请选择" {...itemStyles}>
-                {workProjectOptions.map(({ id, label }) => (
-                  <Select.Option key={id} value={id}>{label}</Select.Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
+          {/* 输入方式：选择 */}
+          {+choose === 0 && (
+            <Fragment>
+              <FormItem label="项目代号" {...formItemLayout}>
+                {getFieldDecorator('projectCode', {
+                  rules: [{ required: true, message: '请选择项目代号' }],
+                })(
+                  <Select placeholder="请选择" onChange={this.handleProjectCodeChange} {...itemStyles}>
+                    {projectCodeOptions.map(({ id, value, label, parentId }) => (
+                      <Select.Option key={id} value={id} label={label} parentId={parentId}>{value}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem label="作业种类" {...formItemLayout}>
+                {getFieldDecorator('workTypeName', {
+                  rules: [{ required: true, message: '请选择作业种类' }],
+                })(
+                  <Input disabled placeholder="请选择" {...itemStyles} />
+                )}
+              </FormItem>
+              <FormItem label="作业项目" {...formItemLayout}>
+                {getFieldDecorator('workProjectName', {
+                  rules: [{ required: true, message: '请选择作业项目' }],
+                })(
+                  <Input disabled placeholder="请选择" {...itemStyles} />
+                )}
+              </FormItem>
+            </Fragment>
+          )}
+          {/* 输入方式：手填 */}
+          {+choose === 1 && (
+            <Fragment>
+              <FormItem label="项目代号" {...formItemLayout}>
+                {getFieldDecorator('projectCode', {
+                  rules: [{ required: true, message: '请选择项目代号' }],
+                })(<Input placeholder="请输入" allowClear {...itemStyles} />)}
+              </FormItem>
+              <FormItem label="作业种类" {...formItemLayout}>
+                {getFieldDecorator('workTypeName', {
+                  rules: [{ required: true, message: '请选择作业种类' }],
+                })(
+                  <Select placeholder="请选择" {...itemStyles} allowClear>
+                    {['特种设备焊接作业'].map(item => (
+                      <Select.Option key={item} value={item}>{item}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem label="作业项目" {...formItemLayout}>
+                {getFieldDecorator('workProjectName', {
+                  rules: [{ required: true, message: '请选择作业项目' }],
+                })(
+                  <Select placeholder="请选择" {...itemStyles} allowClear>
+                    {['非金属焊接操作', '金属焊接操作'].map(item => (
+                      <Select.Option key={item} value={item}>{item}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Fragment>
+          )}
           <FormItem label="连续从事本工作时间" {...formItemLayout}>
             {getFieldDecorator('contineWorktime', {
               initialValue: id ? detail.contineWorktime : undefined,
@@ -413,20 +519,34 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
           <FormItem label="准操项目" {...formItemLayout}>
             {getFieldDecorator('mustholdProject', {
               initialValue: id ? detail.mustholdProject : undefined,
-              rules: [{ required: true, message: '请输入准操项目' }],
             })(
               <TextArea rows={5} placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="作业人员证证号" {...formItemLayout}>
+          <FormItem label="证件编号" {...formItemLayout}>
             {getFieldDecorator('operapersonNumber', {
-              initialValue: id ? detail.mustholdProject : undefined,
-              rules: [{ required: true, message: '请输入作业人员证证号' }],
+              initialValue: id ? detail.operapersonNumber : undefined,
+              rules: [{ required: true, message: '请输入证件编号' }],
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="初领日期" {...formItemLayout}>
+          <FormItem label="档案编号" {...formItemLayout}>
+            {getFieldDecorator('archiveNumber', {
+              initialValue: id ? detail.archiveNumber : undefined,
+              rules: [{ required: true, message: '请输入档案编号' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="发证机关" {...formItemLayout}>
+            {getFieldDecorator('licenseUnit', {
+              initialValue: id ? detail.licenseUnit : undefined,
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="批准日期" {...formItemLayout}>
             {getFieldDecorator('firstDate', {
               initialValue: id && detail.firstDate ? moment(detail.firstDate) : undefined,
             })(
@@ -437,11 +557,12 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
             )}
           </FormItem>
           <FormItem label="有效日期" {...formItemLayout}>
-            {getFieldDecorator('effectiveDate', {
-              initialValue: id ? [moment(detail.startDate), moment(detail.endDate)] : undefined,
+            {getFieldDecorator('endDate', {
+              initialValue: id && detail.endDate ? moment(detail.endDate) : undefined,
               rules: [{ required: true, message: '请选择有效日期' }],
             })(
-              <RangePicker
+              <DatePicker
+                placeholder="请选择"
                 getCalendarContainer={getRootChild}
               />
             )}
@@ -505,10 +626,12 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
     const {
       companyLoading,
       match: { params: { id } },
+      route: { name },
       sensor: { companyModal }, // companyModal { list , pagination:{} }
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? "编辑特种设备作业人员" : "新增特种设备作业人员"
+    const isDetail = name === 'view';
+    const title = id ? isDetail ? '详情' : "编辑" : "新增";
     const breadcrumbList = [
       {
         title: homeTitle,
@@ -535,7 +658,15 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         {this.renderForm()}
-        <Button style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }} type="primary" onClick={this.handleSubmit}>提交</Button>
+        {isDetail ? (
+          <Button type="primary" style={BTN_STYLE} onClick={e => router.push(`/operation-safety/special-equipment-operators/edit/${id}`)}>
+            编辑
+          </Button>
+        ) : (
+            <Button type="primary" style={BTN_STYLE} onClick={this.handleSubmit}>
+              提交
+          </Button>
+          )}
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"

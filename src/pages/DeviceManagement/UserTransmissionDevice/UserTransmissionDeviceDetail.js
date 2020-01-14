@@ -12,6 +12,7 @@ import ModalForm from './ModalForm';
 import { AuthButton } from '@/utils/customAuth';
 import buttonCodes from '@/utils/codes';
 import router from 'umi/router';
+import { stringify } from 'qs';
 
 const { Description } = DescriptionList;
 // const { confirm } = Modal;
@@ -130,7 +131,7 @@ const deviceModalFormItemsUpdate = deviceModalFormItems;
 // const deviceModalFormItemsUpdate = disableDeviceCode(deviceModalFormItems);
 
 // 添加用户传输装置/消防主机时，装置编号不可修改
-function disableDeviceCode(items) {
+function disableDeviceCode (items) {
   return items.map(item => {
     if (item.name === 'deviceCode')
       return { ...item, disabled: true };
@@ -138,14 +139,14 @@ function disableDeviceCode(items) {
   });
 }
 
-function dispatchCallback(code, successMsg, failMsg, msg) {
+function dispatchCallback (code, successMsg, failMsg, msg) {
   if (code === 200)
     message.success(successMsg);
   else
     message.error(msg || failMsg);
 }
 
-function convertMsToString(ms) {
+function convertMsToString (ms) {
   const date = new Date(ms);
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
@@ -167,7 +168,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     currentTransmissionId: null,
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -216,7 +217,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     } = this.props
     // this.setState({ deviceModalVisible: true, operation: 'add' });
     // 跳转到新增网关设备页面（设备类型：用户传输装置）
-    router.push(`/device-management/gateway/add?equipmentType=201&companyId=${id}&companyName=${name}`)
+    router.push(`/device-management/user-transmission-device/add?equipmentType=201&companyId=${id}&companyName=${name}`)
   };
 
   handleDeviceAdd = fieldsValue => {
@@ -234,7 +235,7 @@ export default class UserTransmissionDeviceDetail extends Component {
   handleDeviceUpdateClick = deviceData => {
     // this.setState({ deviceModalVisible: true, operation: 'update', deviceRecord: deviceData });
     // 跳转到编辑网关页面
-    router.push(`/device-management/gateway/edit/${deviceData.id}`)
+    router.push(`/device-management/user-transmission-device/edit/${deviceData.id}`)
   };
 
   handleDeviceUpdate = fieldsValue => {
@@ -317,7 +318,8 @@ export default class UserTransmissionDeviceDetail extends Component {
     //   currentTransmissionId: transmissionId,
     // });
     // 跳转到新增处理设备页面（消防主机 type=101）
-    router.push(`/device-management/data-processing/101/add?companyId=${companyId}&gatewayCode=${transmissionDeviceCode}&gatewayId=${transmissionId}`)
+    const query = { companyId, gatewayCode: transmissionDeviceCode, gatewayId: transmissionId };
+    router.push(`/device-management/user-transmission-device/host/101/add?${stringify(query)}`)
   };
 
   handleHostAdd = fieldsValue => {
@@ -341,7 +343,12 @@ export default class UserTransmissionDeviceDetail extends Component {
     } = this.props;
     // this.setState({ hostModalVisible: true, operation: 'update', hostRecord: record });
     // 跳转到编辑处理设备页面（消防主机 type=101）
-    router.push(`/device-management/data-processing/101/edit/${record.id}?companyId=${companyId}&gatewayCode=${record.transmissionDeviceCode}&gatewayId=${record.id}`)
+    const payload = {
+      companyId,
+      gatewayCode: record.transmissionDeviceCode,
+      gatewayId: record.id,
+    }
+    router.push(`/device-management/user-transmission-device/host/101/edit/${record.id}?${stringify(payload)}`)
   };
 
   handleHostUpdate = fieldsValue => {
@@ -418,7 +425,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  render() {
+  render () {
     const {
       transmission: { deviceList, companyDetail },
       // user: { currentUser: { permissionCodes: codes } },

@@ -50,7 +50,7 @@ export default class GasMonitorDrawer extends PureComponent {
       data,
       gasList,
     } = this.props;
-    const {} = this.state;
+    // const {} = this.state;
     const { count: total = 0, normal = 0, unnormal: abnormal = 0, outContact: loss = 0 } = data;
     const sts = [
       {

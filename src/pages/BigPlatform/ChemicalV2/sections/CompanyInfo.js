@@ -11,32 +11,56 @@ import styles from './CompanyInfo.less';
 /**
  * description: 企业信息
  */
-@connect(({ unitSafety, loading }) => ({
+@connect(({ unitSafety, loading, chemical }) => ({
   unitSafety,
   loading: loading.effects['unitSafety/fetchSafetyIndex'],
+  chemical,
 }))
 export default class CompanyInfo extends PureComponent {
   render() {
-    const { handleClickCount } = this.props;
     const {
-      companyName = '无锡晶安智慧科技有限公司',
-      // 安全管理员
-      headOfSecurity = '张小东',
-      // 联系电话
-      headOfSecurityPhone = '18151518810',
-      // 风险点总数
-      countCheckItem = 12,
-      // 手机号是否可见
-      phoneVisible = true,
-      countCompanyUser = 10,
-      specialEquipmentCount = 4,
-      total = 4,
-      isImportant = true,
-    } = {};
-    const phone =
-      phoneVisible || !headOfSecurityPhone
-        ? headOfSecurityPhone
-        : `${headOfSecurityPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+      handleClickCount,
+      handleClickHiddenDanger,
+      handleShowRiskPoint,
+      data: {
+        // 特种设备统计
+        specialEquipmentCount,
+      },
+      unitSafety: {
+        companyMessage: {
+          companyMessage: {
+            // 企业名称
+            companyName,
+            // 安全管理员
+            headOfSecurity,
+            // 联系电话
+            headOfSecurityPhone,
+            // 风险点总数
+            countCheckItem,
+          },
+          // 是否是重点企业
+          isImportant,
+        },
+        // 安全人员
+        safetyOfficer: { valueList = [] } = {},
+        // 特种设备统计
+        // specialEquipmentCount,
+        // 隐患列表
+        hiddenDangerCount: { total = 0 } = {},
+        // 安全指数
+        safetyIndex,
+        // 手机号是否可见
+        phoneVisible,
+      },
+      chemical: { hiddenDangerTotal },
+    } = this.props;
+    const countCompanyUser = (valueList || []).reduce((total, value) => {
+      return total + (value ? value.length : 0);
+    }, 0);
+    const phone = headOfSecurityPhone;
+    // phoneVisible || !headOfSecurityPhone
+    //   ? headOfSecurityPhone
+    //   : `${headOfSecurityPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
 
     return (
       <Section extra={isImportant && <div className={styles.importantUnit}>重点单位</div>}>
@@ -91,14 +115,14 @@ export default class CompanyInfo extends PureComponent {
               className={styles.hoverable}
               style={{ backgroundImage: `url(${currentHiddenDangerIcon})` }}
               onClick={() => {
-                handleClickCount('currentHiddenDanger');
+                hiddenDangerTotal && handleClickHiddenDanger();
               }}
             >
               <div className={styles.countLabel}>
                 <div>当前隐患</div>
               </div>
               <div className={styles.countValue}>
-                <div>{total}</div>
+                <div>{hiddenDangerTotal}</div>
               </div>
             </div>
 
@@ -121,8 +145,8 @@ export default class CompanyInfo extends PureComponent {
               className={countCheckItem ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${riskPointIcon})` }}
               onClick={() => {
-                countCheckItem &&
-                  handleClickCount('riskPoint', { riskPointType: { key: 'status' } });
+                countCheckItem && handleShowRiskPoint();
+                // handleClickCount('riskPoint', { riskPointType: { key: 'status' } });
               }}
             >
               <div className={styles.countLabel}>

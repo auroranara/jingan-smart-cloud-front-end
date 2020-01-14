@@ -2,20 +2,29 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Button, Card, Modal, Table, message } from 'antd';
+import { Button, Card, Empty, Modal, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './TableList.less';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getTableColumns } from './utils';
+import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, getSearchFields, getTableColumns } from './utils';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
-@connect(({ cardsInfo, loading }) => ({
+// 权限
+const {
+  cardsInfo: {
+    commitmentCard: { add: addCode },
+  },
+} = codes;
+@connect(({ user, cardsInfo, loading }) => ({
+  user,
   cardsInfo,
   loading: loading.models.cardsInfo,
 }))
 export default class TableList extends PureComponent {
-  state = { current: 1, modalVisible: false, modalItem: {} };
+  state = { companyTotal: '', current: 1, modalVisible: false, modalItem: {} };
   values = {};
 
   componentDidMount() {
@@ -24,7 +33,8 @@ export default class TableList extends PureComponent {
 
   getList = pageNum => {
     const { dispatch } = this.props;
-    if (!pageNum) { // pageNum不存在，则为初始化
+    if (!pageNum) {
+      // pageNum不存在，则为初始化
       pageNum = 1;
       this.setState({ current: 1 });
     }
@@ -32,6 +42,9 @@ export default class TableList extends PureComponent {
     dispatch({
       type: 'cardsInfo/fetchCommitList',
       payload: { pageNum, pageSize: PAGE_SIZE, ...this.values },
+      callback: (res, msg) => {
+        this.setState({ companyTotal: msg });
+      },
     });
   };
 
@@ -65,9 +78,7 @@ export default class TableList extends PureComponent {
         if (code === 200) {
           message.success('删除成功');
           this.getList(current);
-        }
-        else
-          message.error(msg);
+        } else message.error(msg);
       },
     });
   };
@@ -85,10 +96,10 @@ export default class TableList extends PureComponent {
     const { name, content, acceptor, time } = modalItem;
 
     return (
-      <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null} >
+      <Modal width="60%" visible={modalVisible} onCancel={this.hideModal} footer={null}>
         <div className={styles.container}>
           <h2 className={styles.title}>{name}</h2>
-          <pre>{content}</pre>
+          <div className={styles.content}>{content}</div>
           <p className={styles.man}>{`承诺人：${acceptor}`}</p>
           <p className={styles.time}>{moment(time).format('YYYY-MM-DD')}</p>
         </div>
@@ -99,33 +110,47 @@ export default class TableList extends PureComponent {
   render() {
     const {
       loading,
+      user: {
+        currentUser: { permissionCodes, unitType },
+      },
       cardsInfo: { commitList, commitTotal },
     } = this.props;
-    const { current } = this.state;
+
+    const { current, companyTotal } = this.state;
+
+    const addAuth = hasAuthority(addCode, permissionCodes);
 
     const list = commitList;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
+
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <Button
+        disabled={!addAuth}
+        type="primary"
+        onClick={this.handleAdd}
+        style={{ marginTop: '8px' }}
+      >
         新增
       </Button>
     );
-    const columns = getTableColumns(this.handleDelete, this.showModal);
+    const fields = getSearchFields(unitType);
+    const columns = getTableColumns(this.handleDelete, this.showModal, unitType);
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length -1].title}
+        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：{commitTotal}
+            单位数量：
+            {companyTotal}
           </p>
         }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={FIELDS}
+            fields={fields}
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
@@ -134,15 +159,19 @@ export default class TableList extends PureComponent {
           />
         </Card>
         <div className={styles1.container}>
-          <Table
-            rowKey="id"
-            loading={loading}
-            columns={columns}
-            dataSource={list}
-            onChange={this.onTableChange}
-            scroll={{ x: 1400 }} // 项目不多时注掉
-            pagination={{ pageSize: PAGE_SIZE, total: commitTotal, current }}
-          />
+          {list.length ? (
+            <Table
+              rowKey="id"
+              loading={loading}
+              columns={columns}
+              dataSource={list}
+              onChange={this.onTableChange}
+              scroll={{ x: 1400 }} // 项目不多时注掉
+              pagination={{ pageSize: PAGE_SIZE, total: commitTotal, current }}
+            />
+          ) : (
+            <Empty />
+          )}
         </div>
         {this.renderModal()}
       </PageHeaderLayout>

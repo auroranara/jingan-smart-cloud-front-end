@@ -3,31 +3,36 @@ import { Input } from 'antd';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
+import Ellipsis from '@/components/Ellipsis';
 import TablePage from '@/templates/TablePage';
 import moment from 'moment';
 
-const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const TYPES = [
+export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+export const STATUSES = [
   { key: '0', value: '预警' },
   { key: '1', value: '告警' },
+  { key: '7', value: '火警' },
   { key: '2', value: '失联' },
   { key: '3', value: '故障' },
   { key: '4', value: '报警解除' },
   { key: '5', value: '恢复在线' },
   { key: '6', value: '故障消除' },
 ];
-const TYPE_MAPPER = [
+export const STATUS_MAPPER = [
   { statusType: -1, warnLevel: 1 },
-  { statusType: -1, warnLevel: 2 },
+  { statusType: -1, warnLevel: 2, fixType: -1 },
   { statusType: -2 },
   { statusType: -3 },
   { statusType: 1 },
   { statusType: 2 },
   { statusType: 3 },
+  { statusType: -1, fixType: 5 },
 ];
-const GET_TYPE_NAME = ({ statusType, warnLevel }) => {
+export const GET_STATUS_NAME = ({ statusType, warnLevel, fixType }) => {
   if (+statusType === -1) {
-    if (+warnLevel === 1) {
+    if (+fixType === 5) {
+      return '火警';
+    } else if (+warnLevel === 1) {
       return '预警';
     } else if (+warnLevel === 2) {
       return '告警';
@@ -48,7 +53,7 @@ const TRANSFORM = (data) => {
   const { statusType, range: [startTime, endTime]=[], ...rest } = data || {};
   return {
     ...rest,
-    ...TYPE_MAPPER[statusType],
+    ...STATUS_MAPPER[statusType],
     startTime: startTime && startTime.format(DEFAULT_FORMAT),
     endTime: endTime && endTime.format(DEFAULT_FORMAT),
   };
@@ -76,7 +81,7 @@ export default class AlarmMessage extends Component {
       },
     ] : []),
     {
-      id: 'monitorType',
+      id: 'monitorEquipmentTypes',
       label: '监测类型',
       render: () => <MonitorTypeSelect allowClear />,
     },
@@ -102,7 +107,7 @@ export default class AlarmMessage extends Component {
     {
       id: 'statusType',
       label: '消息类型',
-      render: () => <SelectOrSpan placeholder="请选择消息类型" list={TYPES} allowClear />,
+      render: () => <SelectOrSpan placeholder="请选择消息类型" list={STATUSES} allowClear />,
     },
   ])
 
@@ -118,13 +123,13 @@ export default class AlarmMessage extends Component {
     ] : []),
     {
       title: '监测类型',
-      dataIndex: 'monitorTypeName',
+      dataIndex: 'monitorEquipmentTypeName',
       align: 'center',
     },
     {
       title: '消息类型',
       dataIndex: 'statusType',
-      render: (_, data) => GET_TYPE_NAME(data),
+      render: (_, data) => GET_STATUS_NAME(data),
       align: 'center',
     },
     {
@@ -136,9 +141,22 @@ export default class AlarmMessage extends Component {
     {
       title: '消息内容',
       dataIndex: 'messageContent',
-      render: (value) => value && (
+      render: (value) => (
+        <div style={{ textAlign: 'left', whiteSpace: 'pre-line' }}>
+          {value}
+        </div>
+      ),
+      align: 'center',
+    },
+    {
+      title: '接收人',
+      dataIndex: 'mailAcceptUsers',
+      render: (value) => value && value.length > 0 && (
         <div style={{ textAlign: 'left' }}>
-          {value.split('\n').map(v => <div key={v}>{v}</div>)}
+          站内信：
+          <Ellipsis length={20} tooltip>
+            {value.map(({ accept_user_name, status }) => `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`).join('，')}
+          </Ellipsis>
         </div>
       ),
       align: 'center',

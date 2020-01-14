@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import { Card, Input, Select, Button, Table, Popconfirm, Modal, Spin, message } from 'antd';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import CustomForm from '@/jingan-components/CustomForm';
+import { Card, Input, Select, Button, Table, Modal, Spin, message, Divider, Empty } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import classNames from 'classnames';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import CustomForm from '@/jingan-components/CustomForm';
 import {
   TITLE,
   BREADCRUMB_LIST,
@@ -22,8 +22,12 @@ import {
   PUBLISH_CODE,
   SECRET_CODES,
   STATUSES,
+  DATE_STATUS,
 } from './config';
 import styles from './index.less';
+import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
+import ReviewModal from '../ReviewModal';
+import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
 
 const { Option } = Select;
 
@@ -40,9 +44,11 @@ export default class EmergencyPlanList extends Component {
     historyVisible: false,
     history: undefined,
     currentAuditStatus: undefined,
+    reviewModalVisible: false, // 审核弹窗是否可见
+    planId: undefined, // 计划id
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.getList();
   }
 
@@ -100,7 +106,7 @@ export default class EmergencyPlanList extends Component {
       status = undefined;
     } else if (auditStatus === '0' && !publishStatus) {
       status = '1';
-    } else if (auditStatus === '-1' && !publishStatus){
+    } else if (auditStatus === '-1' && !publishStatus) {
       status = '3';
     } else if ((auditStatus === '1' || !auditStatus) && publishStatus === '0') {
       status = '2';
@@ -174,8 +180,8 @@ export default class EmergencyPlanList extends Component {
             emergencyPlan: {
               list: {
                 pagination: {
-                  pageSize=DEFAULT_PAGE_SIZE,
-                }={},
+                  pageSize = DEFAULT_PAGE_SIZE,
+                } = {},
               },
             },
           } = this.props;
@@ -203,8 +209,8 @@ export default class EmergencyPlanList extends Component {
             emergencyPlan: {
               list: {
                 pagination: {
-                  pageSize=DEFAULT_PAGE_SIZE,
-                }={},
+                  pageSize = DEFAULT_PAGE_SIZE,
+                } = {},
               },
             },
           } = this.props;
@@ -232,8 +238,8 @@ export default class EmergencyPlanList extends Component {
             emergencyPlan: {
               list: {
                 pagination: {
-                  pageSize=DEFAULT_PAGE_SIZE,
-                }={},
+                  pageSize = DEFAULT_PAGE_SIZE,
+                } = {},
               },
             },
           } = this.props;
@@ -251,7 +257,36 @@ export default class EmergencyPlanList extends Component {
     });
   }
 
-  renderForm() {
+  // 打开审核意见弹窗
+  handleViewReviewModal = (planId) => {
+    this.setState({ planId, reviewModalVisible: true })
+  }
+
+  // 提交审核意见
+  handleSubmitReview = (values) => {
+    const { dispatch } = this.props;
+    const { planId } = this.state;
+    if (!planId) {
+      message.error('参数planId不存在')
+      return;
+    }
+    const payload = { ...values, planId }
+    dispatch({
+      type: 'emergencyPlan/submitReview',
+      payload,
+      callback: (res) => {
+        if (res && res.code === 200) {
+          message.success('审核成功！');
+          this.setState({ reviewModalVisible: false })
+          this.handleListChange(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE);
+        } else {
+          message.warning('审核失败，请稍后重试')
+        }
+      },
+    })
+  }
+
+  renderForm () {
     const {
       user: {
         currentUser: {
@@ -277,6 +312,15 @@ export default class EmergencyPlanList extends Component {
         render: () => (
           <Select placeholder="请选择预案类型代码" allowClear>
             {TYPE_CODES.map(({ key, value }) => <Option key={key}>{value}</Option>)}
+          </Select>
+        ),
+      },
+      {
+        id: 'paststatus',
+        label: '到期状态',
+        render: () => (
+          <Select placeholder="请选择到期状态" allowClear>
+            {DATE_STATUS.map((v, i) => <Option key={i}>{v}</Option>)}
           </Select>
         ),
       },
@@ -334,13 +378,13 @@ export default class EmergencyPlanList extends Component {
     const {
       emergencyPlan: {
         list: {
-          list=[],
+          list = [],
           pagination: {
-            pageSize=DEFAULT_PAGE_SIZE,
-            pageNum=DEFAULT_PAGE_NUM,
-            total=0,
-          }={},
-        }={},
+            pageSize = DEFAULT_PAGE_SIZE,
+            pageNum = DEFAULT_PAGE_NUM,
+            total = 0,
+          } = {},
+        } = {},
       },
       user: {
         currentUser: {
@@ -353,8 +397,8 @@ export default class EmergencyPlanList extends Component {
       publishing,
     } = this.props;
     const isNotCompany = unitType !== 4;
-    const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
-    const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
+    // const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
+    // const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasAuditAuthority = permissionCodes.includes(AUDIT_CODE);
     const hasPublishAuthority = permissionCodes.includes(PUBLISH_CODE);
 
@@ -363,6 +407,7 @@ export default class EmergencyPlanList extends Component {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
+        width: 300,
       },
     ] : []).concat([
       {
@@ -377,12 +422,28 @@ export default class EmergencyPlanList extends Component {
           </div>
         ),
         align: 'center',
+        width: 250,
       },
       {
         title: '有效期至',
         dataIndex: 'endDate',
-        render: endDate => endDate && moment(endDate).format('YYYY.M.D'),
+        render: endDate => endDate ? moment(endDate).format('YYYY-MM-DD') : '-',
         align: 'center',
+        width: 200,
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        key: 'paststatus',
+        align: 'center',
+        width: 120,
+        render: (status, { endDate }) => {
+          return (
+            <span style={{ color: getColorVal(status) }}>
+              {endDate ? paststatusVal[status] : '-'}
+            </span>
+          );
+        },
       },
       {
         title: '代码',
@@ -398,10 +459,12 @@ export default class EmergencyPlanList extends Component {
           );
         },
         align: 'center',
+        width: 200,
       },
       {
         title: '备案',
         dataIndex: 'record',
+        width: 200,
         render: (_, { isRecord, recordCode, recordDate, recordCertificateList }) => isRecord > 0 ? (
           <div className={styles.multi}>
             <div>已备案</div>
@@ -409,18 +472,19 @@ export default class EmergencyPlanList extends Component {
             <div>备案日期：{moment(recordDate).format('YYYY.M.D')}</div>
             <div>备案证明：
               {recordCertificateList && recordCertificateList.map(({ webUrl, fileName }, index) => (
-                <div key={index}>
-                  <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
-                </div>
-              ))}
+              <div key={index}>
+                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
+              </div>
+            ))}
             </div>
           </div>
         ) : '未备案',
-        align: 'center',
+        // align: 'center',
       },
       {
         title: '预案附件',
         dataIndex: 'emergencyFilesList',
+        width: 250,
         render: (emergencyFilesList) => (
           <Fragment>
             {emergencyFilesList && emergencyFilesList.map(({ webUrl, fileName }, index) => (
@@ -430,11 +494,12 @@ export default class EmergencyPlanList extends Component {
             ))}
           </Fragment>
         ),
-        align: 'center',
+        // align: 'center',
       },
       {
         title: '状态',
         dataIndex: 'status',
+        width: 200,
         render: (status) => {
           status = STATUSES.filter(({ key }) => key === status)[0];
           return status && status.value;
@@ -445,35 +510,37 @@ export default class EmergencyPlanList extends Component {
         title: '操作',
         dataIndex: 'operation',
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (_, { id, status }) => (
-          <Fragment>
-            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleViewClick : undefined} data-id={id}>查看</span>}
-            {+status === 1 && (hasAuditAuthority ? (
-              <Popconfirm title="是否通过这个应急预案?" onConfirm={() => this.handleAuditConfirm(id)} onCancel={() => this.handleAuditCancel(id)} okText="通过" cancelText="不通过">
-                <span className={styles.operation}>审核</span>
-              </Popconfirm>
-            ) : (
-              <span className={classNames(styles.operation, styles.disabled)}>审核</span>
-            ))}
-            {+status === 2 && (hasPublishAuthority ? (
-              <Popconfirm title="你确定要发布这个应急预案吗?" onConfirm={() => this.handlePublishConfirm(id)}>
-                <span className={styles.operation} disabled={!hasPublishAuthority}>发布</span>
-              </Popconfirm>
-            ) : (
-              <span className={classNames(styles.operation, styles.disabled)}>发布</span>
-            ))}
-            {(+status === 3 || +status === 4) && <span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditClick : undefined} data-id={id}>编辑</span>}
-          </Fragment>
-        ),
         align: 'center',
+        render: (_, { id, status }) => (
+          <div style={{ textAlign: 'left' }}>
+            <AuthA code={DETAIL_CODE} onClick={this.handleViewClick} data-id={id}>查看</AuthA>
+            <Divider type="vertical" />
+            <AuthA
+              hasAuthFn={() => +status === 1 && hasAuditAuthority}
+              onClick={() => this.handleViewReviewModal(id)}
+            >审核</AuthA>
+            <Divider type="vertical" />
+            <AuthPopConfirm
+              title="你确定要发布这个应急预案吗?"
+              authority={+status === 2 && hasPublishAuthority}
+              onConfirm={() => this.handlePublishConfirm(id)}
+            >发布</AuthPopConfirm>
+            {(+status === 3 || +status === 4) && (
+              <Fragment>
+                <Divider type="vertical" />
+                <AuthA code={EDIT_CODE} onClick={this.handleEditClick} data-id={id}>编辑</AuthA>
+              </Fragment>
+            )}
+          </div>
+        ),
       },
       {
         title: '历史版本',
         dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (versionCount, item) => (
-          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || 1}</span>
-        ),
+        render: (versionCount, item) => +versionCount > 0 ? (
+          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount}</span>
+        ) : '—',
         align: 'center',
       },
     ]);
@@ -481,44 +548,46 @@ export default class EmergencyPlanList extends Component {
     return (
       <Card className={styles.card} bordered={false}>
         <Spin spinning={loadingList || auditing || publishing || false}>
-          <Table
-            className={styles.table}
-            dataSource={list}
-            columns={COLUMNS}
-            rowKey="id"
-            scroll={{
-              x: true,
-            }}
-            pagination={{
-              current: pageNum,
-              pageSize,
-              total,
-              pageSizeOptions: ['5', '10', '15', '20'],
-              // showTotal: total => `共 ${total} 条`,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              onChange: this.handleListChange,
-              onShowSizeChange: (num, size) => {
-                this.handleListChange(1, size);
-              },
-            }}
-          />
+          {list && list.length ? (
+            <Table
+              className={styles.table}
+              dataSource={list}
+              columns={COLUMNS}
+              rowKey="id"
+              scroll={{ x: 'max-content' }}
+              pagination={{
+                current: pageNum,
+                pageSize,
+                total,
+                pageSizeOptions: ['5', '10', '15', '20'],
+                // showTotal: total => `共 ${total} 条`,
+                showQuickJumper: true,
+                showSizeChanger: true,
+                onChange: this.handleListChange,
+                onShowSizeChange: (num, size) => {
+                  this.handleListChange(1, size);
+                },
+              }}
+            />
+          ) : (
+            <Empty />
+          )}
         </Spin>
       </Card>
     );
   }
 
   // 历史版本
-  renderHistory() {
+  renderHistory () {
     const {
       emergencyPlan: {
         history: {
-          list=[],
+          list = [],
           pagination: {
-            total=0,
-            pageSize=0,
-            pageNum=0,
-          }={},
+            total = 0,
+            pageSize = 0,
+            pageNum = 0,
+          } = {},
         },
       },
       user: {
@@ -634,24 +703,25 @@ export default class EmergencyPlanList extends Component {
     );
   }
 
-  render() {
+  render () {
     const {
       emergencyPlan: {
         list: {
           a,
           pagination: {
-            total=0,
-          }={},
-        }={},
+            total = 0,
+          } = {},
+        } = {},
       },
-      user: {
-        currentUser: {
-          unitType,
-        },
-      },
+      user: { currentUser: { unitType } },
     } = this.props;
+    const { reviewModalVisible } = this.state;
     const isNotCompany = unitType !== 4;
-
+    const reviewModalProps = {
+      visible: reviewModalVisible,
+      onOk: this.handleSubmitReview,
+      onCancel: () => { this.setState({ reviewModalVisible: false }) },
+    }
     return (
       <PageHeaderLayout
         title={TITLE}
@@ -666,6 +736,8 @@ export default class EmergencyPlanList extends Component {
         {this.renderForm()}
         {this.renderTable()}
         {this.renderHistory()}
+        {/* 审核提示弹窗 */}
+        <ReviewModal {...reviewModalProps} />
       </PageHeaderLayout>
     );
   }

@@ -43,15 +43,33 @@
       height: 55px;
       // background-color: #fff;
       z-index: 66;
-      top: 70px;
+      top: 110px;
       left: 0px;
       cursor: pointer;
     }
   }
 }
 
+/* 通知框 */
+.notificationIcon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: url('../../IoT/MajorHazard/imgs/icon-alarm2.png') no-repeat center;
+  background-size: contain;
+  vertical-align: top;
+
+  &.success {
+    background-image: url('../../IoT/MajorHazard/imgs/icon-normal.png');
+  }
+
+  &.error {
+    background-image: url('../../IoT/MajorHazard/imgs/icon-alarm2.png');
+  }
+}
+
 .height100 {
-  height: 100%;
+  height: 100% !important;
 }
 
 .menuBtn {
@@ -69,7 +87,7 @@
 }
 
 .notification {
-  background-color: rgba(22, 22, 22, 0.9);
+  background-color: rgba(22, 22, 22, 0.9) !important;
   box-shadow: 0px 0px 20px #f83329;
 
   // animation-duration: 0.5s;
@@ -77,17 +95,28 @@
   :global {
     .ant-notification-notice-close {
       color: #fff;
+
+      &:hover {
+        color: #fff !important;
+      }
     }
 
     .ant-notification-close-icon {
       font-size: 16px;
     }
+
+    .ant-notification-notice-description {
+      margin-left: 40px !important;
+    }
+
+    .ant-notification-notice-message {
+      margin-left: 40px !important;
+    }
   }
 
   .notificationTitle {
     color: #fff;
-    font-size: 18px;
-    margin-left: -10px;
+    font-size: 16px;
 
     .iconFire {
       display: inline-block;
@@ -108,16 +137,20 @@
   .notificationBody {
     line-height: 24px;
     color: #fff;
-    font-size: 16px;
-    padding-left: 25px;
+    font-size: 14px;
+    // padding-left: 25px;
     cursor: pointer;
 
     .address {
       margin-left: 10px;
     }
 
-    .device {
+    .alarm {
       color: #f83329;
+    }
+
+    .fault {
+      color: #f4710f;
     }
   }
 }

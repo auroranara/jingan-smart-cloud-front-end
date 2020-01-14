@@ -26,7 +26,7 @@ export const RISK_CATEGORIES = [
   '自热物质和混合物',
   '遇水放出易燃气体的物质和混合物',
   '氧化性液体',
-  '液化性固体',
+  '氧化性固体',
   '有机过氧化物',
   '金属腐蚀物',
   '急性毒性物质',
@@ -72,17 +72,21 @@ function genFormItem(field, getFieldDecorator) {
     type = 'input',
     name,
     label,
+    disabled = false,
     placeholder,
+    onSelectChange,
     required = true,
     options,
     formItemOptions,
     component: compt,
     formExtraStyle,
+    wrapperClassName,
   } = field;
 
   let child = null;
 
-  if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
+  if (type === 'component') child = compt;
+  // 不经过getFieldDecorator包裹
   else {
     const formOptions = formItemOptions || {};
     const opts = getOptions(options);
@@ -97,12 +101,12 @@ function genFormItem(field, getFieldDecorator) {
       case 'text':
         placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
-        component = <TextArea placeholder={placeholder} />;
+        component = <TextArea placeholder={placeholder} disabled={disabled} autoSize />;
         break;
       case 'select':
         placeholder = placeholder || `请选择${label}`;
         component = (
-          <Select placeholder={placeholder} allowClear>
+          <Select placeholder={placeholder} disabled={disabled} allowClear>
             {opts.map(({ key, value }) => (
               <Option key={key}>{value}</Option>
             ))}
@@ -110,26 +114,30 @@ function genFormItem(field, getFieldDecorator) {
         );
         break;
       case 'radio':
-        component = <RadioGroup options={getOptions(options, ['value', 'label'])} />;
+        component = (
+          <RadioGroup disabled={disabled} options={getOptions(options, ['value', 'label'])} />
+        );
         break;
       case 'datepicker':
-        component = <DatePicker allowClear />;
+        component = <DatePicker disabled={disabled} allowClear />;
         break;
       case 'rangepicker':
-        component = <RangePicker allowClear />;
+        component = <RangePicker disabled={disabled} allowClear />;
         break;
       case 'cascader':
         placeholder = placeholder || `请选择${label}`;
-        component = <Cascader placeholder={placeholder} options={options} allowClear />;
+        component = (
+          <Cascader placeholder={placeholder} disabled={disabled} options={options} allowClear />
+        );
         break;
       case 'companyselect':
         placeholder = placeholder || `请选择${label}`;
-        component = <CompanySelect />;
+        component = <CompanySelect disabled={disabled} onChange={onSelectChange} />;
         break;
       default:
         placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
-        component = <Input placeholder={placeholder} allowClear />;
+        component = <Input placeholder={placeholder} disabled={disabled} allowClear />;
     }
 
     rules.unshift({ required, message: `${label}不能为空` });
@@ -137,15 +145,23 @@ function genFormItem(field, getFieldDecorator) {
     child = getFieldDecorator(name, formOptions)(component);
   }
 
-  return formExtraStyle ? (
-    <FormItem label={label} key={name} {...FORMITEM_LAYOUT_EXTRA}>
-      {child}
-    </FormItem>
-  ) : (
-    <FormItem label={label} key={name} {...FORMITEM_LAYOUT}>
-      {child}
-    </FormItem>
-  );
+  const props = {
+    label,
+    key: name,
+    className: wrapperClassName || undefined,
+    ...(formExtraStyle ? FORMITEM_LAYOUT_EXTRA : FORMITEM_LAYOUT),
+  };
+
+  // return formExtraStyle ? (
+  //   <FormItem label={label} key={name} {...FORMITEM_LAYOUT_EXTRA}>
+  //     {child}
+  //   </FormItem>
+  // ) : (
+  //   <FormItem label={label} key={name} {...FORMITEM_LAYOUT}>
+  //     {child}
+  //   </FormItem>
+  // );
+  return <FormItem {...props}>{child}</FormItem>;
 }
 
 function renderSection(section, index, getFieldDecorator) {
@@ -170,7 +186,13 @@ function getSections(sections) {
   return sections;
 }
 
-export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl, loading=false) {
+export function renderSections(
+  sections,
+  getFieldDecorator,
+  handleSubmit,
+  listUrl,
+  loading = false
+) {
   const secs = getSections(sections);
   const props = {};
   // const props = { ...FORMITEM_LAYOUT };

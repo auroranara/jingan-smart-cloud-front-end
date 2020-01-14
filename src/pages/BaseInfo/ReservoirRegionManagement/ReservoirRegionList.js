@@ -371,14 +371,16 @@ export default class ReservoirRegionList extends PureComponent {
         key: 'monitorEquipmentCount',
         align: 'center',
         width: 120,
-        render: (val, row) => (
-          <span
-            onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
-            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
-          >
-            {val}
-          </span>
-        ),
+        render: (val, row) => {
+          return (
+            <span
+              onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+            >
+              {val}
+            </span>
+          );
+        },
       },
       {
         title: '操作',
@@ -443,6 +445,7 @@ export default class ReservoirRegionList extends PureComponent {
       modalLoading,
       reservoirRegion: {
         areaData: {
+          list = [],
           pagination: { total },
         },
         envirTypeList,
@@ -453,10 +456,17 @@ export default class ReservoirRegionList extends PureComponent {
       },
       device: { monitoringDevice },
     } = this.props;
+
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
     const addAuth = hasAuthority(addCode, permissionCodes);
     // 解绑权限
     const unbindAuthority = hasAuthority(unbindCode, permissionCodes);
+
+    // 绑定传感器总数
+    const monitorEquipmentCount = list.reduce(function(prev, cur) {
+      return cur.monitorEquipmentCount + prev;
+    }, 0);
+
     const fields = [
       {
         id: 'name',
@@ -544,6 +554,10 @@ export default class ReservoirRegionList extends PureComponent {
             <span style={{ paddingLeft: 20 }}>
               库区总数：
               {total}
+            </span>
+            <span style={{ paddingLeft: 20 }}>
+              已绑监测设备数：
+              {monitorEquipmentCount}
             </span>
           </div>
         }

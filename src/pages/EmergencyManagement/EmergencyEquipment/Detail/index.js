@@ -66,9 +66,10 @@ const dspItems = [
 const Sources = ['国配', '自购', '社会装备'];
 const Statuss = ['正常', '维检', '报废', '使用中'];
 
-@connect(({ emergencyManagement, loading }) => ({
+@connect(({ emergencyManagement, loading, user }) => ({
   emergencyManagement,
   loading: loading.models.emergencyManagement,
+  user,
 }))
 export default class EmergencyEquipmentDetail extends Component {
   componentDidMount() {
@@ -78,14 +79,21 @@ export default class EmergencyEquipmentDetail extends Component {
   getDetail = () => {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
+      match: { params: { id = null } = {} },
     } = this.props;
     dispatch({
-      type: 'emergencyManagement/fetchEquipmentDetail',
-      payload: { id },
+      type: 'emergencyManagement/fetchEquipList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        id,
+      },
     });
+  };
+
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
   };
 
   handleBackButtonClick = () => {
@@ -95,10 +103,15 @@ export default class EmergencyEquipmentDetail extends Component {
   render() {
     const {
       emergencyManagement: {
-        equipment: { detail = {} },
+        equipment: { list = [{}] },
+        emergencyOutfit = [],
+      },
+      user: {
+        currentUser: { unitType },
       },
       loading,
     } = this.props;
+    const detail = list[0] || {};
     const fields = dspItems.map(item => {
       const { id } = item;
       const data = detail[id];
@@ -106,9 +119,23 @@ export default class EmergencyEquipmentDetail extends Component {
       if (id === 'equipSource') {
         renderItem = <span>{Sources[data - 1] || NO_DATA}</span>;
       } else if (id === 'produceDate' || id === 'buyDate') {
-        renderItem = <span>{moment(data).format('YYYY-MM-DD') || NO_DATA}</span>;
+        renderItem = <span>{data ? moment(data).format('YYYY-MM-DD') : NO_DATA}</span>;
       } else if (id === 'status') {
         renderItem = <span>{Statuss[data - 1] || NO_DATA}</span>;
+      } else if (id === 'equipType') {
+        let treeData = emergencyOutfit;
+        const string =
+          emergencyOutfit.length > 0
+            ? data
+                .split(',')
+                .map(id => {
+                  const val = treeData.find(item => item.id === id) || {};
+                  treeData = val.children || [];
+                  return val.label;
+                })
+                .join('/')
+            : '';
+        renderItem = <span>{string || NO_DATA}</span>;
       } else if (id === 'fileList') {
         renderItem = (
           <div>
@@ -147,7 +174,7 @@ export default class EmergencyEquipmentDetail extends Component {
             <CustomForm
               buttonWrapperSpan={BUTTON_WRAPPER_SPAN}
               buttonWrapperStyle={{ textAlign: 'center' }}
-              fields={fields}
+              fields={unitType === 4 ? fields.slice(1, fields.length) : fields}
               searchable={false}
               resetable={false}
               action={

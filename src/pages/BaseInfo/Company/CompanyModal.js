@@ -16,10 +16,10 @@ const fields = [
     //   //   message: `请输入${fieldList.name}`,
     //   // }],
     // },
-    render() {
+    render () {
       return <Input placeholder={fieldList.name} />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
@@ -46,6 +46,16 @@ export default class CompanyModal extends PureComponent {
     selectedRowKeys: [],
     name: undefined,
   };
+
+  getSnapshotBeforeUpdate (prevProps, prevState) {
+    return this.props.visible === true && !!this.props.rowSelection && !!this.props.rowSelection.selectedRowKeys;
+  }
+
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    if (snapshot) {
+      this.setState({ selectedRowKeys: this.props.rowSelection.selectedRowKeys })
+    }
+  }
 
   /* 关闭按钮点击事件 */
   handleClose = () => {
@@ -172,7 +182,7 @@ export default class CompanyModal extends PureComponent {
   };
 
   /* 渲染选择按钮 */
-  renderSelectButton() {
+  renderSelectButton () {
     const { selectedRowKeys } = this.state;
     return (
       <Button type="primary" onClick={this.handleSelect} disabled={!selectedRowKeys.length}>
@@ -181,7 +191,7 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       visible,
       width,

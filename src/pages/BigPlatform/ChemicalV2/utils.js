@@ -1,3 +1,32 @@
+import Wave from '@/jingan-components/Wave';
+import styles from './sections/MonitorDrawer.less';
+
+const nbEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/niubinEdu.png';
+const nbEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/niubinEngin.png';
+const wangybEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/wangybEdu.png';
+const wangybEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/wangybEngin.png';
+const zhgEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/zhgEdu.png';
+const zhgEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/zhgEngin.png';
+const zhqEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/zhqEdu.png';
+const zhqEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/zhqEngin.png';
+const zskEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/zskEdu.png';
+const zskEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/zskEngin.png';
+const zblEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/zblEdu.png';
+const zblEngin = 'http://data.jingan-china.cn/v2/chem/chemScreen/zblEngin.png';
+const per1 = 'http://data.jingan-china.cn/v2/chem/chemScreen/personSafety.png';
+const per2 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeSecond.png';
+const per3 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeThird.png';
+const per4 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeFourth.png';
+const per5 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeFifth.png';
+const per6 = 'http://data.jingan-china.cn/v2/chem/chemScreen/perSafeSixth.png';
+
+const storageAreaImg = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
+const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
+const reservoirImg = 'http://data.jingan-china.cn/v2/chem/screen/reservoir.png';
+const warehouseImg = 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png';
+const gasometerImg = 'http://data.jingan-china.cn/v2/chem/screen/gasometer.png';
+const productDeviceImg = 'http://data.jingan-china.cn/v2/chem/screen/productDevice.png';
+
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
   {
@@ -21,7 +50,114 @@ export const VideoList = [
     status: 1,
   },
 ];
-export const KeyList = ['企业管理员', '企业安全员'];
+// export const KeyList = ['企业管理员', '企业安全员'];
+export const KeyList = [
+  {
+    key: '1',
+    label: '企业管理员',
+    value: '2',
+  },
+  {
+    key: '2',
+    label: '安全员',
+    value: '4',
+  },
+  {
+    key: '3',
+    label: '本科',
+    value: '1',
+  },
+  {
+    key: '4',
+    label: '专科',
+    value: '5',
+  },
+  {
+    key: '5',
+    label: '注册工程师证',
+    value: '6',
+  },
+];
+export const PersonList = [
+  {
+    id: 1,
+    name: '牛斌',
+    sex: '男',
+    age: '57',
+    phone: '15857623543',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全管理员',
+    personPic: per1,
+    eduPic: nbEdu,
+    enginPic: nbEngin,
+  },
+  {
+    id: 2,
+    name: '王银冰',
+    sex: '男',
+    age: '32',
+    phone: '13925867749',
+    education: '本科',
+    work: '化工工艺',
+    sign: '安全管理员',
+    personPic: per2,
+    eduPic: wangybEdu,
+    enginPic: wangybEngin,
+  },
+  {
+    id: 3,
+    name: '张胡根',
+    sex: '男',
+    age: '58',
+    phone: '18083412691',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    personPic: per3,
+    eduPic: zhgEdu,
+    enginPic: zhgEngin,
+  },
+  {
+    id: 4,
+    name: '张会强',
+    sex: '男',
+    age: '40',
+    phone: '13952496637',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    personPic: per4,
+    eduPic: zhqEdu,
+    enginPic: zhqEngin,
+  },
+  {
+    id: 5,
+    name: '张世凯',
+    sex: '男',
+    age: '50',
+    phone: '13677342963',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    personPic: per5,
+    eduPic: zskEdu,
+    enginPic: zskEngin,
+  },
+  {
+    id: 6,
+    name: '赵炳良',
+    sex: '男',
+    age: '41',
+    phone: '18153654961',
+    education: '大专',
+    work: '应用化工技术',
+    sign: '安全员',
+    personPic: per6,
+    eduPic: zblEdu,
+    enginPic: zblEngin,
+  },
+];
 export const ValueList = [
   [
     {
@@ -1017,79 +1153,6 @@ export const DataList = [
   },
 ];
 
-export const SpecialEquipmentList = {
-  allList: [
-    {
-      id: 29602,
-      name: '空气储罐',
-      number: '新容1LS1474',
-      person: '孙敬权',
-      expiryDate: 1552233600000,
-      status: '1',
-    },
-    {
-      id: 29514,
-      name: '氮气缓冲罐',
-      number: '11-158',
-      person: '孙敬权',
-      expiryDate: 1554998400000,
-      status: '1',
-    },
-    {
-      id: 29673,
-      name: '乙基脲脱水釜',
-      number: '11-160',
-      person: '孙敬权',
-      expiryDate: 1568217600000,
-      status: '1',
-    },
-    {
-      id: 29653,
-      name: '搪玻璃反应釜',
-      number: '11-357',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-  ],
-  expiredList: [
-    {
-      id: 29602,
-      name: '空气储罐',
-      number: '新容1LS1474',
-      person: '孙敬权',
-      expiryDate: 1552233600000,
-      status: '1',
-    },
-    {
-      id: 29514,
-      name: '氮气缓冲罐',
-      number: '11-158',
-      person: '孙敬权',
-      expiryDate: 1554998400000,
-      status: '1',
-    },
-    {
-      id: 29673,
-      name: '乙基脲脱水釜',
-      number: '11-160',
-      person: '孙敬权',
-      expiryDate: 1568217600000,
-      status: '1',
-    },
-  ],
-  unexpiredList: [
-    {
-      id: 29653,
-      name: '搪玻璃反应釜',
-      number: '11-357',
-      person: '孙敬权',
-      expiryDate: 1637856000000,
-      status: '0',
-    },
-  ],
-};
-
 export const MonitorList = [
   // 罐区
   [
@@ -1302,14 +1365,14 @@ export const MonitorList = [
   // 可燃有毒气体
   [
     {
-      title: '可燃有毒气体监测',
+      title: '可燃气体监测',
       status: 1,
-      location: '仓库-1号仓库',
+      location: '7号罐附近',
       isDanger: 1,
       monitors: [
         {
-          gaugeData: { value: 71, title: '可燃气体浓度', unit: 'mg/m³' },
-          extra: 26,
+          gaugeData: { value: 24, title: '可燃气体浓度', unit: 'mg/m³' },
+          extra: 15,
         },
         {
           gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
@@ -1317,17 +1380,22 @@ export const MonitorList = [
         },
       ],
     },
+  ],
+  // 可燃有毒气体
+  [
     {
-      title: '可燃有毒气体监测',
-      status: 2,
-      location: '仓库-3号仓库',
-      isDanger: 0,
+      title: '有毒气体监测',
+      status: 1,
+      location: '6号罐附近',
+      isDanger: 1,
       monitors: [
         {
-          gaugeData: { value: 35, title: '可燃气体浓度', unit: 'mg/m³' },
+          gaugeData: { value: 6.2, title: '可燃气体浓度', unit: 'mg/m³' },
+          extra: 6,
         },
         {
-          gaugeData: { value: 47, title: '有毒气体浓度', unit: 'mg/m³' },
+          gaugeData: { value: 65, title: '有毒气体浓度', unit: 'mg/m³' },
+          extra: 12,
         },
       ],
     },
@@ -1403,9 +1471,20 @@ export const MonitorFields = [
   ],
   // 可燃有毒气体
   [{ label: '监测区域名称', value: 'location' }],
+  // 可燃有毒气体
+  [{ label: '监测区域名称', value: 'location' }],
 ];
 
-export const MonitorTitles = ['罐区', '库区', '储罐', '生产装置', '库房', '气柜', '可燃有毒气体'];
+export const MonitorTitles = [
+  '罐区',
+  '库区',
+  '储罐',
+  '生产装置',
+  '库房',
+  '气柜',
+  '可燃气体',
+  '有毒气体',
+];
 
 export const MonitorDetailFields = [
   // 罐区
@@ -1484,6 +1563,225 @@ export const MonitorDetailFields = [
       },
     },
   ],
-  // 可燃有毒气体
+  // 可燃气体
+  [{ label: '监测区域名称', value: 'location' }],
+  // 有毒气体
   [{ label: '监测区域名称', value: 'location' }],
 ];
+
+export const MsgShowTypes = [
+  1, // 发生监管
+  2, // 联动
+  3, // 反馈
+  4, // 屏蔽
+  7, // 主机报警
+  9, // 主机报障
+  11, // 一键报修
+  13, // 安全巡查
+  14, // 上报隐患
+  15, // 整改隐患
+  16, // 重新整改隐患
+  17, // 复查隐患
+  18, // 维保巡检
+  32, // 电气火灾报警
+  36, // 水系统报警
+  37, // 水系统恢复
+  38, // 独立烟感报警
+  39, // 可燃气体报警
+  40, // 独立烟感故障
+  42, // 电气火灾失联
+  43, // 电气火灾失联恢复
+  44, // 电气火灾报警恢复
+  45, // 燃气报警恢复
+  46, // 独立烟感失联
+  47, // 独立烟感失联恢复
+  48, // 水系统失联
+  49, // 水系统失联恢复
+  50, // 独立烟感报警恢复
+  51, // 独立烟感故障恢复
+  54, // 可燃气体失联
+  55, // 可燃气体失联恢复
+  56, // 机械臂故障
+  57, // 机械臂故障恢复
+  58, // 人脸识别报警
+  100, // 监测设备
+];
+
+export const TypeClickList = [100, 14, 15, 16, 17];
+
+export const MonitorConfig = {
+  '301': {
+    // 储罐区
+    title: '罐区监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${storageAreaImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'areaName',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '在厂区的位置', value: 'location' },
+      {
+        label: '所处环境功能区',
+        value: 'environmentArea',
+        render: val => {
+          const envirTypeList = [
+            { key: '1', value: '一类区' },
+            { key: '2', value: '二类区' },
+            { key: '3', value: '三类区' },
+          ];
+          return <span>{envirTypeList[val - 1] ? envirTypeList[val - 1].value : ''}</span>;
+        },
+      },
+      { label: '储罐区面积（㎡）', value: 'spaceArea' },
+      {
+        label: '有无围堰',
+        value: 'hasCoffer',
+        render: val => (+val === 0 ? '无' : '有'),
+      },
+      { label: '罐区总容积（m³）', value: 'areaVolume' },
+      { label: '常规储量（t）', value: 'commonStore' },
+    ],
+  },
+  '302': {
+    // 储罐
+    title: '储罐监测',
+    icon: ({ tankName }) => (
+      <div
+        className={styles.iconWrapper}
+        style={{
+          background: `url(${storageImg}) center center / 100% auto no-repeat`,
+        }}
+      >
+        <Wave
+          frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
+          backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
+        />
+        <div className={styles.tankName}>{tankName}</div>
+      </div>
+    ),
+    fields: [
+      {
+        value: 'tankName',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '位号', value: 'number' },
+      { label: '存储物质', value: 'chineName' },
+      {
+        label: '区域位置',
+        value: 'buildingName',
+        render: (val, row) => {
+          const { buildingName, floorName, areaName } = row;
+          return (
+            <span style={{ fontSize: 16 }}>
+              {buildingName ? buildingName + (floorName || '') : areaName || '暂无'}
+            </span>
+          );
+        },
+      },
+    ],
+  },
+  '303': {
+    // 库区
+    title: '库区监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${reservoirImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '区域位置', value: 'position' },
+      {
+        label: '所处环境功能区',
+        value: 'environment',
+        render: val => {
+          const envirTypeList = [
+            { key: '1', value: '一类区' },
+            { key: '2', value: '二类区' },
+            { key: '3', value: '三类区' },
+          ];
+          return <span>{envirTypeList[val - 1] ? envirTypeList[val - 1].value : ''}</span>;
+        },
+      },
+      { label: '库区面积（㎡）', value: 'area' },
+    ],
+  },
+  '304': {
+    // 库房
+    title: '库房监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${warehouseImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '区域位置', value: 'position' },
+      { label: '所属库区', value: 'aname' },
+      { label: '库房面积（㎡）', value: 'area' },
+    ],
+  },
+  '311': {
+    // 生产装置
+    title: '生产装置监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${productDeviceImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '区域位置', value: 'location' },
+      { label: '是否关键装置', value: 'keyDevice', render: val => (+val === 1 ? '是' : '否') },
+      { label: '设计压力（KPa）', value: 'pressure' },
+    ],
+  },
+  '312': {
+    // 气柜
+    title: '气柜监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${gasometerImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'gasholderName',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      { label: '区域位置', value: 'regionalLocation' },
+      { label: '设计柜容（m³）', value: 'designCapacity' },
+      { label: '设计压力（KPa）', value: 'designKpa' },
+    ],
+  },
+};

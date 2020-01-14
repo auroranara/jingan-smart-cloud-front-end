@@ -63,26 +63,35 @@ const dspItems = [
 
 const Statuss = ['未执行', '已执行'];
 
-@connect(({ emergencyManagement, loading }) => ({
+@connect(({ emergencyManagement, loading, user }) => ({
   emergencyManagement,
+  user,
   loading: loading.models.emergencyManagement,
 }))
 export default class EmergencyDrillDetail extends Component {
   componentDidMount() {
+    this.fetchDict({ type: 'emergencyDrill' });
     this.getDetail();
   }
 
   getDetail = () => {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
+      match: { params: { id = null } = {} },
     } = this.props;
     dispatch({
-      type: 'emergencyManagement/fetchDrillDetail',
-      payload: { id },
+      type: 'emergencyManagement/fetchDrillList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        id,
+      },
     });
+  };
+
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
   };
 
   handleBackButtonClick = () => {
@@ -92,10 +101,15 @@ export default class EmergencyDrillDetail extends Component {
   render() {
     const {
       emergencyManagement: {
-        drill: { detail = {} },
+        drill: { list = [{}] },
+        emergencyDrill = [],
       },
       loading,
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
+    const detail = list[0] || {};
     const fields = dspItems.map(item => {
       const { id } = item;
       const data = detail[id];
@@ -103,7 +117,18 @@ export default class EmergencyDrillDetail extends Component {
       if (id === 'projectStatus') {
         renderItem = <span>{Statuss[+data] || NO_DATA}</span>;
       } else if (id === 'draftDate') {
-        renderItem = <span>{moment(data).format('YYYY-MM-DD') || NO_DATA}</span>;
+        renderItem = <span>{data ? moment(data).format('YYYY-MM-DD') : NO_DATA}</span>;
+      } else if (id === 'planType') {
+        let treeData = emergencyDrill;
+        const string = data
+          .split(',')
+          .map(id => {
+            const val = treeData.find(item => item.id === id) || {};
+            treeData = val.children || [];
+            return val.label;
+          })
+          .join('/');
+        renderItem = <span>{string || NO_DATA}</span>;
       }
       return {
         ...item,
@@ -123,7 +148,7 @@ export default class EmergencyDrillDetail extends Component {
             <CustomForm
               buttonWrapperSpan={BUTTON_WRAPPER_SPAN}
               buttonWrapperStyle={{ textAlign: 'center' }}
-              fields={fields}
+              fields={unitType === 4 ? fields.slice(1, fields.length) : fields}
               searchable={false}
               resetable={false}
               action={

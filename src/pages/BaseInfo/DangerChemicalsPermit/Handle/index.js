@@ -363,7 +363,7 @@ export default class DangerChemicalsHandle extends PureComponent {
               initialValue: certificateNumber,
               getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入发证编号' }],
-            })(<Input placeholder="请输入" {...itemStyles} maxLength="15" />)}
+            })(<Input placeholder="请输入" {...itemStyles} maxLength="30" />)}
           </FormItem>
           <FormItem label="证书有效期" {...formItemLayout}>
             {getFieldDecorator('period', {

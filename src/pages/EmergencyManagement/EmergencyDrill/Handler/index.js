@@ -44,8 +44,9 @@ const limitDecimals = value => {
 };
 
 @Form.create()
-@connect(({ emergencyManagement, loading, company }) => ({
+@connect(({ emergencyManagement, loading, company, user }) => ({
   emergencyManagement,
+  user,
   company,
   companyLoading: loading.effects['company/fetchModelList'],
 }))
@@ -147,6 +148,9 @@ export default class EmergencyDrillHandler extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
     const { typeCode } = this.state;
 
@@ -154,7 +158,12 @@ export default class EmergencyDrillHandler extends PureComponent {
       console.log('formData', formData);
 
       if (!error) {
-        const payload = { ...formData, planType: formData.planType.join(','), typeCode };
+        const payload = {
+          ...formData,
+          planType: formData.planType.join(','),
+          typeCode,
+          companyId: unitType === 4 ? companyId : formData.companyId,
+        };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           router.push(listUrl);
@@ -217,7 +226,7 @@ export default class EmergencyDrillHandler extends PureComponent {
     const typeCode = value
       .map(id => {
         const val = treeData.find(item => item.id === id) || {};
-        treeData = val.children;
+        treeData = val.children || [];
         return val.value;
       })
       .join('.');
@@ -231,29 +240,34 @@ export default class EmergencyDrillHandler extends PureComponent {
     const {
       form: { getFieldDecorator, getFieldValue },
       emergencyManagement: { emergencyDrill = [] },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const { selectedCompany, typeCode } = this.state;
 
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
-                </Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位名称"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
+                  </Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="计划名称" {...formItemLayout}>
             {getFieldDecorator('projectName', {
               getValueFromEvent: this.handleTrim,
@@ -293,8 +307,14 @@ export default class EmergencyDrillHandler extends PureComponent {
           <FormItem label="上报人" {...formItemLayout}>
             {getFieldDecorator('reportBy', {
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入上报人' }],
+              // rules: [{ required: true, message: '请输入上报人' }],
             })(<Input placeholder="请输入上报人" {...itemStyles} />)}
+          </FormItem>
+          <FormItem label="演练编号" {...formItemLayout}>
+            {getFieldDecorator('planCode', {
+              getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, message: '请输入演练编号' }],
+            })(<Input placeholder="请输入演练编号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练名称" {...formItemLayout}>
             {getFieldDecorator('planName', {
@@ -332,12 +352,6 @@ export default class EmergencyDrillHandler extends PureComponent {
             {getFieldDecorator('planBack', { getValueFromEvent: this.handleTrim })(
               <Input placeholder="请输入演练背景" {...itemStyles} />
             )}
-          </FormItem>
-          <FormItem label="演练编号" {...formItemLayout}>
-            {getFieldDecorator('planCode', {
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入演练编号' }],
-            })(<Input placeholder="请输入演练编号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练地点" {...formItemLayout}>
             {getFieldDecorator('planLocation', {

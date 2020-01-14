@@ -63,7 +63,7 @@ export default {
       list: [],
       pagination: {
         total: 0,
-        pageSize: 10,
+        pageSize: 20,
         pageNum: 1,
       },
     },
@@ -75,6 +75,76 @@ export default {
     },
     allFloorNumberLists: [],
     floorNumberLists: [],
+    floorIndexList: [
+      {
+        key: '1',
+        value: '地下2楼',
+      },
+      {
+        key: '2',
+        value: '地下1楼',
+      },
+      {
+        key: '3',
+        value: '1楼',
+      },
+      {
+        key: '4',
+        value: '2楼',
+      },
+      {
+        key: '5',
+        value: '3楼',
+      },
+      {
+        key: '6',
+        value: '4楼',
+      },
+      {
+        key: '7',
+        value: '5楼',
+      },
+      {
+        key: '8',
+        value: '6楼',
+      },
+      {
+        key: '9',
+        value: '7楼',
+      },
+      {
+        key: '10',
+        value: '8楼',
+      },
+      {
+        key: '11',
+        value: '9楼',
+      },
+      {
+        key: '12',
+        value: '10楼',
+      },
+      {
+        key: '13',
+        value: '11楼',
+      },
+      {
+        key: '14',
+        value: '12楼',
+      },
+      {
+        key: '15',
+        value: '13楼',
+      },
+      {
+        key: '16',
+        value: '14楼',
+      },
+      {
+        key: '17',
+        value: '15楼',
+      },
+    ],
   },
 
   effects: {
@@ -216,7 +286,7 @@ export default {
           payload: response.data,
         });
         if (success) {
-          success(response.data.list[0]);
+          success(response.data);
         }
       } else if (error) {
         error(response.msg);

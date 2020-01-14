@@ -19,6 +19,8 @@ export default {
       list: [],
       pagination: defaultPagination,
     },
+    // 隐患标准管理数据库——保存查询信息
+    standardDatabaseQueryInfo: {},
     // 隐患流程
     standardProcess: {
       list: [],
@@ -149,6 +151,13 @@ export default {
       return {
         ...state,
         ...payload,
+      }
+    },
+    // 保存隐患标准管理数据库——保存查询信息
+    saveStandardDatabaseQueryInfo (state, action) {
+      return {
+        ...state,
+        standardDatabaseQueryInfo: action.payload || {},
       }
     },
   },

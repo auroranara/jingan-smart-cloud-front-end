@@ -58,6 +58,7 @@ export default {
         listView: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
         edit: 'deviceManagement.userTransmissionDevice.pointManagement.edit',
         delete: 'deviceManagement.userTransmissionDevice.pointManagement.delete',
+        add: 'deviceManagement.userTransmissionDevice.pointManagement.add',
       },
     },
     videoMonitor: {
@@ -404,6 +405,13 @@ export default {
       delete: 'riskControl.gridPointManage.delete',
       detailView: 'riskControl.gridPointManage.detailView',
     },
+    fourColorImage: {
+      listView: 'riskControl.fourColorImage.listView',
+      view: 'riskControl.fourColorImage.view',
+      add: 'riskControl.fourColorImage.add',
+      edit: 'riskControl.fourColorImage.edit',
+      delete: 'riskControl.fourColorImage.delete',
+    },
   },
 
   /** 安防管理 */
@@ -505,6 +513,8 @@ export default {
       edit: 'majorHazardInfo.highRiskProcess.edit',
       detail: 'majorHazardInfo.highRiskProcess.detail',
       delete: 'majorHazardInfo.highRiskProcess.delete',
+      bind: 'majorHazardInfo.highRiskProcess.bind',
+      unbind: 'majorHazardInfo.highRiskProcess.unbind',
     },
     // 特种设备管理
     specialEquipment: {
@@ -570,6 +580,7 @@ export default {
       add: 'facilityManagement.safetyFacilities.add',
       edit: 'facilityManagement.safetyFacilities.edit',
       delete: 'facilityManagement.safetyFacilities.delete',
+      report: 'facilityManagement.safetyFacilities.report',
     },
     // 储罐管理
     storageManagement: {
@@ -621,13 +632,15 @@ export default {
       list: 'twoInformationManagement.dangerFactorsList.list',
       view: 'twoInformationManagement.dangerFactorsList.view',
       delete: 'twoInformationManagement.dangerFactorsList.delete',
-      sync: 'twoInformationManagement.dangerFactorsList.sync',
+      import: 'twoInformationManagement.dangerFactorsList.import',
+      export: 'twoInformationManagement.dangerFactorsList.export',
     },
     safetyRiskList: {
       list: 'twoInformationManagement.safetyRiskList.list',
       view: 'twoInformationManagement.safetyRiskList.view',
       delete: 'twoInformationManagement.safetyRiskList.delete',
-      sync: 'twoInformationManagement.safetyRiskList.sync',
+      import: 'twoInformationManagement.safetyRiskList.import',
+      export: 'twoInformationManagement.safetyRiskList.export',
     },
   },
 
@@ -682,6 +695,42 @@ export default {
       edit: 'hiddenDangerControl.dangerStandardDatabase.edit',
       delete: 'hiddenDangerControl.dangerStandardDatabase.delete',
       process: 'hiddenDangerControl.dangerStandardDatabase.process',
+    },
+  },
+  // 设备设施管理
+  facilityManagement: {
+    // 三同时审批记录
+    threeSimultaneity: {
+      list: 'facilityManagement.threeSimultaneity.listView',
+      add: 'facilityManagement.threeSimultaneity.add',
+      edit: 'facilityManagement.threeSimultaneity.edit',
+      delete: 'facilityManagement.threeSimultaneity.delete',
+    },
+  },
+  cardsInfo: {
+    // 承诺卡
+    commitmentCard: {
+      list: 'cardsInfo.commitmentCard.list',
+      view: 'cardsInfo.commitmentCard.view',
+      add: 'cardsInfo.commitmentCard.add',
+      edit: 'cardsInfo.commitmentCard.edit',
+      delete: 'cardsInfo.commitmentCard.delete',
+    },
+    // 应急卡
+    emergencyCard: {
+      list: 'cardsInfo.emergencyCard.list',
+      view: 'cardsInfo.emergencyCard.view',
+      add: 'cardsInfo.emergencyCard.add',
+      edit: 'cardsInfo.emergencyCard.edit',
+      delete: 'cardsInfo.emergencyCard.delete',
+    },
+    // 应知卡
+    knowCard: {
+      list: 'cardsInfo.knowCard.list',
+      view: 'cardsInfo.knowCard.view',
+      add: 'cardsInfo.knowCard.add',
+      edit: 'cardsInfo.knowCard.edit',
+      delete: 'cardsInfo.knowCard.delete',
     },
   },
 };

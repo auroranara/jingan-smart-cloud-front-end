@@ -6,10 +6,12 @@ import DrawerContainer from '../components/DrawerContainer';
 import SwitchHead from '../components/SwitchHead';
 import NewTimelineCard from '../components/NewTimelineCard';
 import { vaguePhone } from '../utils';
-import flowImg from '../imgs/flow.png';
-import flowFaultImg from '../imgs/flow_m.png';
+// import flowImg from '../imgs/flow.png';
+// import flowFaultImg from '../imgs/flow_m.png';
 import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDrawerTop';
 
+const flowImg = 'http://data.jingan-china.cn/v2/chem/screen/flow.png';
+const flowFaultImg = 'http://data.jingan-china.cn/v2/chem/screen/flow_m.png';
 const ID = 'smoke-flow-drawer';
 const TITLES = ['报警', '故障'];
 const LABELS = [['发生', '确认', '完成'], ['发生', '开始处理', '处理完毕']];

@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Card,
@@ -30,7 +30,7 @@ const formItemLayout = {
 };
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
-
+const itemsStyle = { style: { width: 'calc(34.5%)', marginRight: '10px' } };
 // 获取根节点
 const getRootChild = () => document.querySelector('#root>div');
 
@@ -47,7 +47,7 @@ const {
 } = codes;
 
 @Form.create()
-@connect(({ safeFacilities, user, videoMonitor, loading }) => ({
+@connect(({ safeFacilities, user, baseInfo, videoMonitor, loading }) => ({
   safeFacilities,
   videoMonitor,
   user,
@@ -59,7 +59,14 @@ export default class Edit extends PureComponent {
     uploading: false, // 上传是否加载
     photoUrl: [], // 上传照片
     detailList: {},
-    facNameList: [],
+    categoryOneId: '', // 分类一列表选中Id
+    categoryTwoId: '', // 分类二列表选中Id
+    categoryOneName: undefined, // 分类一列表选中名称
+    categoryTwoName: undefined, // 分类二列表选中名称
+    categoryOneList: [], // 分类一列表
+    categoryTwoList: [], // 分类二列表
+    facilitiesNameList: [], // 安全设施名称列表
+    editCompany: '',
   };
 
   // 挂载后
@@ -69,22 +76,31 @@ export default class Edit extends PureComponent {
       match: {
         params: { id },
       },
-      safeFacilities: { facNameList = [] },
+      form: { setFieldsValue },
     } = this.props;
 
     if (id) {
       dispatch({
         type: 'safeFacilities/fetchSafeFacList',
         payload: {
-          pageSize: 48,
+          id,
+          pageSize: 10,
           pageNum: 1,
         },
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { photoList } = currentList;
+          const { photoList, category, safeFacilitiesName, companyId, categoryName } = currentList;
+          const categoryArray = category ? category.split(',') : '';
+
           this.setState({
+            categoryOneName: categoryName[0],
+            categoryTwoName: categoryName[1],
+            categoryOneId: categoryArray[0],
+            categoryTwoId: categoryArray[1],
+            safeFacilitiesNameId: safeFacilitiesName,
             detailList: currentList,
+            editCompany: companyId,
             photoUrl: photoList.map(({ dbUrl, webUrl }, index) => ({
               uid: index,
               status: 'done',
@@ -93,15 +109,42 @@ export default class Edit extends PureComponent {
               dbUrl,
             })),
           });
+          setFieldsValue({ category });
+          this.fetchDict({
+            payload: { type: 'safeFacilities', parentId: categoryArray[0] },
+            callback: list => {
+              this.setState({ categoryTwoList: list });
+              this.fetchDict({
+                payload: { type: 'safeFacilities', parentId: categoryArray[1] },
+                callback: list => {
+                  this.setState({ facilitiesNameList: list });
+                },
+              });
+            },
+          });
         },
       });
-      this.setState({ facNameList: facNameList });
     } else {
       dispatch({
         type: 'safeFacilities/clearSafeFacDetail',
       });
     }
+    this.fetchDict({
+      payload: { type: 'safeFacilities', parentId: 0 },
+      callback: list => {
+        this.setState({ categoryOneList: list });
+      },
+    });
   }
+
+  // 获取字典
+  fetchDict = actions => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'baseInfo/fetchDict',
+      ...actions,
+    });
+  };
 
   goBack = () => {
     router.push('/facility-management/safety-facilities/list');
@@ -128,12 +171,16 @@ export default class Edit extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
-    const { photoUrl } = this.state;
+    const {
+      photoUrl,
+      categoryOneId,
+      safeFacilitiesNameId,
+      editCompany,
+      categoryTwoId,
+    } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const {
-          category,
-          safeFacilitiesName,
           specifications,
           processFacilitiesInvolved,
           equipNumber,
@@ -142,16 +189,24 @@ export default class Edit extends PureComponent {
           leaveFactoryDate,
           useYear,
           notes,
+          equipName,
+          leaveProductNumber,
+          installPart,
+          useDate,
         } = values;
         const payload = {
           id,
-          companyId: this.companyId || companyId,
-          category: category.join(','),
-          safeFacilitiesName,
+          companyId: this.companyId || companyId || editCompany,
+          category: categoryOneId + ',' + categoryTwoId,
+          safeFacilitiesName: safeFacilitiesNameId,
           specifications,
           processFacilitiesInvolved,
           equipNumber,
+          installPart,
           equipStatus,
+          equipName,
+          useDate: useDate ? useDate.format('YYYY-MM-DD') : undefined,
+          leaveProductNumber,
           productFactory,
           leaveFactoryDate: leaveFactoryDate ? leaveFactoryDate.format('YYYY-MM-DD') : undefined,
           useYear,
@@ -290,11 +345,72 @@ export default class Edit extends PureComponent {
     }
   };
 
-  onChangeCascader = val => {
+  handleCategoryOneChange = val => {
     const {
-      safeFacilities: { facNameList = [] },
+      form: { setFieldsValue },
     } = this.props;
-    this.setState({ facNameList: facNameList });
+
+    const { categoryOneList } = this.state;
+    const typeOneName = categoryOneList.filter(item => item.id === val).map(item => item.label);
+    this.setState({ categoryOneName: typeOneName });
+
+    if (val) {
+      this.fetchDict({
+        payload: { type: 'safeFacilities', parentId: val },
+        callback: list => {
+          this.setState({ categoryTwoList: list });
+        },
+      });
+    } else this.setState({ categoryOneList: [] });
+    this.setState({ categoryOneId: val });
+    setFieldsValue({ category: val });
+  };
+
+  handleCategoryTwoChange = val => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+
+    const { categoryTwoList } = this.state;
+    const typeTwoName = categoryTwoList.filter(item => item.id === val).map(item => item.label);
+    this.setState({ categoryTwoName: typeTwoName });
+
+    if (val) {
+      this.fetchDict({
+        payload: { type: 'safeFacilities', parentId: val },
+        callback: list => {
+          this.setState({ facilitiesNameList: list });
+        },
+      });
+    } else this.setState({ categoryTwoList: [] });
+    this.setState({ categoryTwoId: val });
+    setFieldsValue({ category: val });
+  };
+
+  handleNameChange = id => {
+    this.setState({ safeFacilitiesNameId: id });
+  };
+
+  handleCategoryOneSelect = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({
+      categoryTwoId: '',
+      categoryTwoName: '',
+      safeFacilitiesNameId: '',
+    });
+    setFieldsValue({ safeFacilitiesName: '' });
+  };
+
+  handleCategoryTwoSelect = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({
+      safeFacilitiesNameId: '',
+    });
+    setFieldsValue({ safeFacilitiesName: '' });
   };
 
   /**
@@ -302,28 +418,40 @@ export default class Edit extends PureComponent {
    */
   renderForm = () => {
     const {
-      form: { getFieldDecorator },
-      safeFacilities: { categoryList = [] },
+      form: { getFieldDecorator, getFieldValue },
       user: {
         currentUser: { unitType },
       },
     } = this.props;
-    const { uploading, photoUrl, detailList, facNameList } = this.state;
+    const {
+      uploading,
+      photoUrl,
+      detailList,
+      categoryOneList,
+      categoryTwoList,
+      facilitiesNameList,
+      categoryOneName,
+      categoryTwoName,
+    } = this.state;
+
+    const category = getFieldValue('category') || [];
 
     const {
       companyName,
-      category,
-      safeFacilitiesName,
+      safeFacilitiesLabel,
       specifications,
       processFacilitiesInvolved,
-      equipNumber,
       equipStatus,
       productFactory,
       leaveFactoryDate,
       useYear,
+      leaveProductNumber,
+      installPart,
+      equipName,
+      useDate,
       notes,
-      // photo,
     } = detailList;
+
     return (
       <Card>
         <Form>
@@ -351,7 +479,7 @@ export default class Edit extends PureComponent {
           )}
           <FormItem label="分类" {...formItemLayout}>
             {getFieldDecorator('category', {
-              initialValue: category ? [category.split(',')[0], category.split(',')[1]] : [],
+              initialValue: category,
               rules: [
                 {
                   required: true,
@@ -359,26 +487,49 @@ export default class Edit extends PureComponent {
                 },
               ],
             })(
-              <Cascader
-                {...itemStyles}
-                placeholder="请选择"
-                options={categoryList}
-                allowClear
-                changeOnSelect
-                notFoundContent
-                onChange={this.onChangeCascader}
-                getPopupContainer={getRootChild}
-              />
+              <Fragment>
+                <Select
+                  value={categoryOneName}
+                  placeholder="请选择"
+                  {...itemsStyle}
+                  onChange={this.handleCategoryOneChange}
+                  onSelect={this.handleCategoryOneSelect}
+                >
+                  {categoryOneList.map(({ id, label }) => (
+                    <Select.Option key={id} value={id}>
+                      {label}
+                    </Select.Option>
+                  ))}
+                </Select>
+                <Select
+                  value={categoryTwoName}
+                  placeholder="请选择"
+                  {...itemsStyle}
+                  onChange={this.handleCategoryTwoChange}
+                  onSelect={this.handleCategoryTwoSelect}
+                >
+                  {categoryTwoList.map(({ id, label }) => (
+                    <Select.Option key={id} value={id}>
+                      {label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Fragment>
             )}
           </FormItem>
           <FormItem label="安全设施名称" {...formItemLayout}>
             {getFieldDecorator('safeFacilitiesName', {
-              initialValue: safeFacilitiesName,
-              rules: [{ required: true, message: '请输入安全设施名称' }],
+              initialValue: safeFacilitiesLabel ? safeFacilitiesLabel : undefined,
+              rules: [{ required: true, message: '请选择安全设施名称' }],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择安全设施名称">
-                {facNameList.map(({ key, label }) => (
-                  <Select.Option key={key} value={key}>
+              <Select
+                {...itemStyles}
+                allowClear
+                placeholder="请选择"
+                onChange={this.handleNameChange}
+              >
+                {facilitiesNameList.map(({ id, label }) => (
+                  <Select.Option key={id} value={id}>
                     {label}
                   </Select.Option>
                 ))}
@@ -392,22 +543,22 @@ export default class Edit extends PureComponent {
               rules: [{ required: true, message: '请输入规格型号' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
-          <FormItem label="涉及工艺设施" {...formItemLayout}>
-            {getFieldDecorator('processFacilitiesInvolved', {
-              initialValue: processFacilitiesInvolved,
+          <FormItem label="出厂编号" {...formItemLayout}>
+            {getFieldDecorator('leaveProductNumber', {
+              initialValue: leaveProductNumber,
               getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, message: '请输入出厂编号' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
-          <FormItem label="设备数量" {...formItemLayout}>
-            {getFieldDecorator('equipNumber', {
-              initialValue: equipNumber,
+          <FormItem label="设备名称" {...formItemLayout}>
+            {getFieldDecorator('equipName', {
+              initialValue: equipName,
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入设备数量' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="设备状态" {...formItemLayout}>
             {getFieldDecorator('equipStatus', {
-              initialValue: +equipStatus,
+              initialValue: equipStatus ? +equipStatus : undefined,
               rules: [{ required: true, message: '请选择设备状态' }],
             })(
               <Radio.Group>
@@ -417,6 +568,18 @@ export default class Edit extends PureComponent {
                 <Radio value={4}>使用中</Radio>
               </Radio.Group>
             )}
+          </FormItem>
+          <FormItem label="安装部位" {...formItemLayout}>
+            {getFieldDecorator('installPart', {
+              initialValue: installPart,
+              getValueFromEvent: this.handleTrim,
+            })(<Input placeholder="请输入" {...itemStyles} />)}
+          </FormItem>
+          <FormItem label="涉及工艺设施" {...formItemLayout}>
+            {getFieldDecorator('processFacilitiesInvolved', {
+              initialValue: processFacilitiesInvolved,
+              getValueFromEvent: this.handleTrim,
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="生产厂家" {...formItemLayout}>
             {getFieldDecorator('productFactory', {
@@ -429,7 +592,12 @@ export default class Edit extends PureComponent {
               initialValue: leaveFactoryDate ? moment(+leaveFactoryDate) : undefined,
             })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
-          <FormItem label="使用年限" {...formItemLayout}>
+          <FormItem label="投入使用日期" {...formItemLayout}>
+            {getFieldDecorator('useDate', {
+              initialValue: useDate ? moment(+useDate) : undefined,
+            })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
+          </FormItem>
+          <FormItem label="使用期限（月）" {...formItemLayout}>
             {getFieldDecorator('useYear', {
               initialValue: useYear === 0 ? '' : useYear,
               getValueFromEvent: this.handleTrim,

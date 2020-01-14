@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import moment from 'moment';
 
-import { Form, Card } from 'antd';
+import { Form, Card, Button } from 'antd';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -115,8 +115,12 @@ export default class FloorManagementDetail extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { buildingId, companyId, name: companyName },
+      },
       buildingsInfo: {
         floorData: { list },
+        floorIndexList,
       },
     } = this.props;
 
@@ -125,27 +129,49 @@ export default class FloorManagementDetail extends PureComponent {
     const floorDetail = list.find(d => d.id === id) || {};
 
     const { floorName, floorNumber, floorWebUrl = [] } = floorDetail;
-
-    const imgs = floorWebUrl.map(({ webUrl }, i) => (
-      <div
-        key={i}
-        className={styles.imgSection}
-        style={{
-          backgroundImage: `url(${webUrl})`,
-          backgroundSize: '100% 100%',
-        }}
-        onClick={() => this.handleClickImg(i, floorWebUrl)}
-      />
-    ));
+    const filterIndex = floorIndexList.filter(item => item.key === floorNumber);
+    const imgs =
+      floorWebUrl.length > 0 ? (
+        floorWebUrl.map(({ webUrl }, i) => (
+          <div
+            key={i}
+            className={styles.imgSection}
+            style={{
+              backgroundImage: `url(${webUrl})`,
+              backgroundSize: '100% 100%',
+            }}
+            onClick={() => this.handleClickImg(i, floorWebUrl)}
+          />
+        ))
+      ) : (
+        <div>暂无数据</div>
+      );
 
     return (
       <Card className={styles.card} bordered={false}>
         <DescriptionList col={1}>
           <Description term={fieldLabels.floorName}>{floorName || getEmptyData()}</Description>
-          <Description term={fieldLabels.floorNumber}>{floorNumber || getEmptyData()}</Description>
+          <Description term={fieldLabels.floorNumber}>
+            {filterIndex.map(item => item.value).join('') || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.floorUrl} style={{ width: '100%' }}>
             {imgs}
           </Description>
+          <div style={{ textAlign: 'right' }}>
+            <Button
+              href={`#/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${companyName}`}
+              style={{ marginLeft: '10px' }}
+            >
+              返回
+            </Button>
+            <Button
+              type="primary"
+              href={`#/base-info/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${companyName}&&companyId=${companyId}`}
+              style={{ marginLeft: '10px' }}
+            >
+              编辑
+            </Button>
+          </div>
         </DescriptionList>
 
         <Lightbox

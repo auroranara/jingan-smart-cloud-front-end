@@ -7,10 +7,11 @@ import ReactEcharts from "echarts-for-react";
 
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import CustomSelect from '@/jingan-components/CustomSelect';
-import noTrend from '@/pages/BigPlatform/Gas/imgs/no-monitor.png';
+// import noTrend from '@/pages/BigPlatform/Gas/imgs/no-monitor.png';
 import styles from './index.less';
 import { UnitInfo } from '../Components';
 
+const noTrend = 'http://data.jingan-china.cn/v2/chem/screen/no-monitor.png';
 const STATE = {
   activeKey: '漏电电流',
   activeType: '1',

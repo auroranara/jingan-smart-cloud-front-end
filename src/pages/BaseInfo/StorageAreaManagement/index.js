@@ -133,35 +133,31 @@ export default class StorageAreaManagement extends PureComponent {
     );
     this.pageNum = 1;
     this.pageSize = 10;
+    this.toolbar = null;
   }
 
   // 挂载后
   componentDidMount () {
-    this.fetchList();
+    this.handleQuery();
   }
 
-  fetchList = (pageNum = 1, pageSize = 10, filters = {}) => {
+  handleQuery = (pageNum = 1, pageSize = 10) => {
     const { dispatch } = this.props;
+    const values = this.toolbar.props.form.getFieldsValue();
     dispatch({
       type: 'storageAreaManagement/fetchTankAreaList',
       payload: {
+        ...values,
         pageNum,
         pageSize,
-        ...filters,
       },
     });
-  };
-
-  // 查询
-  handleSearch = values => {
-    this.setState({ formData: { ...values } });
-    this.fetchList(1, this.pageSize, { ...values });
-  };
+  }
 
   // 重置
   handleReset = () => {
     this.setState({ formData: {} });
-    this.fetchList(1, this.pageSize);
+    this.handleQuery(1, this.pageSize);
   };
 
   goDetail = id => {
@@ -174,7 +170,6 @@ export default class StorageAreaManagement extends PureComponent {
 
   handleDelete = id => {
     const { dispatch } = this.props;
-    const { formData } = this.state;
     dispatch({
       type: 'storageAreaManagement/deleteTankArea',
       payload: {
@@ -182,20 +177,12 @@ export default class StorageAreaManagement extends PureComponent {
       },
       success: () => {
         message.success('删除成功！');
-        this.fetchList(this.pageNum, this.pageSize, { ...formData });
+        this.handleQuery(this.pageNum, this.pageSize);
       },
       error: msg => {
         message.error(msg);
       },
     });
-  };
-
-  // 表格改变触发，包含分页变动
-  handleTableChange = (pageNum, pageSize) => {
-    const { formData } = this.state;
-    this.pageNum = pageNum;
-    this.pageSize = pageSize;
-    this.fetchList(pageNum, pageSize, { ...formData });
   };
 
   /**
@@ -270,7 +257,7 @@ export default class StorageAreaManagement extends PureComponent {
       success: () => {
         message.success('绑定成功');
         this.setState({ bindModalVisible: false, detail: {} });
-        this.handleSearch();
+        this.handleQuery();
       },
       error: res => {
         message.error(res ? res.msg : '绑定失败');
@@ -304,7 +291,7 @@ export default class StorageAreaManagement extends PureComponent {
       success: () => {
         message.success('解绑成功');
         this.fetchBindedMonitoringDevice();
-        this.handleSearch();
+        this.handleQuery();
       },
       error: res => {
         message.error(res ? res.msg : '解绑失败');
@@ -343,9 +330,9 @@ export default class StorageAreaManagement extends PureComponent {
           const { code, areaName, tankCount } = row;
           return (
             <div className={styles.multi}>
-              <div>统一编码：{code} </div>
-              <div>储罐区名称： {areaName}</div>
-              <div>储罐个数： {tankCount}</div>
+              <div>统一编码：{code || '暂无数据'} </div>
+              <div>储罐区名称： {areaName || '暂无数据'}</div>
+              <div>储罐个数： {tankCount || 0}</div>
             </div>
           );
         },
@@ -530,7 +517,7 @@ export default class StorageAreaManagement extends PureComponent {
         <Card>
           <ToolBar
             fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
-            onSearch={this.handleSearch}
+            onSearch={() => this.handleQuery()}
             onReset={this.handleReset}
             action={
               <AuthButton
@@ -542,6 +529,7 @@ export default class StorageAreaManagement extends PureComponent {
                 新增
               </AuthButton>
             }
+            wrappedComponentRef={ref => { this.toolbar = ref }}
           />
         </Card>
 

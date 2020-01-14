@@ -185,6 +185,10 @@ export default class UnitSafety extends PureComponent {
         'fetchDeviceCountList',
         // 获取隐患记录
         'fetchHiddenDangerRecordList',
+        // 获取标准及措施
+        'fetchStandardsAndMeasuresList',
+        // 获取点位检查标准
+        'fetchpointInspectionStandards',
       ],
     });
 
@@ -194,7 +198,7 @@ export default class UnitSafety extends PureComponent {
   /**
    * 挂载后
    */
-  componentDidMount() {
+  componentDidMount () {
     const {
       match: {
         params: { companyId },
@@ -236,7 +240,7 @@ export default class UnitSafety extends PureComponent {
     this.setPollingTimer();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearTimeout(this.pollingTimer);
   }
 
@@ -381,6 +385,17 @@ export default class UnitSafety extends PureComponent {
     });
   };
 
+  // 获取标准及措施列表
+  getStandardsAndMeasures = () => {
+    this.fetchStandardsAndMeasuresList({
+      itemId: this.itemId,
+      needStandards: 1,
+    });
+    this.fetchpointInspectionStandards({
+      item_id: this.itemId,
+    })
+  }
+
   /**
    * 设置抽屉是否显示
    * @param {string} drawerName 抽屉名称
@@ -395,8 +410,12 @@ export default class UnitSafety extends PureComponent {
   /**
    * 显示视频
    */
-  showVideo = (videoKeyId, videoList=this.props.unitSafety.videoTree) => {
-    this.setState({ videoVisible: true, videoKeyId, videoList: videoList.map(item => ({ ...item, id: item.id || item.key_id })) });
+  showVideo = (videoKeyId, videoList = this.props.unitSafety.videoTree) => {
+    this.setState({
+      videoVisible: true,
+      videoKeyId,
+      videoList: videoList.map(item => ({ ...item, id: item.id || item.key_id })),
+    });
   };
 
   /**
@@ -410,6 +429,8 @@ export default class UnitSafety extends PureComponent {
    * 显示风险点详情
    */
   showRiskPointDetailDrawer = (itemId, status) => {
+    console.log('itemId', itemId);
+    console.log('status', status);
     // 保存点位id
     this.itemId = itemId;
     // 获取风险告知卡列表
@@ -514,9 +535,7 @@ export default class UnitSafety extends PureComponent {
   showHiddenDangerRecordDrawer = () => {
     const {
       match: {
-        params: {
-          companyId,
-        },
+        params: { companyId },
       },
     } = this.props;
 
@@ -528,7 +547,7 @@ export default class UnitSafety extends PureComponent {
       pageNum: 1,
       pageSize: 20,
     });
-  }
+  };
 
   /**
    * 隐藏隐患记录抽屉
@@ -537,7 +556,7 @@ export default class UnitSafety extends PureComponent {
     this.setState({
       hiddenDangerRecordDrawerVisible: false,
     });
-  }
+  };
 
   /**
    * 根据月份获取人员列表
@@ -598,9 +617,10 @@ export default class UnitSafety extends PureComponent {
       companyId,
       areaLocation: deviceCountAddress,
       status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
-      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
+      type:
+        deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
-  }
+  };
 
   /**
    * 设备统计状态改变
@@ -617,7 +637,8 @@ export default class UnitSafety extends PureComponent {
       companyId,
       areaLocation: deviceCountAddress,
       status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
-      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
+      type:
+        deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
   };
 
@@ -636,7 +657,8 @@ export default class UnitSafety extends PureComponent {
       companyId,
       areaLocation: deviceCountAddress,
       status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
-      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
+      type:
+        deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
   };
 
@@ -645,34 +667,34 @@ export default class UnitSafety extends PureComponent {
     this.setState({
       humiturePointListDrawerVisible: true,
     });
-  }
+  };
 
   // 温湿度监测点列表抽屉关闭事件
   handleHumiturePointListDrawerClose = () => {
     this.setState({
       humiturePointListDrawerVisible: false,
     });
-  }
+  };
 
   // 温湿度监测点点击事件
-  handleHumiturePointClick = (humiturePointDetailDrawerValue) => {
+  handleHumiturePointClick = humiturePointDetailDrawerValue => {
     this.setState({
       humiturePointDetailDrawerValue,
       humiturePointDetailDrawerVisible: true,
     });
-  }
+  };
 
   // 温湿度监测点详情抽屉关闭事件
   handleHumiturePointDetailDrawerClose = () => {
     this.setState({
       humiturePointDetailDrawerVisible: false,
     });
-  }
+  };
 
   /**
    * 渲染
    */
-  render() {
+  render () {
     const {
       unitSafety,
       loadingHiddenDangerList,
@@ -836,6 +858,7 @@ export default class UnitSafety extends PureComponent {
           getRiskPointHiddenDangerList={this.getRiskPointHiddenDangerList}
           getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
           getRiskPointInspectionCount={this.getRiskPointInspectionCount}
+          getStandardsAndMeasures={this.getStandardsAndMeasures}
         />
         {/* 巡查点位详情抽屉 */}
         <InspectionDetailDrawer

@@ -5,8 +5,9 @@ import { Timeline } from 'antd';
 import styles from './FaultMessageDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import TimelineItem from '../components/TimelineItem';
-import flowImg from '../imgs/flow_m.png';
+// import flowImg from '../imgs/flow_m.png';
 
+const flowImg = 'http://data.jingan-china.cn/v2/chem/screen/flow_m.png';
 const isVague = false;
 function nameToVague(str) {
   let newStr = '';

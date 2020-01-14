@@ -3,6 +3,8 @@ import {
   querySafeFacilitiesAdd,
   querySafeFacilitiesEdit,
   querySafeFacilitiesDelete,
+  queryReportList,
+  queryReportAdd,
 } from '../services/company/reservoirRegion';
 export default {
   namespace: 'safeFacilities',
@@ -41,6 +43,10 @@ export default {
         label: '液位仪',
       },
     ],
+    reportData: {
+      list: [],
+      pagination: {},
+    },
   },
 
   effects: {
@@ -100,6 +106,24 @@ export default {
         error(response.msg);
       }
     },
+
+    // 报告列表
+    *fetchReportList({ payload, callback }, { call, put }) {
+      const response = yield call(queryReportList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveReportList',
+          payload: response,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 报告新增
+    *fetchReportAdd({ payload, callback }, { call, put }) {
+      const response = yield call(queryReportAdd, payload);
+      if (callback) callback(response);
+    },
   },
 
   reducers: {
@@ -142,6 +166,14 @@ export default {
           ...state.safeFacData,
           list: state.safeFacData.list.filter(item => item.id !== id),
         },
+      };
+    },
+
+    saveReportList(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        reportData: data,
       };
     },
   },

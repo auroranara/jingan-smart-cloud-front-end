@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Col } from 'antd';
+import { connect } from 'dva';
 // import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 // import LoadMore from '@/components/LoadMore';
@@ -9,6 +10,7 @@ import HiddenDangerCard from '@/jingan-components/HiddenDangerCard';
 import DrawerContainer from '../components/DrawerContainer';
 import CheckedCard from '../components/CheckedCard';
 import NoData from '../components/NoData';
+import StandardsAndMeasures from '@/pages/BigPlatform/Safety/Company3/components/StandardsAndMeasures';
 
 import hasDanger from '../imgs/icon-hasDanger.png';
 import noDanger from '../imgs/icon-noDanger.png';
@@ -32,20 +34,23 @@ const FIELDNAMES = {
   designatedReviewPerson: 'review_user_name', // 指定复查人
 };
 
-const TABS = ['当前隐患', '巡查记录'];
+const TABS = ['当前隐患', '巡查记录', '标准及措施'];
 
 const STATUS = ['已检查', '已检查', '待检查', '已超期'];
 
 const getOffsetDays = ({ nextCheckDate }) => {
   return nextCheckDate
     ? Math.abs(
-        moment()
-          .startOf('day')
-          .diff(moment(+nextCheckDate), 'days')
-      )
+      moment()
+        .startOf('day')
+        .diff(moment(+nextCheckDate), 'days')
+    )
     : '';
 };
 
+@connect(({ unitSafety }) => ({
+  unitSafety,
+}))
 export default class PointPositionName extends PureComponent {
   constructor(props) {
     super(props);
@@ -196,8 +201,8 @@ export default class PointPositionName extends PureComponent {
         </div>
       </Fragment>
     ) : (
-      <NoData />
-    );
+        <NoData />
+      );
   };
 
   renderChecks = () => {
@@ -233,11 +238,11 @@ export default class PointPositionName extends PureComponent {
         </div>
       </Fragment>
     ) : (
-      <NoData />
-    );
+        <NoData />
+      );
   };
 
-  render() {
+  render () {
     const {
       visible,
       pointRecordLists,
@@ -249,6 +254,13 @@ export default class PointPositionName extends PureComponent {
       checkPointName,
       points: { pointList = [] } = {},
       onClose,
+      unitSafety: {
+        // 标准及措施列表
+        standardsAndMeasuresList = [],
+        // 点位检查标准列表
+        pointInspectionStandardsList = [],
+        itemName,
+      },
       ...restProps
     } = this.props;
     const { images, currentImage, lightBoxVisible, tabActive } = this.state;
@@ -260,6 +272,7 @@ export default class PointPositionName extends PureComponent {
     const pointInfo = pointList.find(item => item.item_id === checkItemId) || {};
 
     const pointStatus = pointInfo.status;
+    const standardList = standardsAndMeasuresList.filter(item => item.headType === 'common');
 
     const left = (
       <div className={styles.container}>
@@ -275,8 +288,8 @@ export default class PointPositionName extends PureComponent {
               {dangerList.length > 0 ? (
                 <div className={styles.abnormal}>有隐患</div>
               ) : (
-                <div className={styles.normal}>无隐患</div>
-              )}
+                  <div className={styles.normal}>无隐患</div>
+                )}
             </div>
           </Col>
           <Col span={12}>
@@ -302,10 +315,18 @@ export default class PointPositionName extends PureComponent {
           </Col>
         </div>
 
-        <div className={styles.tabsWrapper}>{this.renderTabs([dangerList.length, count])}</div>
+        <div className={styles.tabsWrapper}>{this.renderTabs([dangerList.length, count, standardList.length + 1])}</div>
 
         <div className={styles.scrollWrapper} id={'checkScroll'}>
-          {tabActive === 0 ? this.renderHiddenDanger() : this.renderChecks()}
+          {tabActive === 0 && this.renderHiddenDanger()}
+          {tabActive === 1 && this.renderChecks()}
+          {tabActive === 2 && (
+            <StandardsAndMeasures
+              standardsAndMeasuresList={standardList}
+              pointInspectionStandardsList={pointInspectionStandardsList}
+              itemName={itemName}
+            />
+          )}
         </div>
 
         {/* <div className={styles.recordTitle}>

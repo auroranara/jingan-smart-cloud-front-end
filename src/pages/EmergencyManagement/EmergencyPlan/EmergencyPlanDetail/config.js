@@ -19,3 +19,8 @@ export const BREADCRUMB_LIST = [
     name: TITLE,
   },
 ];
+
+export const STATUS_OPTIONS = [
+  { label: '通过', status: 2, color: '#06cb06' },
+  { label: '不通过', status: 3, color: 'red' },
+]

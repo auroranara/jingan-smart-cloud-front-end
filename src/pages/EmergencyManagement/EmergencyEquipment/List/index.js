@@ -21,8 +21,8 @@ import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-
 import styles from './index.less';
+import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
 
 const {
   emergencyManagement: {
@@ -76,6 +76,7 @@ export default class EmergencyEquipmentList extends PureComponent {
   pageSize = 10;
 
   componentDidMount() {
+    this.fetchDict({ type: 'emergencyOutfit' });
     this.fetchList(1);
   }
 
@@ -91,10 +92,15 @@ export default class EmergencyEquipmentList extends PureComponent {
     });
   };
 
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
+  };
+
   renderForm = () => {
     const {
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     const fields = [
@@ -113,13 +119,6 @@ export default class EmergencyEquipmentList extends PureComponent {
         transform,
       },
       {
-        id: 'companyName',
-        render() {
-          return <Input placeholder="请输入单位名称" />;
-        },
-        transform,
-      },
-      {
         id: 'deviceCode',
         render() {
           const options = [
@@ -131,7 +130,7 @@ export default class EmergencyEquipmentList extends PureComponent {
             <Select
               allowClear
               showSearch
-              placeholder="请选择到期状态"
+              placeholder="请选择效期状态"
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
             >
@@ -204,6 +203,13 @@ export default class EmergencyEquipmentList extends PureComponent {
           );
         },
       },
+      {
+        id: 'companyName',
+        render() {
+          return <Input placeholder="请输入单位名称" />;
+        },
+        transform,
+      },
     ];
 
     // 是否有新增权限
@@ -212,7 +218,7 @@ export default class EmergencyEquipmentList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={fields}
+          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -278,10 +284,13 @@ export default class EmergencyEquipmentList extends PureComponent {
     const {
       loading = false,
       emergencyManagement: {
-        equipment: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} },
+        equipment: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {}, a },
+        emergencyOutfit = [],
+      },
+      user: {
+        currentUser: { unitType },
       },
     } = this.props;
-    const { currentPage, scrollX } = this.state;
 
     const columns = [
       {
@@ -289,16 +298,28 @@ export default class EmergencyEquipmentList extends PureComponent {
         dataIndex: 'companyName',
         key: 'companyName',
         align: 'center',
-        width: 160,
+        width: 200,
       },
       {
         title: '基本信息',
         dataIndex: 'basicInfo',
         key: 'basicInfo',
         align: 'center',
-        width: 250,
+        width: 300,
         render: (data, record) => {
           const { equipName, equipType, equipCode, equipModel } = record;
+          let treeData = emergencyOutfit;
+          const string =
+            emergencyOutfit.length > 0
+              ? equipType
+                  .split(',')
+                  .map(id => {
+                    const val = treeData.find(item => item.id === id) || {};
+                    treeData = val.children || [];
+                    return val.label;
+                  })
+                  .join('/')
+              : '';
           return (
             <div className={styles.multi}>
               <div>
@@ -307,7 +328,7 @@ export default class EmergencyEquipmentList extends PureComponent {
               </div>
               <div>
                 类型：
-                {equipType || NO_DATA}
+                {string || NO_DATA}
               </div>
               <div>
                 编码：
@@ -355,12 +376,26 @@ export default class EmergencyEquipmentList extends PureComponent {
       },
       {
         title: '有效期至',
-        dataIndex: 'expiryDate',
-        key: 'expiryDate',
+        dataIndex: 'endDate',
+        key: 'endDate',
         align: 'center',
-        width: 120,
-        render: (data, record) => {
-          return '2019.7.11';
+        width: 200,
+        render: date => {
+          return date ? moment(date).format('YYYY-MM-DD') : '-';
+        },
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        key: 'paststatus',
+        align: 'center',
+        width: 140,
+        render: (status, { endDate }) => {
+          return (
+            <span style={{ color: getColorVal(status) }}>
+              {endDate ? paststatusVal[status] : '-'}
+            </span>
+          );
         },
       },
       {
@@ -375,11 +410,11 @@ export default class EmergencyEquipmentList extends PureComponent {
         },
       },
       {
-        title: '装备单价（元）',
+        title: '装备单价(元)',
         dataIndex: 'equipPrice',
         key: 'equipPrice',
         align: 'center',
-        width: 120,
+        width: 200,
       },
       {
         title: '操作',
@@ -414,8 +449,16 @@ export default class EmergencyEquipmentList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            应急装备数量：
-            {total}
+            {unitType !== 4 && (
+              <span>
+                单位数量：
+                {a}
+              </span>
+            )}
+            <span style={{ marginLeft: unitType !== 4 ? 15 : 0 }}>
+              应急装备数量：
+              {total}
+            </span>
           </div>
         }
       >
@@ -425,10 +468,10 @@ export default class EmergencyEquipmentList extends PureComponent {
             <Table
               rowKey="id"
               loading={loading}
-              columns={columns}
+              columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
               dataSource={list}
               pagination={false}
-              // scroll={{ x: true }}
+              scroll={{ x: 'max-content' }}
             />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}

@@ -4,9 +4,10 @@ import { Section2 as CustomSection } from '@/jingan-components/CustomSection';
 import Ellipsis from '@/components/Ellipsis';
 import { vaguePhone } from '@/pages/BigPlatform/NewUnitFireControl/utils';
 import styles from './CompanyInfo.less';
-import defaultGasStationIcon from '../imgs/default-gas-station-icon.png';
+// import defaultGasStationIcon from '../imgs/default-gas-station-icon.png';
 import { iconCheck, iconHd } from '../imgs/links';
 
+const defaultGasStationIcon = 'http://data.jingan-china.cn/v2/chem/screen/default-gas-station-icon.png';
 export default class CompanyInfo extends PureComponent {
   render() {
     const {

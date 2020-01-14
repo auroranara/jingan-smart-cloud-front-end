@@ -40,6 +40,7 @@ export default class FloorManagementEdit extends PureComponent {
   state = {
     uploading: false,
     floorList: [], // 楼层平面图上传列表
+    floorIndexArray: [],
   };
 
   // 挂载后
@@ -54,10 +55,21 @@ export default class FloorManagementEdit extends PureComponent {
       },
     } = this.props;
     // 获取楼层编号
+    // dispatch({
+    //   type: 'buildingsInfo/fetchFloorNumber',
+    //   payload: {
+    //     building_id: buildingId || buildingIdNew,
+    //   },
+    // });
     dispatch({
-      type: 'buildingsInfo/fetchFloorNumber',
+      type: 'buildingsInfo/fetchFloorList',
       payload: {
         building_id: buildingId || buildingIdNew,
+        pageSize: 10,
+        pageNum: 1,
+      },
+      success: ({ list }) => {
+        this.setState({ floorIndexArray: list.map(item => item.floorNumber) });
       },
     });
     if (id) {
@@ -69,7 +81,8 @@ export default class FloorManagementEdit extends PureComponent {
           pageSize: 10,
           pageNum: 1,
         },
-        success: ({ floorWebUrl }) => {
+        success: ({ list }) => {
+          const { floorWebUrl } = list;
           const floorWebUrlList = floorWebUrl ? floorWebUrl : [];
           this.setState({
             floorList: floorWebUrlList.map(({ dbUrl, webUrl }, index) => ({
@@ -232,11 +245,13 @@ export default class FloorManagementEdit extends PureComponent {
       },
       buildingsInfo: {
         floorData: { list },
-        allFloorNumberLists,
+        // allFloorNumberLists,
+        floorIndexList,
       },
     } = this.props;
 
-    const { uploading, floorList } = this.state;
+    const { uploading, floorList, floorIndexArray } = this.state;
+
     const editDetail = list.find(d => d.id === id) || {};
     const { floorName, floorNumber } = editDetail;
     const formItemLayout = {
@@ -250,7 +265,6 @@ export default class FloorManagementEdit extends PureComponent {
         md: { span: 10 },
       },
     };
-    console.log('floorList', floorList);
     return (
       <Card className={styles.card} bordered={false}>
         <Form style={{ marginTop: 8 }}>
@@ -279,9 +293,13 @@ export default class FloorManagementEdit extends PureComponent {
               ],
             })(
               <Select style={{ width: '100%' }} placeholder="请输入楼层编号">
-                {allFloorNumberLists.map(item => (
-                  <Option value={item.id} key={item.id}>
-                    {item.label}
+                {floorIndexList.map(item => (
+                  <Option
+                    value={item.key}
+                    key={item.key}
+                    disabled={floorIndexArray.indexOf(item.key) >= 0 || floorNumber === item.key}
+                  >
+                    {item.value}
                   </Option>
                 ))}
               </Select>

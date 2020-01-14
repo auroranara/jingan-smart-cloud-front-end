@@ -18,6 +18,8 @@ import {
 } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+// 地图定位
+import MapMarkerSelect from '@/components/MapMarkerSelect';
 
 // import { numReg } from '@/utils/validate';
 import Coordinate from '@/components/Coordinate';
@@ -56,6 +58,7 @@ const fieldLabels = {
   plugFlowEquipment: '推流主机编号',
   nvr: 'NVR编号',
   connectType: '连接方式',
+  mapLocation: '地图定位',
 };
 
 //  默认分页参数
@@ -108,15 +111,12 @@ export default class VideoMonitorEdit extends PureComponent {
   componentDidMount () {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
-      location: {
-        query: { companyId, name },
-      },
+      match: { params: { id } },
+      location: { query },
       form: { setFieldsValue },
+      user: { isCompany, currentUser },
     } = this.props;
-    this.fetchConnectTypeDict();
+    const companyId = query.companyId || currentUser.companyId;
     if (id) {
       // 根据id获取详情
       dispatch({
@@ -129,14 +129,28 @@ export default class VideoMonitorEdit extends PureComponent {
           companyName,
           plugFlowEquipmentCode,
           plugFlowEquipment,
+          inheritNvr, // 是否集成NVR
+          nvr, // NVR编号
+          pointFixInfoList,
         } = {}) => {
-          setFieldsValue({ buildingFloor: { buildingId, floorId } });
-          this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+          setFieldsValue({ buildingFloor: { buildingId, floorId }, inheritNvr });
           this.setState({
             company: { id: companyId, name: companyName },
             gatewayEquipment: { id: plugFlowEquipment, code: plugFlowEquipmentCode },
+          }, () => {
+            if (pointFixInfoList && pointFixInfoList.length) {
+              let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+              const coord = { x: +xnum, y: +ynum, z: +znum };
+              groupId = +groupId;
+              setFieldsValue({ mapLocation: { groupId, coord, areaId } })
+            }
           });
           this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+          setTimeout(() => {
+            +inheritNvr === 1 && setFieldsValue({ plugFlowEquipment });
+            +inheritNvr === 0 && setFieldsValue({ nvr });
+          }, 0);
         },
       });
     } else {
@@ -145,17 +159,18 @@ export default class VideoMonitorEdit extends PureComponent {
       this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     }
     // 根据id获取四色图和消防平面图
-    if (id || companyId) {
+    if (id || query.companyId || isCompany) {
       dispatch({
         type: 'safety/fetch',
-        payload: { companyId: id ? companyId : undefined || companyId },
+        payload: { companyId },
       });
       dispatch({
         type: 'company/fetchCompany',
-        payload: { id: id ? companyId : undefined || companyId },
+        payload: { id: companyId },
       });
-      companyId && this.setState({ company: { id: companyId, name } });
+      companyId && this.setState({ company: { id: companyId, name: query.name } });
     }
+    this.fetchConnectTypeDict();
     this.fetchEquipmentsForAll();
   }
 
@@ -258,21 +273,21 @@ export default class VideoMonitorEdit extends PureComponent {
           status,
           rtspAddress,
           photoAddress,
-          xnum,
-          ynum,
-          xfire,
-          yfire,
+          // xnum,
+          // ynum,
+          // xfire,
+          // yfire,
           isInspection,
           buildingFloor: { buildingId, floorId } = {},
           inheritNvr,
           plugFlowEquipment,
           nvr,
           connectType,
+          mapLocation,
         } = values;
-
         const { companyId } = this.state;
 
-        const payload = {
+        let payload = {
           id,
           deviceId,
           videoId: id,
@@ -282,10 +297,10 @@ export default class VideoMonitorEdit extends PureComponent {
           companyId: companyIdParams || companyId || unitId,
           rtspAddress,
           photoAddress,
-          xnum,
-          ynum,
-          xfire,
-          yfire,
+          // xnum,
+          // ynum,
+          // xfire,
+          // yfire,
           fixFireId: this.fixFireId,
           fixImgId: this.fixImgId,
           isInspection: +isInspection,
@@ -296,6 +311,10 @@ export default class VideoMonitorEdit extends PureComponent {
           nvr,
           connectType,
         };
+        if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+          const { coord, ...resMap } = mapLocation;
+          payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+        }
 
         const editCompanyId = companyIdParams || detailCompanyId;
         const editCompanyName = companyName || nameParams;
@@ -648,10 +667,10 @@ export default class VideoMonitorEdit extends PureComponent {
             rtspAddress,
             photoAddress,
             isInspection,
-            xnum,
-            ynum,
-            xfire,
-            yfire,
+            // xnum,
+            // ynum,
+            // xfire,
+            // yfire,
             buildingId,
             floorId,
           },
@@ -661,14 +680,14 @@ export default class VideoMonitorEdit extends PureComponent {
       match: {
         params: { id },
       },
-      safety: {
-        detail: { safetyFourPicture },
-      },
-      company: {
-        detail: {
-          data: { fireIchnographyUrl },
-        },
-      },
+      // safety: {
+      //   detail: { safetyFourPicture },
+      // },
+      // company: {
+      //   detail: {
+      //     data: { fireIchnographyUrl },
+      //   },
+      // },
       user: {
         currentUser: { unitType, companyName: defaultName, permissionCodes },
       },
@@ -681,18 +700,18 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     } = this.props;
     const {
-      coordinate: { visible, fireVisible },
+      // coordinate: { visible, fireVisible },
       gatewayEquipment,
     } = this.state;
-
+    const companyId = this.state.company ? this.state.company.id : undefined;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
     const itemStyles = { style: { width: '70%', marginRight: '10px' } };
-    const fourColorImgs = safetyFourPicture ? JSON.parse(safetyFourPicture) : [];
+    // const fourColorImgs = safetyFourPicture ? JSON.parse(safetyFourPicture) : [];
 
-    const fireImgs = fireIchnographyUrl ? JSON.parse(fireIchnographyUrl) : [];
+    // const fireImgs = fireIchnographyUrl ? JSON.parse(fireIchnographyUrl) : [];
     const buildingFloor = getFieldValue('buildingFloor') || {};
     const addBuildingAuth = hasAuthority(codes.company.buildingsInfo.add, permissionCodes);
     const inheritNvr = getFieldValue('inheritNvr');
@@ -881,8 +900,8 @@ export default class VideoMonitorEdit extends PureComponent {
           {/* 设备关系 */}
           <FormItem {...formItemLayout} label={fieldLabels.inheritNvr}>
             {getFieldDecorator('inheritNvr', {
-              initialValue: id ? detail.inheritNvr : 1,
-              rules: [{ required: true, message: '请选择是否集成NVR' }],
+              initialValue: id ? detail.inheritNvr : undefined,
+              // rules: [{ required: true, message: '请选择是否集成NVR' }],
             })(
               <Radio.Group>
                 <Radio value={1}>是</Radio>
@@ -894,8 +913,8 @@ export default class VideoMonitorEdit extends PureComponent {
           {+inheritNvr === 1 && (
             <FormItem {...formItemLayout} label={fieldLabels.plugFlowEquipment}>
               {getFieldDecorator('plugFlowEquipment', {
-                initialValue: id ? detail.plugFlowEquipment : undefined,
-                rules: [{ required: true, message: '请选择推流主机编号' }],
+                // initialValue: id ? detail.plugFlowEquipment : undefined,
+                // rules: [{ required: true, message: '请选择推流主机编号' }],
               })(
                 <Fragment>
                   <Input
@@ -915,8 +934,8 @@ export default class VideoMonitorEdit extends PureComponent {
           {+inheritNvr === 0 && (
             <FormItem {...formItemLayout} label={fieldLabels.nvr}>
               {getFieldDecorator('nvr', {
-                initialValue: id ? detail.nvr : undefined,
-                rules: [{ required: true, message: '请选择NVR编号' }],
+                // initialValue: id ? detail.nvr : undefined,
+                // rules: [{ required: true, message: '请选择NVR编号' }],
               })(
                 <Select placeholder="请选择" {...itemStyles}>
                   {equipmentList.map(({ id, code }) => (
@@ -932,7 +951,7 @@ export default class VideoMonitorEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.connectType}>
             {getFieldDecorator('connectType', {
               initialValue: id ? detail.connectType : undefined,
-              rules: [{ required: true, message: '请选择连接方式' }],
+              // rules: [{ required: true, message: '请选择连接方式' }],
             })(
               <Select placeholder="请选择" {...itemStyles}>
                 {connectTypeDict.map(({ value, desc }) => (
@@ -950,9 +969,16 @@ export default class VideoMonitorEdit extends PureComponent {
               initialValue: (!status && +status !== 0) || +status === 1,
             })(<Switch checkedChildren="启用" unCheckedChildren="禁用" />)}
           </FormItem>
+          {companyId && (
+            <FormItem {...formItemLayout} label={fieldLabels.mapLocation}>
+              {getFieldDecorator('mapLocation')(
+                <MapMarkerSelect companyId={companyId} />
+              )}
+            </FormItem>
+          )}
         </Form>
 
-        <Form layout="vertical">
+        {/* <Form layout="vertical">
           <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative', marginLeft: '19%' }}>
             <Col span={24}>
               <Row gutter={12}>
@@ -991,9 +1017,9 @@ export default class VideoMonitorEdit extends PureComponent {
               </Row>
             </Col>
           </Row>
-        </Form>
+        </Form> */}
 
-        <Form layout="vertical">
+        {/* <Form layout="vertical">
           <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative', marginLeft: '19%' }}>
             <Col span={24}>
               <Row gutter={12}>
@@ -1033,7 +1059,7 @@ export default class VideoMonitorEdit extends PureComponent {
               </Row>
             </Col>
           </Row>
-        </Form>
+        </Form> */}
       </Card>
     );
   }

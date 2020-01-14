@@ -1,0 +1,66 @@
+@keyframes wave {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    -webkit-transform: translate3d(50%, 0.5em, 0);
+    transform: translate3d(50%, 0.5em, 0);
+  }
+  100% {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+  }
+}
+.waves {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transition: 0.4s transform ease;
+  transform-origin: bottom center;
+}
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-animation: wave 1s linear infinite;
+  animation: wave 1s linear infinite;
+}
+.waveBack {
+  z-index: 1;
+  color: #2C7FBE;
+  -webkit-animation-direction: reverse;
+  animation-direction: reverse;
+}
+.waveFront {
+  z-index: 2;
+  color: #32BAFA;
+}
+.water {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+}
+.water:first-of-type {
+  -webkit-transform: translate(-100%, 0);
+  transform: translate(-100%, 0);
+}
+.water svg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  width: 100%;
+  fill: currentColor;
+}
+// svg {
+  //   fill: currentColor;
+  // }

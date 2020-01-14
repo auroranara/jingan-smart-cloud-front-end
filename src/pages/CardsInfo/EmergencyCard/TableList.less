@@ -3,7 +3,7 @@
 }
 
 .td {
-    width: 200px;
+  width: 200px;
 }
 
 .td1 {
@@ -12,7 +12,40 @@
 
 .table {
   margin-top: 20px;
-  th, td {
+  th,
+  td {
     border: 2px solid #000;
   }
+}
+
+.container {
+  :global {
+    .ant-input-group-addon {
+      padding: 0 !important;
+      border: 0 !important;
+    }
+    .ant-btn {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+    }
+    .ant-input {
+      color: rgba(0, 0, 0, 0.65) !important;
+      background-color: #fff !important;
+      cursor: pointer !important;
+
+      &:hover {
+        border-color: #40a9ff !important;
+      }
+    }
+  }
+}
+
+.disappear {
+  display: none;
+}
+
+.mapLoaction {
+  border: 1px dashed #c3c3c3;
+  height: 400px;
+  display: flex;
 }

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
   Alert,
   Input,
@@ -12,7 +12,9 @@ import {
   Tabs,
   Spin,
   Modal,
+  message,
 } from 'antd';
+import CountDown from '@/components/CountDown';
 import { connect } from 'dva';
 import router from 'umi/router';
 // import debounce from 'lodash/debounce';
@@ -30,6 +32,50 @@ const carouselTime = 10 * 1000;
 const localStorageName = '_login_account';
 // 是否为手机端
 const isFromMobile = isMobileExcludeIpad();
+// 验证码组件
+const Code = ({
+  size,
+  value,
+  onChange,
+  onClick,
+  onPressEnter,
+  refCodeInput,
+  coding,
+  targetTime,
+  onEnd,
+  onFocus,
+}) => {
+  return (
+    <div className={styles.codeContainer}>
+      <div className={styles.codeWrapper}>
+        <Input
+          value={value}
+          onChange={onChange}
+          size={size}
+          prefix={<Icon type="mail" className={styles.icon} />}
+          placeholder="验证码"
+          onPressEnter={onPressEnter}
+          ref={refCodeInput}
+          onFocus={onFocus}
+        />
+      </div>
+      <div className={styles.codeWrapper}>
+        <Button disabled={coding} onClick={onClick} size={size}>
+          {coding ? (
+            <CountDown
+              className={styles.countDown}
+              format={time => `${Math.ceil(time / 1000)} s`}
+              target={targetTime}
+              onEnd={onEnd}
+            />
+          ) : (
+            '获取验证码'
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 /**
  * description: 登录页面
@@ -39,6 +85,7 @@ const isFromMobile = isMobileExcludeIpad();
 @connect(({ login, loading }) => ({
   login,
   submitting: loading.models.login,
+  sending: loading.effects['login/getCode'],
 }))
 @Form.create()
 export default class Login extends PureComponent {
@@ -55,6 +102,10 @@ export default class Login extends PureComponent {
       commonAccount: [],
       // 暂存账号
       payload: undefined,
+      // 是否正在获取验证码
+      coding: false,
+      // 目标时间
+      targetTime: undefined,
     };
     // 轮播定时器
     this.carouselTimer = null;
@@ -100,6 +151,10 @@ export default class Login extends PureComponent {
 
   refMain = main => {
     this.main = main;
+  };
+
+  refCodeInput = codeInput => {
+    this.codeInput = codeInput;
   };
 
   /**
@@ -161,7 +216,13 @@ export default class Login extends PureComponent {
    * 登录类型切换
    */
   handleTabChange = type => {
-    this.setState({ type });
+    const { targetTime, coding } = this.state;
+    const now = +new Date();
+    this.setState({
+      type,
+      notice: undefined,
+      ...(coding && targetTime <= now && { coding: false }),
+    });
   };
 
   /**
@@ -169,42 +230,62 @@ export default class Login extends PureComponent {
    */
   handleSubmit = () => {
     const {
+      dispatch,
       form: { validateFields },
     } = this.props;
     validateFields((err, values) => {
       if (!err) {
-        const { username, password, remember } = values;
-        const payload = { username, password: aesEncrypt(password) };
-        const { dispatch } = this.props;
-        dispatch({
-          type: 'login/login',
-          payload,
-          success: () => {
-            const { commonAccount } = this.state;
-            const account = commonAccount.filter(
-              ({ username: userName }) => userName === username
-            )[0];
-            // 账号已存在并且有更新时
-            if (account && account.password !== payload.password) {
-              account.password = payload.password;
-              this.setLocalStorage(commonAccount);
-            }
-            // 账号不存在并且勾选保存时
-            else if (!account && remember) {
-              commonAccount.push(payload);
-              this.setLocalStorage(commonAccount);
-            }
-          },
-          error: notice => {
-            this.setState({ notice });
-          },
-          handleMoreUser: () => {
-            this.setState({
-              isMoreUser: true,
-              payload,
-            });
-          },
-        });
+        const { type } = this.state;
+        if (type === '1') {
+          const { username, password, remember } = values;
+          const payload = { username, password: aesEncrypt(password) };
+          dispatch({
+            type: 'login/login',
+            payload,
+            success: () => {
+              const { commonAccount } = this.state;
+              const account = commonAccount.filter(
+                ({ username: userName }) => userName === username
+              )[0];
+              // 账号已存在并且有更新时
+              if (account && account.password !== payload.password) {
+                account.password = payload.password;
+                this.setLocalStorage(commonAccount);
+              }
+              // 账号不存在并且勾选保存时
+              else if (!account && remember) {
+                commonAccount.push(payload);
+                this.setLocalStorage(commonAccount);
+              }
+            },
+            error: notice => {
+              this.setState({ notice });
+            },
+            handleMoreUser: () => {
+              this.setState({
+                isMoreUser: true,
+                payload,
+              });
+            },
+          });
+        } else {
+          dispatch({
+            type: 'login/loginByPhone',
+            payload: values,
+            error: notice => {
+              this.setState({ notice });
+            },
+            handleMoreUser: props => {
+              this.setState({
+                isMoreUser: true,
+                payload: {
+                  ...props,
+                  ...values,
+                },
+              });
+            },
+          });
+        }
       }
     });
   };
@@ -248,16 +329,61 @@ export default class Login extends PureComponent {
     this.handleSubmit();
   };
 
+  // 手机号输入框回车
+  handlePhonePressEnter = () => {
+    this.codeInput.focus();
+  };
+
+  // 验证码输入框回车
+  handleCodePressEnter = () => {
+    this.handleSubmit();
+  };
+
+  // 获取验证码按钮点击事件
+  handleCodeButtonClick = () => {
+    const {
+      dispatch,
+      form: { validateFieldsAndScroll },
+    } = this.props;
+    validateFieldsAndScroll(['phone'], (errors, values) => {
+      if (!errors) {
+        dispatch({
+          type: 'login/getCode',
+          payload: values,
+          callback: ({ code, msg }) => {
+            if (code === 200) {
+              message.success('发送成功！');
+            } else {
+              this.setState({ notice: msg });
+            }
+          },
+        });
+        this.setState({
+          coding: true,
+          targetTime: +new Date() + 60000,
+        });
+      }
+    });
+  };
+
+  // 获取验证码倒计时结束
+  handleCodingEnd = () => {
+    this.setState({
+      coding: false,
+    });
+  };
+
   /**
    * 多用户选择
    */
   handleSelectUser = userId => {
     const { dispatch } = this.props;
-    const { payload } = this.state;
+    const { payload, type } = this.state;
 
     dispatch({
       type: 'login/loginWithUserId',
       payload: {
+        type,
         userId,
         ...payload,
       },
@@ -313,7 +439,7 @@ export default class Login extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { size, notice } = this.state;
+    const { size, notice, type, coding, targetTime } = this.state;
 
     return (
       <Form className={styles.form}>
@@ -327,39 +453,83 @@ export default class Login extends PureComponent {
             onClose={this.handleAlertClose}
           />
         )}
-        <FormItem>
-          {getFieldDecorator('username', {
-            rules: [{ required: true, message: '请输入账号!' }],
-          })(
-            <Input
-              size={size}
-              prefix={<Icon type="user" className={styles.icon} />}
-              placeholder="账号"
-              onPressEnter={this.handleUsernamePressEnter}
-            />
-          )}
-        </FormItem>
-        <FormItem>
-          {getFieldDecorator('password', {
-            rules: [{ required: true, message: '请输入密码!' }],
-          })(
-            <Input
-              size={size}
-              prefix={<Icon type="lock" className={styles.icon} />}
-              type="password"
-              placeholder="密码"
-              onPressEnter={this.handlePasswordPressEnter}
-              ref={this.refPasswordInput}
-            />
-          )}
-        </FormItem>
-        <FormItem className={styles.checkboxFormItem}>
-          {getFieldDecorator('remember', {
-            valuePropName: 'checked',
-            initialValue: true,
-          })(<Checkbox>保存为本地常用账号</Checkbox>)}
-        </FormItem>
-        {this.renderCommonAccount()}
+        {type === '1' ? (
+          <Fragment>
+            <FormItem>
+              {getFieldDecorator('username', {
+                rules: [{ required: true, message: '请输入账号！' }],
+              })(
+                <Input
+                  size={size}
+                  prefix={<Icon type="user" className={styles.icon} />}
+                  placeholder="账号"
+                  onPressEnter={this.handleUsernamePressEnter}
+                />
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('password', {
+                rules: [{ required: true, message: '请输入密码！' }],
+              })(
+                <Input.Password
+                  size={size}
+                  prefix={<Icon type="lock" className={styles.icon} />}
+                  type="password"
+                  placeholder="密码"
+                  onPressEnter={this.handlePasswordPressEnter}
+                  ref={this.refPasswordInput}
+                />
+              )}
+            </FormItem>
+            <FormItem className={styles.checkboxFormItem}>
+              {getFieldDecorator('remember', {
+                valuePropName: 'checked',
+                initialValue: true,
+              })(<Checkbox>保存为本地常用账号</Checkbox>)}
+            </FormItem>
+            {this.renderCommonAccount()}
+          </Fragment>
+        ) : (
+          <Fragment>
+            <FormItem>
+              {getFieldDecorator('phone', {
+                getValueFromEvent: ({ target: { value } }) =>
+                  value.replace(/(\d*).*/, '$1').slice(0, 11),
+                rules: [
+                  { required: true, message: '请输入手机号！' },
+                  { len: 11, message: '手机号格式错误！' },
+                ],
+              })(
+                <Input
+                  size={size}
+                  prefix={<Icon type="mobile" className={styles.icon} />}
+                  placeholder="手机号"
+                  onPressEnter={this.handlePhonePressEnter}
+                />
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('code', {
+                getValueFromEvent: ({ target: { value } }) =>
+                  value.replace(/(\d*).*/, '$1').slice(0, 6),
+                rules: [
+                  { required: true, message: '请输入验证码！' },
+                  { len: 6, message: '验证码格式错误！' },
+                ],
+              })(
+                <Code
+                  size={size}
+                  onPressEnter={this.handleCodePressEnter}
+                  refCodeInput={this.refCodeInput}
+                  onClick={this.handleCodeButtonClick}
+                  coding={coding}
+                  targetTime={targetTime}
+                  onEnd={this.handleCodingEnd}
+                />
+              )}
+            </FormItem>
+          </Fragment>
+        )}
         <FormItem className={styles.submitFormItem}>
           <Button
             size={size}
@@ -372,7 +542,6 @@ export default class Login extends PureComponent {
             登录
           </Button>
         </FormItem>
-
         <FormItem className={styles.downloadFormItem}>
           <div className={styles.downloadContainer}>
             <span onClick={this.handleToDownload} className={styles.download}>
@@ -397,10 +566,11 @@ export default class Login extends PureComponent {
       <List
         dataSource={users}
         split={false}
-        renderItem={({ userId, unitName }) => (
+        renderItem={({ userId, unitName, roleName }) => (
           <List.Item key={userId} className={styles.listItem}>
             <Card.Grid onClick={() => this.handleSelectUser(userId)} className={styles.cardGrid}>
-              {unitName ? unitName : '平台管理'}
+              <div className={styles.cardGridDiv}>{unitName ? unitName : '平台管理'}</div>
+              {roleName && <div className={styles.cardGridDiv}>{roleName}</div>}
             </Card.Grid>
           </List.Item>
         )}
@@ -448,6 +618,7 @@ export default class Login extends PureComponent {
   renderMobile() {
     const {
       submitting,
+      sending,
       location: {
         query: { type: configType },
       },
@@ -459,7 +630,7 @@ export default class Login extends PureComponent {
     return (
       <div className={styles.mobileContainer}>
         <div className={styles.main} ref={this.refMain}>
-          <Spin spinning={!!submitting}>
+          <Spin spinning={(submitting && !sending) || false}>
             <div className={styles.titleWrapper}>
               <div className={styles.logo} style={{ backgroundImage: `url(${logo})` }} />
               <div className={styles.title}>{projectName}</div>
@@ -489,6 +660,7 @@ export default class Login extends PureComponent {
   renderPC() {
     const {
       submitting,
+      sending,
       location: {
         query: { type: configType },
       },
@@ -520,7 +692,7 @@ export default class Login extends PureComponent {
             </Carousel>
           </div>
           <div className={styles.main} ref={this.refMain}>
-            <Spin spinning={!!submitting}>
+            <Spin spinning={(submitting && !sending) || false}>
               <div className={styles.titleWrapper}>
                 <div className={styles.logo} style={{ backgroundImage: `url(${logo})` }} />
                 <div className={styles.title}>{projectName}</div>
@@ -530,9 +702,12 @@ export default class Login extends PureComponent {
                 {isMoreUser ? (
                   this.renderMoreUser()
                 ) : (
-                  <Tabs activeKey={type} onChange={this.handleTabChange}>
+                  <Tabs activeKey={type} onChange={this.handleTabChange} animated={false}>
                     <TabPane tab="账号密码登录" key="1">
-                      {this.renderForm()}
+                      {type === '1' && this.renderForm()}
+                    </TabPane>
+                    <TabPane tab="手机号登录" key="2">
+                      {type === '2' && this.renderForm()}
                     </TabPane>
                   </Tabs>
                 )}

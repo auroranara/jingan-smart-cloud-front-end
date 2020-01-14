@@ -52,8 +52,9 @@ const dspItems = [
   { id: 'drillReportList', label: '演练评估报告' },
 ];
 
-@connect(({ emergencyManagement, loading }) => ({
+@connect(({ emergencyManagement, loading, user }) => ({
   emergencyManagement,
+  user,
   loading: loading.models.emergencyManagement,
 }))
 export default class EmergencyEstimateDetail extends Component {
@@ -82,6 +83,9 @@ export default class EmergencyEstimateDetail extends Component {
     const {
       emergencyManagement: {
         estimate: { detail = {} },
+      },
+      user: {
+        currentUser: { unitType },
       },
       loading,
     } = this.props;
@@ -129,7 +133,7 @@ export default class EmergencyEstimateDetail extends Component {
             <CustomForm
               buttonWrapperSpan={BUTTON_WRAPPER_SPAN}
               buttonWrapperStyle={{ textAlign: 'center' }}
-              fields={fields}
+              fields={unitType === 4 ? fields.slice(1, fields.length) : fields}
               searchable={false}
               resetable={false}
               action={

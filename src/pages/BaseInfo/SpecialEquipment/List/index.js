@@ -15,13 +15,14 @@ import {
 } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
+import Link from 'umi/link';
 
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-
 import styles from './index.less';
+import { getColorVal, paststatusVal } from '../utils';
 
 const {
   baseInfo: {
@@ -207,30 +208,40 @@ export default class SpecialEquipmentList extends PureComponent {
         },
         transform,
       },
+      // {
+      //   id: 'brand',
+      //   render: () => (
+      //     <Select placeholder="请选择品牌" onChange={this.handleBrandChange} allowClear>
+      //       {brandList.map(({ id, name }) => (
+      //         <Option key={id} value={id}>
+      //           {name}
+      //         </Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      //   transform,
+      // },
       {
         id: 'brand',
-        render: () => (
-          <Select placeholder="请选择品牌" onChange={this.handleBrandChange} allowClear>
-            {brandList.map(({ id, name }) => (
-              <Option key={id} value={id}>
-                {name}
-              </Option>
-            ))}
-          </Select>
-        ),
+        render: () => <Input placeholder="请输入品牌" allowClear />,
         transform,
       },
+      // {
+      //   id: 'specification',
+      //   render: () => (
+      //     <Select placeholder="请选择型号" allowClear>
+      //       {modelList.map(({ id, name }) => (
+      //         <Option key={id} value={id}>
+      //           {name}
+      //         </Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      //   transform,
+      // },
       {
         id: 'specification',
-        render: () => (
-          <Select placeholder="请选择型号" allowClear>
-            {modelList.map(({ id, name }) => (
-              <Option key={id} value={id}>
-                {name}
-              </Option>
-            ))}
-          </Select>
-        ),
+        render: () => <Input placeholder="请输入型号" allowClear />,
         transform,
       },
       {
@@ -351,7 +362,7 @@ export default class SpecialEquipmentList extends PureComponent {
       user: {
         currentUser: { unitType },
       },
-      emergencyManagement: { specialEquipment },
+      emergencyManagement: { specialEquipment=[] },
     } = this.props;
 
     const columns = [
@@ -368,7 +379,7 @@ export default class SpecialEquipmentList extends PureComponent {
         align: 'center',
         width: 250,
         render: (val, row) => {
-          const { equipName, factoryNumber, brandName, specificationName } = row;
+          const { equipName, factoryNumber, brand, specification } = row;
           return (
             <div className={styles.multi}>
               <div>
@@ -381,11 +392,11 @@ export default class SpecialEquipmentList extends PureComponent {
               </div>
               <div>
                 品牌：
-                {brandName || NO_DATA}
+                {brand || NO_DATA}
               </div>
               <div>
                 型号：
-                {specificationName || NO_DATA}
+                {specification || NO_DATA}
               </div>
             </div>
           );
@@ -404,7 +415,7 @@ export default class SpecialEquipmentList extends PureComponent {
             .split(',')
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};
-              treeData = val.children;
+              treeData = val.children || [];
               return val.label;
             })
             .join('/');
@@ -428,43 +439,85 @@ export default class SpecialEquipmentList extends PureComponent {
         key: 'certificateNumber',
         align: 'center',
         width: 200,
+        render: val => val || '-',
       },
       {
         title: '有效期至',
-        dataIndex: 'paststatus',
-        key: 'paststatus',
+        dataIndex: 'endDate',
+        key: 'endDate',
         align: 'center',
         width: 250,
-        render: (val, row) => {
-          const { endDate } = row;
+        render: (endDate, row) => {
+          const { paststatus } = row;
           return endDate ? (
             <div>
-              <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
+              {/* <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
                 {val && ['未到期', '即将到期', '已过期'][+val]}
-              </div>
-              <div>{endDate && moment(endDate).format('YYYY年MM月DD日')}</div>
+              </div> */}
+              {/* {paststatus !== '0' && (
+                <div style={{ color: getColorVal(paststatus) }}>{paststatusVal[paststatus]}</div>
+              )} */}
+              <div>{moment(endDate).format('YYYY年MM月DD日')}</div>
             </div>
           ) : (
-            NO_DATA
+            '-'
           );
         },
       },
       {
-        title: '已绑传感器',
-        dataIndex: 'sensorInfo',
-        key: 'sensorInfo',
-        align: 'center',
+        title: '有效期状态',
+        dataIndex: 'paststatus',
         width: 120,
-        render: (val, row) => {
-          return 0;
-        },
+        align: 'center',
+        render: pastStatus => (
+          <span style={{ color: getColorVal(pastStatus) }}>
+            {paststatusVal[pastStatus]}
+          </span>
+        ),
+      },
+      // {
+      //   title: '已绑传感器',
+      //   dataIndex: 'sensorInfo',
+      //   key: 'sensorInfo',
+      //   align: 'center',
+      //   width: 120,
+      //   render: (val, row) => {
+      //     return 0;
+      //   },
+      // },
+      // {
+      //   title: '检验报告详情',
+      //   dataIndex: 'detectReportFile',
+      //   key: 'detectReportFile',
+      //   align: 'center',
+      //   width: 120,
+      //   render: (val, row) => {
+      //     if (val.length === 0) return '-';
+      //     const { fileName, webUrl, id } = val[0];
+      //     return (
+      //       <a href={webUrl} target="_blank" rel="noopener noreferrer">
+      //         检验报告
+      //       </a>
+      //     );
+      //   },
+      // },
+      {
+        title: '检验报告',
+        dataIndex: 'report',
+        width: 120,
+        align: 'center',
+        render: (val, text) => (
+          <Link to={`/facility-management/special-equipment/inspection-report/${text.id}`}>
+            查看详情
+          </Link>
+        ),
       },
       {
         title: '操作',
         key: 'opration',
         align: 'center',
         fixed: 'right',
-        width: 200,
+        width: 120,
         render: (val, row) => (
           <Fragment>
             {/* <AuthA code={bindSensorCode} onClick={() => this.goDetail(row.id)}>
@@ -505,10 +558,10 @@ export default class SpecialEquipmentList extends PureComponent {
               设备总数：
               {total}
             </span>
-            <span style={{ marginLeft: 15 }}>
+            {/* <span style={{ marginLeft: 15 }}>
               已绑传感器数：
               {0}
-            </span>
+            </span> */}
           </div>
         }
       >

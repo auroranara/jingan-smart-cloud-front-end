@@ -5,7 +5,7 @@ import moment from 'moment';
 import { getToken } from 'utils/authority';
 import { Card, Form, message, Upload, Button, Icon, Input, Cascader } from 'antd';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import { getFileList, getImageSize } from '../../BaseInfo/utils';
+import { getFileList, getImageSize } from '@/pages/BaseInfo/utils';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST, LIST_URL } from './utils';
@@ -365,7 +365,7 @@ export default class Edit extends PureComponent {
           .split(',')
           .map(id => {
             const val = treeData.find(item => item.id === id) || {};
-            treeData = val.children;
+            treeData = val.children || [];
             return val.label;
           })
           .join('/')
@@ -392,7 +392,7 @@ export default class Edit extends PureComponent {
             .split(',')
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};
-              treeData = val.children;
+              treeData = val.children || [];
               return val.label;
             })
             .join('/');

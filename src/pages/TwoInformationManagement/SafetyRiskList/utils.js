@@ -1,13 +1,13 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 // import moment from 'moment';
-import { Input, Select } from 'antd';
+import { Input, Form, Modal, Table } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
-
-const { Option } = Select;
+import moment from 'moment';
 
 export const PAGE_SIZE = 1;
 export const ROUTER = '/two-information-management'; // modify
 export const LIST_URL = `${ROUTER}/safety-risk-list/list`;
+
 export const LIST = [
   // modify
   {
@@ -27,188 +27,62 @@ export const BREADCRUMBLIST = [
   { title: '安全风险分级管控清单', name: '安全风险分级管控清单', href: LIST_URL },
 ];
 
-const riskClassifyList = [
-  {
-    key: '1',
-    value: '危险化学品',
-  },
-  {
-    key: '2',
-    value: '爆炸性粉尘',
-  },
-  {
-    key: '3',
-    value: '重大危险源',
-  },
-  {
-    key: '4',
-    value: '受限空间',
-  },
-  {
-    key: '5',
-    value: '涉氨场所',
-  },
-  {
-    key: '6',
-    value: '生产系统',
-  },
-  {
-    key: '7',
-    value: '设备设施',
-  },
-  {
-    key: '8',
-    value: '输送管线',
-  },
-  {
-    key: '9',
-    value: '操作行为',
-  },
-  {
-    key: '10',
-    value: '职业健康',
-  },
-  {
-    key: '11',
-    value: '环境条件',
-  },
-  {
-    key: '12',
-    value: '施工场所',
-  },
-  {
-    key: '13',
-    value: '安全管理',
-  },
-  {
-    key: '13',
-    value: '安全管理',
-  },
-  {
-    key: '14',
-    value: '公用工程',
-  },
-  {
-    key: '15',
-    value: '储存场所',
-  },
-  {
-    key: '16',
-    value: '其他',
-  },
-];
+// const dangerLevelList = [
+//   {
+//     key: '1',
+//     value: '红',
+//   },
+//   {
+//     key: '2',
+//     value: '橙',
+//   },
+//   {
+//     key: '3',
+//     value: '黄',
+//   },
+//   {
+//     key: '4',
+//     value: '蓝',
+//   },
+// ];
 
-const dangerLevelList = [
-  {
-    key: '1',
-    value: '红',
-  },
-  {
-    key: '2',
-    value: '橙',
-  },
-  {
-    key: '3',
-    value: '黄',
-  },
-  {
-    key: '4',
-    value: '蓝',
-  },
-];
-
-export const SEARCH_FIELDS_COMPANY = [
-  // modify
+export const SEARCH_FIELDS = [
   {
     id: 'companyName',
     label: '单位名称：',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
-];
-
-export const SEARCH_FIELDS = [
   {
-    id: 'name',
-    label: '作业/设备名称：',
+    id: 'zoneName',
+    label: '风险分区',
     render: () => <Input placeholder="请输入" allowClear />,
   },
-  {
-    id: 'riskClassify',
-    label: '风险分类：',
-    render: () => (
-      <Select placeholder="请选择" allowClear>
-        {riskClassifyList.map(({ key, value }) => (
-          <Option key={key} value={key}>
-            {value}
-          </Option>
-        ))}
-      </Select>
-    ),
-  },
-  {
-    id: 'dangerLevel',
-    label: '风险等级：',
-    render: () => (
-      <Select placeholder="请选择" allowClear>
-        {dangerLevelList.map(({ key, value }) => (
-          <Option key={key} value={key}>
-            {value}
-          </Option>
-        ))}
-      </Select>
-    ),
-  },
 ];
 
-export const TABLE_COLUMNS_COMPANY = [
+export const TABLE_COLUMNS = [
   {
     title: '单位名称',
     dataIndex: 'companyName',
     key: 'companyName',
     align: 'center',
-    width: 260,
     render: val => (
       <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),
   },
-];
-
-export const TABLE_COLUMNS = [
   {
-    title: '作业/设备名称',
-    dataIndex: 'name',
-    key: 'name',
+    title: '风险分区',
+    dataIndex: 'zoneName',
+    key: 'zoneName',
     align: 'center',
-    width: 180,
   },
   {
-    title: '风险分类',
-    dataIndex: 'riskClassifyName',
-    key: 'riskClassifyName',
+    title: '经办人',
+    dataIndex: 'zoneChargerName',
+    key: 'zoneChargerName',
     align: 'center',
-    width: 180,
-  },
-  {
-    title: '主要危险因素',
-    dataIndex: 'dangerFactor',
-    key: 'dangerFactor',
-    align: 'center',
-    width: 300,
-    render: val => (
-      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
-    ),
-  },
-  {
-    title: '易导致后果（风险）',
-    dataIndex: 'consequenceName',
-    key: 'consequenceName',
-    align: 'center',
-    width: 180,
     render: val => (
       <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
         {val}
@@ -216,78 +90,147 @@ export const TABLE_COLUMNS = [
     ),
   },
   {
-    title: '作业条件危险性评价',
-    dataIndex: 'result',
-    key: 'result',
+    title: '电话',
+    dataIndex: 'phoneNumber',
+    key: 'phoneNumber',
     align: 'center',
-    children: [
-      {
-        title: 'L',
-        dataIndex: 'l',
-        key: 'l',
-        width: 90,
-        align: 'center',
-      },
-      {
-        title: 'E',
-        dataIndex: 'e',
-        key: 'e',
-        width: 90,
-        align: 'center',
-      },
-      {
-        title: 'C',
-        dataIndex: 'c',
-        key: 'c',
-        width: 90,
-        align: 'center',
-      },
-      {
-        title: 'D',
-        dataIndex: 'd',
-        key: 'd',
-        width: 90,
-        align: 'center',
-      },
-    ],
-  },
-  {
-    title: '风险等级',
-    dataIndex: 'dangerLevelName',
-    key: 'dangerLevelName',
-    align: 'center',
-    width: 120,
-  },
-  {
-    title: '风险管控措施',
-    dataIndex: 'dangerMeasure',
-    key: 'dangerMeasure',
-    align: 'center',
-    width: 300,
-    render: val => (
-      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
-    ),
-  },
-  {
-    title: '应急处置措施',
-    dataIndex: 'consequenceMeasure',
-    key: 'consequenceMeasure',
-    align: 'center',
-    width: 300,
-    render: val => (
-      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
-    ),
   },
 ];
 
-export const EDIT_FORMITEMS_COMPANY = [{ name: 'companyName', label: '单位名称', required: false }];
+const columnsDetail = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+  },
+  {
+    title: '风险点',
+    dataIndex: 'name',
+    key: 'name',
+    align: 'center',
+  },
+  {
+    title: '所在位置',
+    dataIndex: 'space',
+    key: 'space',
+    align: 'center',
+  },
+  {
+    title: '存在的主要危险（有害）因素',
+    dataIndex: 'dangerFactor',
+    key: 'dangerFactor',
+    align: 'center',
+  },
+  {
+    title: 'L',
+    dataIndex: 'l',
+    key: 'l',
+    align: 'center',
+  },
+  {
+    title: 'E',
+    dataIndex: 'e',
+    key: 'e',
+    align: 'center',
+  },
+  {
+    title: 'C',
+    dataIndex: 'c',
+    key: 'c',
+    align: 'center',
+  },
+  {
+    title: 'D',
+    dataIndex: 'd',
+    key: 'd',
+    align: 'center',
+  },
+  {
+    title: '风险等级/风险色度',
+    dataIndex: 'dangerLevel',
+    key: 'dangerLevel',
+    align: 'center',
+  },
+  {
+    title: '辨识分级时间',
+    dataIndex: 'checkDate',
+    key: 'checkDate',
+    align: 'center',
+    render: val => <span>{moment(+val).format('YYYY年MM月DD日')}</span>,
+  },
+  {
+    title: '采取的主要管控措施',
+    dataIndex: 'dangerMeasure',
+    key: 'dangerMeasure',
+    align: 'center',
+  },
+  {
+    title: '责任部门',
+    dataIndex: 'department',
+    key: 'department',
+    align: 'center',
+  },
+  {
+    title: '责任人',
+    dataIndex: 'principal',
+    key: 'principal ',
+    align: 'center',
+  },
+];
+
+export const DetailModal = Form.create()(props => {
+  const {
+    detailVisible,
+    currentPage,
+    modalTitle,
+    list = [],
+    pagination: { pageNum, pageSize, total },
+    handleDetailClose,
+    handleTableData,
+    handleDetailPageChange,
+  } = props;
+
+  const indexBase = (currentPage - 1) * 10;
+
+  return (
+    <Modal
+      width={1000}
+      title={modalTitle}
+      visible={detailVisible}
+      footer={null}
+      onCancel={handleDetailClose}
+    >
+      {list.length > 0 ? (
+        <Table
+          bordered
+          rowKey="id"
+          dataSource={handleTableData(list, indexBase)}
+          scroll={{ x: 'max-content' }}
+          columns={columnsDetail}
+          pagination={{
+            current: pageNum,
+            pageSize,
+            total,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '15', '20'],
+            onChange: handleDetailPageChange,
+            onShowSizeChange: (num, size) => {
+              handleDetailPageChange(1, size);
+            },
+          }}
+        />
+      ) : (
+        <div style={{ textAlign: 'center' }}>暂无数据</div>
+      )}
+    </Modal>
+  );
+});
 
 export const EDIT_FORMITEMS = [
   // modify
+  { name: 'companyName', label: '单位名称', required: false },
   {
     name: 'name',
     label: '作业/设备名称',

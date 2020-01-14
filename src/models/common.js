@@ -2,20 +2,25 @@ import {
   getCompanyList,
   getAreaList,
   getMonitorTypeList,
+  getMonitorEquipmentList,
+  setMonitorEquipmentBindStatus,
 } from '@/services/common';
 
-const transformMonitorTypeList = (list) => {
-  return list ? list.reduce((result, { id, name: title, child: children }) => {
-    return [
-      ...result,
-      {
-        key: id,
-        value: id,
-        title,
-        children: children && children.length > 0 ? transformMonitorTypeList(children) : undefined,
-      },
-    ];
-  }, []) : [];
+const transformMonitorTypeList = list => {
+  return list
+    ? list.reduce((result, { id, name: title, child: children }) => {
+        return [
+          ...result,
+          {
+            key: id,
+            value: id,
+            title,
+            children:
+              children && children.length > 0 ? transformMonitorTypeList(children) : undefined,
+          },
+        ];
+      }, [])
+    : [];
 };
 
 export default {
@@ -32,6 +37,7 @@ export default {
     },
     areaList: [],
     monitorTypeList: [],
+    monitorEquipmentList: {},
   },
 
   effects: {
@@ -74,7 +80,7 @@ export default {
       const response = yield call(getMonitorTypeList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const monitorTypeList = transformMonitorTypeList(data.list);
+        const monitorTypeList = data.list.map(({ id, name }) => ({ key: id, value: name }));
         yield put({
           type: 'save',
           payload: {
@@ -86,11 +92,32 @@ export default {
         callback && callback(false, msg);
       }
     },
+    // 获取监测设备列表
+    *getMonitorEquipmentList({ payload, callback }, { call, put }) {
+      const response = yield call(getMonitorEquipmentList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const monitorEquipmentList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            monitorEquipmentList,
+          },
+        });
+        callback && callback(true, monitorEquipmentList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 设置监测设备绑定状态
+    *setMonitorEquipmentBindStatus({ payload, callback }, { call }) {
+      const response = yield call(setMonitorEquipmentBindStatus, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
   },
 
   reducers: {
     save: (state, { payload }) => ({ ...state, ...payload }),
   },
-}
-
-
+};

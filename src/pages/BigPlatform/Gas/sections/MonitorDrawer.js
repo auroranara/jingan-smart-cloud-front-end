@@ -13,8 +13,9 @@ import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
 import cameraIcon from '../imgs/camera.png';
-import emptyBg from '@/pages/BigPlatform/Monitor/imgs/waterBg.png';
+// import emptyBg from '@/pages/BigPlatform/Monitor/imgs/waterBg.png';
 
+const emptyBg = 'http://data.jingan-china.cn/v2/chem/screen/waterBg.png';
 // const TYPE = 'monitor';
 const TEMPERATURE = '温度';
 const TITLES = ['单位监测信息', '报警信息'];

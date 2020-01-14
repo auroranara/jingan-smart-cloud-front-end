@@ -5,8 +5,9 @@ import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import noAlarm from '@/assets/no-alarm.png'
+// import noAlarm from '@/assets/no-alarm.png'
 
+const noAlarm = 'http://data.jingan-china.cn/v2/chem/assets/no-alarm.png';
 export default class AlarmHistory extends PureComponent {
 
   static propTypes = {

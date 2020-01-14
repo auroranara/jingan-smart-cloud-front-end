@@ -65,7 +65,7 @@ const categoryList = {
 };
 
 const paststatusVal = {
-  0: ' ',
+  0: '未到期',
   1: '即将到期',
   2: '已过期',
 };
@@ -189,9 +189,9 @@ export default class RegSafetyEngList extends PureComponent {
   getColorVal = status => {
     switch (+status) {
       case 0:
-        return '#1890ff';
+        return 'rgba(0, 0, 0, 0.65)';
       case 1:
-        return '#f5222d';
+        return 'rgb(250, 173, 20)';
       case 2:
         return '#f5222d';
       default:
@@ -294,7 +294,7 @@ export default class RegSafetyEngList extends PureComponent {
               </p>
               <p>
                 性别:
-                {+sex === 1 ? '男生' : '女生'}
+                {+sex === 0 ? '男' : '女'}
               </p>
               <p>
                 出生年月:
@@ -342,7 +342,7 @@ export default class RegSafetyEngList extends PureComponent {
           const { regDate, regCode, endDate, status } = record;
           return (
             <div>
-              <p style={{ color: this.getColorVal(status) }}> {paststatusVal[status]}</p>
+              {/* <p style={{ color: this.getColorVal(status) }}> {paststatusVal[status]}</p> */}
               <p>
                 注册日期:
                 {moment(+regDate).format('YYYY-MM-DD')}
@@ -358,6 +358,17 @@ export default class RegSafetyEngList extends PureComponent {
             </div>
           );
         },
+      },
+      {
+        title: '注册证状态',
+        dataIndex: 'status',
+        align: 'center',
+        width: 120,
+        render: (status, { endDate }) => (
+          <span style={{ color: this.getColorVal(status) }}>
+            {endDate ? paststatusVal[status] : '-'}
+          </span>
+        ),
       },
       {
         title: '证照附件',

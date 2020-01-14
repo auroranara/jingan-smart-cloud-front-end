@@ -3,18 +3,8 @@ import moment from 'moment';
 // 引入样式文件
 import styles from './Tips.less';
 
-const tips = [
-  {
-    type: '主要负责人承诺公告',
-    content: '今天我公司人员密集场所环境处于正常状态，危险物品和特殊作业风险处于安全可控状态。',
-    man: '刘军',
-    date: 1572931992000,
-  },
-  {
-    type: '从业人员承诺公告',
-    content: '作为一名员工严格按照《安全生产法》等相关法律法规，履行安全生产职责。',
-  },
-];
+const content =
+  '今天我公司已进行安全风险研判，各项安全风险防控措施已落实到位，我承诺所有生产装置处于安全运行状态，罐区、仓库等重大危险源安全风险得到有效管控。';
 
 export default class Remind extends PureComponent {
   state = {};
@@ -47,16 +37,20 @@ export default class Remind extends PureComponent {
   };
 
   render() {
+    const { noticeList } = this.props;
     return (
       <div className={styles.container} ref={ref => (this.containerNode = ref)}>
         <div className={styles.tips} ref={ref => (this.scrollNode = ref)}>
-          {tips.map((item, index) => {
-            const { type, content, man, date } = item;
+          {noticeList.slice(0, 10).map((item, index) => {
+            const { allContent, createTime } = item;
             return (
               <div className={styles.tip} key={index}>
-                {type}：{content}
-                {man && <span>{man}</span>}
-                {date && <span>{moment(date).format('YYYY年MM月DD日')}</span>}
+                {moment(createTime).format('YYYY年MM月DD日')}
+                <span>{allContent.split(',')[11]}</span>
+                <span>
+                  安全承诺：
+                  {content}
+                </span>
               </div>
             );
           })}

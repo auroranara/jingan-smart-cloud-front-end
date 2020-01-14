@@ -109,7 +109,7 @@ export default class EmergencySuppliesList extends PureComponent {
   renderForm = () => {
     const {
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
       emergencyManagement: { emergencyEquip = [] },
     } = this.props;
@@ -145,13 +145,6 @@ export default class EmergencySuppliesList extends PureComponent {
         id: 'materialCode',
         render() {
           return <Input placeholder="请输入物资编码" />;
-        },
-        transform,
-      },
-      {
-        id: 'companyName',
-        render() {
-          return <Input placeholder="请输入单位名称" />;
         },
         transform,
       },
@@ -201,6 +194,13 @@ export default class EmergencySuppliesList extends PureComponent {
           );
         },
       },
+      {
+        id: 'companyName',
+        render() {
+          return <Input placeholder="请输入单位名称" />;
+        },
+        transform,
+      },
     ];
 
     // 是否有新增权限
@@ -209,7 +209,7 @@ export default class EmergencySuppliesList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={fields}
+          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -275,8 +275,11 @@ export default class EmergencySuppliesList extends PureComponent {
     const {
       loading = false,
       emergencyManagement: {
-        supplies: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} },
+        supplies: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {}, a },
         emergencyEquip = [],
+      },
+      user: {
+        currentUser: { unitType },
       },
     } = this.props;
     const { currentPage } = this.state;
@@ -329,7 +332,7 @@ export default class EmergencySuppliesList extends PureComponent {
             .split(',')
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};
-              treeData = val.children;
+              treeData = val.children || [];
               return val.label;
             })
             .join('/');
@@ -381,8 +384,16 @@ export default class EmergencySuppliesList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            应急物资数量：
-            {total}
+            {unitType !== 4 && (
+              <span>
+                单位数量：
+                {a}
+              </span>
+            )}
+            <span style={{ marginLeft: unitType !== 4 ? 15 : 0 }}>
+              应急物资数量：
+              {total}
+            </span>
           </div>
         }
       >
@@ -392,7 +403,7 @@ export default class EmergencySuppliesList extends PureComponent {
             <Table
               rowKey="id"
               loading={loading}
-              columns={columns}
+              columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
               dataSource={list}
               pagination={false}
               // scroll={{ x: scrollX }}

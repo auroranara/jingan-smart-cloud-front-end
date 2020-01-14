@@ -1,5 +1,6 @@
 import React from 'react';
 import { Input, Form, Modal, Select } from 'antd';
+import CompanySelect from '@/jingan-components/CompanySelect';
 
 export const PAGE_SIZE = 1;
 export const ROUTER = '/target-responsibility'; // modify
@@ -16,6 +17,12 @@ export const BREADCRUMBLIST = [
 
 export const SEARCH_FIELDS = [
   {
+    id: 'companyName',
+    label: '单位名称',
+    render: () => <Input placeholder="请输入" allowClear />,
+    transform: v => v.trim(),
+  },
+  {
     id: 'targetName',
     label: '指标名称',
     render: () => <Input placeholder="请输入" allowClear />,
@@ -30,6 +37,13 @@ const getFrequency = {
 
 export const TABLE_COLUMNS = [
   // modify
+  {
+    title: '单位名称',
+    dataIndex: 'companyName',
+    key: 'companyName',
+    align: 'center',
+    width: 300,
+  },
   {
     title: '指标',
     dataIndex: 'targetName',
@@ -66,6 +80,8 @@ export const EditModal = Form.create()(props => {
   const {
     form: { getFieldDecorator, validateFields, resetFields },
     detail,
+    unitType,
+    companyId: unitId,
     modalTitle,
     modalVisible,
     modalStatus,
@@ -73,6 +89,8 @@ export const EditModal = Form.create()(props => {
     handleModalAdd,
     handleModalEdit,
   } = props;
+  console.log('detail', detail);
+
   const formItemCol = {
     labelCol: {
       span: 5,
@@ -83,11 +101,17 @@ export const EditModal = Form.create()(props => {
   };
   const onConfirm = () => {
     validateFields((err, fieldsValue) => {
+      const { targetName, checkFrequency, companyId } = fieldsValue;
+      const payload = {
+        targetName,
+        checkFrequency,
+        companyId: unitType === 4 ? unitId : companyId.key,
+      };
       if (err) return;
       resetFields();
       return (
-        (modalStatus === 'add' && handleModalAdd(fieldsValue)) ||
-        (modalStatus === 'edit' && handleModalEdit({ ...fieldsValue, id: detail.id }))
+        (modalStatus === 'add' && handleModalAdd(payload)) ||
+        (modalStatus === 'edit' && handleModalEdit({ ...payload, id: detail.id }))
       );
     });
   };
@@ -100,6 +124,20 @@ export const EditModal = Form.create()(props => {
   return (
     <Modal title={modalTitle} visible={modalVisible} onCancel={handleClose} onOk={onConfirm}>
       <Form>
+        {unitType !== 4 && (
+          <Form.Item {...formItemCol} label="单位名称:">
+            {getFieldDecorator('companyId', {
+              initialValue: { key: detail.companyId, label: detail.companyName },
+              rules: [
+                {
+                  required: true,
+                  message: '请选择单位名称',
+                  transform: value => value && value.label,
+                },
+              ],
+            })(<CompanySelect placeholder="请选择" />)}
+          </Form.Item>
+        )}
         <Form.Item {...formItemCol} label="指标名称：">
           {getFieldDecorator('targetName', {
             getValueFromEvent: e => e.target.value.trim(),

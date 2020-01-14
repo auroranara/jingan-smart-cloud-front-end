@@ -13,7 +13,12 @@ import {
   editScreenPermission,
   queryAddCompanyOptions,
   queryModelList,
+  getMapList,
+  postMap,
+  putMap,
+  getMap,
 } from '../services/company/company.js';
+import { getList } from '@/utils/service';
 
 export default {
   namespace: 'company',
@@ -128,6 +133,7 @@ export default {
         value: '否',
       },
     ],
+    map: {},
   },
 
   effects: {
@@ -364,6 +370,35 @@ export default {
         });
       }
     },
+    *fetchMapList({ payload, callback, initial }, { call, put }) {
+      const response = yield call(getMapList, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = getList(data);
+        if (initial && list[0])
+          yield put({ type: 'saveMap', payload: list[0] });
+        callback && callback(list);
+      }
+    },
+    *fetchMap({ payload, callback }, { call, put }) {
+      const response = yield call(getMap, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const detail = data || {};
+        yield put({ type: 'saveMap', payload: detail });
+        callback && callback(detail);
+      }
+    },
+    *addMap({ payload, callback }, { call }) {
+      const response = yield call(postMap, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
+    },
+    *editMap({ payload, callback }, { call }) {
+      const response = yield call(putMap, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
+    },
   },
 
   reducers: {
@@ -505,6 +540,9 @@ export default {
         ...state,
         companyModal: payload,
       };
+    },
+    saveMap(state, { payload }) {
+      return { ...state, map: payload };
     },
   },
 };

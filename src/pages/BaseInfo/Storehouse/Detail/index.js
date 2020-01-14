@@ -10,7 +10,7 @@ import styles from './index.less';
 
 const listUrl = '/major-hazard-info/storehouse/list';
 const HEADER = '库房管理';
-const TITLE = HEADER + '详情';
+const TITLE = '详情';
 const BREADCRUMB = [
   {
     title: '首页',
@@ -45,8 +45,8 @@ const dspItems = [
   { id: 'code', label: '库房编码' },
   { id: 'number', label: '库房序号' },
   { id: 'name', label: '库房名称' },
-  { id: 'aName', label: '库区名称' },
-  { id: 'aNumber', label: '库区编号' },
+  { id: 'aname', label: '库区名称' },
+  { id: 'anumber', label: '库区编号' },
   { id: 'position', label: '区域位置' },
   { id: 'area', label: '库房面积（㎡）' },
   { id: 'firewall', label: '有无防火墙' },
@@ -102,7 +102,7 @@ export default class StorehouseDetail extends Component {
       storehouse: { list = [{}] },
       loading,
     } = this.props;
-    const detail = list[0];
+    const detail = list[0] || {};
     const items = detail.dangerSource === '1' ? [...dspItems, ...dangerSourceItems] : dspItems;
     const fields = items.map(item => {
       const { id } = item;
@@ -127,7 +127,8 @@ export default class StorehouseDetail extends Component {
         ].includes(id)
       ) {
         renderItem = <span>{data === '0' ? '否' : '是'}</span>;
-      }
+      } else if (id === 'materialsName')
+        renderItem = <span>{data ? JSON.parse(data)[0].chineName : ''}</span>;
       return {
         ...item,
         span: SPAN,
@@ -151,6 +152,7 @@ export default class StorehouseDetail extends Component {
               resetable={false}
               action={
                 <Fragment>
+                  <Button onClick={e => router.push(`/major-hazard-info/storehouse/edit/${detail.id}`)}>编辑</Button>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
                 </Fragment>
               }

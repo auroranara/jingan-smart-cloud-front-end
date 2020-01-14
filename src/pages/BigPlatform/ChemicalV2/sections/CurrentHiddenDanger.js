@@ -103,30 +103,6 @@ export default class CurrentHiddenDanger extends PureComponent {
     });
   };
 
-  // dataIndex从0开始
-  // onChartClick = ({ dataIndex }, chart) => {
-  //   const { onClickChat } = this.props;
-  //   // 如果点击已选中的区块，取消筛选
-  //   if (this.selectedDangerIndex === dataIndex) {
-  //     this.selectedDangerIndex = -1;
-  //     onClickChat({ dataIndex: -1 });
-  //     chart.dispatchAction({
-  //       type: 'downplay',
-  //       seriesIndex: 0,
-  //       dataIndex,
-  //     });
-  //   } else {
-  //     this.selectedDangerIndex = dataIndex;
-  //     onClickChat({ dataIndex }, () => {
-  //       chart.dispatchAction({
-  //         type: 'highlight',
-  //         seriesIndex: 0,
-  //         dataIndex: dataIndex,
-  //       });
-  //     });
-  //   }
-  // };
-
   generateShow = (key, hoverIndex) =>
     (this.selectedDangerIndex === key && [-1, key].includes(hoverIndex)) || hoverIndex === key;
 
@@ -174,19 +150,49 @@ export default class CurrentHiddenDanger extends PureComponent {
     });
   };
 
+  // dataIndex从0开始
+  onChartClick = ({ dataIndex }, chart) => {
+    const { onClickChat } = this.props;
+    // 如果点击已选中的区块，取消筛选
+    if (this.selectedDangerIndex === dataIndex) {
+      this.selectedDangerIndex = -1;
+      onClickChat({ dataIndex: -1 });
+      chart.dispatchAction({
+        type: 'downplay',
+        seriesIndex: 0,
+        dataIndex,
+      });
+    } else {
+      this.selectedDangerIndex = dataIndex;
+      onClickChat({ dataIndex }, () => {
+        chart.dispatchAction({
+          type: 'highlight',
+          seriesIndex: 0,
+          dataIndex: dataIndex,
+        });
+      });
+    }
+  };
+
   render() {
     const {
       visible,
       onClose,
       onCardClick, // 点击小块查看详情
-      overRectifyNum: ycq = 0,
-      rectifyNum: wcq = 3,
-      reviewNum: dfc = 1,
-      totalNum: total = 4,
+      handleParentChange,
+      ycq = 0,
+      wcq = 0,
+      dfc = 0,
+      total = 0,
       list = [],
-      hiddenDangerList: { list: dataList },
+      hiddenDangerList: {
+        pagination: { total: listTotal, pageNum, pageSize },
+        list: dataList,
+      },
+      fetchHiddenDangerList,
+      loading,
     } = this.props;
-    const { loading = false } = {};
+
     const { hoverIndex, images, currentImage, lightBoxVisible } = this.state;
     const legendInfo = {
       已超期: ycq,
@@ -205,7 +211,7 @@ export default class CurrentHiddenDanger extends PureComponent {
         selectedMode: false, // 禁选
         formatter: name => `${name} ${legendInfo[name]}`,
         data: [
-          // { name: '已超期', icon: 'circle' },
+          { name: '已超期', icon: 'circle' },
           { name: '未超期', icon: 'circle' },
           { name: '待复查', icon: 'circle' },
         ],
@@ -220,7 +226,7 @@ export default class CurrentHiddenDanger extends PureComponent {
           type: 'pie',
           hoverOffset: 5,
           center: ['50%', '41%'],
-          radius: ['40%', '60%'],
+          radius: ['40%', '58%'],
           avoidLabelOverlap: false,
           label: {
             show: false,
@@ -243,50 +249,50 @@ export default class CurrentHiddenDanger extends PureComponent {
             },
           },
           labelLine: {
-            length: 30,
+            length: 10,
             lineStyle: {
               color: '#fff',
             },
           },
           data: [
-            // {
-            //   value: ycq,
-            //   name: '已超期',
-            //   itemStyle: { color: `${redColor}` },
-            //   labelLine: {
-            //     show: this.generateShow(0, hoverIndex),
-            //     lineStyle: { color: `${redColor}` },
-            //   },
-            //   label: {
-            //     show: this.generateShow(0, hoverIndex),
-            //     color: { color: `${redColor}` },
-            //   },
-            // },
+            {
+              value: ycq,
+              name: '已超期',
+              itemStyle: { color: `${redColor}` },
+              labelLine: {
+                show: this.generateShow(0, hoverIndex),
+                lineStyle: { color: `${redColor}` },
+              },
+              label: {
+                show: this.generateShow(0, hoverIndex),
+                color: { color: `${redColor}` },
+              },
+            },
             {
               value: wcq,
               name: '未超期',
               itemStyle: { color: `${yellowColor}` },
-              // labelLine: {
-              //   show: this.generateShow(1, hoverIndex),
-              //   lineStyle: { color: `${yellowColor}` },
-              // },
-              // label: {
-              //   show: this.generateShow(1, hoverIndex),
-              //   color: { color: `${yellowColor}` },
-              // },
+              labelLine: {
+                show: this.generateShow(1, hoverIndex),
+                lineStyle: { color: `${yellowColor}` },
+              },
+              label: {
+                show: this.generateShow(1, hoverIndex),
+                color: { color: `${yellowColor}` },
+              },
             },
             {
               value: dfc,
               name: '待复查',
               itemStyle: { color: `${blueColor}` },
-              // labelLine: {
-              //   show: this.generateShow(2, hoverIndex),
-              //   lineStyle: { color: `${blueColor}` },
-              // },
-              // label: {
-              //   show: this.generateShow(2, hoverIndex),
-              //   color: { color: `${blueColor}` },
-              // },
+              labelLine: {
+                show: this.generateShow(2, hoverIndex),
+                lineStyle: { color: `${blueColor}` },
+              },
+              label: {
+                show: this.generateShow(2, hoverIndex),
+                color: { color: `${blueColor}` },
+              },
             },
           ],
         },
@@ -298,9 +304,15 @@ export default class CurrentHiddenDanger extends PureComponent {
         <DrawerContainer
           title="当前隐患"
           visible={visible}
-          onClose={onClose}
+          onClose={() => {
+            onClose();
+            setTimeout(() => {
+              handleParentChange({ hdStatus: 5 });
+            }, 500);
+          }}
           width={535}
           destroyOnClose={true}
+          zIndex={1333}
           left={
             <div className={styles.currentHiddenDanger}>
               <div className={styles.chartContainer}>
@@ -310,7 +322,7 @@ export default class CurrentHiddenDanger extends PureComponent {
                   onEvents={{
                     mouseover: this.onMouseOver,
                     mouseout: this.onMouseOut,
-                    // click: this.onChartClick,
+                    click: this.onChartClick,
                   }}
                 />
                 <div className={styles.total}>
@@ -335,11 +347,11 @@ export default class CurrentHiddenDanger extends PureComponent {
                   ) : (
                     <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>
                   )}
-                  {/* {pageNum * pageSize < listTotal && (
+                  {pageNum * pageSize < listTotal && (
                     <div className={styles.loadMoreWrapper}>
                       <LoadMore onClick={() => fetchHiddenDangerList(pageNum + 1)} />
                     </div>
-                  )} */}
+                  )}
                 </Spin>
                 {/* {list.map((item, index) => {
                 const {

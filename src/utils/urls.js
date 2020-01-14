@@ -55,11 +55,11 @@ export default {
     serviceList: '/fire-control/maintenance-company/serviceList/',
   },
   hiddenDangerReport: {
-    list: '/control-measures-follow-up/hidden-danger-report/list',
-    detail: '/control-measures-follow-up/hidden-danger-report/detail/',
+    list: '/hidden-danger-control/hidden-danger-report/list',
+    detail: '/hidden-danger-control/hidden-danger-report/detail/',
   },
   hiddenDangerCountReport: {
-    list: '/control-measures-follow-up/hidden-danger-count-report/list',
+    list: '/hidden-danger-control/hidden-danger-count-report/list',
   },
   examinationPaper: {
     list: '/training/examination-paper/list',
