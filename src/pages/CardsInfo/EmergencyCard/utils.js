@@ -155,7 +155,7 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
             </AuthLink>
             <Divider type="vertical" />
             <AuthPopConfirm
-              code={!deleteCode}
+              code={deleteCode}
               title="确定删除当前项目？"
               onConfirm={e => handleConfirmDelete(id)}
               okText="确定"
