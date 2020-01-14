@@ -125,7 +125,7 @@ export default class SpecialEquipment extends PureComponent {
             equipName, //设备名称
             certificateNumber, //使用证编号
             usePart, //使用部位
-            number, //数量
+            // number, //数量
             contact, //联系人
             phone, //联系电话
             productUnitName, //生产单位名称
@@ -158,7 +158,7 @@ export default class SpecialEquipment extends PureComponent {
         equipName, //设备名称
         certificateNumber, //使用证编号
         usePart, //使用部位
-        number, //数量
+        // number, //数量
         contact, //联系人
         phone, //联系电话
         productUnitName, //生产单位名称
@@ -763,7 +763,7 @@ export default class SpecialEquipment extends PureComponent {
               <Input placeholder="请输入使用部位" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="数量" {...formItemLayout}>
+          {/* <FormItem label="数量" {...formItemLayout}>
             {getFieldDecorator('number')(
               <InputNumber
                 {...itemStyles}
@@ -773,7 +773,7 @@ export default class SpecialEquipment extends PureComponent {
                 parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
               />
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem label="联系人" {...formItemLayout}>
             {getFieldDecorator('contact', { getValueFromEvent: this.handleTrim })(
               <Input placeholder="请输入联系人" {...itemStyles} />

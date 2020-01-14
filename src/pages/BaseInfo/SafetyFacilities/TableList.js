@@ -415,7 +415,7 @@ export default class TableList extends PureComponent {
         align: 'center',
         render: (val, text) =>
           reportCode ? (
-            <a href={`#/facility-management/safety-facilities/inspection-report/${text.id}`}>
+            <a href={`#/facility-management/safety-facilities/inspection-report/${text.id}`} target="_blank" rel="noopener noreferrer">
               查看详情
             </a>
           ) : (
