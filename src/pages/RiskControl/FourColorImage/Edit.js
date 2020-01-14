@@ -288,12 +288,7 @@ export default class TableList extends React.Component {
     this.setState({ points });
   };
 
-  getBuilding = buildingId => {
-    const {
-      match: {
-        params: { id },
-      },
-    } = this.props;
+  getBuilding = (buildingId, s) => {
     const { modelIds } = this.state;
     const modeIdList = modelIds.split(',').map(Number);
     const areaList = buildingId.filter(item => item).map((item, index) => ({
@@ -302,7 +297,7 @@ export default class TableList extends React.Component {
       point: item.points,
       selected: true,
     }));
-    if (id) {
+    if (s === 0) {
       areaList.reduce(function(pre, cur, index, arr) {
         if (!modeIdList.includes(cur.areaId)) {
           cur.selected = !cur.selected;
@@ -317,7 +312,7 @@ export default class TableList extends React.Component {
 
   handleTagClick = (areaId, point, selected) => {
     const { points } = this.state;
-    this.childMap.handleModelEdit(points, areaId, point, selected);
+    this.childMap.handleModelEdit(points, point, selected);
     const { buildingId } = this.state;
     this.setState({
       buildingId: buildingId.reduce(function(pre, cur, index, arr) {
