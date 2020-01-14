@@ -208,30 +208,40 @@ export default class SpecialEquipmentList extends PureComponent {
         },
         transform,
       },
+      // {
+      //   id: 'brand',
+      //   render: () => (
+      //     <Select placeholder="请选择品牌" onChange={this.handleBrandChange} allowClear>
+      //       {brandList.map(({ id, name }) => (
+      //         <Option key={id} value={id}>
+      //           {name}
+      //         </Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      //   transform,
+      // },
       {
         id: 'brand',
-        render: () => (
-          <Select placeholder="请选择品牌" onChange={this.handleBrandChange} allowClear>
-            {brandList.map(({ id, name }) => (
-              <Option key={id} value={id}>
-                {name}
-              </Option>
-            ))}
-          </Select>
-        ),
+        render: () => <Input placeholder="请输入品牌" allowClear />,
         transform,
       },
+      // {
+      //   id: 'specification',
+      //   render: () => (
+      //     <Select placeholder="请选择型号" allowClear>
+      //       {modelList.map(({ id, name }) => (
+      //         <Option key={id} value={id}>
+      //           {name}
+      //         </Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      //   transform,
+      // },
       {
         id: 'specification',
-        render: () => (
-          <Select placeholder="请选择型号" allowClear>
-            {modelList.map(({ id, name }) => (
-              <Option key={id} value={id}>
-                {name}
-              </Option>
-            ))}
-          </Select>
-        ),
+        render: () => <Input placeholder="请输入型号" allowClear />,
         transform,
       },
       {

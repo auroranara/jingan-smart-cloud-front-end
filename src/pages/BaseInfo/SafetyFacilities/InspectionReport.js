@@ -348,8 +348,8 @@ export default class InspectionReport extends PureComponent {
       },
       {
         title: '检验单位',
-        dataIndex: 'companyName',
-        key: 'companyName',
+        dataIndex: 'inspectUnit',
+        key: 'inspectUnit',
         align: 'center',
       },
       {
