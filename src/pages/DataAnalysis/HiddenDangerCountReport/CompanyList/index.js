@@ -81,7 +81,7 @@ export default class CompanyList extends PureComponent {
     if (data) {
       sessionStorage.setItem('HIDDEN_DANGER_COUNT_REPORT', JSON.stringify(data));
     }
-    // router.push('/hidden-danger-control/hidden-danger-count-report/detail');
+    // router.push('/control-measures-follow-up/hidden-danger-count-report/detail');
   };
 
   handleSearch = () => {
@@ -175,7 +175,7 @@ export default class CompanyList extends PureComponent {
             return (
               <List.Item key={id}>
                 <Link
-                  to={'/hidden-danger-control/hidden-danger-count-report/detail'}
+                  to={'/control-measures-follow-up/hidden-danger-count-report/detail'}
                   onClick={() => this.handleCardClick(item)}
                   target="_blank"
                 >
