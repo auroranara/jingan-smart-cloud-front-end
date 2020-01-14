@@ -141,9 +141,9 @@ export default class Edit extends PureComponent {
         payload: id ? { id, ...vals } : vals,
         callback: (code, msg) => {
           if (code === 200) {
-            message.success('操作成功');
+            message.success('新增成功');
             router.push(LIST_URL);
-          } else message.error(msg);
+          } else message.error('新增失败');
         },
       });
     });
