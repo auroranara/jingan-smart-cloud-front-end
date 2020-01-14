@@ -1176,42 +1176,6 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              path: '/safety-knowledge-base/law-standard', // 法律法规标准评价
-              code: 'safetyKnowledgeBase.lawStandard',
-              name: 'lawStandard',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/safety-knowledge-base/law-standard',
-                  redirect: '/safety-knowledge-base/law-standard/list',
-                },
-                {
-                  name: 'list',
-                  path: '/safety-knowledge-base/law-standard/list',
-                  code: 'safetyKnowledgeBase.lawStandard.list',
-                  component: './SafetyKnowledgeBase/LawStandard/List',
-                },
-                {
-                  name: 'detail',
-                  path: '/safety-knowledge-base/law-standard/detail/:id',
-                  code: 'safetyKnowledgeBase.lawStandard.detail',
-                  component: './SafetyKnowledgeBase/LawStandard/Other',
-                },
-                {
-                  name: 'add',
-                  path: '/safety-knowledge-base/law-standard/add',
-                  code: 'safetyKnowledgeBase.lawStandard.add',
-                  component: './SafetyKnowledgeBase/LawStandard/Other',
-                },
-                {
-                  name: 'edit',
-                  path: '/safety-knowledge-base/law-standard/edit/:id',
-                  code: 'safetyKnowledgeBase.lawStandard.edit',
-                  component: './SafetyKnowledgeBase/LawStandard/Other',
-                },
-              ],
-            },
           ],
         },
 
@@ -2702,6 +2666,42 @@ module.exports = env => {
                   code: 'safetyProductionRegulation.laws.view',
                   name: 'view',
                   component: './LawEnforcement/Laws/LawDatabaseDetail',
+                },
+              ],
+            },
+            {
+              path: '/safety-production-regulation/law-standard', // 法律法规标准评价
+              code: 'safetyProductionRegulation.lawStandard',
+              name: 'lawStandard',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-production-regulation/law-standard',
+                  redirect: '/safety-production-regulation/law-standard/list',
+                },
+                {
+                  name: 'list',
+                  path: '/safety-production-regulation/law-standard/list',
+                  code: 'safetyProductionRegulation.lawStandard.list',
+                  component: './SafetyKnowledgeBase/LawStandard/List',
+                },
+                {
+                  name: 'detail',
+                  path: '/safety-production-regulation/law-standard/detail/:id',
+                  code: 'safetyProductionRegulation.lawStandard.detail',
+                  component: './SafetyKnowledgeBase/LawStandard/Other',
+                },
+                {
+                  name: 'add',
+                  path: '/safety-production-regulation/law-standard/add',
+                  code: 'safetyProductionRegulation.lawStandard.add',
+                  component: './SafetyKnowledgeBase/LawStandard/Other',
+                },
+                {
+                  name: 'edit',
+                  path: '/safety-production-regulation/law-standard/edit/:id',
+                  code: 'safetyProductionRegulation.lawStandard.edit',
+                  component: './SafetyKnowledgeBase/LawStandard/Other',
                 },
               ],
             },

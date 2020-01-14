@@ -63,7 +63,8 @@ const ReportModal = Form.create()(props => {
         certificateNumber,
         inspectDate: inspectDate ? inspectDate.format('YYYY-MM-DD') : undefined,
         usePeriodDate: usePeriodDate ? usePeriodDate.format('YYYY-MM-DD') : undefined,
-        inspectUnit: inspectUnit ? inspectUnit.key : undefined,
+        // inspectUnit: inspectUnit ? inspectUnit.key : undefined,
+        inspectUnit: inspectUnit || undefined,
         reportFileList:
           fileList.length > 0
             ? fileList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
@@ -118,7 +119,8 @@ const ReportModal = Form.create()(props => {
                 transform: value => value && value.label,
               },
             ],
-          })(<CompanySelect placeholder="请选择" />)}
+          // })(<CompanySelect placeholder="请选择" />)}
+          })(<Input placeholder="请输入检验单位" />)}
         </Form.Item>
         <Form.Item {...formItemCol} label="检验报告">
           {getFieldDecorator('reportFileList', {})(
@@ -332,7 +334,7 @@ export default class InspectionReport extends PureComponent {
         key: 'inspectDate',
         align: 'center',
         render: val => {
-          return val === null ? '-' : moment(+val).format('YYYY-MM-DD');
+          return val === null ? '' : moment(+val).format('YYYY-MM-DD');
         },
       },
       {
@@ -341,13 +343,13 @@ export default class InspectionReport extends PureComponent {
         key: 'usePeriodDate',
         align: 'center',
         render: val => {
-          return val === null ? '-' : moment(+val).format('YYYY-MM-DD');
+          return val === null ? '' : moment(+val).format('YYYY-MM-DD');
         },
       },
       {
         title: '检验单位',
-        dataIndex: 'companyName',
-        key: 'companyName',
+        dataIndex: 'inspectUnit',
+        key: 'inspectUnit',
         align: 'center',
       },
       {

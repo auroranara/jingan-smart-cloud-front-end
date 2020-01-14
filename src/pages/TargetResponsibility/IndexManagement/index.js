@@ -153,6 +153,7 @@ export default class TableList extends PureComponent {
       },
     } = this.props;
 
+    console.log('list', list);
     // 权限
     const editCode = hasAuthority(editAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
