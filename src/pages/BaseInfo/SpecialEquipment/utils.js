@@ -15,4 +15,5 @@ export const paststatusVal = {
   0: '未到期',
   1: '即将到期',
   2: '已过期',
+  null: '-',
 };

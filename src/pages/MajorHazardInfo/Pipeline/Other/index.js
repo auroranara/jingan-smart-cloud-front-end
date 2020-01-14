@@ -162,7 +162,7 @@ export default class OperationRecordOther extends Component {
       required: true,
       component: MediumModal,
       props: {
-        company: unitId ? { key: unitId } : company,
+        companyId: unitId || (company && company.key !== company.label ? company.key : undefined),
         onChange: this.handleMeterialChange,
       },
       options: {

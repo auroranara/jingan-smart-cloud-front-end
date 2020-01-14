@@ -61,6 +61,7 @@ const paststatusVal = {
   0: '未到期',
   1: '即将到期',
   2: '已过期',
+  null: '-',
 };
 
 const statusVal = {
@@ -322,13 +323,13 @@ export default class TableList extends PureComponent {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
-        width: 300,
+        // width: 300,
       },
       {
         title: '分类',
         dataIndex: 'categoryName',
         align: 'center',
-        width: 200,
+        // width: 200,
         render: val => {
           return <span>{val ? val[0] + '/' + val[1] : []}</span>;
         },
@@ -337,13 +338,13 @@ export default class TableList extends PureComponent {
         title: '安全设施名称',
         dataIndex: 'safeFacilitiesLabel',
         align: 'center',
-        width: 200,
+        // width: 200,
       },
       {
         title: '编号名称',
         dataIndex: 'info',
         align: 'center',
-        width: 300,
+        // width: 300,
         render: (val, text) => {
           const { specifications, leaveProductNumber, equipName } = text;
           return (
@@ -368,7 +369,7 @@ export default class TableList extends PureComponent {
         title: '状态',
         dataIndex: 'equipStatus',
         align: 'center',
-        width: 200,
+        width: 100,
         render: (val, record) => {
           return (
             <div>
@@ -381,15 +382,15 @@ export default class TableList extends PureComponent {
         title: '检验有效期至',
         dataIndex: 'useYear',
         align: 'center',
-        width: 200,
+        width: 180,
         render: (val, record) => {
           const { endDate, paststatus } = record;
           return endDate ? (
             <div>
               {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}{' '}
-              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+              {/* <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
-              </span>
+              </span> */}
             </div>
           ) : (
             '-'
@@ -397,10 +398,36 @@ export default class TableList extends PureComponent {
         },
       },
       {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        width: 120,
+        align: 'center',
+        render: pastStatus => (
+          <span style={{ color: this.getColorVal(pastStatus) }}>
+            {paststatusVal[pastStatus]}
+          </span>
+        ),
+      },
+      {
+        title: '检验报告',
+        dataIndex: 'report',
+        width: 120,
+        align: 'center',
+        render: (val, text) =>
+          reportCode ? (
+            <a href={`#/facility-management/safety-facilities/inspection-report/${text.id}`}>
+              查看详情
+            </a>
+          ) : (
+            <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看详情</span>
+          ),
+      },
+      {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 200,
+        fixed: 'right',
+        width: 160,
         render: (val, row) => (
           <Fragment>
             {viewCode ? (
@@ -424,20 +451,6 @@ export default class TableList extends PureComponent {
             )}
           </Fragment>
         ),
-      },
-      {
-        title: '检验报告',
-        dataIndex: 'report',
-        width: 120,
-        align: 'center',
-        render: (val, text) =>
-          reportCode ? (
-            <a href={`#/facility-management/safety-facilities/inspection-report/${text.id}`}>
-              查看详情
-            </a>
-          ) : (
-            <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看详情</span>
-          ),
       },
     ];
 

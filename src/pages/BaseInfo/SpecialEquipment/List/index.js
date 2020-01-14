@@ -454,15 +454,26 @@ export default class SpecialEquipmentList extends PureComponent {
               {/* <div style={{ color: +val === 2 ? '#f5222d' : 'rgba(0,0,0,0.65)' }}>
                 {val && ['未到期', '即将到期', '已过期'][+val]}
               </div> */}
-              {paststatus !== '0' && (
+              {/* {paststatus !== '0' && (
                 <div style={{ color: getColorVal(paststatus) }}>{paststatusVal[paststatus]}</div>
-              )}
+              )} */}
               <div>{moment(endDate).format('YYYY年MM月DD日')}</div>
             </div>
           ) : (
             '-'
           );
         },
+      },
+      {
+        title: '有效期状态',
+        dataIndex: 'paststatus',
+        width: 120,
+        align: 'center',
+        render: pastStatus => (
+          <span style={{ color: getColorVal(pastStatus) }}>
+            {paststatusVal[pastStatus]}
+          </span>
+        ),
       },
       // {
       //   title: '已绑传感器',
@@ -506,7 +517,7 @@ export default class SpecialEquipmentList extends PureComponent {
         key: 'opration',
         align: 'center',
         fixed: 'right',
-        width: 200,
+        width: 120,
         render: (val, row) => (
           <Fragment>
             {/* <AuthA code={bindSensorCode} onClick={() => this.goDetail(row.id)}>
