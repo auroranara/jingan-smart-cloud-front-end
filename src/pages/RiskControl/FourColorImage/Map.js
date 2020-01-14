@@ -47,7 +47,7 @@ export default class Map extends React.Component {
       pointList.map(item => {
         const { zoneLevel, coordinateList, modelIds } = item;
         const cordPoints = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-        const modeIdList = modelIds || ''.split(',').map(Number);
+        const modeIdList = modelIds.split(',').map(Number);
         if (modeIdList.length > 0) {
           const models = map.getDatasByAlias(1, 'model');
           models.forEach(item => {
@@ -57,10 +57,6 @@ export default class Map extends React.Component {
           });
           this.drawPolygon(cordPoints, '', 0);
         }
-        // else {
-        //   this.drawPolygon(cordPoints, COLORS[zoneLevel]);
-        //   this.setModelColor(cordPoints, COLORS[zoneLevel]);
-        // }
         return null;
       });
   };
