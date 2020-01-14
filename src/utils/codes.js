@@ -580,6 +580,7 @@ export default {
       add: 'facilityManagement.safetyFacilities.add',
       edit: 'facilityManagement.safetyFacilities.edit',
       delete: 'facilityManagement.safetyFacilities.delete',
+      report: 'facilityManagement.safetyFacilities.report',
     },
     // 储罐管理
     storageManagement: {

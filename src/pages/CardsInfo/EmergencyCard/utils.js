@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 // import Link from 'umi/link';
 // import moment from 'moment';
-import { Input } from 'antd';
+import { Input, Divider } from 'antd';
 
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
@@ -135,7 +135,7 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       title: '操作',
       dataIndex: 'id',
       key: 'id',
-      width: 132,
+      width: 180,
       align: 'center',
       fixed: 'right',
       render(id) {
@@ -144,6 +144,7 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
             <AuthLink code={viewCode} to={`${ROUTER}/view/${id}`} target="_blank">
               查看
             </AuthLink>
+            <Divider type="vertical" />
             <AuthLink
               code={editCode}
               to={`${ROUTER}/edit/${id}`}
@@ -152,14 +153,15 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
             >
               编辑
             </AuthLink>
+            <Divider type="vertical" />
             <AuthPopConfirm
-              code={deleteCode}
+              code={!deleteCode}
               title="确定删除当前项目？"
               onConfirm={e => handleConfirmDelete(id)}
               okText="确定"
               cancelText="取消"
             >
-              <span className={styles1.delete}>删除</span>
+              删除
             </AuthPopConfirm>
           </Fragment>
         );

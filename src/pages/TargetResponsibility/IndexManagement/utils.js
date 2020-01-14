@@ -89,6 +89,8 @@ export const EditModal = Form.create()(props => {
     handleModalAdd,
     handleModalEdit,
   } = props;
+  console.log('detail', detail);
+
   const formItemCol = {
     labelCol: {
       span: 5,
@@ -125,7 +127,7 @@ export const EditModal = Form.create()(props => {
         {unitType !== 4 && (
           <Form.Item {...formItemCol} label="单位名称:">
             {getFieldDecorator('companyId', {
-              // initialValue:,
+              initialValue: { key: detail.companyId, label: detail.companyName },
               rules: [
                 {
                   required: true,

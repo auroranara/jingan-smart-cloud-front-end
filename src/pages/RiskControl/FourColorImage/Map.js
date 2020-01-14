@@ -26,6 +26,7 @@ let map;
 let points = [];
 let naviLines = [];
 
+let buildingId = [];
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
@@ -44,10 +45,22 @@ export default class Map extends React.Component {
     const newList = pointList.length > 0 ? pointList : [];
     newList.length > 0 &&
       pointList.map(item => {
-        const { zoneLevel, coordinateList } = item;
-        const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-        this.drawPolygon(points, COLORS[zoneLevel]);
-        this.setModelColor(points, COLORS[zoneLevel]);
+        const { zoneLevel, coordinateList, modelIds } = item;
+        const cordPoints = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
+        const modeIdList = modelIds || ''.split(',').map(Number);
+        if (modeIdList.length > 0) {
+          const models = map.getDatasByAlias(1, 'model');
+          models.forEach(item => {
+            if (item.ID && modeIdList.includes(item.ID)) {
+              item.setColor(COLORS[zoneLevel], 1);
+            }
+          });
+          this.drawPolygon(cordPoints, '', 0);
+        }
+        // else {
+        //   this.drawPolygon(cordPoints, COLORS[zoneLevel]);
+        //   this.setModelColor(cordPoints, COLORS[zoneLevel]);
+        // }
         return null;
       });
   };
@@ -96,7 +109,6 @@ export default class Map extends React.Component {
 
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
-
       if (!clickedObj || !clickedObj.eventInfo) return;
 
       var { coord } = clickedObj.eventInfo;
@@ -106,11 +118,24 @@ export default class Map extends React.Component {
         points.push(coord);
         // 画线
         this.drawLines(points);
+        // 获取当前所选建筑物ID
       }
     });
 
     map.on('loadComplete', () => {
       this.getPointList(this.props.pointList);
+      this.props.pointList.length > 0 &&
+        this.props.pointList.map(item => {
+          const { coordinateList } = item;
+          const cordList = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
+          const models = map.getDatasByAlias(1, 'model');
+          return (
+            (buildingId = models
+              .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
+              .map(item => ({ buildingId: item.ID, points: item.mapCoord }))),
+            this.props.getBuilding && this.props.getBuilding(buildingId)
+          );
+        });
     });
   };
 
@@ -132,7 +157,7 @@ export default class Map extends React.Component {
     layer.addMarker(im);
   }
 
-  drawPolygon(points, color) {
+  drawPolygon(points, color, s) {
     var groupLayer = map.getFMGroup(1);
     //创建PolygonMarkerLayer
     var layer = new fengMap.FMPolygonMarkerLayer();
@@ -144,7 +169,9 @@ export default class Map extends React.Component {
       points, //多边形坐标点
     });
     polygonMarker.setColor(color);
-    layer.addMarker(polygonMarker);
+    if (s !== 0) {
+      layer.addMarker(polygonMarker);
+    }
     this.polygonLayers.push(layer);
     this.polygonMarkers.push(polygonMarker);
   }
@@ -156,21 +183,46 @@ export default class Map extends React.Component {
     models
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
       .map(model => model.setColor(color));
-    // console.log(models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points)));
+    // 获取当前选中区域所有ID
+    buildingId = models
+      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
+      .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
+    this.props.getBuilding && this.props.getBuilding(buildingId);
   }
 
+  // 切换tag
+  handleModelEdit = (points, areaId, point, selected) => {
+    const models = map.getDatasByAlias(1, 'model');
+    const orginList = models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points));
+    if (!!selected && this.polygonMarkers[0].contain({ ...point, z: 1 })) {
+      const model = orginList.find(item => item.mapCoord === point);
+      model.setColorToDefault();
+      return null;
+    }
+    if (!selected && this.polygonMarkers[0].contain({ ...point, z: 1 })) {
+      const model = orginList.find(item => item.mapCoord === point);
+      this.props.pointList.length > 0
+        ? this.props.pointList.map(item => {
+            const { zoneLevel } = item;
+            return model.setColor(COLORS[zoneLevel]);
+          })
+        : model.setColor(COLOR.blue);
+
+      return null;
+    }
+  };
+
+  // 删除分区
   removeArea = index => {
-    var groupLayer = map.getFMGroup(1);
+    const groupLayer = map.getFMGroup(1);
     groupLayer.removeLayer(this.polygonLayers[index]);
     this.polygonLayers.splice(index, 1);
-
     const models = map.getDatasByAlias(1, 'model');
     models.map(model => {
       const { mapCoord } = model;
       if (this.polygonMarkers[index].contain({ ...mapCoord, z: 1 })) model.setColorToDefault();
       return null;
     });
-
     this.polygonMarkers.splice(index, 1);
   };
 
@@ -184,6 +236,7 @@ export default class Map extends React.Component {
     const models = map.getDatasByAlias(1, 'model');
     models.map(model => model.setColorToDefault());
     map.clearLineMark();
+    buildingId = [];
   };
 
   // 高亮对应区域颜色
@@ -234,6 +287,7 @@ export default class Map extends React.Component {
     line.addSegment(seg);
     var lineObject = map.drawLineMark(line, lineStyle);
     naviLines.push(lineObject);
+    // 获取选中坐标点
     this.props.getPoints(points);
   }
 
