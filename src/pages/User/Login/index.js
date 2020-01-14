@@ -718,7 +718,7 @@ export default class Login extends PureComponent {
         <div className={styles.footer}>
           <div>
             <div>
-              <span>copyright©2019</span>
+              <span>copyright©2020</span>
               <span>{unitName}</span>
               <span style={{ marginLeft: '5px' }}>{global.VERSION}</span>
             </div>

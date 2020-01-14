@@ -30,7 +30,7 @@ const FooterView = () => (
       }
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2019
+          Copyright <Icon type="copyright" /> 2020
         </Fragment>
       }
     />

@@ -65,7 +65,7 @@ export default class UserLayout extends PureComponent {
     const copyright = (
       <Fragment>
         <p>
-          Copyright <Icon type="copyright" /> 2019
+          Copyright <Icon type="copyright" /> 2020
         </p>
         {serviceSupport && (
           <p style={{ marginTop: '5px' }}>
