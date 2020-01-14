@@ -31,12 +31,12 @@ export const TYPES = [
 ];
 export const MAJOR_HAZARD_STATUSES = [
   {
-    key: '0',
-    value: '否',
-  },
-  {
     key: '1',
     value: '是',
+  },
+  {
+    key: '0',
+    value: '否',
   },
 ];
 const BREADCRUMB_LIST = [
