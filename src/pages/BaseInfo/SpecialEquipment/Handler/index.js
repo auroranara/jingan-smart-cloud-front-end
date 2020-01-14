@@ -132,6 +132,7 @@ export default class SpecialEquipment extends PureComponent {
             productUnitPhone, //生产单位电话
             productDate, //生产日期
             // endDate, //截止日期
+            useDate, //投入使用日
             usePeriod, //使用期限
             locationType,
             buildingId,
@@ -163,6 +164,7 @@ export default class SpecialEquipment extends PureComponent {
         productUnitName, //生产单位名称
         productUnitPhone, //生产单位电话
         productDate: productDate && moment(productDate), //生产日期
+        useDate: useDate === null ? undefined : moment(useDate),
         usePeriod: usePeriod || undefined, //使用期限
         locationType,
         paststatus, //到期状态  0：未到期 1：即将到期 2：已过期
@@ -741,11 +743,11 @@ export default class SpecialEquipment extends PureComponent {
               <Input placeholder="请输入注册登记号" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="检测单位" {...formItemLayout}>
+          {/* <FormItem label="检测单位" {...formItemLayout}>
             {getFieldDecorator('detectUnit', { getValueFromEvent: this.handleTrim })(
               <Input placeholder="请输入检测单位" {...itemStyles} />
             )}
-          </FormItem>
+          </FormItem> */}
           {/* <FormItem label="检验报告" {...formItemLayout}>
             {getFieldDecorator('detectReport')(
               <Upload {...defaultUploadProps} fileList={fileList} onChange={this.handleFileChange}>
@@ -796,6 +798,15 @@ export default class SpecialEquipment extends PureComponent {
             {getFieldDecorator('productDate')(
               <DatePicker
                 placeholder="请选择生产日期"
+                getCalendarContainer={getRootChild}
+                {...itemStyles}
+              />
+            )}
+          </FormItem>
+          <FormItem label="投入使用日" {...formItemLayout}>
+            {getFieldDecorator('useDate')(
+              <DatePicker
+                placeholder="请选择投入使用日"
                 getCalendarContainer={getRootChild}
                 {...itemStyles}
               />
