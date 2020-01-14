@@ -27,7 +27,7 @@ export default class MEdit extends PureComponent {
           { name: 'engName', label: '化学品英文名称' },
           { name: 'engName2', label: '化学品英文名称二', required: false },
           { name: 'bookCode', label: '技术说明书编码' },
-          { name: 'casNo', label: 'CAS号' },
+          { name: 'casNo', label: 'CAS号', required: false },
           { name: 'molecFormu', label: '分子式' },
           { name: 'molecWeight', label: '分子量' },
         ],
@@ -44,6 +44,8 @@ export default class MEdit extends PureComponent {
         title: '第三部分：危险性概述',
         fields: [
           { name: 'riskCateg', label: '危险性类别', type: 'select', options: RISK_CATEGORIES },
+          { name: 'correctionCoefficient', label: '矫正系数β值', required: false },
+          { name: 'limitValue', label: '临界量(t)', required: false },
           { name: 'invasionRoute', label: '侵入途径', type: 'text', required: false },
           { name: 'healthHazard', label: '健康危害', type: 'text' },
           { name: 'environmentalHarm', label: '环境危害', type: 'text' },
