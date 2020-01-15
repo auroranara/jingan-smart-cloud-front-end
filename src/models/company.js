@@ -17,6 +17,7 @@ import {
   postMap,
   putMap,
   getMap,
+  getRegulatoryClassification,
 } from '../services/company/company.js';
 import { getList } from '@/utils/service';
 
@@ -134,6 +135,7 @@ export default {
       },
     ],
     map: {},
+    regulatoryClassificationList: [],
   },
 
   effects: {
@@ -399,6 +401,12 @@ export default {
       const { code, msg } = response || {};
       callback && callback(code, msg);
     },
+    *fetchRegulatoryClassification({ payload }, { call, put }) {
+      const response = yield call(getRegulatoryClassification, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveRegulatoryClassification', payload: getList(data) });
+    },
   },
 
   reducers: {
@@ -543,6 +551,9 @@ export default {
     },
     saveMap(state, { payload }) {
       return { ...state, map: payload };
+    },
+    saveRegulatoryClassification(state, { payload }) {
+      return { ...state, regulatoryClassificationList: payload };
     },
   },
 };

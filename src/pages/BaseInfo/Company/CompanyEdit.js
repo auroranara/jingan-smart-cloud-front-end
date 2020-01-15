@@ -93,6 +93,11 @@ const fieldLabels = {
   importantHost: '消防重点单位',
   unitPhoto: '单位照片',
   warningCall: '报警接收电话',
+  regulatoryClassification: '监管分类',
+  ciCompanyType: '化工企业类型',
+  workCompanyType: '生产经营活动类型',
+  workPlaceOwn: '生产场所产权',
+  storePlaceOwn: '存储场所产权',
 };
 // 报警接收电话类型
 const phoneTypes = [{ value: 1, label: '手机' }, { value: 0, label: '固话' }];
@@ -121,6 +126,26 @@ const tabList = [
 const defaultCompanyNature = '一般企业';
 // 默认经纬度坐标
 const defaultPosition = { longitude: 120.30, latitude: 31.57 };
+
+const CHEM_COM_TYPES = [
+  { value: '0', name: '危化品生产企业' },
+  { value: '1', name: '危化品经营企业' },
+  { value: '2', name: '危化品使用企业' },
+  { value: '3', name: '一般化工企业' },
+  { value: '4', name: '其他' },
+];
+
+const WORK_COM_TYPES = [
+  { value: '0', name: '生产' },
+  { value: '1', name: '经营' },
+  { value: '2', name: '使用' },
+  { value: '3', name: '存储' },
+];
+
+const PLACE_OWN = [
+  { value: '0', name: '自有' },
+  { value: '1', name: '租赁' },
+];
 
 @connect(
   ({ company, user, loading }) => ({
@@ -223,6 +248,7 @@ export default class CompanyDetail extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     const {
+      dispatch,
       fetchCompany,
       fetchDict,
       gsafeFetchDict,
@@ -241,6 +267,8 @@ export default class CompanyDetail extends PureComponent {
     } = this.props;
 
     if (this.operation === 'edit' && isFromAdd) this.setState({ tabActiveKey: tabList[1].key });
+
+    dispatch({ type: 'company/fetchRegulatoryClassification' });
 
     // 如果id存在的话，则编辑，否则新增
     if (id) {
@@ -1335,6 +1363,11 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
+  handleChemComTypeChange = value => {
+    const { form: { setFieldsValue } } = this.props;
+    setFieldsValue({ workCompanyType: value ? ['3', '4'].includes(value) ? ['0', '1', '2', '3'] : value : undefined });
+  };
+
   /* 渲染更多信息 */
   renderMoreInfo() {
     const {
@@ -1352,8 +1385,14 @@ export default class CompanyDetail extends PureComponent {
             groupName,
             businessScope,
             companyType,
+            regulatoryClassification,
+            ciCompanyType,
+            workCompanyType,
+            workPlaceOwn,
+            storePlaceOwn,
           },
         },
+        regulatoryClassificationList,
       },
       form: { getFieldDecorator },
       match: {
@@ -1451,6 +1490,66 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             {this.renderIndustryCategory()}
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.regulatoryClassification}>
+                {getFieldDecorator('regulatoryClassification', {
+                  initialValue: regulatoryClassification || undefined,
+                  rules: [{ required: true, message: '请选择监管分类' }],
+                })(
+                  <Select placeholder="请选择监管分类" allowClear>
+                    {regulatoryClassificationList.map(({ type_name: name, type_id: value }) => <Option key={value} value={value}>{name}</Option>)}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.ciCompanyType}>
+                {getFieldDecorator('ciCompanyType', {
+                  initialValue: ciCompanyType || undefined,
+                  rules: [{ required: true, message: '请选择化工企业类型' }],
+                })(
+                  <Select placeholder="请选择化工企业类型" onChange={this.handleChemComTypeChange} allowClear>
+                    {CHEM_COM_TYPES .map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.workCompanyType}>
+                {getFieldDecorator('workCompanyType', {
+                  initialValue: workCompanyType || undefined,
+                  rules: [{ required: true, message: '请选择生产经营活动类型' }],
+                })(
+                  <Select mode="multiple" placeholder="请选择生产经营活动类型" allowClear>
+                    {WORK_COM_TYPES.map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.workPlaceOwn}>
+                {getFieldDecorator('workPlaceOwn', {
+                  initialValue: workPlaceOwn || undefined,
+                  rules: [{ required: true, message: '请选择生产场所产权' }],
+                })(
+                  <Select placeholder="请选择生产场所产权" allowClear>
+                    {PLACE_OWN.map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.storePlaceOwn}>
+                {getFieldDecorator('storePlaceOwn', {
+                  initialValue: storePlaceOwn || undefined,
+                  rules: [{ required: true, message: '请选择存储场所产权' }],
+                })(
+                  <Select placeholder="请选择存储场所产权" allowClear>
+                    {PLACE_OWN.map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={16} md={24} sm={24}>
