@@ -8,7 +8,7 @@ import detailImg from '../imgs/chemical-detail.png';
 import locationImg from '../imgs/chemical-location.png';
 
 const Types = ['生产原料', '中间产品', '最终产品'];
-const No_DATA = '暂无数据';
+const NO_DATA = '暂无数据';
 const fields = [
   { label: '物料类型', value: 'type', render: val => Types[val - 1] },
   { label: '化学品名称', value: 'chineName' },
@@ -17,7 +17,7 @@ const fields = [
   {
     label: '危险性类别',
     value: 'riskCateg',
-    render: val => RISK_CATEGORIES[val] || No_DATA,
+    render: val => RISK_CATEGORIES[val] || NO_DATA,
   },
 ];
 

@@ -1,0 +1,115 @@
+.container {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  margin-right: -15px;
+  padding-right: 15px;
+  color: #fff;
+  font-size: 16px;
+  line-height: 28px;
+
+  .label {
+    color: #0ff;
+    display: inline-block;
+  }
+
+  .locIcon {
+    margin-right: 8px;
+    font-size: 18px;
+    color: #0ff;
+    display: inline-block;
+  }
+
+  .name {
+    position: relative;
+  }
+
+  .wrapper {
+    position: relative;
+    border-top: 1px solid #196092;
+    padding: 16px 10px;
+    padding-left: 25px;
+
+    &:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .more {
+      position: absolute;
+      right: 10px;
+      color: #0ff;
+      cursor: pointer;
+      top: 16px;
+    }
+  }
+
+  .targetWrapper {
+    padding-left: 10px;
+    margin-left: -10px;
+    border-left: 4px solid #0ff;
+  }
+
+  .updateTime {
+    color: #5B809A;
+    font-size: 0.875em;
+  }
+
+  .paramsWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &+.paramsWrapper {
+      margin-top: 15px;
+    }
+
+    .icon {
+      width: 70px;
+      height: 70px;
+      margin-right: 20px;
+    }
+
+    .params {
+      flex: 1;
+    }
+  }
+
+  .lineWrapper {
+    display: flex;
+    justify-content: space-between;
+
+    .line {
+      display: flex;
+      padding: 0.25em 0;
+      position: relative;
+      flex: none;
+
+      &:last-child {
+        .label {
+          color: #fff;
+        }
+      }
+
+      .label {
+        flex: none;
+        color: #0ff;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .value {
+        flex: 1;
+      }
+
+      .number {
+        display: inline-block;
+        width: 4em;
+        letter-spacing: 2em;
+        white-space: nowrap;
+        overflow: hidden;
+        vertical-align: top;
+      }
+    }
+  }
+}

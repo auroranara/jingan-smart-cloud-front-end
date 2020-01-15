@@ -8,11 +8,19 @@ const content =
 
 export default class Remind extends PureComponent {
   state = {};
-
+  timer = null;
   num = 0;
 
   componentDidMount() {
     this.scrollLeft();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { noticeList: prevNoticeList } = prevProps;
+    const { noticeList } = this.props;
+    if (JSON.stringify(prevNoticeList) !== JSON.stringify(noticeList)) {
+      this.scrollLeft();
+    }
   }
 
   componentWillUnmount() {
@@ -20,9 +28,11 @@ export default class Remind extends PureComponent {
   }
 
   scrollLeft = () => {
+    clearInterval(this.timer);
     const speed = 30;
     const containerWidth = this.containerNode.offsetWidth;
     const scrollWidth = this.scrollNode.scrollWidth;
+    console.log('scrollWidth', scrollWidth);
     this.scrollNode.style.marginLeft = `${containerWidth}px`;
     this.num = containerWidth;
     this.timer = setInterval(() => {
