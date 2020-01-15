@@ -225,19 +225,21 @@ export class GasCard extends MonitorCard {
     const imgUrl = this.generateFieldValue(data, fields.imgUrl);// 图片地址
     const monitorParams = this.generateFieldValue(data, fields.monitorParams) || []; // 监测的参数
     // const status = this.generateFieldValue(data, fields.status); // 状态 0 报警 1 正常
+    const { dataUpdateTime, paramDesc, paramUnit, realValue, status, condition, limitValueStr } = monitorParams && monitorParams.length ? monitorParams[0] : {};
     return (
       <div className={styles.cardContainer} ref={ref => { this.container = ref }}>
         {this.renderLocation({ location })}
         <div className={styles.content}>
           <div className={styles.gasImgContainer} style={{ background: `url(${imgUrl}) no-repeat center center / 100% 100%` }}>
-            {/* <div className={styles.text}>
-                LEL 24%
-              </div> */}
+            <div className={styles.text}>
+              <div>{paramDesc}</div>
+              <div>{realValue ? `${realValue}${paramUnit || ''}` : EMPTY_FILLING}</div>
+            </div>
           </div>
           <div className={styles.flexCenter}>
             <div className={styles.labelContainer}>
               {this.renderLabel({ label: '编号', value: code })}
-              {monitorParams.map(({ dataUpdateTime, paramDesc, paramUnit, realValue, status, condition, limitValueStr }, index) => (
+              {/* {monitorParams.map(({ dataUpdateTime, paramDesc, paramUnit, realValue, status, condition, limitValueStr }, index) => (
                 <Fragment key={index}>
                   {this.renderLabel({ label: '更新时间', value: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING })}
                   {this.renderLabel({
@@ -247,7 +249,14 @@ export class GasCard extends MonitorCard {
                     statusLabel: `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
                   })}
                 </Fragment>
-              ))}
+              ))} */}
+              {this.renderLabel({ label: '更新时间', value: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING })}
+              {this.renderLabel({
+                label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                value: realValue || EMPTY_FILLING,
+                status,
+                statusLabel: `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+              })}
             </div>
           </div>
         </div>

@@ -71,9 +71,9 @@ const StandardsAndMeasures = (props) => {
       <Collapse
         bordered={false}
         expandIconPosition="right"
-        defaultActiveKey={['1']}
+        defaultActiveKey={[0]}
       >
-        <Panel header={renderTitle('点位检查标准')} key={'1'} style={customPanelStyle}>
+        <Panel header={renderTitle('点位检查标准')} key={0} style={customPanelStyle}>
           <div className={styles.content}>
             <div className={styles.titleLine}>
               <span>{itemName}</span>
@@ -86,6 +86,7 @@ const StandardsAndMeasures = (props) => {
       <Collapse
         bordered={false}
         expandIconPosition="right"
+        defaultActiveKey={[standardsAndMeasuresList.length - 1]}
       >
         {standardsAndMeasuresList.map(({ title, detailInfo }, index) => title ? (
           <Panel header={renderTitle(title)} key={index} style={customPanelStyle}>

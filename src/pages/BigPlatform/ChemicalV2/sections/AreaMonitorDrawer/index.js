@@ -1,5 +1,5 @@
 import { PureComponent, Fragment } from 'react';
-import { Tabs } from 'antd';
+import { Tabs, Row, Col } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './index.less';
 import iconAlarm from '@/assets/icon-alarm.png';
@@ -15,7 +15,10 @@ import emptyImg from '@/assets/empty_data.png';
 
 const { TabPane } = Tabs;
 
-const storageUrl = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
+// 罐区基本信息图片
+const tankAreaUrl = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
+// 库区基本信息图片
+const reservoirUrl = 'http://data.jingan-china.cn/v2/chem/screen/reservoir.png';
 // const tabsOptions = [{ label: '储罐监测', key: '0' }, { label: '可燃气体', key: '1' }, { label: '有毒气体', key: '2' }];
 
 export default class AreaMonitorDrawer extends PureComponent {
@@ -50,7 +53,7 @@ export default class AreaMonitorDrawer extends PureComponent {
     warnStatus,
   }) => (
       <div className={styles.infoCard}>
-        <img src={storageUrl} alt="img" />
+        <img src={tankAreaUrl} alt="img" />
         <div className={styles.content}>
           <p>{areaName}</p>
           <p>
@@ -90,7 +93,7 @@ export default class AreaMonitorDrawer extends PureComponent {
   // 库区
   renderReservoirBaseInfo = ({ name, position, environment, area, warnStatus }) => (
     <div className={styles.infoCard}>
-      <img src={storageUrl} alt="img" />
+      <img src={reservoirUrl} alt="img" />
       <div className={styles.content}>
         <p>{name}</p>
         <p>
@@ -117,13 +120,13 @@ export default class AreaMonitorDrawer extends PureComponent {
 
   // 监测情况统计
   renderStatistics = tabs => (
-    <div className={styles.statistics}>
+    <Row className={styles.statistics} gutter={16}>
       {tabs.map(({ tab, warn, total }, index) => (
-        <div key={index}>
+        <Col key={index} span={8}>
           {tab}：<span>{warn}</span> / <span>{total}</span>
-        </div>
+        </Col>
       ))}
-    </div>
+    </Row>
   );
 
   // 渲染监测情况tabs
