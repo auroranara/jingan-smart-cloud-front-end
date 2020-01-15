@@ -26,10 +26,11 @@ const renderSubTitle = (title, tag) => (
 const renderTitle = (title) => (<span className={styles.title}>>>{title}</span>)
 
 // 展开后的信息
-const InfoItem = (value, index) => (
+const InfoItem = (value, index, level) => (
   <div key={index}>
     {index === 0 && <DashDivider />}
     <div>{value}</div>
+    {level ? (<div className={styles.grayText}>{level}</div>) : null}
     <DashDivider />
   </div>
 )
@@ -44,7 +45,7 @@ const InnerCollapse = (arr) => {
       {arr.map(({ object_title, object_id, business_type, flows }) => (
         <Panel header={renderSubTitle(object_title, hiddenDangerType[business_type].slice(0, 1))} key={object_id} extra={flows && flows.length || 0} style={customPanelStyle}>
           <div className={styles.textContent}>
-            {flows.map((item, index) => InfoItem(item.flow_name, index))}
+            {flows.map((item, index) => InfoItem(item.flow_name, index, item.danger_level))}
           </div>
         </Panel>
       ))}

@@ -41,6 +41,10 @@ class MonitorCard extends PureComponent {
 
   getPopupContainer = () => this.container
 
+  /*
+    status 0 绿色 1 红色；
+    statusLabel优先使用；
+  */
   renderLabel = ({ label, value, status = null, statusLabel, ...res }) => (
     <div {...res} className={styles.parameter}>
       <div className={styles.lightBlue}>{label}：</div>
@@ -92,13 +96,13 @@ class MonitorCard extends PureComponent {
     } = this.props;
     return (
       <Row className={styles.mb10}>
-        <Col className={styles.location} span={12}>
+        <Col className={styles.location} span={16}>
           <span className={styles.label}>监测位置：</span>
           <Tooltip getPopupContainer={this.getPopupContainer} autoAdjustOverflow title={location}>
             <span className={styles.value}>{location}</span>
           </Tooltip>
         </Col>
-        <Col span={12} className={styles.logoContainer}>
+        <Col span={8} className={styles.logoContainer}>
           {videoList && videoList.length > 0 && (
             <img onClick={() => onVideoClick(videoList)} className={styles.fl} src={cameraImg} alt="img" />
           )}
@@ -220,7 +224,7 @@ export class GasCard extends MonitorCard {
     const location = this.generateFieldValue(data, fields.location) || EMPTY_FILLING; // 位置
     const imgUrl = this.generateFieldValue(data, fields.imgUrl);// 图片地址
     const monitorParams = this.generateFieldValue(data, fields.monitorParams) || []; // 监测的参数
-    const status = this.generateFieldValue(data, fields.status); // 状态 0 报警 1 正常
+    // const status = this.generateFieldValue(data, fields.status); // 状态 0 报警 1 正常
     return (
       <div className={styles.cardContainer} ref={ref => { this.container = ref }}>
         {this.renderLocation({ location })}
@@ -233,10 +237,15 @@ export class GasCard extends MonitorCard {
           <div className={styles.flexCenter}>
             <div className={styles.labelContainer}>
               {this.renderLabel({ label: '编号', value: code })}
-              {monitorParams.map(({ dataUpdateTime, paramDesc, paramUnit, realValue }, index) => (
+              {monitorParams.map(({ dataUpdateTime, paramDesc, paramUnit, realValue, status, condition, limitValueStr }, index) => (
                 <Fragment key={index}>
                   {this.renderLabel({ label: '更新时间', value: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING })}
-                  {this.renderLabel({ label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`, value: realValue || EMPTY_FILLING, status })}
+                  {this.renderLabel({
+                    label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                    value: realValue || EMPTY_FILLING,
+                    status,
+                    statusLabel: `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                  })}
                 </Fragment>
               ))}
             </div>

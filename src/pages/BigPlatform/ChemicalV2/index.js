@@ -72,7 +72,6 @@ const GAS_FIELDS = {
   location: 'areaLocation', // 位置
   imgUrl: 'equipmentTypeLogoWebUrl', // 图片地址
   monitorParams: 'allMonitorParam', // 实时监测的数据
-  status: ({ warnStatus }) => (warnStatus === -1 ? 1 : warnStatus), // 状态
 };
 const TANK_FIELDS = {
   name: 'tankName', // 储罐名称
@@ -262,11 +261,11 @@ export default class Chemical extends PureComponent {
     });
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.init();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.ws.close();
     notification.destroy();
   }
@@ -398,7 +397,7 @@ export default class Chemical extends PureComponent {
     dispatch({
       type: 'newUnitFireControl/fetchScreenMessage',
       payload: { companyId },
-      success: res => {},
+      success: res => { },
     });
   };
 
@@ -459,9 +458,9 @@ export default class Chemical extends PureComponent {
               >{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
                 ['预警', '告警'].includes(typeName)
                   ? `，超过${typeName}值${Math.round(Math.abs(monitorValue - limitValue) * 100) /
-                      100}${paramUnit || ''}`
+                  100}${paramUnit || ''}`
                   : ''
-              }`}</div>
+                }`}</div>
             )}
           {/* {![-2, -3].includes(+statusType) && (
             <div
@@ -1053,7 +1052,7 @@ export default class Chemical extends PureComponent {
   /**
    * 渲染
    */
-  render() {
+  render () {
     const {
       unitSafety: { points },
       bigPlatform: { hiddenDangerList },
@@ -1195,16 +1194,16 @@ export default class Chemical extends PureComponent {
                     model={newUnitFireControl}
                   />
                 ) : (
-                  <div className={styles.msgContainer}>
-                    {/* <Badge count={3}> */}
-                    <Icon
-                      type="message"
-                      className={styles.msgIcon}
-                      onClick={() => this.setState({ msgVisible: true })}
-                    />
-                    {/* </Badge> */}
-                  </div>
-                )}
+                    <div className={styles.msgContainer}>
+                      {/* <Badge count={3}> */}
+                      <Icon
+                        type="message"
+                        className={styles.msgIcon}
+                        onClick={() => this.setState({ msgVisible: true })}
+                      />
+                      {/* </Badge> */}
+                    </div>
+                  )}
 
                 <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
               </div>
@@ -1297,8 +1296,8 @@ export default class Chemical extends PureComponent {
           monitorData={monitorData}
           handleClickMonitorDetail={this.handleClickMonitorDetail}
           setDrawerVisible={this.setDrawerVisible}
-          // handleGasOpen={this.handleGasOpen}
-          // handlePoisonOpen={this.handlePoisonOpen}
+        // handleGasOpen={this.handleGasOpen}
+        // handlePoisonOpen={this.handlePoisonOpen}
         />
 
         {/* <StorageDrawer
@@ -1439,7 +1438,7 @@ export default class Chemical extends PureComponent {
             { tab: '储罐监测', dataSourse: tanksUnderArea, fields: TANK_FIELDS },
             { tab: '可燃气体', dataSourse: flameGasList, fields: GAS_FIELDS },
             { tab: '有毒气体', dataSourse: toxicGasList, fields: GAS_FIELDS },
-          ]}
+          ].filter(item => item.dataSourse && item.dataSourse.length > 0)}
           onClose={() => {
             this.setState({ tankAreaDrawerVisible: false });
           }}
@@ -1455,7 +1454,7 @@ export default class Chemical extends PureComponent {
             { tab: '库房监测', dataSourse: storeroomList, fields: Treasury_FIELDS },
             { tab: '可燃气体', dataSourse: flameGasList, fields: GAS_FIELDS },
             { tab: '有毒气体', dataSourse: toxicGasList, fields: GAS_FIELDS },
-          ]}
+          ].filter(item => item.dataSourse && item.dataSourse.length > 0)}
           onClose={() => {
             this.setState({ storehouseDrawerVisible: false });
           }}

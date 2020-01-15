@@ -24,9 +24,15 @@ export default class AreaMonitorDrawer extends PureComponent {
     }
   }
 
+  componentDidUpdate (prevProps) {
+    if (prevProps.visible !== this.props.visible) {
+      this.setState({ activeKey: '0' });
+    }
+  }
+
   // 标题
-  renderTitle = (title) => (
-    <div className={styles.title}>{title}</div>
+  renderTitle = ({ title, ...resProps }) => (
+    <div {...resProps} className={styles.title}>{title}</div>
   )
 
   // 罐区基本信息卡片
@@ -146,12 +152,16 @@ export default class AreaMonitorDrawer extends PureComponent {
 
     return (
       <div className={styles.areaMonitorDrawer}>
-        {this.renderTitle('基本信息')}
+        {this.renderTitle({ title: '基本信息' })}
         {/罐区/.test(title) && this.renderTankBaseInfo(data)}
         {/库区/.test(title) && this.renderReservoirBaseInfo(data)}
-        {this.renderTitle('监测情况')}
-        {this.renderStatistics(statisticsProps)}
-        {this.renderMonitorTabs(tabs, onVideoClick)}
+        {tabs && tabs.length ? (
+          <Fragment>
+            {this.renderTitle({ title: '监测情况', style: { marginTop: '10px' } })}
+            {this.renderStatistics(statisticsProps)}
+            {this.renderMonitorTabs(tabs, onVideoClick)}
+          </Fragment>
+        ) : null}
       </div>
     )
   }
