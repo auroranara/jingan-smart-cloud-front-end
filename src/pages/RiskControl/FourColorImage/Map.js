@@ -26,7 +26,6 @@ let map;
 let points = [];
 let naviLines = [];
 
-let buildingId = [];
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
@@ -125,12 +124,11 @@ export default class Map extends React.Component {
           const { coordinateList } = item;
           const cordList = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const models = map.getDatasByAlias(1, 'model');
-          return (
-            (buildingId = models
-              .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
-              .map(item => ({ buildingId: item.ID, points: item.mapCoord }))),
-            this.props.getBuilding && this.props.getBuilding(buildingId)
-          );
+          const arrayList = models
+            .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
+            .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
+          this.props.getBuilding && this.props.getBuilding(arrayList, 0);
+          return null;
         });
     });
   };
@@ -180,14 +178,14 @@ export default class Map extends React.Component {
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
       .map(model => model.setColor(color));
     // 获取当前选中区域所有ID
-    buildingId = models
+    const arrayList = models
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
       .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
-    this.props.getBuilding && this.props.getBuilding(buildingId);
+    this.props.getBuilding && this.props.getBuilding(arrayList, 1);
   }
 
   // 切换tag
-  handleModelEdit = (points, areaId, point, selected) => {
+  handleModelEdit = (points, point, selected) => {
     const models = map.getDatasByAlias(1, 'model');
     const orginList = models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points));
     if (!!selected && this.polygonMarkers[0].contain({ ...point, z: 1 })) {
@@ -203,7 +201,6 @@ export default class Map extends React.Component {
             return model.setColor(COLORS[zoneLevel]);
           })
         : model.setColor(COLOR.blue);
-
       return null;
     }
   };
@@ -232,7 +229,6 @@ export default class Map extends React.Component {
     const models = map.getDatasByAlias(1, 'model');
     models.map(model => model.setColorToDefault());
     map.clearLineMark();
-    buildingId = [];
   };
 
   // 高亮对应区域颜色
@@ -242,7 +238,7 @@ export default class Map extends React.Component {
       const { coordinateList } = item;
       const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
       this.setModelColor(points, selectedColor);
-      this.drawPolygon(points, selectedColor);
+      this.drawPolygon(points, selectedColor, 0);
       return null;
     });
   };
@@ -253,7 +249,7 @@ export default class Map extends React.Component {
     pointList.filter(item => item.id === id).map(item => {
       const { coordinateList, zoneLevel } = item;
       const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-      this.drawPolygon(points, COLORS[zoneLevel]);
+      this.drawPolygon(points, COLORS[zoneLevel], 0);
       this.setModelColor(points, COLORS[zoneLevel]);
       return null;
     });

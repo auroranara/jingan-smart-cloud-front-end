@@ -26,6 +26,7 @@ const reservoirImg = 'http://data.jingan-china.cn/v2/chem/screen/reservoir.png';
 const warehouseImg = 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png';
 const gasometerImg = 'http://data.jingan-china.cn/v2/chem/screen/gasometer.png';
 const productDeviceImg = 'http://data.jingan-china.cn/v2/chem/screen/productDevice.png';
+const pipelineImg = 'http://data.jingan-china.cn/v2/chem/screen/pipeline.png';
 
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
@@ -1782,6 +1783,31 @@ export const MonitorConfig = {
       { label: '区域位置', value: 'regionalLocation' },
       { label: '设计柜容（m³）', value: 'designCapacity' },
       { label: '设计压力（KPa）', value: 'designKpa' },
+    ],
+  },
+  '314': {
+    // 工业管道
+    title: '工业管道监测',
+    icon: (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${pipelineImg}) center center / 100% auto no-repeat` }}
+      />
+    ),
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      {
+        label: '是否危化品管道',
+        value: 'dangerPipeline',
+        render: val => (+val === 1 ? '是' : '否'),
+      },
+      { label: '是否压力管道', value: 'pressure', render: val => (+val === 1 ? '是' : '否') },
+      { label: '设计压力（KPa）', value: 'designPressure' },
     ],
   },
 };

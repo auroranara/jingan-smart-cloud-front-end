@@ -59,7 +59,7 @@ export default {
     detail: '/hidden-danger-control/hidden-danger-report/detail/',
   },
   hiddenDangerCountReport: {
-    list: '/hidden-danger-control/hidden-danger-count-report/list',
+    list: '/control-measures-follow-up/hidden-danger-count-report/list',
   },
   examinationPaper: {
     list: '/training/examination-paper/list',

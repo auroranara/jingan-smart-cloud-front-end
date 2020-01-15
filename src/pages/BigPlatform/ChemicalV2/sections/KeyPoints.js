@@ -22,59 +22,6 @@ const LABELS = ['监测对象', '两重点一重大'];
 const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 
 // iot/major-hazard/index
-const monitorData = [
-  {
-    icon: iconStorage,
-    label: '储罐监测',
-    value: 1,
-    total: 11,
-    url: 'iot/major-hazard/tank/real-time',
-    type: 2,
-  },
-  {
-    icon: iconHigh,
-    label: '可燃气体',
-    value: 1,
-    total: 1,
-    url: 'gas-iot/monitor-report',
-    type: 6,
-  },
-  {
-    icon: iconPoison,
-    label: '有毒气体',
-    value: 1,
-    total: 1,
-    url: 'gas-iot/monitor-report',
-    type: 7,
-  },
-  {
-    icon: iconStorageArea,
-    label: '罐区监测',
-    value: 1,
-    total: 1,
-    url: 'iot/major-hazard/tank-area/real-time',
-    type: 0,
-  },
-  {
-    icon: iconStoreArea,
-    label: '库区监测',
-    value: 1,
-    total: 1,
-    url: 'iot/major-hazard/storage-area/real-time',
-    type: 1,
-  },
-  { icon: iconProduce, label: '生产装置监测', value: 1, total: 3, type: 3 },
-  {
-    icon: iconStorehouse,
-    label: '库房监测',
-    value: 1,
-    total: 2,
-    url: 'iot/major-hazard/storage-house/real-time',
-    type: 4,
-  },
-  { icon: iconGas, label: '气柜监测', value: 1, total: 2, type: 5 },
-  // { icon: iconHigh, label: '高危工艺监测', value: 1, total: 4 },
-];
 const keyPointsData1 = [
   { icon: iconDangerSource, label: '重大危险源', value: 2 },
   { icon: iconChemical, label: '危险化学品', value: 2 },
@@ -94,41 +41,15 @@ export default class KeyPoints extends PureComponent {
   };
 
   handleClickMonitor = type => {
-    const {
-      setDrawerVisible,
-      handleGasOpen,
-      handlePoisonOpen,
-      handleClickTankMonitor,
-      handleClickMonitor,
-    } = this.props;
+    const { handleClickMonitor } = this.props;
     handleClickMonitor(type);
-    // switch (type) {
-    //   case "302":
-    //     // 储罐
-    //     // handleClickTankMonitor();
-    //     break;
-
-    //   default:
-    //     break;
-    // }
-    // const { setDrawerVisible, handleGasOpen, handlePoisonOpen } = this.props;
-    // if (type || type === 0) {
-    //   if (type === 2 || type === 6 || type === 7) {
-    //     type === 2 && setDrawerVisible('storage');
-    //     type === 6 && handleGasOpen();
-    //     type === 7 && handlePoisonOpen();
-    //     return;
-    //   }
-    //   setDrawerVisible('monitor', { monitorType: type });
-    // }
-    // window.open(`${window.publicPath}#/${url}`, `_blank`);
   };
 
   handleClickKey = index => {
-    const { setDrawerVisible, handleClickDangerSource } = this.props;
-    const drawers = ['dangerSource', 'chemical', 'technology'];
-    // setDrawerVisible(drawers[index]);
+    const { handleShowProcessList, handleClickDangerSource, handleShowChemicalList } = this.props;
     index === 0 && handleClickDangerSource();
+    index === 1 && handleShowChemicalList();
+    index === 2 && handleShowProcessList();
   };
 
   render() {

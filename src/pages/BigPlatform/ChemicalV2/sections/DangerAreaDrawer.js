@@ -273,7 +273,7 @@ export default class KeyPoints extends PureComponent {
                       style={{ cursor: cardLists[index].length > 0 ? 'pointer' : 'default' }}
                     >
                       {label}
-                      <span className={styles.tagValue}>({cardLists[index].length})</span>
+                      {/* <span className={styles.tagValue}>({cardLists[index].length})</span> */}
                       {cardLists[index].length > 0 && (
                         <Icon type="right" className={styles.rightIcon} />
                       )}

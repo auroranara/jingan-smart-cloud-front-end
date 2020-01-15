@@ -507,7 +507,7 @@ export default class SpecialEquipmentList extends PureComponent {
         width: 120,
         align: 'center',
         render: (val, text) => (
-          <Link to={`/facility-management/special-equipment/inspection-report/${text.id}`}>
+          <Link to={`/facility-management/special-equipment/inspection-report/${text.id}`} target="_blank">
             查看详情
           </Link>
         ),

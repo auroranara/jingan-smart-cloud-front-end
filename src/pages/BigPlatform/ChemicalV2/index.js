@@ -143,6 +143,8 @@ const SocketOptions = {
     device,
     storehouse,
     baseInfo,
+    materials,
+    majorHazardInfo,
   }) => ({
     unitSafety,
     bigPlatform,
@@ -153,6 +155,8 @@ const SocketOptions = {
     device,
     storehouse,
     baseInfo,
+    materials,
+    majorHazardInfo,
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
     riskPointLoading: loading.effects['unitSafety/fetchPoints'],
   })
@@ -212,6 +216,7 @@ export default class Chemical extends PureComponent {
       flameGasList: [],
       // 有毒气体列表
       toxicGasList: [],
+      chemicalDetail: {},
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -944,25 +949,26 @@ export default class Chemical extends PureComponent {
         // 库区
         this.handleViewReservoirAreaDetail(detail);
         break;
-      case '304':
-        // 库房
-        this.handleShowMonitorDetail(detail);
-        break;
+      // case '304':
+      //   // 库房
+      //   this.handleShowMonitorDetail(detail);
+      //   break;
       case '305':
         // 高危工艺
         break;
       case '306':
         // 特种设备
         break;
-      case '311':
-        // 生产装置
-        this.handleShowMonitorDetail(detail);
-        break;
-      case '312':
-        // 气柜
-        this.handleShowMonitorDetail(detail);
-        break;
+      // case '311':
+      //   // 生产装置
+      //   this.handleShowMonitorDetail(detail);
+      //   break;
+      // case '312':
+      //   // 气柜
+      //   this.handleShowMonitorDetail(detail);
+      //   break;
       default:
+        this.handleShowMonitorDetail(detail);
         return null;
     }
   };
@@ -1049,6 +1055,51 @@ export default class Chemical extends PureComponent {
     this.setDrawerVisible('dangerSource');
   };
 
+  // 重点监管危险化学品列表
+  handleShowChemicalList = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'materials/fetchMaterialsList',
+      payload: {
+        pageNum: 1,
+        pageSize: 0,
+        superviseChemicals: 1,
+        companyId,
+      },
+    });
+    this.setDrawerVisible('chemical');
+  };
+
+  // 重点监管危险化学品列表
+  handleShowProcessList = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'majorHazardInfo/fetchHighRiskProcessList',
+      payload: {
+        pageNum: 1,
+        pageSize: 0,
+        iskeySupervisionProcess: 1,
+        companyId,
+      },
+    });
+    this.setDrawerVisible('technology');
+  };
+
+  handleShowChemicalDetail = detail => {
+    this.setState({ chemicalDetail: detail });
+    this.setDrawerVisible('chemicalDetail');
+  }
+
   /**
    * 渲染
    */
@@ -1080,6 +1131,10 @@ export default class Chemical extends PureComponent {
       },
       storehouse: { list: storeroomList },
       riskPointLoading,
+      materials: { list: materialsList },
+      majorHazardInfo: {
+        highRiskProcess: { list: highRiskProcessList = [] },
+      },
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -1120,6 +1175,7 @@ export default class Chemical extends PureComponent {
       flameGasList,
       toxicGasList,
       storehouseDrawerVisible,
+      chemicalDetail,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -1169,6 +1225,8 @@ export default class Chemical extends PureComponent {
                   handleClickTankMonitor={this.handleClickTankMonitor}
                   handleClickMonitor={this.handleClickMonitor}
                   handleClickDangerSource={this.handleClickDangerSource}
+                  handleShowChemicalList={this.handleShowChemicalList}
+                  handleShowProcessList={this.handleShowProcessList}
                 />
               </div>
             </Col>
@@ -1364,6 +1422,8 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('chemical');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          materialsList={materialsList}
+          handleShowChemicalDetail={this.handleShowChemicalDetail}
         />
 
         <ChemicalDetailDrawer
@@ -1372,6 +1432,7 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('chemicalDetail');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          chemicalDetail={chemicalDetail}
         />
 
         <TechnologyDrawer
@@ -1380,6 +1441,7 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('technology');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          highRiskProcessList={highRiskProcessList}
         />
 
         <StorageDrawer
