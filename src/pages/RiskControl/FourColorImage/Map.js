@@ -186,12 +186,12 @@ export default class Map extends React.Component {
   handleModelEdit = (points, point, selected) => {
     const models = map.getDatasByAlias(1, 'model');
     const orginList = models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points));
-    if (!!selected && this.polygonMarkers[0].contain({ ...point, z: 1 })) {
+    if (!!selected) {
       const model = orginList.find(item => item.mapCoord === point);
       model.setColorToDefault();
       return null;
     }
-    if (!selected && this.polygonMarkers[0].contain({ ...point, z: 1 })) {
+    if (!selected) {
       const model = orginList.find(item => item.mapCoord === point);
       this.props.pointList.length > 0
         ? this.props.pointList.map(item => {

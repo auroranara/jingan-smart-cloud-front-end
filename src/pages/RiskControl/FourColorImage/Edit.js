@@ -354,7 +354,6 @@ export default class TableList extends React.Component {
     } = this.props;
     const { isDrawing, detailList, pointList, buildingId, modelIds } = this.state;
     const editTitle = id ? '编辑' : '新增';
-    console.log('buildingId', buildingId);
     const {
       zoneCode,
       zoneName,
