@@ -23,8 +23,8 @@ export default class Section extends PureComponent {
       },
     } = this.props;
 
-    const { mapIp, buildId, secret } = companyBasicInfo || {};
-    const src = getSrc('regionalSecurity', mapIp, buildId, secret);
+    const { mapIp, mapBuildId, mapSecret } = companyBasicInfo || {};
+    const src = getSrc('regionalSecurity', mapIp, mapBuildId, mapSecret);
     return (
       <PageHeaderLayout
         title={TITLE}

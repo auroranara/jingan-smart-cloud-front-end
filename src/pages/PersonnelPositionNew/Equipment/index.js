@@ -23,8 +23,8 @@ export default class Equipment extends PureComponent {
       },
     } = this.props;
 
-    const { mapIp, buildId, secret } = companyBasicInfo || {};
-    const src = getSrc('deviceManagement', mapIp, buildId, secret);
+    const { mapIp, mapBuildId, mapSecret } = companyBasicInfo || {};
+    const src = getSrc('deviceManagement', mapIp, mapBuildId, mapSecret);
     return (
       <PageHeaderLayout
         title={TITLE}

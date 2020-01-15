@@ -23,8 +23,8 @@ export default class Monitor extends PureComponent {
       },
     } = this.props;
 
-    const { mapIp, buildId, secret } = companyBasicInfo || {};
-    const src = getSrc('location', mapIp, buildId, secret);
+    const { mapIp, mapBuildId, mapSecret } = companyBasicInfo || {};
+    const src = getSrc('location', mapIp, mapBuildId, mapSecret);
     return (
       <PageHeaderLayout
         title={TITLE}

@@ -23,8 +23,8 @@ export default class Alarm extends PureComponent {
       },
     } = this.props;
 
-    const { mapIp, buildId, secret } = companyBasicInfo || {};
-    const src = getSrc('alarms', mapIp, buildId, secret);
+    const { mapIp, mapBuildId, mapSecret } = companyBasicInfo || {};
+    const src = getSrc('alarms', mapIp, mapBuildId, mapSecret);
     return (
       <PageHeaderLayout
         title={TITLE}

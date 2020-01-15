@@ -23,8 +23,8 @@ export default class Report extends PureComponent {
       },
     } = this.props;
 
-    const { mapIp, buildId, secret } = companyBasicInfo || {};
-    const src = getSrc('statistics', mapIp, buildId, secret);
+    const { mapIp, mapBuildId, mapSecret } = companyBasicInfo || {};
+    const src = getSrc('statistics', mapIp, mapBuildId, mapSecret);
     return (
       <PageHeaderLayout
         title={TITLE}

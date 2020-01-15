@@ -4,5 +4,5 @@ const SECRET = '8691844ea20d4ceeaa3d000ebc3a5ba1';
 const APP_ID = 'client';
 
 export function getSrc(type, ip, buildId, secret, appId) {
-  return `http://${ip || IP}/js/tunnel.html?to=${type}&buildId=${buildId || BUILD_ID}&appid=${appId || APP_ID}&secret=${secret || SECRET}`;
+  return `http://${ip}/js/tunnel.html?to=${type}&buildId=${buildId || BUILD_ID}&appid=${appId || APP_ID}&secret=${secret}&wh=false`;
 }
