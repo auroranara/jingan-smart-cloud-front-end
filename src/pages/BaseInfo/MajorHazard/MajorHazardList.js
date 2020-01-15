@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Button, Input, Select, Table, Divider, Popconfirm, message } from 'antd';
 import { Link } from 'dva/router';
+import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from '@/components/Ellipsis';
 import ToolBar from '@/components/ToolBar';
@@ -177,6 +178,7 @@ export default class MajorHazardList extends PureComponent {
               title: '单位名称',
               dataIndex: 'companyName',
               align: 'center',
+              width: 300,
             },
           ]
         : []),
@@ -186,9 +188,9 @@ export default class MajorHazardList extends PureComponent {
         align: 'center',
         width: 300,
         render: (val, text) => {
-          const { code, name, dangerLevel } = text;
+          const { code, name, dangerLevel, recordDate } = text;
           return (
-            <div>
+            <div style={{ textAlign: 'left' }}>
               <p>
                 统一编码:
                 {code}
@@ -201,6 +203,10 @@ export default class MajorHazardList extends PureComponent {
                 重大危险源等级:
                 {dangerList[dangerLevel]}
               </p>
+              <p>
+                备案日期:
+                {recordDate ? moment(+recordDate).format('YYYY-MM-DD') : ''}
+              </p>
             </div>
           );
         },
@@ -209,12 +215,69 @@ export default class MajorHazardList extends PureComponent {
         title: '重大危险源描述',
         dataIndex: 'desc',
         align: 'center',
-        width: 200,
+        width: 220,
         render: val => (
           <Ellipsis tooltip length={50} style={{ overflow: 'visible' }}>
             {val}
           </Ellipsis>
         ),
+      },
+      {
+        title: '重大危险源范围',
+        dataIndex: 'area',
+        align: 'center',
+        width: 300,
+        render: (val, row) => {
+          const {
+            dangerSourceList: {
+              tankArea,
+              wareHouseArea,
+              gasHolderManage,
+              productDevice,
+              industryPipeline,
+            } = {},
+          } = row;
+          return (
+            <div style={{ textAlign: 'left' }}>
+              {tankArea.length > 0 && (
+                <p>
+                  储罐区:
+                  {tankArea.map(item => item.areaName).join(',')}
+                </p>
+              )}
+              {wareHouseArea.length > 0 && (
+                <p>
+                  库区:
+                  {wareHouseArea.map(item => item.name).join(',')}
+                </p>
+              )}
+              {productDevice.length > 0 && (
+                <p>
+                  生产装置:
+                  {productDevice.map(item => item.name).join(',')}
+                </p>
+              )}
+              {gasHolderManage.length > 0 && (
+                <p>
+                  气柜:
+                  {gasHolderManage.map(item => item.gasholderName).join(',')}
+                </p>
+              )}
+              {industryPipeline.length > 0 && (
+                <p>
+                  工业管道:
+                  {industryPipeline.map(item => item.name).join(',')}
+                </p>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        title: '责任人',
+        dataIndex: 'dutyPerson',
+        align: 'center',
+        width: 150,
       },
       {
         title: '区域位置',
@@ -227,6 +290,7 @@ export default class MajorHazardList extends PureComponent {
         key: '操作',
         align: 'center',
         width: 150,
+        fixed: 'right',
         render: (val, row) => (
           <Fragment>
             {editCode ? (
@@ -254,7 +318,7 @@ export default class MajorHazardList extends PureComponent {
           columns={columns}
           dataSource={list}
           bordered
-          scroll={{ x: 1300 }}
+          scroll={{ x: 'max-content' }}
           pagination={{
             current: pageNum,
             pageSize,

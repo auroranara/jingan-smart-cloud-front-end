@@ -341,7 +341,7 @@ export default class ReservoirRegionList extends PureComponent {
         width: 200,
       },
       {
-        title: '重大危险源',
+        title: '构成重大危险源',
         dataIndex: 'dangerSource',
         align: 'center',
         width: 200,
@@ -386,7 +386,7 @@ export default class ReservoirRegionList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 200,
+        width: 240,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
@@ -463,9 +463,9 @@ export default class ReservoirRegionList extends PureComponent {
     const unbindAuthority = hasAuthority(unbindCode, permissionCodes);
 
     // 绑定传感器总数
-    const monitorEquipmentCount = list.reduce(function(prev, cur) {
-      return cur.monitorEquipmentCount + prev;
-    }, 0);
+    // const monitorEquipmentCount = list.reduce(function(prev, cur) {
+    //   return cur.monitorEquipmentCount + prev;
+    // }, 0);
 
     const fields = [
       {
@@ -493,12 +493,25 @@ export default class ReservoirRegionList extends PureComponent {
       {
         id: 'environment',
         label: '所处环境功能区',
-        span: { md: 16, sm: 16, xs: 24 },
         render: () => (
           <Select allowClear placeholder="请选择所处环境功能区">
             {envirTypeList.map(({ key, value }) => (
               <Option key={key} value={key}>
                 {value}
+              </Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        id: 'dangerSource',
+        label: '构成重大危险源',
+        span: spanStyle,
+        render: () => (
+          <Select allowClear placeholder="请选择构成重大危险源">
+            {['否', '是'].map((item, index) => (
+              <Option key={index} value={index}>
+                {item}
               </Option>
             ))}
           </Select>
@@ -555,10 +568,10 @@ export default class ReservoirRegionList extends PureComponent {
               库区总数：
               {total}
             </span>
-            <span style={{ paddingLeft: 20 }}>
+            {/* <span style={{ paddingLeft: 20 }}>
               已绑监测设备数：
               {monitorEquipmentCount}
-            </span>
+            </span> */}
           </div>
         }
       >

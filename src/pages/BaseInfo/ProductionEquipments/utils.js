@@ -135,15 +135,14 @@ export const TABLE_COLUMNS = [
             化工工艺:
             {dangerTechnologyList.map(item => item.processName).join(',')}
           </p>
-          {unitChemiclaNumDetail.map((item, index) => {
-            const { chineName, unitChemiclaNum } = item;
-            return (
-              <p key={index}>
-                危化品:
-                {chineName} {unitChemiclaNum}
-              </p>
-            );
-          })}
+          <p>
+            危化品:
+            {unitChemiclaNumDetail.map(item => item.chineName).join(',')}
+          </p>
+          <p>
+            危化品数量:
+            {unitChemiclaNumDetail.map(item => item.unitChemiclaNum).join(',')}
+          </p>
         </div>
       );
     },
@@ -197,13 +196,6 @@ export const TABLE_COLUMNS = [
     key: 'location',
     align: 'center',
     width: 200,
-  },
-  {
-    title: '已绑定传感器',
-    dataIndex: 'bindSensor',
-    key: 'bindSensor',
-    align: 'center',
-    width: 150,
   },
 ];
 

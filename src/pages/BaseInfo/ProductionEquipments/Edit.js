@@ -98,7 +98,11 @@ export default class Edit extends PureComponent {
 
   // 选择企业
   onChangeComapny = item => {
-    this.setState({ selectedCompany: item });
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ selectedCompany: item, selectedMaterials: [] });
+    setFieldsValue({ dangerTechnologyName: '', unitChemicla: '' });
   };
 
   // 打开高危工艺弹框
@@ -368,7 +372,6 @@ export default class Edit extends PureComponent {
               </Radio.Group>
             )}
           </FormItem>
-
           <FormItem label="所属危险化工工艺" {...formItemLayout}>
             {getFieldDecorator('dangerTechnologyName', {
               initialValue: dangerTechnologyList

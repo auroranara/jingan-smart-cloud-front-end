@@ -525,9 +525,7 @@ export default class StorehouseHandler extends PureComponent {
             })(<Input placeholder="请输入库房名称" {...itemStyles} />)}
           </FormItem>
           <FormItem label="库区名称" {...formItemLayout}>
-            {getFieldDecorator('areaId', {
-              rules: [{ required: true, message: '请选择库区名称' }],
-            })(
+            {getFieldDecorator('areaId', {})(
               <Fragment>
                 <Input
                   {...itemStyles}
@@ -564,16 +562,6 @@ export default class StorehouseHandler extends PureComponent {
               />
             )}
           </FormItem>
-          <FormItem label="有无防火墙" {...formItemLayout}>
-            {getFieldDecorator('firewall', {
-              rules: [{ required: true, message: '请选择有无防火墙' }],
-            })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="0">无</Radio>
-                <Radio value="1">有</Radio>
-              </RadioGroup>
-            )}
-          </FormItem>
           <FormItem label="库房形式" {...formItemLayout}>
             {getFieldDecorator('style', {
               rules: [{ required: true, message: '请选择库房形式' }],
@@ -585,17 +573,15 @@ export default class StorehouseHandler extends PureComponent {
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="火灾危险性等级" {...formItemLayout}>
-            {getFieldDecorator('dangerLevel', {
-              rules: [{ required: true, message: '请选择火灾危险性等级' }],
+          <FormItem label="投产日期" {...formItemLayout}>
+            {getFieldDecorator('produceDate', {
+              rules: [{ required: true, message: '请选择投产日期' }],
             })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="1">甲</Radio>
-                <Radio value="2">乙</Radio>
-                <Radio value="3">丙</Radio>
-                <Radio value="4">丁</Radio>
-                <Radio value="5">戊</Radio>
-              </RadioGroup>
+              <DatePicker
+                placeholder="请选择投产日期"
+                getCalendarContainer={getRootChild}
+                {...itemStyles}
+              />
             )}
           </FormItem>
           <FormItem label="贮存物质名称" {...formItemLayout}>
@@ -642,17 +628,30 @@ export default class StorehouseHandler extends PureComponent {
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="投产日期" {...formItemLayout}>
-            {getFieldDecorator('produceDate', {
-              rules: [{ required: true, message: '请选择投产日期' }],
+          <FormItem label="火灾危险性等级" {...formItemLayout}>
+            {getFieldDecorator('dangerLevel', {
+              rules: [{ required: true, message: '请选择火灾危险性等级' }],
             })(
-              <DatePicker
-                placeholder="请选择投产日期"
-                getCalendarContainer={getRootChild}
-                {...itemStyles}
-              />
+              <RadioGroup {...itemStyles}>
+                <Radio value="1">甲</Radio>
+                <Radio value="2">乙</Radio>
+                <Radio value="3">丙</Radio>
+                <Radio value="4">丁</Radio>
+                <Radio value="5">戊</Radio>
+              </RadioGroup>
             )}
           </FormItem>
+          <FormItem label="有无防火墙" {...formItemLayout}>
+            {getFieldDecorator('firewall', {
+              rules: [{ required: true, message: '请选择有无防火墙' }],
+            })(
+              <RadioGroup {...itemStyles}>
+                <Radio value="0">无</Radio>
+                <Radio value="1">有</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+
           <FormItem label="是否设置自动喷淋" {...formItemLayout}>
             {getFieldDecorator('spary', {
               rules: [{ required: true, message: '请选择是否设置自动喷淋' }],
@@ -709,6 +708,9 @@ export default class StorehouseHandler extends PureComponent {
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
+          </Button>
+          <Button style={{ marginLeft: '10px' }} href={`#${listUrl}`}>
+            返回
           </Button>
         </Row>
       </Card>

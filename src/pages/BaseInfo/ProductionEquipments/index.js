@@ -249,10 +249,28 @@ export default class TableList extends PureComponent {
 
     const extraColumns = [
       {
+        title: '已绑定传感器',
+        dataIndex: 'monitorEquipmentCount',
+        key: 'monitorEquipmentCount',
+        align: 'center',
+        width: 150,
+        render: (val, row) => {
+          return (
+            <span
+              onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+            >
+              {val}
+            </span>
+          );
+        },
+      },
+      {
         title: '操作',
         dataIndex: 'id',
         key: 'id',
         align: 'center',
+        fixed: 'right',
         width: 250,
         render: (val, row) => (
           <Fragment>
@@ -315,7 +333,7 @@ export default class TableList extends PureComponent {
           <div>
             <span>单位数量: {msg}</span>
             <span style={{ paddingLeft: 20 }}>装置总数: {total}</span>
-            <span style={{ paddingLeft: 10 }}>已绑定传感器数: {''}</span>
+            {/* <span style={{ paddingLeft: 10 }}>已绑定传感器数: {''}</span> */}
           </div>
         }
       >

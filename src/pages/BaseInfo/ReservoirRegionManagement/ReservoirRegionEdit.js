@@ -39,6 +39,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     dangerVisible: false,
     editCompanyId: '',
     dangerSourceUnitId: [],
+    wareHouseIds: '',
   };
 
   // 挂载后
@@ -99,7 +100,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           submitting: true,
         });
 
-        const { editCompanyId } = this.state;
+        const { editCompanyId, wareHouseIds } = this.state;
 
         const {
           number,
@@ -121,6 +122,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           safetyDistance,
           deviceDistance,
           area,
+          wareHouseIds,
           spaceBetween,
         };
 
@@ -221,7 +223,12 @@ export default class ReservoirRegionEdit extends PureComponent {
     const { editCompanyId } = this.state;
     const fixedCompanyId = this.companyId || editCompanyId || companyId;
     if (fixedCompanyId) {
-      this.fetchStoreHouseList({ companyId: fixedCompanyId });
+      this.fetchStoreHouseList({
+        payload: {
+          pageSize: 10,
+          pageNum: 1,
+        },
+      });
       this.setState({ storeHouseVisible: true });
     } else {
       message.warning('请先选择单位！');
@@ -229,26 +236,31 @@ export default class ReservoirRegionEdit extends PureComponent {
   };
 
   // 获取库房列表
-  fetchStoreHouseList = ({ ...payload }) => {
+  fetchStoreHouseList = ({ payload }) => {
+    const {
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+    const { editCompanyId } = this.state;
+    const fixedCompanyId = this.companyId || editCompanyId || companyId;
     const { dispatch } = this.props;
     dispatch({
       type: 'storehouse/fetchStorehouseList',
-      payload: {
-        pageNum: 1,
-        pageSize: 10,
-        ...payload,
-      },
+      payload: { ...payload, companyId: fixedCompanyId },
     });
   };
 
   // 选择库房
   handleStoreHouseSelect = item => {
+    console.log('item', item);
+
     const {
       form: { setFieldsValue },
     } = this.props;
-    console.log('item', item);
     this.setState({ storeHouseVisible: false });
-    setFieldsValue({ includeArea: item.map(item => item.name).join(',') });
+    setFieldsValue({ wareHouseName: item.map(item => item.name).join(',') });
+    this.setState({ wareHouseIds: item.map(item => item.id).join(',') });
   };
 
   renderInfo() {
@@ -272,7 +284,8 @@ export default class ReservoirRegionEdit extends PureComponent {
       deviceDistance,
       area,
       spaceBetween,
-    } = detailList;
+      warehouseInfos = [],
+    } = detailList || {};
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
@@ -381,8 +394,11 @@ export default class ReservoirRegionEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label="选择包含的库房">
-            {getFieldDecorator('includeArea', {
-              initialValue: position,
+            {getFieldDecorator('wareHouseName', {
+              initialValue:
+                warehouseInfos.length > 0
+                  ? warehouseInfos.map(item => item.name).join(',')
+                  : undefined,
             })(
               <TextArea
                 {...itemStyles}
@@ -508,7 +524,7 @@ export default class ReservoirRegionEdit extends PureComponent {
             提交
           </Button>
         )}
-        <Button type="primary" size="large" onClick={this.goBack}>
+        <Button size="large" onClick={this.goBack}>
           返回
         </Button>
       </FooterToolbar>
@@ -525,6 +541,7 @@ export default class ReservoirRegionEdit extends PureComponent {
       route: { name },
       storehouse,
     } = this.props;
+    console.log('storehouse', storehouse);
 
     const { storeHouseVisible } = this.state;
     const isDetail = name === 'view';
