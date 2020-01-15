@@ -1,5 +1,5 @@
 import { PureComponent, Fragment } from 'react';
-import { Tabs } from 'antd';
+import { Tabs, Row, Col } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './index.less';
 import iconAlarm from '@/assets/icon-alarm.png';
@@ -15,7 +15,10 @@ import emptyImg from '@/assets/empty_data.png';
 
 const { TabPane } = Tabs;
 
-const storageUrl = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
+// 罐区基本信息图片
+const tankAreaUrl = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
+// 库区基本信息图片
+const reservoirUrl = 'http://data.jingan-china.cn/v2/chem/screen/reservoir.png';
 // const tabsOptions = [{ label: '储罐监测', key: '0' }, { label: '可燃气体', key: '1' }, { label: '有毒气体', key: '2' }];
 
 export default class AreaMonitorDrawer extends PureComponent {
@@ -27,8 +30,16 @@ export default class AreaMonitorDrawer extends PureComponent {
     };
   }
 
+  componentDidUpdate (prevProps) {
+    if (prevProps.visible !== this.props.visible) {
+      this.setState({ activeKey: '0' });
+    }
+  }
+
   // 标题
-  renderTitle = title => <div className={styles.title}>{title}</div>;
+  renderTitle = ({ title, ...resProps }) => (
+    <div {...resProps} className={styles.title}>{title}</div>
+  )
 
   // 罐区基本信息卡片
   renderTankBaseInfo = ({
@@ -41,48 +52,48 @@ export default class AreaMonitorDrawer extends PureComponent {
     commonStore,
     warnStatus,
   }) => (
-    <div className={styles.infoCard}>
-      <img src={storageUrl} alt="img" />
-      <div className={styles.content}>
-        <p>{areaName}</p>
-        <p>
-          <span>在厂区的位置：</span>
-          {location}
-        </p>
-        <p>
-          <span>所处环境功能区：</span>
-          {envFunAreaEnum[environmentArea]}
-        </p>
-        <p>
-          <span>储罐区面积（㎡）：</span>
-          {spaceArea}
-        </p>
-        <p>
-          <span>有无围堰：</span>
-          {judgeEnum[hasCoffer]}
-        </p>
-        <p>
-          <span>罐区总容积（m³）：</span>
-          {areaVolume}
-        </p>
-        <p>
-          <span>常规储量（t）：</span>
-          {commonStore}
-        </p>
+      <div className={styles.infoCard}>
+        <img src={tankAreaUrl} alt="img" />
+        <div className={styles.content}>
+          <p>{areaName}</p>
+          <p>
+            <span>在厂区的位置：</span>
+            {location}
+          </p>
+          <p>
+            <span>所处环境功能区：</span>
+            {envFunAreaEnum[environmentArea]}
+          </p>
+          <p>
+            <span>储罐区面积（㎡）：</span>
+            {spaceArea}
+          </p>
+          <p>
+            <span>有无围堰：</span>
+            {judgeEnum[hasCoffer]}
+          </p>
+          <p>
+            <span>罐区总容积（m³）：</span>
+            {areaVolume}
+          </p>
+          <p>
+            <span>常规储量（t）：</span>
+            {commonStore}
+          </p>
+        </div>
+        {+warnStatus !== 0 && (
+          <div
+            className={styles.iconAlarm}
+            style={{ background: `url(${iconAlarm}) no-repeat center center / 100% 100%` }}
+          />
+        )}
       </div>
-      {+warnStatus !== 0 && (
-        <div
-          className={styles.iconAlarm}
-          style={{ background: `url(${iconAlarm}) no-repeat center center / 100% 100%` }}
-        />
-      )}
-    </div>
-  );
+    );
 
   // 库区
   renderReservoirBaseInfo = ({ name, position, environment, area, warnStatus }) => (
     <div className={styles.infoCard}>
-      <img src={storageUrl} alt="img" />
+      <img src={reservoirUrl} alt="img" />
       <div className={styles.content}>
         <p>{name}</p>
         <p>
@@ -109,13 +120,13 @@ export default class AreaMonitorDrawer extends PureComponent {
 
   // 监测情况统计
   renderStatistics = tabs => (
-    <div className={styles.statistics}>
+    <Row className={styles.statistics} gutter={16}>
       {tabs.map(({ tab, warn, total }, index) => (
-        <div key={index}>
+        <Col key={index} span={8}>
           {tab}：<span>{warn}</span> / <span>{total}</span>
-        </div>
+        </Col>
       ))}
-    </div>
+    </Row>
   );
 
   // 渲染监测情况tabs
@@ -147,11 +158,11 @@ export default class AreaMonitorDrawer extends PureComponent {
               </Fragment>
             ))
           ) : (
-            <div
-              className={styles.emptyContent}
-              style={{ background: `url(${emptyImg}) no-repeat center center / 50% 50%` }}
-            />
-          )}
+              <div
+                className={styles.emptyContent}
+                style={{ background: `url(${emptyImg}) no-repeat center center / 50% 50%` }}
+              />
+            )}
         </TabPane>
       ))}
     </Tabs>
@@ -191,17 +202,21 @@ export default class AreaMonitorDrawer extends PureComponent {
 
     return (
       <div className={styles.areaMonitorDrawer}>
-        {this.renderTitle('基本信息')}
+        {this.renderTitle({ title: '基本信息' })}
         {/罐区/.test(title) && this.renderTankBaseInfo(data)}
         {/库区/.test(title) && this.renderReservoirBaseInfo(data)}
-        {this.renderTitle('监测情况')}
-        {this.renderStatistics(statisticsProps)}
-        {this.renderMonitorTabs(tabs, onVideoClick)}
+        {tabs && tabs.length ? (
+          <Fragment>
+            {this.renderTitle({ title: '监测情况', style: { marginTop: '10px' } })}
+            {this.renderStatistics(statisticsProps)}
+            {this.renderMonitorTabs(tabs, onVideoClick)}
+          </Fragment>
+        ) : null}
       </div>
     );
   };
 
-  render() {
+  render () {
     const { visible, onClose, title } = this.props;
     return (
       <DrawerContainer

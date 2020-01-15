@@ -124,28 +124,30 @@ export default class SafetyOfficerDrawer extends PureComponent {
                     <span className={styles.signName}>{role_name}</span>
                   </div>
                   <div className={styles.iconBtn}>
-                    <Tooltip title="学历证书">
-                      <div
-                        className={styles.icon}
-                        style={{
-                          background: `url(${EduIcon}) no-repeat center bottom`,
-                          backgroundSize: '100% 100%',
-                          cursor: educationFileList.length ? 'pointer' : 'default',
-                        }}
-                        onClick={() => educationFileList.length ? handleClickImgShow(educationFileList.map(item => item.webUrl)) : null}
-                      />
-                    </Tooltip>
-                    <Tooltip title="注册安全工程师">
-                      <div
-                        className={styles.icon}
-                        style={{
-                          background: `url(${RegisterEnginIcon}) no-repeat center bottom`,
-                          backgroundSize: '100%  100%',
-                          cursor: safetyFile.length ? 'pointer' : 'default',
-                        }}
-                        onClick={() => safetyFile.length ? handleClickImgShow(safetyFile.map(item => item.webUrl)) : null}
-                      />
-                    </Tooltip>
+                    {educationFileList && educationFileList.length > 0 && (
+                      <Tooltip title="学历证书">
+                        <div
+                          className={styles.icon}
+                          style={{
+                            background: `url(${EduIcon}) no-repeat center bottom`,
+                            backgroundSize: '100% 100%',
+                          }}
+                          onClick={() => handleClickImgShow(educationFileList.map(item => item.webUrl))}
+                        />
+                      </Tooltip>
+                    )}
+                    {safetyFile && safetyFile.length > 0 && (
+                      <Tooltip title="注册安全工程师">
+                        <div
+                          className={styles.icon}
+                          style={{
+                            background: `url(${RegisterEnginIcon}) no-repeat center bottom`,
+                            backgroundSize: '100%  100%',
+                          }}
+                          onClick={() => handleClickImgShow(safetyFile.map(item => item.webUrl))}
+                        />
+                      </Tooltip>
+                    )}
                   </div>
                 </div>
               </div>

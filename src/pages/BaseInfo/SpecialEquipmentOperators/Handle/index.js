@@ -88,7 +88,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
       callback: list => {
         this.setState({
           workProjectOptionsAll: list,
-          projectCodeOptions: list.filter(item => item.parentId !== '0'),
+          projectCodeOptions: list.filter(item => item.parentId !== '0' && item.value),
         });
       },
     })

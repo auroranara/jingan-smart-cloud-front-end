@@ -26,10 +26,11 @@ const renderSubTitle = (title, tag) => (
 const renderTitle = (title) => (<span className={styles.title}>>>{title}</span>)
 
 // 展开后的信息
-const InfoItem = (value, index) => (
+const InfoItem = (value, index, level) => (
   <div key={index}>
     {index === 0 && <DashDivider />}
     <div>{value}</div>
+    {level ? (<div className={styles.grayText}>{level}</div>) : null}
     <DashDivider />
   </div>
 )
@@ -44,7 +45,7 @@ const InnerCollapse = (arr) => {
       {arr.map(({ object_title, object_id, business_type, flows }) => (
         <Panel header={renderSubTitle(object_title, hiddenDangerType[business_type].slice(0, 1))} key={object_id} extra={flows && flows.length || 0} style={customPanelStyle}>
           <div className={styles.textContent}>
-            {flows.map((item, index) => InfoItem(item.flow_name, index))}
+            {flows.map((item, index) => InfoItem(item.flow_name, index, item.danger_level))}
           </div>
         </Panel>
       ))}
@@ -70,9 +71,9 @@ const StandardsAndMeasures = (props) => {
       <Collapse
         bordered={false}
         expandIconPosition="right"
-        defaultActiveKey={['1']}
+        defaultActiveKey={[0]}
       >
-        <Panel header={renderTitle('点位检查标准')} key={'1'} style={customPanelStyle}>
+        <Panel header={renderTitle('点位检查标准')} key={0} style={customPanelStyle}>
           <div className={styles.content}>
             <div className={styles.titleLine}>
               <span>{itemName}</span>
@@ -85,6 +86,7 @@ const StandardsAndMeasures = (props) => {
       <Collapse
         bordered={false}
         expandIconPosition="right"
+        defaultActiveKey={[standardsAndMeasuresList.length - 1]}
       >
         {standardsAndMeasuresList.map(({ title, detailInfo }, index) => title ? (
           <Panel header={renderTitle(title)} key={index} style={customPanelStyle}>
