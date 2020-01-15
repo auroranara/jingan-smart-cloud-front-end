@@ -17,7 +17,7 @@ const COLORS = {
   3: 'rgb(251, 247, 24)',
   4: 'rgb(30, 96, 255)',
 };
-const selectedColor = 'rgb(255,255,255, 0.8)';
+const selectedColor = 'rgb(245,245,245, 0.5)';
 
 const defaultPolygonMarkerHeight = 5;
 //配置线型、线宽、透明度等
@@ -54,8 +54,8 @@ export default class Map extends React.Component {
               item.setColor(COLORS[zoneLevel], 1);
             }
           });
-          this.drawPolygon(cordPoints, '', 0);
         }
+        this.drawPolygon(cordPoints, COLORS[zoneLevel]);
         return null;
       });
   };
@@ -151,7 +151,7 @@ export default class Map extends React.Component {
     layer.addMarker(im);
   }
 
-  drawPolygon(points, color, s) {
+  drawPolygon(points, color) {
     var groupLayer = map.getFMGroup(1);
     //创建PolygonMarkerLayer
     var layer = new fengMap.FMPolygonMarkerLayer();
@@ -159,13 +159,11 @@ export default class Map extends React.Component {
     var polygonMarker = new fengMap.FMPolygonMarker({
       alpha: 0.5, //设置透明度
       lineWidth: 1, //设置边框线的宽度
-      height: 5, //设置高度*/
+      height: 2, //设置高度*/
       points, //多边形坐标点
     });
     polygonMarker.setColor(color);
-    if (s !== 0) {
-      layer.addMarker(polygonMarker);
-    }
+    layer.addMarker(polygonMarker);
     this.polygonLayers.push(layer);
     this.polygonMarkers.push(polygonMarker);
   }
@@ -235,10 +233,14 @@ export default class Map extends React.Component {
   selectedModelColor = (id, fun) => {
     const { pointList } = this.props;
     pointList.filter(item => item.id === id).map(item => {
-      const { coordinateList } = item;
-      const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-      this.setModelColor(points, selectedColor);
-      this.drawPolygon(points, selectedColor, 0);
+      const { modelIds } = item;
+      const modeIdList = modelIds.split(',').map(Number);
+      const models = map.getDatasByAlias(1, 'model');
+      models.forEach(item => {
+        if (item.ID && modeIdList.includes(item.ID)) {
+          item.setColor(selectedColor, 1);
+        }
+      });
       return null;
     });
   };
@@ -247,10 +249,14 @@ export default class Map extends React.Component {
   restModelColor = id => {
     const { pointList } = this.props;
     pointList.filter(item => item.id === id).map(item => {
-      const { coordinateList, zoneLevel } = item;
-      const points = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-      this.drawPolygon(points, COLORS[zoneLevel], 0);
-      this.setModelColor(points, COLORS[zoneLevel]);
+      const { zoneLevel, modelIds } = item;
+      const modeIdList = modelIds.split(',').map(Number);
+      const models = map.getDatasByAlias(1, 'model');
+      models.forEach(item => {
+        if (item.ID && modeIdList.includes(item.ID)) {
+          item.setColor(COLORS[zoneLevel], 1);
+        }
+      });
       return null;
     });
   };

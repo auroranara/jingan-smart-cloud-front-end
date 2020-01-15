@@ -15,7 +15,7 @@ const {
   },
 } = codes;
 
-// const MAX_LENGTH = 20;
+const MAX_LENGTH = 30;
 const DATE_FORMAT = 'YYYY-MM-DD';
 export const PAGE_SIZE = 20;
 export const ROUTER = '/cards-info/know-card'; // modify
@@ -66,11 +66,15 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       title: '单位名称',
       dataIndex: 'companyName',
       key: 'companyName',
+      align: 'center',
+      width: 250,
     },
     {
       title: '风险分区',
       dataIndex: 'pointFixInfoList',
       key: 'pointFixInfoList',
+      align: 'center',
+      width: 180,
       render: (val, row) => {
         return <span>{val.length > 0 ? val.map(item => item.areaName).join('') : ''}</span>;
       },
@@ -79,6 +83,7 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       title: '应知卡名称',
       dataIndex: 'name',
       key: 'name',
+      render: txt => (txt.length > MAX_LENGTH ? `${txt.slice(0, MAX_LENGTH)}...` : txt),
     },
     {
       title: '发布人员',
@@ -121,8 +126,9 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       title: '操作',
       dataIndex: 'id',
       key: 'id',
+      width: 180,
       align: 'center',
-      // fixed: 'right',
+      fixed: 'right',
       render(id) {
         return (
           <Fragment>

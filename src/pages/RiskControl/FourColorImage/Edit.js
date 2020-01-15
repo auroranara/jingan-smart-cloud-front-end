@@ -298,11 +298,10 @@ export default class TableList extends React.Component {
       selected: true,
     }));
     if (s === 0) {
-      areaList.reduce(function(pre, cur, index, arr) {
-        if (!modeIdList.includes(cur.areaId)) {
-          cur.selected = !cur.selected;
+      areaList.forEach(element => {
+        if (!modeIdList.includes(element.areaId)) {
+          element.selected = !element.selected;
         }
-        return [...arr];
       });
       this.setState({ buildingId: areaList });
     } else {
@@ -314,15 +313,13 @@ export default class TableList extends React.Component {
     const { points } = this.state;
     this.childMap.handleModelEdit(points, point, selected);
     const { buildingId } = this.state;
+    buildingId.forEach(item => {
+      if (item.areaId === areaId) {
+        item.selected = !item.selected;
+      }
+    });
     this.setState({
-      buildingId: buildingId.reduce(function(pre, cur, index, arr) {
-        if (pre.areaId === areaId) {
-          pre.selected = !pre.selected;
-        } else if (cur.areaId === areaId) {
-          cur.selected = !cur.selected;
-        }
-        return [...arr];
-      }),
+      buildingId: buildingId,
     });
   };
 
@@ -357,7 +354,7 @@ export default class TableList extends React.Component {
     } = this.props;
     const { isDrawing, detailList, pointList, buildingId, modelIds } = this.state;
     const editTitle = id ? '编辑' : '新增';
-
+    console.log('buildingId', buildingId);
     const {
       zoneCode,
       zoneName,
@@ -502,7 +499,7 @@ export default class TableList extends React.Component {
               </FormItem>
               <FormItem {...formItemLayout}>
                 <div style={{ textAlign: 'center' }}>
-                  <Button style={{ marginRight: 10 }} onClick={this.handleSubmit}>
+                  <Button style={{ marginRight: 10 }} type="primary" onClick={this.handleSubmit}>
                     提交
                   </Button>
                   <Button href={'#/risk-control/four-color-image/list'}>返回</Button>
