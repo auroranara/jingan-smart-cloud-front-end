@@ -1,8 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
-import { connect } from 'dva';
+// import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import { message, Button, Card, Col, Form, Icon, Modal, Upload, Radio } from 'antd';
-// import FooterToolbar from 'components/FooterToolbar';
+import { getToken } from 'utils/authority';
+import Lightbox from 'react-images';
+
 import {
   getNewCompanyType,
   getImportantTypes,
@@ -10,9 +12,8 @@ import {
   getFileList,
   getImageSize,
 } from '../utils';
-import Lightbox from 'react-images';
+import { getInitPhotoList as getInitFileList, getSubmitPhotoList as getSubmitFileList, handleFileList } from '@/pages/RoleAuthorization/AccountManagement/utils';
 import urls from 'utils/urls';
-import { getToken } from 'utils/authority';
 import styles from './FireControl.less';
 
 const { Item: FormItem } = Form;
@@ -33,6 +34,7 @@ export default class FireControl extends PureComponent {
     images: [],
     currentImage: 0,
     lightBoxVisible: false,
+    fireFileList: [],
   };
 
   componentDidMount() {
@@ -48,7 +50,7 @@ export default class FireControl extends PureComponent {
 
   initImgs = () => {
     const { detail } = this.props;
-    const { fireIchnographyDetails, companyPhotoDetails } = detail;
+    const { fireIchnographyDetails, companyPhotoDetails, fireCheckFileList } = detail;
     const fireIchnographyList = Array.isArray(fireIchnographyDetails) ? fireIchnographyDetails : [];
     const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
     this.setState({
@@ -66,6 +68,7 @@ export default class FireControl extends PureComponent {
         url: webUrl,
         dbUrl,
       })),
+      fireFileList: getInitFileList(fireCheckFileList),
     });
   };
 
@@ -80,7 +83,7 @@ export default class FireControl extends PureComponent {
     validateFields((err, fieldsValue) => {
       // 获取到的为Option中的value
       const { operation } = this.props;
-      const { firePictureList, unitPhotoList } = this.state;
+      const { firePictureList, unitPhotoList, fireFileList } = this.state;
       // 在添加页面安监信息都提示要新建企业基本信息后才能添加，当新建企业基本信息成功后，会询问是否添加安监信息，选择添加，则会跳转到编辑页面
       // 也就是说安监信息的添加修改都在编辑页面完成，添加页面的安监信息只是为了让人看下需要添加那些东西
       if (operation === 'add') {
@@ -107,6 +110,7 @@ export default class FireControl extends PureComponent {
         companyPhoto: JSON.stringify(
           unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
         ),
+        fireCheckFileList: getSubmitFileList(fireFileList),
       };
       this.setState({ submitting: true });
       // 成功回调
@@ -312,13 +316,23 @@ export default class FireControl extends PureComponent {
     }
   };
 
+  handleUploadFireFileList = info => {
+    const { fileList, file } = info;
+    let fList = fileList;
+    if (file.status === 'done' || file.status === undefined){ // file.status === undefined 为文件被beforeUpload拦截下拉的情况
+      fList = handleFileList(fileList);
+    }
+
+    this.setState({ fireFileList: fList });
+  };
+
   renderFormItems = () => {
     const {
       form: { getFieldDecorator },
       detail: { companyType, photoStyle },
       operation,
     } = this.props;
-    const { firePictureList, unitPhotoList } = this.state;
+    const { firePictureList, unitPhotoList, fireFileList } = this.state;
     const [importantHost] = getImportantTypes(companyType);
     return (
       <Fragment>
@@ -408,6 +422,15 @@ export default class FireControl extends PureComponent {
               this.handleUploadUnitPhoto,
               false,
               '尺寸限制：240*320（宽*高），png格式'
+            )}
+          </Form.Item>
+        </Col>
+        <Col span={16} offset={1}>
+          <Form.Item label="消防验收报告">
+            {this.renderUploadButton(
+              fireFileList,
+              this.handleUploadFireFileList,
+              false,
             )}
           </Form.Item>
         </Col>

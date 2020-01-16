@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import { Button, Card, Form, Input, message } from 'antd';
+import React, { Fragment, PureComponent } from 'react';
+import { Button, Card, Form, Input, Select, Slider, message } from 'antd';
 import router from 'umi/router';
 
 import styles from './FireControl.less';
@@ -11,6 +11,9 @@ const FIELDS = [
   { key: 'mapId', label: '地图ID' },
   { key: 'key', label: 'key值' },
 ];
+
+const LABEL_COL = { xs: { span: 24 }, sm: { span: 4 } };
+const WRAPPER_COL = { xs: { span: 24 }, sm: { span: 16 } };
 
 @Form.create()
 export default class ThreeDMap extends PureComponent {
@@ -66,12 +69,12 @@ export default class ThreeDMap extends PureComponent {
       form: { getFieldDecorator },
     } = this.props;
 
-    return FIELDS.map(({ key, label }) => (
+    const formItems = FIELDS.map(({ key, label }) => (
       <FormItem
         key={key}
         label={label}
-        labelCol={{ xs: { span: 24 }, sm: { span: 4 } }}
-        wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }}
+        labelCol={LABEL_COL}
+        wrapperCol={WRAPPER_COL}
       >
         {getFieldDecorator(key, {
           rules: [{ required: true, message: `请输入${label}` }],
@@ -80,6 +83,37 @@ export default class ThreeDMap extends PureComponent {
         )}
       </FormItem>
     ));
+
+    const moreItems = (
+      <Fragment>
+        <FormItem label="默认中心位置" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('defaultViewCenter', {
+          })(
+            <Input placeholder="请输入默认中心位置并以英文逗号分割" />
+          )}
+        </FormItem>
+        <FormItem label="默认视图模式" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('defaultViewMode', {
+          })(
+            <Select placeholder="请选择默认视图模式" />
+          )}
+        </FormItem>
+        <FormItem label="缩放等级范围" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('mapScaleLevelRange', {
+          })(
+            <Slider range min={16} max={23} defaultValue={[16, 23]} />
+          )}
+        </FormItem>
+        <FormItem label="默认缩放等级" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('defaultMapScaleLevel', {
+          })(
+            <Slider defaultValue={9} min={16} max={23} />
+          )}
+        </FormItem>
+      </Fragment>
+    );
+
+    return formItems.concat(moreItems);
   }
 
   render() {

@@ -243,6 +243,7 @@ export default class CompanyDetail extends PureComponent {
       point: undefined,
     },
     gridTree: [],
+    showChemFields: false,
   };
 
   /* 生命周期函数 */
@@ -268,7 +269,21 @@ export default class CompanyDetail extends PureComponent {
 
     if (this.operation === 'edit' && isFromAdd) this.setState({ tabActiveKey: tabList[1].key });
 
-    dispatch({ type: 'company/fetchRegulatoryClassification' });
+    dispatch({
+      type: 'company/fetchRegulatoryClassification',
+      callback: list => {
+        const {
+          company: {
+            detail: {
+              data: {
+                regulatoryClassification,
+              },
+            },
+          },
+        } = this.props;
+        this.setShowChemFields(regulatoryClassification);
+      },
+    });
 
     // 如果id存在的话，则编辑，否则新增
     if (id) {
@@ -284,13 +299,16 @@ export default class CompanyDetail extends PureComponent {
           practicalProvince,
           practicalCity,
           practicalDistrict,
-          companyIchnography,
-          fireIchnographyDetails,
-          companyPhotoDetails,
-          companyNatureLabel,
+          // companyIchnography,
+          // fireIchnographyDetails,
+          // companyPhotoDetails,
+          // companyNatureLabel,
           gridId,
-          companyType,
+          // companyType,
+          regulatoryClassification,
         }) => {
+          this.setShowChemFields(regulatoryClassification);
+
           // const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
           // const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
           // const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
@@ -421,6 +439,17 @@ export default class CompanyDetail extends PureComponent {
   operation = null;
   idMap = {};
   gridId = '';
+
+  setShowChemFields = val => {
+    const { company: { regulatoryClassificationList } } = this.props;
+    if (val !== null && regulatoryClassificationList.length) {
+      let showChemFields = false;
+      console.log(val, regulatoryClassificationList.find(({ type_name, type_id }) => type_name === '化工' && type_id === val));
+      if (regulatoryClassificationList.find(({ type_name, type_id }) => type_name === '化工' && type_id === val))
+        showChemFields = true;
+      this.setState({ showChemFields });
+    }
+  };
 
   // 在safety组件中同步gridTree
   setGridTree = (gridTree, idMap) => {
@@ -1363,6 +1392,10 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
+  handleRegulatoryClassificationChange = value => {
+    this.setShowChemFields(value);
+  };
+
   handleChemComTypeChange = value => {
     const { form: { setFieldsValue } } = this.props;
     setFieldsValue({ workCompanyType: value ? ['3', '4'].includes(value) ? ['0', '1', '2', '3'] : value : undefined });
@@ -1399,6 +1432,7 @@ export default class CompanyDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
+    const { showChemFields } = this.state;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -1496,36 +1530,40 @@ export default class CompanyDetail extends PureComponent {
                   initialValue: regulatoryClassification || undefined,
                   rules: [{ required: true, message: '请选择监管分类' }],
                 })(
-                  <Select placeholder="请选择监管分类" allowClear>
+                  <Select placeholder="请选择监管分类" onChange={this.handleRegulatoryClassificationChange} allowClear>
                     {regulatoryClassificationList.map(({ type_name: name, type_id: value }) => <Option key={value} value={value}>{name}</Option>)}
                   </Select>
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.ciCompanyType}>
-                {getFieldDecorator('ciCompanyType', {
-                  initialValue: ciCompanyType || undefined,
-                  rules: [{ required: true, message: '请选择化工企业类型' }],
-                })(
-                  <Select placeholder="请选择化工企业类型" onChange={this.handleChemComTypeChange} allowClear>
-                    {CHEM_COM_TYPES .map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
-                  </Select>
-                )}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.workCompanyType}>
-                {getFieldDecorator('workCompanyType', {
-                  initialValue: workCompanyType || undefined,
-                  rules: [{ required: true, message: '请选择生产经营活动类型' }],
-                })(
-                  <Select mode="multiple" placeholder="请选择生产经营活动类型" allowClear>
-                    {WORK_COM_TYPES.map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
-                  </Select>
-                )}
-              </Form.Item>
-            </Col>
+            {showChemFields && (
+              <Col lg={8} md={12} sm={24}>
+                <Form.Item label={fieldLabels.ciCompanyType}>
+                  {getFieldDecorator('ciCompanyType', {
+                    initialValue: ciCompanyType || undefined,
+                    rules: [{ required: true, message: '请选择化工企业类型' }],
+                  })(
+                    <Select placeholder="请选择化工企业类型" onChange={this.handleChemComTypeChange} allowClear>
+                      {CHEM_COM_TYPES .map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>
+            )}
+            {showChemFields && (
+              <Col lg={8} md={12} sm={24}>
+                <Form.Item label={fieldLabels.workCompanyType}>
+                  {getFieldDecorator('workCompanyType', {
+                    initialValue: workCompanyType || undefined,
+                    rules: [{ required: true, message: '请选择生产经营活动类型' }],
+                  })(
+                    <Select mode="multiple" placeholder="请选择生产经营活动类型" allowClear>
+                      {WORK_COM_TYPES.map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>
+            )}
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.workPlaceOwn}>
                 {getFieldDecorator('workPlaceOwn', {

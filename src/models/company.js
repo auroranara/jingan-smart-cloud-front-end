@@ -92,6 +92,7 @@ export default {
         safetyPhone: undefined,
         safetyEmail: undefined,
         companyType: undefined,
+        regulatoryClassification: null,
       },
     },
     modal: {
@@ -401,11 +402,14 @@ export default {
       const { code, msg } = response || {};
       callback && callback(code, msg);
     },
-    *fetchRegulatoryClassification({ payload }, { call, put }) {
+    *fetchRegulatoryClassification({ payload, callback }, { call, put }) {
       const response = yield call(getRegulatoryClassification, payload);
       const { code, data } = response || {};
-      if (code === 200)
-        yield put({ type: 'saveRegulatoryClassification', payload: getList(data) });
+      if (code === 200) {
+        const list = getList(data).map(({ type_name, type_id }) => ({ type_name, type_id: type_id.toString() }));
+        yield put({ type: 'saveRegulatoryClassification', payload: list });
+        callback && callback(list);
+      }
     },
   },
 
