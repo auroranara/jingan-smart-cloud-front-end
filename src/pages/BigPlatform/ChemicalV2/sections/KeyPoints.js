@@ -34,7 +34,7 @@ const keyPointsList = [
 ];
 
 export default class KeyPoints extends PureComponent {
-  state = { active: 1 };
+  state = { active: 0 };
 
   handleClickTab = i => {
     this.setState({ active: i });
