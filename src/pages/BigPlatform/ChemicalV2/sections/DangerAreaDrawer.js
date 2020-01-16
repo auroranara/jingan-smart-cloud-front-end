@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col, Icon, Modal, Table } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerAreaDrawer.less';
 
@@ -67,7 +67,9 @@ const threeCardData = [
 ];
 
 export default class KeyPoints extends PureComponent {
-  state = {};
+  state = {
+    tableModallVisible: false,
+  };
 
   handleJump = (url, images) => {
     const { handleShowImg } = this.props;
@@ -76,6 +78,23 @@ export default class KeyPoints extends PureComponent {
     }
     if (!url || images) return;
     window.open(`${window.publicPath}#/${url}`, `_blank`);
+  };
+
+  renderTableModal = () => {
+    const { tableModallVisible } = this.state;
+    return (
+      <Modal
+        className={styles.modalContainer}
+        width={850}
+        title={'title'}
+        visible={tableModallVisible}
+        onCancel={this.handleModalClose}
+        footer={false}
+        afterClose={this.handleAfterClose}
+      >
+        <Table rowKey="deviceId" columns={[]} dataSource={[]} pagination={false} />
+      </Modal>
+    );
   };
 
   render() {

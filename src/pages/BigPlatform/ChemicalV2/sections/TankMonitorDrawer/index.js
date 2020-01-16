@@ -11,6 +11,12 @@ import styles from './index.less';
 const API = 'xxx/getTankMonitor';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const img = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
+const STATUS = ['正常', '预警', '告警'];
+const transformCondition = condition => {
+  if (condition === '>=') return '≥';
+  else if (condition === '<=') return '≤';
+  return condition;
+};
 
 // 请把xxx替换成对应model
 @connect(
@@ -66,14 +72,14 @@ export default class TankMonitorDrawer extends Component {
     });
   };
 
-  handleWorkOrderIconClick = () => {
-    const { tankDetail: { id = 1 } = {} } = this.props;
-    window.open(`${window.publicPath}#/company-iot/alarm-work-order/detail/${id}`);
+  handleWorkOrderIconClick = id => {
+    // 工单id
+    id && window.open(`${window.publicPath}#/company-iot/alarm-work-order/detail/${id}`);
   };
 
-  handleMonitorTrendIconClick = () => {
-    const { tankDetail: { id = 1 } = {} } = this.props;
-    window.open(`${window.publicPath}#/company-iot/alarm-work-order/monitor-trend/${id}`);
+  handleMonitorTrendIconClick = id => {
+    // 监测设备id
+    id && window.open(`${window.publicPath}#/company-iot/alarm-work-order/monitor-trend/${id}`);
   };
 
   render() {
@@ -96,10 +102,12 @@ export default class TankMonitorDrawer extends Component {
         emergencyMeasure,
         monitorParams = [],
         videoList = [],
+        meList = [],
       },
       onVideoClick,
     } = this.props;
     const { videoVisible, videoKeyId } = this.state;
+    const { noFinishWarningProcessId, id } = meList[0] || {};
 
     return (
       <CustomDrawer
@@ -125,8 +133,14 @@ export default class TankMonitorDrawer extends Component {
                   <span className={styles.video} onClick={() => onVideoClick(videoList)} />
                 )}
               <div className={styles.jumperWrapper}>
-                <span onClick={this.handleWorkOrderIconClick} />
-                <span onClick={this.handleMonitorTrendIconClick} />
+                <span
+                  onClick={() => this.handleWorkOrderIconClick(noFinishWarningProcessId)}
+                  style={{ display: noFinishWarningProcessId ? 'inline-block' : 'none' }}
+                />
+                <span
+                  onClick={() => this.handleMonitorTrendIconClick(id)}
+                  style={{ display: id ? 'inline-block' : 'none' }}
+                />
               </div>
             </div>
           </div>
@@ -174,7 +188,15 @@ export default class TankMonitorDrawer extends Component {
               <div className={styles.value}>{designPressure}</div>
             </div>
             {monitorParams.map((param, index) => {
-              const { paramDesc, paramUnit, realValue, status, dataUpdateTime } = param;
+              const {
+                paramDesc,
+                paramUnit,
+                realValue,
+                status,
+                dataUpdateTime,
+                condition,
+                limitValueStr,
+              } = param;
               return (
                 <div className={styles.paramsWrapper} key={index}>
                   <div className={styles.lineWrapper}>
@@ -189,9 +211,14 @@ export default class TankMonitorDrawer extends Component {
                       <div className={styles.label}>状态：</div>
                       <div
                         className={styles.value}
-                        style={{ color: +status > 0 ? '#ff4848' : '#0ff' }}
+                        style={{ color: +status > 0 ? '#ff4848' : '#11B409' }}
                       >
-                        {+status > 0 ? '报警' : '正常'}
+                        {/* {`${STATUS[status]}${
+                          condition && limitValueStr
+                            ? `（${transformCondition(condition)}${limitValueStr}）`
+                            : ''
+                        }`} */}
+                        {`${STATUS[status]}`}
                       </div>
                     </div>
                   </div>
