@@ -6,6 +6,7 @@ import {
   queryCountCompanyNum,
   queryRegionList,
   queryDangerSourceList,
+  fetchStorageSubstanceList,
 } from '@/services/baseInfo/storehouse';
 
 const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 };
@@ -20,10 +21,14 @@ export default {
     regionModal: { list: [], pagination: defaultPagination },
     dangerSourceModal: { list: [], pagination: defaultPagination },
     sensorCount: 0, // 传感器数量
+    chemical: { // 装卸危险化学品种类
+      list: [],
+      pagination: defaultPagination,
+    },
   },
   effects: {
     // 查询库房列表
-    *fetchStorehouseList({ payload, callback }, { call, put }) {
+    *fetchStorehouseList ({ payload, callback }, { call, put }) {
       const response = yield call(queryStorehouseList, payload);
       if (response.code === 200) {
         yield put({
@@ -36,7 +41,7 @@ export default {
       }
     },
     // 新建库房
-    *addStorehouse({ payload, success, error }, { call }) {
+    *addStorehouse ({ payload, success, error }, { call }) {
       const response = yield call(addStorehouse, payload);
       const {
         data: { id },
@@ -52,7 +57,7 @@ export default {
       }
     },
     // 修改库房
-    *editStorehouse({ payload, success, error }, { call }) {
+    *editStorehouse ({ payload, success, error }, { call }) {
       const response = yield call(updateStorehouse, payload);
       const { code, msg } = response;
       if (code === 200) {
@@ -64,7 +69,7 @@ export default {
       }
     },
     // 删除库房
-    *deleteStorehouse({ payload, success, error }, { call, put }) {
+    *deleteStorehouse ({ payload, success, error }, { call, put }) {
       const response = yield call(deleteStorehouse, payload);
       const { code, msg } = response;
       if (code === 200) {
@@ -76,7 +81,7 @@ export default {
       }
     },
     // 查询单位数量
-    *fetchCountCompanyNum({ payload, callback }, { call, put }) {
+    *fetchCountCompanyNum ({ payload, callback }, { call, put }) {
       const response = yield call(queryCountCompanyNum, payload);
       if (response.code === 200) {
         yield put({
@@ -89,7 +94,7 @@ export default {
       }
     },
     // 查询库房列表
-    *fetchRegionModel({ payload, callback }, { call, put }) {
+    *fetchRegionModel ({ payload, callback }, { call, put }) {
       const response = yield call(queryRegionList, payload);
       if (response.code === 200) {
         yield put({
@@ -102,7 +107,7 @@ export default {
       }
     },
     // 重大危险源模态框
-    *fetchDangerSourceModel({ payload, callback }, { call, put }) {
+    *fetchDangerSourceModel ({ payload, callback }, { call, put }) {
       const response = yield call(queryDangerSourceList, payload);
       if (response.code === 200) {
         yield put({
@@ -114,9 +119,20 @@ export default {
         }
       }
     },
+    // 获取装卸危险化学品种类（存储物质列表）
+    *fetchChemicalList ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchStorageSubstanceList, payload);
+      if (res && res.code === 200) {
+        yield put({
+          type: 'saveChemical',
+          payload: res.data,
+        })
+        if (callback) callback(res.data);
+      }
+    },
   },
   reducers: {
-    saveList(state, { payload }) {
+    saveList (state, { payload }) {
       const { list, pagination: { pageNum, pageSize, total } = {} } = payload;
       return {
         ...state,
@@ -128,7 +144,7 @@ export default {
         },
       };
     },
-    countCompanyNum(state, { payload }) {
+    countCompanyNum (state, { payload }) {
       return {
         ...state,
         countCompanyNum: payload.companyNum || 0,
@@ -136,16 +152,30 @@ export default {
       };
     },
     // 库区弹出框
-    saveRegionModel(state, { payload }) {
+    saveRegionModel (state, { payload }) {
       return {
         ...state,
         regionModal: payload,
       };
     },
-    saveDangerSourceModel(state, { payload }) {
+    saveDangerSourceModel (state, { payload }) {
       return {
         ...state,
         dangerSourceModal: payload,
+      };
+    },
+    saveChemical (state, { payload }) {
+      const { list, pagination: { pageNum, pageSize, total } = {} } = payload;
+      return {
+        ...state,
+        chemical: {
+          list,
+          pagination: {
+            pageSize,
+            pageNum,
+            total,
+          },
+        },
       };
     },
   },

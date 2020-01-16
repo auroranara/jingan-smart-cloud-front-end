@@ -163,8 +163,10 @@ export default class StorageEdit extends PureComponent {
           designPressure, // 设计压力
           cofferdam,      // 有无围堰
           cofferdamArea,  // 围堰所围面积
+          highRiskTank, // 是否高危储罐
+          highRiskTankSystem, // 高危储罐自控系统
         }) => {
-          setFieldsValue({ companyId, locationType, pressureVessel, cofferdam })
+          setFieldsValue({ companyId, locationType, pressureVessel, cofferdam, highRiskTank });
           this.setState({
             selectedCompany: { id: companyId, name: companyName }, // 所属单位
             selectedArea: [{ id: tankArea, areaName }], // 所属储罐区
@@ -184,7 +186,9 @@ export default class StorageEdit extends PureComponent {
               name: item.fileName,
             })) : [],
           })
-          setFieldsValue({ buildingId, floorId, pressureRate, designPressure, cofferdamArea });
+          setTimeout(() => {
+            setFieldsValue({ buildingId, floorId, pressureRate, designPressure, cofferdamArea, highRiskTankSystem });
+          }, 0);
           if (pointFixInfoList && pointFixInfoList.length) {
             let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
             const coord = { x: +xnum, y: +ynum, z: +znum };
@@ -697,7 +701,7 @@ export default class StorageEdit extends PureComponent {
 
   renderInfo () {
     const {
-      dispatch,
+      // dispatch,
       form: { getFieldDecorator, getFieldsValue, setFieldsValue },
       match: { params: { id } },
       baseInfo: {
@@ -710,22 +714,22 @@ export default class StorageEdit extends PureComponent {
           floors = [],      // 楼层列表
         },
       },
-      riskPointManage: {
-        imgData: { list: imgList = [] },
-      },
-      device: {
-        flatGraphic, // 平面图类型选项
-      },
+      // riskPointManage: {
+      //   imgData: { list: imgList = [] },
+      // },
+      // device: {
+      //   flatGraphic, // 平面图类型选项
+      // },
       user: { currentUser: { unitType } },
     } = this.props;
 
     const {
       selectedCompany, // 选择的单位 { id,name }
-      editingIndex, // 平面图标注--当前编辑的下标
+      // editingIndex, // 平面图标注--当前编辑的下标
       // pointFixInfoList,
-      picModalVisible,
-      isImgSelect,
-      imgIdCurrent,
+      // picModalVisible,
+      // isImgSelect,
+      // imgIdCurrent,
       selectedArea,
       selectedMedium,
       // selectedMajorHazard,
@@ -735,7 +739,7 @@ export default class StorageEdit extends PureComponent {
       fileUploading,
     } = this.state
 
-    const { locationType, designReservesAndUnit, pressureVessel, cofferdam } = getFieldsValue();
+    const { locationType, designReservesAndUnit, pressureVessel, cofferdam, highRiskTank } = getFieldsValue();
     const companyId = selectedCompany.id;
     // const FlatPicProps = {
     //   visible: picModalVisible,
@@ -784,22 +788,6 @@ export default class StorageEdit extends PureComponent {
               rules: [{ required: true, message: '请输入统一编码' }],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="所属罐组编号">
-            {getFieldDecorator('tankGroupNumber', {
-              initialValue: id ? detail.tankGroupNumber : undefined,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入所属罐组编号' }],
-            })(<Input {...itemStyles} placeholder="请输入" />)}
-          </FormItem>
-          <FormItem {...formItemLayout} label="储罐编号">
-            {getFieldDecorator('tankNumber', {
-              initialValue: id ? detail.tankNumber : undefined,
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                { required: true, message: '请输入储罐编号' },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入" />)}
-          </FormItem>
           <FormItem {...formItemLayout} label="储罐名称">
             {getFieldDecorator('tankName', {
               initialValue: id ? detail.tankName : undefined,
@@ -809,19 +797,21 @@ export default class StorageEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="储罐位置分类">
-            {getFieldDecorator('tankLocationCate', {
-              initialValue: id ? detail.tankLocationCate : undefined,
-              rules: [{ required: true, message: '请选择储罐位置分类' }],
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
-                {storageAreaList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
+          <FormItem {...formItemLayout} label="位号">
+            {getFieldDecorator('number', {
+              initialValue: id ? detail.number : undefined,
+              getValueFromEvent: this.handleTrim,
+              rules: [
+                { required: true, message: '请输入位号' },
+              ],
+            })(<Input {...itemStyles} placeholder="请输入" />)}
+          </FormItem>
+          <FormItem {...formItemLayout} label="所属罐组编号">
+            {getFieldDecorator('tankGroupNumber', {
+              initialValue: id ? detail.tankGroupNumber : undefined,
+              getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, message: '请输入所属罐组编号' }],
+            })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="所属储罐区">
             {getFieldDecorator('tankArea', {
@@ -834,15 +824,15 @@ export default class StorageEdit extends PureComponent {
             )}
             <Button type="primary" onClick={this.handleToSelectStorageArea}> 选择</Button>
           </FormItem>
-          <FormItem {...formItemLayout} label="位号">
-            {getFieldDecorator('number', {
-              initialValue: id ? detail.number : undefined,
+          {/* <FormItem {...formItemLayout} label="储罐编号">
+            {getFieldDecorator('tankNumber', {
+              initialValue: id ? detail.tankNumber : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
-                { required: true, message: '请输入位号' },
+                { required: true, message: '请输入储罐编号' },
               ],
             })(<Input {...itemStyles} placeholder="请输入" />)}
-          </FormItem>
+          </FormItem> */}
           <FormItem {...formItemLayout} label="储罐容积（m³）">
             {getFieldDecorator('tankVolume', {
               initialValue: id ? detail.tankVolume : undefined,
@@ -868,6 +858,80 @@ export default class StorageEdit extends PureComponent {
               rules: [{ required: true, message: '请输入储罐高度' }],
             })(
               <Input {...itemStyles} placeholder="请输入" />
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="设计储量">
+            {getFieldDecorator('designReservesAndUnit', {
+              initialValue: id ? [detail.designReserves, 't'] : [],
+              // getValueFromEvent: this.handleTrim,
+              rules: [{ required: true, validator: this.validateDesignReservesAndUnit }],
+            })(
+              <Fragment>
+                <Input
+                  value={designReservesAndUnit ? designReservesAndUnit[0] : undefined}
+                  onChange={e => { setFieldsValue({ designReservesAndUnit: [e.target.value.trim(), designReservesAndUnit[1]] }) }}
+                  {...itemStyles}
+                  placeholder="请输入" />
+                <Input
+                  disabled
+                  value={designReservesAndUnit ? designReservesAndUnit[1] : undefined}
+                  onChange={e => { setFieldsValue({ designReservesAndUnit: [designReservesAndUnit[0], e.target.value.trim()] }) }}
+                  style={{ width: '50px', textAlign: 'center' }}
+                  placeholder="单位" />
+              </Fragment>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="是否压力容器">
+            {getFieldDecorator('pressureVessel', {
+              initialValue: id ? detail.pressureVessel : undefined,
+              rules: [{ required: true, message: '请选择是否压力容器' }],
+            })(
+              <Select {...itemStyles} allowClear placeholder="请选择">
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
+          {pressureVessel === '1' && (
+            <Fragment>
+              <FormItem {...formItemLayout} label="压力等级">
+                {getFieldDecorator('pressureRate', {
+                  // initialValue: id ? detail.pressureRate : undefined,
+                  rules: [{ required: true, message: '请选择压力等级' }],
+                })(
+                  <Select {...itemStyles} allowClear placeholder="请选择">
+                    {pressureList.map(({ key, value }) => (
+                      <Option key={key} value={key}>
+                        {value}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout} label="设计压力（KPa）">
+                {getFieldDecorator('designPressure', {
+                  // initialValue: id ? detail.designPressure : undefined,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入设计压力（KPa）' }],
+                })(<Input {...itemStyles} placeholder="请输入" />)}
+              </FormItem>
+            </Fragment>
+          )}
+          <FormItem {...formItemLayout} label="储罐位置分类">
+            {getFieldDecorator('tankLocationCate', {
+              initialValue: id ? detail.tankLocationCate : undefined,
+              rules: [{ required: true, message: '请选择储罐位置分类' }],
+            })(
+              <Select {...itemStyles} allowClear placeholder="请选择">
+                {storageAreaList.map(({ key, value }) => (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                ))}
+              </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="储罐形式">
@@ -918,65 +982,7 @@ export default class StorageEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="是否压力容器">
-            {getFieldDecorator('pressureVessel', {
-              initialValue: id ? detail.pressureVessel : undefined,
-              rules: [{ required: true, message: '请选择是否压力容器' }],
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
-                {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-          {pressureVessel === '1' && (
-            <Fragment>
-              <FormItem {...formItemLayout} label="压力等级">
-                {getFieldDecorator('pressureRate', {
-                  // initialValue: id ? detail.pressureRate : undefined,
-                  rules: [{ required: true, message: '请选择压力等级' }],
-                })(
-                  <Select {...itemStyles} allowClear placeholder="请选择">
-                    {pressureList.map(({ key, value }) => (
-                      <Option key={key} value={key}>
-                        {value}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-              <FormItem {...formItemLayout} label="设计压力（KPa）">
-                {getFieldDecorator('designPressure', {
-                  // initialValue: id ? detail.designPressure : undefined,
-                  getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入设计压力（KPa）' }],
-                })(<Input {...itemStyles} placeholder="请输入" />)}
-              </FormItem>
-            </Fragment>
-          )}
-          <FormItem {...formItemLayout} label="设计储量">
-            {getFieldDecorator('designReservesAndUnit', {
-              initialValue: id ? [detail.designReserves, detail.designReservesUnit || null] : [],
-              // getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, validator: this.validateDesignReservesAndUnit }],
-            })(
-              <Fragment>
-                <Input
-                  value={designReservesAndUnit ? designReservesAndUnit[0] : undefined}
-                  onChange={e => { setFieldsValue({ designReservesAndUnit: [e.target.value.trim(), designReservesAndUnit[1]] }) }}
-                  {...itemStyles}
-                  placeholder="请输入" />
-                <Input
-                  value={designReservesAndUnit ? designReservesAndUnit[1] : undefined}
-                  onChange={e => { setFieldsValue({ designReservesAndUnit: [designReservesAndUnit[0], e.target.value.trim()] }) }}
-                  style={{ width: '100px' }}
-                  placeholder="单位" />
-              </Fragment>
-            )}
-          </FormItem>
+
           <FormItem {...formItemLayout} label="进出料方式">
             {getFieldDecorator('feedDischargMode', {
               initialValue: id ? detail.feedDischargMode : undefined,
@@ -1056,7 +1062,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem> */}
           <FormItem {...formItemLayout} label="是否高危储罐">
             {getFieldDecorator('highRiskTank', {
-              initialValue: id ? detail.highRiskTank : undefined,
+              // initialValue: id ? detail.highRiskTank : undefined,
               rules: [
                 {
                   required: true,
@@ -1073,12 +1079,14 @@ export default class StorageEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="高危储罐自控系统">
-            {getFieldDecorator('highRiskTankSystem', {
-              initialValue: id ? detail.highRiskTankSystem : undefined,
-              getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} placeholder="请输入" />)}
-          </FormItem>
+          {+highRiskTank === 1 && (
+            <FormItem {...formItemLayout} label="高危储罐自控系统">
+              {getFieldDecorator('highRiskTankSystem', {
+                // initialValue: id ? detail.highRiskTankSystem : undefined,
+                getValueFromEvent: this.handleTrim,
+              })(<Input {...itemStyles} placeholder="请输入" />)}
+            </FormItem>
+          )}
           <FormItem {...formItemLayout} label="安全设备">
             {getFieldDecorator('safeEquip', {
               initialValue: id ? detail.safeEquip : undefined,
@@ -1102,8 +1110,8 @@ export default class StorageEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
-                <Option value="1">无</Option>
-                <Option value="2">有</Option>
+                <Option value="0">无</Option>
+                <Option value="1">有</Option>
               </Select>
             )}
           </FormItem>
