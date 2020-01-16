@@ -92,10 +92,15 @@ export default class Map extends PureComponent {
       payload: { companyId, pageNum: 1, pageSize: 0 },
       callback: ({ list }) => {
         list.map(polygon => {
-          const { zoneLevel, coordinateList, groupId } = polygon;
+          const { zoneLevel, coordinateList, groupId, modelIds } = polygon;
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
-          this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
+          // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
+          this.setModelColorById(
+            groupId,
+            modelIds.split(',').map(id => +id),
+            COLORS[zoneLevel - 1]
+          );
           return null;
         });
       },
@@ -228,15 +233,16 @@ export default class Map extends PureComponent {
       )
         return;
 
-      const { eventInfo: { coord } = {} } = clickedObj;
+      const { eventInfo: { coord } = {}, ID } = clickedObj;
       if (coord) {
         // 点击区域
         for (let index = 0; index < this.polygonArray.length; index++) {
           const polygon = this.polygonArray[index];
-          if (this.isPointInPolygon(coord, polygon)) {
-            const {
-              polygonProps: { id },
-            } = polygon;
+          const {
+            polygonProps: { modelIds, id },
+          } = polygon;
+          const IDs = modelIds.split(',').map(item => +item);
+          if (this.isPointInPolygon(coord, polygon) || IDs.includes(ID)) {
             handleShowAreaDrawer(id);
             break;
           }
@@ -257,8 +263,7 @@ export default class Map extends PureComponent {
           this.handleShowVideo(keyId);
         } else if (iconType === 2) {
           // 监测设备
-          const { type, targetId } = markerProps;
-          if (type) handleClickMonitorIcon(type, targetId);
+          handleClickMonitorIcon(markerProps);
         }
       }
     });
@@ -315,6 +320,15 @@ export default class Map extends PureComponent {
     });
   }
 
+  setModelColorById = (groupId, IDs, color) => {
+    const models = map.getDatasByAlias(groupId, 'model');
+    models.map(model => {
+      const { ID } = model;
+      if (IDs.includes(ID)) model.setColor(color);
+      return null;
+    });
+  };
+
   addMarkers = (gId, markerProps, layer) => {
     let markerLayer = layer;
     const groupId = gId || 1;
@@ -326,12 +340,14 @@ export default class Map extends PureComponent {
     }
     const im = new fengmap.FMImageMarker({
       size: 50, //设置图片显示尺寸
-      height: 3, //标注高度，大于model的高度
+      height: 0, //标注高度，大于model的高度
       ...markerProps,
+      callback: function() {
+        im.alwaysShow();
+      },
     });
 
     markerLayer.addMarker(im); //图片标注层添加图片Marker
-    im.alwaysShow();
     this.markerArray.push(im);
   };
 

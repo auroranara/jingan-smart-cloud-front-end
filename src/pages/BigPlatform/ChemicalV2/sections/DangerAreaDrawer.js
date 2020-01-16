@@ -257,7 +257,7 @@ export default class KeyPoints extends PureComponent {
                 </div>
               </div>
             </div> */}
-
+            {/* {dcList.length + scList.length > 0 && ( */}
             <div className={styles.wrapper}>
               <div className={styles.title}>两单</div>
               <div className={styles.content}>
@@ -282,7 +282,9 @@ export default class KeyPoints extends PureComponent {
                 })}
               </div>
             </div>
+            {/* )} */}
 
+            {/* {acList.length + kcList.length + ecList.length > 0 && ( */}
             <div className={styles.wrapper}>
               <div className={styles.title}>三卡</div>
               <div className={styles.content}>
@@ -307,6 +309,7 @@ export default class KeyPoints extends PureComponent {
                 })}
               </div>
             </div>
+            {/* )} */}
           </div>
         }
       />

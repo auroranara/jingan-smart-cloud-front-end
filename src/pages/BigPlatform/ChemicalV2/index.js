@@ -51,6 +51,7 @@ import {
   GasDrawer,
   PoisonDrawer,
   MHDrawer,
+  MonitorEquipDrawer,
 } from './sections/Components';
 
 const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
@@ -222,6 +223,8 @@ export default class Chemical extends PureComponent {
       // 有毒气体列表
       toxicGasList: [],
       chemicalDetail: {},
+      monitorEquipDrawerVisible: false,
+      monitorMarker: {},
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -899,27 +902,10 @@ export default class Chemical extends PureComponent {
     this.setState({ monitorType, monitorDrawerVisible: true });
   };
 
-  handleClickMonitorIcon = (monitorType, id) => {
-    const {
-      match: {
-        params: { unitId: companyId },
-      },
-      dispatch,
-    } = this.props;
-    if (!MonitorConfig[monitorType]) return;
-    dispatch({
-      type: 'chemical/fetchMonitorData',
-      payload: { companyId, pageSize: 0, pageNum: 1, monitorType, hasMonitor: true, id },
-      callback: res => {
-        if (!res || !res.data) return;
-        const {
-          data: { list },
-        } = res;
-        const detail = list[0];
-        this.setState({ monitorType }, () => {
-          this.handleClickMonitorDetail(detail);
-        });
-      },
+  // 监测设备详情弹窗
+  handleClickMonitorIcon = (markerProps) => {
+    this.setDrawerVisible('monitorEquip', {
+      monitorMarker: markerProps,
     });
   };
 
@@ -1103,7 +1089,7 @@ export default class Chemical extends PureComponent {
   handleShowChemicalDetail = detail => {
     this.setState({ chemicalDetail: detail });
     this.setDrawerVisible('chemicalDetail');
-  }
+  };
 
   /**
    * 渲染
@@ -1181,6 +1167,8 @@ export default class Chemical extends PureComponent {
       toxicGasList,
       storehouseDrawerVisible,
       chemicalDetail,
+      monitorEquipDrawerVisible,
+      monitorMarker,
     } = this.state;
     return (
       <BigPlatformLayout
@@ -1526,6 +1514,15 @@ export default class Chemical extends PureComponent {
             this.setState({ storehouseDrawerVisible: false });
           }}
           onVideoClick={this.handleShowVideo}
+        />
+
+        {/* 监测设备弹窗 */}
+        <MonitorEquipDrawer
+          visible={monitorEquipDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('monitorEquip');
+          }}
+          monitorMarker={monitorMarker}
         />
       </BigPlatformLayout>
     );

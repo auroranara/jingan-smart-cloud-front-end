@@ -24,6 +24,7 @@ import Messages from './Messages';
 import GasDrawer from './GasDrawer';
 import PoisonDrawer from './PoisonDrawer';
 import MHDrawer from './MHDrawer';
+import MonitorEquipDrawer from './MonitorEquipDrawer';
 
 export {
   Risk,
@@ -52,4 +53,5 @@ export {
   GasDrawer,
   PoisonDrawer,
   MHDrawer,
+  MonitorEquipDrawer,
 };
