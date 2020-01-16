@@ -16,10 +16,10 @@ const fields = [
     //   //   message: `请输入${fieldList.name}`,
     //   // }],
     // },
-    render () {
+    render() {
       return <Input placeholder={fieldList.name} />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
@@ -47,13 +47,17 @@ export default class CompanyModal extends PureComponent {
     name: undefined,
   };
 
-  getSnapshotBeforeUpdate (prevProps, prevState) {
-    return this.props.visible === true && !!this.props.rowSelection && !!this.props.rowSelection.selectedRowKeys;
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    return (
+      this.props.visible === true &&
+      !!this.props.rowSelection &&
+      !!this.props.rowSelection.selectedRowKeys
+    );
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     if (snapshot) {
-      this.setState({ selectedRowKeys: this.props.rowSelection.selectedRowKeys })
+      this.setState({ selectedRowKeys: this.props.rowSelection.selectedRowKeys });
     }
   }
 
@@ -109,12 +113,15 @@ export default class CompanyModal extends PureComponent {
     const {
       modal: { list },
       onSelect,
+      isId,
       multiSelect,
     } = this.props;
     let selectedData;
     if (multiSelect) {
       selectedData = selectedRowKeys.map(data => {
-        return list.find(item => item.id === data);
+        return list.find(item => {
+          return isId ? item.loginId === data : item.id === data;
+        });
       });
     } else {
       selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
@@ -182,7 +189,7 @@ export default class CompanyModal extends PureComponent {
   };
 
   /* 渲染选择按钮 */
-  renderSelectButton () {
+  renderSelectButton() {
     const { selectedRowKeys } = this.state;
     return (
       <Button type="primary" onClick={this.handleSelect} disabled={!selectedRowKeys.length}>
@@ -191,7 +198,7 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
-  render () {
+  render() {
     const {
       visible,
       width,

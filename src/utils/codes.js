@@ -605,6 +605,16 @@ export default {
       edit: 'operationSafety.specialEquipmentOperators.edit',
       delete: 'operationSafety.specialEquipmentOperators.delete',
     },
+
+    // 生产装置
+    productionEquipments: {
+      list: 'majorHazardInfo.productionEquipments.listView',
+      add: 'majorHazardInfo.productionEquipments.add',
+      edit: 'majorHazardInfo.productionEquipments.edit',
+      delete: 'majorHazardInfo.productionEquipments.delete',
+      bindSensor: 'majorHazardInfo.productionEquipments.bindSensor',
+      unbindSensor: 'majorHazardInfo.productionEquipments.unbindSensor',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例

@@ -73,6 +73,7 @@ export default class RegSafetyEngEdit extends PureComponent {
           this.setState({
             editCompanyId: companyId,
             detailList: currentList,
+            editCompanyId: companyId,
             requireFilesList: requirementsFilesList.map(({ dbUrl, webUrl }, index) => ({
               uid: index,
               status: 'done',
@@ -112,6 +113,7 @@ export default class RegSafetyEngEdit extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
+    const { editCompanyId } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const { requireFilesList, regFilesList, editCompanyId } = this.state;

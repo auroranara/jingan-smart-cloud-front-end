@@ -908,7 +908,6 @@ module.exports = env => {
               name: 'productionEquipments', // 生产装置
               code: 'majorHazardInfo.productionEquipments',
               path: '/major-hazard-info/production-equipments',
-              developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -920,7 +919,7 @@ module.exports = env => {
                   name: 'list',
                   code: 'majorHazardInfo.productionEquipments.list',
                   path: '/major-hazard-info/production-equipments/list',
-                  // "component": "./MajorHazardInfo/ProductionEquipments/TableList",
+                  component: './BaseInfo/ProductionEquipments/index',
                 },
                 {
                   name: 'view',
@@ -932,13 +931,13 @@ module.exports = env => {
                   name: 'add',
                   code: 'majorHazardInfo.productionEquipments.add',
                   path: '/major-hazard-info/production-equipments/add',
-                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                  component: './BaseInfo/ProductionEquipments/Edit',
                 },
                 {
                   name: 'edit',
                   code: 'majorHazardInfo.productionEquipments.edit',
                   path: '/major-hazard-info/production-equipments/edit/:id',
-                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                  component: './BaseInfo/ProductionEquipments/Edit',
                 },
               ],
             },
@@ -1293,25 +1292,25 @@ module.exports = env => {
                   name: 'list',
                   code: 'riskControl.fourColorImage.list',
                   path: '/risk-control/four-color-image/list',
-                  component: './RiskControl/FourColorImage/TableList',
+                  component: "./RiskControl/FourColorImage/TableList",
                 },
                 {
                   name: 'view',
                   code: 'riskControl.fourColorImage.view',
                   path: '/risk-control/four-color-image/view/:id',
-                  // "component": "./RiskControl/FourColorImage/Edit",
+                  component: "./RiskControl/FourColorImage/Edit",
                 },
                 {
                   name: 'add',
                   code: 'riskControl.fourColorImage.add',
                   path: '/risk-control/four-color-image/add',
-                  component: './RiskControl/FourColorImage/Edit',
+                  component: "./RiskControl/FourColorImage/Edit",
                 },
                 {
                   name: 'edit',
                   code: 'riskControl.fourColorImage.edit',
                   path: '/risk-control/four-color-image/edit/:id',
-                  component: './RiskControl/FourColorImage/Edit',
+                  component: "./RiskControl/FourColorImage/Edit",
                 },
               ],
             },
