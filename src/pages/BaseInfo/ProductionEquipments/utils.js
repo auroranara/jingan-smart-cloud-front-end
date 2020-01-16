@@ -60,7 +60,7 @@ export const SEARCH_FIELDS = [
     id: 'deviceStatus',
     label: '装置状态',
     render: () => (
-      <Select placeholder="请输入" allowClear>
+      <Select placeholder="请选择" allowClear>
         {deviceStatusList.map(({ key, value }) => (
           <Option key={key} value={key}>
             {value}

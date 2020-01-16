@@ -434,7 +434,7 @@ export default class StorehouseList extends PureComponent {
         },
       },
       {
-        title: '贮存物质名称',
+        title: '贮存物质及设计储量',
         dataIndex: 'materialsName',
         key: 'materialsName',
         align: 'center',

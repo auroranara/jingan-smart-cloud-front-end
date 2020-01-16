@@ -157,7 +157,7 @@ const columnsDetail = [
     dataIndex: 'checkDate',
     key: 'checkDate',
     align: 'center',
-    render: val => <span>{moment(+val).format('YYYY年MM月DD日')}</span>,
+    render: val => <span>{val === null ? '' : moment(+val).format('YYYY年MM月DD日')}</span>,
   },
   {
     title: '采取的主要管控措施',

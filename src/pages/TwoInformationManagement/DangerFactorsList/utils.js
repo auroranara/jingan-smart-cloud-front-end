@@ -126,7 +126,7 @@ const columnsDetail = [
     key: 'checkDate',
     align: 'center',
     width: 340,
-    render: val => <span>{moment(+val).format('YYYY年MM月DD日')}</span>,
+    render: val => <span>{val === null ? '' : moment(+val).format('YYYY年MM月DD日')}</span>,
   },
 ];
 export const DetailModal = Form.create()(props => {
