@@ -178,6 +178,7 @@ export default class TableList extends React.Component {
     });
     // 获取地图
     this.fetchMap({ companyId: company.id }, mapInfo => {
+      if (!mapInfo.mapId) return;
       this.childMap.initMap({ ...mapInfo });
     });
     // 获取列表

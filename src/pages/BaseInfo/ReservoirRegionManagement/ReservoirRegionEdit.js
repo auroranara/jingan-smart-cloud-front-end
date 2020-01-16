@@ -247,14 +247,16 @@ export default class ReservoirRegionEdit extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'storehouse/fetchStorehouseList',
-      payload: { ...payload, companyId: fixedCompanyId },
+      payload: {
+        ...payload,
+        isBind: 0, //0未绑定  1绑定
+        companyId: fixedCompanyId,
+      },
     });
   };
 
   // 选择库房
   handleStoreHouseSelect = item => {
-    console.log('item', item);
-
     const {
       form: { setFieldsValue },
     } = this.props;

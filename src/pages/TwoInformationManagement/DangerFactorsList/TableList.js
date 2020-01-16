@@ -30,7 +30,7 @@ const {
 } = codes;
 
 const url =
-  'http://data.jingan-china.cn/v2/chem/file/%E5%8D%B1%E9%99%A9%EF%BC%88%E6%9C%89%E5%AE%B3%EF%BC%89%E5%9B%A0%E7%B4%A0%E6%8E%92%E6%9F%A5%E8%BE%A8%E8%AF%86%E6%B8%85%E5%8D%95.xls';
+  'http://data.jingan-china.cn/v2/chem/file1/%E5%8D%B1%E9%99%A9%EF%BC%88%E6%9C%89%E5%AE%B3%EF%BC%89%E5%9B%A0%E7%B4%A0%E6%8E%92%E6%9F%A5%E8%BE%A8%E8%AF%86%E6%B8%85%E5%8D%95.xls';
 
 @connect(({ twoInformManagement, fourColorImage, user, loading }) => ({
   twoInformManagement,

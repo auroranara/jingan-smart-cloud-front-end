@@ -249,7 +249,7 @@ export default class TableList extends PureComponent {
 
     const extraColumns = [
       {
-        title: '已绑定传感器',
+        title: '已绑定监测设备',
         dataIndex: 'monitorEquipmentCount',
         key: 'monitorEquipmentCount',
         align: 'center',

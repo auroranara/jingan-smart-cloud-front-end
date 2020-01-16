@@ -30,6 +30,7 @@ const addTitle = '新增重大危险源';
     account,
     user,
     pipeline,
+    department,
     loading,
   }) => ({
     reservoirRegion,
@@ -39,6 +40,7 @@ const addTitle = '新增重大危险源';
     storageAreaManagement,
     productionEquipments,
     pipeline,
+    department,
     gasometer,
     loading: loading.models.reservoirRegion,
     // personModalLoading:
@@ -482,6 +484,7 @@ export default class MajorHazardEdit extends PureComponent {
   // 打开责任人弹框
   handlePersonModal = () => {
     const {
+      dispatch,
       user: {
         currentUser: { companyId },
       },
@@ -494,6 +497,10 @@ export default class MajorHazardEdit extends PureComponent {
           pageSize: 10,
           pageNum: 1,
         },
+      });
+      dispatch({
+        type: 'department/fetchDepartmentList',
+        payload: { companyId: fixedCompanyId },
       });
       this.setState({ personModalVisible: true });
     } else {
@@ -513,7 +520,10 @@ export default class MajorHazardEdit extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'account/fetch',
-      payload: { ...payload, unitId: fixedCompanyId },
+      payload: {
+        ...payload,
+        unitId: fixedCompanyId,
+      },
     });
   };
 
@@ -1019,6 +1029,9 @@ export default class MajorHazardEdit extends PureComponent {
         list: { list: pipelineList = [] },
       },
       account: { data: personData = {} },
+      department: {
+        data: { list: departmentList = [] },
+      },
     } = this.props;
 
     const { dangerType, targetKeys, dangerModalVisible, personModalVisible } = this.state;
@@ -1099,7 +1112,15 @@ export default class MajorHazardEdit extends PureComponent {
         align: 'center',
         render: (val, row) => {
           const { users } = row;
-          return <span>{users.map(item => item.departmentName).join('')}</span>;
+          const departmentId = users.map(item => item.departmentId).join('');
+          return (
+            <span>
+              {departmentList
+                .filter(item => item.id === departmentId)
+                .map(item => item.name)
+                .join('')}
+            </span>
+          );
         },
       },
     ];

@@ -111,68 +111,6 @@ const dangerSourceFields = [
     },
   },
 ];
-// let inputValue;
-// const materialsColumns = [
-//   {
-//     title: '统一编码',
-//     dataIndex: 'unifiedCode',
-//     key: 'unifiedCode',
-//   },
-//   {
-//     title: '品名',
-//     dataIndex: 'chineName',
-//     key: 'chineName',
-//   },
-//   {
-//     title: 'CAS号',
-//     dataIndex: 'casNo',
-//     key: 'casNo',
-//   },
-//   {
-//     title: '危险性类别',
-//     dataIndex: 'riskCateg',
-//     key: 'riskCateg',
-//   },
-//   {
-//     title: '设计储量（吨）',
-//     dataIndex: 'unitChemiclaNum',
-//     key: 'unitChemiclaNum',
-//     render: (data, row) => {
-//       return (
-//         <InputNumber
-//           placeholder="请输入设计储量（吨）"
-//           min={0}
-//           ref={node => (inputValue = node)}
-//           onBlur={e => {
-//             console.log('e', e);
-//             console.log('e.currentTarget', e.currentTarget);
-//             console.log('inputValue', inputValue);
-//           }}
-//         />
-//       );
-//     },
-//   },
-// ];
-// const materialsFields = [
-//   {
-//     id: 'casNo',
-//     render() {
-//       return <Input placeholder="CAS号" />;
-//     },
-//     transform(value) {
-//       return value.trim();
-//     },
-//   },
-//   {
-//     id: 'chineName',
-//     render() {
-//       return <Input placeholder="品名" />;
-//     },
-//     transform(value) {
-//       return value.trim();
-//     },
-//   },
-// ];
 
 @Form.create()
 @connect(({ company, storehouse, materials, loading, user }) => ({
@@ -376,7 +314,12 @@ export default class StorehouseHandler extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    this.setState({ selectedCompany, companyModalVisible: false });
+    this.setState({
+      selectedCompany,
+      companyModalVisible: false,
+      selectedMaterials: [],
+      selectedRegion: {},
+    });
     setFieldsValue({ companyId: selectedCompany.id });
   };
 
@@ -397,13 +340,19 @@ export default class StorehouseHandler extends PureComponent {
   };
 
   handleSelectMaterials = selectedMaterials => {
-    console.log('selectedMaterials', selectedMaterials);
-
     const {
       form: { setFieldsValue },
     } = this.props;
     const { materialsNum } = this.state;
     this.setState({ selectedMaterials, materialsModalVisible: false });
+    const isToxicChem = selectedMaterials.map(item => item.highlyToxicChem);
+    const isChemcataSn = selectedMaterials.map(item => item.dangerChemcataSn);
+    if (isChemcataSn.length > 0) {
+      setFieldsValue({ dangerWarehouse: '1' });
+    }
+    if (isToxicChem.indexOf('1') > -1) {
+      setFieldsValue({ toxicWarehouse: '1' });
+    }
     setFieldsValue({
       materialsName: JSON.stringify(
         selectedMaterials.map(item => ({
@@ -429,13 +378,24 @@ export default class StorehouseHandler extends PureComponent {
   };
 
   handleViewRegionModal = () => {
-    this.setState({ regionModalVisible: true });
-    this.fetchRegion({
-      payload: {
-        pageSize: 10,
-        pageNum: 1,
+    const {
+      user: {
+        currentUser: { companyId },
       },
-    });
+    } = this.props;
+    const { selectedCompany } = this.state;
+    const fixCompanyId = selectedCompany.id || companyId;
+    if (fixCompanyId) {
+      this.setState({ regionModalVisible: true });
+      this.fetchRegion({
+        payload: {
+          pageSize: 10,
+          pageNum: 1,
+        },
+      });
+    } else {
+      message.warning('请先选择单位！');
+    }
   };
 
   handleDangerSourceModal = () => {
@@ -449,13 +409,24 @@ export default class StorehouseHandler extends PureComponent {
   };
 
   handleMaterialsModal = () => {
-    this.setState({ materialsModalVisible: true });
-    this.fetchMaterials({
-      payload: {
-        pageSize: 10,
-        pageNum: 1,
+    const {
+      user: {
+        currentUser: { companyId },
       },
-    });
+    } = this.props;
+    const { selectedCompany } = this.state;
+    const fixCompanyId = selectedCompany.id || companyId;
+    if (fixCompanyId) {
+      this.setState({ materialsModalVisible: true });
+      this.fetchMaterials({
+        payload: {
+          pageSize: 10,
+          pageNum: 1,
+        },
+      });
+    } else {
+      message.warning('请先选择单位！');
+    }
   };
 
   handleChangeDangerSource = e => {
@@ -770,12 +741,12 @@ export default class StorehouseHandler extends PureComponent {
         dataIndex: 'casNo',
         key: 'casNo',
       },
-      {
-        title: '危险性类别',
-        dataIndex: 'riskCateg',
-        key: 'riskCateg',
-        render: data => RISK_CATEGORIES[data],
-      },
+      // {
+      //   title: '危险性类别',
+      //   dataIndex: 'riskCateg',
+      //   key: 'riskCateg',
+      //   render: data => RISK_CATEGORIES[data],
+      // },
       {
         title: '设计储量（吨）',
         dataIndex: 'unitChemiclaNum',

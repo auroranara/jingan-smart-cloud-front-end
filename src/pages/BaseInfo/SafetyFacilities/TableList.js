@@ -243,33 +243,25 @@ export default class TableList extends PureComponent {
   handleCategoryOneChange = val => {
     const { categoryOneList } = this.state;
     const typeOneName = categoryOneList.filter(item => item.id === val).map(item => item.label);
-    this.setState({ categoryOneName: typeOneName });
-
-    if (val) {
-      this.fetchDict({
-        payload: { type: 'safeFacilities', parentId: val },
-        callback: list => {
-          this.setState({ categoryTwoList: list });
-        },
-      });
-    } else this.setState({ categoryOneList: [] });
-    this.setState({ categoryOneId: val });
+    this.fetchDict({
+      payload: { type: 'safeFacilities', parentId: val },
+      callback: list => {
+        this.setState({ categoryTwoList: list });
+      },
+    });
+    this.setState({ categoryOneId: val, categoryOneName: typeOneName });
   };
 
   handleCategoryTwoChange = val => {
     const { categoryTwoList } = this.state;
     const typeTwoName = categoryTwoList.filter(item => item.id === val).map(item => item.label);
-    this.setState({ categoryTwoName: typeTwoName });
-
-    if (val) {
-      this.fetchDict({
-        payload: { type: 'safeFacilities', parentId: val },
-        callback: list => {
-          this.setState({ facilitiesNameList: list });
-        },
-      });
-    } else this.setState({ categoryTwoList: [] });
-    this.setState({ categoryTwoId: val });
+    this.fetchDict({
+      payload: { type: 'safeFacilities', parentId: val },
+      callback: list => {
+        this.setState({ facilitiesNameList: list });
+      },
+    });
+    this.setState({ categoryTwoName: typeTwoName, categoryTwoId: val });
   };
 
   handleNameChange = val => {
@@ -277,8 +269,7 @@ export default class TableList extends PureComponent {
     const typeThreeName = facilitiesNameList
       .filter(item => item.id === val)
       .map(item => item.label);
-    this.setState({ categoryThreeName: typeThreeName });
-    this.setState({ safeFacilitiesNameId: val });
+    this.setState({ categoryThreeName: typeThreeName, safeFacilitiesNameId: val });
   };
 
   handleCategoryOneSelect = () => {
@@ -403,9 +394,7 @@ export default class TableList extends PureComponent {
         width: 120,
         align: 'center',
         render: pastStatus => (
-          <span style={{ color: this.getColorVal(pastStatus) }}>
-            {paststatusVal[pastStatus]}
-          </span>
+          <span style={{ color: this.getColorVal(pastStatus) }}>{paststatusVal[pastStatus]}</span>
         ),
       },
       {
@@ -415,7 +404,11 @@ export default class TableList extends PureComponent {
         align: 'center',
         render: (val, text) =>
           reportCode ? (
-            <a href={`#/facility-management/safety-facilities/inspection-report/${text.id}`} target="_blank" rel="noopener noreferrer">
+            <a
+              href={`#/facility-management/safety-facilities/inspection-report/${text.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               查看详情
             </a>
           ) : (
@@ -514,6 +507,7 @@ export default class TableList extends PureComponent {
               <Form.Item label={'分类'}>
                 <div>
                   <Select
+                    allowClear
                     value={categoryOneName}
                     placeholder="请选择"
                     {...itemsStyle}
@@ -527,6 +521,7 @@ export default class TableList extends PureComponent {
                     ))}
                   </Select>
                   <Select
+                    allowClear
                     value={categoryTwoName}
                     {...itemsStyle}
                     placeholder="请选择"
@@ -540,6 +535,7 @@ export default class TableList extends PureComponent {
                     ))}
                   </Select>
                   <Select
+                    allowClear
                     {...itemsStyle}
                     value={categoryThreeName}
                     onChange={this.handleNameChange}

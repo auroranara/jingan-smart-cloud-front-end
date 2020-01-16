@@ -3,7 +3,7 @@ import { Modal } from 'antd';
 import { isPointInPolygon } from '@/utils/map';
 
 const fengMap = fengmap; // eslint-disable-line
-const fmapID = '100';
+// const fmapID = '100';
 const COLOR = {
   orange: 'rgb(241, 122, 10)',
   yellow: 'rgb(251, 247, 25)',
@@ -61,7 +61,10 @@ export default class Map extends React.Component {
   };
 
   handleDispose = () => {
-    map && map.dispose();
+    if (!map) return;
+
+    map.dispose();
+    map = undefined;
   };
 
   initMap = ({ appName, key, mapId }) => {

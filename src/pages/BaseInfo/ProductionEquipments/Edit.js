@@ -107,9 +107,20 @@ export default class Edit extends PureComponent {
 
   // 打开高危工艺弹框
   handleTechnologyModal = () => {
-    this.setState({ technologyVisible: true });
-    const payload = { pageSize: 10, pageNum: 1 };
-    this.fetchTechnologyList({ payload });
+    const {
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+    const { selectedCompany } = this.state;
+    const fixCompanyId = selectedCompany.key || companyId;
+    if (fixCompanyId) {
+      this.setState({ technologyVisible: true });
+      const payload = { pageSize: 10, pageNum: 1 };
+      this.fetchTechnologyList({ payload });
+    } else {
+      message.warning('请先选择单位！');
+    }
   };
 
   // 获取高危工艺列表
@@ -136,9 +147,20 @@ export default class Edit extends PureComponent {
 
   // 打开贮存物质弹框
   handleMaterialsModal = () => {
-    this.setState({ materialsVisible: true });
-    const payload = { pageSize: 10, pageNum: 1 };
-    this.fetchMaterialsList({ payload });
+    const {
+      user: {
+        currentUser: { companyId },
+      },
+    } = this.props;
+    const { selectedCompany } = this.state;
+    const fixCompanyId = selectedCompany.key || companyId;
+    if (fixCompanyId) {
+      this.setState({ materialsVisible: true });
+      const payload = { pageSize: 10, pageNum: 1 };
+      this.fetchMaterialsList({ payload });
+    } else {
+      message.warning('请先选择单位！');
+    }
   };
 
   // 获取贮存物质列表

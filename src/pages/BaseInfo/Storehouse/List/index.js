@@ -404,7 +404,7 @@ export default class StorehouseList extends PureComponent {
               </div>
               <div>
                 重大危险源：
-                {dangerSource === '0' ? '否' : '是'}
+                {dangerSource === '1' ? '是' : '否'}
               </div>
             </div>
           );
