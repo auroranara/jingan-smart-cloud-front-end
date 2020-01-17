@@ -762,11 +762,11 @@ export default class accountManagementList extends React.Component {
                 <Card
                   title={
                     <div>
-                      <span>loginName</span>
+                      <span>{loginName}</span>
                       {!!isBindWechat && (
                         <span style={{ paddingLeft: 10 }}>
                           <span>{<Icon type="wechat" />}</span>
-                          <span>{<Icon type="mobile" />}</span>
+                          <span style={{ paddingLeft: 6 }}>{<Icon type="mobile" />}</span>
                         </span>
                       )}
                     </div>
