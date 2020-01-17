@@ -123,6 +123,12 @@ const columnsDetail = [
     align: 'center',
   },
   {
+    title: '可能导致事故类别',
+    dataIndex: 'consequence',
+    key: 'consequence',
+    align: 'center',
+  },
+  {
     title: 'L',
     dataIndex: 'l',
     key: 'l',
@@ -164,6 +170,11 @@ const columnsDetail = [
     dataIndex: 'dangerMeasure',
     key: 'dangerMeasure',
     align: 'center',
+    render: val => (
+      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
   },
   {
     title: '责任部门',

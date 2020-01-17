@@ -331,6 +331,7 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
+        isDanger: 0,
         ...payload,
       },
     });
@@ -344,6 +345,7 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
+        dangerSource: 0,
         ...payload,
       },
     });
@@ -357,6 +359,7 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
+        dangerSource: 0,
         ...payload,
       },
     });
@@ -370,6 +373,7 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
+        majorHazard: 0,
         ...payload,
       },
     });
@@ -383,6 +387,7 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
+        dangerSource: 0,
         ...payload,
       },
     });

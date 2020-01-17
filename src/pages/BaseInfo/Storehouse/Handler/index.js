@@ -347,11 +347,15 @@ export default class StorehouseHandler extends PureComponent {
     this.setState({ selectedMaterials, materialsModalVisible: false });
     const isToxicChem = selectedMaterials.map(item => item.highlyToxicChem);
     const isChemcataSn = selectedMaterials.map(item => item.dangerChemcataSn);
-    if (isChemcataSn.length > 0) {
+    if (isChemcataSn.join(',') !== '') {
       setFieldsValue({ dangerWarehouse: '1' });
+    } else {
+      setFieldsValue({ dangerWarehouse: undefined });
     }
-    if (isToxicChem.indexOf('1') > -1) {
+    if (isToxicChem.includes('1')) {
       setFieldsValue({ toxicWarehouse: '1' });
+    } else {
+      setFieldsValue({ toxicWarehouse: undefined });
     }
     setFieldsValue({
       materialsName: JSON.stringify(
