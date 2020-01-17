@@ -12,8 +12,7 @@ import {
   message,
   Popconfirm,
 } from 'antd';
-import moment from 'moment';
-import { routerRedux } from 'dva/router';
+// import moment from 'moment';
 import router from 'umi/router';
 
 import { hasAuthority, AuthA } from '@/utils/customAuth';
@@ -23,7 +22,7 @@ import codes from '@/utils/codes';
 import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 import styles from './index.less';
-import index from '../../StorageAreaManagement';
+// import index from '../../StorageAreaManagement';
 
 const {
   baseInfo: {
@@ -66,7 +65,7 @@ export default class MaterialsList extends PureComponent {
     formData: {},
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchList(1);
   }
 
@@ -90,18 +89,19 @@ export default class MaterialsList extends PureComponent {
       user: {
         currentUser: { permissionCodes, unitType },
       },
+      materials: { materialTypeOptions },
     } = this.props;
     const fields = [
       {
         id: 'chineName',
-        render() {
+        render () {
           return <Input placeholder="请输入品名" />;
         },
         transform,
       },
       {
         id: 'riskCateg',
-        render() {
+        render () {
           const options = RISK_CATEGORIES.map((item, index) => ({ value: index, name: item }));
           return (
             <Select
@@ -124,11 +124,16 @@ export default class MaterialsList extends PureComponent {
         },
       },
       {
-        id: 'reservesLocation',
-        render() {
-          return <Input placeholder="请输入存储场所" />;
+        id: 'type',
+        render () {
+          return (
+            <Select placeholder="请选择物料类型">
+              {materialTypeOptions.map(({ value, label }) => (
+                <Option value={value} key={value}>{label}</Option>
+              ))}
+            </Select>
+          );
         },
-        transform,
       },
       // {
       //   id: 'majorHazard',
@@ -155,15 +160,8 @@ export default class MaterialsList extends PureComponent {
       //   },
       // },
       {
-        id: 'casNo',
-        render() {
-          return <Input placeholder="请输入CAS号" />;
-        },
-        transform,
-      },
-      {
         id: 'highlyToxicChem',
-        render() {
+        render () {
           const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
           return (
             <Select
@@ -186,8 +184,22 @@ export default class MaterialsList extends PureComponent {
         },
       },
       {
+        id: 'casNo',
+        render () {
+          return <Input placeholder="请输入CAS号" />;
+        },
+        transform,
+      },
+      {
+        id: 'companyName',
+        render () {
+          return <Input placeholder="请输入单位名称" />;
+        },
+        transform,
+      },
+      {
         id: 'easyMakePoison',
-        render() {
+        render () {
           const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
           return (
             <Select
@@ -211,7 +223,7 @@ export default class MaterialsList extends PureComponent {
       },
       {
         id: 'easyMakeExplode',
-        render() {
+        render () {
           const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
           return (
             <Select
@@ -234,36 +246,8 @@ export default class MaterialsList extends PureComponent {
         },
       },
       {
-        id: 'type',
-        render() {
-          const options = [
-            { value: '1', name: '生产原料' },
-            { value: '2', name: '中间产品' },
-            { value: '3', name: '最终产品' },
-          ];
-          return (
-            <Select
-              allowClear
-              showSearch
-              placeholder="请选择物料类型"
-              getPopupContainer={getRootChild}
-              style={{ width: '100%' }}
-            >
-              {options.map(item => {
-                const { value, name } = item;
-                return (
-                  <Option value={value} key={value}>
-                    {name}
-                  </Option>
-                );
-              })}
-            </Select>
-          );
-        },
-      },
-      {
         id: 'superviseChemicals',
-        render() {
+        render () {
           const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
           return (
             <Select
@@ -284,13 +268,6 @@ export default class MaterialsList extends PureComponent {
             </Select>
           );
         },
-      },
-      {
-        id: 'companyName',
-        render() {
-          return <Input placeholder="请输入单位名称" />;
-        },
-        transform,
       },
     ];
 
@@ -358,7 +335,7 @@ export default class MaterialsList extends PureComponent {
     });
   };
 
-  render() {
+  render () {
     const {
       loading = false,
       user: {
@@ -370,7 +347,7 @@ export default class MaterialsList extends PureComponent {
         companyNum = 0,
       },
     } = this.props;
-    const { currentPage } = this.state;
+    // const { currentPage } = this.state;
 
     const columns = [
       {
@@ -423,41 +400,41 @@ export default class MaterialsList extends PureComponent {
             type,
             annualConsumption,
             annualConsumptionUnit,
-            maxStoreDay,
-            maxStoreDayUnit,
-            actualReserves,
-            actualReservesUnit,
+            // maxStoreDay,
+            // maxStoreDayUnit,
+            // actualReserves,
+            // actualReservesUnit,
             annualThroughput,
             annualThroughputUnit,
           } = record;
           return (
             <div className={styles.multi}>
               <div>{['生产原料', '中间产品', '最终产品'][type - 1]}</div>
-              {type === '1' ? (
+              {['2', '3'].includes(type) ? (
                 <div>
                   年生产能力：
                   {annualThroughput}
                   {annualThroughputUnit}
                 </div>
               ) : (
-                <Fragment>
-                  <div>
-                    年消耗量：
+                  <Fragment>
+                    <div>
+                      年消耗量：
                     {annualConsumption}
-                    {annualConsumptionUnit}
-                  </div>
-                  <div>
-                    最大存储量：
+                      {annualConsumptionUnit}
+                    </div>
+                    {/* <div>
+                      最大存储量：
                     {maxStoreDay}
-                    {maxStoreDayUnit}
-                  </div>
-                </Fragment>
-              )}
-              <div>
+                      {maxStoreDayUnit}
+                    </div> */}
+                  </Fragment>
+                )}
+              {/* <div>
                 实际存储量：
                 {actualReserves}
                 {actualReservesUnit}
-              </div>
+              </div> */}
             </div>
           );
         },
@@ -486,13 +463,13 @@ export default class MaterialsList extends PureComponent {
           return dataList.join('/');
         },
       },
-      {
-        title: '存储场所',
-        dataIndex: 'reservesLocation',
-        key: 'reservesLocation',
-        align: 'center',
-        width: 180,
-      },
+      // {
+      //   title: '存储场所',
+      //   dataIndex: 'reservesLocation',
+      //   key: 'reservesLocation',
+      //   align: 'center',
+      //   width: 180,
+      // },
       {
         title: '操作',
         dataIndex: 'operation',
@@ -551,16 +528,16 @@ export default class MaterialsList extends PureComponent {
               total={total}
               onChange={this.handleTableChange}
               onShowSizeChange={this.handleTableChange}
-              // showTotal={total => `共 ${total} 条`}
+            // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-          <Spin spinning={loading}>
-            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-              <span>暂无数据</span>
-            </Card>
-          </Spin>
-        )}
+            <Spin spinning={loading}>
+              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+                <span>暂无数据</span>
+              </Card>
+            </Spin>
+          )}
       </PageHeaderLayout>
     );
   }

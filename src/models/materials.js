@@ -5,6 +5,7 @@ import {
   deleteMaterials,
   queryDangerSourceList,
   queryMsdsList,
+  fetchInfoByCas,
 } from '@/services/baseInfo/materials';
 
 const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 };
@@ -12,6 +13,12 @@ const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 };
 export default {
   namespace: 'materials',
   state: {
+    // 物料类型选项
+    materialTypeOptions: [
+      { value: '1', label: '生产原料' },
+      { value: '2', label: '中间产品' },
+      { value: '3', label: '最终产品' },
+    ],
     list: [],
     pagination: defaultPagination,
     detail: {},
@@ -21,7 +28,7 @@ export default {
   },
   effects: {
     // 查询物料列表
-    *fetchMaterialsList({ payload, callback }, { call, put }) {
+    *fetchMaterialsList ({ payload, callback }, { call, put }) {
       const response = yield call(queryMaterialsList, payload);
       if (response.code === 200) {
         yield put({
@@ -34,7 +41,7 @@ export default {
       }
     },
     // 新建物料
-    *addMaterials({ payload, success, error }, { call }) {
+    *addMaterials ({ payload, success, error }, { call }) {
       const response = yield call(addMaterials, payload);
       const {
         data: { id },
@@ -50,7 +57,7 @@ export default {
       }
     },
     // 修改物料
-    *editMaterials({ payload, success, error }, { call }) {
+    *editMaterials ({ payload, success, error }, { call }) {
       const response = yield call(updateMaterials, payload);
       const { code, msg } = response;
       if (code === 200) {
@@ -62,7 +69,7 @@ export default {
       }
     },
     // 删除物料
-    *deleteMaterials({ payload, success, error }, { call, put }) {
+    *deleteMaterials ({ payload, success, error }, { call, put }) {
       const response = yield call(deleteMaterials, payload);
       const { code, msg } = response;
       if (code === 200) {
@@ -74,7 +81,7 @@ export default {
       }
     },
     // 重大危险源模态框
-    *fetchDangerSourceModel({ payload, callback }, { call, put }) {
+    *fetchDangerSourceModel ({ payload, callback }, { call, put }) {
       const response = yield call(queryDangerSourceList, payload);
       if (response.code === 200) {
         yield put({
@@ -87,7 +94,7 @@ export default {
       }
     },
     // 重大危险源模态框
-    *fetchMsdsModel({ payload, callback }, { call, put }) {
+    *fetchMsdsModel ({ payload, callback }, { call, put }) {
       const response = yield call(queryMsdsList, payload);
       if (response.code === 200) {
         yield put({
@@ -99,9 +106,16 @@ export default {
         }
       }
     },
+    // 根据CAS号获取信息
+    *fetchInfoByCas ({ payload, callback }, { call }) {
+      const res = yield call(fetchInfoByCas, payload);
+      if (res && res.code === 200) {
+        callback && callback(res.data.list.length ? '1' : '0');
+      }
+    },
   },
   reducers: {
-    saveList(state, { payload }) {
+    saveList (state, { payload }) {
       const { list, pagination: { pageNum, pageSize, total } = {}, companyNum } = payload;
       return {
         ...state,
@@ -115,13 +129,13 @@ export default {
       };
     },
     // 库区弹出框
-    saveDangerSourceModel(state, { payload }) {
+    saveDangerSourceModel (state, { payload }) {
       return {
         ...state,
         dangerSourceModal: payload,
       };
     },
-    saveMsdsModel(state, { payload }) {
+    saveMsdsModel (state, { payload }) {
       return {
         ...state,
         msdsModal: payload,
