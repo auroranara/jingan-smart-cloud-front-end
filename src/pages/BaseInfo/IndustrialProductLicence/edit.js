@@ -247,16 +247,23 @@ export default class IndustriallicenceEdit extends PureComponent {
         }),
         fileLoading: false,
       });
-    } else {
+    } else if (file.status === 'error') {
       // error
-      message.error('上传失败！');
-      this.setState({
-        accessoryList: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
-        fileLoading: false,
-      });
+      this.setState({ accessoryList: [], fileLoading: false });
     }
+  };
+
+  // 上传附件之前的回调
+  handleBeforeUpload = file => {
+    const { fileLoading } = this.state;
+    const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (fileLoading) {
+      message.error('尚未上传结束');
+    }
+    if (!isImage) {
+      message.error('上传失败，请上传jpg格式或者png格式图片');
+    }
+    return isImage && !fileLoading;
   };
 
   renderInfo() {
@@ -425,6 +432,7 @@ export default class IndustriallicenceEdit extends PureComponent {
                 action={uploadAction} // 上传地址
                 fileList={accessoryList}
                 onChange={this.handleUploadChange}
+                beforeUpload={this.handleBeforeUpload}
               >
                 <Button
                   type="dashed"
