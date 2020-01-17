@@ -11,6 +11,7 @@ const isSupportLineClamp = document.body.style.webkitLineClamp !== undefined;
 const TooltipOverlayStyle = {
   overflowWrap: 'break-word',
   wordWrap: 'break-word',
+  zIndex: 9999,
 };
 
 export const getStrFullLength = (str = '') =>
