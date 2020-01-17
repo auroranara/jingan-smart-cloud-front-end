@@ -1,4 +1,6 @@
 import Wave from '@/jingan-components/Wave';
+import Ellipsis from '@/components/Ellipsis';
+import moment from 'moment';
 import styles from './sections/MonitorDrawer.less';
 
 const nbEdu = 'http://data.jingan-china.cn/v2/chem/chemScreen/niubinEdu.png';
@@ -27,6 +29,12 @@ const warehouseImg = 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png';
 const gasometerImg = 'http://data.jingan-china.cn/v2/chem/screen/gasometer.png';
 const productDeviceImg = 'http://data.jingan-china.cn/v2/chem/screen/productDevice.png';
 const pipelineImg = 'http://data.jingan-china.cn/v2/chem/screen/pipeline.png';
+
+const renderEllipsis = val => (
+  <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+    {val}
+  </Ellipsis>
+);
 
 export const TYPE_DESCES = ['应急避难场所', '应急仓库', '消防站'];
 export const VideoList = [
@@ -1811,3 +1819,208 @@ export const MonitorConfig = {
     ],
   },
 };
+
+export const DangerFactorsColumns = [
+  {
+    title: '序号',
+    key: 'index',
+    dataIndex: 'index',
+    align: 'center',
+    width: 60,
+  },
+  {
+    title: '风险点名称',
+    dataIndex: 'name',
+    key: 'name',
+    align: 'center',
+    width: 160,
+  },
+  {
+    title: '所在位置',
+    dataIndex: 'space',
+    key: 'space',
+    align: 'center',
+    width: 160,
+  },
+  {
+    title: '存在的主要危险（有害）因素',
+    dataIndex: 'dangerFactor',
+    key: 'dangerFactor',
+    align: 'center',
+    width: 300,
+    render: renderEllipsis,
+  },
+  {
+    title: '易发生的事故类型',
+    dataIndex: 'consequence',
+    key: 'consequence',
+    align: 'center',
+    width: 340,
+    render: renderEllipsis,
+  },
+  {
+    title: '排查人员',
+    dataIndex: 'checkPerson',
+    key: 'checkPerson',
+    align: 'center',
+    width: 340,
+  },
+  {
+    title: '负责人',
+    dataIndex: 'principal',
+    key: 'principal ',
+    align: 'center',
+    width: 340,
+    render: renderEllipsis,
+  },
+  {
+    title: '时间',
+    dataIndex: 'checkDate',
+    key: 'checkDate',
+    align: 'center',
+    width: 340,
+    render: val => <span>{val === null ? '' : moment(+val).format('YYYY年MM月DD日')}</span>,
+  },
+];
+export const SafetyRiskColumns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    width: 60,
+  },
+  {
+    title: '风险点',
+    dataIndex: 'name',
+    key: 'name',
+    align: 'center',
+    width: 160,
+  },
+  {
+    title: '所在位置',
+    dataIndex: 'space',
+    key: 'space',
+    align: 'center',
+    width: 160,
+  },
+  {
+    title: '存在的主要危险（有害）因素',
+    dataIndex: 'dangerFactor',
+    key: 'dangerFactor',
+    align: 'center',
+    width: 340,
+    render: renderEllipsis,
+  },
+  {
+    title: '可能导致事故类别',
+    dataIndex: 'consequence',
+    key: 'consequence',
+    align: 'center',
+    width: 340,
+    render: renderEllipsis,
+  },
+  {
+    title: 'L',
+    dataIndex: 'l',
+    key: 'l',
+    align: 'center',
+  },
+  {
+    title: 'E',
+    dataIndex: 'e',
+    key: 'e',
+    align: 'center',
+  },
+  {
+    title: 'C',
+    dataIndex: 'c',
+    key: 'c',
+    align: 'center',
+  },
+  {
+    title: 'D',
+    dataIndex: 'd',
+    key: 'd',
+    align: 'center',
+  },
+  {
+    title: '风险等级/风险色度',
+    dataIndex: 'dangerLevel',
+    key: 'dangerLevel',
+    align: 'center',
+    width: 100,
+  },
+  {
+    title: '辨识分级时间',
+    dataIndex: 'checkDate',
+    key: 'checkDate',
+    align: 'center',
+    width: 150,
+    render: val => <span>{val === null ? '' : moment(+val).format('YYYY年MM月DD日')}</span>,
+  },
+  {
+    title: '采取的主要管控措施',
+    dataIndex: 'dangerMeasure',
+    key: 'dangerMeasure',
+    align: 'center',
+    width: 340,
+    render: renderEllipsis,
+  },
+  {
+    title: '责任部门',
+    dataIndex: 'department',
+    key: 'department',
+    align: 'center',
+    width: 160,
+  },
+  {
+    title: '责任人',
+    dataIndex: 'principal',
+    key: 'principal ',
+    align: 'center',
+    width: 160,
+    render: renderEllipsis,
+  },
+];
+export const AcceptCardFields = [
+  {
+    label: '承诺卡名称',
+    value: 'name',
+  },
+  {
+    label: '承诺卡内容',
+    value: 'content',
+  },
+  {
+    label: '承诺人',
+    value: 'acceptor',
+  },
+  {
+    label: '时间',
+    value: 'time',
+    render: val => (val ? moment(val).format('YYYY-MM-DD') : ''),
+  },
+];
+export const EmergencyCardFields = [
+  {
+    label: '应急卡名称',
+    value: 'name',
+  },
+  {
+    label: '作业/设备名称',
+    value: 'equipmentName',
+  },
+  {
+    label: '风险提示',
+    value: 'riskWarning',
+  },
+  {
+    label: '应急处置方法',
+    value: 'emergency',
+  },
+  {
+    label: '注意事项',
+    value: 'needAttention',
+  },
+];

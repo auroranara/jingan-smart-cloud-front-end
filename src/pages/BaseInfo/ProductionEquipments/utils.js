@@ -94,7 +94,7 @@ export const TABLE_COLUMNS = [
     width: 200,
     render: (val, row) => {
       return (
-        <div>
+        <div style={{ textAlign: 'left' }}>
           <p>
             装置编号:
             {row.code}
@@ -130,7 +130,7 @@ export const TABLE_COLUMNS = [
     render: (val, row) => {
       const { dangerTechnologyList, unitChemiclaNumDetail } = row;
       return (
-        <div>
+        <div style={{ textAlign: 'left' }}>
           <p>
             化工工艺:
             {dangerTechnologyList.map(item => item.processName).join(',')}
@@ -165,7 +165,7 @@ export const TABLE_COLUMNS = [
     width: 250,
     render: (val, row) => {
       return (
-        <div>
+        <div style={{ textAlign: 'left' }}>
           <p>
             装置功能:
             {row.deviceFunction}
@@ -185,6 +185,7 @@ export const TABLE_COLUMNS = [
           <p>
             设计压力:
             {row.pressure}
+            KPa
           </p>
         </div>
       );

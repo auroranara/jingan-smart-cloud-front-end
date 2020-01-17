@@ -155,13 +155,11 @@ export default class TEdit extends PureComponent {
         }),
         accidentLoading: false,
       });
-    } else {
+    } else if (file.status === 'error') {
       // error
       message.error('上传失败！');
       this.setState({
-        accidentPicList: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
+        accidentPicList: [],
         accidentLoading: false,
       });
     }
@@ -204,13 +202,9 @@ export default class TEdit extends PureComponent {
         }),
         directLoading: false,
       });
-    } else {
-      // error
-      message.error('上传失败！');
+    } else if (file.status === 'error') {
       this.setState({
-        directPicList: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
+        directPicList: [],
         directLoading: false,
       });
     }
@@ -253,13 +247,10 @@ export default class TEdit extends PureComponent {
         }),
         indirectLoading: false,
       });
-    } else {
+    } else if (file.status === 'error') {
       // error
-      message.error('上传失败！');
       this.setState({
-        indirectPicList: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
+        indirectPicList: [],
         indirectLoading: false,
       });
     }
@@ -302,16 +293,24 @@ export default class TEdit extends PureComponent {
         }),
         adjunctLoading: false,
       });
-    } else {
+    } else if (file.status === 'error') {
       // error
-      message.error('上传失败！');
       this.setState({
-        adjunctPicList: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
+        adjunctPicList: [],
         adjunctLoading: false,
       });
     }
+  };
+
+  handleBeforeUpload = (file, uploading) => {
+    const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (uploading) {
+      message.error('尚未上传结束');
+    }
+    if (!isImage) {
+      message.error('上传失败，请上传jpg格式或者png格式图片');
+    }
+    return isImage && !uploading;
   };
 
   handleClickValidate = () => {
@@ -323,7 +322,15 @@ export default class TEdit extends PureComponent {
       form: { validateFieldsAndScroll },
     } = this.props;
     const { accidentPicList, directPicList, indirectPicList, adjunctPicList } = this.state;
+
     validateFieldsAndScroll((errors, values) => {
+      if (
+        accidentPicList.length === 0 ||
+        directPicList.length === 0 ||
+        adjunctPicList.length === 0
+      ) {
+        return message.error('请先上传！');
+      }
       if (!errors) {
         const { expName, industyCategory, keyWords, abstractDesc } = values;
         const payload = {
@@ -484,6 +491,7 @@ export default class TEdit extends PureComponent {
                 action={uploadAction} // 上传地址
                 fileList={accidentPicList}
                 onChange={this.handleAccidentChange}
+                beforeUpload={file => this.handleBeforeUpload(file, accidentLoading)}
               >
                 <Button
                   type="dashed"
@@ -515,6 +523,7 @@ export default class TEdit extends PureComponent {
                 action={uploadAction} // 上传地址
                 fileList={directPicList}
                 onChange={this.handleDirectChange}
+                beforeUpload={file => this.handleBeforeUpload(file, directLoading)}
               >
                 <Button
                   type="dashed"
@@ -538,6 +547,7 @@ export default class TEdit extends PureComponent {
                 action={uploadAction} // 上传地址
                 fileList={indirectPicList}
                 onChange={this.handleIndirectChange}
+                beforeUpload={file => this.handleBeforeUpload(file, indirectLoading)}
               >
                 <Button
                   type="dashed"
@@ -569,6 +579,7 @@ export default class TEdit extends PureComponent {
                 action={uploadAction} // 上传地址
                 fileList={adjunctPicList}
                 onChange={this.handleAdjunctChange}
+                beforeUpload={file => this.handleBeforeUpload(file, adjunctLoading)}
               >
                 <Button
                   type="dashed"

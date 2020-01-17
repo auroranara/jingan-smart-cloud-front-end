@@ -1,9 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Icon, Modal, Table } from 'antd';
+import { Carousel, Icon, Modal, Table } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerAreaDrawer.less';
 
-// import { MonitorList } from '../utils';
+import {
+  DangerFactorsColumns,
+  SafetyRiskColumns,
+  AcceptCardFields,
+  EmergencyCardFields,
+} from '../utils';
 import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
 
 const dangerFactorsList = 'http://data.jingan-china.cn/v2/chem/chemScreen/danger-factors-list.png';
@@ -69,7 +74,15 @@ const threeCardData = [
 export default class KeyPoints extends PureComponent {
   state = {
     tableModallVisible: false,
+    cardModallVisible: false,
+    isAcceptCard: false,
   };
+  modalTitle = '';
+  tableList = [];
+  tableColumns = [];
+  cardModalData = {};
+  cardModalList = [];
+  scrolls = [];
 
   handleJump = (url, images) => {
     const { handleShowImg } = this.props;
@@ -80,20 +93,181 @@ export default class KeyPoints extends PureComponent {
     window.open(`${window.publicPath}#/${url}`, `_blank`);
   };
 
+  handleModalClose = () => {
+    this.setState({ tableModallVisible: false, cardModallVisible: false });
+    this.scrolls = [];
+    console.log('this.scrolls1111111', this.scrolls);
+  };
+
   renderTableModal = () => {
     const { tableModallVisible } = this.state;
     return (
       <Modal
-        className={styles.modalContainer}
-        width={850}
-        title={'title'}
+        className={styles.tableModallContainer}
+        width={1200}
+        title={<div className={styles.modalTitle}>{this.modalTitle}</div>}
         visible={tableModallVisible}
         onCancel={this.handleModalClose}
         footer={false}
-        afterClose={this.handleAfterClose}
+        zIndex={1522}
+        destroyOnClose
       >
-        <Table rowKey="deviceId" columns={[]} dataSource={[]} pagination={false} />
+        <div className={styles.scroll} style={{ maxHeight: document.body.clientHeight * 0.7 }}>
+          <Table
+            rowKey="index"
+            columns={this.tableColumns}
+            dataSource={this.tableList.map((item, index) => ({ ...item, index: index + 1 }))}
+            pagination={false}
+            bordered
+          />
+        </div>
       </Modal>
+    );
+  };
+
+  handleShowTableModel = (list, columns, title) => {
+    this.tableList = list;
+    this.tableColumns = columns;
+    this.modalTitle = title;
+    this.setState({ tableModallVisible: true });
+  };
+
+  handleClickThreeCards = (list, index, title) => {
+    if (index === 1) {
+      const { handleShowImg } = this.props;
+      const images = list.map(item => item.contentDetails[0].webUrl);
+      images && images.length > 0 && handleShowImg(images);
+    } else {
+      this.cardModalList = list;
+      this.modalTitle = title;
+      this.setState({ cardModallVisible: true, isAcceptCard: index === 0 });
+    }
+  };
+
+  handlePrev = () => {
+    this.scrolls.map(item => {
+      if (!item) return null;
+      item.scrollTop = 0;
+      return null;
+    });
+    this.carousel.prev();
+  };
+
+  handleNext = () => {
+    console.log('this.scrolls', this.scrolls);
+
+    this.scrolls.map(item => {
+      if (!item) return null;
+      item.scrollTop = 0;
+      return null;
+    });
+    this.carousel.next();
+  };
+
+  renderCardModal = () => {
+    const { cardModallVisible, isAcceptCard } = this.state;
+    return (
+      <Modal
+        className={styles.tableModallContainer}
+        width={1000}
+        title={<div className={styles.modalTitle}>{this.modalTitle}</div>}
+        visible={cardModallVisible}
+        onCancel={this.handleModalClose}
+        footer={
+          this.cardModalList.length > 1 && [
+            <div className={styles.switchBtn} style={{ float: 'left' }} onClick={this.handlePrev}>
+              <Icon type="left" />
+            </div>,
+            <div className={styles.switchBtn} onClick={this.handleNext}>
+              <Icon type="right" />
+            </div>,
+          ]
+        }
+        zIndex={1522}
+        destroyOnClose
+      >
+        <Carousel
+          ref={carousel => {
+            this.carousel = carousel;
+          }}
+          dots={false}
+        >
+          {this.cardModalList.map((item, index) => (
+            <div key={index}>
+              <div
+                className={styles.scroll}
+                style={{ maxHeight: document.body.clientHeight * 0.7, padding: 0, margin: 0 }}
+                ref={scroll => {
+                  this.scrolls.push(scroll);
+                }}
+              >
+                {isAcceptCard ? this.renderAcceptCard(item) : this.renderEmergencyCard(item)}
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      </Modal>
+    );
+  };
+
+  // 承诺卡
+  renderAcceptCard = data => {
+    return (
+      <div className={styles.cardContainer}>
+        {AcceptCardFields.map((item, index) => {
+          const { label, value, render } = item;
+          return (
+            <div className={styles.line} key={index}>
+              <div className={styles.lineItem}>{label}</div>
+              <div className={styles.lineItem}>
+                {render ? render(data[value], data) : data[value] || ''}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // 应急卡
+  renderEmergencyCard = data => {
+    const { safetyNum, telNum } = data;
+    return (
+      <div className={styles.cardContainer}>
+        {EmergencyCardFields.map((item, index) => {
+          const { label, value, render } = item;
+          return (
+            <div className={styles.line} key={index}>
+              <div className={styles.lineItem}>{label}</div>
+              <div className={styles.lineItem}>
+                {render ? render(data[value], data) : data[value] || ''}
+              </div>
+            </div>
+          );
+        })}
+        <div className={styles.line}>
+          <div className={styles.lineItem2} style={{ color: '#fff', fontSize: '18px' }}>
+            应急联系方式
+          </div>
+        </div>
+        <div className={styles.line}>
+          <div className={styles.lineItem} />
+          <div className={styles.lineItem2}>安全负责人</div>
+          <div className={styles.lineItem2}>联系方式</div>
+        </div>
+        <div className={styles.line}>
+          <div className={styles.lineItem}>内部</div>
+          <div className={styles.lineItem2}>{safetyNum}</div>
+          <div className={styles.lineItem2}>{telNum}</div>
+        </div>
+        <div className={styles.line}>
+          <div className={styles.lineItem}>外部</div>
+          <div className={styles.lineItem2}>火警：119</div>
+          <div className={styles.lineItem2} style={{ borderLeft: '1px solid transparent' }}>
+            医疗救护：120
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -127,93 +301,94 @@ export default class KeyPoints extends PureComponent {
     const hiddenDangerList = hdList.filter(item => +item.status !== 4);
 
     return (
-      <DrawerContainer
-        title={`风险分区信息`}
-        visible={visible}
-        onClose={onClose}
-        width={535}
-        destroyOnClose={true}
-        zIndex={1222}
-        left={
-          <div className={styles.container}>
-            <div className={styles.areaContainer}>
-              <div>
-                区域名称：
-                {zoneName}
+      <Fragment>
+        <DrawerContainer
+          title={`风险分区信息`}
+          visible={visible}
+          onClose={onClose}
+          width={535}
+          destroyOnClose={true}
+          zIndex={1222}
+          left={
+            <div className={styles.container}>
+              <div className={styles.areaContainer}>
+                <div>
+                  区域名称：
+                  {zoneName}
+                </div>
+                <div>
+                  区域负责人：
+                  {zoneChargerName}
+                </div>
+                <div>
+                  联系电话：
+                  {phoneNumber}
+                </div>
+                <div
+                  className={styles.areaColor}
+                  style={{
+                    backgroundColor: areaLvl.color,
+                    color: +zoneLevel === 3 ? '#000' : '#fff',
+                  }}
+                >
+                  {areaLvl.label}
+                </div>
               </div>
-              <div>
-                区域负责人：
-                {zoneChargerName}
-              </div>
-              <div>
-                联系电话：
-                {phoneNumber}
-              </div>
-              <div
-                className={styles.areaColor}
-                style={{
-                  backgroundColor: areaLvl.color,
-                  color: +zoneLevel === 3 ? '#000' : '#fff',
-                }}
-              >
-                {areaLvl.label}
-              </div>
-            </div>
 
-            {cbiList.length > 0 && (
-              <div className={styles.wrapper}>
-                <div className={styles.title}>
-                  风险点
-                  <span className={styles.value}>({cbiList.length})</span>
-                  <div className={styles.extra} onClick={handleShowRiskPoint}>
-                    详情
-                    <span style={{ color: '#0ff' }}>>></span>
+              {cbiList.length > 0 && (
+                <div className={styles.wrapper}>
+                  <div className={styles.title}>
+                    风险点
+                    <span className={styles.value}>({cbiList.length})</span>
+                    <div className={styles.extra} onClick={handleShowRiskPoint}>
+                      详情
+                      <span style={{ color: '#0ff' }}>>></span>
+                    </div>
+                  </div>
+                  <div className={styles.content}>
+                    {riskData.map((item, index) => {
+                      const { label, color } = item;
+                      const count = cbiList.filter(hd => +hd.riskLevel === index + 1).length;
+                      return count ? (
+                        <div className={styles.dotItem} key={index}>
+                          <span className={styles.dot} style={{ backgroundColor: color }} />
+                          {label}
+                          <span className={styles.dotValue}>{count}</span>
+                        </div>
+                      ) : null;
+                    })}
                   </div>
                 </div>
-                <div className={styles.content}>
-                  {riskData.map((item, index) => {
-                    const { label, color } = item;
-                    const count = cbiList.filter(hd => +hd.riskLevel === index + 1).length;
-                    return count ? (
-                      <div className={styles.dotItem} key={index}>
-                        <span className={styles.dot} style={{ backgroundColor: color }} />
-                        {label}
-                        <span className={styles.dotValue}>{count}</span>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </div>
-            )}
+              )}
 
-            {hiddenDangerList.length > 0 && (
-              <div className={styles.wrapper}>
-                <div className={styles.title}>
-                  隐患
-                  <span className={styles.value}>({hiddenDangerList.length})</span>
-                  <div className={styles.extra} onClick={handleClickHiddenDanger}>
-                    详情
-                    <span style={{ color: '#0ff' }}>>></span>
+              {hiddenDangerList.length > 0 && (
+                <div className={styles.wrapper}>
+                  <div className={styles.title}>
+                    隐患
+                    <span className={styles.value}>({hiddenDangerList.length})</span>
+                    <div className={styles.extra} onClick={handleClickHiddenDanger}>
+                      详情
+                      <span style={{ color: '#0ff' }}>>></span>
+                    </div>
+                  </div>
+                  <div className={styles.content}>
+                    {hiddenDangerData.map((item, index) => {
+                      const { label, color } = item;
+                      const count = hiddenDangerList.filter(hd => +hd.status === hdStatus[index])
+                        .length;
+                      return count ? (
+                        <div className={styles.dotItem} key={index}>
+                          <span className={styles.dot} style={{ backgroundColor: color }} />
+                          {label}
+                          <span className={styles.dotValue}>{count}</span>
+                        </div>
+                      ) : null;
+                    })}
                   </div>
                 </div>
-                <div className={styles.content}>
-                  {hiddenDangerData.map((item, index) => {
-                    const { label, color } = item;
-                    const count = hiddenDangerList.filter(hd => +hd.status === hdStatus[index])
-                      .length;
-                    return count ? (
-                      <div className={styles.dotItem} key={index}>
-                        <span className={styles.dot} style={{ backgroundColor: color }} />
-                        {label}
-                        <span className={styles.dotValue}>{count}</span>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* <div className={styles.wrapper}>
+              {/* <div className={styles.wrapper}>
               <div className={styles.title}>
                 重大危险源
                 <span
@@ -276,62 +451,71 @@ export default class KeyPoints extends PureComponent {
                 </div>
               </div>
             </div> */}
-            {/* {dcList.length + scList.length > 0 && ( */}
-            <div className={styles.wrapper}>
-              <div className={styles.title}>两单</div>
-              <div className={styles.content}>
-                {twoListData.map((item, index) => {
-                  const { label, url, images } = item;
-                  const cardLists = [dcList, scList];
+              {dcList.length + scList.length > 0 && (
+                <div className={styles.wrapper}>
+                  <div className={styles.title}>两单</div>
+                  <div className={styles.content}>
+                    {twoListData.map((item, index) => {
+                      const { label, url, images } = item;
+                      const cardLists = [dcList, scList];
+                      const cardList = cardLists[index];
+                      const clickable = cardList.length > 0;
+                      const columns = [DangerFactorsColumns, SafetyRiskColumns][index];
 
-                  return (
-                    <div
-                      className={styles.tagItem}
-                      key={index}
-                      onClick={() => cardLists[index].length > 0 && this.handleJump(url, images)}
-                      style={{ cursor: cardLists[index].length > 0 ? 'pointer' : 'default' }}
-                    >
-                      {label}
-                      {/* <span className={styles.tagValue}>({cardLists[index].length})</span> */}
-                      {cardLists[index].length > 0 && (
-                        <Icon type="right" className={styles.rightIcon} />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                      return (
+                        <div
+                          className={styles.tagItem}
+                          key={index}
+                          // onClick={() => clickable && this.handleJump(url, images)}
+                          onClick={() =>
+                            clickable && this.handleShowTableModel(cardList, columns, label)
+                          }
+                          style={{ cursor: clickable ? 'pointer' : 'default' }}
+                        >
+                          {label}
+                          {/* <span className={styles.tagValue}>({cardLists[index].length})</span> */}
+                          {clickable && <Icon type="right" className={styles.rightIcon} />}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {acList.length + kcList.length + ecList.length > 0 && (
+                <div className={styles.wrapper}>
+                  <div className={styles.title}>三卡</div>
+                  <div className={styles.content}>
+                    {threeCardData.map((item, index) => {
+                      const { label, url, images } = item;
+                      const cardLists = [acList, kcList, ecList];
+                      const cardList = cardLists[index];
+                      const clickable = cardList.length > 0;
+
+                      return (
+                        <div
+                          className={styles.tagItem}
+                          key={index}
+                          onClick={() =>
+                            clickable && this.handleClickThreeCards(cardList, index, label)
+                          }
+                          style={{ cursor: clickable ? 'pointer' : 'default' }}
+                        >
+                          {label}
+                          <span className={styles.tagValue}>({cardLists[index].length})</span>
+                          {clickable && <Icon type="right" className={styles.rightIcon} />}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
-            {/* )} */}
-
-            {/* {acList.length + kcList.length + ecList.length > 0 && ( */}
-            <div className={styles.wrapper}>
-              <div className={styles.title}>三卡</div>
-              <div className={styles.content}>
-                {threeCardData.map((item, index) => {
-                  const { label, url, images } = item;
-                  const cardLists = [acList, kcList, ecList];
-
-                  return (
-                    <div
-                      className={styles.tagItem}
-                      key={index}
-                      onClick={() => cardLists[index].length > 0 && this.handleJump(url, images)}
-                      style={{ cursor: cardLists[index].length > 0 ? 'pointer' : 'default' }}
-                    >
-                      {label}
-                      <span className={styles.tagValue}>({cardLists[index].length})</span>
-                      {cardLists[index].length > 0 && (
-                        <Icon type="right" className={styles.rightIcon} />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            {/* )} */}
-          </div>
-        }
-      />
+          }
+        />
+        {this.renderTableModal()}
+        {this.renderCardModal()}
+      </Fragment>
     );
   }
 }

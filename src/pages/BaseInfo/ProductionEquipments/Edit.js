@@ -603,7 +603,7 @@ export default class Edit extends PureComponent {
         render: data => RISK_CATEGORIES[data],
       },
       {
-        title: '危化品数量',
+        title: '危化品数量(t)',
         dataIndex: 'unitChemiclaNum',
         key: 'unitChemiclaNum',
         align: 'center',

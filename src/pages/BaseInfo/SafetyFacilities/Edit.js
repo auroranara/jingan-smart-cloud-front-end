@@ -333,9 +333,7 @@ export default class Edit extends PureComponent {
         }),
         uploading: false,
       });
-    } else {
-      // error
-      message.error('上传失败！');
+    } else if (file.status === 'error') {
       this.setState({
         photoUrl: fileList.filter(item => {
           return item.status !== 'error';
@@ -343,6 +341,19 @@ export default class Edit extends PureComponent {
         uploading: false,
       });
     }
+  };
+
+  // 上传附件之前的回调
+  handleBeforeUpload = file => {
+    const { uploading } = this.state;
+    const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (uploading) {
+      message.error('尚未上传结束');
+    }
+    if (!isImage) {
+      message.error('上传失败，请上传jpg格式或者png格式图片');
+    }
+    return isImage && !uploading;
   };
 
   handleCategoryOneChange = val => {
@@ -627,6 +638,7 @@ export default class Edit extends PureComponent {
                 action={uploadAction} // 上传地址
                 fileList={photoUrl}
                 onChange={this.handleUploadChange}
+                beforeUpload={this.handleBeforeUpload}
               >
                 <Button
                   type="dashed"
