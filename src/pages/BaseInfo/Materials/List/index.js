@@ -24,6 +24,9 @@ import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import styles from './index.less';
 // import index from '../../StorageAreaManagement';
 
+// 判断选项
+const JUDGE_OPTIONS = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
+
 const {
   baseInfo: {
     materials: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
@@ -87,7 +90,8 @@ export default class MaterialsList extends PureComponent {
   renderForm = () => {
     const {
       user: {
-        currentUser: { permissionCodes, unitType },
+        currentUser: { permissionCodes },
+        isCompany,
       },
       materials: { materialTypeOptions },
     } = this.props;
@@ -190,13 +194,15 @@ export default class MaterialsList extends PureComponent {
         },
         transform,
       },
-      {
-        id: 'companyName',
-        render () {
-          return <Input placeholder="请输入单位名称" />;
+      ...isCompany ? [] : [
+        {
+          id: 'companyName',
+          render () {
+            return <Input placeholder="请输入单位名称" />;
+          },
+          transform,
         },
-        transform,
-      },
+      ],
       {
         id: 'easyMakePoison',
         render () {
@@ -223,51 +229,39 @@ export default class MaterialsList extends PureComponent {
       },
       {
         id: 'easyMakeExplode',
-        render () {
-          const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
-          return (
-            <Select
-              allowClear
-              showSearch
-              placeholder="是否易制爆"
-              getPopupContainer={getRootChild}
-              style={{ width: '100%' }}
-            >
-              {options.map(item => {
-                const { value, name } = item;
-                return (
-                  <Option value={value} key={value}>
-                    {name}
-                  </Option>
-                );
-              })}
-            </Select>
-          );
-        },
+        render: () => (
+          <Select
+            allowClear
+            showSearch
+            placeholder="是否易制爆"
+            getPopupContainer={getRootChild}
+            style={{ width: '100%' }}
+          >
+            {JUDGE_OPTIONS.map(({ value, name }) => (
+              <Option value={value} key={value}>
+                {name}
+              </Option>
+            ))}
+          </Select>
+        ),
       },
       {
         id: 'superviseChemicals',
-        render () {
-          const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
-          return (
-            <Select
-              allowClear
-              showSearch
-              placeholder="是否重点监管危险化学品"
-              getPopupContainer={getRootChild}
-              style={{ width: '100%' }}
-            >
-              {options.map(item => {
-                const { value, name } = item;
-                return (
-                  <Option value={value} key={value}>
-                    {name}
-                  </Option>
-                );
-              })}
-            </Select>
-          );
-        },
+        render: () => (
+          <Select
+            allowClear
+            showSearch
+            placeholder="是否重点监管危险化学品"
+            getPopupContainer={getRootChild}
+            style={{ width: '100%' }}
+          >
+            {JUDGE_OPTIONS.map(({ value, name }) => (
+              <Option value={value} key={value}>
+                {name}
+              </Option>
+            ))}
+          </Select>
+        ),
       },
     ];
 
@@ -277,7 +271,7 @@ export default class MaterialsList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
+          fields={fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -391,7 +385,7 @@ export default class MaterialsList extends PureComponent {
         },
       },
       {
-        title: '存储量',
+        title: '物料类型',
         key: 'storageInfo',
         align: 'center',
         // width: 280,

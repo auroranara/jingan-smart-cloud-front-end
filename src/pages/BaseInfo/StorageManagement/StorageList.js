@@ -285,10 +285,10 @@ export default class StorageList extends PureComponent {
         key: 'info',
         align: 'center',
         width: 300,
-        render: (val, { tankGroupNumber, tankNumber, tankName, number }) => (
+        render: (val, { tankGroupNumber, unifiedCode, tankName, number }) => (
           <div style={{ textAlign: 'left' }}>
+            <div>统一编码：{unifiedCode || '暂无数据'}</div>
             <div>所属罐组编号：{tankGroupNumber || '暂无数据'}</div>
-            <div>储罐编号：{tankNumber || '暂无数据'}</div>
             <div>储罐名称：{tankName || '暂无数据'}</div>
             <div>位号：{number || '暂无数据'}</div>
           </div>

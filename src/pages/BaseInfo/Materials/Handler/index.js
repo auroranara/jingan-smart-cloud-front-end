@@ -8,14 +8,14 @@ import {
   Radio,
   Row,
   message,
-  Cascader,
   InputNumber,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import { KEYSUPERVISION } from '../utils.js';
+// import { KEYSUPERVISION } from '../utils.js';
+import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 import styles from './index.less';
 
@@ -165,15 +165,15 @@ export default class MaterialsHandler extends PureComponent {
               companyId,
               companyName,
               type, //类型
-              // unifiedCode, //编码
+              unifiedCode, // 统一编码
               dangerChemcataSn, //危险化学品目录序号
               materialForm, //物质形态
               superviseChemicals, //是否重点监管的危险化学品
               msds, //msds
               annualConsumption, //年消耗量
               annualConsumptionUnit, //年消耗量单位
-              maxStoreDay, //最大存储量
-              maxStoreDayUnit, //最大存储量单位
+              // maxStoreDay, //最大存储量
+              // maxStoreDayUnit, //最大存储量单位
               // actualReserves, //实际存储量
               // actualReservesUnit, //实际存储量单位
               annualThroughput, //年生产能力
@@ -184,7 +184,7 @@ export default class MaterialsHandler extends PureComponent {
               // dangerId, //所属危险源id
               // technologyId, //所在工艺流程id
               keySupervisionProcess, //所在工艺流程是否属于重点监管危险化工工艺
-              keySupervision, //重点监管危险化工工艺
+              // keySupervision, //重点监管危险化工工艺
               highRiskChemicals, //高危化学品种类
               highlyToxicChem, //是否剧毒化学品
               safetyMeasures, //安全措施
@@ -204,7 +204,7 @@ export default class MaterialsHandler extends PureComponent {
         setFieldsValue({
           companyId,
           type, //类型
-          // unifiedCode, //编码
+          unifiedCode, //编码
           dangerChemcataSn, //危险化学品目录序号
           materialForm, //物质形态
           superviseChemicals, //是否重点监管的危险化学品
@@ -530,14 +530,14 @@ export default class MaterialsHandler extends PureComponent {
               </Fragment>
             )}
           </FormItem>
-          <FormItem label="化学品中文名称" {...formItemLayout}>
+          <FormItem label="化学品中文名称2" {...formItemLayout}>
             {getFieldDecorator('chineName2')(<span>{selectedMsds.chineName2 || ''}</span>)}
           </FormItem>
           <FormItem label="CAS号" {...formItemLayout}>
             {getFieldDecorator('casNo')(<span>{selectedMsds.casNo || ''}</span>)}
           </FormItem>
           <FormItem label="危险性类别" {...formItemLayout}>
-            {getFieldDecorator('riskCateg')(<span>{selectedMsds.riskCateg || ''}</span>)}
+            {getFieldDecorator('riskCateg')(<span>{selectedMsds.riskCateg ? RISK_CATEGORIES[selectedMsds.riskCateg] : ''}</span>)}
           </FormItem>
           {/* <FormItem label="统一编码" {...formItemLayout}>
             {getFieldDecorator('unifiedCode')(<span>{selectedMsds.casNo}</span>)}
@@ -614,9 +614,9 @@ export default class MaterialsHandler extends PureComponent {
           {isDangerChemicals === '1' && (
             <FormItem label="高危化学品种类" {...formItemLayout}>
               {getFieldDecorator('highRiskChemicals', {
-                rules: [{ required: false, message: '请选择高危化学品' }],
+                rules: [{ required: true, message: '请选择高危化学品种类' }],
               })(
-                <Select placeholder="请选择重点监管危险化工工艺" {...itemStyles}>
+                <Select placeholder="请选择高危化学品种类" {...itemStyles}>
                   <Option value={'0'}>硝酸铵</Option>
                   <Option value={'1'}>硝化棉</Option>
                   <Option value={'2'}>氰化钠</Option>

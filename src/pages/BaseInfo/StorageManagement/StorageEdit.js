@@ -862,7 +862,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="设计储量">
             {getFieldDecorator('designReservesAndUnit', {
-              initialValue: id ? [detail.designReserves, 't'] : [],
+              initialValue: id ? [detail.designReserves, 't'] : [undefined, 't'],
               // getValueFromEvent: this.handleTrim,
               rules: [{ required: true, validator: this.validateDesignReservesAndUnit }],
             })(
@@ -1115,7 +1115,7 @@ export default class StorageEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          {cofferdam === '2' && (
+          {cofferdam === '1' && (
             <FormItem {...formItemLayout} label="围堰所围面积">
               {getFieldDecorator('cofferdamArea', {
                 // initialValue: id ? detail.cofferdamArea : undefined,
