@@ -1,11 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Form, Input, Button, Card, Icon, Popover, Select, message } from 'antd';
+import { Form, Input, Button, Card, Icon, Popover, Select, message, Table } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+// 选择储罐弹窗
+import TankSelectModal from './Sections/TankSelectModal';
+// 选择装卸危险化学品种类弹窗
+import ChemicalsSelectModal from './Sections/ChemicalsSelectModal';
 
 import styles from './Edit.less';
 
@@ -63,19 +67,19 @@ const dangerSourceColumns = [
 const dangerSourceFields = [
   {
     id: 'code',
-    render() {
+    render () {
       return <Input placeholder="统一编码" />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
   {
     id: 'name',
-    render() {
+    render () {
       return <Input placeholder="危险源名称" />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
@@ -113,25 +117,25 @@ const materialsColumns = [
 const materialsFields = [
   {
     id: 'casNo',
-    render() {
+    render () {
       return <Input placeholder="CAS号" />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
   {
     id: 'chineName',
-    render() {
+    render () {
       return <Input placeholder="品名" />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
 ];
 
-@connect(({ loading, company, storehouse, materials, user }) => ({
+@connect(({ loading, company, storehouse, materials, user, baseInfo }) => ({
   company,
   storehouse,
   materials,
@@ -139,6 +143,7 @@ const materialsFields = [
   dangerSourceLoading: loading.effects['storehouse/fetchDangerSourceModel'],
   materialsLoading: loading.effects['materials/fetchMaterialsList'],
   user,
+  baseInfo,
 }))
 @Form.create()
 export default class Edit extends PureComponent {
@@ -152,10 +157,15 @@ export default class Edit extends PureComponent {
     selectedDangerSource: [],
     dangerUnitVisible: false,
     companySelectVisible: false,
+    tankModalVisible: false, // 选择储罐弹窗
+    chemicalModalVisible: false,// 选择装卸危险化学品种类弹窗
+    selectedTemp: [],
+    selectedTank: [], // 已选择储罐
+    selectedChemical: [], // 已选择装卸危险化学品种类
   };
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     const {
       user: {
         currentUser: {
@@ -190,11 +200,14 @@ export default class Edit extends PureComponent {
             hasPassage, //有无消防通道
             loadType, //装卸方式
             dangerType, //装卸危险化学品种类
-            isDanger, //是否构成重大危险源
-            dangerUnit, //所属危险化学品重大危险源单元
+            // isDanger, //是否构成重大危险源
+            // dangerUnit, //所属危险化学品重大危险源单元
             // companyName,
             // chineName,//品名
-            chineNameList, //存储介质列表
+            // chineNameList, //存储介质列表
+            tankIds, // 绑定的储罐
+            tankNames, // 储罐名称数组
+            chineNameList, // 装卸危险化学品种类的品名数组
           },
         ],
       } = res.data;
@@ -218,7 +231,9 @@ export default class Edit extends PureComponent {
         dangerType, //装卸危险化学品种类
         // isDanger, //是否构成重大危险源
         // dangerUnit, //所属危险化学品重大危险源单元
+        newTankId: Array.isArray(tankIds) ? tankIds.join(',') : undefined,
       });
+      const dangerTypes = dangerType ? dangerType.split(',') : [];
       this.setState(
         {
           selectedCompany: { id: companyId, name: companyName },
@@ -230,11 +245,20 @@ export default class Edit extends PureComponent {
           //   .map((item, index) => ({ id: item, name: chineNameList[index] })),
           cofferAreaVisible: +hasCoffer === 1,
           // dangerUnitVisible: +isDanger === 1,
+          selectedTank: Array.isArray(tankIds) ? tankIds.map((id, i) => ({ id, tankName: tankNames[i] })) : [],
+          selectedChemical: Array.isArray(dangerTypes) ? dangerTypes.map((storageId, i) => ({ storageId, chineName: chineNameList[i] })) : [],
         },
         () => {
           setFieldsValue({ cofferArea });
         }
       );
+      // 获取存储物质及常规存储量
+      this.fetchChemicalList({
+        payload: { pageNum: 1, pageSize: 10 },
+        callback: ({ list }) => {
+          setFieldsValue({ storageList: list });
+        },
+      })
     });
   }
 
@@ -277,6 +301,27 @@ export default class Edit extends PureComponent {
   fetchDangerSource = ({ payload }) => {
     const { dispatch } = this.props;
     dispatch({ type: 'storehouse/fetchDangerSourceModel', payload });
+  };
+
+  // 获取储罐列表
+  fetchTankList = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'baseInfo/fetchStorageTankForPage',
+      ...actions,
+      payload: { ...actions.payload, tankArea: '' },
+    })
+  };
+
+  // 获取装卸危险化学品种类列表
+  fetchChemicalList = (actions) => {
+    const { dispatch, form: { getFieldValue }, match: { params: { id } } } = this.props;
+    const newTankId = getFieldValue('newTankId');
+    dispatch({
+      type: 'storehouse/fetchChemicalList',
+      ...actions,
+      payload: { ...actions.payload, newTankId, id },
+    })
   };
 
   handleSelectDangerSource = selectedDangerSource => {
@@ -345,10 +390,12 @@ export default class Edit extends PureComponent {
         params: { id },
       },
     } = this.props;
-
     validateFields((error, formData) => {
       if (!error) {
-        const payload = { ...formData, companyId: unitType === 4 ? companyId : formData.companyId };
+        const payload = {
+          ...formData,
+          companyId: unitType === 4 ? companyId : formData.companyId,
+        };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
@@ -391,20 +438,68 @@ export default class Edit extends PureComponent {
     setFieldsValue({ dangerUnit: undefined });
   };
 
-  renderInfo() {
+  // 打开选择储罐弹窗
+  handleViewTankModal = () => {
+    const { selectedTank } = this.state;
+    this.fetchTankList({ payload: { pageNum: 1, pageSize: 10 } });
+    this.setState({ tankModalVisible: true, selectedTemp: selectedTank });
+  }
+
+  // 选择储罐
+  handleSelectTank = () => {
+    const {
+      match: { params: { id } },
+    } = this.props;
+    const { selectedTemp } = this.state;
+    const { form: { setFieldsValue } } = this.props;
+    setFieldsValue({ newTankId: selectedTemp.map(item => item.id).join(',') });
+    this.setState({ selectedTank: selectedTemp, tankModalVisible: false });
+    // 获取存储物质及常规存储量
+    this.fetchChemicalList({
+      payload: { pageNum: 1, pageSize: 10 },
+      callback: ({ list }) => {
+        setFieldsValue({ storageList: list });
+      },
+    })
+  }
+
+  // 打开选择装卸危险化学品种类弹窗
+  handleViewChemicalModal = () => {
+    const { selectedChemical } = this.state;
+    this.fetchChemicalList({ payload: { pageNum: 1, pageSize: 10 } });
+    this.setState({ chemicalModalVisible: true, selectedTemp: selectedChemical });
+  }
+
+  // 选择装卸危险化学品种类
+  handleSelectChemical = () => {
+    const { selectedTemp } = this.state;
+    const { form: { setFieldsValue } } = this.props;
+    setFieldsValue({ dangerType: selectedTemp.map(item => item.storageId).join(',') });
+    this.setState({ selectedChemical: selectedTemp, chemicalModalVisible: false });
+  }
+
+  // 存储物质及常规存储量--常规储量改变
+  handleNomalStorageChange = (value, key) => {
+    if (!/^\d*$/.test(value)) return;
+    const { form: { getFieldValue, setFieldsValue } } = this.props;
+    const storageList = getFieldValue('storageList');
+    setFieldsValue({
+      storageList: storageList.map(item => item.storageId === key ? ({ ...item, nomalStorage: value }) : item),
+    })
+  }
+
+  renderInfo () {
     const {
       user: {
         currentUser: { unitType },
       },
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const {
       selectedCompany,
       cofferAreaVisible,
-      selectedMaterials,
-      selectedDangerSource,
-      dangerUnitVisible,
-      companySelectVisible,
+      selectedTank,
+      selectedChemical,
     } = this.state;
 
     const formItemLayout = {
@@ -412,6 +507,7 @@ export default class Edit extends PureComponent {
       wrapperCol: { span: 18 },
     };
     const itemStyles = { style: { width: '70%', marginRight: '10px' } };
+    const storageList = getFieldValue('storageList');
     return (
       <Card className={styles.card} bordered={false}>
         <Form style={{ marginTop: 8 }}>
@@ -461,16 +557,38 @@ export default class Edit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入储罐区名称" />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="在厂区的位置">
+          <FormItem {...formItemLayout} label="区域位置">
             {getFieldDecorator('location', {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
-                  message: '请输入在厂区的位置',
+                  message: '请输入区域位置',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入在厂区的位置" />)}
+            })(<Input {...itemStyles} placeholder="请输入区域位置" />)}
+          </FormItem>
+          <FormItem {...formItemLayout} label="储罐区面积（㎡）">
+            {getFieldDecorator('spaceArea', {
+              getValueFromEvent: this.handleTrim,
+              rules: [
+                {
+                  required: true,
+                  message: '请输入储罐区面积',
+                },
+              ],
+            })(<Input {...itemStyles} placeholder="请输入储罐区面积（㎡）" />)}
+          </FormItem>
+          <FormItem {...formItemLayout} label="储罐区总容积（m³）">
+            {getFieldDecorator('areaVolume', {
+              getValueFromEvent: this.handleTrim,
+              rules: [
+                {
+                  required: true,
+                  message: '请输入储罐区总容积（m³）',
+                },
+              ],
+            })(<Input {...itemStyles} placeholder="请输入储罐区总容积（m³）" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="所处环境功能区">
             {getFieldDecorator('environmentArea', {
@@ -490,27 +608,31 @@ export default class Edit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="周边安全防护间距（m）">
-            {getFieldDecorator('safeSpace', {
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入周边安全防护间距（m）',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入周边安全防护间距（m）" />)}
+          <FormItem {...formItemLayout} label="选择包含的储罐">
+            {getFieldDecorator('newTankId')(
+              <Fragment>
+                <Input
+                  {...itemStyles}
+                  disabled
+                  value={selectedTank.map(item => item.tankName).join('、')}
+                  placeholder="请选择包含的储罐"
+                />
+                <Button type="primary" onClick={this.handleViewTankModal}>
+                  选择
+                  </Button>
+              </Fragment>
+            )}
           </FormItem>
-          <FormItem {...formItemLayout} label="储罐区面积（㎡）">
-            {getFieldDecorator('spaceArea', {
+          <FormItem {...formItemLayout} label="两罐间最小间距（m）">
+            {getFieldDecorator('minSpace', {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
-                  message: '请输入储罐区面积',
+                  message: '请输入两罐间最小间距（m）',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入储罐区面积（㎡）" />)}
+            })(<Input {...itemStyles} placeholder="请输入两罐间最小间距（m）" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="有无围堰">
             {getFieldDecorator('hasCoffer', {
@@ -545,52 +667,20 @@ export default class Edit extends PureComponent {
               })(<Input {...itemStyles} placeholder="请输入围堰所围面积" />)}
             </FormItem>
           )}
-          {/* <FormItem {...formItemLayout} label="储罐个数">
-            {getFieldDecorator('tankCount', {
+
+          <FormItem {...formItemLayout} label="周边安全防护间距（m）">
+            {getFieldDecorator('safeSpace', {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
-                  message: '请输入储罐个数',
+                  message: '请输入周边安全防护间距（m）',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入储罐个数" />)}
+            })(<Input {...itemStyles} placeholder="请输入周边安全防护间距（m）" />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="储存物质">
-            {getFieldDecorator('storeMaterial', {
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入储存物质',
-                },
-              ],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedMaterials.map(item => item.chineName).join(', ')}
-                  placeholder="请选择储存物质"
-                />
-                <Button type="primary" onClick={this.handleMaterialsModal}>
-                  选择
-                </Button>
-              </Fragment>
-            )}
-          </FormItem> */}
-          <FormItem {...formItemLayout} label="储罐区总容积（m³）">
-            {getFieldDecorator('areaVolume', {
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入储罐区总容积（m³）',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入储罐区总容积（m³）" />)}
-          </FormItem>
-          <FormItem {...formItemLayout} label="常规存储量">
+
+          {/* <FormItem {...formItemLayout} label="常规存储量">
             {getFieldDecorator('commonStore', {
               getValueFromEvent: this.handleTrim,
               rules: [
@@ -600,18 +690,8 @@ export default class Edit extends PureComponent {
                 },
               ],
             })(<Input {...itemStyles} placeholder="请输入常规存储量" />)}
-          </FormItem>
-          <FormItem {...formItemLayout} label="两罐间最小间距（m）">
-            {getFieldDecorator('minSpace', {
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入两罐间最小间距（m）',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入两罐间最小间距（m）" />)}
-          </FormItem>
+          </FormItem> */}
+
           <FormItem {...formItemLayout} label="有无消防通道">
             {getFieldDecorator('hasPassage', {
               rules: [
@@ -627,6 +707,23 @@ export default class Edit extends PureComponent {
               </Select>
             )}
           </FormItem>
+
+          <FormItem {...formItemLayout} label="装卸危险化学品种类">
+            {getFieldDecorator('dangerType')(
+              <Fragment>
+                <Input
+                  {...itemStyles}
+                  disabled
+                  value={selectedChemical.map(item => item.chineName).join('、')}
+                  placeholder="请选择装卸危险化学品种类"
+                />
+                <Button type="primary" onClick={this.handleViewChemicalModal}>
+                  选择
+                  </Button>
+              </Fragment>
+            )}
+          </FormItem>
+
           <FormItem {...formItemLayout} label="装卸方式">
             {getFieldDecorator('loadType', {
               getValueFromEvent: this.handleTrim,
@@ -638,17 +735,54 @@ export default class Edit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入装卸方式" />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="装卸危险化学品种类">
-            {getFieldDecorator('dangerType', {
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入危险化学品性质',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入装卸危险化学品种类" />)}
+
+          <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} label="存储物质及常规存储量">
+            {getFieldDecorator('storageList')(
+              <Fragment>
+                {storageList && storageList.length ? (
+                  <Table
+                    rowKey="storageId"
+                    dataSource={storageList}
+                    bordered
+                    columns={[
+                      {
+                        title: '统一编码',
+                        dataIndex: 'code',
+                        align: 'center',
+                        width: 200,
+                      },
+                      {
+                        title: '品名',
+                        dataIndex: 'chineName',
+                        align: 'center',
+                        width: 200,
+                      },
+                      {
+                        title: 'CAS号',
+                        dataIndex: 'casNo',
+                        align: 'center',
+                        width: 200,
+                      },
+                      {
+                        title: '常规存储量（t）',
+                        dataIndex: 'nomalStorage',
+                        align: 'center',
+                        width: 200,
+                        render: (val, row) => (
+                          <Input
+                            value={val}
+                            onChange={e => this.handleNomalStorageChange(e.target.value, row.storageId)}
+                          />
+                        ),
+                      },
+                    ]}
+                    pagination={false}
+                  />
+                ) : '请选择包含的储罐'}
+              </Fragment>
+            )}
           </FormItem>
+
           {/* <FormItem {...formItemLayout} label="是否构成重大危险源">
             {getFieldDecorator('isDanger', {
               rules: [
@@ -694,7 +828,7 @@ export default class Edit extends PureComponent {
   }
 
   /* 渲染错误信息 */
-  renderErrorInfo() {
+  renderErrorInfo () {
     const {
       form: { getFieldsError },
     } = this.props;
@@ -738,7 +872,7 @@ export default class Edit extends PureComponent {
   }
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar() {
+  renderFooterToolbar () {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
@@ -753,7 +887,7 @@ export default class Edit extends PureComponent {
   }
 
   // 渲染页面所有信息
-  render() {
+  render () {
     const {
       match: {
         params: { id },
@@ -763,9 +897,17 @@ export default class Edit extends PureComponent {
       dangerSourceLoading,
       materialsLoading,
       materials: materialsModal,
-      storehouse: { dangerSourceModal },
+      storehouse: { dangerSourceModal, chemical },
+      baseInfo: { storageTank },
     } = this.props;
-    const { companyModalVisible, dangerSourceModalVisible, materialsModalVisible } = this.state;
+    const {
+      companyModalVisible,
+      dangerSourceModalVisible,
+      materialsModalVisible,
+      tankModalVisible,
+      chemicalModalVisible,
+      selectedTemp,
+    } = this.state;
     const title = id ? editTitle : addTitle;
 
     // 面包屑
@@ -839,6 +981,30 @@ export default class Edit extends PureComponent {
           onClose={() => {
             this.setState({ materialsModalVisible: false });
           }}
+        />
+        <TankSelectModal
+          title="选择包含的储罐"
+          visible={tankModalVisible}
+          onCancel={() => { this.setState({ tankModalVisible: false }) }}
+          fetch={this.fetchTankList}
+          model={storageTank}
+          rowSelection={{
+            selectedRowKeys: selectedTemp.map(item => item.id),
+            onChange: (keys, rows) => { this.setState({ selectedTemp: rows }) },
+          }}
+          handleSelect={this.handleSelectTank}
+        />
+        <ChemicalsSelectModal
+          title="选择装卸危险化学品种类"
+          visible={chemicalModalVisible}
+          onCancel={() => { this.setState({ chemicalModalVisible: false }) }}
+          fetch={this.fetchChemicalList}
+          model={chemical}
+          rowSelection={{
+            selectedRowKeys: selectedTemp.map(item => item.storageId),
+            onChange: (keys, rows) => { this.setState({ selectedTemp: rows }); console.log('1', rows) },
+          }}
+          handleSelect={this.handleSelectChemical}
         />
       </PageHeaderLayout>
     );
