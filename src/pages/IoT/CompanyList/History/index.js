@@ -945,7 +945,7 @@ export default class GasHistory extends Component {
         align: 'center',
         render: (_, { paramUnit, condition, warnLevel, limitValue, monitorValue, statusType }) =>
           +statusType === -1 &&
-          `超过${+warnLevel === 1 ? '预警' : '告警'}值${toFixed(
+          `${condition === '>=' ? '超过' : '低于'}${+warnLevel === 1 ? '预警' : '告警'}值${toFixed(
             Math.abs(limitValue - monitorValue)
           )}${paramUnit}（${+warnLevel === 1 ? '预警' : '告警'}${
             condition === '>=' ? '上限' : '下限'
