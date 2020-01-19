@@ -1,0 +1,92 @@
+.emptyData {
+  color: rgba(0, 0, 0, 0.45);
+}
+.customFormCard {
+  margin-bottom: 24px;
+}
+.infiniteList {
+  :global {
+    .ant-row {
+      display: flex;
+      flex-wrap: wrap;
+
+      .ant-col {
+        flex: none;
+        display: flex;
+        flex-direction: column;
+
+        .ant-list-item {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+
+          .ant-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            .ant-card-head {
+              flex: none;
+              .ant-card-head-title {
+                white-space: normal;
+              }
+            }
+            .ant-card-body {
+              flex: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.fieldWrapper {
+  display: flex;
+  padding: 0.25em 0;
+
+  & > :first-child {
+    flex: none;
+
+    & > :first-child {
+      display: inline-block;
+      width: 5em;
+      white-space: nowrap;
+      overflow: hidden;
+      vertical-align: top;
+
+      &.address {
+        letter-spacing: 3em;
+      }
+      &.industryCategory {
+        letter-spacing: 0.333333em;
+      }
+      &.safetyPhone {
+        letter-spacing: 0.333333em;
+      }
+    }
+  }
+  & > :last-child {
+    flex: 1;
+  }
+}
+.iconContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -4px;
+
+  .iconWrapper {
+    flex: none;
+    padding: 0.25em 4px;
+
+    .icon {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      vertical-align: top;
+      background: no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+    }
+  }
+}
