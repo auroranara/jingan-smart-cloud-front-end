@@ -335,9 +335,7 @@ export default class Edit extends PureComponent {
       });
     } else if (file.status === 'error') {
       this.setState({
-        photoUrl: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
+        photoUrl: [],
         uploading: false,
       });
     }
