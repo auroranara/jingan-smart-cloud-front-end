@@ -62,36 +62,36 @@ const fields = [
     id: 'areaName',
     label: '储罐区名称',
     span: spanStyle,
-    render: () => <Input placeholder="请输入储罐区名称" />,
+    render: () => <Input placeholder="请输入" />,
     transform: v => v.trim(),
   },
   {
     id: 'code',
     label: '统一编码',
     span: spanStyle,
-    render: () => <Input placeholder="请输入统一编码" />,
+    render: () => <Input placeholder="请输入" />,
     transform: v => v.trim(),
   },
   {
     id: 'location',
     label: '区域位置',
     span: spanStyle,
-    render: () => <Input placeholder="请输入区域位置" />,
+    render: () => <Input placeholder="请输入" />,
     transform: v => v.trim(),
   },
   {
     id: 'chineName',
     label: '存储介质',
     span: spanStyle,
-    render: () => <Input placeholder="请输入存储介质" />,
+    render: () => <Input placeholder="请输入" />,
     transform: v => v.trim(),
   },
   {
     id: 'isDanger',
-    label: '重大危险源',
+    label: '是否重大危险源',
     span: spanStyle,
     render: () => (
-      <Select allowClear placeholder="请选择危险性类别">
+      <Select allowClear placeholder="请选择">
         {dangerTypeList.map(({ key, value }) => (
           <Option key={key} value={key}>
             {value}
@@ -365,7 +365,7 @@ export default class StorageAreaManagement extends PureComponent {
         dataIndex: 'monitorEquipmentCount',
         key: 'monitorEquipmentCount',
         align: 'center',
-        width: 120,
+        width: 150,
         render: (val, row) => (
           <span
             onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}

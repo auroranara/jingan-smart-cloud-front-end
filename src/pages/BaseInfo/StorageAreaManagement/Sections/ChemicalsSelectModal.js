@@ -7,6 +7,7 @@ import {
   Input,
   Table,
 } from 'antd';
+import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 const FormItem = Form.Item;
 
@@ -74,6 +75,7 @@ const ChemicalsSelectModal = Form.create()(props => {
       dataIndex: 'risk',
       align: 'center',
       width: 200,
+      render: (val) => RISK_CATEGORIES[val],
     },
   ]
   return (
