@@ -91,6 +91,11 @@ export default class TableList extends PureComponent {
     this.setState({ modalVisible: false });
   };
 
+  // 替换换行字符
+  handleLineFeed = str => {
+    return <div dangerouslySetInnerHTML={{ __html: str.replace(/\n/g, '<br>') }} />;
+  };
+
   renderModal() {
     const { modalVisible, modalItem } = this.state;
     const {
@@ -117,15 +122,15 @@ export default class TableList extends PureComponent {
           </tr>
           <tr>
             <td className={styles.td}>风险提示</td>
-            <td>{riskWarning}</td>
+            <td>{riskWarning ? this.handleLineFeed(riskWarning) : ''}</td>
           </tr>
           <tr>
             <td className={styles.td}>应急处置方法</td>
-            <td>{emergency}</td>
+            <td>{emergency ? this.handleLineFeed(emergency) : ''}</td>
           </tr>
           <tr>
             <td className={styles.td}>注意事项</td>
-            <td>{needAttention}</td>
+            <td>{needAttention ? this.handleLineFeed(needAttention) : ''}</td>
           </tr>
           <tr>
             <td colspan="2" className={styles.td1}>

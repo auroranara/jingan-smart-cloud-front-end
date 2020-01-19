@@ -13,6 +13,7 @@ import {
   Table,
   Popconfirm,
   message,
+  Radio,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
@@ -22,6 +23,8 @@ import CheckModal from '../../LawEnforcement/Illegal/checkModal';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from './RiskPointEdit.less';
+
+const { Group: RadioGroup } = Radio;
 
 const fengMap = fengmap; // eslint-disable-line
 const { Option } = Select;
@@ -52,6 +55,7 @@ const fieldLabels = {
   cycleType: '自定义检查周期：',
   RecommendCycle: '推荐检查周期:',
   mapLocation: '地图定位',
+  isShow: '该点位在化工安全生产驾驶舱',
 };
 
 const COLUMNS = [
@@ -157,11 +161,15 @@ export default class RiskPointEdit extends PureComponent {
   handleTrim = e => e.target.value.trim();
 
   // 挂载后
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
-      match: { params: { id } },
-      location: { query: { companyId } },
+      match: {
+        params: { id },
+      },
+      location: {
+        query: { companyId },
+      },
       form: { setFieldsValue },
     } = this.props;
     const payload = { pageSize: PageSize, pageNum: 1 };
@@ -208,7 +216,7 @@ export default class RiskPointEdit extends PureComponent {
             let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
             const coord = { x: +xnum, y: +ynum, z: +znum };
             groupId = +groupId;
-            setFieldsValue({ mapLocation: { groupId, coord, areaId } })
+            setFieldsValue({ mapLocation: { groupId, coord, areaId } });
           }
           flow_id = itemFlowList.map(d => {
             return { flow_id_data: d.flow_id_data, flow_id: d.flow_id };
@@ -267,7 +275,7 @@ export default class RiskPointEdit extends PureComponent {
       dispatch({
         type: 'riskPointManage/clearDetail',
       });
-    };
+    }
   }
 
   // 点击提交按钮验证表单信息
@@ -305,6 +313,7 @@ export default class RiskPointEdit extends PureComponent {
           cycleType,
           itemCode,
           mapLocation,
+          isShow,
         } = values;
         if (+cycleType === 1 && checkCycleData === null) {
           return (
@@ -333,7 +342,9 @@ export default class RiskPointEdit extends PureComponent {
         };
         if (mapLocation && mapLocation.groupId && mapLocation.coord) {
           const { coord, ...resMap } = mapLocation;
-          payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+          payload.pointFixInfoList = [
+            { isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },
+          ];
         }
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -441,7 +452,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染模态框(RFID)
-  renderRfidModal () {
+  renderRfidModal() {
     const {
       loading,
       riskPointManage: { labelModal },
@@ -451,7 +462,7 @@ export default class RiskPointEdit extends PureComponent {
     const setField = [
       {
         id: 'locationCode',
-        render () {
+        render() {
           return <Input placeholder="请输入标签编号" />;
         },
       },
@@ -513,7 +524,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染模态框(检查内容)
-  renderCheckModal () {
+  renderCheckModal() {
     const {
       illegalDatabase: { checkModal, businessTypes },
       loading,
@@ -587,8 +598,8 @@ export default class RiskPointEdit extends PureComponent {
               {flow_id.map(item => item.flow_id_data).indexOf(record.flow_id) >= 0 ? (
                 <span style={{ color: '#ccc' }}> 已添加</span>
               ) : (
-                  '添加'
-                )}
+                '添加'
+              )}
             </a>
           </span>
         ),
@@ -598,7 +609,7 @@ export default class RiskPointEdit extends PureComponent {
     const checkField = [
       {
         id: 'industry',
-        render () {
+        render() {
           return (
             <Select placeholder="请选择所属行业">
               {list.map(item => (
@@ -612,7 +623,7 @@ export default class RiskPointEdit extends PureComponent {
       },
       {
         id: 'business_type',
-        render () {
+        render() {
           return (
             <Select placeholder="请选择业务分类">
               {businessTypes.map(item => (
@@ -626,10 +637,10 @@ export default class RiskPointEdit extends PureComponent {
       },
       {
         id: 'object_title',
-        render () {
+        render() {
           return <Input placeholder="请输入检查项名称" />;
         },
-        transform (value) {
+        transform(value) {
           return value.trim();
         },
       },
@@ -922,7 +933,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染平面图信息
-  renderPicInfo () {
+  renderPicInfo() {
     const {
       form: { getFieldDecorator, getFieldValue },
       riskPointManage: {
@@ -1058,15 +1069,15 @@ export default class RiskPointEdit extends PureComponent {
                       </span>
                     </span>
                   ) : (
-                      <span
-                        className={styles.picIconSpan}
-                        onClick={() => {
-                          this.handlePicEdit(index);
-                        }}
-                      >
-                        编辑
+                    <span
+                      className={styles.picIconSpan}
+                      onClick={() => {
+                        this.handlePicEdit(index);
+                      }}
+                    >
+                      编辑
                     </span>
-                    )}
+                  )}
                 </Col>
               </Row>
             </Col>
@@ -1117,7 +1128,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   /* 渲染table(检查内容) */
-  renderCheckTable () {
+  renderCheckTable() {
     const {
       tableLoading,
       match: {
@@ -1212,16 +1223,18 @@ export default class RiskPointEdit extends PureComponent {
             width={500}
           />
         ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
       </Card>
     );
   }
 
   // 渲染信息
-  renderInfo () {
+  renderInfo() {
     const {
-      location: { query: { companyId } },
+      location: {
+        query: { companyId },
+      },
       form,
       form: { getFieldDecorator },
       riskPointManage: {
@@ -1232,6 +1245,7 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
     // const { isDisabled, groupId, coord } = this.state;
+    const { picList } = this.state;
 
     const formItemLayout = {
       labelCol: {
@@ -1374,8 +1388,16 @@ export default class RiskPointEdit extends PureComponent {
               <div className={styles.mapLocation} id="fengMap"></div>
               <Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>
             </div> */}
-            {getFieldDecorator('mapLocation')(
-              <MapMarkerSelect companyId={companyId} />
+            {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
+          </Form.Item>
+          <Form.Item label={fieldLabels.isShow}>
+            {getFieldDecorator('isShow', {
+              initialValue: picList ? picList.map(item => item.isShow).join(',') : '',
+            })(
+              <RadioGroup>
+                <Radio value="1">显示</Radio>
+                <Radio value="0">不显示</Radio>
+              </RadioGroup>
             )}
           </Form.Item>
         </Form>
@@ -1414,7 +1436,7 @@ export default class RiskPointEdit extends PureComponent {
   }
 
   // 渲染页面所有信息
-  render () {
+  render() {
     const {
       match: {
         params: { id },

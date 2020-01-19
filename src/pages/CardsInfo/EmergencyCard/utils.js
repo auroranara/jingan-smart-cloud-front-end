@@ -194,6 +194,8 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
 
 export function handleEquipmentValues(values) {
   const { letterName, dangerFactor, emergencyMeasures, preventMeasures } = values;
+  console.log('emergencyMeasures', emergencyMeasures);
+
   console.log(values);
   return {
     equipmentName: letterName,
