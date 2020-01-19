@@ -1,40 +1,38 @@
 import React, { Component } from 'react';
 // import { TreeSelect } from 'antd';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
-import { connect} from 'dva';
+import { connect } from 'dva';
 
-@connect(({
-  common,
-}) => ({
-  common,
-}), dispatch => ({
-  getMonitorTypeList(payload, callback) {
-    dispatch({
-      type: 'common/getMonitorTypeList',
-      payload: {
-        type: 4,
-        ...payload,
-      },
-      callback,
-    });
-  },
-}))
+@connect(
+  ({ common }) => ({
+    common,
+  }),
+  dispatch => ({
+    getMonitorTypeList(payload, callback) {
+      dispatch({
+        type: 'common/getMonitorTypeList',
+        payload: {
+          type: 4,
+          ...payload,
+        },
+        callback,
+      });
+    },
+  })
+)
 export default class MonitorTypeSelect extends Component {
   componentDidMount() {
-    const {
-      getMonitorTypeList,
-    } = this.props;
+    const { getMonitorTypeList } = this.props;
     getMonitorTypeList();
   }
 
   render() {
     const {
-      common: {
-        monitorTypeList=[],
-      },
+      common: { monitorTypeList = [] },
       value,
       onChange,
-      allowClear=false,
+      allowClear = false,
+      type,
     } = this.props;
 
     return (
@@ -46,6 +44,7 @@ export default class MonitorTypeSelect extends Component {
         onChange={onChange}
         allowClear={allowClear}
         list={monitorTypeList}
+        type={type}
       />
     );
   }

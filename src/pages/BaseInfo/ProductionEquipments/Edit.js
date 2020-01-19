@@ -418,7 +418,8 @@ export default class Edit extends PureComponent {
                   placeholder="请选择"
                   value={selectedMaterials
                     .map(
-                      item => item.chineName + (materialsNum[item.id] ? materialsNum[item.id] : '')
+                      item =>
+                        item.chineName + (materialsNum[item.id] ? materialsNum[item.id] + 't' : '')
                     )
                     .join('，')}
                   disabled

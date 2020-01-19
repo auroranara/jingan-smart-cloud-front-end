@@ -141,7 +141,7 @@ export const TABLE_COLUMNS = [
           </p>
           <p>
             危化品数量:
-            {unitChemiclaNumDetail.map(item => item.unitChemiclaNum).join(',')}
+            {unitChemiclaNumDetail.map(item => item.unitChemiclaNum + 't').join(',')}
           </p>
         </div>
       );

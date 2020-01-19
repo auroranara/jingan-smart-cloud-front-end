@@ -45,6 +45,7 @@ const ReportModal = Form.create()(props => {
     handleUploadChange,
     handleModalClose,
     handleModalAdd,
+    handleBeforeUpload,
   } = props;
 
   const formItemCol = {
@@ -119,7 +120,7 @@ const ReportModal = Form.create()(props => {
                 transform: value => value && value.label,
               },
             ],
-          // })(<CompanySelect placeholder="请选择" />)}
+            // })(<CompanySelect placeholder="请选择" />)}
           })(<Input placeholder="请输入检验单位" />)}
         </Form.Item>
         <Form.Item {...formItemCol} label="检验报告">
@@ -132,6 +133,7 @@ const ReportModal = Form.create()(props => {
               action={uploadAction} // 上传地址
               fileList={fileList}
               onChange={handleUploadChange}
+              beforeUpload={handleBeforeUpload}
             >
               <Button type="dashed" style={{ width: '96px', height: '96px' }} disabled={uploading}>
                 <Icon type="plus" style={{ fontSize: '32px' }} />
@@ -239,16 +241,25 @@ export default class InspectionReport extends PureComponent {
         }),
         uploading: false,
       });
-    } else {
+    } else if (file.status === 'error') {
       // error
-      message.error('上传失败！');
       this.setState({
-        fileList: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
+        fileList: [],
         uploading: false,
       });
     }
+  };
+
+  handleBeforeUpload = file => {
+    const { uploading } = this.state;
+    const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (uploading) {
+      message.error('尚未上传结束');
+    }
+    if (!isImage) {
+      message.error('上传失败，请上传jpg格式或者png格式图片');
+    }
+    return isImage && !uploading;
   };
 
   handleModalAdd = formData => {
@@ -395,6 +406,7 @@ export default class InspectionReport extends PureComponent {
       handleUploadChange: this.handleUploadChange,
       handleModalClose: this.handleModalClose,
       handleModalAdd: this.handleModalAdd,
+      handleBeforeUpload: this.handleBeforeUpload,
     };
 
     return (
