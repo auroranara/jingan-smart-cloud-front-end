@@ -16,10 +16,10 @@ const fields = [
     //   //   message: `请输入${fieldList.name}`,
     //   // }],
     // },
-    render() {
+    render () {
       return <Input placeholder={fieldList.name} />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
@@ -47,7 +47,7 @@ export default class CompanyModal extends PureComponent {
     name: undefined,
   };
 
-  getSnapshotBeforeUpdate(prevProps, prevState) {
+  getSnapshotBeforeUpdate (prevProps, prevState) {
     return (
       this.props.visible === true &&
       !!this.props.rowSelection &&
@@ -55,7 +55,7 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps, prevState, snapshot) {
     if (snapshot) {
       this.setState({ selectedRowKeys: this.props.rowSelection.selectedRowKeys });
     }
@@ -172,7 +172,7 @@ export default class CompanyModal extends PureComponent {
   /* 更换页码或显示数量 */
   handleChangePagination = ({ current, pageSize }) => {
     const { fetch, payload, cameraKeys } = this.props;
-    const { name } = this.state;
+    const { selectedRowKeys, ...resValues } = this.state;
     if (!cameraKeys) {
       this.setState({
         selectedRowKeys: [],
@@ -180,7 +180,7 @@ export default class CompanyModal extends PureComponent {
     }
     fetch({
       payload: {
-        name,
+        ...resValues,
         pageNum: current,
         pageSize,
         ...payload,
@@ -189,7 +189,7 @@ export default class CompanyModal extends PureComponent {
   };
 
   /* 渲染选择按钮 */
-  renderSelectButton() {
+  renderSelectButton () {
     const { selectedRowKeys } = this.state;
     return (
       <Button type="primary" onClick={this.handleSelect} disabled={!selectedRowKeys.length}>
@@ -198,7 +198,7 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       visible,
       width,

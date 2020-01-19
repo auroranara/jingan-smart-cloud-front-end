@@ -168,98 +168,99 @@ export default class Edit extends PureComponent {
   componentDidMount () {
     const {
       user: {
-        currentUser: {
-          unitType,
-          // companyId,
-          // companyName,
-        },
+        currentUser,
+        isCompany,
       },
       form: { setFieldsValue },
       match: { params: { id = null } = {} },
     } = this.props;
-    if (!id) return;
-    this.fetchList(1, 10, { id }, res => {
-      const {
-        list: [
+    if (id) {
+      this.fetchList(1, 10, { id }, res => {
+        const {
+          list: [
+            {
+              companyId,
+              companyName,
+              code, //统一编码
+              areaName, //储罐区名称
+              location, //在厂区的位置
+              environmentArea, //所处环境功能区
+              safeSpace, //周边安全防护间距
+              spaceArea, //储罐区面积
+              hasCoffer, //有无围堰
+              cofferArea, //围堰所围面积
+              // tankCount, //储罐个数
+              // storeMaterial, //存储物质
+              areaVolume, //储罐区总容积
+              commonStore, //常规存储量
+              minSpace, //两罐间最小间距
+              hasPassage, //有无消防通道
+              loadType, //装卸方式
+              dangerType, //装卸危险化学品种类
+              // isDanger, //是否构成重大危险源
+              // dangerUnit, //所属危险化学品重大危险源单元
+              // companyName,
+              // chineName,//品名
+              // chineNameList, //存储介质列表
+              tankIds, // 绑定的储罐
+              tankNames, // 储罐名称数组
+              dangerTypeList, // 装卸危险化学品种类的品名数组
+            },
+          ],
+        } = res.data;
+        setFieldsValue({
+          companyId,
+          code, //统一编码
+          areaName, //储罐区名称
+          location, //在厂区的位置
+          environmentArea, //所处环境功能区
+          safeSpace, //周边安全防护间距
+          spaceArea, //储罐区面积
+          hasCoffer, //有无围堰
+          // cofferArea, //围堰所围面积
+          // tankCount, //储罐个数
+          // storeMaterial, //存储物质
+          areaVolume, //储罐区总容积
+          commonStore, //常规存储量
+          minSpace, //两罐间最小间距
+          hasPassage, //有无消防通道
+          loadType, //装卸方式
+          dangerType, //装卸危险化学品种类
+          // isDanger, //是否构成重大危险源
+          // dangerUnit, //所属危险化学品重大危险源单元
+          newTankId: Array.isArray(tankIds) ? tankIds.join(',') : undefined,
+        });
+        const dangerTypes = dangerType ? dangerType.split(',') : [];
+        this.setState(
           {
-            companyId,
-            companyName,
-            code, //统一编码
-            areaName, //储罐区名称
-            location, //在厂区的位置
-            environmentArea, //所处环境功能区
-            safeSpace, //周边安全防护间距
-            spaceArea, //储罐区面积
-            hasCoffer, //有无围堰
-            cofferArea, //围堰所围面积
-            // tankCount, //储罐个数
-            // storeMaterial, //存储物质
-            areaVolume, //储罐区总容积
-            commonStore, //常规存储量
-            minSpace, //两罐间最小间距
-            hasPassage, //有无消防通道
-            loadType, //装卸方式
-            dangerType, //装卸危险化学品种类
-            // isDanger, //是否构成重大危险源
-            // dangerUnit, //所属危险化学品重大危险源单元
-            // companyName,
-            // chineName,//品名
-            // chineNameList, //存储介质列表
-            tankIds, // 绑定的储罐
-            tankNames, // 储罐名称数组
-            chineNameList, // 装卸危险化学品种类的品名数组
+            selectedCompany: { id: companyId, name: companyName },
+            // selectedMaterials: storeMaterial
+            //   .split(',')
+            //   .map((item, index) => ({ id: item, chineName: chineNameList[index] })),
+            // selectedDangerSource: dangerUnit
+            //   .split(',')
+            //   .map((item, index) => ({ id: item, name: chineNameList[index] })),
+            cofferAreaVisible: +hasCoffer === 1,
+            // dangerUnitVisible: +isDanger === 1,
+            selectedTank: Array.isArray(tankIds) ? tankIds.map((id, i) => ({ id, tankName: tankNames[i] })) : [],
+            selectedChemical: Array.isArray(dangerTypes) ? dangerTypes.map((storageId, i) => ({ storageId, chineName: dangerTypeList[i] })) : [],
           },
-        ],
-      } = res.data;
-      setFieldsValue({
-        companyId,
-        code, //统一编码
-        areaName, //储罐区名称
-        location, //在厂区的位置
-        environmentArea, //所处环境功能区
-        safeSpace, //周边安全防护间距
-        spaceArea, //储罐区面积
-        hasCoffer, //有无围堰
-        // cofferArea, //围堰所围面积
-        // tankCount, //储罐个数
-        // storeMaterial, //存储物质
-        areaVolume, //储罐区总容积
-        commonStore, //常规存储量
-        minSpace, //两罐间最小间距
-        hasPassage, //有无消防通道
-        loadType, //装卸方式
-        dangerType, //装卸危险化学品种类
-        // isDanger, //是否构成重大危险源
-        // dangerUnit, //所属危险化学品重大危险源单元
-        newTankId: Array.isArray(tankIds) ? tankIds.join(',') : undefined,
+          () => {
+            setFieldsValue({ cofferArea });
+          }
+        );
+        // 获取存储物质及常规存储量
+        this.fetchChemicalList({
+          payload: { pageNum: 1, pageSize: 0 },
+          callback: ({ list }) => {
+            setFieldsValue({ storageList: list });
+          },
+        })
       });
-      const dangerTypes = dangerType ? dangerType.split(',') : [];
-      this.setState(
-        {
-          selectedCompany: { id: companyId, name: companyName },
-          // selectedMaterials: storeMaterial
-          //   .split(',')
-          //   .map((item, index) => ({ id: item, chineName: chineNameList[index] })),
-          // selectedDangerSource: dangerUnit
-          //   .split(',')
-          //   .map((item, index) => ({ id: item, name: chineNameList[index] })),
-          cofferAreaVisible: +hasCoffer === 1,
-          // dangerUnitVisible: +isDanger === 1,
-          selectedTank: Array.isArray(tankIds) ? tankIds.map((id, i) => ({ id, tankName: tankNames[i] })) : [],
-          selectedChemical: Array.isArray(dangerTypes) ? dangerTypes.map((storageId, i) => ({ storageId, chineName: chineNameList[i] })) : [],
-        },
-        () => {
-          setFieldsValue({ cofferArea });
-        }
-      );
-      // 获取存储物质及常规存储量
-      this.fetchChemicalList({
-        payload: { pageNum: 1, pageSize: 10 },
-        callback: ({ list }) => {
-          setFieldsValue({ storageList: list });
-        },
-      })
-    });
+    } else if (isCompany) {
+      // 如果是企业登录
+      this.setState({ selectedCompany: { id: currentUser.companyId, name: currentUser.companyName } });
+    }
   }
 
   fetchList = (pageNum = 1, pageSize = 10, filters = {}, callback) => {
@@ -284,8 +285,14 @@ export default class Edit extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    this.setState({ selectedCompany, companyModalVisible: false });
-    setFieldsValue({ companyId: selectedCompany.id });
+    this.setState({
+      selectedCompany,
+      companyModalVisible: false,
+      selectedTank: [], // 已选择储罐
+      selectedChemical: [], // 已选择装卸危险化学品种类
+    });
+    // 清空包含的储罐、
+    setFieldsValue({ companyId: selectedCompany.id, newTankId: undefined, storageList: [], dangerType: undefined });
   };
 
   handleViewCompanyModal = () => {
@@ -305,12 +312,18 @@ export default class Edit extends PureComponent {
 
   // 获取储罐列表
   fetchTankList = (actions) => {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'baseInfo/fetchStorageTankForPage',
-      ...actions,
-      payload: { ...actions.payload, tankArea: '' },
-    })
+    const { dispatch } = this.props;
+    const { selectedCompany } = this.state;
+    if (selectedCompany && selectedCompany.id) {
+      dispatch({
+        type: 'baseInfo/fetchStorageTankForPage',
+        ...actions,
+        payload: { ...actions.payload, tankArea: '', companyId: selectedCompany.id },
+      })
+    } else {
+      message.error('请先选择单位');
+      return;
+    }
   };
 
   // 获取装卸危险化学品种类列表
@@ -440,16 +453,18 @@ export default class Edit extends PureComponent {
 
   // 打开选择储罐弹窗
   handleViewTankModal = () => {
-    const { selectedTank } = this.state;
-    this.fetchTankList({ payload: { pageNum: 1, pageSize: 10 } });
-    this.setState({ tankModalVisible: true, selectedTemp: selectedTank });
+    const { selectedTank, selectedCompany } = this.state;
+    if (selectedCompany && selectedCompany.id) {
+      this.fetchTankList({ payload: { pageNum: 1, pageSize: 10 } });
+      this.setState({ tankModalVisible: true, selectedTemp: selectedTank });
+    } else {
+      message.error('请先选择单位');
+      return;
+    }
   }
 
   // 选择储罐
   handleSelectTank = () => {
-    const {
-      match: { params: { id } },
-    } = this.props;
     const { selectedTemp } = this.state;
     const { form: { setFieldsValue } } = this.props;
     setFieldsValue({ newTankId: selectedTemp.map(item => item.id).join(',') });
@@ -480,7 +495,7 @@ export default class Edit extends PureComponent {
 
   // 存储物质及常规存储量--常规储量改变
   handleNomalStorageChange = (value, key) => {
-    if (!/^\d*$/.test(value)) return;
+    if (isNaN(value)) return;
     const { form: { getFieldValue, setFieldsValue } } = this.props;
     const storageList = getFieldValue('storageList');
     setFieldsValue({
@@ -709,7 +724,9 @@ export default class Edit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label="装卸危险化学品种类">
-            {getFieldDecorator('dangerType')(
+            {getFieldDecorator('dangerType', {
+              rules: [{ required: true, message: '请选择装卸危险化学品种类' }],
+            })(
               <Fragment>
                 <Input
                   {...itemStyles}
@@ -1002,7 +1019,7 @@ export default class Edit extends PureComponent {
           model={chemical}
           rowSelection={{
             selectedRowKeys: selectedTemp.map(item => item.storageId),
-            onChange: (keys, rows) => { this.setState({ selectedTemp: rows }); console.log('1', rows) },
+            onChange: (keys, rows) => { this.setState({ selectedTemp: rows }) },
           }}
           handleSelect={this.handleSelectChemical}
         />

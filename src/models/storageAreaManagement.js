@@ -23,7 +23,7 @@ export default {
   },
   effects: {
     // 查询物料列表
-    *fetchTankAreaList({ payload, callback }, { call, put }) {
+    *fetchTankAreaList ({ payload, callback }, { call, put }) {
       const response = yield call(queryTankAreaList, payload);
       if (response.code === 200) {
         yield put({
@@ -36,7 +36,7 @@ export default {
       }
     },
     // 新建物料
-    *addTankArea({ payload, success, error }, { call }) {
+    *addTankArea ({ payload, success, error }, { call }) {
       const response = yield call(addTankArea, payload);
       const {
         data: { id },
@@ -52,7 +52,7 @@ export default {
       }
     },
     // 修改物料
-    *editTankArea({ payload, success, error }, { call }) {
+    *editTankArea ({ payload, success, error }, { call }) {
       const response = yield call(updateTankArea, payload);
       const { code, msg } = response;
       if (code === 200) {
@@ -64,15 +64,12 @@ export default {
       }
     },
     // 删除物料
-    *deleteTankArea({ payload, success, error }, { call, put }) {
-      const response = yield call(deleteTankArea, payload);
-      const { code, msg } = response;
-      if (code === 200) {
-        if (success) {
-          success();
-        }
-      } else if (error) {
-        error(msg);
+    *deleteTankArea ({ payload, success, error }, { call, put }) {
+      const res = yield call(deleteTankArea, payload);
+      if (res && res.code === 200) {
+        success && success();
+      } else {
+        error(res ? res.msg : '删除失败');
       }
     },
     // // 重大危险源模态框
@@ -103,7 +100,7 @@ export default {
     // },
   },
   reducers: {
-    saveList(state, { payload }) {
+    saveList (state, { payload }) {
       const { list, pagination: { pageNum, pageSize, total } = {}, a } = payload;
       return {
         ...state,
@@ -117,13 +114,13 @@ export default {
       };
     },
     // 库区弹出框
-    saveDangerSourceModel(state, { payload }) {
+    saveDangerSourceModel (state, { payload }) {
       return {
         ...state,
         dangerSourceModal: payload,
       };
     },
-    saveMsdsModel(state, { payload }) {
+    saveMsdsModel (state, { payload }) {
       return {
         ...state,
         msdsModal: payload,
