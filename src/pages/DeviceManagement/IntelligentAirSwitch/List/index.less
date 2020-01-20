@@ -1,0 +1,221 @@
+.container {
+  :global {
+    .ant-tabs {
+      margin-bottom: -17px !important;
+    }
+  }
+}
+.infiniteList {
+  :global {
+    .ant-spin-container > .ant-row {
+      display: flex;
+      flex-wrap: wrap;
+
+      & > .ant-col {
+        flex: none;
+        display: flex;
+        flex-direction: column;
+
+        & > .ant-list-item {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+  }
+}
+.card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  word-break: break-all;
+
+  .cardTop {
+    flex: none;
+    display: flex;
+    padding-bottom: 1em;
+    border-bottom: 1px solid #ddd;
+
+    .cardIcon {
+      flex: none;
+      margin-right: 1em;
+      width: 50px;
+      height: 50px;
+      background: url('../imgs/icon-switch.png') no-repeat center;
+      background-size: contain;
+    }
+
+    .cardTitle {
+      flex: 1;
+
+      .cardNameWrapper {
+        display: flex;
+        font-size: 20px;
+
+        .cardName {
+          margin-right: 0.5em;
+        }
+
+        .cardOnlineStatus {
+          flex: none;
+          margin: 0.25em 0;
+          width: 1em;
+          height: 1em;
+          background: no-repeat center;
+          background-size: contain;
+
+          &.offline {
+            background-image: url('../imgs/icon-offline.png');
+          }
+
+          &.online {
+            background-image: url('../imgs/icon-online.png');
+          }
+        }
+      }
+
+      .cardAddressWrapper {
+        display: flex;
+        line-height: 20px;
+
+        .cardAddressIcon {
+          flex: none;
+          margin: 2px 0.5em 2px 0;
+          width: 16px;
+          height: 16px;
+          background: url('../imgs/icon-address.png') no-repeat center;
+          background-size: contain;
+        }
+
+        .cardAddress {
+          margin-right: 1em;
+          min-height: 20px;
+        }
+
+        .cardVideo {
+          flex: none;
+          margin: -3px 0;
+          width: 26px;
+          height: 26px;
+          background: url('../imgs/icon-video.png') no-repeat center;
+          background-size: contain;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .cardSwitch {
+      flex: none;
+    }
+  }
+
+  .cardBottom {
+    flex: 1;
+    padding-top: 1em;
+
+    .updateTimeWrapper {
+      display: flex;
+      padding-bottom: 1em;
+
+      .updateTimeLabel {
+        flex: none;
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 12px;
+      }
+      .updateTimeValue {
+        flex: 1;
+        font-size: 12px;
+      }
+    }
+
+    .paramList {
+      margin-bottom: -1em;
+      overflow: hidden;
+    }
+
+    .param {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1em;
+
+      .paramIcon {
+        flex: none;
+        margin-right: 0.5em;
+        width: 36px;
+        height: 36px;
+        background: no-repeat center;
+        background-size: contain;
+
+        &.power {
+          &.offline {
+            background-image: url('../imgs/icon-power-offline.png');
+          }
+
+          &.online {
+            background-image: url('../imgs/icon-power-online.png');
+          }
+        }
+
+        &.leakageCurrent {
+          &.offline {
+            background-image: url('../imgs/icon-leakage-current-offline.png');
+          }
+
+          &.online {
+            background-image: url('../imgs/icon-leakage-current-online.png');
+          }
+        }
+
+        &.electricity {
+          &.offline {
+            background-image: url('../imgs/icon-electricity-offline.png');
+          }
+
+          &.online {
+            background-image: url('../imgs/icon-electricity-online.png');
+          }
+        }
+
+        &.voltage {
+          &.offline {
+            background-image: url('../imgs/icon-voltage-offline.png');
+          }
+
+          &.online {
+            background-image: url('../imgs/icon-voltage-online.png');
+          }
+        }
+
+        &.temperature {
+          &.offline {
+            background-image: url('../imgs/icon-temperature-offline.png');
+          }
+
+          &.online {
+            background-image: url('../imgs/icon-temperature-online.png');
+          }
+        }
+      }
+
+      .paramContent {
+        flex: 1;
+
+        .paramLabel {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.45);
+          white-space: nowrap;
+        }
+
+        .paramValue {
+          font-size: 28px;
+          min-height: 36px;
+          line-height: 36px;
+        }
+      }
+    }
+  }
+}
+.emtpyData {
+  color: rgba(0, 0, 0, 0.45);
+}

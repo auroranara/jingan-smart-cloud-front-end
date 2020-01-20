@@ -502,6 +502,8 @@ export default {
   'menu.deviceManagement.virtualMonitoringDevice.edit': '编辑虚拟监测对象',
   'menu.deviceManagement.tagLibrary': '图标库管理',
   'menu.deviceManagement.tagLibrary.listView': '图标库列表',
+  'menu.deviceManagement.intelligentAirSwitch': '智能空开',
+  'menu.deviceManagement.intelligentAirSwitch.list': '智能空开',
   'menu.companyIot': '物联网监测报警',
   'menu.companyIot.IOTAbnormalData': 'IOT监测及趋势统计',
   'menu.companyIot.IOTAbnormalData.IOTAbnormalData': 'IOT监测及趋势统计',

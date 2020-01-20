@@ -3714,6 +3714,25 @@ module.exports = env => {
                 },
               ],
             },
+            // 智能空开
+            {
+              path: '/device-management/intelligent-air-switch',
+              code: 'deviceManagement.intelligentAirSwitch',
+              name: 'intelligentAirSwitch',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/intelligent-air-switch',
+                  redirect: '/device-management/intelligent-air-switch/list',
+                },
+                {
+                  path: '/device-management/intelligent-air-switch/list',
+                  name: 'list',
+                  code: 'deviceManagement.intelligentAirSwitch.list',
+                  component: './DeviceManagement/IntelligentAirSwitch/List',
+                },
+              ],
+            },
           ],
         },
 
