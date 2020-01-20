@@ -74,8 +74,8 @@ class VideoPlay extends Component {
       this.setState({
         activeIndex: index,
       });
-      const item = videoList[index]
-      deviceId = item.device_id || item.deviceId
+      const item = videoList[index];
+      deviceId = item.device_id || item.deviceId;
     }
     dispatch({
       type: 'videoPlay/fetchStartToPlay',
@@ -99,13 +99,13 @@ class VideoPlay extends Component {
           });
         }
       },
-      // error: response => {
-      //   notification['error']({
-      //     message: '视频请求失败',
-      //     description: response.msg,
-      //     duration: null,
-      //   });
-      // },
+      error: response => {
+        notification['error']({
+          message: '视频请求失败',
+          description: response.msg,
+          duration: null,
+        });
+      },
     });
   };
 
@@ -120,7 +120,7 @@ class VideoPlay extends Component {
               [styles.itemActive]: activeIndex === index,
             });
             const keyId = item.key_id || item.keyId;
-            const deviceId = item.device_id || item.deviceId
+            const deviceId = item.device_id || item.deviceId;
             return (
               <li
                 className={itemStyles}
@@ -208,10 +208,10 @@ class VideoPlay extends Component {
             {loading ? (
               LOADING_COMPONENT
             ) : (
-                <Player>
-                  <HLSSource isVideoChild src={videoSrc} ref="source" />
-                </Player>
-              )}
+              <Player>
+                <HLSSource isVideoChild src={videoSrc} ref="source" />
+              </Player>
+            )}
           </div>
           {showList && (
             <div className={styles.videoList}>
