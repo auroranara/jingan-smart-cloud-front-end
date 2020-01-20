@@ -140,7 +140,7 @@ class VideoPlay extends Component {
     let index = videoList.findIndex(item => {
       return item.key_id === videoId;
     });
-    console.log(videoId, index, videoList);
+    // console.log(videoId, index, videoList);
     if (index > -1) {
       this.setState({
         activeIndex: index,
@@ -155,7 +155,6 @@ class VideoPlay extends Component {
         device_id: deviceId,
       },
       success: response => {
-        // console.log('response', response);
         if (videoId) {
           let index = videoList.findIndex(item => {
             return item.key_id === videoId;
@@ -323,6 +322,7 @@ class VideoPlay extends Component {
       </div>
     );
   };
+
   renderTreeNode = arr => {
     const { searchValue, selectedKeys } = this.state;
     return arr.map(item => {
@@ -395,9 +395,12 @@ class VideoPlay extends Component {
             });
           },
           error: response => {
+            this.setState({
+              videoSrc: '',
+            });
             notification['error']({
               message: '失败',
-              description: '视频请求失败',
+              description: response.msg,
               duration: 3,
             });
           },
@@ -433,8 +436,12 @@ class VideoPlay extends Component {
           error: response => {
             notification['error']({
               message: '失败',
-              description: '视频请求失败',
+              description: response.msg,
               duration: 3,
+            });
+            // 失败之后不继续播放
+            this.setState({
+              videoSrc: '',
             });
           },
         });
