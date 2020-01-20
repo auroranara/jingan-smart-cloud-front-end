@@ -293,14 +293,14 @@ export default class GasHistory extends Component {
   handleMonitorObjectTypeIdChange = monitorObjectTypeId => {
     if (monitorObjectTypeId) {
       const {
-        user: {
-          currentUser: { unitId },
+        match: {
+          params: { companyId },
         },
         getMonitorObjectList,
       } = this.props;
       getMonitorObjectList({
         type: monitorObjectTypeId,
-        companyId: unitId,
+        companyId,
       });
     }
     this.setState(
@@ -887,6 +887,9 @@ export default class GasHistory extends Component {
    */
   renderTable() {
     const {
+      match: {
+        params: { equipmentTypes },
+      },
       gasMonitor: {
         historyList: { list = [], pagination: { total, pageNum, pageSize } = {} } = {},
         monitorObjectTypeList = [],
@@ -931,11 +934,13 @@ export default class GasHistory extends Component {
         title: '监测数值',
         dataIndex: 'monitorValue',
         align: 'center',
-        render: (value, { paramUnit, statusType }) =>
+        render: (value, { fixType, paramUnit, statusType }) =>
           isNumber(value) && (
             <Badge
               status={+statusType === -1 ? 'error' : 'success'}
-              text={`${value}${paramUnit || ''}`}
+              text={
+                fixType !== 5 ? `${value}${paramUnit || ''}` : +statusType === -1 ? '火警' : '正常'
+              }
             />
           ),
       },
@@ -943,13 +948,18 @@ export default class GasHistory extends Component {
         title: '报警原因',
         dataIndex: 'alarm',
         align: 'center',
-        render: (_, { paramUnit, condition, warnLevel, limitValue, monitorValue, statusType }) =>
+        render: (
+          _,
+          { fixType, paramUnit, condition, warnLevel, limitValue, monitorValue, statusType }
+        ) =>
           +statusType === -1 &&
-          `超过${+warnLevel === 1 ? '预警' : '告警'}值${toFixed(
-            Math.abs(limitValue - monitorValue)
-          )}${paramUnit}（${+warnLevel === 1 ? '预警' : '告警'}${
-            condition === '>=' ? '上限' : '下限'
-          }为${limitValue}${paramUnit}）`,
+          (+fixType !== 5
+            ? `${condition === '>=' ? '超过' : '低于'}${
+                +warnLevel === 1 ? '预警' : '告警'
+              }值${toFixed(Math.abs(limitValue - monitorValue))}${paramUnit}（${
+                +warnLevel === 1 ? '预警' : '告警'
+              }${condition === '>=' ? '上限' : '下限'}为${limitValue}${paramUnit}）`
+            : '——'),
       },
       {
         title: '发生时间',
@@ -962,19 +972,21 @@ export default class GasHistory extends Component {
     return (
       <Card className={styles.card}>
         <Row className={styles.controlRow} gutter={24}>
-          <Col xs={24} sm={12} md={8}>
-            <Select
-              className={styles.select}
-              placeholder="请选择安全状态"
-              value={status}
-              onChange={this.handleStatusChange}
-              allowClear
-            >
-              {STATUSES.slice(0, 2).map(({ key, value }) => (
-                <Option key={key}>{value}</Option>
-              ))}
-            </Select>
-          </Col>
+          {equipmentTypes !== '413' && (
+            <Col xs={24} sm={12} md={8}>
+              <Select
+                className={styles.select}
+                placeholder="请选择安全状态"
+                value={status}
+                onChange={this.handleStatusChange}
+                allowClear
+              >
+                {STATUSES.slice(0, 2).map(({ key, value }) => (
+                  <Option key={key}>{value}</Option>
+                ))}
+              </Select>
+            </Col>
+          )}
           <Col xs={24} sm={12} md={8}>
             <Select
               className={styles.select}

@@ -63,7 +63,7 @@ const breadcrumbList = [
   {
     title: 'IOT数据分析',
     name: 'IOT数据分析',
-    href: '/data-analysis/IOT-abnormal-data/list',
+    href: '/company-iot/IOT-abnormal-data/list',
   },
   { title: LABEL, name: LABEL },
 ];
@@ -209,7 +209,7 @@ export default class CompanyDetail extends PureComponent {
     const action = (
       <Link
         // to={`/dynamic-monitoring/fire-alarm/history-record/${companyId}`}
-        to={`/data-analysis/IOT-abnormal-data/fire-alarm/history-record/${companyId}`}
+        to={`/company-iot/IOT-abnormal-data/fire-alarm/history-record/${companyId}`}
       >
         <AuthButton code={codesMap.dataAnalysis.IOTAbnormalData.history}>
           历史记录

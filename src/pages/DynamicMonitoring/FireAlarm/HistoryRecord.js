@@ -2,17 +2,7 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import {
-  Button,
-  Card,
-  Table,
-  Select,
-  Form,
-  Input,
-  DatePicker,
-  Pagination,
-  Modal,
-} from 'antd';
+import { Button, Card, Table, Select, Form, Input, DatePicker, Pagination, Modal } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 
 const FormItem = Form.Item;
@@ -238,12 +228,12 @@ export default class HistoryRecord extends PureComponent {
       {
         title: 'IOT数据分析',
         name: 'IOT数据分析',
-        href: '/data-analysis/IOT-abnormal-data/list',
+        href: '/company-iot/IOT-abnormal-data/list',
       },
       {
         title: '火灾自动报警系统',
         name: '火灾自动报警系统',
-        href: `/data-analysis/IOT-abnormal-data/fire-alarm/company/${companyId}`,
+        href: `/company-iot/IOT-abnormal-data/fire-alarm/company/${companyId}`,
       },
       { title: '历史记录', name: '历史记录' },
     ];
