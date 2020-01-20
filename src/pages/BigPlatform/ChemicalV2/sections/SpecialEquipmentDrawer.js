@@ -3,13 +3,17 @@ import { connect } from 'dva';
 import classNames from 'classnames';
 import SpecialEquipmentCard from '@/jingan-components/SpecialEquipmentCard';
 import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
-import { SpecialEquipmentList } from '../utils';
+import moment from 'moment';
+
+// import { SpecialEquipmentList } from '../utils';
+
 // 引入样式文件
 import styles from './SpecialEquipmentDrawer.less';
 
 // 特种设备状态
 const filterOptions = ['全部', '已过期', '即将过期', '未过期'];
-
+// 时间格式
+const TIME_FORMAT = 'YYYY-MM-DD';
 const statusSetting = {
   '0': { label: '未过期', color: '#1E60FF' },
   '1': { label: '即将到期', color: 'rgb(250, 173, 20)' },
@@ -126,10 +130,8 @@ export default class SpecialEquipmentDrawer extends PureComponent {
       visible,
       // 关闭函数
       onClose,
-      // unitSafety: {
-      //   specialEquipmentList: { allList = [], expiredList = [], unexpiredList = [] } = {},
-      // },
       data: { list, expired, notExpired, expiring },
+      dict = [], // 分类字典
     } = this.props;
     const { selectedStatus } = this.state;
     // let list;
@@ -164,11 +166,47 @@ export default class SpecialEquipmentDrawer extends PureComponent {
               data={item}
               key={item.id}
               fieldNames={{
+                category: 'category', // 分类
+                brand: 'brand', // 品牌
                 name: 'equipName', // 设备名称
                 number: 'factoryNumber', // 出厂编号
                 person: 'contact', // 负责人
                 expiryDate: 'endDate', // 有效期至
               }}
+              fields={[
+                {
+                  label: '分类',
+                  render: ({ category }) => {
+                    let dictData = dict;
+                    return category.split(',').reduce((arr, val) => {
+                      const target = dictData.find(item => item.id === val) || {};
+                      dictData = target.children;
+                      return [...arr, target.label];
+                    }, []).join('>>')
+                  },
+                },
+                {
+                  label: '品牌',
+                  key: 'brand',
+                },
+                {
+                  label: '设备名称',
+                  key: 'name',
+                },
+                {
+                  label: '出厂编号',
+                  key: 'number',
+                },
+                {
+                  label: '负责人',
+                  key: 'person',
+                  labelWrapperClassName: styles.personLabelWrapper,
+                },
+                {
+                  label: '有效期至',
+                  render: ({ expiryDate, status }) => <span style={{ color: +status === 1 && '#ff4848' }}>{expiryDate && moment(+expiryDate).format(TIME_FORMAT)}</span>,
+                },
+              ]}
               statusLabel={statusSetting[item.paststatus] ? statusSetting[item.paststatus].label : undefined}
               statusColor={statusSetting[item.paststatus] ? statusSetting[item.paststatus].color : undefined}
             />

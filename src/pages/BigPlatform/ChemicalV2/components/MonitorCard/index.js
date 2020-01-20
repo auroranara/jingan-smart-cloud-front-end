@@ -1,4 +1,4 @@
-import { PureComponent, Fragment } from 'react';
+import { PureComponent } from 'react';
 import { Row, Col, Tooltip } from 'antd';
 import styles from './index.less';
 import classNames from 'classnames';
@@ -27,7 +27,7 @@ const defaultFields = {
 };
 // 无数据填充
 const EMPTY_FILLING = '-';
-const STATUS = ['正常', '预警', '报警'];
+const STATUS = ['正常', '预警', '告警'];
 
 class MonitorCard extends PureComponent {
   constructor(props) {
@@ -50,7 +50,7 @@ class MonitorCard extends PureComponent {
       <div className={styles.lightBlue}>{label}：</div>
       <span>{value}</span>
       {status === 0 && (<div>状态：<span className={styles.greenText}>{statusLabel || '正常'}</span></div>)}
-      {+status > 0 && (<div>状态：<span className={styles.redText}>{statusLabel || '报警'}</span></div>)}
+      {+status > 0 && (<div>状态：<span className={styles.redText}>{statusLabel || '告警'}</span></div>)}
     </div>
   )
 
@@ -60,7 +60,7 @@ class MonitorCard extends PureComponent {
         <div className={styles.lightBlue}>{label}：</div>
         <span>{value}</span>
         {status === 0 && (<div>状态：<span className={styles.greenText}>{statusLabel || '正常'}</span></div>)}
-        {+status > 0 && (<div>状态：<span className={styles.redText}>{statusLabel || '报警'}</span></div>)}
+        {+status > 0 && (<div>状态：<span className={styles.redText}>{statusLabel || '告警'}</span></div>)}
       </div>
       <div className={styles.time}>更新时间：{time}</div>
     </div>

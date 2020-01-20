@@ -143,15 +143,13 @@ export default class AreaMonitorDrawer extends PureComponent {
           {dataSourse.length ? (
             dataSourse.map((item, index) => (
               <Fragment key={index}>
-                {+this.state.activeKey === 0 &&
-                  /罐区/.test(this.props.title) && (
-                    <TankCard data={item} onVideoClick={onVideoClick} {...res} />
-                  )}
-                {+this.state.activeKey === 0 &&
-                  /库区/.test(this.props.title) && (
-                    <ReservoirAreaCard data={item} onVideoClick={onVideoClick} {...res} />
-                  )}
-                {[1, 2].includes(+this.state.activeKey) && (
+                {tab === '储罐监测' && (
+                  <TankCard data={item} onVideoClick={onVideoClick} {...res} />
+                )}
+                {tab === '库房监测' && (
+                  <ReservoirAreaCard data={item} onVideoClick={onVideoClick} {...res} />
+                )}
+                {['可燃气体', '有毒气体'].includes(tab) && (
                   <GasCard data={item} onVideoClick={onVideoClick} {...res} />
                 )}
                 {index !== dataSourse.length - 1 && <Divider />}
