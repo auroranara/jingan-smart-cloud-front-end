@@ -34,7 +34,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
    * 生成年龄
    * @param {number} time 出生日期时间戳
    **/
-  generateAge = time => time ? (new Date().getYear() - new Date(time).getYear() + 1) : '-';
+  generateAge = time => time ? (new Date().getYear() - new Date(time).getYear()) : '-';
 
   render () {
     let {
