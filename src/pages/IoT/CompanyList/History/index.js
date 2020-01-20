@@ -293,14 +293,14 @@ export default class GasHistory extends Component {
   handleMonitorObjectTypeIdChange = monitorObjectTypeId => {
     if (monitorObjectTypeId) {
       const {
-        user: {
-          currentUser: { unitId },
+        match: {
+          params: { companyId },
         },
         getMonitorObjectList,
       } = this.props;
       getMonitorObjectList({
         type: monitorObjectTypeId,
-        companyId: unitId,
+        companyId,
       });
     }
     this.setState(
