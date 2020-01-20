@@ -187,7 +187,7 @@ export default class StorageEdit extends PureComponent {
             })) : [],
           })
           setTimeout(() => {
-            setFieldsValue({ buildingId, floorId, pressureRate, designPressure, cofferdamArea, highRiskTankSystem });
+            setFieldsValue({ buildingId, floorId, pressureRate, designPressure, highRiskTankSystem, cofferdamArea });
           }, 0);
           if (pointFixInfoList && pointFixInfoList.length) {
             let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
@@ -667,7 +667,7 @@ export default class StorageEdit extends PureComponent {
         area: +values.locationType === 1 ? area : '',
         pressureRate: values.pressureVessel === '1' ? pressureRate : '',
         designPressure: values.pressureVessel === '1' ? designPressure : '',
-        cofferdamArea: values.cofferdam === '2' ? cofferdamArea : '',
+        cofferdamArea: values.cofferdam === '1' ? cofferdamArea : '',
       }
       if (mapLocation && mapLocation.groupId && mapLocation.coord) {
         const { coord, ...resMap } = mapLocation;
@@ -1101,7 +1101,6 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="有无围堰">
             {getFieldDecorator('cofferdam', {
-              initialValue: id ? detail.cofferdam : undefined,
               rules: [
                 {
                   required: true,
@@ -1118,7 +1117,6 @@ export default class StorageEdit extends PureComponent {
           {cofferdam === '1' && (
             <FormItem {...formItemLayout} label="围堰所围面积">
               {getFieldDecorator('cofferdamArea', {
-                // initialValue: id ? detail.cofferdamArea : undefined,
                 getValueFromEvent: this.handleTrim,
                 rules: [{ required: true, message: '请输入围堰所围面积' }],
               })(<Input {...itemStyles} placeholder="请输入" />)}

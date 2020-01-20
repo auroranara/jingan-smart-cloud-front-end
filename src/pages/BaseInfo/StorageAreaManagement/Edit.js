@@ -405,6 +405,11 @@ export default class Edit extends PureComponent {
     } = this.props;
     validateFields((error, formData) => {
       if (!error) {
+        const storageList = formData.storageList;
+        if (storageList && storageList.length && storageList.some(item => !item.nomalStorage)) {
+          message.warning('请输入常规存储量');
+          return;
+        }
         const payload = {
           ...formData,
           companyId: unitType === 4 ? companyId : formData.companyId,
@@ -624,7 +629,9 @@ export default class Edit extends PureComponent {
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="选择包含的储罐">
-            {getFieldDecorator('newTankId')(
+            {getFieldDecorator('newTankId', {
+              rules: [{ required: true, message: '请选择包含的储罐' }],
+            })(
               <Fragment>
                 <Input
                   {...itemStyles}
@@ -781,7 +788,7 @@ export default class Edit extends PureComponent {
                         width: 200,
                       },
                       {
-                        title: '常规存储量（t）',
+                        title: (<span className={styles.requiredText}>常规存储量（t）</span>),
                         dataIndex: 'nomalStorage',
                         align: 'center',
                         width: 200,
