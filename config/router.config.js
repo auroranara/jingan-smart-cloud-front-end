@@ -1326,9 +1326,25 @@ module.exports = env => {
               name: 'reevaluateWarning', // 复评预警管理
               code: 'riskControl.reevaluateWarning',
               path: '/risk-control/reevaluate-warning',
-              developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  path: '/risk-control/reevaluate-warning',
+                  redirect: '/risk-control/reevaluate-warning/list',
+                },
+                {
+                  name: 'list',
+                  code: 'riskControl.reevaluateWarning.list',
+                  path: '/risk-control/reevaluate-warning/list',
+                  component: './RiskControl/ReevaluateWarning/List',
+                },
+                {
+                  name: 'history',
+                  code: 'riskControl.reevaluateWarning.history',
+                  path: '/risk-control/reevaluate-warning/history/:id',
+                  component: './RiskControl/ReevaluateWarning/History',
+                },
+              ],
             },
             {
               name: 'changeWarning', // 变更预警管理

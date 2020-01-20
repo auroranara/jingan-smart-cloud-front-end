@@ -173,6 +173,8 @@ export default {
   'menu.riskControl.fourColorImage.edit': '风险四色图管理编辑',
   'menu.riskControl.upgradeWarning': '风险升级预警信息',
   'menu.riskControl.reevaluateWarning': '复评预警管理',
+  'menu.riskControl.reevaluateWarning.list': '复评预警管理',
+  'menu.riskControl.reevaluateWarning.history': '复评预警管理历史记录',
   'menu.riskControl.changeWarning': '变更预警管理',
   'menu.riskControl.changeWarning.list': '变更预警管理',
   'menu.controlMeasuresFollowUp': '管控措施跟进信息管理',
