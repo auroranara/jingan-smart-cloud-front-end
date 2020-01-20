@@ -95,7 +95,7 @@ const Columns = [
     title: '附件',
     dataIndex: 'file',
     align: 'center',
-    render: value => <CustomUpload value={value} type="span" />,
+    render: value => <CustomUpload className={styles.customUpload} value={value} type="span" />,
   },
 ];
 

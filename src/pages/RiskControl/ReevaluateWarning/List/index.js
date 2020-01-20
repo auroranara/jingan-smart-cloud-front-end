@@ -100,7 +100,7 @@ export default class ReevaluateWarningList extends Component {
       dataIndex: 'historyCount',
       width: 116,
       fixed: list && list.length ? 'right' : undefined,
-      render: (_, data) => renderHistoryButton(data),
+      render: (_, data) => <div className={styles.buttonWrapper}>{renderHistoryButton(data)}</div>,
       align: 'center',
     },
     {
@@ -108,7 +108,9 @@ export default class ReevaluateWarningList extends Component {
       dataIndex: '操作',
       width: 60,
       fixed: list && list.length ? 'right' : undefined,
-      render: (_, data) => renderReevaluateButton(data),
+      render: (_, data) => (
+        <div className={styles.buttonWrapper}>{renderReevaluateButton(data)}</div>
+      ),
       align: 'center',
     },
   ];
