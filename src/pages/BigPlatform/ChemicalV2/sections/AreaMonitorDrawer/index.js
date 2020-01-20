@@ -205,13 +205,9 @@ export default class AreaMonitorDrawer extends PureComponent {
         {this.renderTitle({ title: '基本信息' })}
         {/罐区/.test(title) && this.renderTankBaseInfo(data)}
         {/库区/.test(title) && this.renderReservoirBaseInfo(data)}
-        {tabs && tabs.length ? (
-          <Fragment>
-            {this.renderTitle({ title: '监测情况', style: { marginTop: '10px' } })}
-            {this.renderStatistics(statisticsProps)}
-            {this.renderMonitorTabs(tabs, onVideoClick)}
-          </Fragment>
-        ) : null}
+        {tabs && tabs.length ? this.renderTitle({ title: '监测情况', style: { marginTop: '10px' } }) : null}
+        {tabs && tabs.length ? this.renderStatistics(statisticsProps) : null}
+        {tabs && tabs.length ? this.renderMonitorTabs(tabs, onVideoClick) : null}
       </div>
     );
   };

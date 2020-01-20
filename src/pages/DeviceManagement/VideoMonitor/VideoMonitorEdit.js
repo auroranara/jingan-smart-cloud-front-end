@@ -7,8 +7,6 @@ import {
   Input,
   Button,
   Card,
-  Col,
-  Row,
   Switch,
   Icon,
   Popover,
@@ -22,7 +20,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import MapMarkerSelect from '@/components/MapMarkerSelect';
 
 // import { numReg } from '@/utils/validate';
-import Coordinate from '@/components/Coordinate';
+// import Coordinate from '@/components/Coordinate';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import codes from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
@@ -139,10 +137,10 @@ export default class VideoMonitorEdit extends PureComponent {
             gatewayEquipment: { id: plugFlowEquipment, code: plugFlowEquipmentCode },
           }, () => {
             if (pointFixInfoList && pointFixInfoList.length) {
-              let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+              let { xnum, ynum, znum, groupId, areaId, isShow } = pointFixInfoList[0];
               const coord = { x: +xnum, y: +ynum, z: +znum };
               groupId = +groupId;
-              setFieldsValue({ mapLocation: { groupId, coord, areaId } })
+              setFieldsValue({ isShow: isShow || '1', mapLocation: { groupId, coord, areaId } })
             }
           });
           this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
@@ -284,6 +282,7 @@ export default class VideoMonitorEdit extends PureComponent {
           nvr,
           connectType,
           mapLocation,
+          isShow,
         } = values;
         const { companyId } = this.state;
 
@@ -313,7 +312,7 @@ export default class VideoMonitorEdit extends PureComponent {
         };
         if (mapLocation && mapLocation.groupId && mapLocation.coord) {
           const { coord, ...resMap } = mapLocation;
-          payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+          payload.pointFixInfoList = [{ isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
         }
 
         const editCompanyId = companyIdParams || detailCompanyId;
@@ -973,6 +972,16 @@ export default class VideoMonitorEdit extends PureComponent {
             <FormItem {...formItemLayout} label={fieldLabels.mapLocation}>
               {getFieldDecorator('mapLocation')(
                 <MapMarkerSelect companyId={companyId} />
+              )}
+            </FormItem>
+          )}
+          {companyId && (
+            <FormItem label="该点位是否在化工安全生产驾驶舱显示" {...formItemLayout}>
+              {getFieldDecorator('isShow')(
+                <Radio.Group>
+                  <Radio value="1">显示</Radio>
+                  <Radio value="0">不显示</Radio>
+                </Radio.Group>
               )}
             </FormItem>
           )}

@@ -41,7 +41,10 @@ const unitLayout = {
   style: { position: 'absolute', left: '78%', top: 0, width: '20%' },
 };
 
-const unitOptions = ['t', 'm³'];
+const unitOptions = [
+  { value: '1', label: 't' },
+  { value: '2', label: 'm³' },
+];
 
 const dangerSourceColumns = [
   {
@@ -666,8 +669,8 @@ export default class MaterialsHandler extends PureComponent {
                   rules: [{ required: true, message: '请输入单位' }],
                 })(
                   <Select placeholder="单位">
-                    {unitOptions.map(item => (
-                      <Option value={item} key={item}>{item}</Option>
+                    {unitOptions.map(({ value, label }) => (
+                      <Option value={value} key={value}>{label}</Option>
                     ))}
                   </Select>
                 )}
@@ -687,8 +690,8 @@ export default class MaterialsHandler extends PureComponent {
                       rules: [{ required: true, message: '请输入单位' }],
                     })(
                       <Select placeholder="单位">
-                        {unitOptions.map(item => (
-                          <Option value={item} key={item}>{item}</Option>
+                        {unitOptions.map(({ value, label }) => (
+                          <Option value={value} key={value}>{label}</Option>
                         ))}
                       </Select>
                     )}

@@ -26,6 +26,11 @@ import styles from './index.less';
 
 // 判断选项
 const JUDGE_OPTIONS = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
+// 单位选项
+const unitOptions = [
+  { value: '1', label: 't' },
+  { value: '2', label: 'm³' },
+];
 
 const {
   baseInfo: {
@@ -303,6 +308,8 @@ export default class MaterialsList extends PureComponent {
     router.push(`/major-hazard-info/materials/edit/${id}`);
   };
 
+  generateUnit = value => unitOptions.find(item => item.value === value) ? unitOptions.find(item => item.value === value).label : ''
+
   // 表格改变触发，包含分页变动
   handleTableChange = (pageNum, pageSize) => {
     const { formData } = this.state;
@@ -408,14 +415,14 @@ export default class MaterialsList extends PureComponent {
                 <div>
                   年生产能力：
                   {annualThroughput}
-                  {annualThroughputUnit}
+                  {this.generateUnit(annualThroughputUnit)}
                 </div>
               ) : (
                   <Fragment>
                     <div>
                       年消耗量：
-                    {annualConsumption}
-                      {annualConsumptionUnit}
+                      {annualConsumption}
+                      {this.generateUnit(annualConsumptionUnit)}
                     </div>
                     {/* <div>
                       最大存储量：

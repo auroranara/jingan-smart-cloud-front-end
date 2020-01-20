@@ -10,7 +10,6 @@ import {
   message,
   Radio,
   DatePicker,
-  TreeSelect,
   Upload,
   Icon,
   Tooltip,
@@ -32,6 +31,7 @@ import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '@/pages/DeviceManagement/NewSensor/AddSensor.less';
 
 const FormItem = Form.Item;
+
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
@@ -120,10 +120,10 @@ export default class AddMonitoringDevice extends Component {
                 setFieldsValue({ area, location });
               } else setFieldsValue({ floorId });
               if (pointFixInfoList && pointFixInfoList.length) {
-                let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+                let { xnum, ynum, znum, groupId, areaId, isShow } = pointFixInfoList[0];
                 const coord = { x: +xnum, y: +ynum, z: +znum };
                 groupId = +groupId;
-                setFieldsValue({ mapLocation: { groupId, coord, areaId } });
+                setFieldsValue({ isShow: isShow || '1', mapLocation: { groupId, coord, areaId } });
               }
             }
           );
@@ -379,7 +379,7 @@ export default class AddMonitoringDevice extends Component {
       message.warning('请先保存平面图信息');
       return;
     }
-    validateFields((err, { mapLocation, ...resValues }) => {
+    validateFields((err, { mapLocation, isShow, ...resValues }) => {
       if (err) return;
       let payload = {
         ...resValues,
@@ -388,7 +388,7 @@ export default class AddMonitoringDevice extends Component {
       };
       if (mapLocation && mapLocation.groupId && mapLocation.coord) {
         const { coord, ...resMap } = mapLocation;
-        payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+        payload.pointFixInfoList = [{ isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
       }
       // console.log('payload', payload);
       const tag = id ? '编辑' : '新增';
@@ -425,7 +425,7 @@ export default class AddMonitoringDevice extends Component {
    */
   renderForm = () => {
     const {
-      dispatch,
+      // dispatch,
       form: { getFieldDecorator, getFieldsValue },
       match: {
         params: { id },
@@ -433,7 +433,7 @@ export default class AddMonitoringDevice extends Component {
       device: {
         monitoringDeviceTypes, // 监测设备类型
         monitoringDeviceDetail: detail, // 监测设备详情
-        flatGraphic,
+        // flatGraphic,
       },
       personnelPosition: {
         map: {
@@ -441,17 +441,17 @@ export default class AddMonitoringDevice extends Component {
           floors = [], // 楼层列表
         },
       },
-      riskPointManage: {
-        imgData: { list: imgList = [] },
-      },
+      // riskPointManage: {
+      //   imgData: { list: imgList = [] },
+      // },
     } = this.props;
     const {
-      editingIndex,
+      // editingIndex,
       // pointFixInfoList,
-      isImgSelect,
-      imgIdCurrent,
+      // isImgSelect,
+      // imgIdCurrent,
       selectedCompany,
-      picModalVisible,
+      // picModalVisible,
       uploading,
       fileList,
     } = this.state;
@@ -673,6 +673,14 @@ export default class AddMonitoringDevice extends Component {
                   <FlatPic {...FlatPicProps} /> */}
                   {getFieldDecorator('mapLocation')(
                     <MapMarkerSelect companyId={companyId} />
+                  )}
+                </FormItem>
+                <FormItem label="该点位是否在化工安全生产驾驶舱显示" {...formItemLayout}>
+                  {getFieldDecorator('isShow')(
+                    <Radio.Group>
+                      <Radio value="1">显示</Radio>
+                      <Radio value="0">不显示</Radio>
+                    </Radio.Group>
                   )}
                 </FormItem>
               </Form>
