@@ -126,7 +126,7 @@ export default class StorehouseDetail extends Component {
       { id: 'cofferArea', label: '围堰所围面积' },
       { id: 'safeSpace', label: '周边安全防护间距（m）' },
       { id: 'hasPassage', label: '有无消防通道', render: ({ hasPassage }) => this.generateJudgeLabel(hasPassage) },
-      { id: 'dangerType', label: '装卸危险化学品种类' },
+      { id: 'dangerType', label: '装卸危险化学品种类', render: ({ dangerTypeList }) => dangerTypeList && dangerTypeList.length ? dangerTypeList.join('、') : NO_DATA },
       { id: 'loadType', label: '装卸方式' },
       {
         id: 'storageList', label: '存储物质及常规存储量', render: () => storageList && storageList.length ? (
