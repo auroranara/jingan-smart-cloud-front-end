@@ -17,6 +17,7 @@ import {
   postMap,
   putMap,
   getMap,
+  getRegulatoryClassification,
 } from '../services/company/company.js';
 import { getList } from '@/utils/service';
 
@@ -91,6 +92,7 @@ export default {
         safetyPhone: undefined,
         safetyEmail: undefined,
         companyType: undefined,
+        regulatoryClassification: null,
       },
     },
     modal: {
@@ -134,6 +136,7 @@ export default {
       },
     ],
     map: {},
+    regulatoryClassificationList: [],
   },
 
   effects: {
@@ -399,6 +402,15 @@ export default {
       const { code, msg } = response || {};
       callback && callback(code, msg);
     },
+    *fetchRegulatoryClassification({ payload, callback }, { call, put }) {
+      const response = yield call(getRegulatoryClassification, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = getList(data).map(({ type_name, type_id }) => ({ type_name, type_id: type_id.toString() }));
+        yield put({ type: 'saveRegulatoryClassification', payload: list });
+        callback && callback(list);
+      }
+    },
   },
 
   reducers: {
@@ -543,6 +555,9 @@ export default {
     },
     saveMap(state, { payload }) {
       return { ...state, map: payload };
+    },
+    saveRegulatoryClassification(state, { payload }) {
+      return { ...state, regulatoryClassificationList: payload };
     },
   },
 };

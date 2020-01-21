@@ -145,3 +145,8 @@ export async function putMap(params) {
     body: params,
   });
 }
+
+// 获取监管分类列表
+export async function getRegulatoryClassification() {
+  return request(`/acloud_new/v2/baseInfo/getMonitorTypeInfo`);
+}

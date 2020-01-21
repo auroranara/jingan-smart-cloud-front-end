@@ -444,7 +444,7 @@ export function getScreenList(treeList, permissions, extraPermissions) {
   if (!list || !list.length)
     return [];
 
-  console.log(list);
+  // console.log(list);
   return list.filter(({ id }) => [permissions, extra].some(ids => ids.includes(id))).filter(({ showZname }) => !showZname.includes('首页'));
 }
 
