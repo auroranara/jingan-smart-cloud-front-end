@@ -2,10 +2,13 @@
   padding: 10px 4px;
   border: 1px solid #0FF;
   font-size: 14px;
+
+  &+.container {
+    margin-top: 15px;
+  }
 }
 
 .head {
-  margin-bottom: 8px;
   position: relative;
   padding: 0 10px;
 }
@@ -48,12 +51,12 @@
 .sheet:extend(.icon) {
   margin-right: 10px;
   background-size: 19px 25px;
-  background-image: url(../imgs/sheet.png);
+  background-image: url(../imgs/icon-work-order.png);
 }
 
 .trend:extend(.icon) {
   background-size: 22px 21px;
-  background-image: url(../imgs/trend.png);
+  background-image: url(../imgs/icon-trend.png);
 }
 
 .alarm {
@@ -67,8 +70,7 @@
 }
 
 .detail {
-  // color: #1475ED;
-  color: #0FF;
+  color: #1475ED;
   position: absolute;
   bottom: 0;
   right: 10px;
@@ -76,6 +78,7 @@
 }
 
 .body {
+  margin-top: 8px;
   padding: 10px;
   border-top: 1px solid #586D88;
 }
@@ -86,11 +89,12 @@
 
 .bodyInner {
   display: flex;
+  min-height: 150px;
 }
 
 .imgContainer {
-  width: 40%;
-  padding: 10px;
+  width: 35%;
+  padding: 15px;
 }
 
 .img {
@@ -101,5 +105,8 @@
 }
 
 .info {
-  width: 50%;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

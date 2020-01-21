@@ -1,7 +1,9 @@
 @cyan: #0FF;
 
 .container {
-  margin-bottom: 10px;
+  &+.container {
+    margin-top: 10px;
+  }
 }
 
 .status {

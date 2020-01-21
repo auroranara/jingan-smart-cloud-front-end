@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon } from 'antd';
+import { Icon, Tooltip } from 'antd';
 import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceLvlDrawer.less';
@@ -112,9 +112,15 @@ export default class DangerSourceLvlDrawer extends PureComponent {
             <div className={styles.rlvl}>
               <span className={styles.label}>R值：</span>
               {3}
-              <span className={styles.question}>
-                <Icon type="question-circle" />
-              </span>
+              <Tooltip
+                title="由专家根据公式评估算出，具体参照《GB 18218-2018 危险化学品重大危险源辨识》"
+                overlayStyle={{ zIndex: 9999 }}
+                placement={'right'}
+              >
+                <span className={styles.question}>
+                  <Icon type="question-circle" />
+                </span>
+              </Tooltip>
             </div>
             <div className={styles.subTitle}>
               <span className={styles.circle} />

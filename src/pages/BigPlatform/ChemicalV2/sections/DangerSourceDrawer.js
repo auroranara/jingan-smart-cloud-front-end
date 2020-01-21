@@ -4,24 +4,7 @@ import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/D
 // import styles from './MonitorDrawer.less';
 import { CardItem } from '../components/Components';
 
-const list = [
-  {
-    code: '156487941654',
-    name: '危险品液体原料储罐区',
-    level: '四级',
-    location: '东厂区1号楼',
-    time: '2019.01.01',
-    man: '李磊 13056177523',
-  },
-  {
-    code: '151444441321',
-    name: '氯乙烷生产装置',
-    level: '四级',
-    location: '东厂区1号楼1车间',
-    time: '2019.03.01',
-    man: '李刚 13814873478',
-  },
-];
+const NO_DATA = '暂无数据';
 const fields = [
   { label: '统一编码', value: 'code' },
   { label: '重大危险源名称', value: 'name' },
@@ -31,8 +14,12 @@ const fields = [
     render: val => ['一级', '二级', '三级', '四级'][val - 1],
   },
   { label: '区域位置', value: 'location' },
-  { label: '备案时间', value: 'time' },
-  { label: '责任人', value: 'man' },
+  {
+    label: '备案时间',
+    value: 'recordDate',
+    render: val => (val ? moment(val).format('YYYY-MM-DD') : NO_DATA),
+  },
+  { label: '责任人', value: 'dutyPerson' },
 ];
 
 export default class DangerSourceDrawer extends PureComponent {
@@ -41,9 +28,9 @@ export default class DangerSourceDrawer extends PureComponent {
     this.state = {};
   }
 
-  handleClick = () => {
-    const { setDrawerVisible } = this.props;
-    setDrawerVisible('dangerSourceInfo');
+  handleClick = detail => {
+    const { handleShowDangerSourceDetail } = this.props;
+    handleShowDangerSourceDetail(detail);
   };
 
   render() {
@@ -58,13 +45,21 @@ export default class DangerSourceDrawer extends PureComponent {
         destroyOnClose={true}
         zIndex={1222}
         left={
-          <div>
+          <div
+            style={{
+              position: 'relative',
+              height: '100%',
+              overflow: 'auto',
+              marginRight: '-15px',
+              paddingRight: '15px',
+            }}
+          >
             {dangerSourceList.map((item, index) => (
               <CardItem
                 key={index}
                 data={item}
                 fields={fields}
-                onClick={() => this.handleClick()}
+                onClick={() => this.handleClick(item)}
               />
             ))}
           </div>

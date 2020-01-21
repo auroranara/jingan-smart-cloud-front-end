@@ -9,6 +9,7 @@ import { connect } from 'dva';
 import styles from './index.less';
 
 const API = 'xxx/getTankMonitor';
+const NO_DATA = '暂无数据';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const img = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
 const STATUS = ['正常', '预警', '告警'];
@@ -205,7 +206,9 @@ export default class TankMonitorDrawer extends Component {
                         {paramDesc}（{paramUnit}
                         ）：
                       </div>
-                      <div className={styles.value}>{realValue}</div>
+                      <div className={styles.value}>
+                        {realValue || realValue === 0 ? realValue : NO_DATA}
+                      </div>
                     </div>
                     <div className={styles.line}>
                       <div className={styles.label}>状态：</div>

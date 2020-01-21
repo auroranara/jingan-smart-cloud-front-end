@@ -13,7 +13,11 @@ const fields = [
   { label: '物料类型', value: 'type', render: val => Types[val - 1] },
   { label: '化学品名称', value: 'chineName' },
   { label: 'CAS号', value: 'casNo' },
-  { label: '最大储量', value: 'maxStoreDay', render: (val, row) => val + row.maxStoreDayUnit },
+  // {
+  //   label: '最大储量',
+  //   value: 'maxStoreDay',
+  //   render: (val, row) => val + (+row.maxStoreDayUnit === 1 ? 't' : 'm³'),
+  // },
   {
     label: '危险性类别',
     value: 'riskCateg',
@@ -28,7 +32,13 @@ export default class ChemicalDrawer extends PureComponent {
   }
 
   render() {
-    const { visible, onClose, materialsList, handleShowChemicalDetail } = this.props;
+    const {
+      visible,
+      onClose,
+      materialsList,
+      handleShowChemicalDetail,
+      handleShowChemicalStore,
+    } = this.props;
     // const {} = this.state;
 
     return (
@@ -60,6 +70,7 @@ export default class ChemicalDrawer extends PureComponent {
                       style={{
                         background: `url(${locationImg}) center center / 100% 100% no-repeat`,
                       }}
+                      onClick={() => handleShowChemicalStore(item)}
                     />
                   </div>
                 }

@@ -228,6 +228,7 @@ export default class Chemical extends PureComponent {
       chemicalDetail: {},
       monitorEquipDrawerVisible: false,
       monitorMarker: {},
+      dangerSourceDetail: {},
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -273,6 +274,8 @@ export default class Chemical extends PureComponent {
         'fetchHiddenDangerTotal',
         // 重大危险源列表
         'fetchDangerSourceList',
+        // 重点监管危化品生产存储场所
+        'fetchMesageByMaterialId',
       ],
     });
   }
@@ -636,7 +639,8 @@ export default class Chemical extends PureComponent {
   };
 
   handleShowVideo = videoList => {
-    this.setState({ videoList: videoList || VideoList, videoVisible: true });
+    if(!videoList || !videoList.length) return;
+    this.setState({ videoList, videoVisible: true });
   };
 
   handleParentChange = newState => {
@@ -1122,9 +1126,22 @@ export default class Chemical extends PureComponent {
     this.setDrawerVisible('technology');
   };
 
+  // 重点监管危化品安全措施和应急处置措施
   handleShowChemicalDetail = detail => {
     this.setState({ chemicalDetail: detail });
     this.setDrawerVisible('chemicalDetail');
+  };
+
+  // 重大危险源详情
+  handleShowDangerSourceDetail = detail => {
+    this.setState({ dangerSourceDetail: detail });
+  };
+
+  // 重点监管危化品生产存储场所
+  handleShowChemicalStore = detail => {
+    this.fetchMesageByMaterialId({ id: detail.id });
+    this.setState({ chemicalDetail: detail });
+    this.handleMHOpen();
   };
 
   /**
@@ -1148,6 +1165,13 @@ export default class Chemical extends PureComponent {
         zoneContent = {},
         noticeList,
         dangerSourceList,
+        mesageByMaterialId: {
+          gasholderManage = [],
+          industryPipelines = [],
+          productDevice = [],
+          tankManages = [],
+          warehouseInfos = [],
+        },
       },
       match: {
         params: { unitId: companyId },
@@ -1206,7 +1230,22 @@ export default class Chemical extends PureComponent {
       chemicalDetail,
       monitorEquipDrawerVisible,
       monitorMarker,
+      dangerSourceDetail,
     } = this.state;
+    const mhList = [
+      { list: tankManages, type: 302 },
+      { list: gasholderManage, type: 312 },
+      { list: warehouseInfos, type: 304 },
+      { list: productDevice, type: 311 },
+      { list: industryPipelines, type: 314 },
+    ].reduce((prev, next) => {
+      const { type, list } = next;
+      list.forEach(element => {
+        prev.push({ type, target: element });
+      });
+      return prev;
+    }, []);
+
     return (
       <BigPlatformLayout
         title="五位一体信息化管理平台"
@@ -1429,6 +1468,7 @@ export default class Chemical extends PureComponent {
           }}
           setDrawerVisible={this.setDrawerVisible}
           dangerSourceList={dangerSourceList}
+          handleShowDangerSourceDetail={this.handleShowDangerSourceDetail}
         />
 
         <DangerSourceInfoDrawer
@@ -1437,6 +1477,7 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('dangerSourceInfo');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          dangerSourceDetail={dangerSourceDetail}
         />
 
         <DangerSourceLvlDrawer
@@ -1455,6 +1496,7 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           materialsList={materialsList}
           handleShowChemicalDetail={this.handleShowChemicalDetail}
+          handleShowChemicalStore={this.handleShowChemicalStore}
         />
 
         <ChemicalDetailDrawer
@@ -1506,7 +1548,14 @@ export default class Chemical extends PureComponent {
           onVideoClick={this.handleShowVideo}
           tankDetail={tankDetail}
         />
-        <MHDrawer visible={mhVisible} handleClose={this.handleMHClose} />
+
+        <MHDrawer
+          visible={mhVisible}
+          handleClose={this.handleMHClose}
+          mhList={mhList}
+          chemicalDetail={chemicalDetail}
+          handleShowVideo={this.handleShowVideo}
+        />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />
 

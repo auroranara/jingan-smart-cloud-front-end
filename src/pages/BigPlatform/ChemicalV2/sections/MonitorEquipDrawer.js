@@ -137,7 +137,9 @@ export default class MonitorEquipDrawer extends PureComponent {
                               {+fixType !== 5 && `(${paramUnit})：`}
                             </div>
                             {+fixType !== 5 && (
-                              <div className={styles.value}>{realValue || NO_DATA}</div>
+                              <div className={styles.value}>
+                                {realValue || realValue === 0 ? realValue : NO_DATA}
+                              </div>
                             )}
                           </div>
                           <div className={styles.line}>

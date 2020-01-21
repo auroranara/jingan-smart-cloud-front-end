@@ -210,6 +210,12 @@ export default class KeyPoints extends PureComponent {
     );
   };
 
+  // 换行符转成<br />
+  linefeed = str => {
+    if (!JSON.stringify(str).includes('\\n')) return str;
+    return <div dangerouslySetInnerHTML={{ __html: str.replace(/\n/g, '<br>') }} />;
+  };
+
   // 承诺卡
   renderAcceptCard = data => {
     return (
@@ -220,7 +226,7 @@ export default class KeyPoints extends PureComponent {
             <div className={styles.line} key={index}>
               <div className={styles.lineItem}>{label}</div>
               <div className={styles.lineItem}>
-                {render ? render(data[value], data) : data[value] || ''}
+                {render ? render(data[value], data) : this.linefeed(data[value]) || ''}
               </div>
             </div>
           );
@@ -240,7 +246,7 @@ export default class KeyPoints extends PureComponent {
             <div className={styles.line} key={index}>
               <div className={styles.lineItem}>{label}</div>
               <div className={styles.lineItem}>
-                {render ? render(data[value], data) : data[value] || ''}
+                {render ? render(data[value], data) : this.linefeed(data[value]) || ''}
               </div>
             </div>
           );

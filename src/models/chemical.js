@@ -9,6 +9,7 @@ import {
   getProductDevice,
   getZoneContent,
   getNotice,
+  getMesageByMaterialId,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
@@ -41,6 +42,13 @@ export default {
     noticeList: [],
     hiddenDangerTotal: 0,
     dangerSourceList: [],
+    mesageByMaterialId: {
+      gasholderManage: [],
+      industryPipelines: [],
+      productDevice: [],
+      tankManages: [],
+      warehouseInfos: [],
+    },
   },
 
   effects: {
@@ -264,6 +272,21 @@ export default {
           type: 'save',
           payload: {
             dangerSourceList,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 重点监管危化品生产存储场所
+    *fetchMesageByMaterialId({ payload, callback }, { call, put }) {
+      const response = yield call(getMesageByMaterialId, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const mesageByMaterialId = data;
+        yield put({
+          type: 'save',
+          payload: {
+            mesageByMaterialId,
           },
         });
       }

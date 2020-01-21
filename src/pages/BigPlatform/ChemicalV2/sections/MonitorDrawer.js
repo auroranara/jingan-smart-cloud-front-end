@@ -6,7 +6,7 @@ import { MonitorConfig } from '../utils';
 import styles from './MonitorDrawer.less';
 import iconAlarm from '@/assets/icon-alarm.png';
 
-export default class DangerSourceInfoDrawer extends PureComponent {
+export default class MonitorDrawer extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};

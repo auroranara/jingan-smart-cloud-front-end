@@ -16,7 +16,13 @@ export default class PoisonDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, handleClose, mhList = [{}] } = this.props;
+    const {
+      visible,
+      handleClose,
+      mhList = [{}],
+      chemicalDetail: { chineName, casNo },
+      handleShowVideo,
+    } = this.props;
 
     return (
       <CustomDrawer
@@ -25,19 +31,21 @@ export default class PoisonDrawer extends PureComponent {
         onClose={handleClose}
         zIndex={1322}
         width={535}
+        destroyOnClose={true}
       >
         <div className={styles.head}>
           <p>
-            <span className={styles.cyan}>重点监管危险化学品：</span>氯
+            <span className={styles.cyan}>重点监管危险化学品：</span>
+            {chineName}
           </p>
           <p>
             <span className={styles.cyan}>CAS号：</span>
-            7782-50-5
+            {casNo}
           </p>
         </div>
         <div className={styles.cards}>
           {mhList.map((item, index) => (
-            <TypeCard data={item} key={index} />
+            <TypeCard data={item} key={index} handleShowVideo={handleShowVideo} />
           ))}
         </div>
       </CustomDrawer>

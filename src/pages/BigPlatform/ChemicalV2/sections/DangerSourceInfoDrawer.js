@@ -4,7 +4,6 @@ import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/D
 import styles from './DangerSourceInfoDrawer.less';
 import { CardItem } from '../components/Components';
 import Wave from '@/jingan-components/Wave';
-// import storage from '../imgs/storage.png';
 
 const basicList = [
   {
@@ -129,24 +128,23 @@ export default class DangerSourceInfoDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, setDrawerVisible } = this.props;
+    const { visible, onClose, setDrawerVisible, dangerSourceDetail } = this.props;
     // const {} = this.state;
     const basicFields = [
       { label: '统一编码', value: 'code' },
       { label: '重大危险源名称', value: 'name' },
       {
         label: '重大危险源等级',
-        value: 'level',
+        value: 'dangerLevel',
+        render: val => ['一级', '二级', '三级', '四级'][val - 1],
         extra: (
           <span className={styles.detail} onClick={this.handleClickDetail}>
             查看详情>>
           </span>
         ),
       },
-      // { label: 'R值', value: 'RValue' },
       { label: '区域位置', value: 'location' },
-      // { label: '备案时间', value: 'time' },
-      { label: '责任人', value: 'man' },
+      { label: '责任人', value: 'dutyPerson' },
     ];
 
     return (
@@ -162,9 +160,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
             <div className={styles.title} style={{ marginTop: 0 }}>
               基本信息：
             </div>
-            {basicList.map((item, index) => (
-              <CardItem key={index} data={item} fields={basicFields} />
-            ))}
+            <CardItem data={dangerSourceDetail} fields={basicFields} />
             <div className={styles.title}>防护要求：</div>
             <div className={styles.content}>
               必须戴防护手套，必须戴防毒面具，必须穿防护服，必须戴防护眼镜

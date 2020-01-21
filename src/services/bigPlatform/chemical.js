@@ -52,3 +52,8 @@ export async function getZoneContent(params) {
 export async function getNotice(params) {
   return request(`${URL_PREFIX}/notice/companyPublicForPage?${stringify(params)}`);
 }
+
+// 重点监管危化品生产存储场所
+export async function getMesageByMaterialId(params) {
+  return request(`${URL_PREFIX}/dangerSource/getMesageByMaterialId?${stringify(params)}`);
+}

@@ -1688,10 +1688,11 @@ export const MonitorConfig = {
         label: '区域位置',
         value: 'buildingName',
         render: (val, row) => {
-          const { buildingName, floorName, areaName } = row;
+          const { buildingName, floorName, area, location } = row;
           return (
             <span style={{ fontSize: 16 }}>
-              {buildingName ? buildingName + (floorName || '') : areaName || '暂无'}
+              {`${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` ||
+                '暂无数据'}
             </span>
           );
         },

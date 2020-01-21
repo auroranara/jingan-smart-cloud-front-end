@@ -5,29 +5,22 @@ import styles from './TypeCard.less';
 import TypeCardHead from './TypeCardHead';
 import TypeCardBody from './TypeCardBody';
 
+const NO_DATA = '暂无数据';
 const TYPE_LABELS = {
-  304: ['库房名称', '区域位置', '所属库区', '设计储量(t)'], //库房
-  404: ['储罐名称', '位号', '区域位置', '实时储量'], // 储罐
-  408: ['装置名称', '区域位置', '是否关键装置', '设计压力(KPa)'], // 生产装置
-  409: ['气柜名称', '区域位置', '设计柜容(m3)', '设计压力(KPa)'], // 气柜
+  304: ['库房名称', '区域位置', '所属库区'], //库房
+  302: ['储罐名称', '位号', '区域位置'], // 储罐
+  311: ['装置名称', '区域位置', '是否关键装置', '设计压力(KPa)'], // 生产装置
+  312: ['气柜名称', '区域位置', '设计柜容(m³)', '设计压力(KPa)'], // 气柜
+  314: ['管道名称', '是否危化品管道', '是否压力管道', '设计压力(KPa)'], // 管道
 };
 
 const TYPE_IMGS = {
   304: 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png',
-  404: 'http://data.jingan-china.cn/v2/chem/chemScreen/storage.png',
-  408: 'http://data.jingan-china.cn/v2/chem/screen/productDevice.png',
-  409: 'http://data.jingan-china.cn/v2/chem/screen/gasometer.png',
+  302: 'http://data.jingan-china.cn/v2/chem/chemScreen/storage.png',
+  311: 'http://data.jingan-china.cn/v2/chem/screen/productDevice.png',
+  312: 'http://data.jingan-china.cn/v2/chem/screen/gasometer.png',
+  314: 'http://data.jingan-china.cn/v2/chem/screen/pipeline.png',
 };
-
-const STORAGE = [
-  { name: '温度', unit: '℃', value: 30, status: 1, time: +moment() },
-  { name: '液位', unit: 'cm', value: 23, status: 0, time: +moment() },
-  { name: '压力', unit: 'MPa', value: 0.15, status: 0, time: +moment() },
-];
-const PARAMLIST = [
-  { name: '1号储罐', paramList: STORAGE },
-  { name: '2号储罐', paramList: STORAGE },
-];
 
 function getLabelList(type, values) {
   return TYPE_LABELS[type].map((label, i) => [label, values[i]]);
@@ -35,16 +28,65 @@ function getLabelList(type, values) {
 
 export default class TypeCard extends PureComponent {
   render() {
-    const { data } = this.props;
-    const { list=PARAMLIST, type=404 } = data;
+    const { data, handleShowVideo } = this.props;
+    const { target, type = 404 } = data;
+    const {
+      tankName,
+      number,
+      buildingName,
+      floorName,
+      area,
+      location,
+      position,
+      aname,
+      name,
+      keyDevice,
+      pressure,
+      gasholderName,
+      regionalLocation,
+      designCapacity,
+      designKpa,
+      dangerPipeline,
+      designPressure,
+      warnStatus,
+      meList,
+    } = target;
+
+    const TYPE_VALUES = {
+      304: [
+        name,
+        position,
+        `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` || NO_DATA,
+      ],
+      302: [tankName, number, aname],
+      311: [name, location, +keyDevice === 1 ? '是' : '否', pressure],
+      312: [gasholderName, regionalLocation, designCapacity, designKpa],
+      314: [
+        name,
+        +dangerPipeline === 1 ? '是' : '否',
+        +pressure === 1 ? '是' : '否',
+        designPressure,
+      ],
+    };
 
     return (
       <div className={styles.container}>
         <TypeCardHead
-          alarming={1}
-          labelList={getLabelList(404, ['液氯储罐', '4305A', '1号楼1车间', '6t'])}
+          alarming={+warnStatus === -1}
+          labelList={getLabelList(type, TYPE_VALUES[type])}
+          type={type}
+          data={target}
         />
-        {Array.isArray(list) ? list.map(item => <TypeCardBody url={TYPE_IMGS[type]} data={item} />) : null}
+        {Array.isArray(meList)
+          ? meList.map((item, index) => (
+              <TypeCardBody
+                key={index}
+                url={TYPE_IMGS[type]}
+                data={item}
+                handleShowVideo={handleShowVideo}
+              />
+            ))
+          : null}
       </div>
     );
   }

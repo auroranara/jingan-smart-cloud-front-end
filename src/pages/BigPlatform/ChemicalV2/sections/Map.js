@@ -110,7 +110,8 @@ export default class Map extends PureComponent {
   renderPoints = (pointsInfo, iconType) => {
     if (!pointsInfo.length) return;
     pointsInfo.map(item => {
-      const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
+      const { groupId, xnum, ynum, znum, isShow } = item.pointFixInfoList[0];
+      if (!+isShow) return null;
       this.addMarkers(+groupId, {
         x: +xnum,
         y: +ynum,
