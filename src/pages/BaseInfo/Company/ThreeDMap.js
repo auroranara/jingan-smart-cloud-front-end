@@ -24,12 +24,21 @@ const MODES = [
   { name: '3D', value: fengMap.FMViewMode.MODE_3D },
 ];
 
+function getDefaultViewCenter(center) {
+  if (!center)
+    return;
+
+  const c = center.split(',').map(s => Number.parseFloat(s.trim()));
+  if (c.length === 2 && c.every(n => !Number.isNaN(n)))
+    return { x: c[0], y: c[1] };
+}
+
 @Form.create()
 export default class ThreeDMap extends PureComponent {
   state = {
     mapVisible: false,
     scaleRange: INIT_RANGE,
-    scale: INIT_SCALE,
+    // scale: INIT_SCALE,
   };
 
   componentDidMount() {
@@ -49,6 +58,8 @@ export default class ThreeDMap extends PureComponent {
       }
     });
   }
+
+  map = null;
 
   handleSubmit = e => {
     const {
@@ -89,8 +100,8 @@ export default class ThreeDMap extends PureComponent {
     });
   };
 
-  genHandleRangeChange = prop => value => {
-    this.setState({ [prop]: value });
+  handleRangeChange = value => {
+    this.setState({ scaleRange: value });
   };
 
   renderBaseItems() {
@@ -123,10 +134,11 @@ export default class ThreeDMap extends PureComponent {
 
     return (
       <Fragment>
+        <p className={styles.tip}>默认中心位置请在地图上单击获取位置</p>
         <FormItem label="默认中心位置" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('defaultViewCenter', {
           })(
-            <Input placeholder="请输入默认中心位置并以英文逗号分割" />
+            <Input disabled placeholder="默认中心位置请在地图上单击获取位置" />
           )}
         </FormItem>
         <FormItem label="默认视图模式" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
@@ -156,7 +168,8 @@ export default class ThreeDMap extends PureComponent {
     );
   }
 
-  initMap = ({ appName, key, mapId, defaultViewMode }) => {
+  initMap = ({ appName, key, mapId, scale, defaultViewMode, defaultViewCenter }) => {
+    this.map && this.map.dispose();
     const { form: { setFieldsValue } } = this.props;
 
     if (!appName || !key || !mapId) {
@@ -164,7 +177,8 @@ export default class ThreeDMap extends PureComponent {
       return;
     }
 
-    const { scaleRange, scale } = this.state;
+    const center = getDefaultViewCenter(defaultViewCenter);
+    const { scaleRange } = this.state;
     this.setState({ mapVisible: true });
     const [minScale, maxScale] = scaleRange;
     const mapOptions = {
@@ -172,7 +186,8 @@ export default class ThreeDMap extends PureComponent {
       appName,
       key,
       mapServerURL: './data/' + mapId, // 地图数据位置
-      viewMode: defaultViewMode,
+      defaultViewCenter: center,
+      defaultViewMode,
       mapScale: scale,
       minScale,
       maxScale,
@@ -181,10 +196,22 @@ export default class ThreeDMap extends PureComponent {
     };
 
     //初始化地图对象
-    const map = new fengMap.FMMap(mapOptions);
+    const map = this.map = new fengMap.FMMap(mapOptions);
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
-    map.on('mapScaleLevelChanged', e => setFieldsValue({ defaultMapScaleLevel: e.mapScale }))
+    map.on('mapScaleLevelChanged', e => {
+      setFieldsValue({ defaultMapScaleLevel: e.mapScale });
+    });
+    map.on('mapClickNode', e => {
+      const { mapCoord } = e;
+      if (!mapCoord)
+        return;
+      const { x, y } = mapCoord;
+      if (!x && !y)
+        return;
+      setFieldsValue({ defaultViewCenter: `${x}, ${y}` });
+    });
+    // map.gestureEnableController.enableMapPan = false;
   }
 
   handlePreview = e => {
@@ -209,7 +236,7 @@ export default class ThreeDMap extends PureComponent {
             </Button>
           </FormItem>
         </Form>
-        <div style={{ height: 400, display: mapVisible ? 'block' : 'none' }} id="bird-map" />
+        <div style={{ height: 600, display: mapVisible ? 'block' : 'none' }} id="bird-map" />
         {!mapVisible && <Empty />}
       </Card>
     );
