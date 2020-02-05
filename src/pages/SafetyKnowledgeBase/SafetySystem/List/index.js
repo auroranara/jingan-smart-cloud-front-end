@@ -26,7 +26,7 @@ export const DELETE_CODE = 'safetyProductionRegulation.safetySystem.delete';
 export const AUDIT_CODE = 'safetyProductionRegulation.safetySystem.audit';
 export const PUBLISH_CODE = 'safetyProductionRegulation.safetySystem.publish';
 export const EXPIRE_STATUSES = [
-  { key: '0', value: '未到期'/* , color: '#52c41a' */ },
+  { key: '0', value: '未到期' /* , color: '#52c41a' */ },
   { key: '1', value: '即将到期', color: '#faad14' },
   { key: '2', value: '已过期', color: '#f5222d' },
 ];
@@ -66,92 +66,82 @@ const REMOVE = 'safetySystem/remove';
 const AUDIT = 'safetySystem/audit';
 const PUBLISH = 'safetySystem/publish';
 
-@connect(({
-  safetySystem,
-  user,
-  loading,
-}) => ({
-  safetySystem,
-  user,
-  loading: loading.effects[GET_LIST],
-  loadingHistory: loading.effects[GET_HISTORY_LIST],
-}), dispatch => ({
-  getList (payload, callback) {
-    dispatch({
-      type: GET_LIST,
-      payload: {
-        pageNum: 1,
-        pageSize: getPageSize(),
-        ...payload,
-      },
-      callback,
-    });
-  },
-  getHistoryList (payload, callback) {
-    dispatch({
-      type: GET_HISTORY_LIST,
-      payload: {
-        pageNum: 1,
-        pageSize: getPageSize(),
-        ...payload,
-      },
-      callback,
-    });
-  },
-  remove (payload, callback) {
-    dispatch({
-      type: REMOVE,
-      payload,
-      callback,
-    });
-  },
-  audit (payload, callback) {
-    dispatch({
-      type: AUDIT,
-      payload,
-      callback,
-    });
-  },
-  publish (payload, callback) {
-    dispatch({
-      type: PUBLISH,
-      payload,
-      callback,
-    });
-  },
-  dispatch,
-}))
+@connect(
+  ({ safetySystem, user, loading }) => ({
+    safetySystem,
+    user,
+    loading: loading.effects[GET_LIST],
+    loadingHistory: loading.effects[GET_HISTORY_LIST],
+  }),
+  dispatch => ({
+    getList(payload, callback) {
+      dispatch({
+        type: GET_LIST,
+        payload: {
+          pageNum: 1,
+          pageSize: getPageSize(),
+          ...payload,
+        },
+        callback,
+      });
+    },
+    getHistoryList(payload, callback) {
+      dispatch({
+        type: GET_HISTORY_LIST,
+        payload: {
+          pageNum: 1,
+          pageSize: getPageSize(),
+          ...payload,
+        },
+        callback,
+      });
+    },
+    remove(payload, callback) {
+      dispatch({
+        type: REMOVE,
+        payload,
+        callback,
+      });
+    },
+    audit(payload, callback) {
+      dispatch({
+        type: AUDIT,
+        payload,
+        callback,
+      });
+    },
+    publish(payload, callback) {
+      dispatch({
+        type: PUBLISH,
+        payload,
+        callback,
+      });
+    },
+    dispatch,
+  })
+)
 export default class SafetySystemList extends Component {
   state = {
     historyVisible: false,
     data: undefined,
     reviewModalVisible: false, // 审核弹窗可见
     ruleId: undefined,
-  }
+  };
 
-  prevValues = {}
+  prevValues = null;
 
-  componentDidMount () {
-    const {
-      getList,
-    } = this.props;
+  componentDidMount() {
+    const { getList } = this.props;
     getList();
   }
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   reload = () => {
     const {
-      safetySystem: {
-        list: {
-          pagination: {
-            pageNum = 1,
-            pageSize = getPageSize(),
-          } = {},
-        } = {},
-      },
+      safetySystem: { list: { pagination: { pageNum = 1, pageSize = getPageSize() } = {} } = {} },
       getList,
     } = this.props;
     getList({
@@ -159,30 +149,31 @@ export default class SafetySystemList extends Component {
       pageNum,
       pageSize,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
-  }
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
+  };
 
   // 新增按钮点击事件
   handleAddButtonClick = () => {
     router.push(ADD_PATH);
-  }
+  };
 
   // 编辑按钮点击事件
-  handleEditButtonClick = (e) => {
+  handleEditButtonClick = e => {
     const { id } = e.currentTarget.dataset;
     router.push(`${EDIT_PATH}/${id}`);
-  }
+  };
 
   // 查看按钮点击事件
-  handleDetailButtonClick = (e) => {
+  handleDetailButtonClick = e => {
     const { id } = e.currentTarget.dataset;
     router.push(`${DETAIL_PATH}/${id}`);
-  }
+  };
 
   // 删除按钮点击事件
-  handleDeleteButtonClick = (id) => {
+  handleDeleteButtonClick = id => {
     const { remove } = this.props;
-    remove({ id }, (success) => {
+    remove({ id }, success => {
       if (success) {
         message.success('删除成功');
         this.reload();
@@ -190,57 +181,66 @@ export default class SafetySystemList extends Component {
         message.error('删除失败，请稍后重试或联系管理人员！');
       }
     });
-  }
+  };
 
   // 确认发布
-  handlePublishConfirm = (id) => {
+  handlePublishConfirm = id => {
     const { publish } = this.props;
-    publish({
-      id,
-    }, (success) => {
-      if (success) {
-        message.success('发布成功！');
-        this.reload();
-      } else {
-        message.error('发布失败，请稍后重试或联系管理人员！');
+    publish(
+      {
+        id,
+      },
+      success => {
+        if (success) {
+          message.success('发布成功！');
+          this.reload();
+        } else {
+          message.error('发布失败，请稍后重试或联系管理人员！');
+        }
       }
-    });
-  }
+    );
+  };
 
   // 审核通过
-  handleAuditConfirm = (id) => {
+  handleAuditConfirm = id => {
     const { audit } = this.props;
-    audit({
-      id,
-      status: 2,
-    }, (success) => {
-      if (success) {
-        message.success('审核成功！');
-        this.reload();
-      } else {
-        message.error('审核失败，请稍后重试或联系管理人员！');
+    audit(
+      {
+        id,
+        status: 2,
+      },
+      success => {
+        if (success) {
+          message.success('审核成功！');
+          this.reload();
+        } else {
+          message.error('审核失败，请稍后重试或联系管理人员！');
+        }
       }
-    });
-  }
+    );
+  };
 
   // 审核不通过
-  handleAuditCancel = (id) => {
+  handleAuditCancel = id => {
     const { audit } = this.props;
-    audit({
-      id,
-      status: 3,
-    }, (success) => {
-      if (success) {
-        message.success('审核成功！');
-        this.reload();
-      } else {
-        message.error('审核失败，请稍后重试或联系管理人员！');
+    audit(
+      {
+        id,
+        status: 3,
+      },
+      success => {
+        if (success) {
+          message.success('审核成功！');
+          this.reload();
+        } else {
+          message.error('审核失败，请稍后重试或联系管理人员！');
+        }
       }
-    });
-  }
+    );
+  };
 
   // 历史版本按钮点击
-  handleHistoryButtonClick = (data) => {
+  handleHistoryButtonClick = data => {
     const { getHistoryList } = this.props;
     this.setState({
       historyVisible: true,
@@ -249,18 +249,12 @@ export default class SafetySystemList extends Component {
     getHistoryList({
       id: data.id,
     });
-  }
+  };
 
   // 查询
-  handleSearch = (values) => {
+  handleSearch = values => {
     const {
-      safetySystem: {
-        list: {
-          pagination: {
-            pageSize = getPageSize(),
-          } = {},
-        } = {},
-      },
+      safetySystem: { list: { pagination: { pageSize = getPageSize() } = {} } = {} },
       getList,
     } = this.props;
     this.prevValues = values;
@@ -268,23 +262,17 @@ export default class SafetySystemList extends Component {
       ...values,
       pageSize,
     });
-  }
+  };
 
   // 重置
-  handleReset = (values) => {
+  handleReset = values => {
     this.handleSearch(values);
-  }
+  };
 
   // 表格change
   handleTableChange = ({ current, pageSize }) => {
     const {
-      safetySystem: {
-        list: {
-          pagination: {
-            pageSize: prevPageSize = getPageSize(),
-          } = {},
-        } = {},
-      },
+      safetySystem: { list: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {} },
       getList,
     } = this.props;
     getList({
@@ -292,27 +280,22 @@ export default class SafetySystemList extends Component {
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
     prevPageSize !== pageSize && setPageSize(pageSize);
-  }
+  };
 
   // 历史版本弹出框cancel
   handleModalCancel = () => {
     this.setState({
       historyVisible: false,
     });
-  }
+  };
 
   // 历史版本表格chagne
   handleHistoryTableChange = ({ current, pageSize }) => {
     const {
-      safetySystem: {
-        list: {
-          pagination: {
-            pageSize: prevPageSize = getPageSize(),
-          } = {},
-        } = {},
-      },
+      safetySystem: { list: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {} },
       getHistoryList,
     } = this.props;
     const { data } = this.state;
@@ -322,49 +305,42 @@ export default class SafetySystemList extends Component {
       pageSize,
     });
     prevPageSize !== pageSize && setPageSize(pageSize);
-  }
+  };
 
   // 打开审核意见弹窗
-  handleViewReviewModal = (ruleId) => {
-    this.setState({ ruleId, reviewModalVisible: true })
-  }
+  handleViewReviewModal = ruleId => {
+    this.setState({ ruleId, reviewModalVisible: true });
+  };
 
   // 提交审核意见
-  handleSubmitReview = (values) => {
+  handleSubmitReview = values => {
     const { dispatch } = this.props;
     const { ruleId } = this.state;
     if (!ruleId) {
-      message.error('参数planId不存在')
+      message.error('参数planId不存在');
       return;
     }
-    const payload = { ...values, ruleId }
+    const payload = { ...values, ruleId };
     dispatch({
       type: 'safetySystem/submitReview',
       payload,
-      callback: (res) => {
+      callback: res => {
         if (res && res.code === 200) {
           message.success('审核成功！');
-          this.setState({ reviewModalVisible: false })
+          this.setState({ reviewModalVisible: false });
           this.reload();
         } else {
-          message.warning('审核失败，请稍后重试')
+          message.warning('审核失败，请稍后重试');
         }
       },
-    })
-  }
+    });
+  };
 
   // 历史版本
-  renderHistory () {
+  renderHistory() {
     const {
       safetySystem: {
-        historyList: {
-          list = [],
-          pagination: {
-            total,
-            pageSize,
-            pageNum,
-          } = {},
-        },
+        historyList: { list = [], pagination: { total, pageSize, pageNum } = {} },
       },
       loadingHistory,
     } = this.props;
@@ -373,13 +349,13 @@ export default class SafetySystemList extends Component {
       {
         title: '版本号',
         dataIndex: 'versionCode',
-        render: (value) => `V${value}`,
+        render: value => `V${value}`,
         align: 'center',
       },
       {
         title: '状态',
         dataIndex: 'status',
-        render: (value) => STATUSES_MAPPER[value],
+        render: value => STATUSES_MAPPER[value],
         align: 'center',
       },
       {
@@ -390,7 +366,7 @@ export default class SafetySystemList extends Component {
       {
         title: '创建时间',
         dataIndex: 'createTime',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT2),
+        render: time => time && moment(time).format(DEFAULT_FORMAT2),
         align: 'center',
       },
       {
@@ -401,7 +377,7 @@ export default class SafetySystemList extends Component {
       {
         title: '审核通过时间',
         dataIndex: 'approveDate',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT2),
+        render: time => time && moment(time).format(DEFAULT_FORMAT2),
         align: 'center',
       },
       {
@@ -412,7 +388,7 @@ export default class SafetySystemList extends Component {
       {
         title: '发布时间',
         dataIndex: 'publishDate',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT2),
+        render: time => time && moment(time).format(DEFAULT_FORMAT2),
         align: 'center',
       },
     ];
@@ -451,42 +427,49 @@ export default class SafetySystemList extends Component {
     );
   }
 
-  renderForm () {
+  renderForm() {
     const {
       user: {
-        currentUser: {
-          unitType,
-          permissionCodes,
-        },
+        currentUser: { unitType, permissionCodes },
       },
     } = this.props;
     const isNotCompany = unitType !== 4;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const fields = [
-      ...(isNotCompany ? [
-        {
-          id: 'companyName',
-          label: '单位名称',
-          transform: value => value.trim(),
-          render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
-        },
-      ] : []),
+      ...(isNotCompany
+        ? [
+            {
+              id: 'companyName',
+              label: '单位名称',
+              transform: value => value.trim(),
+              render: ({ handleSearch }) => (
+                <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
+              ),
+            },
+          ]
+        : []),
       {
         id: 'safetyName',
         label: '安全制度名称',
         transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入安全制度名称" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入安全制度名称" onPressEnter={handleSearch} maxLength={50} />
+        ),
       },
       {
         id: 'compaileName',
         label: '编制人/联系电话',
-        render: ({ handleSearch }) => <Input placeholder="请选择编制人/联系电话" onPressEnter={handleSearch} maxLength={50} />,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请选择编制人/联系电话" onPressEnter={handleSearch} maxLength={50} />
+        ),
       },
       {
         id: 'paststatus',
         label: '到期状态',
-        render: () => <SelectOrSpan list={EXPIRE_STATUSES} placeholder="请选择到期状态" allowClear />,
+        render: () => (
+          <SelectOrSpan list={EXPIRE_STATUSES} placeholder="请选择到期状态" allowClear />
+        ),
       },
       {
         id: 'status',
@@ -501,32 +484,22 @@ export default class SafetySystemList extends Component {
           fields={fields}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={(
-            <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>新增</Button>
-          )}
+          action={
+            <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>
+              新增
+            </Button>
+          }
           ref={this.setFormReference}
         />
       </Card>
     );
   }
 
-  renderTable () {
+  renderTable() {
     const {
-      safetySystem: {
-        list: {
-          list = [],
-          pagination: {
-            total,
-            pageNum,
-            pageSize,
-          } = {},
-        } = {},
-      },
+      safetySystem: { list: { list = [], pagination: { total, pageNum, pageSize } = {} } = {} },
       user: {
-        currentUser: {
-          permissionCodes,
-          unitType,
-        },
+        currentUser: { permissionCodes, unitType },
       },
       loading = false,
     } = this.props;
@@ -534,13 +507,15 @@ export default class SafetySystemList extends Component {
     const hasAuditAuthority = permissionCodes.includes(AUDIT_CODE);
     const hasPublishAuthority = permissionCodes.includes(PUBLISH_CODE);
     const columns = [
-      ...(isNotCompany ? [
-        {
-          title: '单位名称',
-          dataIndex: 'companyName',
-          align: 'center',
-        },
-      ] : []),
+      ...(isNotCompany
+        ? [
+            {
+              title: '单位名称',
+              dataIndex: 'companyName',
+              align: 'center',
+            },
+          ]
+        : []),
       {
         title: '安全制度名称',
         dataIndex: 'safetyName',
@@ -551,8 +526,14 @@ export default class SafetySystemList extends Component {
         dataIndex: 'compaileName',
         render: (_, { compaileName, telephone }) => (
           <div className={styles.multi}>
-            <div><span className={styles.label}>姓名：</span>{compaileName}</div>
-            <div><span className={styles.label}>联系电话：</span>{telephone}</div>
+            <div>
+              <span className={styles.label}>姓名：</span>
+              {compaileName}
+            </div>
+            <div>
+              <span className={styles.label}>联系电话：</span>
+              {telephone}
+            </div>
           </div>
         ),
         align: 'center',
@@ -562,8 +543,14 @@ export default class SafetySystemList extends Component {
         dataIndex: 'time',
         render: (_, { startDate, endDate }) => (
           <div className={styles.multi}>
-            <div><span className={styles.label}>开始日期：</span>{startDate && moment(startDate).format(DEFAULT_FORMAT)}</div>
-            <div><span className={styles.label}>结束日期：</span>{endDate && moment(endDate).format(DEFAULT_FORMAT)}</div>
+            <div>
+              <span className={styles.label}>开始日期：</span>
+              {startDate && moment(startDate).format(DEFAULT_FORMAT)}
+            </div>
+            <div>
+              <span className={styles.label}>结束日期：</span>
+              {endDate && moment(endDate).format(DEFAULT_FORMAT)}
+            </div>
           </div>
         ),
         align: 'center',
@@ -571,22 +558,23 @@ export default class SafetySystemList extends Component {
       {
         title: '到期状态',
         dataIndex: 'paststatus',
-        render: (value) => {
-          const { value: label, color } = (EXPIRE_STATUSES.find(({ key }) => key === `${value}`) || {});
-          return <span style={{ color }}>{label}</span>
+        render: value => {
+          const { value: label, color } =
+            EXPIRE_STATUSES.find(({ key }) => key === `${value}`) || {};
+          return <span style={{ color }}>{label}</span>;
         },
         align: 'center',
       },
       {
         title: '附件',
         dataIndex: 'otherFileList',
-        render: (value) => <CustomUpload className={styles.fileList} value={value} type="span" />,
+        render: value => <CustomUpload className={styles.fileList} value={value} type="span" />,
         align: 'center',
       },
       {
         title: '审核状态',
         dataIndex: 'status',
-        render: (value) => <SelectOrSpan list={STATUSES} value={value} type="span" />,
+        render: value => <SelectOrSpan list={STATUSES} value={value} type="span" />,
         align: 'center',
       },
       {
@@ -594,7 +582,14 @@ export default class SafetySystemList extends Component {
         dataIndex: 'versionCount',
         width: 88,
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (value, data) => <span className={value > 0 ? styles.operation : undefined} onClick={value > 0 ? () => this.handleHistoryButtonClick(data) : undefined}>{value > 0 ? value : '—'}</span>,
+        render: (value, data) => (
+          <span
+            className={value > 0 ? styles.operation : undefined}
+            onClick={value > 0 ? () => this.handleHistoryButtonClick(data) : undefined}
+          >
+            {value > 0 ? value : '—'}
+          </span>
+        ),
         align: 'center',
       },
       {
@@ -605,12 +600,16 @@ export default class SafetySystemList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
           <div style={{ textAlign: 'left' }}>
-            <AuthA code={DETAIL_CODE} onClick={this.handleDetailButtonClick} data-id={id}>查看</AuthA>
+            <AuthA code={DETAIL_CODE} onClick={this.handleDetailButtonClick} data-id={id}>
+              查看
+            </AuthA>
             <Divider type="vertical" />
             <AuthA
               hasAuthFn={() => +status === 1 && hasAuditAuthority}
               onClick={() => this.handleViewReviewModal(id)}
-            >审核</AuthA>
+            >
+              审核
+            </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               title="你确定要发布吗?"
@@ -622,7 +621,9 @@ export default class SafetySystemList extends Component {
             {(+status === 3 || +status === 4) && (
               <Fragment>
                 <Divider type="vertical" />
-                <AuthA code={EDIT_CODE} onClick={this.handleEditButtonClick} data-id={id}>编辑</AuthA>
+                <AuthA code={EDIT_CODE} onClick={this.handleEditButtonClick} data-id={id}>
+                  编辑
+                </AuthA>
               </Fragment>
             )}
           </div>
@@ -654,35 +655,33 @@ export default class SafetySystemList extends Component {
             }}
           />
         ) : (
-            <Empty />
-          )}
+          <Empty />
+        )}
       </Card>
     );
   }
 
-  render () {
+  render() {
     const {
-      user: { currentUser: { unitType } },
-      safetySystem: {
-        list: {
-          a = 0,
-        } = {},
+      user: {
+        currentUser: { unitType },
       },
+      safetySystem: { list: { a = 0 } = {} },
     } = this.props;
     const { reviewModalVisible } = this.state;
     const isNotCompany = unitType !== 4;
     const reviewModalProps = {
       visible: reviewModalVisible,
       onOk: this.handleSubmitReview,
-      onCancel: () => { this.setState({ reviewModalVisible: false }) },
+      onCancel: () => {
+        this.setState({ reviewModalVisible: false });
+      },
     };
     return (
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
-        content={(
-          isNotCompany && <span className={styles.count}>{`单位数量：${a}`}</span>
-        )}
+        content={isNotCompany && <span className={styles.count}>{`单位数量：${a}`}</span>}
       >
         {this.renderForm()}
         {this.renderTable()}
@@ -693,4 +692,3 @@ export default class SafetySystemList extends Component {
     );
   }
 }
-

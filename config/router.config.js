@@ -4245,6 +4245,32 @@ module.exports = env => {
             },
           ],
         },
+        // 车辆管理
+        {
+          path: '/vehicle-management',
+          code: 'vehicleManagement',
+          name: 'vehicleManagement',
+          icon: 'car',
+          systemType: 3,
+          routes: [
+            {
+              path: '/vehicle-management',
+              redirect: '/vehicle-management/list',
+            },
+            {
+              path: '/vehicle-management/list/:id?',
+              code: 'vehicleManagement.list',
+              name: 'list',
+              component: './LicensePlateRecognitionSystem/VehicleManagement/List',
+            },
+            // {
+            //   path: '/vehicle-management/add/:id?',
+            //   code: 'vehicleManagement.add',
+            //   name: 'add',
+            //   component: './LicensePlateRecognitionSystem/VehicleManagement/Other',
+            // },
+          ],
+        },
       ],
     },
   ];

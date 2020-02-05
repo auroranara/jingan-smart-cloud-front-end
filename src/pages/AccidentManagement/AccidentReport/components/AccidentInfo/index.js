@@ -4,67 +4,61 @@ import CustomForm from '@/jingan-components/CustomForm';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import moment from 'moment';
 import TypeSelect from '../../../components/TypeSelect';
-import {
-  LEVELS,
-  DEFAULT_FORMAT,
-} from '../../List';
+import { LEVELS, DEFAULT_FORMAT } from '../../List';
 import { connect } from 'dva';
 import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
 const { Option } = Select;
 const GET_LIST = 'accidentReport/getList';
 
-@connect(({
-  accidentReport,
-  loading,
-}) => ({
-  accidentReport,
-  loading: loading.effects[GET_LIST],
-}), (dispatch) => ({
-  getList(payload, callback) {
-    dispatch({
-      type: GET_LIST,
-      payload: {
-        type: '0',
-        pageNum: 1,
-        pageSize: getPageSize(),
-        ...payload,
-      },
-      callback,
-    });
-  },
-}))
+@connect(
+  ({ accidentReport, loading }) => ({
+    accidentReport,
+    loading: loading.effects[GET_LIST],
+  }),
+  dispatch => ({
+    getList(payload, callback) {
+      dispatch({
+        type: GET_LIST,
+        payload: {
+          type: '0',
+          pageNum: 1,
+          pageSize: getPageSize(),
+          ...payload,
+        },
+        callback,
+      });
+    },
+  })
+)
 export default class AccidentInfo extends Component {
   state = {
     visible: false,
     selectedRowKeys: undefined,
-  }
+  };
 
-  prevValues = {}
+  prevValues = null;
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   handleButtonClick = () => {
-    const {
-      companyId,
-      getList,
-    } = this.props;
+    const { companyId, getList } = this.props;
     getList({ accidentCompanyId: companyId });
-    this.prevValues = {};
+    this.prevValues = null;
     this.setState({
       visible: true,
       selectedRowKeys: undefined,
     });
-  }
+  };
 
   handleModalCancel = () => {
     this.setState({
       visible: false,
     });
     this.form && this.form.resetFields();
-  }
+  };
 
   handleSelectButtonClick = () => {
     const { onChange } = this.props;
@@ -74,25 +68,19 @@ export default class AccidentInfo extends Component {
       visible: false,
     });
     this.form && this.form.resetFields();
-  }
+  };
 
-  handleSelectedRowKeysChange = (selectedRowKeys) => {
+  handleSelectedRowKeysChange = selectedRowKeys => {
     this.setState({
       selectedRowKeys,
     });
-  }
+  };
 
   // 查询
-  handleSearch = (values) => {
+  handleSearch = values => {
     const {
       companyId,
-      accidentReport: {
-        list: {
-          pagination: {
-            pageSize=getPageSize(),
-          }={},
-        }={},
-      },
+      accidentReport: { list: { pagination: { pageSize = getPageSize() } = {} } = {} },
       getList,
     } = this.props;
     this.prevValues = values;
@@ -101,23 +89,19 @@ export default class AccidentInfo extends Component {
       pageSize,
       accidentCompanyId: companyId,
     });
-  }
+  };
 
   // 重置
-  handleReset = (values) => {
+  handleReset = values => {
     this.handleSearch(values);
-  }
+  };
 
   // 表格change
   handleTableChange = ({ current, pageSize }) => {
     const {
       companyId,
       accidentReport: {
-        list: {
-          pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
+        list: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
       },
       getList,
     } = this.props;
@@ -127,50 +111,45 @@ export default class AccidentInfo extends Component {
       pageSize,
       accidentCompanyId: companyId,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
     prevPageSize !== pageSize && setPageSize(pageSize);
-  }
+  };
 
   render() {
     const {
       companyId,
-      accidentReport: {
-        list: {
-          list=[],
-          pagination: {
-            pageNum,
-            pageSize,
-            total,
-          }={},
-        }={},
-      },
+      accidentReport: { list: { list = [], pagination: { pageNum, pageSize, total } = {} } = {} },
       loading,
     } = this.props;
-    const {
-      visible,
-      selectedRowKeys,
-    } = this.state;
+    const { visible, selectedRowKeys } = this.state;
 
     const fields = [
       {
         id: 'accidentTitle',
         label: '事故信息标题',
         transform: value => value.trim(),
-        render: _this => <Input placeholder="请输入事故信息标题" onPressEnter={_this.handleSearch} maxLength={50} />,
+        render: _this => (
+          <Input
+            placeholder="请输入事故信息标题"
+            onPressEnter={_this.handleSearch}
+            maxLength={50}
+          />
+        ),
       },
       {
         id: 'accidentType',
         label: '事故类型代码',
-        render: () => (
-          <TypeSelect allowClear />
-        ),
+        render: () => <TypeSelect allowClear />,
       },
       {
         id: 'accidentLevel',
         label: '事故级别',
         render: () => (
           <Select placeholder="请选择事故级别" allowClear>
-            {LEVELS.map(({ key, value }) => <Option key={key}>{value}</Option>)}
+            {LEVELS.map(({ key, value }) => (
+              <Option key={key}>{value}</Option>
+            ))}
           </Select>
         ),
       },
@@ -197,7 +176,7 @@ export default class AccidentInfo extends Component {
       {
         title: '事故发生时间',
         dataIndex: 'happenTime',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+        render: time => time && moment(time).format(DEFAULT_FORMAT),
         align: 'center',
       },
       {
@@ -208,14 +187,16 @@ export default class AccidentInfo extends Component {
       {
         title: '事故级别',
         dataIndex: 'accidentLevel',
-        render: (value) => <SelectOrSpan list={LEVELS} value={`${value}`} type="span" />,
+        render: value => <SelectOrSpan list={LEVELS} value={`${value}`} type="span" />,
         align: 'center',
       },
     ];
 
     return (
       <div>
-        <Button type="primary" onClick={this.handleButtonClick} disabled={!companyId}>选择</Button>
+        <Button type="primary" onClick={this.handleButtonClick} disabled={!companyId}>
+          选择
+        </Button>
         <Modal
           title="选择事故信息"
           width="80%"
@@ -229,7 +210,15 @@ export default class AccidentInfo extends Component {
             fields={fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            action={<Button type="primary" onClick={this.handleSelectButtonClick} disabled={!selectedRowKeys || !selectedRowKeys.length}>选择</Button>}
+            action={
+              <Button
+                type="primary"
+                onClick={this.handleSelectButtonClick}
+                disabled={!selectedRowKeys || !selectedRowKeys.length}
+              >
+                选择
+              </Button>
+            }
             ref={this.setFormReference}
           />
           <Table

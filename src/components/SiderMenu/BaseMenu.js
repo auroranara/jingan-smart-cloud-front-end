@@ -163,7 +163,7 @@ export default class BaseMenu extends PureComponent {
     if (path && path.indexOf('http') === 0) {
       return path;
     }
-    return `/${path || ''}`.replace(/\/+/g, '/');
+    return `/${path || ''}`.replace(/\/+/g, '/').replace(/\/:.*$/, '');
   };
 
   render() {
