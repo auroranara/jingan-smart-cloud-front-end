@@ -571,6 +571,10 @@ export default {
   'menu.accidentManagement.accidentReport.edit': '事故报告编辑',
   'menu.changeManagement': '变更管理',
   'menu.changeManagement.changeLog': '变更日志',
+  'menu.realNameCertification': '实名制认证系统',
+  'menu.realNameCertification.personnelManagement': '人员管理',
+  'menu.realNameCertification.personnelManagement.companyList': '单位列表',
+  'menu.realNameCertification.personnelManagement.personList': '人员列表',
   // demo自带
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',

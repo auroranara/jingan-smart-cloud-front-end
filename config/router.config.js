@@ -4245,6 +4245,40 @@ module.exports = env => {
             },
           ],
         },
+        {
+          path: '/real-name-certification', // 实名制认证系统
+          code: 'realNameCertification',
+          icon: 'tag',
+          name: 'realNameCertification',
+          systemType: 3,
+          routes: [
+            {
+              name: 'personnelManagement', // 人员管理
+              code: 'realNameCertification',
+              path: '/real-name-certification/personnel-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/personnel-management',
+                  redirect: '/real-name-certification/personnel-management/company-list',
+                },
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/personnel-management/company-list',
+                  code: 'realNameCertification',
+                  component: './RealNameCertification/Person/CompanyList',
+                },
+                {
+                  name: 'personList',
+                  path: '/real-name-certification/personnel-management/person-list/:companyId',
+                  code: 'realNameCertification',
+                  component: './RealNameCertification/Person/PersonList',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];
