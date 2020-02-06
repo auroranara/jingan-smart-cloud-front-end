@@ -349,6 +349,7 @@ export default {
   'menu.targetResponsibility.targetSetting.detail': '详情',
   'menu.targetResponsibility.targetSetting.checkDetail': '考核详情页',
   'menu.targetResponsibility.targetAnalysis': '目标责任分析报表',
+  'menu.targetResponsibility.targetAnalysis.view': '目标责任分析报表',
   'menu.safetyProductionRegulation': '安全生产制度法规',
   'menu.safetyProductionRegulation.safetySystem': '安全制度管理',
   'menu.safetyProductionRegulation.safetySystem.list': '安全制度管理列表',

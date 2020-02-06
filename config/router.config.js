@@ -2597,9 +2597,21 @@ module.exports = env => {
               name: 'targetAnalysis', // 目标责任分析报表
               code: 'targetResponsibility.targetAnalysis',
               path: '/target-responsibility/target-analysis',
-              developing: true,
+              // developing: true,
               hideChildrenInMenu: true,
-              routes: [],
+              routes: [
+                {
+                  name: 'view',
+                  path: '/target-responsibility/target-analysis',
+                  redirect: '/target-responsibility/target-analysis/index',
+                },
+                {
+                  name: 'view',
+                  code: 'targetResponsibility.targetAnalysis',
+                  path: '/target-responsibility/target-analysis/index',
+                  component: './TargetResponsibility/TargetAnalysis/index',
+                },
+              ],
             },
           ],
         },
