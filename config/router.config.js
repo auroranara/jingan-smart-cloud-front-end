@@ -4254,7 +4254,7 @@ module.exports = env => {
           routes: [
             {
               name: 'personnelManagement', // 人员管理
-              code: 'realNameCertification',
+              code: 'personnelManagement',
               path: '/real-name-certification/personnel-management',
               hideChildrenInMenu: true,
               routes: [
@@ -4266,14 +4266,26 @@ module.exports = env => {
                 {
                   name: 'companyList',
                   path: '/real-name-certification/personnel-management/company-list',
-                  code: 'realNameCertification',
+                  code: 'personnelManagement',
                   component: './RealNameCertification/Person/CompanyList',
                 },
                 {
-                  name: 'personList',
+                  name: 'personnelList',
                   path: '/real-name-certification/personnel-management/person-list/:companyId',
-                  code: 'realNameCertification',
-                  component: './RealNameCertification/Person/PersonList',
+                  code: 'personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelList',
+                },
+                {
+                  name: 'add',
+                  path: '/real-name-certification/personnel-management/add',
+                  code: 'personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelAdd',
+                },
+                {
+                  name: 'edit',
+                  path: '/real-name-certification/personnel-management/edit/:id',
+                  code: 'personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelAdd',
                 },
               ],
             },

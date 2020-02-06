@@ -21,6 +21,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
 import router from 'umi/router';
+import { stringify } from 'qs';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -63,7 +64,7 @@ const formItemLayout = {
 //   formLoading: loading.models.personnelInfo,
 // }))
 @Form.create()
-export default class CompanyList extends PureComponent {
+export default class PersonnelList extends PureComponent {
 
   // componentDidMount() {
 
@@ -71,7 +72,9 @@ export default class CompanyList extends PureComponent {
 
   // 查询列表
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
-
+    const { from: { getFieldsValue } } = this.props;
+    const values = getFieldsValue();
+    console.log('query', values);
   }
 
 
@@ -80,6 +83,7 @@ export default class CompanyList extends PureComponent {
     const {
       formLoading: loading,
       form: { getFieldDecorator },
+      match: { params: { companyId } },
     } = this.props;
     return (
       <Card>
@@ -132,7 +136,7 @@ export default class CompanyList extends PureComponent {
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
                 </Button>
-                <Button type="primary">
+                <Button type="primary" onClick={() => { router.push(`/real-name-certification/personnel-management/add?${stringify({ companyId })}`) }}>
                   新增人员
                 </Button>
               </FormItem>
@@ -253,6 +257,8 @@ export default class CompanyList extends PureComponent {
               人员总数:
               <span style={{ paddingLeft: 8 }}>{0}</span>
             </span>
+            <Button type="primary" style={{ float: 'right' }}>批量导入照片</Button>
+            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>批量导入</Button>
           </div>
         }
       >
