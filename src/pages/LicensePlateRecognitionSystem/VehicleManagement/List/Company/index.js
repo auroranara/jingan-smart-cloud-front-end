@@ -4,17 +4,12 @@ import UnconnectedListPage from '@/templates/UnconnectedListPage';
 import Ellipsis from '@/components/Ellipsis';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
+import Link from 'umi/link';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { LIST_URL, ADD_URL, EmptyData } from '..';
+import { BREADCRUMB_LIST, URL_PREFIX, EmptyData } from '..';
 import styles from '../index.less';
-
 const API = 'licensePlateRecognitionSystem/getCompanyList';
-const BREADCRUMB_LIST = [
-  { title: '首页', name: '首页', href: '/' },
-  { title: '车辆管理', name: '车辆管理' },
-  { title: '车辆基本信息', name: '车辆基本信息' },
-];
 const FIELDS = [
   {
     id: 'name',
@@ -73,7 +68,7 @@ export default class Company extends Component {
     validateFieldsAndScroll((error, values) => {
       if (!error) {
         const { company } = values;
-        router.push(`${ADD_URL}/${company.key}`);
+        router.push(`${URL_PREFIX}/${company.key}/add`);
       }
     });
   };
@@ -155,13 +150,14 @@ export default class Company extends Component {
               )}
             </div>
           </div>
-          <Button
-            className={styles.cardCount}
-            shape="circle"
-            onClick={() => router.push(`${LIST_URL}/${id}`)}
+          <Link
+            className={styles.cardCountWrapper}
+            to={`${URL_PREFIX}/${id}/list`} /*  target="_blank" */
           >
-            {0}
-          </Button>
+            <Button className={styles.cardCount} shape="circle">
+              {0}
+            </Button>
+          </Link>
         </div>
       </Card>
     );
@@ -175,6 +171,7 @@ export default class Company extends Component {
       getCompanyList,
     } = this.props;
     const { visible } = this.state;
+    const breadcrumbList = BREADCRUMB_LIST.concat({ title: '单位车辆信息', name: '单位车辆信息' });
     const fields = [
       {
         id: 'company',
@@ -196,7 +193,7 @@ export default class Company extends Component {
     return (
       <UnconnectedListPage
         pageHeaderProps={{
-          breadcrumbList: BREADCRUMB_LIST,
+          breadcrumbList,
           content: (
             <div className={styles.content}>
               <span>

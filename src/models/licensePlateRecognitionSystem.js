@@ -2,6 +2,9 @@ import {
   getCompanyList,
   getVehicleList,
   deleteVehicle,
+  getVehicleDetail,
+  addVehicle,
+  editVehicle,
 } from '@/services/licensePlateRecognitionSystem';
 
 export default {
@@ -10,6 +13,7 @@ export default {
   state: {
     companyList: {},
     vehicleList: {},
+    vehicleDetail: {},
   },
 
   effects: {
@@ -74,9 +78,83 @@ export default {
         callback && callback(false, msg);
       }
     },
+    *getVehicleDetail({ payload, callback }, { call, put }) {
+      // const response = yield call(getVehicleDetail, payload);
+      console.log('getDetail');
+      console.log(payload);
+      const response = {
+        code: 200,
+        data: {
+          id: 1,
+          品牌: '1',
+          型号: '1',
+          当前状态: '1',
+          押运员: '1',
+          押运员联系电话: '1',
+          生产日期: +new Date(),
+          购买日期: +new Date(),
+          车牌号: '1',
+          车牌类型: '0',
+          车辆类型: '0',
+          载重: 1,
+          驾驶员: '1',
+          驾驶员联系电话: '1',
+          车辆照片: [
+            {
+              dbUrl: '@@IPEXP_IMP_FILES_WEB/gsafe/file/200206-195517-83a1.jpg',
+              fileName: '车2.jpg',
+              success: '/home/lucas/grid/webfiles_test/gsafe/file/200206-195517-83a1.jpg',
+              webUrl: 'http://data.jingan-china.cn/hello/gsafe/file/200206-195517-83a1.jpg',
+            },
+          ],
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const vehicleDetail = {
+          ...data,
+          车辆照片: (data.车辆照片 || []).map((item, index) => ({
+            ...item,
+            status: 'done',
+            uid: -1 - index,
+            name: item.fileName,
+            url: item.webUrl,
+          })),
+        };
+        yield put({
+          type: 'save',
+          payload: {
+            vehicleDetail,
+          },
+        });
+        callback && callback(true, vehicleDetail);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
     // 删除车辆
     *deleteVehicle({ payload, callback }, { call, put }) {
       // const response = yield call(deleteVehicle, payload);
+      console.log('delete');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 新增车辆
+    *addVehicle({ payload, callback }, { call, put }) {
+      // const response = yield call(addVehicle, payload);
+      console.log('add');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 编辑车辆
+    *editVehicle({ payload, callback }, { call, put }) {
+      // const response = yield call(editVehicle, payload);
+      console.log('edit');
+      console.log(payload);
       const response = { code: 200 };
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);

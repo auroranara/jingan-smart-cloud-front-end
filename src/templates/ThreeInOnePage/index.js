@@ -11,40 +11,50 @@ import CustomUpload from '@/jingan-components/CustomUpload';
 import Text from '@/jingan-components/Text';
 import { connect } from 'dva';
 import router from 'umi/router';
+import classNames from 'classnames';
 import locales from '@/locales/zh-CN';
 import styles from './index.less';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
+const STYLE = {
+  marginBottom: undefined,
+  padding: undefined,
+};
 
 @connect(
-  (state, { route: { name, code, path } }) => {
-    const { breadcrumbList } = code.split('.').reduce(
-      (result, item, index, list) => {
-        const key = `${result.key}.${item}`;
-        const title = locales[key];
-        result.key = key;
-        result.breadcrumbList.push({
-          title,
-          name: title,
-          href:
-            index === list.length - 2 ? path.replace(new RegExp(`${name}.*`), 'list') : undefined,
-        });
-        return result;
-      },
-      {
-        breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
-        key: 'menu',
-      }
-    );
-    const namespace = code.replace(/.*\.(.*)\..*/, '$1');
+  (state, { route: { name, code }, location: { pathname }, mapper, breadcrumbList: b }) => {
+    const { namespace: n, detail: d, getDetail: gd } = mapper || {};
+    const { breadcrumbList } = b
+      ? { breadcrumbList: b }
+      : code.split('.').reduce(
+          (result, item, index, list) => {
+            const key = `${result.key}.${item}`;
+            const title = locales[key];
+            result.key = key;
+            result.breadcrumbList.push({
+              title,
+              name: title,
+              href:
+                index === list.length - 2
+                  ? pathname.replace(new RegExp(`${name}.*`), 'list')
+                  : undefined,
+            });
+            return result;
+          },
+          {
+            breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
+            key: 'menu',
+          }
+        );
+    const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     const {
       user: {
         currentUser: { unitType, unitId, permissionCodes },
       },
-      [namespace]: { detail },
+      [namespace]: { [d || 'detail']: detail },
       loading: {
-        effects: { [`${namespace}/getDetail`]: loading },
+        effects: { [`${namespace}/${gd || 'getDetail'}`]: loading },
       },
     } = state;
     return {
@@ -64,15 +74,18 @@ const LABEL_COL = { span: 6 };
         params: { id },
       },
       route: { name, code, path },
+      location: { pathname },
       error = true,
+      mapper,
     }
   ) => {
-    const namespace = code.replace(/.*\.(.*)\..*/, '$1');
+    const { namespace: n, detail: d, getDetail: gd, edit: e, add: a, save: s } = mapper || {};
+    const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     return {
       getDetail(payload, callback) {
         if (id) {
           dispatch({
-            type: `${namespace}/getDetail`,
+            type: `${namespace}/${gd || 'getDetail'}`,
             payload: {
               id,
               ...payload,
@@ -88,15 +101,15 @@ const LABEL_COL = { span: 6 };
       },
       setDetail() {
         dispatch({
-          type: `${namespace}/save`,
+          type: `${namespace}/${s || 'save'}`,
           payload: {
-            detail: {},
+            [d || 'detail']: {},
           },
         });
       },
       handler(payload, callback) {
         dispatch({
-          type: id ? `${namespace}/edit` : `${namespace}/add`,
+          type: id ? `${namespace}/${e || 'edit'}` : `${namespace}/${a || 'add'}`,
           payload: {
             id,
             ...payload,
@@ -104,7 +117,7 @@ const LABEL_COL = { span: 6 };
           callback: (success, data) => {
             if (success) {
               message.success(`${id ? '编辑' : '新增'}成功！`);
-              router.push(path.replace(new RegExp(`${name}.*`), 'list'));
+              router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
             } else if (error) {
               message.error(`${id ? '编辑' : '新增'}失败，请稍后重试或联系管理人员！`);
             }
@@ -113,11 +126,12 @@ const LABEL_COL = { span: 6 };
         });
       },
       goBack() {
-        router.goBack();
+        router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
+        // router.goBack();
         // window.scrollTo(0, 0);
       },
       goToEdit() {
-        router.push(path.replace(new RegExp(`${name}.*`), `edit/${id}`));
+        router.push(pathname.replace(new RegExp(`${name}.*`), `edit/${id}`));
         window.scrollTo(0, 0);
       },
     };
@@ -143,9 +157,12 @@ export default class ThreeInOnePage extends Component {
     });
   }
 
-  shouldComponentUpdate({ detail: nextDetail, loading: nextLoading }, nextState) {
-    const { detail, loading } = this.props;
-    return nextDetail !== detail || nextLoading !== loading || nextState !== this.state;
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextProps.detail !== this.props.detail ||
+      nextProps.loading !== this.props.loading ||
+      nextState !== this.state
+    );
   }
 
   setFormReference = form => {
@@ -208,14 +225,14 @@ export default class ThreeInOnePage extends Component {
     }
   };
 
-  renderItem = (item, index) => {
-    if (Array.isArray(item)) {
+  renderItem = item => {
+    if (item.fields) {
       return {
-        key: `${index}`,
-        fields: item.map(this.renderItem),
+        ...item,
+        fields: item.fields.map(this.renderItem),
       };
     } else {
-      const { isEdit, isNotDetail } = this.props;
+      const { isEdit, isNotDetail, layout } = this.props;
       const { initialValues } = this.state;
       const {
         id,
@@ -232,37 +249,42 @@ export default class ThreeInOnePage extends Component {
         id,
         label,
         span,
-        labelCol,
+        style: isNotDetail && layout === 'vertical' ? STYLE : undefined,
+        labelCol: layout !== 'vertical' ? labelCol : undefined,
         render: () => {
+          const itemClassName = classNames(
+            isNotDetail && layout !== 'vertical' ? styles.item : styles.verticalItem,
+            props && props.className
+          );
           if (component === 'Input') {
             return (
               <InputOrSpan
-                className={isNotDetail ? styles.item : undefined}
                 placeholder={`请输入${label}`}
-                type={isNotDetail || 'span'}
                 {...props}
+                type={isNotDetail ? props && props.type : 'span'}
+                className={itemClassName}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'Select') {
             return (
               <SelectOrSpan
-                className={isNotDetail ? styles.item : undefined}
                 placeholder={`请选择${label}`}
                 type={isNotDetail || 'span'}
                 allowClear={!required}
                 {...props}
+                className={itemClassName}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'CompanySelect') {
             return (
               <CompanySelect
-                className={isNotDetail ? styles.item : undefined}
                 placeholder={`请选择${label}`}
                 disabled={isEdit}
                 type={isNotDetail || 'span'}
                 {...props}
+                className={itemClassName}
                 onChange={this.generateChangeCallback(
                   refreshEnable,
                   props,
@@ -273,33 +295,33 @@ export default class ThreeInOnePage extends Component {
           } else if (component === 'DatePicker') {
             return (
               <DatePickerOrSpan
-                className={isNotDetail ? styles.item : undefined}
                 placeholder={`请选择${label}`}
                 type={isNotDetail || 'span'}
                 allowClear={!required}
                 {...props}
+                className={itemClassName}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'RangePicker') {
             return (
               <DatePickerOrSpan
-                className={isNotDetail ? styles.item : undefined}
                 placeholder={['开始时间', '结束时间']}
                 type={isNotDetail ? 'RangePicker' : 'span'}
                 allowClear={!required}
                 {...props}
+                className={itemClassName}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
           } else if (component === 'TextArea') {
             return (
               <InputOrSpan
-                className={isNotDetail ? styles.item : undefined}
                 placeholder={`请输入${label}`}
                 type={isNotDetail ? 'TextArea' : 'span'}
                 autosize={{ minRows: 3, maxRows: 10 }}
                 {...props}
+                className={itemClassName}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
@@ -325,9 +347,9 @@ export default class ThreeInOnePage extends Component {
             const DefaultComponent = component;
             return (
               <DefaultComponent
-                className={isNotDetail ? styles.item : undefined}
                 type={isNotDetail || 'span'}
                 {...props}
+                className={itemClassName}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
@@ -380,17 +402,22 @@ export default class ThreeInOnePage extends Component {
       detail = {},
       unitId,
       getLoading,
+      layout,
     } = this.props;
     const { submitting } = this.state;
     const showEdit = typeof editEnable === 'function' ? editEnable(detail) : editEnable;
     const values = { unitId, ...(this.form && this.form.getFieldsValue()) }; // 这里有问题，但是不知道怎么解决
     let Fields = typeof fields === 'function' ? fields(values) : fields;
-    const uploading = Fields.reduce((result, { id, component }) => {
+    const callback = (result, { id, component, fields }) => {
+      if (fields) {
+        return fields.reduce(callback, result);
+      }
       if (component === 'CustomUpload') {
         result = result || (values[id] || []).some(({ status }) => status === 'uploading');
       }
       return result;
-    }, false);
+    };
+    const uploading = Fields.reduce(callback, false);
     Fields = Fields.map(this.renderItem);
     if (!Fields[0].fields) {
       Fields = [
@@ -408,7 +435,9 @@ export default class ThreeInOnePage extends Component {
       >
         <Spin spinning={loading}>
           <CustomForm
+            className={isNotDetail && layout === 'vertical' ? styles.form : undefined}
             mode="multiple"
+            layout={isNotDetail ? layout : undefined}
             fields={Fields}
             searchable={false}
             resetable={false}

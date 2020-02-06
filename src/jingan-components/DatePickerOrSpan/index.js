@@ -7,18 +7,23 @@ export default class DatePickerOrSpan extends Component {
     const {
       type,
       value,
-      format='YYYY-MM-DD',
-      unknown='?',
-      separator=' 至 ',
+      format = 'YYYY-MM-DD',
+      unknown = '?',
+      separator = ' 至 ',
       ...restProps
     } = this.props;
 
-
     if (type !== 'span') {
       const Item = DatePicker[type] || DatePicker;
-      return <Item {...restProps} value={value} format={format} separator={separator} />
+      return <Item {...restProps} value={value} format={format} separator={separator} />;
     } else {
-      return <span {...restProps}>{(Array.isArray(value) ? value : [value]).map(v => v ? v.format(format) : unknown).join(separator)}</span>;
+      return (
+        <span {...restProps}>
+          {(Array.isArray(value) ? value : [value])
+            .map(v => (v ? v.format(format) : unknown))
+            .join(separator)}
+        </span>
+      );
     }
   }
 }
