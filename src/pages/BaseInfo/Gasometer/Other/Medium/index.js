@@ -19,64 +19,57 @@ const MATERIAL_FORMS = [
 const RISKY_CATEGORIES = RISK_CATEGORIES.map((value, index) => ({ key: `${index}`, value }));
 
 // 存储介质
-@connect(({
-  gasometer,
-  loading,
-}) => ({
-  gasometer,
-  loading: loading.effects[GET_STORAGE_MEDIUM_LIST],
-}), dispatch => ({
-  getStorageMediumList(payload, callback) {
-    dispatch({
-      type: GET_STORAGE_MEDIUM_LIST,
-      payload: {
-        pageNum: 1,
-        pageSize: getPageSize(),
-        ...payload,
-      },
-      callback,
-    });
-  },
-}))
+@connect(
+  ({ gasometer, loading }) => ({
+    gasometer,
+    loading: loading.effects[GET_STORAGE_MEDIUM_LIST],
+  }),
+  dispatch => ({
+    getStorageMediumList(payload, callback) {
+      dispatch({
+        type: GET_STORAGE_MEDIUM_LIST,
+        payload: {
+          pageNum: 1,
+          pageSize: getPageSize(),
+          ...payload,
+        },
+        callback,
+      });
+    },
+  })
+)
 export default class Medium extends Component {
   state = {
     visible: false,
     selectedRowKeys: undefined,
-  }
+  };
 
-  prevValues = {}
+  prevValues = null;
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   handleButtonClick = () => {
-    const {
-      getStorageMediumList,
-      companyId,
-    } = this.props;
+    const { getStorageMediumList, companyId } = this.props;
     getStorageMediumList({ companyId });
-    this.prevValues = {};
+    this.prevValues = null;
     this.setState({
       visible: true,
       selectedRowKeys: undefined,
     });
-  }
+  };
 
   handleModalCancel = () => {
     this.setState({
       visible: false,
     });
     this.form && this.form.resetFields();
-  }
+  };
 
   handleSelectButtonClick = () => {
     const {
-      gasometer: {
-        storageMediumList: {
-          list=[],
-        }={},
-      },
+      gasometer: { storageMediumList: { list = [] } = {} },
       onChange,
     } = this.props;
     const { selectedRowKeys } = this.state;
@@ -85,25 +78,19 @@ export default class Medium extends Component {
       visible: false,
     });
     this.form && this.form.resetFields();
-  }
+  };
 
-  handleSelectedRowKeysChange = (selectedRowKeys) => {
+  handleSelectedRowKeysChange = selectedRowKeys => {
     this.setState({
       selectedRowKeys,
     });
-  }
+  };
 
   // 查询
-  handleSearch = (values) => {
+  handleSearch = values => {
     const {
       companyId,
-      gasometer: {
-        storageMediumList: {
-          pagination: {
-            pageSize=getPageSize(),
-          }={},
-        }={},
-      },
+      gasometer: { storageMediumList: { pagination: { pageSize = getPageSize() } = {} } = {} },
       getStorageMediumList,
     } = this.props;
     this.prevValues = values;
@@ -112,23 +99,19 @@ export default class Medium extends Component {
       pageSize,
       companyId,
     });
-  }
+  };
 
   // 重置
-  handleReset = (values) => {
+  handleReset = values => {
     this.handleSearch(values);
-  }
+  };
 
   // 表格change
   handleTableChange = ({ current, pageSize }) => {
     const {
       companyId,
       gasometer: {
-        storageMediumList: {
-          pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
+        storageMediumList: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
       },
       getStorageMediumList,
     } = this.props;
@@ -138,41 +121,36 @@ export default class Medium extends Component {
       pageSize,
       companyId,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
     prevPageSize !== pageSize && setPageSize(pageSize);
-  }
+  };
 
   renderModal() {
     const {
       gasometer: {
-        storageMediumList: {
-          list=[],
-          pagination: {
-            pageNum,
-            pageSize,
-            total,
-          }={},
-        }={},
+        storageMediumList: { list = [], pagination: { pageNum, pageSize, total } = {} } = {},
       },
-      loading=false,
+      loading = false,
     } = this.props;
-    const {
-      visible,
-      selectedRowKeys,
-    } = this.state;
+    const { visible, selectedRowKeys } = this.state;
 
     const fields = [
       {
         id: 'casNo',
         label: 'CAS号',
         transform: value => value.trim(),
-        render: _this => <Input placeholder="请输入CAS号" onPressEnter={_this.handleSearch} maxLength={50} />,
+        render: _this => (
+          <Input placeholder="请输入CAS号" onPressEnter={_this.handleSearch} maxLength={50} />
+        ),
       },
       {
         id: 'chineName',
         label: '品名',
         transform: value => value.trim(),
-        render: _this => <Input placeholder="请输入品名" onPressEnter={_this.handleSearch} maxLength={50} />,
+        render: _this => (
+          <Input placeholder="请输入品名" onPressEnter={_this.handleSearch} maxLength={50} />
+        ),
       },
     ];
     const columns = [
@@ -219,7 +197,15 @@ export default class Medium extends Component {
           fields={fields}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={<Button type="primary" onClick={this.handleSelectButtonClick} disabled={!selectedRowKeys || !selectedRowKeys.length}>选择</Button>}
+          action={
+            <Button
+              type="primary"
+              onClick={this.handleSelectButtonClick}
+              disabled={!selectedRowKeys || !selectedRowKeys.length}
+            >
+              选择
+            </Button>
+          }
           ref={this.setFormReference}
         />
         <Table
@@ -248,13 +234,7 @@ export default class Medium extends Component {
   }
 
   render() {
-    const {
-      className,
-      companyId,
-      value,
-      allowClear=false,
-      type,
-    } = this.props;
+    const { className, companyId, value, allowClear = false, type } = this.props;
 
     return (
       <div className={classNames(styles.container, className)}>
@@ -262,15 +242,11 @@ export default class Medium extends Component {
           value={value && value.chineName}
           placeholder="请选择存储介质"
           disabled
-          addonAfter={(
-            <Button
-              type="primary"
-              onClick={this.handleButtonClick}
-              disabled={!companyId}
-            >
+          addonAfter={
+            <Button type="primary" onClick={this.handleButtonClick} disabled={!companyId}>
               选择
             </Button>
-          )}
+          }
           allowClear={allowClear}
           type={type}
         />

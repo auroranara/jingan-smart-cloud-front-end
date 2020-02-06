@@ -156,10 +156,10 @@ export default class TablePage extends Component {
   };
 
   // 除了用来保存控件值以外，还可以用来初始化
-  prevValues = {};
+  prevValues = null;
 
   componentDidMount() {
-    this.handleSearchButtonClick(this.prevValues);
+    this.handleSearchButtonClick();
   }
 
   // 设置form的引用
@@ -175,11 +175,12 @@ export default class TablePage extends Component {
       transform,
     } = this.props;
     getList({
-      ...(transform ? transform(this.prevValues) : this.prevValues),
+      ...(transform && this.prevValues ? transform(this.prevValues) : this.prevValues),
       pageNum,
       pageSize,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
   };
 
   // 查询按钮点击事件
@@ -235,11 +236,12 @@ export default class TablePage extends Component {
       transform,
     } = this.props;
     getList({
-      ...(transform ? transform(this.prevValues) : this.prevValues),
+      ...(transform && this.prevValues ? transform(this.prevValues) : this.prevValues),
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
     prevPageSize !== pageSize && setPageSize(pageSize);
   };
 

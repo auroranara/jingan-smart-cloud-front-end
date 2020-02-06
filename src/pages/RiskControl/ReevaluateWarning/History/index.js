@@ -120,7 +120,7 @@ const Columns = [
   })
 )
 export default class ReevaluateWarningHistory extends Component {
-  prevValues = {};
+  prevValues = null;
 
   componentDidMount() {
     this.handleSearchButtonClick(this.prevValues);
@@ -144,7 +144,8 @@ export default class ReevaluateWarningHistory extends Component {
       pageSize,
       ...this.prevValues,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
   };
 
   // 查询按钮点击事件
@@ -185,7 +186,8 @@ export default class ReevaluateWarningHistory extends Component {
       pageSize,
       ...this.prevValues,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
     prevPageSize !== pageSize && setPageSize(pageSize);
   };
 

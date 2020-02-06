@@ -120,9 +120,9 @@ export default class GasometerList extends Component {
     unbinding: false,
   };
 
-  prevValues = {};
+  prevValues = null;
 
-  prevValues2 = {};
+  prevValues2 = null;
 
   componentDidMount() {
     const { getList } = this.props;
@@ -147,7 +147,8 @@ export default class GasometerList extends Component {
       pageNum,
       pageSize,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
   };
 
   reload2 = () => {
@@ -165,7 +166,8 @@ export default class GasometerList extends Component {
       companyId: data.companyId,
       targetId: data.id,
     });
-    this.form2 && this.form2.setFieldsValue(this.prevValues2);
+    this.form2 &&
+      (this.prevValues2 ? this.form2.setFieldsValue(this.prevValues2) : this.form2.resetFields());
   };
 
   // 新增按钮点击事件
@@ -185,7 +187,7 @@ export default class GasometerList extends Component {
       targetId: data.id,
     });
     this.form2 && this.form2.resetFields();
-    this.prevValues2 = {};
+    this.prevValues2 = null;
     this.setState({
       type: 1,
       visible: true,
@@ -206,7 +208,7 @@ export default class GasometerList extends Component {
       bindTargetStatus: 0,
     });
     this.form2 && this.form2.resetFields();
-    this.prevValues2 = {};
+    this.prevValues2 = null;
     this.setState({
       type: 0,
       visible: true,
@@ -269,7 +271,8 @@ export default class GasometerList extends Component {
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
     prevPageSize !== pageSize && setPageSize(pageSize);
   };
 
@@ -327,7 +330,8 @@ export default class GasometerList extends Component {
             bindTargetStatus: 0,
           }),
     });
-    this.form2 && this.form2.setFieldsValue(this.prevValues2);
+    this.form2 &&
+      (this.prevValues2 ? this.form2.setFieldsValue(this.prevValues2) : this.form2.resetFields());
     prevPageSize !== pageSize && setPageSize(pageSize);
   };
 

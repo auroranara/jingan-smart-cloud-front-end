@@ -57,7 +57,9 @@ const FIELDS = [
     id: 'name',
     label: '任务标题',
     transform: value => value.trim(),
-    render: ({ handleSearch }) => <Input placeholder="请输入任务标题" onPressEnter={handleSearch} maxLength={50} />,
+    render: ({ handleSearch }) => (
+      <Input placeholder="请输入任务标题" onPressEnter={handleSearch} maxLength={50} />
+    ),
   },
   {
     id: 'status',
@@ -67,87 +69,89 @@ const FIELDS = [
 ];
 const PAGE_SIZE = 18;
 
-@connect(({
-  specialExamination: {
+@connect(
+  ({ specialExamination: { list }, user, loading }) => ({
     list,
-  },
-  user,
-  loading,
-}) => ({
-  list,
-  user,
-  loading: loading.effects[GET_LIST],
-}), dispatch => ({
-  getList(payload, callback) {
-    dispatch({
-      type: GET_LIST,
-      payload,
-      callback,
-    });
-  },
-  remove(payload, callback) {
-    dispatch({
-      type: REMOVE,
-      payload,
-      callback,
-    });
-  },
-}))
+    user,
+    loading: loading.effects[GET_LIST],
+  }),
+  dispatch => ({
+    getList(payload, callback) {
+      dispatch({
+        type: GET_LIST,
+        payload,
+        callback,
+      });
+    },
+    remove(payload, callback) {
+      dispatch({
+        type: REMOVE,
+        payload,
+        callback,
+      });
+    },
+  })
+)
 export default class SpecialExamination extends Component {
   state = {
     reloading: false,
-  }
+  };
 
-  prevValues = {}
+  prevValues = null;
 
-  getList = (pageNum=1, callback) => {
+  getList = (pageNum = 1, callback) => {
     const {
       prevValues,
-      props: {
-        getList,
-      },
-      form: {
-        setFieldsValue,
-      },
+      props: { getList },
     } = this;
-    getList({
-      ...prevValues,
-      pageNum,
-      pageSize: PAGE_SIZE,
-    }, callback);
-    setFieldsValue(prevValues);
-  }
+    getList(
+      {
+        ...prevValues,
+        pageNum,
+        pageSize: PAGE_SIZE,
+      },
+      callback
+    );
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
+  };
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   // 查看按钮点击事件
-  handleDetailButtonClick = ({ currentTarget: { dataset: { id } } }) => {
+  handleDetailButtonClick = ({
+    currentTarget: {
+      dataset: { id },
+    },
+  }) => {
     router.push(`${DETAIL_CODE}/${id}`);
-  }
+  };
 
   // 新增按钮点击事件
   handleAddButtonClick = () => {
     router.push(ADD_PATH);
-  }
+  };
 
   // 编辑按钮点击事件
-  handleEditButtonClick = ({ currentTarget: { dataset: { id } } }) => {
+  handleEditButtonClick = ({
+    currentTarget: {
+      dataset: { id },
+    },
+  }) => {
     router.push(`${EDIT_CODE}/${id}`);
-  }
+  };
 
   // 删除按钮点击事件
-  handleDeleteButtonClick = (id) => {
+  handleDeleteButtonClick = id => {
     const { remove } = this.props;
-    remove({ id }, (isSuccess) => {
+    remove({ id }, isSuccess => {
       if (isSuccess) {
         message.success('删除成功');
         const {
           list: {
-            pagination: {
-              pageNum,
-            },
+            pagination: { pageNum },
           },
         } = this.props;
         this.getList(pageNum);
@@ -155,37 +159,38 @@ export default class SpecialExamination extends Component {
         message.error('删除失败，请稍后重试！');
       }
     });
-  }
+  };
 
   // 查询
-  handleSearch = (values) => {
+  handleSearch = values => {
     const { getList } = this.props;
     this.prevValues = values;
     this.setState({
       reloading: true,
     });
-    getList({
-      ...values,
-      pageNum: 1,
-      pageSize: PAGE_SIZE,
-    }, () => {
-      this.setState({
-        reloading: false,
-      });
-    });
-  }
+    getList(
+      {
+        ...values,
+        pageNum: 1,
+        pageSize: PAGE_SIZE,
+      },
+      () => {
+        this.setState({
+          reloading: false,
+        });
+      }
+    );
+  };
 
   // 重置
-  handleReset = (values) => {
+  handleReset = values => {
     this.handleSearch(values);
-  }
+  };
 
   renderForm() {
     const {
       user: {
-        currentUser: {
-          permissionCodes,
-        },
+        currentUser: { permissionCodes },
       },
     } = this.props;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
@@ -196,9 +201,11 @@ export default class SpecialExamination extends Component {
           fields={FIELDS}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={(
-            <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>新增</Button>
-          )}
+          action={
+            <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>
+              新增
+            </Button>
+          }
           ref={this.setFormReference}
         />
       </Card>
@@ -208,9 +215,7 @@ export default class SpecialExamination extends Component {
   renderList() {
     const {
       user: {
-        currentUser: {
-          permissionCodes,
-        },
+        currentUser: { permissionCodes },
       },
       list,
       loading,
@@ -227,16 +232,7 @@ export default class SpecialExamination extends Component {
         getList={this.getList}
         loading={loading}
         reloading={reloading}
-        renderItem={({
-          id,
-          name,
-          startDate,
-          endDate,
-          content,
-          completeNumber,
-          total,
-          status,
-        }) => (
+        renderItem={({ id, name, startDate, endDate, content, completeNumber, total, status }) => (
           <Card
             className={styles.item}
             title={name}
@@ -257,30 +253,36 @@ export default class SpecialExamination extends Component {
                 编辑
               </span>,
               hasDeleteAuthority ? (
-                <Popconfirm title="您确定要删除吗？" onConfirm={() => this.handleDeleteButtonClick(id)}>
-                  <span className={styles.operation}>
-                    删除
-                  </span>
+                <Popconfirm
+                  title="您确定要删除吗？"
+                  onConfirm={() => this.handleDeleteButtonClick(id)}
+                >
+                  <span className={styles.operation}>删除</span>
                 </Popconfirm>
               ) : (
-                <span className={classNames(styles.operation, styles.disabled)}>
-                  删除
-                </span>
+                <span className={classNames(styles.operation, styles.disabled)}>删除</span>
               ),
             ]}
           >
-            <div>任务时间：{(startDate || endDate) ? (
-              `${startDate ? moment(startDate).format(DEFAULT_FORMAT) : '?'} 至 ${endDate ? moment(endDate).format(DEFAULT_FORMAT) : '?'}`
-            ) : (
-              <EmptyData />
-            )}</div>
-            <div>完成进度：{status > 0 ? (
-              `${completeNumber || 0}/${total || 0}`
-            ) : '——'}</div>
-            <div>任务内容：{content || <EmptyData />}</div>
-            <div className={styles[`mark${status}`]}>
-              {(STATUSES[status] || {}).value}
+            <div>
+              任务时间：
+              {startDate || endDate ? (
+                `${startDate ? moment(startDate).format(DEFAULT_FORMAT) : '?'} 至 ${
+                  endDate ? moment(endDate).format(DEFAULT_FORMAT) : '?'
+                }`
+              ) : (
+                <EmptyData />
+              )}
             </div>
+            <div>
+              完成进度：
+              {status > 0 ? `${completeNumber || 0}/${total || 0}` : '——'}
+            </div>
+            <div>
+              任务内容：
+              {content || <EmptyData />}
+            </div>
+            <div className={styles[`mark${status}`]}>{(STATUSES[status] || {}).value}</div>
           </Card>
         )}
       />
@@ -288,19 +290,18 @@ export default class SpecialExamination extends Component {
   }
 
   render() {
-    const {
-      list: {
-        pagination: {
-          total,
-        }={},
-      }={},
-    } = this.props;
+    const { list: { pagination: { total } = {} } = {} } = this.props;
 
     return (
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
-        content={<span>专项检查总数：{total}</span>}
+        content={
+          <span>
+            专项检查总数：
+            {total}
+          </span>
+        }
       >
         {this.renderForm()}
         {this.renderList()}

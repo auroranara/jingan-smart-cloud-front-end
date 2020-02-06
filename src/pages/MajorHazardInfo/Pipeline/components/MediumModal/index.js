@@ -42,7 +42,7 @@ export default class MediumModal extends Component {
     data: undefined, // 选中项
   };
 
-  prevValues = {};
+  prevValues = null;
 
   componentDidUpdate({ companyId: prevCompanyId }) {
     const { companyId, value, onChange } = this.props;
@@ -72,7 +72,7 @@ export default class MediumModal extends Component {
   // 点击显示modal
   handleShowButtonClick = () => {
     const { companyId, value, getList } = this.props;
-    this.prevValues = {};
+    this.prevValues = null;
     getList({ companyId });
     this.form && this.form.resetFields();
     this.setState({
@@ -139,7 +139,8 @@ export default class MediumModal extends Component {
       pageSize,
       companyId,
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
     prevPageSize !== pageSize && setModalPageSize(pageSize);
   };
 

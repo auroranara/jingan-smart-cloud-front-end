@@ -85,7 +85,7 @@ export default class NewMenuReveal extends Component {
       currentBlockClassification: null, // 当前模块下标（数组blockClassification下标）
     };
   }
-  componentDidMount () {
+  componentDidMount() {
     const { dispatch } = this.props;
     const { routes } = config;
     setBlocks(blockClassification, routes);
@@ -105,18 +105,17 @@ export default class NewMenuReveal extends Component {
         const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
         this.setState({ menuSys, menuSysAll });
 
-        if (logined)
-          dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
+        if (logined) dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
       },
     });
   }
 
   /**
- * 筛选系统路由
- * @param {Array} array 待处理数组
- * @param {Number} depth depth=2 两层含有routes子节点数组
- * @param {String} parentLocale 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
- **/
+   * 筛选系统路由
+   * @param {Array} array 待处理数组
+   * @param {Number} depth depth=2 两层含有routes子节点数组
+   * @param {String} parentLocale 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
+   **/
   filterSysMenu = (array, depth = 0, parentLocale) => {
     const {
       user: {
@@ -161,7 +160,7 @@ export default class NewMenuReveal extends Component {
   // 点击菜单 打开相应新页面
   handleOpenMenu = url => {
     // window.open(`${window.publicPath}#${url}`, '_blank')
-    router.push(url);
+    router.push(url.replace(/\/:.*$/, ''));
   };
 
   // 去除url中尾部参数
@@ -184,37 +183,48 @@ export default class NewMenuReveal extends Component {
   };
 
   // 输出数据类型
-  generateType = str => Object.prototype.toString.call(str).replace(/\[|\]|object\s/g, '').toLocaleLowerCase()
+  generateType = str =>
+    Object.prototype.toString
+      .call(str)
+      .replace(/\[|\]|object\s/g, '')
+      .toLocaleLowerCase();
 
   generateMenuItemClass = index => {
     const { currentBlockClassification } = this.state;
     return classNames(styles.menuItem, {
       [styles.selectedItem]: currentBlockClassification === index,
-    })
-  }
+    });
+  };
 
   handleLogout = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'login/logout',
     });
-  }
+  };
 
   renderBlocks = () => {
     return (
       <div className={styles.blocks}>
-        {blockClassification.map(({ name, splitIndex, icon, menuSys }, index) => menuSys && menuSys.length ? (
-          <div key={index} className={styles.blockItem} onClick={() => this.handleSelectBlockClassification(index)}>
-            <div className={styles.blockItemInner}>
-              <img src={icon} alt="block" />
-              <div style={{ marginTop: '20px' }}>{name.slice(0, splitIndex)}</div>
-              <div>{name.slice(splitIndex)}</div>
-            </div>
-          </div>
-        ) : null)}
+        {blockClassification.map(
+          ({ name, splitIndex, icon, menuSys }, index) =>
+            menuSys && menuSys.length ? (
+              <div
+                key={index}
+                className={styles.blockItem}
+                onClick={() => this.handleSelectBlockClassification(index)}
+              >
+                <div className={styles.blockItemInner}>
+                  <img src={icon} alt="block" />
+                  <div style={{ marginTop: '20px' }}>{name.slice(0, splitIndex)}</div>
+                  <div>{name.slice(splitIndex)}</div>
+                </div>
+              </div>
+            ) : null
+        )}
       </div>
-    )
-  }
+    );
+  };
 
   renderBlockMenus = () => {
     const { menuSys } = this.state;
@@ -223,44 +233,41 @@ export default class NewMenuReveal extends Component {
       <div className={styles.innerContent}>
         {menuSys.length
           ? menuSys.map(block => (
-            <Row key={block.name}>
-              <div className={styles.blockTitle}>
-                <Divider /> {block.title}
-              </div>
-              <Row className={styles.blockContent}>
-                {block.routes && block.routes.length
-                  ? block.routes.map(item => (
-                    <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
-                      <div className={styles.item}>
-                        <div
-                          className={styles.itemInner}
-                          onClick={item.developing ? null : () => this.handleOpenMenu(item.path)}
-                        >
-                          <img src={this.generateSysUrl(item)} alt="logo" />
-                          <div>{item.title}</div>
-                          {item.developing ? <span className={styles.dot} /> : null}
-                        </div>
-                      </div>
-                    </Col>
-                  ))
-                  : null}
+              <Row key={block.name}>
+                <div className={styles.blockTitle}>
+                  <Divider /> {block.title}
+                </div>
+                <Row className={styles.blockContent}>
+                  {block.routes && block.routes.length
+                    ? block.routes.map(item => (
+                        <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
+                          <div className={styles.item}>
+                            <div
+                              className={styles.itemInner}
+                              onClick={
+                                item.developing ? null : () => this.handleOpenMenu(item.path)
+                              }
+                            >
+                              <img src={this.generateSysUrl(item)} alt="logo" />
+                              <div>{item.title}</div>
+                              {item.developing ? <span className={styles.dot} /> : null}
+                            </div>
+                          </div>
+                        </Col>
+                      ))
+                    : null}
+                </Row>
               </Row>
-            </Row>
-          ))
+            ))
           : null}
       </div>
-    )
-  }
+    );
+  };
 
-  render () {
+  render() {
     const {
       user: {
-        currentUser: {
-          userName,
-          unitType,
-          companyId,
-          permissionCodes,
-        },
+        currentUser: { userName, unitType, companyId, permissionCodes },
       },
     } = this.props;
     const { currentBlockClassification } = this.state;
@@ -281,17 +288,28 @@ export default class NewMenuReveal extends Component {
           {this.generateType(currentBlockClassification) === 'number' ? (
             <div className={styles.menuContainer}>
               {blockClassification.map((item, index) => (
-                <div key={index} className={this.generateMenuItemClass(index)} onClick={() => this.handleSelectBlockClassification(index)}>
+                <div
+                  key={index}
+                  className={this.generateMenuItemClass(index)}
+                  onClick={() => this.handleSelectBlockClassification(index)}
+                >
                   <span>{item.name.slice(0, -2)}</span>
                 </div>
               ))}
-              <div onClick={() => { this.setState({ currentBlockClassification: null }) }} className={styles.backButton}></div>
+              <div
+                onClick={() => {
+                  this.setState({ currentBlockClassification: null });
+                }}
+                className={styles.backButton}
+              />
             </div>
           ) : null}
         </div>
         {/* 菜单模块内容 */}
         <Col className={styles.content} span={16} offset={4}>
-          {this.generateType(currentBlockClassification) === 'number' ? this.renderBlockMenus() : this.renderBlocks()}
+          {this.generateType(currentBlockClassification) === 'number'
+            ? this.renderBlockMenus()
+            : this.renderBlocks()}
         </Col>
         {/* 底部 */}
         <div className={styles.footer}>
@@ -305,14 +323,18 @@ export default class NewMenuReveal extends Component {
             <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
             <div>工作台</div>
           </div>
-          {unitType === 4 && showChemical && (
-            <div className={styles.linkItem} onClick={() => router.push(`/big-platform/chemical/${companyId}`)}>
-              <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
-              <div>驾驶舱</div>
-            </div>
-          )}
+          {unitType === 4 &&
+            showChemical && (
+              <div
+                className={styles.linkItem}
+                onClick={() => router.push(`/big-platform/chemical/${companyId}`)}
+              >
+                <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
+                <div>驾驶舱</div>
+              </div>
+            )}
         </div>
       </div>
-    )
+    );
   }
 }

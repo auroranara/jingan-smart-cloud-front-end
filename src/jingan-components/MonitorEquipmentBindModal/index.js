@@ -53,13 +53,13 @@ export default class MonitorEquipmentBindModal extends Component {
     bindIdList: [], // 选中的监测设备的id列表
   };
 
-  prevValues = {};
+  prevValues = null;
 
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
       const { type, data, getList } = this.props;
-      this.prevValues = {};
+      this.prevValues = null;
       getList({
         companyId: data.companyId,
         ...(type
@@ -106,7 +106,8 @@ export default class MonitorEquipmentBindModal extends Component {
             bindTargetStatus: 0,
           }),
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
   };
 
   handleSearch = values => {
@@ -147,7 +148,7 @@ export default class MonitorEquipmentBindModal extends Component {
       getList,
     } = this.props;
     getList({
-      ...this.prevValues2,
+      ...this.prevValues,
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
       companyId: data.companyId,
@@ -160,7 +161,8 @@ export default class MonitorEquipmentBindModal extends Component {
             bindTargetStatus: 0,
           }),
     });
-    this.form && this.form.setFieldsValue(this.prevValues);
+    this.form &&
+      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
     prevPageSize !== pageSize && setModalPageSize(pageSize);
   };
 
