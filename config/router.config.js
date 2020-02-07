@@ -4257,30 +4257,71 @@ module.exports = env => {
             },
           ],
         },
-        // 车辆管理
+        // 车牌识别系统
         {
-          path: '/vehicle-management',
-          code: 'vehicleManagement',
-          name: 'vehicleManagement',
+          path: '/license-plate-recognition-system',
+          code: 'licensePlateRecognitionSystem',
+          name: 'licensePlateRecognitionSystem',
           icon: 'car',
           systemType: 3,
           routes: [
             {
-              path: '/vehicle-management',
-              redirect: '/vehicle-management/list',
+              path: '/license-plate-recognition-system',
+              redirect: '/license-plate-recognition-system/vehicle-management',
             },
+            // 车辆管理
             {
-              path: '/vehicle-management/list/:id?',
-              code: 'vehicleManagement.list',
-              name: 'list',
-              component: './LicensePlateRecognitionSystem/VehicleManagement/List',
+              path: '/license-plate-recognition-system/vehicle-management',
+              code: 'licensePlateRecognitionSystem.vehicleManagement',
+              name: 'vehicleManagement',
+              routes: [
+                {
+                  path: '/license-plate-recognition-system/vehicle-management',
+                  redirect: '/license-plate-recognition-system/vehicle-management/index',
+                },
+                // 车辆信息
+                {
+                  path: '/license-plate-recognition-system/vehicle-management/index',
+                  code: 'licensePlateRecognitionSystem.vehicleManagement.index',
+                  name: 'index',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/license-plate-recognition-system/vehicle-management/index',
+                      redirect: '/license-plate-recognition-system/vehicle-management/index/list',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/vehicle-management/index/:unitId?/list',
+                      code: 'licensePlateRecognitionSystem.vehicleManagement.index.list',
+                      name: 'list',
+                      component: './LicensePlateRecognitionSystem/VehicleManagement/List',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/vehicle-management/index/:unitId?/add',
+                      code: 'licensePlateRecognitionSystem.vehicleManagement.index.add',
+                      name: 'add',
+                      component: './LicensePlateRecognitionSystem/VehicleManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/vehicle-management/index/:unitId?/detail/:id',
+                      code: 'licensePlateRecognitionSystem.vehicleManagement.index.detail',
+                      name: 'detail',
+                      component: './LicensePlateRecognitionSystem/VehicleManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/vehicle-management/index/:unitId?/edit/:id',
+                      code: 'licensePlateRecognitionSystem.vehicleManagement.index.edit',
+                      name: 'edit',
+                      component: './LicensePlateRecognitionSystem/VehicleManagement/Other',
+                    },
+                  ],
+                },
+              ],
             },
-            // {
-            //   path: '/vehicle-management/add/:id?',
-            //   code: 'vehicleManagement.add',
-            //   name: 'add',
-            //   component: './LicensePlateRecognitionSystem/VehicleManagement/Other',
-            // },
           ],
         },
       ],

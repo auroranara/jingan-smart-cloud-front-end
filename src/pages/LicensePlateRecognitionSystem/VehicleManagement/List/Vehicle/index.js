@@ -7,7 +7,7 @@ import ImagePreview from '@/jingan-components/ImagePreview';
 import Link from 'umi/link';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { LIST_URL, ADD_URL, DETAIL_URL, EDIT_URL, EmptyData, STATUSES } from '..';
+import { BREADCRUMB_LIST, URL_PREFIX, EmptyData, STATUSES } from '..';
 import styles from '../index.less';
 
 const { Meta } = Card;
@@ -15,13 +15,13 @@ const GET_API = 'licensePlateRecognitionSystem/getVehicleList';
 const RELOAD_API = 'licensePlateRecognitionSystem/reloadVehicleList';
 const DELETE_API = 'licensePlateRecognitionSystem/deleteVehicle';
 const FIELDS = [
-  {
-    id: 'name',
-    transform: v => v.trim(),
-    render: ({ onSearch }) => (
-      <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
-    ),
-  },
+  // {
+  //   id: 'name',
+  //   transform: v => v.trim(),
+  //   render: ({ onSearch }) => (
+  //     <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
+  //   ),
+  // },
   {
     id: 'number',
     transform: v => v.trim(),
@@ -41,11 +41,14 @@ const preventDefault = e => e.preventDefault();
     licensePlateRecognitionSystem,
     loading: loading.effects[GET_API],
   }),
-  dispatch => ({
+  (dispatch, { unitId }) => ({
     getVehicleList(payload, callback) {
       dispatch({
         type: GET_API,
-        payload,
+        payload: {
+          unitId,
+          ...payload,
+        },
         callback: (success, data) => {
           if (!success) {
             message.error('获取列表失败，请稍候重试！');
@@ -57,7 +60,10 @@ const preventDefault = e => e.preventDefault();
     reloadVehicleList(payload, callback) {
       dispatch({
         type: RELOAD_API,
-        payload,
+        payload: {
+          unitId,
+          ...payload,
+        },
         callback: (success, data) => {
           if (!success) {
             message.error('刷新列表失败，请稍候重试！');
@@ -87,20 +93,33 @@ export default class Vehicle extends Component {
     images: null,
   };
 
+  componentDidUpdate({ unitId: prevUnitId }) {
+    const { unitId } = this.props;
+    if (prevUnitId !== unitId) {
+      this.page &&
+        this.page.reload((payload, callback) => {
+          const { reloadVehicleList } = this.props;
+          reloadVehicleList(payload, callback);
+        });
+    }
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     return (
+      nextProps.unitId !== this.props.unitId ||
       nextProps.licensePlateRecognitionSystem !== this.props.licensePlateRecognitionSystem ||
       nextProps.loading !== this.props.loading ||
       nextState !== this.state
     );
   }
+
   setPageReference = page => {
     this.page = page;
   };
 
   handleAddButtonClick = () => {
     const { isUnit, unitId } = this.props;
-    router.push(`${ADD_URL}${isUnit ? '' : `/${unitId}`}`);
+    router.push(`${URL_PREFIX}${isUnit ? '' : `/${unitId}`}/add`);
   };
 
   handleDeleteButtonClick = id => {
@@ -126,13 +145,13 @@ export default class Vehicle extends Component {
     status = '1',
     image = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
   }) => {
-    const { hasDetailAuthority, hasEditAuthority, hasDeleteAuthority } = this.props;
+    const { isUnit, unitId, hasDetailAuthority, hasEditAuthority, hasDeleteAuthority } = this.props;
     return (
       <Card
         className={styles.card}
         actions={[
           <Link
-            to={`${DETAIL_URL}/${id}`}
+            to={`${URL_PREFIX}${isUnit ? '' : `/${unitId}`}/detail/${id}`}
             disabled={!hasDetailAuthority}
             target="_blank"
             onClick={hasDetailAuthority ? undefined : preventDefault}
@@ -140,7 +159,7 @@ export default class Vehicle extends Component {
             查看
           </Link>,
           <Link
-            to={`${EDIT_URL}/${id}`}
+            to={`${URL_PREFIX}${isUnit ? '' : `/${unitId}`}/edit/${id}`}
             disabled={!hasEditAuthority}
             target="_blank"
             onClick={hasEditAuthority ? undefined : preventDefault}
@@ -251,11 +270,12 @@ export default class Vehicle extends Component {
       getVehicleList,
     } = this.props;
     const { images } = this.state;
-    const breadcrumbList = [
-      { title: '首页', name: '首页', href: '/' },
-      { title: '车辆管理', name: '车辆管理', href: isUnit ? undefined : LIST_URL },
-      { title: '车辆基本信息', name: '车辆基本信息' },
-    ];
+    const breadcrumbList = BREADCRUMB_LIST.concat(
+      [
+        !isUnit && { title: '单位车辆信息', name: '单位车辆信息', href: `${URL_PREFIX}/list` },
+        { title: '车辆信息', name: '车辆信息' },
+      ].filter(v => v)
+    );
 
     return (
       <UnconnectedListPage

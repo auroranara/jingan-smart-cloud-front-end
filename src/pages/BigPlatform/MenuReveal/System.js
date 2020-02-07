@@ -160,7 +160,7 @@ export default class NewMenuReveal extends Component {
   // 点击菜单 打开相应新页面
   handleOpenMenu = url => {
     // window.open(`${window.publicPath}#${url}`, '_blank')
-    router.push(url.replace(/\/:.*$/, ''));
+    router.push(url.replace(/\/:[^\/]*/g, ''));
   };
 
   // 去除url中尾部参数
