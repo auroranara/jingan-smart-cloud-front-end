@@ -5,6 +5,7 @@ action 控件栏其余按钮
 columns 表格配置对象
 codes 其他权限数组，如['bind']
 transform 转换控件值以后作为接口参数
+withUnitId 是否将unitId作为参数传入getList接口
 
 示例
 

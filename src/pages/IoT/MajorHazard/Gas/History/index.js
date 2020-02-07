@@ -345,12 +345,30 @@ export default class GasHistory extends Component {
   };
 
   handleExportButtonClick = () => {
-    const { exportData } = this.props;
-    const { selectedRowKeys } = this.state;
-    // exportData({
-    //   ids: selectedRowKeys.join(','),
-    // });
-    console.log(selectedRowKeys);
+    const {
+      user: {
+        currentUser: { unitId },
+      },
+      exportData,
+    } = this.props;
+    const {
+      range: [startTime, endTime] = [],
+      status,
+      monitorObjectTypeId,
+      monitorObjectId,
+      monitorPointId,
+    } = this.state;
+    exportData({
+      companyId: unitId,
+      startTime: startTime && startTime.format(DEFAULT_FORMAT),
+      endTime: endTime && endTime.format(DEFAULT_FORMAT),
+      monitorEquipmentTypes: '405,406',
+      beMonitorTargetType: monitorObjectTypeId,
+      beMonitorTargetId: monitorObjectId,
+      monitorEquipmentId: monitorPointId,
+      statusType: -1,
+      ...STATUS_MAPPER[status],
+    });
   };
 
   handleSelectedRowKeysChange = selectedRowKeys => {
@@ -1026,9 +1044,15 @@ export default class GasHistory extends Component {
               </Select>
             </Col>
           )}
-          {/* <Col xs={24} sm={12} md={8}>
-            <Button type="primary" onClick={this.handleExportButtonClick} disabled={!selectedRowKeys.length}>导出明细</Button>
-          </Col> */}
+          <Col xs={24} sm={12} md={8}>
+            <Button
+              type="primary"
+              onClick={this.handleExportButtonClick}
+              disabled={/* !selectedRowKeys.length */ !list.length}
+            >
+              导出明细
+            </Button>
+          </Col>
           <Col span={24}>
             {list.length ? (
               <Table

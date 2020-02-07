@@ -23,42 +23,59 @@ const STYLE = {
 };
 
 @connect(
-  (state, { route: { name, code }, location: { pathname }, mapper, breadcrumbList: b }) => {
+  (
+    state,
+    {
+      route: { name, code },
+      location: { pathname },
+      match: {
+        params: { unitId: unitId1 },
+      },
+      mapper,
+      breadcrumbList: b,
+    }
+  ) => {
     const { namespace: n, detail: d, getDetail: gd } = mapper || {};
-    const { breadcrumbList } = b
-      ? { breadcrumbList: b }
-      : code.split('.').reduce(
-          (result, item, index, list) => {
-            const key = `${result.key}.${item}`;
-            const title = locales[key];
-            result.key = key;
-            result.breadcrumbList.push({
-              title,
-              name: title,
-              href:
-                index === list.length - 2
-                  ? pathname.replace(new RegExp(`${name}.*`), 'list')
-                  : undefined,
-            });
-            return result;
-          },
-          {
-            breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
-            key: 'menu',
-          }
-        );
+    let breadcrumbList;
     const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     const {
       user: {
-        currentUser: { unitType, unitId, permissionCodes },
+        currentUser: { unitType, unitId: unitId2, permissionCodes },
       },
       [namespace]: { [d || 'detail']: detail },
       loading: {
         effects: { [`${namespace}/${gd || 'getDetail'}`]: loading },
       },
     } = state;
+    const isUnit = +unitType === 4;
+    const unitId = isUnit ? unitId2 : unitId1;
+    if (b) {
+      breadcrumbList =
+        typeof b === 'function' ? b({ isUnit, unitId, title: locales[`menu.${code}`] }) : b;
+    } else {
+      breadcrumbList = code.split('.').reduce(
+        (result, item, index, list) => {
+          const key = `${result.key}.${item}`;
+          const title = locales[key];
+          result.key = key;
+          result.breadcrumbList.push({
+            title,
+            name: title,
+            href:
+              index === list.length - 2
+                ? pathname.replace(new RegExp(`${name}.*`), 'list')
+                : undefined,
+          });
+          return result;
+        },
+        {
+          breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
+          key: 'menu',
+        }
+      );
+    }
     return {
-      unitId: +unitType === 4 ? unitId : undefined,
+      unitId,
       detail,
       loading,
       breadcrumbList,
@@ -73,7 +90,7 @@ const STYLE = {
       match: {
         params: { id },
       },
-      route: { name, code, path },
+      route: { name, code },
       location: { pathname },
       error = true,
       mapper,

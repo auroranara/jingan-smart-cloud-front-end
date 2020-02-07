@@ -50,3 +50,8 @@ export async function getMonitorObjectList(params) {
 export async function getMonitorPointList(params) {
   return request(`/acloud_new/v2/monitor/monitorEquipment/list?${stringify(params)}`);
 }
+
+// 获取监测点列表
+export async function exportData(params) {
+  return request(`/acloud_new/v2/monitor/sensorStatusHistory/excel?${stringify(params)}`);
+}

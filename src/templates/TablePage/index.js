@@ -20,42 +20,62 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
  * 表格页
  */
 @connect(
-  (state, { route: { name, code }, otherOperation }) => {
-    const { breadcrumbList } = code
-      .split('.')
-      .slice(0, -1)
-      .reduce(
-        (result, item) => {
-          const key = `${result.key}.${item}`;
-          const title = locales[key];
-          result.key = key;
-          result.breadcrumbList.push({
-            title,
-            name: title,
-          });
-          return result;
-        },
-        {
-          breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
-          key: 'menu',
-        }
-      );
-    const namespace = code.replace(/.*\.(.*)\..*/, '$1');
+  (
+    state,
+    {
+      route: { name, code },
+      match: {
+        params: { unitId: unitId1 },
+      },
+      otherOperation,
+      mapper,
+      breadcrumbList: b,
+    }
+  ) => {
+    const { namespace: n, list: l, getList: gl, remove: r, exportList: el } = mapper || {};
+    let breadcrumbList;
+    const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     const {
       user: {
-        currentUser: { unitType, unitId, permissionCodes },
+        currentUser: { unitType, unitId: unitId2, permissionCodes },
       },
-      [namespace]: { list },
+      [namespace]: { [l || 'list']: list },
       loading: {
         effects: {
-          [`${namespace}/getList`]: loading1,
-          [`${namespace}/remove`]: loading2,
-          [`${namespace}/exportList`]: loading3,
+          [`${namespace}/${gl || 'getList'}`]: loading1,
+          [`${namespace}/${r || 'remove'}`]: loading2,
+          [`${namespace}/${el || 'exportList'}`]: loading3,
         },
       },
     } = state;
+    const isUnit = +unitType === 4;
+    const unitId = isUnit ? unitId2 : unitId1;
+    if (b) {
+      breadcrumbList =
+        typeof b === 'function' ? b({ isUnit, unitId, title: locales[`menu.${code}`] }) : b;
+    } else {
+      breadcrumbList = code
+        .split('.')
+        .slice(0, -1)
+        .reduce(
+          (result, item) => {
+            const key = `${result.key}.${item}`;
+            const title = locales[key];
+            result.key = key;
+            result.breadcrumbList.push({
+              title,
+              name: title,
+            });
+            return result;
+          },
+          {
+            breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
+            key: 'menu',
+          }
+        );
+    }
     return {
-      unitId: +unitType === 4 ? unitId : undefined,
+      unitId,
       list,
       loading: loading1 || loading2 || loading3,
       breadcrumbList,
@@ -75,12 +95,16 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
         }, {})),
     };
   },
-  (dispatch, { route: { name, code }, location: { pathname }, error = true, otherOperation }) => {
-    const namespace = code.replace(/.*\.(.*)\..*/, '$1');
+  (
+    dispatch,
+    { route: { name, code }, location: { pathname }, error = true, otherOperation, mapper }
+  ) => {
+    const { namespace: n, getList: gl, remove: r, exportList: el } = mapper || {};
+    const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     return {
       getList(payload, callback) {
         dispatch({
-          type: `${namespace}/getList`,
+          type: `${namespace}/${gl || 'getList'}`,
           payload,
           callback: (success, data) => {
             if (!success && error) {
@@ -92,7 +116,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
       },
       remove(payload, callback) {
         dispatch({
-          type: `${namespace}/remove`,
+          type: `${namespace}/${r || 'remove'}`,
           payload,
           callback: (success, data) => {
             if (success) {
@@ -106,7 +130,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
       },
       exportList(payload, callback) {
         dispatch({
-          type: `${namespace}/exportList`,
+          type: `${namespace}/${el || 'exportList'}`,
           payload,
           callback: (success, data) => {
             if (!success && error) {
@@ -120,7 +144,6 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
         router.push(pathname.replace(new RegExp(`${name}.*`), 'add'));
       },
       goToEdit(data) {
-        console.log(data);
         router.push(pathname.replace(new RegExp(`${name}.*`), `edit/${(data && data.id) || data}`));
       },
       goToDetail(data) {
@@ -164,6 +187,14 @@ export default class TablePage extends Component {
     this.handleSearchButtonClick();
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextProps.list !== this.props.list ||
+      nextProps.loading !== this.props.loading ||
+      nextState !== this.state
+    );
+  }
+
   // 设置form的引用
   setFormReference = form => {
     this.form = form;
@@ -175,9 +206,12 @@ export default class TablePage extends Component {
       list: { pagination: { pageNum = 1, pageSize = getPageSize() } = {} } = {},
       getList,
       transform,
+      withUnitId,
+      unitId,
     } = this.props;
+    const payload = withUnitId ? { unitId, ...this.prevValues } : this.prevValues;
     getList({
-      ...(transform && this.prevValues ? transform(this.prevValues) : this.prevValues),
+      ...(transform && (this.prevValues || withUnitId) ? transform(payload) : payload),
       pageNum,
       pageSize,
     });
@@ -191,10 +225,13 @@ export default class TablePage extends Component {
       list: { pagination: { pageSize = getPageSize() } = {} } = {},
       getList,
       transform,
+      withUnitId,
+      unitId,
     } = this.props;
+    const payload = withUnitId ? { unitId, ...values } : values;
     this.prevValues = values;
     getList({
-      ...(transform ? transform(values) : values),
+      ...(transform ? transform(payload) : payload),
       pageNum: 1,
       pageSize,
     });
@@ -236,9 +273,12 @@ export default class TablePage extends Component {
       list: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
       getList,
       transform,
+      withUnitId,
+      unitId,
     } = this.props;
+    const payload = withUnitId ? { unitId, ...this.prevValues } : this.prevValues;
     getList({
-      ...(transform && this.prevValues ? transform(this.prevValues) : this.prevValues),
+      ...(transform && (this.prevValues || withUnitId) ? transform(payload) : payload),
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
     });

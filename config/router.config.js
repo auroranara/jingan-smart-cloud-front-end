@@ -4310,6 +4310,57 @@ module.exports = env => {
                 },
               ],
             },
+            // 车场管理
+            {
+              path: '/license-plate-recognition-system/park-management',
+              code: 'licensePlateRecognitionSystem.parkManagement',
+              name: 'parkManagement',
+              routes: [
+                {
+                  path: '/license-plate-recognition-system/park-management',
+                  redirect: '/license-plate-recognition-system/park-management/index',
+                },
+                // 车场信息
+                {
+                  path: '/license-plate-recognition-system/park-management/index',
+                  code: 'licensePlateRecognitionSystem.parkManagement.index',
+                  name: 'index',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/license-plate-recognition-system/park-management/index',
+                      redirect: '/license-plate-recognition-system/park-management/index/list',
+                    },
+                    {
+                      path: '/license-plate-recognition-system/park-management/index/:unitId?/list',
+                      code: 'licensePlateRecognitionSystem.parkManagement.index.list',
+                      name: 'list',
+                      component: './LicensePlateRecognitionSystem/ParkManagement/List',
+                    },
+                    {
+                      path: '/license-plate-recognition-system/park-management/index/:unitId?/add',
+                      code: 'licensePlateRecognitionSystem.parkManagement.index.add',
+                      name: 'add',
+                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/index/:unitId?/detail/:id',
+                      code: 'licensePlateRecognitionSystem.parkManagement.index.detail',
+                      name: 'detail',
+                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/index/:unitId?/edit/:id',
+                      code: 'licensePlateRecognitionSystem.parkManagement.index.edit',
+                      name: 'edit',
+                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
       ],
