@@ -71,7 +71,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
             breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
             key: 'menu',
           }
-        );
+        ).breadcrumbList;
     }
     return {
       unitId,
@@ -97,11 +97,8 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
         }, {})),
     };
   },
-  (
-    dispatch,
-    { route: { name, code }, location: { pathname }, error = true, otherOperation, mapper }
-  ) => {
-    const { namespace: n, getList: gl, remove: r, exportList: el } = mapper || {};
+  (dispatch, { route: { name, code }, location: { pathname }, error = true, mapper }) => {
+    const { namespace: n, getList: gl, remove: r, exportList: el, reloadList: rl } = mapper || {};
     const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     return {
       getList(payload, callback) {
@@ -142,6 +139,18 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
           },
         });
       },
+      reloadList(payload, callback) {
+        dispatch({
+          type: `${namespace}/${rl || 'reloadList'}`,
+          payload,
+          callback: (success, data) => {
+            if (!success && error) {
+              message.error('重新获取列表数据失败，请稍后重试或联系管理人员！');
+            }
+            callback && callback(success, data);
+          },
+        });
+      },
       goToAdd() {
         router.push(pathname.replace(new RegExp(`${name}.*`), 'add'));
       },
@@ -163,6 +172,7 @@ export default class ListPage extends Component {
     return (
       nextProps.list !== this.props.list ||
       nextProps.loading !== this.props.loading ||
+      nextProps.children !== this.props.children ||
       nextState !== this.state
     );
   }
@@ -274,7 +284,7 @@ export default class ListPage extends Component {
       (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
   };
 
-  renderAddButton = ({ name = '新增', onClick }) => {
+  renderAddButton = ({ name = '新增', onClick } = {}) => {
     const { hasAddAuthority, goToAdd } = this.props;
     return (
       <Button
@@ -287,7 +297,7 @@ export default class ListPage extends Component {
     );
   };
 
-  renderExportButton = ({ name = '导出', onClick }) => {
+  renderExportButton = ({ name = '导出', onClick } = {}) => {
     const { hasExportAuthority, list: { list } = {} } = this.props;
     return (
       <Button
@@ -381,37 +391,36 @@ export default class ListPage extends Component {
     const payload = {
       list,
       unitId,
-      ...(otherOperation &&
-        otherOperation.reduce(
-          (result, { code, name, onClick, disabled }) => {
-            const upperCode = `${code[0].toUpperCase()}${code.slice(1)}`;
-            const hasAuthority = this.props[`has${upperCode}Authority`];
-            const methodName = GET_METHOD_NAME(`render${upperCode}Button`, result);
-            return {
-              ...result,
-              [methodName]: data => {
-                const enabled =
-                  hasAuthority && !(typeof disabled === 'function' ? disabled(data) : disabled);
-                const id = (data && data.id) || data;
-                return (
-                  <Link
-                    to={onClick ? '/' : `${code}Url/${id}`}
-                    disabled={!enabled}
-                    target="_blank"
-                    onClick={enabled ? onClick || undefined : preventDefault}
-                  >
-                    {typeof name === 'function' ? name(id) : name}
-                  </Link>
-                );
-              },
-            };
-          },
-          {
-            renderDetailButton: this.renderDetailButton,
-            renderEditButton: this.renderEditButton,
-            renderDeleteButton: this.renderDeleteButton,
-          }
-        )),
+      ...(otherOperation || []).reduce(
+        (result, { code, name, onClick, disabled }) => {
+          const upperCode = `${code[0].toUpperCase()}${code.slice(1)}`;
+          const hasAuthority = this.props[`has${upperCode}Authority`];
+          const methodName = GET_METHOD_NAME(`render${upperCode}Button`, result);
+          return {
+            ...result,
+            [methodName]: data => {
+              const enabled =
+                hasAuthority && !(typeof disabled === 'function' ? disabled(data) : disabled);
+              const id = (data && data.id) || data;
+              return (
+                <Link
+                  to={onClick ? '/' : `${code}Url/${id}`}
+                  disabled={!enabled}
+                  target="_blank"
+                  onClick={enabled ? onClick || undefined : preventDefault}
+                >
+                  {typeof name === 'function' ? name(id) : name}
+                </Link>
+              );
+            },
+          };
+        },
+        {
+          renderDetailButton: this.renderDetailButton,
+          renderEditButton: this.renderEditButton,
+          renderDeleteButton: this.renderDeleteButton,
+        }
+      ),
     };
 
     return (

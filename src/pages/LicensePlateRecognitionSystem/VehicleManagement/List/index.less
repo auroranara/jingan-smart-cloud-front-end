@@ -1,13 +1,3 @@
-.emptyData {
-  color: rgba(0, 0, 0, 0.45);
-}
-.content {
-  margin: 0 -12px;
-
-  span {
-    padding: 0 12px;
-  }
-}
 .card {
   overflow: hidden;
   cursor: auto !important;
@@ -15,7 +5,7 @@
 .cardContent {
   position: relative;
   margin: -0.25em 0;
-  padding-right: 4em;
+  color: rgba(0, 0, 0, 0.65) !important;
 
   .cardRow {
     display: flex;
@@ -29,19 +19,9 @@
       flex: 1;
     }
   }
-  .cardCountWrapper {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-
-    .cardCount {
-      width: 4em;
-      height: 4em;
-    }
-  }
 }
 .ellipsis {
+  font-weight: bold;
   white-space: normal;
 }
 .avatar {

@@ -160,6 +160,7 @@ export default class ReevaluateWarningList extends Component {
         },
       ],
       ref: this.setPageReference,
+      showTotal: false,
       ...this.props,
     };
 

@@ -1,60 +1,63 @@
 import React, { Component } from 'react';
-import { Input, Button, Card, Modal, message } from 'antd';
-import UnconnectedListPage from '@/templates/UnconnectedListPage';
+import { Input, Button, Card, Modal } from 'antd';
+import ListPage from '@/templates/ListPage';
 import Ellipsis from '@/components/Ellipsis';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
+import EmptyData from '@/jingan-components/EmptyData';
 import Link from 'umi/link';
-import { connect } from 'dva';
 import router from 'umi/router';
-import { BREADCRUMB_LIST, URL_PREFIX, EmptyData } from '..';
-import styles from '../index.less';
-const API = 'licensePlateRecognitionSystem/getCompanyList';
-const FIELDS = [
-  {
-    id: 'name',
-    transform: v => v.trim(),
-    render: ({ onSearch }) => (
-      <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
-    ),
-  },
-];
+import styles from './index.less';
 
-@connect(
-  ({ licensePlateRecognitionSystem, loading }) => ({
-    licensePlateRecognitionSystem,
-    loading: loading.effects[API],
-  }),
-  dispatch => ({
-    getCompanyList(payload, callback) {
-      dispatch({
-        type: API,
-        payload,
-        callback: (success, data) => {
-          if (!success) {
-            message.error('获取企业列表失败，请稍候重试！');
-          }
-          callback && callback(success, data);
-        },
-      });
-    },
-  })
-)
+const MAPPER = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'companyList',
+  getList: 'getCompanyList',
+};
+
 export default class Company extends Component {
   state = {
     visible: false,
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (
-      nextProps.licensePlateRecognitionSystem !== this.props.licensePlateRecognitionSystem ||
-      nextProps.loading !== this.props.loading ||
-      nextState !== this.state
-    );
+    return nextState !== this.state;
   }
 
   setFormReference = form => {
     this.form = form;
+  };
+
+  getContent = ({ list: { pagination: { total, a } = {} } = {} }) => {
+    const { name } = this.props;
+    return (
+      <div className={styles.content}>
+        <span>
+          单位总数：
+          {total || 0}
+        </span>
+        <span>
+          {name}
+          总数：
+          {a || 0}
+        </span>
+      </div>
+    );
+  };
+
+  getFields = () => [
+    {
+      id: 'name',
+      transform: v => v.trim(),
+      render: ({ onSearch }) => (
+        <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
+      ),
+    },
+  ];
+
+  getAction = ({ renderAddButton }) => {
+    const { name } = this.props;
+    return renderAddButton({ name: `新增单位${name}`, onClick: this.handleAddButtonClick });
   };
 
   handleAddButtonClick = () => {
@@ -67,8 +70,9 @@ export default class Company extends Component {
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((error, values) => {
       if (!error) {
+        const { urlPrefix } = this.props;
         const { company } = values;
-        router.push(`${URL_PREFIX}/${company.key}/add`);
+        router.push(`${urlPrefix}/${company.key}/add`);
       }
     });
   };
@@ -94,6 +98,7 @@ export default class Company extends Component {
     safetyName,
     safetyPhone,
   }) => {
+    const { urlPrefix } = this.props;
     const address = [
       practicalProvinceLabel,
       practicalCityLabel,
@@ -152,7 +157,7 @@ export default class Company extends Component {
           </div>
           <Link
             className={styles.cardCountWrapper}
-            to={`${URL_PREFIX}/${id}/list`} /*  target="_blank" */
+            to={`${urlPrefix}/${id}/list`} /*  target="_blank" */
           >
             <Button className={styles.cardCount} shape="circle">
               {0}
@@ -164,14 +169,7 @@ export default class Company extends Component {
   };
 
   render() {
-    const {
-      hasAddAuthority,
-      licensePlateRecognitionSystem: { companyList },
-      loading,
-      getCompanyList,
-    } = this.props;
     const { visible } = this.state;
-    const breadcrumbList = BREADCRUMB_LIST.concat({ title: '单位车辆信息', name: '单位车辆信息' });
     const fields = [
       {
         id: 'company',
@@ -191,36 +189,13 @@ export default class Company extends Component {
     ];
 
     return (
-      <UnconnectedListPage
-        pageHeaderProps={{
-          breadcrumbList,
-          content: (
-            <div className={styles.content}>
-              <span>
-                单位总数：
-                {0}
-              </span>
-              <span>
-                车辆总数：
-                {0}
-              </span>
-            </div>
-          ),
-        }}
-        formProps={{
-          fields: FIELDS,
-          action: (
-            <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>
-              新增单位车辆
-            </Button>
-          ),
-        }}
-        listProps={{
-          list: companyList,
-          loading,
-          getList: getCompanyList,
-          renderItem: this.renderItem,
-        }}
+      <ListPage
+        content={this.getContent}
+        fields={this.getFields}
+        action={this.getAction}
+        renderItem={this.renderItem}
+        mapper={MAPPER}
+        {...this.props}
       >
         <Modal
           title="新增单位"
@@ -237,7 +212,7 @@ export default class Company extends Component {
             ref={this.setFormReference}
           />
         </Modal>
-      </UnconnectedListPage>
+      </ListPage>
     );
   }
 }

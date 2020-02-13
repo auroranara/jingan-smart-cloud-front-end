@@ -3,9 +3,9 @@ error=true 接口报错时是否提示
 fields 控件栏配置对象
 action 控件栏其余按钮
 columns 表格配置对象
-codes 其他权限数组，如['bind']
 transform 转换控件值以后作为接口参数
 withUnitId 是否将unitId作为参数传入getList接口
+otherOperation 其他操作按钮
 
 示例
 
@@ -159,9 +159,6 @@ export default class AlarmMessage extends Component {
 
   render() {
     const props = {
-      addEnable: false,
-      // exportEnable: true,
-      operateEnable: false,
       fields: this.getFields,
       columns: this.getColumns,
       transform: TRANSFORM,
