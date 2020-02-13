@@ -48,7 +48,7 @@ export default {
     /* 刷新企业列表 */
     *reloadVehicleList(
       {
-        payload: { total, pageNum, pageSize, ...payload },
+        payload: { pageNum, pageSize, ...payload },
         callback,
       },
       { call, put }

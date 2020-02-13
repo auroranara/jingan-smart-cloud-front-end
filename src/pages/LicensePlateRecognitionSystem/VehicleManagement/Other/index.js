@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import moment from 'moment';
-import { connect } from 'dva';
 import { isNumber } from '@/utils/utils';
 import { BREADCRUMB_LIST, URL_PREFIX, STATUSES } from '../List';
 import styles from './index.less';
@@ -28,9 +27,6 @@ const SPAN2 = {
   xs: 24,
 };
 
-@connect(({ user }) => ({
-  user,
-}))
 export default class VehicleOther extends Component {
   shouldComponentUpdate(nextProps) {
     return nextProps.match.params.unitId !== this.props.match.params.unitId;
@@ -68,28 +64,17 @@ export default class VehicleOther extends Component {
     车辆照片: 车辆照片 || [],
   });
 
-  transform = ({ 生产日期, 购买日期, ...payload }) => ({
-    生产日期: 生产日期 && 生产日期.format('YYYY-MM-DD'),
-    购买日期: 购买日期 && 购买日期.format('YYYY-MM-DD'),
-    ...payload,
-  });
+  transform = ({ unitId, 生产日期, 购买日期, ...payload }) => {
+    return {
+      unitId, // 这里接接口的时候重点关注一下
+      生产日期: 生产日期 && 生产日期.format('YYYY-MM-DD'),
+      购买日期: 购买日期 && 购买日期.format('YYYY-MM-DD'),
+      ...payload,
+    };
+  };
 
-  render() {
-    const {
-      route,
-      location,
-      match,
-      route: { name },
-      match: {
-        params: { unitId },
-      },
-      user: {
-        currentUser: { unitType },
-      },
-    } = this.props;
-    const isUnit = unitType === 4;
-    const title = { detail: '车辆信息详情', add: '新增车辆信息', edit: '编辑车辆信息' }[name];
-    const breadcrumbList = BREADCRUMB_LIST.concat(
+  getBreadcrumbList = ({ isUnit, unitId, title }) =>
+    BREADCRUMB_LIST.concat(
       [
         !isUnit && { title: '单位车辆信息', name: '单位车辆信息', href: `${URL_PREFIX}/list` },
         {
@@ -100,138 +85,140 @@ export default class VehicleOther extends Component {
         { title, name: title },
       ].filter(v => v)
     );
-    const fields = [
-      {
-        key: '车辆基本信息',
-        title: '车辆基本信息',
-        fields: [
-          {
-            id: '车牌号',
-            label: '车牌号',
-            required: true,
-            component: 'Input',
-            labelCol: {},
-            span: SPAN,
-          },
-          {
-            id: '品牌',
-            label: '品牌',
-            component: 'Input',
-            span: SPAN,
-          },
-          {
-            id: '型号',
-            label: '型号',
-            component: 'Input',
-            span: SPAN,
-          },
-          {
-            id: '车辆类型',
-            label: '车辆类型',
-            required: true,
-            component: 'Select',
-            span: SPAN,
-            props: {
-              list: VEHICLE_TYPES,
-            },
-          },
-          {
-            id: '车牌类型',
-            label: '车牌类型',
-            required: true,
-            component: 'Select',
-            span: SPAN,
-            props: {
-              list: LICENCE_PLATE_TYPES,
-            },
-          },
-          {
-            id: '生产日期',
-            label: '生产日期',
-            component: 'DatePicker',
-            span: SPAN,
-          },
-          {
-            id: '载重',
-            label: '载重',
-            component: 'Input',
-            span: SPAN,
-            props: {
-              type: 'InputNumber',
-              min: 1,
-            },
-          },
-          {
-            id: '购买日期',
-            label: '购买日期',
-            component: 'DatePicker',
-            span: SPAN,
-          },
-          {
-            id: '当前状态',
-            label: '当前状态',
-            required: true,
-            component: 'Select',
-            span: SPAN,
-            props: {
-              list: STATUSES,
-            },
-          },
-          {
-            id: '车辆照片',
-            label: '车辆照片',
-            component: 'CustomUpload',
-            props: {
-              length: 1,
-              types: ['JPG', 'PNG'],
-            },
-          },
-        ],
-      },
-      {
-        key: '人员信息',
-        title: '人员信息',
-        fields: [
-          {
-            id: '驾驶员',
-            label: '驾驶员',
-            required: true,
-            component: 'Input',
-            span: SPAN,
-          },
-          {
-            id: '驾驶员联系电话',
-            label: '联系电话',
-            required: true,
-            component: 'Input',
-            span: SPAN2,
-            props: {
-              className: styles.phoneInput,
-            },
-          },
-          {
-            id: '押运员',
-            label: '押运员',
-            component: 'Input',
-            span: SPAN,
-          },
-          {
-            id: '押运员联系电话',
-            label: '联系电话',
-            component: 'Input',
-            span: SPAN2,
-            props: {
-              className: styles.phoneInput,
-            },
-          },
-        ],
-      },
-    ];
 
+  getFields = () => [
+    {
+      key: '车辆基本信息',
+      title: '车辆基本信息',
+      fields: [
+        {
+          id: '车牌号',
+          label: '车牌号',
+          required: true,
+          component: 'Input',
+          labelCol: {},
+          span: SPAN,
+        },
+        {
+          id: '品牌',
+          label: '品牌',
+          component: 'Input',
+          span: SPAN,
+        },
+        {
+          id: '型号',
+          label: '型号',
+          component: 'Input',
+          span: SPAN,
+        },
+        {
+          id: '车辆类型',
+          label: '车辆类型',
+          required: true,
+          component: 'Select',
+          span: SPAN,
+          props: {
+            list: VEHICLE_TYPES,
+          },
+        },
+        {
+          id: '车牌类型',
+          label: '车牌类型',
+          required: true,
+          component: 'Select',
+          span: SPAN,
+          props: {
+            list: LICENCE_PLATE_TYPES,
+          },
+        },
+        {
+          id: '生产日期',
+          label: '生产日期',
+          component: 'DatePicker',
+          span: SPAN,
+        },
+        {
+          id: '载重',
+          label: '载重',
+          component: 'Input',
+          span: SPAN,
+          props: {
+            type: 'InputNumber',
+            min: 1,
+          },
+        },
+        {
+          id: '购买日期',
+          label: '购买日期',
+          component: 'DatePicker',
+          span: SPAN,
+        },
+        {
+          id: '当前状态',
+          label: '当前状态',
+          required: true,
+          component: 'Select',
+          span: SPAN,
+          props: {
+            list: STATUSES,
+          },
+        },
+        {
+          id: '车辆照片',
+          label: '车辆照片',
+          component: 'CustomUpload',
+          props: {
+            length: 1,
+            types: ['JPG', 'PNG'],
+          },
+        },
+      ],
+    },
+    {
+      key: '人员信息',
+      title: '人员信息',
+      fields: [
+        {
+          id: '驾驶员',
+          label: '驾驶员',
+          required: true,
+          component: 'Input',
+          span: SPAN,
+        },
+        {
+          id: '驾驶员联系电话',
+          label: '联系电话',
+          required: true,
+          component: 'Input',
+          span: SPAN2,
+          props: {
+            className: styles.phoneInput,
+          },
+        },
+        {
+          id: '押运员',
+          label: '押运员',
+          component: 'Input',
+          span: SPAN,
+        },
+        {
+          id: '押运员联系电话',
+          label: '联系电话',
+          component: 'Input',
+          span: SPAN2,
+          props: {
+            className: styles.phoneInput,
+          },
+        },
+      ],
+    },
+  ];
+
+  render() {
     return (
       <ThreeInOnePage
-        breadcrumbList={breadcrumbList}
-        fields={fields}
+        breadcrumbList={this.getBreadcrumbList}
+        fields={this.getFields}
         initialize={this.initialize}
         transform={this.transform}
         mapper={{
@@ -242,9 +229,7 @@ export default class VehicleOther extends Component {
           edit: 'editVehicle',
         }}
         layout="vertical"
-        route={route}
-        location={location}
-        match={match}
+        {...this.props}
       />
     );
   }
