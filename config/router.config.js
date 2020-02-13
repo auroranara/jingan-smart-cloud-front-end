@@ -1341,7 +1341,7 @@ module.exports = env => {
                 {
                   name: 'history',
                   code: 'riskControl.reevaluateWarning.history',
-                  path: '/risk-control/reevaluate-warning/history/:id',
+                  path: '/risk-control/reevaluate-warning/history',
                   component: './RiskControl/ReevaluateWarning/History',
                 },
               ],
