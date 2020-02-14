@@ -10,15 +10,17 @@ import {
   getZoneContent,
   getNotice,
   getMesageByMaterialId,
+  monitorEquipmentTypeCountDto,
+  fireDeviceList,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
-import { queryAreaList } from '@/services/company/reservoirRegion';
+import { queryAreaList, queryDangerSourceList } from '@/services/company/reservoirRegion';
 import { queryStorehouseList } from '@/services/baseInfo/storehouse';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { getList } from '@/services/gasometer';
-import { queryDangerSourceList } from '../services/company/reservoirRegion';
 import { getList as getPipelineList } from '@/services/pipeline';
+import { getDeviceDetail } from '@/services/alarmWorkOrder';
 
 export default {
   namespace: 'chemical',
@@ -26,6 +28,8 @@ export default {
   state: {
     pastStatusCount: {},
     monitorTargetCount: [],
+    monitorEquipCount: [],
+    fireDeviceList: [],
     dangerSourceCount: {},
     tankList: {
       list: [],
@@ -77,6 +81,36 @@ export default {
           type: 'save',
           payload: {
             monitorTargetCount,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 统计IoT监测各个类型的数量
+    *fetchMonitorEquipCount({ payload, callback }, { call, put }) {
+      const response = yield call(monitorEquipmentTypeCountDto, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        const { list: monitorEquipCount } = data;
+        yield put({
+          type: 'save',
+          payload: {
+            monitorEquipCount,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 消防主机列表
+    *fetchFireDeviceList({ payload, callback }, { call, put }) {
+      const response = yield call(fireDeviceList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        const { list: fireDeviceList } = data;
+        yield put({
+          type: 'save',
+          payload: {
+            fireDeviceList,
           },
         });
       }

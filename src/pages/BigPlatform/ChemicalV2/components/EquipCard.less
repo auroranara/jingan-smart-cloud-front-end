@@ -1,0 +1,177 @@
+.container {
+  position: relative;
+  border: 1px solid #0ff;
+  & + .container {
+    margin-top: 15px;
+  }
+
+  .label {
+    color: #0ff;
+    display: inline-block;
+  }
+
+  .locIcon {
+    margin-right: 8px;
+    font-size: 18px;
+    color: #0ff;
+    display: inline-block;
+  }
+
+  .name {
+    position: relative;
+
+    .iconsWrapper {
+      position: absolute;
+      height: 100%;
+      right: 10px;
+      top: 0;
+      .icon {
+        display: inline-block;
+        width: 40px;
+        height: 100%;
+        vertical-align: top;
+        cursor: pointer;
+
+        & + .icon {
+          margin-left: 8px;
+        }
+      }
+      //   .video {
+      //     display: inline-block;
+      //     // position: absolute;
+      //     // top: 6px;
+      //     // left: 60%;
+      //     width: 1.4em;
+      //     height: 1em;
+      //     background: url('../imgs/icon-video.png') no-repeat center;
+      //     background-size: auto 1em;
+      //     vertical-align: top;
+      //     cursor: pointer;
+      //   }
+    }
+  }
+
+  .wrapper {
+    position: relative;
+    border-top: 1px solid #196092;
+    padding: 16px 10px;
+    padding-left: 25px;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    .more {
+      position: absolute;
+      right: 10px;
+      color: #0ff;
+      cursor: pointer;
+      top: 16px;
+    }
+  }
+
+  .targetWrapper {
+    padding-left: 10px;
+    margin-left: -10px;
+    border-left: 4px solid #0ff;
+  }
+
+  .updateTime {
+    color: #5b809a;
+    font-size: 0.875em;
+  }
+
+  .paramsWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    & + .paramsWrapper {
+      margin-top: 15px;
+    }
+
+    .icon {
+      width: 60px;
+      height: 70px;
+      margin-right: 20px;
+    }
+
+    .params {
+      flex: 1;
+    }
+  }
+
+  .lineWrapper {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+
+    .line {
+      display: flex;
+      padding: 0.25em 0;
+      position: relative;
+      flex: 1;
+
+      &:last-child {
+        margin-left: 1em;
+
+        .label {
+          color: #fff;
+        }
+      }
+
+      .label {
+        flex: none;
+        color: #0ff;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .value {
+        flex: 1;
+      }
+
+      .number {
+        display: inline-block;
+        width: 4em;
+        letter-spacing: 2em;
+        white-space: nowrap;
+        overflow: hidden;
+        vertical-align: top;
+      }
+    }
+  }
+}
+
+.titleWrapper {
+  position: relative;
+  display: inline-block;
+  width: calc(~'100% - 40px');
+
+  .jumperWrapper {
+    position: absolute;
+    top: 0;
+    right: 2em;
+    margin: 0 -0.5em;
+
+    span {
+      display: inline-block;
+      padding: 0 0.5em;
+      width: 1.5em;
+      height: 1.5em;
+      background: no-repeat center;
+      background-size: auto 1.5em;
+      vertical-align: top;
+      cursor: pointer;
+      box-sizing: content-box;
+
+      &:first-child {
+        background-image: url('../imgs/icon-work-order.png');
+      }
+
+      &:nth-child(2) {
+        background-image: url('../imgs/icon-trend.png');
+      }
+    }
+  }
+}

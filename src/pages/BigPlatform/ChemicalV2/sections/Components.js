@@ -25,6 +25,8 @@ import GasDrawer from './GasDrawer';
 import PoisonDrawer from './PoisonDrawer';
 import MHDrawer from './MHDrawer';
 import MonitorEquipDrawer from './MonitorEquipDrawer';
+import IoTMonitorDrawer from './IoTMonitorDrawer';
+import FireMonitorDrawer from './FireMonitorDrawer';
 
 export {
   Risk,
@@ -54,4 +56,6 @@ export {
   PoisonDrawer,
   MHDrawer,
   MonitorEquipDrawer,
+  IoTMonitorDrawer,
+  FireMonitorDrawer,
 };
