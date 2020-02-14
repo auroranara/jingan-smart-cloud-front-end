@@ -1,5 +1,6 @@
 import {
   getCompanyList,
+  getCityList,
   getVehicleList,
   getVehicleDetail,
   addVehicle,
@@ -11,6 +12,20 @@ import {
   deletePark,
   editPark,
   getAreaList,
+  getAreaDetail,
+  addArea,
+  deleteArea,
+  editArea,
+  getChannelList,
+  getChannelDetail,
+  addChannel,
+  deleteChannel,
+  editChannel,
+  getDeviceList,
+  getDeviceDetail,
+  addDevice,
+  deleteDevice,
+  editDevice,
 } from '@/services/licensePlateRecognitionSystem';
 
 export default {
@@ -18,12 +33,18 @@ export default {
 
   state: {
     companyList: {},
+    provinceList: [],
+    cityList: [],
     vehicleList: {},
     vehicleDetail: {},
     parkList: {},
     parkDetail: {},
-    provinceList: [],
-    cityList: [],
+    areaList: {},
+    areaDetail: {},
+    channelList: {},
+    channelDetail: {},
+    deviceList: {},
+    deviceDetail: {},
   },
 
   effects: {
@@ -43,7 +64,7 @@ export default {
     },
     /* 获取省列表 */
     *getProvinceList({ payload, callback }, { call, put }) {
-      const response = yield call(getAreaList, payload);
+      const response = yield call(getCityList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         const provinceList = data.list.map(({ id, name }) => ({ key: `${id}`, value: name }));
@@ -60,7 +81,7 @@ export default {
     },
     /* 获取市列表 */
     *getCityList({ payload, callback }, { call, put }) {
-      const response = yield call(getAreaList, payload);
+      const response = yield call(getCityList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         const cityIds = +payload.cityIds;
@@ -277,6 +298,234 @@ export default {
     // 编辑车场
     *editPark({ payload, callback }, { call, put }) {
       // const response = yield call(editPark, payload);
+      console.log('edit');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    /* 获取区域列表 */
+    *getAreaList({ payload, callback }, { call, put }) {
+      const response = yield call(getAreaList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const areaList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            areaList,
+          },
+        });
+        callback && callback(true, areaList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取区域详情
+    *getAreaDetail({ payload, callback }, { call, put }) {
+      // const response = yield call(getAreaDetail, payload);
+      console.log('getDetail');
+      console.log(payload);
+      const response = {
+        code: 200,
+        data: {
+          id: 1,
+          unitId: 'zcdm737ycau1i9ca',
+          联系电话: '1',
+          车场名称: '1',
+          车场所在城市: '33148',
+          车场所在省份: '5709',
+          车场状态: '1',
+          车场联系人: '1',
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const areaDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            areaDetail,
+          },
+        });
+        callback && callback(true, areaDetail);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 删除区域
+    *deleteArea({ payload, callback }, { call, put }) {
+      // const response = yield call(deleteArea, payload);
+      console.log('delete');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 新增区域
+    *addArea({ payload, callback }, { call, put }) {
+      // const response = yield call(addArea, payload);
+      console.log('add');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 编辑区域
+    *editArea({ payload, callback }, { call, put }) {
+      // const response = yield call(editArea, payload);
+      console.log('edit');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    /* 获取通道列表 */
+    *getChannelList({ payload, callback }, { call, put }) {
+      const response = yield call(getChannelList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const channelList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            channelList,
+          },
+        });
+        callback && callback(true, channelList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取通道详情
+    *getChannelDetail({ payload, callback }, { call, put }) {
+      // const response = yield call(getChannelDetail, payload);
+      console.log('getDetail');
+      console.log(payload);
+      const response = {
+        code: 200,
+        data: {
+          id: 1,
+          unitId: 'zcdm737ycau1i9ca',
+          联系电话: '1',
+          车场名称: '1',
+          车场所在城市: '33148',
+          车场所在省份: '5709',
+          车场状态: '1',
+          车场联系人: '1',
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const channelDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            channelDetail,
+          },
+        });
+        callback && callback(true, channelDetail);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 删除通道
+    *deleteChannel({ payload, callback }, { call, put }) {
+      // const response = yield call(deleteChannel, payload);
+      console.log('delete');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 新增通道
+    *addChannel({ payload, callback }, { call, put }) {
+      // const response = yield call(addChannel, payload);
+      console.log('add');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 编辑通道
+    *editChannel({ payload, callback }, { call, put }) {
+      // const response = yield call(editChannel, payload);
+      console.log('edit');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    /* 获取设备列表 */
+    *getDeviceList({ payload, callback }, { call, put }) {
+      const response = yield call(getDeviceList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const deviceList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            deviceList,
+          },
+        });
+        callback && callback(true, deviceList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取设备详情
+    *getDeviceDetail({ payload, callback }, { call, put }) {
+      // const response = yield call(getDeviceDetail, payload);
+      console.log('getDetail');
+      console.log(payload);
+      const response = {
+        code: 200,
+        data: {
+          id: 1,
+          unitId: 'zcdm737ycau1i9ca',
+          联系电话: '1',
+          车场名称: '1',
+          车场所在城市: '33148',
+          车场所在省份: '5709',
+          车场状态: '1',
+          车场联系人: '1',
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const deviceDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            deviceDetail,
+          },
+        });
+        callback && callback(true, deviceDetail);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 删除设备
+    *deleteDevice({ payload, callback }, { call, put }) {
+      // const response = yield call(deleteDevice, payload);
+      console.log('delete');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 新增设备
+    *addDevice({ payload, callback }, { call, put }) {
+      // const response = yield call(addDevice, payload);
+      console.log('add');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 编辑设备
+    *editDevice({ payload, callback }, { call, put }) {
+      // const response = yield call(editDevice, payload);
       console.log('edit');
       console.log(payload);
       const response = { code: 200 };

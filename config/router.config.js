@@ -4374,27 +4374,27 @@ module.exports = env => {
                       path: '/license-plate-recognition-system/park-management/area/:unitId?/list',
                       code: 'licensePlateRecognitionSystem.parkManagement.area.list',
                       name: 'list',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/List',
+                      component: './LicensePlateRecognitionSystem/AreaManagement/List',
                     },
                     {
                       path: '/license-plate-recognition-system/park-management/area/:unitId?/add',
                       code: 'licensePlateRecognitionSystem.parkManagement.area.add',
                       name: 'add',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
                     },
                     {
                       path:
                         '/license-plate-recognition-system/park-management/area/:unitId?/detail/:id',
                       code: 'licensePlateRecognitionSystem.parkManagement.area.detail',
                       name: 'detail',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
                     },
                     {
                       path:
                         '/license-plate-recognition-system/park-management/area/:unitId?/edit/:id',
                       code: 'licensePlateRecognitionSystem.parkManagement.area.edit',
                       name: 'edit',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
                     },
                   ],
                 },
@@ -4414,28 +4414,28 @@ module.exports = env => {
                         '/license-plate-recognition-system/park-management/channel/:unitId?/list',
                       code: 'licensePlateRecognitionSystem.parkManagement.channel.list',
                       name: 'list',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/List',
+                      component: './LicensePlateRecognitionSystem/ChannelManagement/List',
                     },
                     {
                       path:
                         '/license-plate-recognition-system/park-management/channel/:unitId?/add',
                       code: 'licensePlateRecognitionSystem.parkManagement.channel.add',
                       name: 'add',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/ChannelManagement/Other',
                     },
                     {
                       path:
                         '/license-plate-recognition-system/park-management/channel/:unitId?/detail/:id',
                       code: 'licensePlateRecognitionSystem.parkManagement.channel.detail',
                       name: 'detail',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/ChannelManagement/Other',
                     },
                     {
                       path:
                         '/license-plate-recognition-system/park-management/channel/:unitId?/edit/:id',
                       code: 'licensePlateRecognitionSystem.parkManagement.channel.edit',
                       name: 'edit',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/ChannelManagement/Other',
                     },
                   ],
                 },
@@ -4455,27 +4455,27 @@ module.exports = env => {
                         '/license-plate-recognition-system/park-management/device/:unitId?/list',
                       code: 'licensePlateRecognitionSystem.parkManagement.device.list',
                       name: 'list',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/List',
+                      component: './LicensePlateRecognitionSystem/DeviceManagement/List',
                     },
                     {
                       path: '/license-plate-recognition-system/park-management/device/:unitId?/add',
                       code: 'licensePlateRecognitionSystem.parkManagement.device.add',
                       name: 'add',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
                     },
                     {
                       path:
                         '/license-plate-recognition-system/park-management/device/:unitId?/detail/:id',
                       code: 'licensePlateRecognitionSystem.parkManagement.device.detail',
                       name: 'detail',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
                     },
                     {
                       path:
                         '/license-plate-recognition-system/park-management/device/:unitId?/edit/:id',
                       code: 'licensePlateRecognitionSystem.parkManagement.device.edit',
                       name: 'edit',
-                      component: './LicensePlateRecognitionSystem/ParkManagement/Other',
+                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
                     },
                   ],
                 },
