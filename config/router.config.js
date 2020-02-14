@@ -4359,6 +4359,126 @@ module.exports = env => {
                     },
                   ],
                 },
+                // 区域管理
+                {
+                  path: '/license-plate-recognition-system/park-management/area',
+                  code: 'licensePlateRecognitionSystem.parkManagement.area',
+                  name: 'area',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/license-plate-recognition-system/park-management/area',
+                      redirect: '/license-plate-recognition-system/park-management/area/list',
+                    },
+                    {
+                      path: '/license-plate-recognition-system/park-management/area/:unitId?/list',
+                      code: 'licensePlateRecognitionSystem.parkManagement.area.list',
+                      name: 'list',
+                      component: './LicensePlateRecognitionSystem/AreaManagement/List',
+                    },
+                    {
+                      path: '/license-plate-recognition-system/park-management/area/:unitId?/add',
+                      code: 'licensePlateRecognitionSystem.parkManagement.area.add',
+                      name: 'add',
+                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/area/:unitId?/detail/:id',
+                      code: 'licensePlateRecognitionSystem.parkManagement.area.detail',
+                      name: 'detail',
+                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/area/:unitId?/edit/:id',
+                      code: 'licensePlateRecognitionSystem.parkManagement.area.edit',
+                      name: 'edit',
+                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
+                    },
+                  ],
+                },
+                // 通道管理
+                {
+                  path: '/license-plate-recognition-system/park-management/channel',
+                  code: 'licensePlateRecognitionSystem.parkManagement.channel',
+                  name: 'channel',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/license-plate-recognition-system/park-management/channel',
+                      redirect: '/license-plate-recognition-system/park-management/channel/list',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/channel/:unitId?/list',
+                      code: 'licensePlateRecognitionSystem.parkManagement.channel.list',
+                      name: 'list',
+                      component: './LicensePlateRecognitionSystem/ChannelManagement/List',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/channel/:unitId?/add',
+                      code: 'licensePlateRecognitionSystem.parkManagement.channel.add',
+                      name: 'add',
+                      component: './LicensePlateRecognitionSystem/ChannelManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/channel/:unitId?/detail/:id',
+                      code: 'licensePlateRecognitionSystem.parkManagement.channel.detail',
+                      name: 'detail',
+                      component: './LicensePlateRecognitionSystem/ChannelManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/channel/:unitId?/edit/:id',
+                      code: 'licensePlateRecognitionSystem.parkManagement.channel.edit',
+                      name: 'edit',
+                      component: './LicensePlateRecognitionSystem/ChannelManagement/Other',
+                    },
+                  ],
+                },
+                // 设备管理
+                {
+                  path: '/license-plate-recognition-system/park-management/device',
+                  code: 'licensePlateRecognitionSystem.parkManagement.device',
+                  name: 'device',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/license-plate-recognition-system/park-management/device',
+                      redirect: '/license-plate-recognition-system/park-management/device/list',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/device/:unitId?/list',
+                      code: 'licensePlateRecognitionSystem.parkManagement.device.list',
+                      name: 'list',
+                      component: './LicensePlateRecognitionSystem/DeviceManagement/List',
+                    },
+                    {
+                      path: '/license-plate-recognition-system/park-management/device/:unitId?/add',
+                      code: 'licensePlateRecognitionSystem.parkManagement.device.add',
+                      name: 'add',
+                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/device/:unitId?/detail/:id',
+                      code: 'licensePlateRecognitionSystem.parkManagement.device.detail',
+                      name: 'detail',
+                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
+                    },
+                    {
+                      path:
+                        '/license-plate-recognition-system/park-management/device/:unitId?/edit/:id',
+                      code: 'licensePlateRecognitionSystem.parkManagement.device.edit',
+                      name: 'edit',
+                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
+                    },
+                  ],
+                },
               ],
             },
           ],

@@ -13,7 +13,7 @@ const LEVELS = [
   { key: '4', value: '超高压' },
 ];
 
-export default class OperationRecordOther extends Component {
+export default class PipelineOther extends Component {
   setPageReference = page => {
     this.page = page && page.getWrappedInstance();
   };

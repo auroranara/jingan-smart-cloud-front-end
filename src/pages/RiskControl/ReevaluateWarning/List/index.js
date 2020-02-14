@@ -174,6 +174,7 @@ export default class ReevaluateWarningList extends Component {
         },
       ],
       ref: this.setPageReference,
+      showTotal: false,
       action: (
         <Button type="primary" onClick={() => this.handleViewHistory()}>历史记录</Button>
       ),

@@ -1,16 +1,3 @@
-## 说明
-
-content 页面头部内容
-error=true 接口报错时是否提示
-fields 控件栏配置对象
-action 控件栏其余按钮
-columns 表格配置对象
-transform 转换控件值以后作为接口参数
-withUnitId 是否将unitId作为参数传入getList接口
-otherOperation 其他操作按钮
-
-## 示例
-
 ```javascript
 import React, { Component } from 'react';
 import { Input, Card } from 'antd';
@@ -18,10 +5,20 @@ import ListPage from '@/templates/ListPage';
 import Ellipsis from '@/components/Ellipsis';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { BREADCRUMB_LIST, URL_PREFIX, EmptyData, STATUSES } from '..';
-import styles from '../index.less';
-
+import EmptyData from '@/jingan-components/EmptyData';
+import Company from '../../Company';
+import { connect } from 'dva';
+import styles from './index.less';
 const { Meta } = Card;
+
+export const URL_PREFIX = '/license-plate-recognition-system/vehicle-management/index';
+export const STATUSES = [{ key: '1', value: '正常' }, { key: '0', value: '停用' }];
+export const BREADCRUMB_LIST = [
+  { title: '首页', name: '首页', href: '/' },
+  { title: '人员在岗在位管理', name: '人员在岗在位管理' },
+  { title: '车牌识别系统', name: '车牌识别系统' },
+  { title: '车辆管理', name: '车辆管理' },
+];
 const MAPPER = {
   namespace: 'licensePlateRecognitionSystem',
   list: 'vehicleList',
@@ -30,13 +27,18 @@ const MAPPER = {
   reloadList: 'reloadVehicleList',
 };
 
-export default class Vehicle extends Component {
+@connect(({ user }) => ({
+  user,
+}))
+export default class VehicleList extends Component {
   state = {
     images: null,
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    return nextState !== this.state;
+    return (
+      nextProps.match.params.unitId !== this.props.match.params.unitId || nextState !== this.state
+    );
   }
 
   getBreadcrumbList = ({ isUnit }) =>
@@ -50,7 +52,7 @@ export default class Vehicle extends Component {
   getContent = ({ list: { pagination: { total } = {} } = {} }) => (
     <span>
       车辆总数：
-      {total}
+      {total || 0}
     </span>
   );
 
@@ -106,15 +108,12 @@ export default class Vehicle extends Component {
             />
           }
           title={
-            <Ellipsis className={styles.ellipsis} style={{ fontWeight: 'bold' }} lines={1} tooltip>
+            <Ellipsis className={styles.ellipsis} lines={1} tooltip>
               {licencePlate}
             </Ellipsis>
           }
           description={
-            <div
-              className={styles.cardContent}
-              style={{ paddingRight: 0, color: 'rgba(0, 0, 0, 0.65)' }}
-            >
+            <div className={styles.cardContent}>
               <div className={styles.cardRow}>
                 <div>品牌：</div>
                 <div>
@@ -178,9 +177,23 @@ export default class Vehicle extends Component {
   };
 
   render() {
+    const {
+      user: { currentUser: { unitType } = {} },
+      match: {
+        params: { unitId },
+      },
+      route,
+      location,
+      match,
+    } = this.props;
     const { images } = this.state;
+    const props = {
+      route,
+      location,
+      match,
+    };
 
-    return (
+    return unitType === 4 || unitId ? (
       <ListPage
         breadcrumbList={this.getBreadcrumbList}
         content={this.getContent}
@@ -188,10 +201,20 @@ export default class Vehicle extends Component {
         action={this.getAction}
         renderItem={this.renderItem}
         mapper={MAPPER}
-        {...this.props}
+        {...props}
       >
         <ImagePreview images={images} />
       </ListPage>
+    ) : (
+      <Company
+        name="车辆"
+        urlPrefix={URL_PREFIX}
+        breadcrumbList={BREADCRUMB_LIST.concat({
+          title: '单位车辆信息',
+          name: '单位车辆信息',
+        })}
+        {...props}
+      />
     );
   }
 }

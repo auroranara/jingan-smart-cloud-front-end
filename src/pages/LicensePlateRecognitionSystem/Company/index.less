@@ -1,0 +1,42 @@
+.content {
+  margin: 0 -12px;
+
+  span {
+    padding: 0 12px;
+  }
+}
+.card {
+  cursor: auto !important;
+}
+.cardContent {
+  position: relative;
+  margin: -0.25em 0;
+  padding-right: 4em;
+
+  .cardRow {
+    display: flex;
+    padding: 0.25em 0;
+
+    & > :first-child {
+      flex: none;
+    }
+
+    & > :last-child {
+      flex: 1;
+    }
+  }
+  .cardCountWrapper {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    .cardCount {
+      width: 4em;
+      height: 4em;
+    }
+  }
+}
+.ellipsis {
+  white-space: normal;
+}
