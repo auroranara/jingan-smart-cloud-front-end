@@ -17,8 +17,8 @@ import iconStorehouse from '../imgs/icon-storehouse.png';
 import iconChemical from '../imgs/icon-chemical.png';
 import iconDangerSource from '../imgs/icon-dangerSource.png';
 
-// const LABELS = ['监测对象', 'IOT监测', '两重点一重大'];
-const LABELS = ['监测对象', '两重点一重大'];
+const LABELS = ['监测对象', 'IOT监测', '两重点一重大'];
+// const LABELS = ['监测对象', '两重点一重大'];
 const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 
 // iot/major-hazard/index
@@ -34,7 +34,7 @@ const keyPointsList = [
 ];
 
 export default class KeyPoints extends PureComponent {
-  state = { active: 1 };
+  state = { active: 0 };
 
   handleClickTab = i => {
     this.setState({ active: i });
@@ -53,7 +53,7 @@ export default class KeyPoints extends PureComponent {
   };
 
   render() {
-    const { monitorList, dangerSourceCount } = this.props;
+    const { monitorList, dangerSourceCount, monitorEquipList, handleShowMonitorList } = this.props;
     const { active } = this.state;
     const monitorData = monitorList.filter(item => item.monitorCount).map(item => {
       const { count, monitorCount, typeName, warningCount, webUrl } = item;
@@ -66,13 +66,24 @@ export default class KeyPoints extends PureComponent {
       };
     });
 
+    const monitorEquipData = monitorEquipList.filter(item => item.monitorCount).map(item => {
+      const { count, monitorCount, typeName, warningCount, webUrl } = item;
+      return {
+        ...item,
+        icon: webUrl || iconDangerSource,
+        label: typeName,
+        value: warningCount,
+        total: count,
+      };
+    });
+
     const keyPointsData = keyPointsList.map(item => ({
       ...item,
       value: dangerSourceCount[item.key] || 0,
     }));
     // .filter(item => item.value);
 
-    const dataList = [monitorData, keyPointsData, keyPointsData][active];
+    const dataList = [monitorData, monitorEquipData, keyPointsData][active];
 
     return (
       <Section>
@@ -99,7 +110,8 @@ export default class KeyPoints extends PureComponent {
                         }}
                         onClick={() => {
                           active === 0 && this.handleClickMonitor(type);
-                          active === 1 && this.handleClickKey(index);
+                          active === 1 && handleShowMonitorList(item);
+                          active === 2 && this.handleClickKey(index);
                         }}
                       >
                         <div className={styles.countLabel}>

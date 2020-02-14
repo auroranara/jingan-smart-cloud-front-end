@@ -52,6 +52,8 @@ import {
   PoisonDrawer,
   MHDrawer,
   MonitorEquipDrawer,
+  IoTMonitorDrawer,
+  FireMonitorDrawer,
 } from './sections/Components';
 
 const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
@@ -152,6 +154,7 @@ const SocketOptions = {
     baseInfo,
     materials,
     majorHazardInfo,
+    gasMonitor,
     emergencyManagement,
   }) => ({
     unitSafety,
@@ -165,6 +168,7 @@ const SocketOptions = {
     baseInfo,
     materials,
     majorHazardInfo,
+    gasMonitor,
     emergencyManagement,
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
     riskPointLoading: loading.effects['unitSafety/fetchPoints'],
@@ -229,6 +233,9 @@ export default class Chemical extends PureComponent {
       monitorEquipDrawerVisible: false,
       monitorMarker: {},
       dangerSourceDetail: {},
+      IoTMonitorDrawerVisible: false,
+      fireMonitorDrawerVisible: false,
+      selectedEquip: {},
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -276,6 +283,10 @@ export default class Chemical extends PureComponent {
         'fetchDangerSourceList',
         // 重点监管危化品生产存储场所
         'fetchMesageByMaterialId',
+        // 统计IoT监测各个类型的数量
+        'fetchMonitorEquipCount',
+        // 消防主机列表
+        'fetchFireDeviceList',
       ],
     });
   }
@@ -316,6 +327,8 @@ export default class Chemical extends PureComponent {
     this.fetchAllSpecialEquipList({ companyId });
     // 统计监测对象各个类型的数量
     this.fetchMonitorTargetCount({ companyId });
+    // 统计IoT监测各个类型的数量
+    this.fetchMonitorEquipCount({ companyId });
     // 到期提醒数量
     this.fetchPastStatusCount({ companyId });
     // 两重点一重大的数量
@@ -1145,6 +1158,34 @@ export default class Chemical extends PureComponent {
     this.handleMHOpen();
   };
 
+  // 监测设备列表
+  handleShowMonitorList = equip => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const { type } = equip;
+    this.setState({ selectedEquip: equip });
+    if (type === '1') {
+      // 消防主机
+      this.fetchFireDeviceList({ companyId, pageSize: 0, pageNum: 1 });
+      this.setDrawerVisible('fireMonitor');
+    } else {
+      dispatch({
+        type: 'gasMonitor/getRealTimeList',
+        payload: {
+          pageNum: 1,
+          pageSize: 0,
+          companyId,
+          equipmentType: type,
+        },
+      });
+      this.setDrawerVisible('IoTMonitor');
+    }
+  };
+
   /**
    * 渲染
    */
@@ -1159,6 +1200,8 @@ export default class Chemical extends PureComponent {
       },
       chemical: {
         monitorTargetCount,
+        monitorEquipCount,
+        fireDeviceList,
         pastStatusCount,
         dangerSourceCount,
         tankList,
@@ -1188,6 +1231,7 @@ export default class Chemical extends PureComponent {
         highRiskProcess: { list: highRiskProcessList = [] },
       },
       emergencyManagement: { specialEquipment: specialEquipDict = [] },
+      gasMonitor: { realTimeList },
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -1232,6 +1276,9 @@ export default class Chemical extends PureComponent {
       monitorEquipDrawerVisible,
       monitorMarker,
       dangerSourceDetail,
+      IoTMonitorDrawerVisible,
+      fireMonitorDrawerVisible,
+      selectedEquip,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1288,6 +1335,7 @@ export default class Chemical extends PureComponent {
               <div className={styles.leftBottom}>
                 <KeyPoints
                   monitorList={monitorTargetCount}
+                  monitorEquipList={monitorEquipCount}
                   dangerSourceCount={dangerSourceCount}
                   setDrawerVisible={this.setDrawerVisible}
                   handleGasOpen={this.handleGasOpen}
@@ -1297,6 +1345,7 @@ export default class Chemical extends PureComponent {
                   handleClickDangerSource={this.handleClickDangerSource}
                   handleShowChemicalList={this.handleShowChemicalList}
                   handleShowProcessList={this.handleShowProcessList}
+                  handleShowMonitorList={this.handleShowMonitorList}
                 />
               </div>
             </Col>
@@ -1619,6 +1668,30 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('monitorEquip');
           }}
           monitorMarker={monitorMarker}
+          handleShowVideo={this.handleShowVideo}
+          handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
+        />
+
+        {/* 监测设备弹窗 */}
+        <IoTMonitorDrawer
+          visible={IoTMonitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('IoTMonitor');
+          }}
+          selectedEquip={selectedEquip}
+          list={realTimeList}
+          handleShowVideo={this.handleShowVideo}
+          handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
+        />
+
+        {/* 主机监测设备弹窗 */}
+        <FireMonitorDrawer
+          visible={fireMonitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('fireMonitor');
+          }}
+          selectedEquip={selectedEquip}
+          list={fireDeviceList}
           handleShowVideo={this.handleShowVideo}
           handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
         />

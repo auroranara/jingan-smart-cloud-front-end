@@ -61,9 +61,9 @@ export default class Map extends PureComponent {
     const { onRef } = this.props;
     onRef && onRef(this);
 
-    setTimeout(() => {
-      this.handleUpdateMap();
-    }, 8000);
+    // setTimeout(() => {
+    //   this.handleUpdateMap();
+    // }, 8000);
   }
 
   fetchMap = () => {
@@ -140,7 +140,7 @@ export default class Map extends PureComponent {
         // .map(item => {
         //   return item.pointFixInfoList[0];
         // });
-        console.log('pointsInfo', pointsInfo);
+        console.log('pointsInfo', pointsInfo.filter(item => item.pointFixInfoList[0].isShow));
         if (isUpdate) this.removeMarkersByType(iconType);
         this.renderPoints(pointsInfo, iconType);
       },
@@ -330,7 +330,7 @@ export default class Map extends PureComponent {
     });
   };
 
-  handleMarkerStatusChange = (equipmentId, status)=>{
+  handleMarkerStatusChange = (equipmentId, status) => {
     map.groupIDs.map(gId => {
       const group = map.getFMGroup(gId);
       //遍历图层
@@ -347,7 +347,7 @@ export default class Map extends PureComponent {
         }
       });
     });
-  }
+  };
 
   // 监测设备状态变化
   handleUpdateMap = (equipmentId, status) => {
@@ -359,12 +359,11 @@ export default class Map extends PureComponent {
       payload: { companyId, pageNum: 1, pageSize: 0 },
       callback: res => {
         const pointsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
-        console.log('pointsInfo', pointsInfo);
         this.removeMarkersByType(2);
         this.renderPoints(pointsInfo, 2);
 
         setTimeout(() => {
-          this.handleMarkerStatusChange(equipmentId, status)
+          this.handleMarkerStatusChange(equipmentId, status);
         }, 50);
       },
     });
@@ -389,8 +388,6 @@ export default class Map extends PureComponent {
   };
 
   addMarkers = (gId, markerProps, layer) => {
-    console.log(11111111);
-
     let markerLayer = layer;
     const groupId = gId || 1;
     if (!layer) {
