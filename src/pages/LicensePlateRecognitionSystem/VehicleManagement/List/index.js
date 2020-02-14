@@ -40,6 +40,11 @@ export default class VehicleList extends Component {
     );
   }
 
+  transform = ({ unitId, ...props }) => ({
+    // unitId, // 这个接接口时重点关注一下
+    ...props,
+  });
+
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
@@ -200,6 +205,7 @@ export default class VehicleList extends Component {
         action={this.getAction}
         renderItem={this.renderItem}
         mapper={MAPPER}
+        withUnitId
         {...props}
       >
         <ImagePreview images={images} />

@@ -26,6 +26,7 @@ import {
   addDevice,
   deleteDevice,
   editDevice,
+  setMainCamera,
 } from '@/services/licensePlateRecognitionSystem';
 
 export default {
@@ -527,6 +528,15 @@ export default {
     *editDevice({ payload, callback }, { call, put }) {
       // const response = yield call(editDevice, payload);
       console.log('edit');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 设置主相机
+    *setMainCamera({ payload, callback }, { call, put }) {
+      // const response = yield call(setMainCamera, payload);
+      console.log('setMainCamera');
       console.log(payload);
       const response = { code: 200 };
       const { code, msg } = response || {};

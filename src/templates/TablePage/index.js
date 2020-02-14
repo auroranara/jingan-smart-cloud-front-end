@@ -32,7 +32,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
       breadcrumbList: b,
     }
   ) => {
-    const { namespace: n, list: l, getList: gl, remove: r, exportList: el } = mapper || {};
+    const { namespace: n, list: l, getList: gl, remove: r, exportList: el, loading } = mapper || {};
     let breadcrumbList;
     const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     const {
@@ -48,6 +48,11 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
         },
       },
     } = state;
+    const loading4 =
+      loading &&
+      (Array.isArray(loading) ? loading : [loading]).reduce((result, item) => {
+        return result || state.loading.effects[`${namespace}/${item}`];
+      }, false);
     const isUnit = +unitType === 4;
     const unitId = isUnit ? unitId2 : unitId1;
     if (b) {
@@ -77,7 +82,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
     return {
       unitId,
       list,
-      loading: loading1 || loading2 || loading3,
+      loading: loading1 || loading2 || loading3 || loading4,
       breadcrumbList,
       hasAddAuthority: permissionCodes.includes(code.replace(name, 'add')),
       hasEditAuthority: permissionCodes.includes(code.replace(name, 'edit')),

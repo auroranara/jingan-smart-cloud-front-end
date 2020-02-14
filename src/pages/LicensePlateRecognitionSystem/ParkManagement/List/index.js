@@ -29,6 +29,11 @@ export default class ParkList extends Component {
     return nextProps.match.params.unitId !== this.props.match.params.unitId;
   }
 
+  transform = ({ unitId, ...props }) => ({
+    // unitId, // 这个接接口时重点关注一下
+    ...props,
+  });
+
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
@@ -74,7 +79,7 @@ export default class ParkList extends Component {
 
   getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车场' });
 
-  getColumns = ({ renderDetailButton, renderEditButton, renderDeleteButton }) => [
+  getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
     {
       title: '车场名称',
       dataIndex: 'name',
@@ -94,7 +99,7 @@ export default class ParkList extends Component {
       title: '车场状态',
       dataIndex: 'status',
       align: 'center',
-      render: value => <SelectOrSpan list={STATUSES} value={value} type="span" />,
+      render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
     },
     {
       title: '区域（个）',
@@ -118,6 +123,8 @@ export default class ParkList extends Component {
       title: '操作',
       dataIndex: '操作',
       align: 'center',
+      width: 148,
+      fixed: list && list.length ? 'right' : undefined,
       render: (_, data) => (
         <div className={styles.buttonWrapper}>
           {renderDetailButton(data)}
@@ -151,8 +158,9 @@ export default class ParkList extends Component {
         fields={this.getFields}
         action={this.getAction}
         columns={this.getColumns}
-        showTotal={false}
         mapper={MAPPER}
+        showTotal={false}
+        withUnitId
         {...props}
       />
     ) : (
