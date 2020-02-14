@@ -1,68 +1,59 @@
-import React, { Component } from 'react';
-import { Modal, message, Spin } from 'antd';
-import CustomForm from '@/jingan-components/CustomForm';
+import React, { PureComponent } from 'react';
+import {
+  Modal,
+  message,
+  Spin,
+  Form,
+} from 'antd';
+// import CustomForm from '@/jingan-components/CustomForm';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
-import SelectOrSpan from '@/jingan-components/SelectOrSpan';
+// import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
+import PersonSelect from '@/pages/RiskControl/ReevaluateWarning/components/PersonSelect';
 import { connect } from 'dva';
 import styles from './index.less';
 
-const API = 'reevaluateWarning/getReevaluatorList';
-const API2 = 'reevaluateWarning/reevaluate';
+const FormItem = Form.Item;
+const formItemLayout = {
+  labelCol: { span: 5 },
+  wrapperCol: { span: 19 },
+};
 
-@connect(
-  ({ reevaluateWarning: { reevaluatorList }, loading }) => ({
-    reevaluatorList,
-    loading: loading.effects[API2],
-  }),
-  dispatch => ({
-    getReevaluatorList(payload, callback) {
-      dispatch({
-        type: API,
-        payload,
-        callback: (success, data) => {
-          if (!success) {
-            message.error('获取复评人员失败，请稍后重试！');
-          }
-          callback && callback(success, data);
-        },
-      });
-    },
-    reevaluate(payload, callback) {
-      dispatch({
-        type: API2,
-        payload,
-        callback: (success, data) => {
-          if (success) {
-            message.success('提交成功！');
-          } else {
-            message.error('提交失败，请稍后重试！');
-          }
-          callback && callback(success, data);
-        },
-      });
-    },
-  })
-)
-export default class ReevaluateModal extends Component {
-  componentDidMount() {
-    const { getReevaluatorList } = this.props;
-    getReevaluatorList();
+@connect(({ reevaluateWarning, loading }) => ({
+  reevaluateWarning,
+  loading: loading.effects['reevaluateWarning/reevaluate'],
+}))
+@Form.create()
+export default class ReevaluateModal extends PureComponent {
+
+  // 获取复评人员列表
+  fetchReevaluatorList = (pageNum = 1, pageSize = 10) => {
+    const { dispatch, data } = this.props;
+    dispatch({
+      type: 'reevaluateWarning/getReevaluatorList',
+      payload: {
+        pageNum,
+        pageSize,
+        unitId: data ? data.companyId : null,
+      },
+    });
   }
 
-  componentDidUpdate({ visible: prevVisible }) {
-    const { visible } = this.props;
-    if (!prevVisible && visible) {
-      this.form && this.form.resetFields();
-    }
-  }
-
-  shouldComonentUpdate(nextProps) {
-    return (
-      nextProps.reevaluatorList !== this.props.reevaluatorList ||
-      nextProps.loading !== this.props.loading ||
-      nextProps.visible !== this.props.visible
-    );
+  // 复评
+  reevaluate = (payload, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reevaluateWarning/reevaluate',
+      payload,
+      callback: (success, data) => {
+        if (success) {
+          message.success('提交成功！');
+        } else {
+          message.error('提交失败，请稍后重试！');
+        }
+        callback && callback(success, data);
+      },
+    });
   }
 
   setFormReference = form => {
@@ -70,17 +61,17 @@ export default class ReevaluateModal extends Component {
   };
 
   handleOk = () => {
-    this.form.validateFieldsAndScroll((error, values) => {
+    this.props.form.validateFieldsAndScroll((error, values) => {
       if (!error) {
         const {
           data: { id },
-          reevaluate,
         } = this.props;
-        console.log(values);
-        reevaluate(
+        const { reviewPerson, ...resValues } = values;
+        this.reevaluate(
           {
             id,
-            ...values,
+            reviewPerson: reviewPerson.join(','),
+            ...resValues,
           },
           success => {
             if (success) {
@@ -97,69 +88,84 @@ export default class ReevaluateModal extends Component {
     this.forceUpdate();
   };
 
+  // 选择复评人
+  handleSelectPerson = (keys, rows) => {
+    this.props.form.setFieldsValue({ reviewPerson: keys })
+  }
+
   render() {
-    const { visible, onClose, reevaluatorList, loading = false } = this.props;
-    const { file } = (this.form && this.form.getFieldsValue()) || {};
+    const {
+      visible,
+      onClose,
+      loading = false,
+      reevaluateWarning: { reviewer },
+      form: { getFieldDecorator, getFieldsValue },
+    } = this.props;
+    const { file } = (getFieldsValue()) || {};
     const uploading = (file || []).some(({ status }) => status === 'uploading');
 
-    const fields = [
-      {
-        id: 'a',
-        label: '复评人员',
-        span: 24,
-        render: () => (
-          <SelectOrSpan list={reevaluatorList} placeholder="请选择复评人员" mode="tags" />
-        ),
-        options: {
-          rules: [
-            {
-              required: true,
-              message: `复评人员不能为空`,
-            },
-          ],
-        },
-      },
-      {
-        id: 'b',
-        label: '复评周期',
-        span: 24,
-        render: () => <InputOrSpan placeholder="请选择复评周期" addonAfter="月" />,
-        options: {
-          getValueFromEvent: e => `${+e.target.value.replace(/^\D*(\d*).*$/, '$1') || ''}`,
-          rules: [
-            {
-              required: true,
-              message: `复评周期不能为空`,
-            },
-          ],
-        },
-      },
-      {
-        id: 'file',
-        label: (
-          <span>
-            附<span className={styles.hide}>隐藏</span>件
-          </span>
-        ),
-        span: 24,
-        render: () => <CustomUpload onChange={this.handleUploadChange} />,
-        options: {
-          rules: [
-            {
-              required: true,
-              type: 'array',
-              min: 1,
-              message: `附件不能为空`,
-            },
-          ],
-        },
-      },
-    ];
+    // const fields = [
+    //   {
+    //     id: 'reviewPerson',
+    //     label: '复评人员',
+    //     span: 24,
+    //     render: () => (
+    //       <PersonSelect
+    //         data={reviewer}
+    //         onOk={this.handleSelectPerson}
+    //         fetch={this.fetchReevaluatorList}
+    //       />
+    //     ),
+    //     options: {
+    //       rules: [
+    //         {
+    //           required: true,
+    //           message: `复评人员不能为空`,
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     id: 'reviewCycle',
+    //     label: '复评周期',
+    //     span: 24,
+    //     render: () => <InputOrSpan placeholder="请选择复评周期" addonAfter="月" />,
+    //     options: {
+    //       getValueFromEvent: e => `${+e.target.value.replace(/^\D*(\d*).*$/, '$1') || ''}`,
+    //       rules: [
+    //         {
+    //           required: true,
+    //           message: `复评周期不能为空`,
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     id: 'otherFileList',
+    //     label: (
+    //       <span>
+    //         附<span className={styles.hide}>隐藏</span>件
+    //       </span>
+    //     ),
+    //     span: 24,
+    //     render: () => <CustomUpload onChange={this.handleUploadChange} />,
+    //     options: {
+    //       rules: [
+    //         {
+    //           required: true,
+    //           type: 'array',
+    //           min: 1,
+    //           message: `附件不能为空`,
+    //         },
+    //       ],
+    //     },
+    //   },
+    // ];
 
     return (
       <Modal
+        width={600}
         title="复评信息"
-        zIndex={1009}
         visible={visible}
         onCancel={onClose}
         onOk={this.handleOk}
@@ -167,12 +173,61 @@ export default class ReevaluateModal extends Component {
         confirmLoading={loading || uploading}
       >
         <Spin spinning={loading}>
-          <CustomForm
+          {/* <CustomForm
             fields={fields}
             searchable={false}
             resetable={false}
-            ref={this.setFormReference}
-          />
+            wrappedComponentRef={this.setFormReference}
+          /> */}
+          <Form>
+            <FormItem {...formItemLayout} label="复评人员">
+              {getFieldDecorator('reviewPerson', {
+                rules: [
+                  {
+                    required: true,
+                    message: `复评人员不能为空`,
+                  },
+                ],
+              })(
+                <PersonSelect
+                  data={reviewer}
+                  onOk={this.handleSelectPerson}
+                  fetch={this.fetchReevaluatorList}
+                />
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="复评周期">
+              {getFieldDecorator('reviewCycle', {
+                getValueFromEvent: e => `${+e.target.value.replace(/^\D*(\d*).*$/, '$1') || ''}`,
+                rules: [
+                  {
+                    required: true,
+                    message: `复评周期不能为空`,
+                  },
+                ],
+              })(
+                <InputOrSpan placeholder="请选择复评周期" addonAfter="月" />
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label={(
+              <span>
+                附<span className={styles.hide}>隐藏</span>件
+            </span>
+            )}>
+              {getFieldDecorator('otherFileList', {
+                rules: [
+                  {
+                    required: true,
+                    type: 'array',
+                    min: 1,
+                    message: `附件不能为空`,
+                  },
+                ],
+              })(
+                <CustomUpload onChange={this.handleUploadChange} />
+              )}
+            </FormItem>
+          </Form>
         </Spin>
       </Modal>
     );
