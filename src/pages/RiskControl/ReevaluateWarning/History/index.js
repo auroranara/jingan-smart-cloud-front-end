@@ -133,12 +133,12 @@ export default class ReevaluateWarningHistory extends Component {
 
   reload = () => {
     const {
-      location: { query: { id } },
+      location: { query: { zoneId } },
       history: { pagination: { pageNum = 1, pageSize = getPageSize() } = {} } = {},
       getHistory,
     } = this.props;
     getHistory({
-      zoneId: id,
+      zoneId,
       pageNum,
       pageSize,
       ...this.prevValues,
@@ -150,13 +150,13 @@ export default class ReevaluateWarningHistory extends Component {
   // 查询按钮点击事件
   handleSearchButtonClick = values => {
     const {
-      location: { query: { id } },
+      location: { query: { zoneId } },
       history: { pagination: { pageSize = getPageSize() } = {} } = {},
       getHistory,
     } = this.props;
     this.prevValues = values;
     getHistory({
-      zoneId: id,
+      zoneId,
       pageNum: 1,
       pageSize,
       ...values,
@@ -171,12 +171,12 @@ export default class ReevaluateWarningHistory extends Component {
   // 表格的change事件
   handleTableChange = ({ current, pageSize }) => {
     const {
-      location: { query: { id } },
+      location: { query: { zoneId } },
       history: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
       getHistory,
     } = this.props;
     getHistory({
-      zoneId: id,
+      zoneId,
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
       ...this.prevValues,

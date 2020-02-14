@@ -163,7 +163,7 @@ export default class ReevaluateWarningList extends Component {
           onClick: detail => {
             router.push({
               pathname: '/risk-control/reevaluate-warning/history',
-              query: { id: detail.id },
+              query: { zoneId: detail.zoneId },
             })
           },
         },
