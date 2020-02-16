@@ -8,10 +8,10 @@ import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, COLUMNS, getSearchFields } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 
-@connect(({ user, changeWarning, loading }) => ({
+@connect(({ user, changeWarningNew, loading }) => ({
   user,
-  changeWarning,
-  loading: loading.models.changeWarning,
+  changeWarning: changeWarningNew,
+  loading: loading.models.changeWarningNew,
 }))
 export default class TableList extends PureComponent {
   state = { current: 1 };
@@ -23,6 +23,7 @@ export default class TableList extends PureComponent {
   }
 
   getList = pageNum => {
+    console.log('get list');
     const { dispatch } = this.props;
     if (!pageNum) { // pageNum不存在，则为初始化
       pageNum = 1;
@@ -38,7 +39,7 @@ export default class TableList extends PureComponent {
       [vals.startDate, vals.endDate] = range.map(m => m.format('YYYY-MM-DD HH:mm:ss'));
 
     dispatch({
-      type: 'changeWarning/fetchWarningList',
+      type: 'changeWarningNew/fetchWarningNewList',
       payload: { pageNum, pageSize: PAGE_SIZE, ...vals },
     });
   };
