@@ -1,4 +1,5 @@
 import {
+  evaluate,
   getWarningNewList,
 } from '../services/changeWarning';
 import { getList } from '@/utils/service';
@@ -13,7 +14,6 @@ export default {
 
   effects: {
     *fetchWarningNewList({ payload, callback }, { call, put }) {
-      console.log('new model');
       const response = yield call(getWarningNewList, payload);
       const { code, data, msg } = response || {};
       if (code === 200) {
@@ -21,6 +21,11 @@ export default {
         yield put({ type: 'saveList', payload: getList(data) });
         callback && callback(code, msg);
       }
+    },
+    *postEvaluate({ payload, callback }, { call, put }) {
+      const response = yield call(evaluate, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
     },
   },
 

@@ -17,7 +17,7 @@ const PROJECT_ENV = process.env.PROJECT_ENV || 'default';
 const projectShortName = generateName(PROJECT_ENV);
 
 const hosts = {
-  lm: '192.168.10.2', // 吕旻
+  lm: '192.168.10.2:8080', // 吕旻
   lm1: '192.168.14.241:8080',
   sj: '192.168.10.3', // 沈杰
   gjm: '192.168.10.55', // 顾家铭
@@ -45,12 +45,12 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://25.18.33.96:8080`,
+      target: `http://${hosts.lm}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/gsafe': {
-      target: `http://25.18.33.96:8080`,
+      target: `http://${hosts.lm}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

@@ -1,13 +1,10 @@
-import moment from 'moment';
-import { Input, Select, DatePicker } from 'antd';
+import { Select } from 'antd';
 
 import CompanySelect from '@/jingan-components/CompanySelect';
 
-const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 export const PAGE_SIZE = 20;
-const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const CHANGE_TYPE_LIST = [
   { key: 'add', value: '添加' },
   { key: 'update', value: '修改' },
@@ -30,35 +27,22 @@ export const DATA_TYPE_LIST = [
   { key: 'point', value: '风险点' },
 ];
 
-function getValueByKey(k, list) {
-  const target = list.find(({ key }) => key === k);
-  if (target)
-    return target.value;
-}
-
-const DATA_TYPE_MAP = {
-  'dept': '/base-info/company/department/list',
-  'safeEng': '/base-info/registered-engineer-management/view',
-  'secm': '/operation-safety/special-operation-permit/view',
-  'sewm': '/operation-safety/special-equipment-operators/view',
-  'gwgy': '/major-hazard-info/high-risk-process/detail',
-  'se': '/facility-management/special-equipment/detail',
-  'sczz': '/major-hazard-info/high-risk-process/detail',
-  'tankArea': '/major-hazard-info/storage-area-management/detail',
-  'tank': '/major-hazard-info/storage-management/view',
-  'wareHouse': '/major-hazard-info/storehouse/detail',
-  'wareHouseArea': '/major-hazard-info/reservoir-region-management/view',
-  'gasHolder': '/major-hazard-info/gasometer/detail',
-  'area': '',
-  'point': '/risk-control/risk-point-manage/risk-point-edit',
-};
-
-function getRouter(dataId, type, companyId) {
-  let id = dataId;
-  if (type === 'dept')
-    id = companyId;
-  return `${DATA_TYPE_MAP[type]}/${id}`;
-}
+// const DATA_TYPE_MAP = {
+//   'dept': '/base-info/company/department/list',
+//   'safeEng': '/base-info/registered-engineer-management/view',
+//   'secm': '/operation-safety/special-operation-permit/view',
+//   'sewm': '/operation-safety/special-equipment-operators/view',
+//   'gwgy': '/major-hazard-info/high-risk-process/detail',
+//   'se': '/facility-management/special-equipment/detail',
+//   'sczz': '/major-hazard-info/high-risk-process/detail',
+//   'tankArea': '/major-hazard-info/storage-area-management/detail',
+//   'tank': '/major-hazard-info/storage-management/view',
+//   'wareHouse': '/major-hazard-info/storehouse/detail',
+//   'wareHouseArea': '/major-hazard-info/reservoir-region-management/view',
+//   'gasHolder': '/major-hazard-info/gasometer/detail',
+//   'area': '',
+//   'point': '/risk-control/risk-point-manage/risk-point-edit',
+// };
 
 export const BREADCRUMBLIST = [
   { title: '首页', name: '首页', href: '/' },
@@ -66,7 +50,12 @@ export const BREADCRUMBLIST = [
   { title: '变更预警管理', name: '变更预警管理' },
 ];
 
-export function getSearchFields(getRangeFromEvent, isComUser) {
+export const STATUS = [
+  { key: '0', value: '待评价' },
+  { key: '1', value: '已评价' },
+];
+
+export function getSearchFields(getRangeFromEvent, isComUser, sections=[]) {
   const span = isComUser ? 12 : 8;
 
   const fields = [
@@ -74,6 +63,16 @@ export function getSearchFields(getRangeFromEvent, isComUser) {
       id: 'companyId',
       label: '单位名称',
       render: () => <CompanySelect placeholder="请输入单位名称" allowClear />,
+    },
+    {
+      id: 'section',
+      label: '所属风险分区',
+      span,
+      render: () => (
+        <Select placeholder="请选择风险分区" allowClear>
+          {sections.map(({ key, value }) => <Option key={key} value={key}>{value}</Option>)}
+        </Select>
+      ),
     },
     {
       id: 'dataType',
@@ -86,20 +85,14 @@ export function getSearchFields(getRangeFromEvent, isComUser) {
       ),
     },
     {
-      id: 'userName',
-      label: '操作人',
+      id: 'status',
+      label: '评价状态',
       span,
-      render: () => <Input placeholder="请输入操作人" allowClear />,
-      transform: v => v.trim(),
-    },
-    {
-      id: 'range',
-      label: '操作时间',
-      span,
-      render: () => <RangePicker showTime={{ format: 'HH:mm:ss' }} allowClear />,
-      options: {
-        getValueFromEvent: getRangeFromEvent,
-      },
+      render: () => (
+        <Select placeholder="请选择评价状态" allowClear>
+          {STATUS.map(({ key, value }) => <Option key={key} value={key}>{value}</Option>)}
+        </Select>
+      ),
     },
   ];
 
@@ -109,60 +102,59 @@ export function getSearchFields(getRangeFromEvent, isComUser) {
   return fields;
 }
 
-export const COLUMNS = [
-  {
-    title: '单位名称',
-    dataIndex: 'companyName',
-    key: 'companyName',
-  },
-  {
-    title: '变更对象',
-    dataIndex: 'dataType',
-    key: 'dataType',
-    width: 200,
-    align: 'center',
-    render: d => getValueByKey(d, DATA_TYPE_LIST),
-  },
-  {
-    title: '变更操作',
-    dataIndex: 'changeType',
-    key: 'changeType',
-    width: 100,
-    align: 'center',
-    render: c => getValueByKey(c, CHANGE_TYPE_LIST),
-  },
-  {
-    title: '变更内容',
-    dataIndex: 'changeContent',
-    key: 'changeContent',
-    render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
-  },
-  {
-    title: '操作时间',
-    dataIndex: 'changeDate',
-    key: 'changeDate',
-    width: 200,
-    align: 'center',
-    render: t => moment(t).format(DATE_FORMAT),
-  },
-  {
-    title: '操作人',
-    dataIndex: 'userName',
-    key: 'userName',
-    width: 120,
-    align: 'center',
-  },
-  {
-    title: '操作',
-    dataIndex: 'dataId',
-    key: 'dataId',
-    width: 80,
-    align: 'center',
-    fixed: 'right',
-    render(dataId, { changeType, dataType, companyId }) {
-      return changeType === 'delete' || dataType === 'area'
-        ? <span style={{ cursor: 'not-allowed' }}>查看</span>
-        : <a href={`${window.publicPath}#${getRouter(dataId, dataType, companyId)}`} target="_blank" rel="noopener noreferrer">查看</a>;
+export function getColumns(genConfirmEvaluate) {
+  return [
+    {
+      title: '单位名称',
+      dataIndex: 'companyName',
+      key: 'companyName',
     },
-  },
-];
+    {
+      title: '变更对象',
+      dataIndex: 'dataTypeName',
+      key: 'dataTypeName',
+      width: 200,
+      align: 'center',
+    },
+    {
+      title: '变更操作',
+      dataIndex: 'changeTypeName',
+      key: 'changeTypeName',
+      width: 100,
+      align: 'center',
+    },
+    {
+      title: '变更内容',
+      dataIndex: 'dataEntity',
+      key: 'dataEntity',
+      render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
+    },
+    {
+      title: '所属风险分区',
+      dataIndex: 'zoneName',
+      key: 'zoneName',
+      width: 200,
+      align: 'center',
+    },
+    {
+      title: '评价状态',
+      dataIndex: 'statusName',
+      key: 'statusName',
+      width: 120,
+      align: 'center',
+    },
+    {
+      title: '操作',
+      dataIndex: 'id',
+      key: 'id',
+      width: 120,
+      align: 'center',
+      fixed: 'right',
+      render(id, { status }) {
+        return status === '0'
+          ? <span onClick={genConfirmEvaluate(id)} style={{ color: '#1890ff', cursor: 'pointer' }}>标为已评价</span>
+          : null;
+      },
+    },
+  ];
+}

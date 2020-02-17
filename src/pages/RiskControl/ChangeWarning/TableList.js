@@ -1,12 +1,14 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Empty, Table } from 'antd';
+import { Card, Empty, Modal, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, PAGE_SIZE, COLUMNS, getSearchFields } from './utils';
+import { BREADCRUMBLIST, PAGE_SIZE, getColumns, getSearchFields } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+
+const { confirm } = Modal;
 
 @connect(({ user, changeWarningNew, loading }) => ({
   user,
@@ -23,7 +25,6 @@ export default class TableList extends PureComponent {
   }
 
   getList = pageNum => {
-    console.log('get list');
     const { dispatch } = this.props;
     if (!pageNum) { // pageNum不存在，则为初始化
       pageNum = 1;
@@ -60,11 +61,31 @@ export default class TableList extends PureComponent {
     this.getList(current);
   };
 
-  getRangeFromEvent = range => {
-    const empty = !(range && range.length);
-    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
-    this.empty = empty;
-    return result;
+  genConfirmEvaluate = id => e => {
+    confirm({
+      title: '审批',
+      content: '请保证已对变更影响的区域进行风险评价，且制定了相应的风险管控措施！确定标为已评价？',
+      okText: '确定',
+      cancelText: '取消',
+      onOk: () => {
+        this.handleEvaluate(id);
+      },
+    });
+  };
+
+  handleEvaluate = id => {
+    const { dispatch } = this.props;
+    const { current } = this.state;
+    dispatch({
+      type: 'changeWarningNew/postEvaluate',
+      payload: { id, status: '1' },
+      callback: (code, msg) => {
+        if (code === 200)
+          this.getList(current);
+        else
+          message.error(msg);
+      },
+    })
   };
 
   render() {
@@ -76,16 +97,24 @@ export default class TableList extends PureComponent {
     const { current } = this.state;
     const isComUser = isCompanyUser(unitType);
     const fields = getSearchFields(this.getRangeFromEvent, isComUser);
-    const columns = isComUser ? COLUMNS.filter(({ dataIndex }) => dataIndex !== 'companyName') : COLUMNS;
+    const cols = getColumns(this.genConfirmEvaluate);
+    const columns = isComUser ? cols.filter(({ dataIndex }) => dataIndex !== 'companyName') : cols;
 
     return (
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length -1].title}
         breadcrumbList={BREADCRUMBLIST}
         content={
-          <p className={styles1.total}>
-            共计：{total}
-          </p>
+          <Fragment>
+            <p className={styles1.total}>
+              共计：{total}
+            </p>
+            <p style={{ margin: 0 }}>
+              请对变更所属的风险区域重新进行风险评价，评价完成后可对变更进行审批（
+              <a href={`${window.publicPath}#/risk-control/change-management/list`} target="_blank" rel="noopener noreferrer">变更管理</a>
+              ）
+            </p>
+          </Fragment>
         }
       >
         <Card style={{ marginBottom: 15 }}>
