@@ -2,22 +2,29 @@ import React, { Component } from 'react';
 import { Select } from 'antd';
 
 const { Option } = Select;
+const FIELDNAMES = {
+  key: 'key',
+  value: 'value',
+};
 
 // span和select互相转换
 export default class SelectOrSpan extends Component {
   render() {
-    const { type, value, list, selectRef, ...restProps } = this.props;
+    const { className, style, type, value, list, selectRef, fieldNames, ...restProps } = this.props;
+    const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
 
     return type !== 'span' ? (
-      <Select {...restProps} value={value} ref={selectRef}>
+      <Select {...restProps} className={className} style={style} value={value} ref={selectRef}>
         {(list || []).map(item => (
-          <Option key={item.key} data={item}>
-            {item.value}
+          <Option key={item[k]} data={item}>
+            {item[v]}
           </Option>
         ))}
       </Select>
     ) : (
-      <span {...restProps}>{((list || []).filter(({ key }) => key === value)[0] || {}).value}</span>
+      <span className={className} style={style}>
+        {((list || []).find(item => item[k] === value) || {})[v]}
+      </span>
     );
   }
 }

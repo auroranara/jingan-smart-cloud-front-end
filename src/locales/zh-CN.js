@@ -635,6 +635,8 @@ export default {
   'menu.licensePlateRecognitionSystem.parkManagement.device.detail': '设备详情',
   'menu.licensePlateRecognitionSystem.parkManagement.device.add': '新增设备',
   'menu.licensePlateRecognitionSystem.parkManagement.device.edit': '编辑设备',
+  'menu.licensePlateRecognitionSystem.config': '参数配置',
+  'menu.licensePlateRecognitionSystem.config.displayAndVoice': '显示与语言配置',
   'app.home.introduce': '介绍',
   'app.analysis.test': '工专路 {no} 号店',
   'app.analysis.introduce': '指标说明',

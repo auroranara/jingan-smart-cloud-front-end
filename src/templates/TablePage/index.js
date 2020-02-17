@@ -300,25 +300,31 @@ export default class TablePage extends Component {
     });
   };
 
-  renderAddButton = () => {
+  renderAddButton = ({ name = '新增', onClick } = {}) => {
     const { hasAddAuthority, goToAdd } = this.props;
     return (
-      <Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>
-        新增
+      <Button
+        type="primary"
+        onClick={onClick ? e => onClick(goToAdd, e) : goToAdd}
+        disabled={!hasAddAuthority}
+      >
+        {typeof name === 'function' ? name() : name}
       </Button>
     );
   };
 
-  renderExportButton = () => {
+  renderExportButton = ({ name = '导出', onClick } = {}) => {
     const { hasExportAuthority } = this.props;
     const { selectedRowKeys } = this.state;
     return (
       <Button
         type="primary"
-        onClick={this.handleExportButtonClick}
+        onClick={
+          onClick ? e => onClick(this.handleExportButtonClick, e) : this.handleExportButtonClick
+        }
         disabled={!hasExportAuthority || !selectedRowKeys || !selectedRowKeys.length}
       >
-        导出
+        {typeof name === 'function' ? name() : name}
       </Button>
     );
   };

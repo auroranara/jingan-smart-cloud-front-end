@@ -4481,6 +4481,25 @@ module.exports = env => {
                 },
               ],
             },
+            // 参数配置
+            {
+              path: '/license-plate-recognition-system/config',
+              code: 'licensePlateRecognitionSystem.config',
+              name: 'config',
+              routes: [
+                {
+                  path: '/license-plate-recognition-system/config',
+                  redirect: '/license-plate-recognition-system/config/display-and-voice',
+                },
+                {
+                  path:
+                    '/license-plate-recognition-system/config/:unitId?/display-and-voice',
+                  code: 'licensePlateRecognitionSystem.config.displayAndVoice',
+                  name: 'displayAndVoice',
+                  component: './LicensePlateRecognitionSystem/Config/DisplayAndVoice',
+                },
+              ],
+            },
           ],
         },
       ],

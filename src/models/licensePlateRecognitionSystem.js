@@ -27,6 +27,8 @@ import {
   deleteDevice,
   editDevice,
   setMainCamera,
+  getDisplayAndVoiceConfig,
+  setDisplayAndVoiceConfig,
 } from '@/services/licensePlateRecognitionSystem';
 
 export default {
@@ -46,6 +48,7 @@ export default {
     channelDetail: {},
     deviceList: {},
     deviceDetail: {},
+    displayAndVoiceConfig: {},
   },
 
   effects: {
@@ -537,6 +540,40 @@ export default {
     *setMainCamera({ payload, callback }, { call, put }) {
       // const response = yield call(setMainCamera, payload);
       console.log('setMainCamera');
+      console.log(payload);
+      const response = { code: 200 };
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 获取显示与声音配置
+    *getDisplayAndVoiceConfig({ payload, callback }, { call, put }) {
+      // const response = yield call(getDisplayAndVoiceConfig, payload);
+      console.log('getDisplayAndVoiceConfig');
+      console.log(payload);
+      const response = {
+        code: 200,
+        data: {
+          id: 1,
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const displayAndVoiceConfig = data;
+        yield put({
+          type: 'save',
+          payload: {
+            displayAndVoiceConfig,
+          },
+        });
+        callback && callback(true, displayAndVoiceConfig);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 应用显示与声音配置
+    *setDisplayAndVoiceConfig({ payload, callback }, { call, put }) {
+      // const response = yield call(setDisplayAndVoiceConfig, payload);
+      console.log('setDisplayAndVoiceConfig');
       console.log(payload);
       const response = { code: 200 };
       const { code, msg } = response || {};

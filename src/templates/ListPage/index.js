@@ -346,7 +346,7 @@ export default class ListPage extends Component {
       <Link
         to={`${detailUrl}/${id}`}
         disabled={!hasDetailAuthority}
-        target="_blank"
+        // target="_blank"
         onClick={hasDetailAuthority ? undefined : preventDefault}
       >
         查看
@@ -361,7 +361,7 @@ export default class ListPage extends Component {
       <Link
         to={`${editUrl}/${id}`}
         disabled={!hasEditAuthority}
-        target="_blank"
+        // target="_blank"
         onClick={hasEditAuthority ? undefined : preventDefault}
       >
         编辑
@@ -406,7 +406,7 @@ export default class ListPage extends Component {
                 <Link
                   to={onClick ? '/' : `${code}Url/${id}`}
                   disabled={!enabled}
-                  target="_blank"
+                  // target="_blank"
                   onClick={enabled ? onClick || undefined : preventDefault}
                 >
                   {typeof name === 'function' ? name(id) : name}

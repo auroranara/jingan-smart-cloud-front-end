@@ -204,7 +204,10 @@ export default class CustomForm extends PureComponent {
     } = this.props;
 
     return (
-      <Form className={classNames(styles.form, className)} layout={layout}>
+      <Form
+        className={classNames(styles.form, layout === 'vertical' && styles.verticalForm, className)}
+        layout={layout}
+      >
         {mode === 'multiple' ? (
           <Fragment>
             {fields.map(({ key, title, fields: list }) => (

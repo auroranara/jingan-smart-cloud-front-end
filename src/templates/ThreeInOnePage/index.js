@@ -368,7 +368,6 @@ export default class ThreeInOnePage extends Component {
               <SwitchOrSpan
                 type={isNotDetail || 'span'}
                 {...props}
-                className={classNames(styles.switch, props && props.className)}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
@@ -463,7 +462,6 @@ export default class ThreeInOnePage extends Component {
       >
         <Spin spinning={loading}>
           <CustomForm
-            className={isNotDetail && layout === 'vertical' ? styles.form : undefined}
             mode="multiple"
             layout={isNotDetail ? layout : undefined}
             fields={Fields}

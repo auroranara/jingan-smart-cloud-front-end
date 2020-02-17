@@ -83,7 +83,7 @@ export default class ChannelOther extends Component {
       id: 'status',
       label: '通道状态',
       required: true,
-      component: 'Select',
+      component: 'Switch',
       props: {
         list: STATUSES,
       },
