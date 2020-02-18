@@ -177,6 +177,8 @@ export default {
   'menu.riskControl.reevaluateWarning.history': '复评预警管理历史记录',
   'menu.riskControl.changeWarning': '变更预警管理',
   'menu.riskControl.changeWarning.list': '变更预警管理',
+  'menu.riskControl.changeManagement': '变更管理',
+  'menu.riskControl.changeManagement.list': '变更管理',
   'menu.controlMeasuresFollowUp': '管控措施跟进信息管理',
   'menu.controlMeasuresFollowUp.companyReport': '企业风险点自查报表',
   'menu.controlMeasuresFollowUp.companyReport.list': '企业风险点自查报表',

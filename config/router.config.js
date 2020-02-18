@@ -1365,6 +1365,25 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'changeManagement', // 变更管理
+              code: 'riskControl.changeManagement',
+              path: '/risk-control/change-management',
+              // developing: true,
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/change-management',
+                  redirect: '/risk-control/change-management/list',
+                },
+                {
+                  path: '/risk-control/change-management/list',
+                  code: 'riskControl.changeManagement.list',
+                  name: 'list',
+                  component: './RiskControl/ChangeManagement/TableList',
+                },
+              ],
+            },
           ],
         },
 
