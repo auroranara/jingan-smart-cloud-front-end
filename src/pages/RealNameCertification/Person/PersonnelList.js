@@ -91,7 +91,7 @@ export default class PersonnelList extends PureComponent {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('a')(
+                {getFieldDecorator('personType')(
                   <Select placeholder="人员类型">
                     {['员工', '外协人员', '临时人员'].map(item => (
                       <Option key={item} value={item}>{item}</Option>
@@ -109,21 +109,21 @@ export default class PersonnelList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('phone')(
+                {getFieldDecorator('telephone')(
                   <Input placeholder="电话" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('office')(
+                {getFieldDecorator('duty')(
                   <Input placeholder="职务" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('icNum')(
+                {getFieldDecorator('icnumber')(
                   <Input placeholder="IC卡号" />
                 )}
               </FormItem>
@@ -155,24 +155,18 @@ export default class PersonnelList extends PureComponent {
         id: '001',
         companyId: '123',
         companyName: '常熟市鑫博伟针纺织有限公司',
-        phone: '13815208877',
+        telephone: '13815208877',
         name: '张三',
         sex: '男',
         remark: '',
-        office: '员工',
-        icNum: '1919E11F0009',
+        duty: '员工',
+        icnumber: '1919E11F0009',
       },
     ];
     const columns = [
       {
         title: '姓名',
         dataIndex: 'name',
-        align: 'center',
-        width: 200,
-      },
-      {
-        title: '人员备注',
-        dataIndex: 'remark',
         align: 'center',
         width: 200,
       },
@@ -184,19 +178,19 @@ export default class PersonnelList extends PureComponent {
       },
       {
         title: '电话',
-        dataIndex: 'phone',
+        dataIndex: 'telephone',
         align: 'center',
         width: 200,
       },
       {
         title: '职务',
-        dataIndex: 'office',
+        dataIndex: 'duty',
         align: 'center',
         width: 150,
       },
       {
         title: 'IC卡号',
-        dataIndex: 'icNum',
+        dataIndex: 'icnumber',
         align: 'center',
         width: 200,
       },

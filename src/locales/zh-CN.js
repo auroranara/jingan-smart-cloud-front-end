@@ -577,6 +577,8 @@ export default {
   'menu.realNameCertification.personnelManagement.personnelList': '人员列表',
   'menu.realNameCertification.personnelManagement.add': '新增人员信息',
   'menu.realNameCertification.personnelManagement.edit': '编辑人员信息',
+  'menu.realNameCertification.deviceManagement': '设备管理',
+  'menu.realNameCertification.deviceManagement.list': '设备管理',
   // demo自带
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',

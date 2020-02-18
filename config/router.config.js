@@ -4254,7 +4254,7 @@ module.exports = env => {
           routes: [
             {
               name: 'personnelManagement', // 人员管理
-              code: 'personnelManagement',
+              code: 'realNameCertification.personnelManagement',
               path: '/real-name-certification/personnel-management',
               hideChildrenInMenu: true,
               routes: [
@@ -4266,26 +4266,45 @@ module.exports = env => {
                 {
                   name: 'companyList',
                   path: '/real-name-certification/personnel-management/company-list',
-                  code: 'personnelManagement',
+                  code: 'realNameCertification.personnelManagement',
                   component: './RealNameCertification/Person/CompanyList',
                 },
                 {
                   name: 'personnelList',
                   path: '/real-name-certification/personnel-management/person-list/:companyId',
-                  code: 'personnelManagement',
+                  code: 'realNameCertification.personnelManagement',
                   component: './RealNameCertification/Person/PersonnelList',
                 },
                 {
                   name: 'add',
                   path: '/real-name-certification/personnel-management/add',
-                  code: 'personnelManagement',
+                  code: 'realNameCertification.personnelManagement',
                   component: './RealNameCertification/Person/PersonnelAdd',
                 },
                 {
                   name: 'edit',
                   path: '/real-name-certification/personnel-management/edit/:id',
-                  code: 'personnelManagement',
+                  code: 'realNameCertification.personnelManagement',
                   component: './RealNameCertification/Person/PersonnelAdd',
+                },
+              ],
+            },
+            {
+              name: 'deviceManagement', // 设备管理
+              path: '/real-name-certification/device-management',
+              code: 'realNameCertification.deviceManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path:'/real-name-certification/device-management',
+                  name:'list',
+                  redirect:'/real-name-certification/device-management/list',
+                },
+                {
+                  path:'/real-name-certification/device-management/list',
+                  name:'list',
+                  code:'realNameCertification.deviceManagement',
+                  component:'./RealNameCertification/Device/List',
                 },
               ],
             },
