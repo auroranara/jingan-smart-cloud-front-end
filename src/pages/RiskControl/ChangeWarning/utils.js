@@ -124,7 +124,7 @@ export function getColumns(genConfirmEvaluate) {
       align: 'center',
     },
     {
-      title: '变更内容',
+      title: '设备',
       dataIndex: 'dataEntity',
       key: 'dataEntity',
       // render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
