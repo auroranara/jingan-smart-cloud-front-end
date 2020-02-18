@@ -61,7 +61,7 @@ export default class TableList extends PureComponent {
 
   genConfirmEvaluate = id => e => {
     confirm({
-      title: '审批',
+      title: '提示',
       content: '请保证已对变更影响的区域进行风险评价，且制定了相应的风险管控措施！确定标为已评价？',
       okText: '确定',
       cancelText: '取消',

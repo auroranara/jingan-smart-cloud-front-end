@@ -264,7 +264,8 @@ export default class SpecialEquipment extends PureComponent {
           ];
         }
         const success = () => {
-          message.success(id ? '编辑成功！' : '新增成功！');
+          // message.success(id ? '编辑成功！' : '新增成功！');
+          message.success(`${id ? '编辑' : '新增'}成功！风险变更，请对相应的风险分区重新进行风险评价，并在变更预警管理中标记为已评价。`);
           router.push(listUrl);
         };
         const error = () => {
