@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import AsyncSelect from '@/jingan-components/AsyncSelect';
 import { isNumber } from '@/utils/utils';
-import { BREADCRUMB_LIST, URL_PREFIX, STATUSES, MODES, DIRECTIONS } from '../List';
+import { BREADCRUMB_LIST, STATUSES, MODES, DIRECTIONS } from '../List';
 import styles from './index.less';
 
 const MAPPER = {
@@ -43,11 +43,18 @@ export default class ChannelOther extends Component {
   getBreadcrumbList = ({ isUnit, unitId, title }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位通道信息', name: '单位通道信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位通道信息',
+          name: '单位通道信息',
+          href: this.props.route.path.replace(/:unitId.*/, 'list'),
+        },
         {
           title: '通道信息',
           name: '通道信息',
-          href: isUnit ? `${URL_PREFIX}/list` : `${URL_PREFIX}/${unitId}/list`,
+          href: this.props.location.pathname.replace(
+            new RegExp(`${this.props.route.name}.*`),
+            'list'
+          ),
         },
         { title, name: title },
       ].filter(v => v)

@@ -88,7 +88,9 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
       hasEditAuthority: permissionCodes.includes(code.replace(name, 'edit')),
       hasDetailAuthority: permissionCodes.includes(code.replace(name, 'detail')),
       hasDeleteAuthority: permissionCodes.includes(code.replace(name, 'delete')),
-      hasExportAuthority: permissionCodes.includes(code.replace(name, 'export')),
+      hasExportAuthority:
+        permissionCodes.includes(code.replace(name, 'export')) ||
+        permissionCodes.includes(code.replace(/[^\.]*$/, 'export')),
       ...(otherOperation &&
         otherOperation.reduce((result, { code: codeName }) => {
           return {

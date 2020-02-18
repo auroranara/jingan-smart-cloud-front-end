@@ -6,7 +6,6 @@ import Company from '../../Company';
 import { connect } from 'dva';
 import styles from './index.less';
 
-export const URL_PREFIX = '/license-plate-recognition-system/park-management/device';
 export const TYPES = [
   { key: '1', value: '主相机' },
   { key: '2', value: '辅相机' },
@@ -64,7 +63,11 @@ export default class DeviceList extends Component {
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位设备信息', name: '单位设备信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位设备信息',
+          name: '单位设备信息',
+          href: this.props.route.path.replace(/\/:[^\/]*/g, ''),
+        },
         { title: '设备信息', name: '设备信息' },
       ].filter(v => v)
     );
@@ -215,7 +218,6 @@ export default class DeviceList extends Component {
     ) : (
       <Company
         name="设备"
-        urlPrefix={URL_PREFIX}
         breadcrumbList={BREADCRUMB_LIST.concat({
           title: '单位设备信息',
           name: '单位设备信息',

@@ -10,8 +10,16 @@ import { connect } from 'dva';
 import styles from './index.less';
 const { Meta } = Card;
 
-export const URL_PREFIX = '/license-plate-recognition-system/vehicle-management/index';
 export const STATUSES = [{ key: '1', value: '正常' }, { key: '0', value: '停用' }];
+export const VEHICLE_TYPES = [{ key: '0', value: '小车' }, { key: '1', value: '大车' }];
+export const LICENCE_PLATE_TYPES = [
+  { key: '0', value: '临时车' },
+  { key: '1', value: '月租车' },
+  { key: '2', value: '充值车' },
+  { key: '3', value: '贵宾车' },
+  { key: '4', value: '免费车' },
+  { key: '8', value: '收费月租车' },
+];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员在岗在位管理', name: '人员在岗在位管理' },
@@ -48,7 +56,11 @@ export default class VehicleList extends Component {
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车辆信息', name: '单位车辆信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位车辆信息',
+          name: '单位车辆信息',
+          href: this.props.route.path.replace(/\/:[^\/]*/g, ''),
+        },
         { title: '车辆信息', name: '车辆信息' },
       ].filter(v => v)
     );
@@ -213,7 +225,6 @@ export default class VehicleList extends Component {
     ) : (
       <Company
         name="车辆"
-        urlPrefix={URL_PREFIX}
         breadcrumbList={BREADCRUMB_LIST.concat({
           title: '单位车辆信息',
           name: '单位车辆信息',

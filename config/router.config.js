@@ -4492,11 +4492,34 @@ module.exports = env => {
                   redirect: '/license-plate-recognition-system/config/display-and-voice',
                 },
                 {
-                  path:
-                    '/license-plate-recognition-system/config/:unitId?/display-and-voice',
+                  path: '/license-plate-recognition-system/config/:unitId?/display-and-voice',
                   code: 'licensePlateRecognitionSystem.config.displayAndVoice',
                   name: 'displayAndVoice',
                   component: './LicensePlateRecognitionSystem/Config/DisplayAndVoice',
+                },
+              ],
+            },
+            // 报表查询
+            {
+              path: '/license-plate-recognition-system/report',
+              code: 'licensePlateRecognitionSystem.report',
+              name: 'report',
+              routes: [
+                {
+                  path: '/license-plate-recognition-system/report',
+                  redirect: '/license-plate-recognition-system/report/presence-record',
+                },
+                {
+                  path: '/license-plate-recognition-system/report/:unitId?/presence-record',
+                  code: 'licensePlateRecognitionSystem.report.presenceRecord.list',
+                  name: 'presenceRecord',
+                  component: './LicensePlateRecognitionSystem/Report/PresenceRecord',
+                },
+                {
+                  path: '/license-plate-recognition-system/report/:unitId?/abnormal-record',
+                  code: 'licensePlateRecognitionSystem.report.abnormalRecord.list',
+                  name: 'abnormalRecord',
+                  component: './LicensePlateRecognitionSystem/Report/AbnormalRecord',
                 },
               ],
             },

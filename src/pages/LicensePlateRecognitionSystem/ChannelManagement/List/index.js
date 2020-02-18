@@ -7,7 +7,6 @@ import { connect } from 'dva';
 import moment from 'moment';
 import styles from './index.less';
 
-export const URL_PREFIX = '/license-plate-recognition-system/park-management/channel';
 export const STATUSES = [{ key: '1', value: '启用' }, { key: '0', value: '停用' }];
 export const MODES = [{ key: '0', value: '无人值守' }, { key: '1', value: '有人值守' }];
 export const DIRECTIONS = [{ key: '0', value: '入口' }, { key: '1', value: '出口' }];
@@ -40,7 +39,11 @@ export default class ChannelList extends Component {
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位通道信息', name: '单位通道信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位通道信息',
+          name: '单位通道信息',
+          href: this.props.route.path.replace(/\/:[^\/]*/g, ''),
+        },
         { title: '通道信息', name: '通道信息' },
       ].filter(v => v)
     );
@@ -179,7 +182,6 @@ export default class ChannelList extends Component {
     ) : (
       <Company
         name="通道"
-        urlPrefix={URL_PREFIX}
         breadcrumbList={BREADCRUMB_LIST.concat({
           title: '单位通道信息',
           name: '单位通道信息',

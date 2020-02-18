@@ -59,8 +59,12 @@ export default class Company extends Component {
   ];
 
   getAction = ({ renderAddButton }) => {
-    const { name } = this.props;
-    return name && renderAddButton({ name: `新增单位${name}`, onClick: this.handleAddButtonClick });
+    const { name, addEnable = true } = this.props;
+    return (
+      name &&
+      addEnable &&
+      renderAddButton({ name: `新增单位${name}`, onClick: this.handleAddButtonClick })
+    );
   };
 
   handleAddButtonClick = () => {
@@ -73,9 +77,11 @@ export default class Company extends Component {
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((error, values) => {
       if (!error) {
-        const { urlPrefix } = this.props;
+        const {
+          route: { path },
+        } = this.props;
         const { company } = values;
-        router.push(`${urlPrefix}/${company.key}/add`);
+        router.push(path.replace(/:unitId.*/, `${company.key}/add`));
       }
     });
   };
@@ -90,6 +96,10 @@ export default class Company extends Component {
     this.form && this.form.resetFields();
   };
 
+  handleLinkClick = () => {
+    window.scrollTo(0, 0);
+  };
+
   renderItem = ({
     id,
     name,
@@ -101,7 +111,10 @@ export default class Company extends Component {
     safetyName,
     safetyPhone,
   }) => {
-    const { name: menuName, urlPrefix, onClick } = this.props;
+    const {
+      name: menuName,
+      route: { path },
+    } = this.props;
     const address = [
       practicalProvinceLabel,
       practicalCityLabel,
@@ -111,6 +124,7 @@ export default class Company extends Component {
     ]
       .filter(v => v)
       .join('');
+    const to = path.replace(/:unitId\?/, id);
     return (
       <Card
         className={menuName && styles.card}
@@ -120,7 +134,14 @@ export default class Company extends Component {
           </Ellipsis>
         }
         hoverable
-        onClick={menuName ? undefined : () => onClick(id)}
+        onClick={
+          menuName
+            ? undefined
+            : () => {
+                router.push(to);
+                window.scrollTo(0, 0);
+              }
+        }
       >
         <div className={classNames(styles.cardContent, menuName && styles.hasCount)}>
           <div className={styles.cardRow}>
@@ -162,7 +183,8 @@ export default class Company extends Component {
           {menuName && (
             <Link
               className={styles.cardCountWrapper}
-              to={`${urlPrefix}/${id}/list`} /*  target="_blank" */
+              to={to}
+              onClick={this.handleLinkClick} /*  target="_blank" */
             >
               <Button className={styles.cardCount} shape="circle">
                 {0}

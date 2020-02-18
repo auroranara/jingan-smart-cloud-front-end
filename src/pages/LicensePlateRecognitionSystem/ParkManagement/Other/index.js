@@ -3,7 +3,7 @@ import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import ProvinceSelect from './components/ProvinceSelect';
 import CitySelect from './components/CitySelect';
 import { isNumber } from '@/utils/utils';
-import { BREADCRUMB_LIST, URL_PREFIX, STATUSES } from '../List';
+import { BREADCRUMB_LIST, STATUSES } from '../List';
 import styles from './index.less';
 
 const MAPPER = {
@@ -42,11 +42,15 @@ export default class ParkOther extends Component {
   getBreadcrumbList = ({ isUnit, unitId, title }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车场信息', name: '单位车场信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位车场信息',
+          name: '单位车场信息',
+          href: this.props.route.path.replace(/:unitId.*/, 'list'),
+        },
         {
           title: '车场信息',
           name: '车场信息',
-          href: isUnit ? `${URL_PREFIX}/list` : `${URL_PREFIX}/${unitId}/list`,
+          href: this.props.location.pathname.replace(new RegExp(`${this.props.route.name}.*`), 'list'),
         },
         { title, name: title },
       ].filter(v => v)

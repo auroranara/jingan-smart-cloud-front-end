@@ -29,7 +29,13 @@ import {
   setMainCamera,
   getDisplayAndVoiceConfig,
   setDisplayAndVoiceConfig,
+  getPresenceRecordList,
+  exportPresenceRecordList,
+  getAbnormalRecordList,
+  exportAbnormalRecordList,
 } from '@/services/licensePlateRecognitionSystem';
+import fileDownload from 'js-file-download';
+import moment from 'moment';
 
 export default {
   namespace: 'licensePlateRecognitionSystem',
@@ -49,6 +55,8 @@ export default {
     deviceList: {},
     deviceDetail: {},
     displayAndVoiceConfig: {},
+    presenceRecordList: {},
+    abnormalRecordList: {},
   },
 
   effects: {
@@ -578,6 +586,50 @@ export default {
       const response = { code: 200 };
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
+    },
+    // 获取在场记录列表
+    *getPresenceRecordList({ payload, callback }, { call, put }) {
+      const response = yield call(getPresenceRecordList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const presenceRecordList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            presenceRecordList,
+          },
+        });
+        callback && callback(true, presenceRecordList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 导出在场记录
+    *exportPresenceRecordList({ payload }, { call }) {
+      const blob = yield call(exportPresenceRecordList, payload);
+      fileDownload(blob, `在场记录_${moment().format('YYYYMMDD')}.xlsx`);
+    },
+    // 获取异常抬杆记录列表
+    *getAbnormalRecordList({ payload, callback }, { call, put }) {
+      const response = yield call(getAbnormalRecordList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const abnormalRecordList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            abnormalRecordList,
+          },
+        });
+        callback && callback(true, abnormalRecordList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 导出异常抬杆记录
+    *exportAbnormalRecordList({ payload }, { call }) {
+      const blob = yield call(exportAbnormalRecordList, payload);
+      fileDownload(blob, `异常抬杆记录_${moment().format('YYYYMMDD')}.xlsx`);
     },
   },
 

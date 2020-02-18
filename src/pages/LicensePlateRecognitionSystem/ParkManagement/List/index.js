@@ -6,7 +6,6 @@ import Company from '../../Company';
 import { connect } from 'dva';
 import styles from './index.less';
 
-export const URL_PREFIX = '/license-plate-recognition-system/park-management/index';
 export const STATUSES = [{ key: '1', value: '启用' }, { key: '0', value: '停用' }];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
@@ -37,7 +36,11 @@ export default class ParkList extends Component {
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车场信息', name: '单位车场信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位车场信息',
+          name: '单位车场信息',
+          href: this.props.route.path.replace(/\/:[^\/]*/g, ''),
+        },
         { title: '车场信息', name: '车场信息' },
       ].filter(v => v)
     );
@@ -166,7 +169,6 @@ export default class ParkList extends Component {
     ) : (
       <Company
         name="车场"
-        urlPrefix={URL_PREFIX}
         breadcrumbList={BREADCRUMB_LIST.concat({
           title: '单位车场信息',
           name: '单位车场信息',

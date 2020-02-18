@@ -10,7 +10,6 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import styles from './index.less';
 
-export const URL_PREFIX = '/license-plate-recognition-system/config';
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员在岗在位管理', name: '人员在岗在位管理' },
@@ -169,10 +168,6 @@ export default class DisplayAndVoice extends Component {
     }, 0);
   };
 
-  handleCompanyCardClick = unitId => {
-    router.push(`${URL_PREFIX}/${unitId}/display-and-voice`);
-  };
-
   handleFilterOption = (input, option) =>
     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
@@ -203,6 +198,7 @@ export default class DisplayAndVoice extends Component {
 
   renderConfig() {
     const {
+      route: { path },
       user: { currentUser: { unitType } = {} },
       licensePlateRecognitionSystem: {
         channelList: { list = [] } = {},
@@ -218,7 +214,7 @@ export default class DisplayAndVoice extends Component {
         +unitType !== 4 && {
           title: '单位信息',
           name: '单位信息',
-          href: `${URL_PREFIX}/display-and-voice`,
+          href: path.replace(/\/:[^\/]*/g, ''),
         },
         { title: '显示与语音配置', name: '显示与语音配置' },
       ].filter(v => v)
@@ -392,7 +388,6 @@ export default class DisplayAndVoice extends Component {
           title: '单位信息',
           name: '单位信息',
         })}
-        onClick={this.handleCompanyCardClick}
         {...props}
       />
     );
