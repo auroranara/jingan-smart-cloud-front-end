@@ -277,7 +277,10 @@ export default class TableList extends PureComponent {
         title: '变更内容',
         dataIndex: 'dataEntity',
         key: 'dataEntity',
-        render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
+        // render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
+        render: (txt, { dataId }) => (
+          <a href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}`} target="_blank" rel="noopener noreferrer">{txt}</a>
+        ),
       },
       {
         title: '所属风险分区',
@@ -285,6 +288,9 @@ export default class TableList extends PureComponent {
         key: 'zoneName',
         width: 200,
         align: 'center',
+        render: (txt, { zoneId, companyId }) => (
+          <a href={`${window.publicPath}#/risk-control/four-color-image/edit/${zoneId}?companyId=${companyId}`} target="_blank" rel="noopener noreferrer">{txt}</a>
+        ),
       },
       {
         title: '评价状态',
