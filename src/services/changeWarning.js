@@ -38,3 +38,8 @@ export async function approve(params) {
 export async function getLogList(params) {
   return request(`/acloud_new/v2/changeWarn/changeWarnRecordForPage?${stringify(params)}`);
 }
+
+// 获取公司风险分区列表
+export async function getZoneList(params) {
+  return request(`${URL_PREFIX}/zone/zoneForPage?${stringify(params)}`);
+}

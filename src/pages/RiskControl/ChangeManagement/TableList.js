@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import { Card, Empty, Form, Input, Modal, Table, Radio, message } from 'antd';
@@ -6,8 +6,8 @@ import { Card, Empty, Form, Input, Modal, Table, Radio, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { PAGE_SIZE, getSearchFields } from '../ChangeWarning/utils';
-import { BREADCRUMBLIST, STATUS_MAP, STYLE } from './utils';
+import { PAGE_SIZE } from '../ChangeWarning/utils';
+import { BREADCRUMBLIST, STATUS_MAP, STYLE, getSearchFields } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 
 const { confirm } = Modal;
@@ -33,18 +33,16 @@ export default class TableList extends PureComponent {
 
   getList = pageNum => {
     const { dispatch } = this.props;
+    const { companyId } = this.values;
+    const vals = { ...this.values };
+    if (companyId)
+      vals.companyId = companyId.key;
+
     if (!pageNum) { // pageNum不存在，则为初始化
       pageNum = 1;
       this.setState({ current: 1 });
+      this.getZones(vals.companyId);
     }
-
-    const { companyId, range } = this.values;
-    const vals = { ...this.values };
-    delete vals.range;
-    if (companyId)
-      vals.companyId = companyId.key;
-    if (range)
-      [vals.startDate, vals.endDate] = range.map(m => m.format('YYYY-MM-DD HH:mm:ss'));
 
     dispatch({
       type: 'changeManagement/fetchChangeList',
@@ -227,6 +225,33 @@ export default class TableList extends PureComponent {
     );
   }
 
+  getZones = id => { // id不存在时清空
+    const {
+      dispatch,
+      user: { currentUser: { unitType } },
+    } = this.props;
+    const isComUser = isCompanyUser(unitType);
+
+    if (isComUser || id)
+      dispatch({
+        type: 'changeManagement/fetchZoneList',
+        payload: { companyId: id, pageSize: 0, pageNum: 1 },
+      });
+    else
+      dispatch({
+        type: 'changeManagement/saveZoneList',
+        payload: [],
+      });
+  };
+
+  handleCompanyChange = c => {
+    const { key, label } = c || {};
+    if (!key)
+      this.getZones();
+    if (key !== label) // key === label 时，为键盘输入的值，不相等时是选取到的值
+      this.getZones(key);
+  };
+
   getColumns = () => {
     return [
       {
@@ -295,11 +320,11 @@ export default class TableList extends PureComponent {
     const {
       listLoading,
       user: { currentUser: { unitType } },
-      changeManagement: { list, total },
+      changeManagement: { total, list, zoneList },
     } = this.props;
     const { current } = this.state;
     const isComUser = isCompanyUser(unitType);
-    const fields = getSearchFields(this.getRangeFromEvent, isComUser);
+    const fields = getSearchFields(isComUser, zoneList, this.handleCompanyChange);
     const cols = this.getColumns();
     const columns = isComUser ? cols.filter(({ dataIndex }) => dataIndex !== 'companyName') : cols;
 
@@ -308,9 +333,16 @@ export default class TableList extends PureComponent {
         title={BREADCRUMBLIST[BREADCRUMBLIST.length -1].title}
         breadcrumbList={BREADCRUMBLIST}
         content={
-          <p className={styles1.total}>
-            共计：{total}
+          <Fragment>
+            <p className={styles1.total}>
+              共计：{total}
+            </p>
+            <p style={{ margin: 0, color: '#F00' }}>
+            请对变更所属的风险区域重新进行风险评价（
+            <a href={`${window.publicPath}#/risk-control/change-warning/list`} target="_blank" rel="noopener noreferrer">变更预警管理</a>
+            ）后再进行审批
           </p>
+          </Fragment>
         }
       >
         <Card style={{ marginBottom: 15 }}>

@@ -55,22 +55,22 @@ export const STATUS = [
   { key: '1', value: '已评价' },
 ];
 
-export function getSearchFields(getRangeFromEvent, isComUser, sections=[]) {
+export function getSearchFields(isComUser, sections=[], handleCompanyChange) {
   const span = isComUser ? 12 : 8;
 
   const fields = [
     {
       id: 'companyId',
       label: '单位名称',
-      render: () => <CompanySelect placeholder="请输入单位名称" allowClear />,
+      render: () => <CompanySelect onChange={handleCompanyChange} placeholder="请输入单位名称" allowClear />,
     },
     {
-      id: 'section',
+      id: 'zoneId',
       label: '所属风险分区',
       span,
       render: () => (
         <Select placeholder="请选择风险分区" allowClear>
-          {sections.map(({ key, value }) => <Option key={key} value={key}>{value}</Option>)}
+          {sections.map(({ id: key, zoneName: value }) => <Option key={key} value={key}>{value}</Option>)}
         </Select>
       ),
     },

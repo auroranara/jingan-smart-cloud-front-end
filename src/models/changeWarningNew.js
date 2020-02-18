@@ -1,6 +1,7 @@
 import {
   evaluate,
   getWarningNewList,
+  getZoneList,
 } from '../services/changeWarning';
 import { getList } from '@/utils/service';
 
@@ -10,6 +11,7 @@ export default {
   state: {
     total: 0,
     list: [],
+    zoneList: [],
   },
 
   effects: {
@@ -21,6 +23,12 @@ export default {
         yield put({ type: 'saveList', payload: getList(data) });
         callback && callback(code, msg);
       }
+    },
+    *fetchZoneList({ payload, callback }, { call, put }) {
+      const response = yield call(getZoneList, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveZoneList', payload: getList(data) });
     },
     *postEvaluate({ payload, callback }, { call, put }) {
       const response = yield call(evaluate, payload);
@@ -35,6 +43,9 @@ export default {
     },
     saveList(state, action) {
       return { ...state, list: action.payload };
+    },
+    saveZoneList(state, action) {
+      return { ...state, zoneList: action.payload };
     },
   },
 }
