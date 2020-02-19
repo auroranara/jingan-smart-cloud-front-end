@@ -33,6 +33,7 @@ import {
   exportPresenceRecordList,
   getAbnormalRecordList,
   exportAbnormalRecordList,
+  getLiftRecordList,
 } from '@/services/licensePlateRecognitionSystem';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -57,6 +58,7 @@ export default {
     displayAndVoiceConfig: {},
     presenceRecordList: {},
     abnormalRecordList: {},
+    liftRecordList: {},
   },
 
   effects: {
@@ -630,6 +632,23 @@ export default {
     *exportAbnormalRecordList({ payload }, { call }) {
       const blob = yield call(exportAbnormalRecordList, payload);
       fileDownload(blob, `异常抬杆记录_${moment().format('YYYYMMDD')}.xlsx`);
+    },
+    // 获取抬杆记录
+    *getLiftRecordList({ payload, callback }, { call, put }) {
+      const response = yield call(getLiftRecordList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const liftRecordList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            liftRecordList,
+          },
+        });
+        callback && callback(true, liftRecordList);
+      } else {
+        callback && callback(false, msg);
+      }
     },
   },
 

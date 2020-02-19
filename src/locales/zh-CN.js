@@ -640,6 +640,8 @@ export default {
   'menu.licensePlateRecognitionSystem.report': '报表查询',
   'menu.licensePlateRecognitionSystem.report.presenceRecord': '在场记录',
   'menu.licensePlateRecognitionSystem.report.abnormalRecord': '异常抬杆记录',
+  'menu.licensePlateRecognitionSystem.channelStatus': '通道状态',
+  'menu.licensePlateRecognitionSystem.channelStatus.channelMonitor': '通道监控',
   'app.home.introduce': '介绍',
   'app.analysis.test': '工专路 {no} 号店',
   'app.analysis.introduce': '指标说明',

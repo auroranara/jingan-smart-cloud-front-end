@@ -55,3 +55,8 @@ export async function getAbnormalRecordList(params) {
 export async function exportAbnormalRecordList(params) {
   return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
 }
+
+/* 获取抬杆记录列表 */
+export async function getLiftRecordList(params) {
+  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
+}
