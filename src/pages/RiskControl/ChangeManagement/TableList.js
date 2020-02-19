@@ -170,7 +170,7 @@ export default class TableList extends PureComponent {
     this.setState({ logVisible: true });
     dispatch({
       type: 'changeManagement/fetchLogList',
-      payload: { dataId: id, pageSize: 0, pageNum: 1 },
+      payload: { dataId: id, pageSize: 100, pageNum: 1 },
     });
   };
 
