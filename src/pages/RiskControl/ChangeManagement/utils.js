@@ -16,7 +16,7 @@ export const STATUS = [
   { key: '1', value: '审批通过' },
   { key: '2', value: '审批不通过' },
 ];
-export const STATUS_MAP = ['待审批', '审批通过', '审批不通过'];
+export const STATUS_MAP = ['新增', '审批通过', '审批不通过'];
 
 export const STYLE = { color: '#1890ff', cursor: 'pointer' };
 
