@@ -173,6 +173,7 @@ export default class Messages extends PureComponent {
       handleClickSmoke,
       handleClickWater,
       showCaptureDetailDrawer,
+      handleClickMsgEquip,
     } = this.props;
     const {
       type,
@@ -239,6 +240,7 @@ export default class Messages extends PureComponent {
         monitorEquipmentName,
         monitorEquipmentAreaLocation,
         monitorEquipmentTypeName,
+        monitorEquipmentId,
         paramDesc,
         monitorValue,
         paramUnit,
@@ -462,6 +464,9 @@ export default class Messages extends PureComponent {
         otherTitle: `【${monitorEquipmentTypeName +
           (+statusType === -1 && +fixType === 5 ? '发生' : '') +
           typeName}】`,
+        onClick: () => {
+          handleClickMsgEquip(monitorEquipmentId);
+        },
         items: [
           {
             value: () => {

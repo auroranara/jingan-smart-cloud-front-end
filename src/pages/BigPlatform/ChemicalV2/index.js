@@ -156,6 +156,7 @@ const SocketOptions = {
     majorHazardInfo,
     gasMonitor,
     emergencyManagement,
+    alarmWorkOrder,
   }) => ({
     unitSafety,
     bigPlatform,
@@ -170,6 +171,7 @@ const SocketOptions = {
     majorHazardInfo,
     gasMonitor,
     emergencyManagement,
+    alarmWorkOrder,
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
     riskPointLoading: loading.effects['unitSafety/fetchPoints'],
   })
@@ -406,14 +408,17 @@ export default class Chemical extends PureComponent {
       try {
         const data = JSON.parse(e.data).data;
         console.log('e.data', data);
-        const { type } = data;
-        // if (
-        //   ['405', '406'].includes(`${data.monitorEquipmentType}`) &&
-        //   ['1', '2'].includes(`${data.warnLevel}`)
-        // ) {
-        +type === 100 && this.showNotification(data);
-        // }
+        const {
+          type,
+          monitorMessageDto: { monitorEquipmentId, statusType },
+        } = data;
+        // 更新消息
         this.fetchScreenMessage();
+        // 报警弹框
+        +type === 100 && this.showNotification(data);
+        // 地图点位弹跳
+        +type === 100 && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
+        // 更新监测对象各个类型的数量
         +type === 100 && this.fetchMonitorTargetCount({ companyId });
       } catch (error) {
         console.log('error', error);
@@ -680,7 +685,7 @@ export default class Chemical extends PureComponent {
       ...options,
     });
 
-    this.childMap.handleUpdateMap();
+    this.childMap.handleUpdateMap('mgvmzd3bwa59qi4j', -1);
 
     setTimeout(() => {
       // 解决加入animation覆盖notification自身显示动效时长问题
@@ -1186,6 +1191,19 @@ export default class Chemical extends PureComponent {
     }
   };
 
+  handleClickMsgEquip = equipmentId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'alarmWorkOrder/getDeviceDetail',
+      payload: { id: equipmentId },
+      callback: (success, deviceDetail) => {
+        if (success) {
+          this.handleClickMonitorIcon(deviceDetail);
+        }
+      },
+    });
+  };
+
   /**
    * 渲染
    */
@@ -1369,6 +1387,7 @@ export default class Chemical extends PureComponent {
                     handleParentChange={this.handleParentChange}
                     handleGasOpen={this.handleGasOpen}
                     model={newUnitFireControl}
+                    handleClickMsgEquip={this.handleClickMsgEquip}
                   />
                 ) : (
                   <div className={styles.msgContainer}>

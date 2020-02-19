@@ -44,7 +44,7 @@ export default class FireMonitorDrawer extends PureComponent {
         left={
           <div className={styles.container}>
             {list.map((item, index) => {
-              const { installLocation, deviceId, pointCountMap = {}, videoList, id } = item;
+              const { installLocation, deviceCode, pointCountMap = {}, videoList, id } = item;
               const pointCount = pointCountMap || {};
 
               return (
@@ -52,7 +52,7 @@ export default class FireMonitorDrawer extends PureComponent {
                   <div className={styles.wrapper}>
                     <div className={styles.name}>
                       <span className={styles.label}>主机编号：</span>
-                      {deviceId}
+                      {deviceCode.toString()}
                       <div className={styles.iconsWrapper}>
                         {videoList &&
                           videoList.length > 0 && (

@@ -40,6 +40,7 @@ export default class MonitorEquipDrawer extends PureComponent {
         areaLocation,
         beMonitorTargetName,
         type,
+        beMonitorTargetType,
         allMonitorParam = [],
         videoList,
         targetId,
@@ -91,7 +92,7 @@ export default class MonitorEquipDrawer extends PureComponent {
               </div>
             </div>
 
-            {type &&
+            {beMonitorTargetType &&
               targetId && (
                 <div className={styles.wrapper}>
                   <div className={styles.targetWrapper}>
@@ -99,7 +100,7 @@ export default class MonitorEquipDrawer extends PureComponent {
                     {beMonitorTargetName}
                     <div
                       className={styles.more}
-                      onClick={() => handleClickShowMonitorDetail(type, targetId)}
+                      onClick={() => handleClickShowMonitorDetail(beMonitorTargetType, targetId)}
                     >
                       详情>>
                     </div>

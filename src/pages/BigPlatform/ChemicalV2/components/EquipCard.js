@@ -40,7 +40,7 @@ export default class EquipCard extends PureComponent {
         name,
         areaLocation,
         beMonitorTargetName,
-        type,
+        beMonitorTargetType,
         allMonitorParam = [],
         videoList,
         targetId,
@@ -106,7 +106,7 @@ export default class EquipCard extends PureComponent {
           </div>
         </div>
 
-        {type &&
+        {beMonitorTargetType &&
           targetId && (
             <div className={styles.wrapper}>
               <div className={styles.targetWrapper}>
@@ -114,7 +114,7 @@ export default class EquipCard extends PureComponent {
                 {beMonitorTargetName}
                 <div
                   className={styles.more}
-                  onClick={() => handleClickShowMonitorDetail(type, targetId)}
+                  onClick={() => handleClickShowMonitorDetail(beMonitorTargetType, targetId)}
                 >
                   详情>>
                 </div>

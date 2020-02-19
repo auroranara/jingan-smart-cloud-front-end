@@ -1616,7 +1616,8 @@ export const MsgShowTypes = [
   100, // 监测设备
 ];
 
-export const TypeClickList = [100, 14, 15, 16, 17];
+// export const TypeClickList = [100, 14, 15, 16, 17];
+export const TypeClickList = [100];
 
 export const MonitorConfig = {
   '301': {
