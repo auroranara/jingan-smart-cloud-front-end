@@ -255,8 +255,8 @@ export default class ReportOther extends Component {
         const [longitude, latitude] = (coordinate || '').split(',');
         const payload = {
           id,
-          // accidentCompanyId: +unitType !== 4 ? company.key : unitId,
-          accidentCompanyId: company.key,
+          accidentCompanyId: +unitType !== 4 ? company.key : unitId,
+          // accidentCompanyId: company.key,
           provinceId,
           cityId,
           districtId,
