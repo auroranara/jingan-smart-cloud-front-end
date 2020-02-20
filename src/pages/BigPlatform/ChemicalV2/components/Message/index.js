@@ -127,6 +127,13 @@ const formatTime = time => {
 const getEmptyData = () => {
   return '暂无数据';
 };
+
+const transformCondition = condition => {
+  if (condition === '>=') return '超过';
+  else if (condition === '<=') return '低于';
+  return condition;
+};
+
 /**
  * description: 大屏消息
  * author: zkg
@@ -250,6 +257,9 @@ export default class Messages extends PureComponent {
         happenTime,
         faultTypeName,
         fixType,
+        condition: monitorCondition,
+        monitorEquipmentType,
+        installAddress: fireAddress,
       } = {},
     } = msg;
 
@@ -464,31 +474,42 @@ export default class Messages extends PureComponent {
         otherTitle: `【${monitorEquipmentTypeName +
           (+statusType === -1 && +fixType === 5 ? '发生' : '') +
           typeName}】`,
-        onClick: () => {
-          handleClickMsgEquip(monitorEquipmentId);
-        },
+        onClick:
+          monitorEquipmentType !== '1'
+            ? () => {
+                handleClickMsgEquip(monitorEquipmentId);
+              }
+            : null,
         items: [
           {
             value: () => {
               if (+statusType === -1 && +fixType === 5) return null;
-              else if ([-1, 1].includes(+statusType))
+              else if ([-1].includes(+statusType))
                 return (
                   <div>{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
                     ['预警', '告警'].includes(typeName)
-                      ? `，超过${typeName}值${Math.round(
+                      ? `，${transformCondition(monitorCondition)}${typeName}值${Math.round(
                           Math.abs(monitorValue - limitValue) * 100
                         ) / 100}${paramUnit || ''}`
                       : ''
                   }`}</div>
                 );
               else if ([-3, 3].includes(+statusType))
-                return <div>{`故障类型：${faultTypeName || ''}`}</div>;
+                return (
+                  <div>
+                    <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>故障类型：</span>
+                    {faultTypeName || ''}
+                  </div>
+                );
               else return null;
             },
             // style: { color: (+statusType === -1 || +statusType === -3) && '#fc4849' },
           },
           { name: '监测设备', value: monitorEquipmentName },
-          { name: '区域位置', value: monitorEquipmentAreaLocation },
+          {
+            name: '区域位置',
+            value: monitorEquipmentType !== '1' ? monitorEquipmentAreaLocation : fireAddress,
+          },
         ],
       },
     };
@@ -645,6 +666,7 @@ export default class Messages extends PureComponent {
       // 失联恢复添加描述
       items.unshift({ value: '设备失联状态恢复正常', style: CYAN_STYLE });
     if (+type === 39 && (!realtimeVal || !limitVal)) items.shift();
+    if (+type === 100 && monitorEquipmentType === '1') items.splice(1, 1);
     const handleClick = !typeClickList || typeClickList.includes(+type) ? onClick : undefined;
     const detailBtn = cssType ? (
       <Icon type="right" className={styles.detailArrow} />

@@ -103,7 +103,7 @@ const msgInfo = [
     title: '火警提示',
     icon: iconFire,
     color: '#f83329',
-    body: '发生报警，',
+    body: '发生火警，',
     bottom: '情况危急，请立即处理！',
     animation: styles.redShadow,
     types: [7, 38],
@@ -140,6 +140,12 @@ const SocketOptions = {
 };
 // const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
+const transformCondition = condition => {
+  if (condition === '>=') return '超过';
+  else if (condition === '<=') return '低于';
+  return condition;
+};
+
 @connect(
   ({
     unitSafety,
@@ -174,6 +180,7 @@ const SocketOptions = {
     alarmWorkOrder,
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
     riskPointLoading: loading.effects['unitSafety/fetchPoints'],
+    zoneLoading: loading.effects['chemical/fetchZoneContent'],
   })
 )
 export default class Chemical extends PureComponent {
@@ -462,7 +469,10 @@ export default class Chemical extends PureComponent {
         monitorEquipmentAreaLocation,
         monitorEquipmentName,
         faultTypeName,
+        condition,
         fixType,
+        monitorEquipmentType,
+        installAddress,
       },
     } = data;
     if (+statusType !== -1) return;
@@ -503,8 +513,9 @@ export default class Chemical extends PureComponent {
                 className={styles.alarm}
               >{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
                 ['预警', '告警'].includes(typeName)
-                  ? `，超过${typeName}值${Math.round(Math.abs(monitorValue - limitValue) * 100) /
-                      100}${paramUnit || ''}`
+                  ? `，${transformCondition(condition)}${typeName}值${Math.round(
+                      Math.abs(monitorValue - limitValue) * 100
+                    ) / 100}${paramUnit || ''}`
                   : ''
               }`}</div>
             )}
@@ -521,8 +532,10 @@ export default class Chemical extends PureComponent {
           {[-3, 3].includes(+statusType) && (
             <div className={styles.alarm}>{`故障类型：${faultTypeName || ''}`}</div>
           )} */}
-          <div>{`监测设备：${monitorEquipmentName || ''}`}</div>
-          <div>{`区域位置：${monitorEquipmentAreaLocation || ''}`}</div>
+          {monitorEquipmentType !== '1' && <div>{`监测设备：${monitorEquipmentName || ''}`}</div>}
+          <div>{`区域位置：${
+            monitorEquipmentType !== '1' ? monitorEquipmentAreaLocation : installAddress || ''
+          }`}</div>
         </div>
       ),
       // duration: 30,
@@ -1250,6 +1263,7 @@ export default class Chemical extends PureComponent {
       },
       emergencyManagement: { specialEquipment: specialEquipDict = [] },
       gasMonitor: { realTimeList },
+      zoneLoading,
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -1447,6 +1461,7 @@ export default class Chemical extends PureComponent {
           zoneContent={zoneContent}
           handleClickHiddenDanger={this.handleClickHiddenDanger}
           handleShowRiskPoint={this.handleShowRiskPoint}
+          loading={zoneLoading}
         />
 
         <StorageAreaDrawer

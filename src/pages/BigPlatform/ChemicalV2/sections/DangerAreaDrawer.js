@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Carousel, Icon, Modal, Table } from 'antd';
+import { Carousel, Icon, Modal, Table, Spin } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerAreaDrawer.less';
 
@@ -96,7 +96,6 @@ export default class KeyPoints extends PureComponent {
   handleModalClose = () => {
     this.setState({ tableModallVisible: false, cardModallVisible: false });
     this.scrolls = [];
-    console.log('this.scrolls1111111', this.scrolls);
   };
 
   renderTableModal = () => {
@@ -154,8 +153,6 @@ export default class KeyPoints extends PureComponent {
   };
 
   handleNext = () => {
-    console.log('this.scrolls', this.scrolls);
-
     this.scrolls.map(item => {
       if (!item) return null;
       item.scrollTop = 0;
@@ -301,6 +298,7 @@ export default class KeyPoints extends PureComponent {
       },
       handleClickHiddenDanger,
       handleShowRiskPoint,
+      loading,
     } = this.props;
     // const {  } = this.state;
     const areaLvl = Levels[zoneLevel - 1] || {};
@@ -317,84 +315,85 @@ export default class KeyPoints extends PureComponent {
           zIndex={1222}
           left={
             <div className={styles.container}>
-              <div className={styles.areaContainer}>
-                <div>
-                  区域名称：
-                  {zoneName}
+              <Spin spinning={loading} wrapperClassName={styles.spin}>
+                <div className={styles.areaContainer}>
+                  <div>
+                    区域名称：
+                    {zoneName}
+                  </div>
+                  <div>
+                    区域负责人：
+                    {zoneChargerName}
+                  </div>
+                  <div>
+                    联系电话：
+                    {phoneNumber}
+                  </div>
+                  <div
+                    className={styles.areaColor}
+                    style={{
+                      backgroundColor: areaLvl.color,
+                      color: +zoneLevel === 3 ? '#000' : '#fff',
+                    }}
+                  >
+                    {areaLvl.label}
+                  </div>
                 </div>
-                <div>
-                  区域负责人：
-                  {zoneChargerName}
-                </div>
-                <div>
-                  联系电话：
-                  {phoneNumber}
-                </div>
-                <div
-                  className={styles.areaColor}
-                  style={{
-                    backgroundColor: areaLvl.color,
-                    color: +zoneLevel === 3 ? '#000' : '#fff',
-                  }}
-                >
-                  {areaLvl.label}
-                </div>
-              </div>
 
-              {cbiList.length > 0 && (
-                <div className={styles.wrapper}>
-                  <div className={styles.title}>
-                    风险点
-                    <span className={styles.value}>({cbiList.length})</span>
-                    <div className={styles.extra} onClick={handleShowRiskPoint}>
-                      详情
-                      <span style={{ color: '#0ff' }}>>></span>
+                {cbiList.length > 0 && (
+                  <div className={styles.wrapper}>
+                    <div className={styles.title}>
+                      风险点
+                      <span className={styles.value}>({cbiList.length})</span>
+                      <div className={styles.extra} onClick={handleShowRiskPoint}>
+                        详情
+                        <span style={{ color: '#0ff' }}>>></span>
+                      </div>
+                    </div>
+                    <div className={styles.content}>
+                      {riskData.map((item, index) => {
+                        const { label, color } = item;
+                        const count = cbiList.filter(hd => +hd.riskLevel === index + 1).length;
+                        return count ? (
+                          <div className={styles.dotItem} key={index}>
+                            <span className={styles.dot} style={{ backgroundColor: color }} />
+                            {label}
+                            <span className={styles.dotValue}>{count}</span>
+                          </div>
+                        ) : null;
+                      })}
                     </div>
                   </div>
-                  <div className={styles.content}>
-                    {riskData.map((item, index) => {
-                      const { label, color } = item;
-                      const count = cbiList.filter(hd => +hd.riskLevel === index + 1).length;
-                      return count ? (
-                        <div className={styles.dotItem} key={index}>
-                          <span className={styles.dot} style={{ backgroundColor: color }} />
-                          {label}
-                          <span className={styles.dotValue}>{count}</span>
-                        </div>
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              )}
+                )}
 
-              {hiddenDangerList.length > 0 && (
-                <div className={styles.wrapper}>
-                  <div className={styles.title}>
-                    隐患
-                    <span className={styles.value}>({hiddenDangerList.length})</span>
-                    <div className={styles.extra} onClick={handleClickHiddenDanger}>
-                      详情
-                      <span style={{ color: '#0ff' }}>>></span>
+                {hiddenDangerList.length > 0 && (
+                  <div className={styles.wrapper}>
+                    <div className={styles.title}>
+                      隐患
+                      <span className={styles.value}>({hiddenDangerList.length})</span>
+                      <div className={styles.extra} onClick={handleClickHiddenDanger}>
+                        详情
+                        <span style={{ color: '#0ff' }}>>></span>
+                      </div>
+                    </div>
+                    <div className={styles.content}>
+                      {hiddenDangerData.map((item, index) => {
+                        const { label, color } = item;
+                        const count = hiddenDangerList.filter(hd => +hd.status === hdStatus[index])
+                          .length;
+                        return count ? (
+                          <div className={styles.dotItem} key={index}>
+                            <span className={styles.dot} style={{ backgroundColor: color }} />
+                            {label}
+                            <span className={styles.dotValue}>{count}</span>
+                          </div>
+                        ) : null;
+                      })}
                     </div>
                   </div>
-                  <div className={styles.content}>
-                    {hiddenDangerData.map((item, index) => {
-                      const { label, color } = item;
-                      const count = hiddenDangerList.filter(hd => +hd.status === hdStatus[index])
-                        .length;
-                      return count ? (
-                        <div className={styles.dotItem} key={index}>
-                          <span className={styles.dot} style={{ backgroundColor: color }} />
-                          {label}
-                          <span className={styles.dotValue}>{count}</span>
-                        </div>
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              )}
+                )}
 
-              {/* <div className={styles.wrapper}>
+                {/* <div className={styles.wrapper}>
               <div className={styles.title}>
                 重大危险源
                 <span
@@ -457,65 +456,66 @@ export default class KeyPoints extends PureComponent {
                 </div>
               </div>
             </div> */}
-              {dcList.length + scList.length > 0 && (
-                <div className={styles.wrapper}>
-                  <div className={styles.title}>两单</div>
-                  <div className={styles.content}>
-                    {twoListData.map((item, index) => {
-                      const { label, url, images } = item;
-                      const cardLists = [dcList, scList];
-                      const cardList = cardLists[index];
-                      const clickable = cardList.length > 0;
-                      const columns = [DangerFactorsColumns, SafetyRiskColumns][index];
+                {dcList.length + scList.length > 0 && (
+                  <div className={styles.wrapper}>
+                    <div className={styles.title}>两单</div>
+                    <div className={styles.content}>
+                      {twoListData.map((item, index) => {
+                        const { label, url, images } = item;
+                        const cardLists = [dcList, scList];
+                        const cardList = cardLists[index];
+                        const clickable = cardList.length > 0;
+                        const columns = [DangerFactorsColumns, SafetyRiskColumns][index];
 
-                      return (
-                        <div
-                          className={styles.tagItem}
-                          key={index}
-                          // onClick={() => clickable && this.handleJump(url, images)}
-                          onClick={() =>
-                            clickable && this.handleShowTableModel(cardList, columns, label)
-                          }
-                          style={{ cursor: clickable ? 'pointer' : 'default' }}
-                        >
-                          {label}
-                          {/* <span className={styles.tagValue}>({cardLists[index].length})</span> */}
-                          {clickable && <Icon type="right" className={styles.rightIcon} />}
-                        </div>
-                      );
-                    })}
+                        return (
+                          <div
+                            className={styles.tagItem}
+                            key={index}
+                            // onClick={() => clickable && this.handleJump(url, images)}
+                            onClick={() =>
+                              clickable && this.handleShowTableModel(cardList, columns, label)
+                            }
+                            style={{ cursor: clickable ? 'pointer' : 'default' }}
+                          >
+                            {label}
+                            {/* <span className={styles.tagValue}>({cardLists[index].length})</span> */}
+                            {clickable && <Icon type="right" className={styles.rightIcon} />}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {acList.length + kcList.length + ecList.length > 0 && (
-                <div className={styles.wrapper}>
-                  <div className={styles.title}>三卡</div>
-                  <div className={styles.content}>
-                    {threeCardData.map((item, index) => {
-                      const { label, url, images } = item;
-                      const cardLists = [acList, kcList, ecList];
-                      const cardList = cardLists[index];
-                      const clickable = cardList.length > 0;
+                {acList.length + kcList.length + ecList.length > 0 && (
+                  <div className={styles.wrapper}>
+                    <div className={styles.title}>三卡</div>
+                    <div className={styles.content}>
+                      {threeCardData.map((item, index) => {
+                        const { label, url, images } = item;
+                        const cardLists = [acList, kcList, ecList];
+                        const cardList = cardLists[index];
+                        const clickable = cardList.length > 0;
 
-                      return (
-                        <div
-                          className={styles.tagItem}
-                          key={index}
-                          onClick={() =>
-                            clickable && this.handleClickThreeCards(cardList, index, label)
-                          }
-                          style={{ cursor: clickable ? 'pointer' : 'default' }}
-                        >
-                          {label}
-                          <span className={styles.tagValue}>({cardLists[index].length})</span>
-                          {clickable && <Icon type="right" className={styles.rightIcon} />}
-                        </div>
-                      );
-                    })}
+                        return (
+                          <div
+                            className={styles.tagItem}
+                            key={index}
+                            onClick={() =>
+                              clickable && this.handleClickThreeCards(cardList, index, label)
+                            }
+                            style={{ cursor: clickable ? 'pointer' : 'default' }}
+                          >
+                            {label}
+                            <span className={styles.tagValue}>({cardLists[index].length})</span>
+                            {clickable && <Icon type="right" className={styles.rightIcon} />}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </Spin>
             </div>
           }
         />

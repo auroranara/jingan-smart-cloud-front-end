@@ -1916,8 +1916,8 @@ export const SafetyRiskColumns = [
   },
   {
     title: '可能导致事故类别',
-    dataIndex: 'consequence',
-    key: 'consequence',
+    dataIndex: 'consequenceMeasure',
+    key: 'consequenceMeasure',
     align: 'center',
     width: 340,
     render: renderEllipsis,

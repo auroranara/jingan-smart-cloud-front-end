@@ -26,6 +26,7 @@ export default {
   namespace: 'chemical',
 
   state: {
+    zoneContent: {},
     pastStatusCount: {},
     monitorTargetCount: [],
     monitorEquipCount: [],
@@ -193,6 +194,12 @@ export default {
     },
     // 区域信息
     *fetchZoneContent({ payload, callback }, { call, put }) {
+      yield put({
+        type: 'save',
+        payload: {
+          zoneContent: {},
+        },
+      });
       const response = yield call(getZoneContent, payload);
       const { code, data } = response || {};
       if (code === 200 && data) {
