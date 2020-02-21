@@ -1,13 +1,15 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-// import router from 'umi/router';
+import router from 'umi/router';
 import { Button, Card, Form, Icon, Popover } from 'antd';
 
 import styles1 from '@/pages/BaseInfo/Company/Company.less';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
-import { getFieldLabels, convertSections, renderSections, LIST_URL, RISK_CATEGORIES } from './utils';
+import { getFieldLabels, renderSections, LIST_URL, RISK_CATEGORIES } from './utils';
+
+
 
 @Form.create()
 @connect(({ msds, loading }) => ({ msds, loading: loading.models.msds }))
@@ -195,7 +197,7 @@ export default class MEdit extends PureComponent {
 
     this.fieldLabels = getFieldLabels(sections);
 
-    this.setState({ sections: this.isDetail() ? convertSections(sections, {}) : sections }, id ? this.getDetail() : null);
+    this.setState({ sections }, id ? this.getDetail() : null);
   }
 
   fieldLabels = {};
@@ -209,119 +211,8 @@ export default class MEdit extends PureComponent {
     dispatch({
       type: 'msds/getMSDS',
       payload: id,
-      callback: detail => {
-        if (this.isDetail())
-          this.setState(({ sections }) => ({ sections: convertSections(sections, detail) }), () => setFieldsValue(detail));
-        else
-          setFieldsValue(detail);
-      },
+      callback: detail => setFieldsValue(detail),
     });
-  };
-
-  renderErrorInfo() {
-    const {
-      form: { getFieldsError },
-    } = this.props;
-    const errors = getFieldsError();
-    const errorCount = Object.keys(errors).filter(key => errors[key]).length;
-    if (!errors || errorCount === 0) {
-      return null;
-    }
-    const scrollToField = fieldKey => {
-      const labelNode = document.querySelector(`label[for="${fieldKey}"]`);
-      if (labelNode) {
-        labelNode.scrollIntoView(true);
-      }
-    };
-    const errorList = Object.keys(errors).map(key => {
-      if (!errors[key]) {
-        return null;
-      }
-      return (
-        <li key={key} className={styles1.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles1.errorIcon} />
-          <div className={styles1.errorMessage}>{errors[key][0]}</div>
-          <div className={styles1.errorField}>{this.fieldLabels[key]}</div>
-        </li>
-      );
-    });
-    return (
-      <span className={styles1.errorIcon}>
-        <Popover
-          title="表单校验信息"
-          content={errorList}
-          overlayClassName={styles1.errorPopover}
-          trigger="click"
-          getPopupContainer={trigger => trigger.parentNode}
-        >
-          <Icon type="exclamation-circle" />
-          {errorCount}
-        </Popover>
-      </span>
-    );
-  }
-
-  /* 渲染底部工具栏 */
-  renderFooterToolbar() {
-    const { loading } = this.props;
-    return (
-      <FooterToolbar>
-        {this.renderErrorInfo()}
-        {/* <Button onClick={e => router.push(LIST_URL)}>返回</Button> */}
-        {!this.isDetail() && (
-          <Button
-            type="primary"
-            size="large"
-            onClick={this.handleClickValidate}
-            loading={loading}
-          >
-            提交
-          </Button>
-        )}
-      </FooterToolbar>
-    );
-  }
-
-  add = values => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'msds/addMSDS',
-      payload: values,
-      callback: genOperateCallback(LIST_URL),
-    })
-  };
-
-  update = values => {
-    const {
-      dispatch,
-      match: { params: { id } },
-    } = this.props;
-    dispatch({
-      type: 'msds/editMSDS',
-      payload: { ...values, id },
-      callback: genOperateCallback(LIST_URL),
-    })
-  };
-
-  handleClickValidate = () => {
-    const {
-      match: { params: { id } },
-      form: { validateFieldsAndScroll },
-    } = this.props;
-
-    validateFieldsAndScroll((errors, values) => {
-      if (!errors) {
-        if (id)
-          this.update(values);
-        else
-          this.add(values);
-      }
-    });
-  };
-
-  isDetail = () => {
-    const { match: { url } } = this.props;
-    return url && url.includes('detail');
   };
 
   render() {
@@ -331,8 +222,7 @@ export default class MEdit extends PureComponent {
     } = this.props;
     const { sections } = this.state;
 
-    const isDetail = this.isDetail();
-    const title = isDetail ? '详情' : id ? '编辑' : '新增';
+    const title = '详情';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '安全生产知识库', name: '安全生产知识库' },
@@ -342,13 +232,12 @@ export default class MEdit extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title={`MSDS${title}`}
+        title="MSDS详情"
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
           {renderSections(sections, getFieldDecorator)}
         </Card>
-        {!isDetail && this.renderFooterToolbar()}
       </PageHeaderLayout>
     );
   }

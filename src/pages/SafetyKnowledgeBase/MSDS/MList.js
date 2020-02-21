@@ -90,7 +90,7 @@ function getColumns(genHandleDelete) {
       key: 'bookCode',
       align: 'center',
       render(txt, record) {
-        return <Link to={`/safety-knowledge-base/msds/detail/${record.id}`}>{txt}</Link>;
+        return <Link to={`/safety-knowledge-base/msds/detail/${record.id}`} target="_blank">{txt}</Link>;
       },
     },
     {
@@ -101,7 +101,7 @@ function getColumns(genHandleDelete) {
       render(id, record) {
         return (
           <Fragment>
-            <Link to={`/safety-knowledge-base/msds/edit/${id}`}>编辑</Link>
+            <Link to={`/safety-knowledge-base/msds/edit/${id}`} target="_blank">编辑</Link>
             <Popconfirm
               title="确定删除当前项目？"
               onConfirm={genHandleDelete(id)}
