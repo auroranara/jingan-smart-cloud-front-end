@@ -36,7 +36,12 @@ const hiddenDangerData = [
   { label: '待复查', value: 0, color: '#0967D3' },
 ];
 const riskSourceData = [
-  { label: '危险品液体原料储罐区' },
+  { label: '储罐区监测' },
+  { label: '库区监测' },
+  { label: '生产装置监测' },
+  { label: '气柜监测' },
+  { label: '工业管道监测' },
+  // { label: '危险品液体原料储罐区' },
   // { label: '储罐区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
   // { label: '储罐监测', value: 3, tip: '液位、压力、温度' },
   // { label: '库区监测', value: 1, tip: '可燃气体浓度、有毒气体浓度' },
@@ -294,6 +299,7 @@ export default class KeyPoints extends PureComponent {
         ecList = [],
         dcList = [],
         scList = [],
+        dsList = [],
         id,
       },
       handleClickHiddenDanger,
@@ -303,6 +309,39 @@ export default class KeyPoints extends PureComponent {
     // const {  } = this.state;
     const areaLvl = Levels[zoneLevel - 1] || {};
     const hiddenDangerList = hdList.filter(item => +item.status !== 4);
+    const dangerSourceList = dsList.reduce(
+      (prev, next) => {
+        const {
+          dangerSourceList: {
+            productDevice = [],
+            industryPipeline = [],
+            gasHolderManage = [],
+            tankArea = [],
+            wareHouseArea = [],
+          },
+        } = next;
+        const dataList = [
+          tankArea,
+          wareHouseArea,
+          productDevice,
+          gasHolderManage,
+          industryPipeline,
+        ];
+        prev.forEach((arr, index) => {
+          const data = dataList[index];
+          prev[index] = [...prev[index], ...data];
+        });
+        return prev;
+      },
+      [[], [], [], [], []]
+    );
+    dangerSourceList[0] = dangerSourceList[0].filter(item => item.tmList.length > 0);
+    dangerSourceList[1] = dangerSourceList[1].filter(item => item.warehouseInfos.length > 0);
+    // console.log('dangerSourceList', dangerSourceList);
+    const dangerSourceListTotal = dangerSourceList.reduce((prev, next) => {
+      prev += next.length;
+      return prev;
+    }, 0);
 
     return (
       <Fragment>
@@ -393,39 +432,41 @@ export default class KeyPoints extends PureComponent {
                   </div>
                 )}
 
-                {/* <div className={styles.wrapper}>
-              <div className={styles.title}>
-                重大危险源
-                <span
-                  className={styles.video}
-                  style={{
-                    background: `url(${cameraImg}) center center / 100% 100% no-repeat`,
-                  }}
-                  onClick={handleShowVideo}
-                />
-              </div>
-              <div className={styles.content}>
-                {riskSourceData.map((item, index) => {
-                  const { label, value, url, images, tip, type } = item;
-                  return (
-                    <div
-                      className={styles.tagItem}
-                      key={index}
-                      // onClick={() => this.handleJump(url, images)}
-                      onClick={() => {
-                        setDrawerVisible('dangerSourceInfo');
+                {dangerSourceListTotal > 0 && (
+                  <div className={styles.wrapper}>
+                    <div className={styles.title}>
+                      重大危险源
+                      {/* <span
+                      className={styles.video}
+                      style={{
+                        background: `url(${cameraImg}) center center / 100% 100% no-repeat`,
                       }}
-                    >
-                      {label}
-                      <Icon type="right" className={styles.rightIcon} />
-                      <span className={styles.tip}>{tip}</span>
+                      onClick={handleShowVideo}
+                    /> */}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
+                    <div className={styles.content}>
+                      {riskSourceData.map((item, index) => {
+                        const { label, value, url, images, tip, type } = item;
+                        return dangerSourceList[index].length > 0 ? (
+                          <div
+                            className={styles.tagItem}
+                            key={index}
+                            // onClick={() => this.handleJump(url, images)}
+                            onClick={() => {
+                              // setDrawerVisible('dangerSourceInfo');
+                            }}
+                          >
+                            {label}
+                            <Icon type="right" className={styles.rightIcon} />
+                            {/* <span className={styles.tip}>{tip}</span> */}
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+                )}
 
-            <div className={styles.wrapper}>
+                {/* <div className={styles.wrapper}>
               <div
                 className={styles.title}
                 style={{ cursor: 'pointer' }}

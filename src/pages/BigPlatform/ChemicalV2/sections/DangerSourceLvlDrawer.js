@@ -4,85 +4,39 @@ import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceLvlDrawer.less';
 import { CardItem } from '../components/Components';
-// import storage from '../imgs/storage.png';
+import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
-const basicList = [
-  {
-    code: '156487941654',
-    name: '危险品液体原料储罐区',
-    level: '四级',
-    RValue: 8,
-    location: '东厂区1号楼',
-    time: '2019.01.01',
-    man: '李磊 13056177523',
-    number: '30(α=1.0)',
-  },
-];
-const basicFields = [
-  {
-    label: '重大危险源等级',
-    value: 'level',
-  },
-  { label: 'R值', value: 'RValue' },
-  { label: '周围500米内常住人口数量', value: 'number' },
-];
+const uniqueByid = array => {
+  return array.reduce((prev, next) => {
+    const ids = prev.map(item => item.id);
+    if (ids.indexOf(next.id) < 0) prev.push(next);
+    return prev;
+  }, []);
+};
+const NO_DATA = '暂无数据';
 
-const list = [
-  {
-    store: '无水乙醇',
-    type: '第3.2类 中闪点易燃液体（β=1）',
-    acture: '22t',
-    max: '500t',
-  },
-  {
-    store: '丙酮',
-    type: '第3.1类  低闪点易燃液体（β=2）',
-    acture: '8t',
-    max: '500t',
-  },
-  {
-    store: '二甲苯',
-    type: '第3.3类  高闪点易燃液体（β=2）',
-    acture: '8t',
-    max: '5000t',
-  },
-  {
-    store: '乙酸乙酯',
-    type: '第3.2类 中闪点易燃液体（β=1.5）',
-    acture: '8t',
-    max: '500t',
-  },
-  {
-    store: '乙腈',
-    type: '第3类 易燃液体，有毒品（β=2）',
-    acture: '20t',
-    max: '100t',
-  },
-  {
-    store: '甲醇',
-    type: '第3.2类 中闪点一级易燃液体，有毒品（β=2）',
-    acture: '10t',
-    max: '500t',
-  },
-  {
-    store: 'N,N二甲基甲酰胺',
-    type: '第3.3类  高闪点易燃液体（β=1.5）',
-    acture: '12t',
-    max: '50t',
-  },
-  {
-    store: '二氯甲烷',
-    type: '第6.1类  毒害品（β=2）',
-    acture: '8t',
-    max: '10t',
-  },
-];
 const fields = [
-  { label: '存储物质', value: 'store' },
-  { label: '危险性类别', value: 'type' },
-  { label: '实时储量(q)', value: 'acture' },
-  { label: '临界量(Q)', value: 'max' },
+  { label: '存储物质', value: 'chineName' },
+  {
+    label: '危险性类别',
+    value: 'riskCateg',
+    render: (val, data) => {
+      const betaStr = data.beta || data.beta === 0 ? `（β=${data.beta}）` : '';
+      return RISK_CATEGORIES[val] ? `${RISK_CATEGORIES[val]}${betaStr}` : NO_DATA;
+    },
+  },
+  // { label: '实时储量(q)', value: 'acture' },
+  { label: '临界量(Q)', value: 'ljl', render: val => (val || val === 0 ? `${val}t` : NO_DATA) },
 ];
+
+const getAlpha = number => {
+  const num = +number;
+  if (num === 0) return '0.5';
+  else if (num >= 1 && num <= 29) return '1.0';
+  else if (num >= 30 && num <= 49) return '1.2';
+  else if (num >= 50 && num <= 99) return '1.5';
+  else if (num >= 100) return '2.0';
+};
 
 export default class DangerSourceLvlDrawer extends PureComponent {
   constructor(props) {
@@ -96,8 +50,13 @@ export default class DangerSourceLvlDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose } = this.props;
-    // const {} = this.state;
+    const {
+      visible,
+      onClose,
+      dangerSourceDetail: { r, personNum },
+      dangerSourceMaterials: { miList = [], alpha },
+    } = this.props;
+    const materials = uniqueByid(miList);
 
     return (
       <DrawerContainer
@@ -111,7 +70,7 @@ export default class DangerSourceLvlDrawer extends PureComponent {
           <div className={styles.container}>
             <div className={styles.rlvl}>
               <span className={styles.label}>R值：</span>
-              {3}
+              {r}
               <Tooltip
                 title="由专家根据公式评估算出，具体参照《GB 18218-2018 危险化学品重大危险源辨识》"
                 overlayStyle={{ zIndex: 9999 }}
@@ -125,23 +84,29 @@ export default class DangerSourceLvlDrawer extends PureComponent {
             <div className={styles.subTitle}>
               <span className={styles.circle} />
               <span className={styles.label}>周围500米内常住人口数量：</span>
-              {`30(α=1.0)`}
-            </div>
-            <div className={styles.subTitle} style={{ marginBottom: '8px' }}>
-              <span className={styles.circle} />
-              <span className={styles.label}>重大危险源存储物质</span>
+              {personNum || NO_DATA}
+              {personNum && ` (α=${getAlpha(personNum)})`}
             </div>
 
-            {/* {basicList.map((item, index) => (
+            {materials.length > 0 && (
+              <div>
+                <div className={styles.subTitle} style={{ marginBottom: '8px' }}>
+                  <span className={styles.circle} />
+                  <span className={styles.label}>重大危险源存储物质</span>
+                </div>
+
+                {/* {basicList.map((item, index) => (
               <CardItem key={index} data={item} fields={basicFields} />
             ))} */}
-            {/* <div className={styles.title}>
+                {/* <div className={styles.title}>
               <span className={styles.rect} />
               重大危险源存储物质
             </div> */}
-            {list.map((item, index) => (
-              <CardItem key={index} data={item} fields={fields} />
-            ))}
+                {materials.map((item, index) => (
+                  <CardItem key={index} data={item} fields={fields} />
+                ))}
+              </div>
+            )}
           </div>
         }
       />

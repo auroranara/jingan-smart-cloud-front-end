@@ -240,14 +240,16 @@ export default class TankMonitorDrawer extends Component {
           </div>
           <div className={styles.bottomContent}>{emergencyMeasure}</div>
         </div>
-        <NewVideoPlay
-          style={{ zIndex: 9999 }}
-          videoList={videoList}
-          visible={videoVisible}
-          showList={true}
-          keyId={videoKeyId}
-          handleVideoClose={this.hideVideo}
-        />
+        {videoVisible && (
+          <NewVideoPlay
+            style={{ zIndex: 9999 }}
+            videoList={videoList}
+            visible={videoVisible}
+            showList={true}
+            keyId={videoKeyId}
+            handleVideoClose={this.hideVideo}
+          />
+        )}
       </CustomDrawer>
     );
   }

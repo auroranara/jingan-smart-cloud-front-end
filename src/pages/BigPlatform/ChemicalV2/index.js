@@ -296,6 +296,8 @@ export default class Chemical extends PureComponent {
         'fetchMonitorEquipCount',
         // 消防主机列表
         'fetchFireDeviceList',
+        // 重大危险源存储物质
+        'fetchDangerSourceMaterials',
       ],
     });
   }
@@ -427,6 +429,8 @@ export default class Chemical extends PureComponent {
         +type === 100 && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
         // 更新监测对象各个类型的数量
         +type === 100 && this.fetchMonitorTargetCount({ companyId });
+        // 更新IoT监测各个类型的数量
+        +type === 100 && this.fetchMonitorEquipCount({ companyId });
       } catch (error) {
         console.log('error', error);
       }
@@ -674,8 +678,8 @@ export default class Chemical extends PureComponent {
     this.setState({ videoList, videoVisible: true });
   };
 
-  handleParentChange = newState => {
-    this.setState({ ...newState });
+  handleParentChange = (newState, callback) => {
+    this.setState({ ...newState }, callback);
   };
 
   handleClickNotification = () => {
@@ -1167,6 +1171,7 @@ export default class Chemical extends PureComponent {
   handleShowDangerSourceDetail = detail => {
     this.setState({ dangerSourceDetail: detail });
     this.setDrawerVisible('dangerSourceInfo');
+    this.fetchDangerSourceMaterials({ id: detail.id });
   };
 
   // 重点监管危化品生产存储场所
@@ -1247,6 +1252,7 @@ export default class Chemical extends PureComponent {
           tankManages = [],
           warehouseInfos = [],
         },
+        dangerSourceMaterials,
       },
       match: {
         params: { unitId: companyId },
@@ -1490,14 +1496,16 @@ export default class Chemical extends PureComponent {
           dict={specialEquipDict}
         />
 
-        <NewVideoPlay
-          showList={true}
-          videoList={videoList}
-          visible={videoVisible}
-          keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
-          handleVideoClose={() => this.setState({ videoVisible: false })}
-          isTree={false}
-        />
+        {videoVisible && (
+          <NewVideoPlay
+            showList={true}
+            videoList={videoList}
+            visible={videoVisible}
+            keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
+            handleVideoClose={() => this.setState({ videoVisible: false })}
+            isTree={false}
+          />
+        )}
 
         <MonitorDrawer
           visible={monitorDrawerVisible}
@@ -1562,6 +1570,8 @@ export default class Chemical extends PureComponent {
           }}
           setDrawerVisible={this.setDrawerVisible}
           dangerSourceDetail={dangerSourceDetail}
+          handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
+          dangerSourceMaterials={dangerSourceMaterials}
         />
 
         <DangerSourceLvlDrawer
@@ -1570,6 +1580,8 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('dangerSourceLvl');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          dangerSourceDetail={dangerSourceDetail}
+          dangerSourceMaterials={dangerSourceMaterials}
         />
 
         <ChemicalDrawer

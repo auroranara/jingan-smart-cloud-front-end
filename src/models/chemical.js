@@ -12,6 +12,7 @@ import {
   getMesageByMaterialId,
   monitorEquipmentTypeCountDto,
   fireDeviceList,
+  getWZList,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
@@ -54,6 +55,7 @@ export default {
       tankManages: [],
       warehouseInfos: [],
     },
+    dangerSourceMaterials: {},
   },
 
   effects: {
@@ -328,6 +330,21 @@ export default {
           type: 'save',
           payload: {
             mesageByMaterialId,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 重大危险源存储物质
+    *fetchDangerSourceMaterials({ payload, callback }, { call, put }) {
+      const response = yield call(getWZList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const dangerSourceMaterials = data;
+        yield put({
+          type: 'save',
+          payload: {
+            dangerSourceMaterials,
           },
         });
       }

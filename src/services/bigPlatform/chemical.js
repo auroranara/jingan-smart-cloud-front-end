@@ -67,3 +67,8 @@ export async function monitorEquipmentTypeCountDto(params) {
 export async function fireDeviceList(params) {
   return request(`${URL_PREFIX}/fireControl/fireDevice/page?${stringify(params)}`);
 }
+
+// 重大危险源存储物质
+export async function getWZList(params) {
+  return request(`${URL_PREFIX}/dangerSource/getWZList?${stringify(params)}`);
+}

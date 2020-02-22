@@ -484,7 +484,7 @@ export default class Messages extends PureComponent {
           {
             value: () => {
               if (+statusType === -1 && +fixType === 5) return null;
-              else if ([-1].includes(+statusType))
+              else if ([-1, 1].includes(+statusType))
                 return (
                   <div>{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
                     ['预警', '告警'].includes(typeName)
