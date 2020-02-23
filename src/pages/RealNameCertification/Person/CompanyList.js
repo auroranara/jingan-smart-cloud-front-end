@@ -11,8 +11,8 @@ import {
   Col,
   Row,
   Select,
-  AutoComplete,
   message,
+  Input,
 } from 'antd';
 import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
@@ -56,11 +56,11 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(({ personnelInfo, hiddenDangerReport, user, loading }) => ({
-  personnelInfo,
+@connect(({ realNameCertification, hiddenDangerReport, user, loading }) => ({
+  realNameCertification,
   hiddenDangerReport,
   user,
-  formLoading: loading.models.personnelInfo,
+  loading: loading.effects['realNameCertification/fetchCompanyList'],
 }))
 @Form.create()
 export default class CompanyList extends PureComponent {
@@ -74,12 +74,43 @@ export default class CompanyList extends PureComponent {
     };
   }
 
-  // componentDidMount() {
-
-  // }
+  componentDidMount() {
+    this.handleQuery();
+  }
 
   // 查询列表
-  handleQuery = () => { }
+  handleQuery = (payload = { pageNum: 1, pageSize: defaultPageSize }) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const values = getFieldsValue();
+    dispatch({
+      type: 'realNameCertification/fetchCompanyList',
+      payload: { ...payload, ...values },
+    });
+  }
+
+  handleLoadMore = () => {
+    const {
+      realNameCertification: {
+        company: {
+          pagination: { pageNum, pageSize },
+          isLast,
+        },
+      },
+    } = this.props;
+    if (isLast) return;
+    this.handleQuery({ pageNum: pageNum + 1, pageSize });
+  }
+
+  handleReset = () => {
+    const {
+      form: { resetFields },
+    } = this.props;
+    resetFields();
+    this.handleQuery();
+  }
 
   // 单位下拉框输入
   onUnitChange = value => {
@@ -130,45 +161,20 @@ export default class CompanyList extends PureComponent {
 
   // 打开新增人员modal
   handleViewAdd = () => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    this.setState({ modalVisible: true });
-    setFieldsValue({
-      companyId: undefined,
-    });
-    // 获取模糊搜索单位列表
-    this.fetchUnitList();
+    router.push('/real-name-certification/personnel-management/add');
   }
 
   // 渲染筛选栏
   renderFilter = () => {
     const {
-      formLoading: loading,
       form: { getFieldDecorator },
-      hiddenDangerReport: { unitIdes },
     } = this.props;
     return (
       <Card>
         <Form layout="inline">
           <FormItem>
-            {getFieldDecorator('company_id')(
-              <AutoComplete
-                allowClear
-                mode="combobox"
-                optionLabelProp="children"
-                placeholder="请选择单位"
-                notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                onSearch={this.onUnitChange}
-                filterOption={false}
-                style={{ width: '300px' }}
-              >
-                {unitIdes.map(({ id, name }) => (
-                  <Option value={id} key={id}>
-                    {name}
-                  </Option>
-                ))}
-              </AutoComplete>
+            {getFieldDecorator('companyName')(
+              <Input placeholder="单位名称" />
             )}
           </FormItem>
           <FormItem>
@@ -255,12 +261,11 @@ export default class CompanyList extends PureComponent {
 
   render() {
     const {
-      formLoading: loading,
-      form: { getFieldDecorator },
-      hiddenDangerReport: { unitIdes },
+      loading,
+      realNameCertification: {
+        company: { isLast },
+      },
     } = this.props;
-    const { modalVisible } = this.state;
-
     return (
       <PageHeaderLayout
         title={title}
@@ -280,7 +285,7 @@ export default class CompanyList extends PureComponent {
       >
         <BackTop />
         {this.renderFilter()}
-        {/* <InfiniteScroll
+        <InfiniteScroll
           initialLoad={false}
           pageStart={0}
           loadMore={() => {
@@ -299,9 +304,8 @@ export default class CompanyList extends PureComponent {
           }
         >
           {this.renderList()}
-        </InfiniteScroll> */}
-        {this.renderList()}
-        <Modal
+        </InfiniteScroll>
+        {/* <Modal
           title="添加单位"
           visible={modalVisible}
           onCancel={() => { this.setState({ modalVisible: false }) }}
@@ -338,7 +342,7 @@ export default class CompanyList extends PureComponent {
               )}
             </FormItem>
           </Form>
-        </Modal>
+        </Modal> */}
       </PageHeaderLayout>
     )
   }
