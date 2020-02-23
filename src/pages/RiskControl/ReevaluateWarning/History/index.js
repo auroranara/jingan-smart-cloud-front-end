@@ -20,7 +20,7 @@ const BREADCRUMB_LIST = [
 ];
 const Fields = [
   {
-    id: 'area',
+    id: 'zoneName',
     label: '区域名称',
     transform: value => value.trim(),
     render: ({ handleSearch }) => (
@@ -28,14 +28,14 @@ const Fields = [
     ),
   },
   {
-    id: 'planTime',
+    id: 'reviewDate',
     label: '应复评时间',
     render: () => (
       <DatePickerOrSpan placeholder="请选择应复评时间" allowClear className={styles.datePicker} />
     ),
   },
   {
-    id: 'realTime',
+    id: 'realityReviewDate',
     label: '实际复评时间',
     render: () => (
       <DatePickerOrSpan placeholder="请选择实际复评时间" allowClear className={styles.datePicker} />
@@ -45,55 +45,56 @@ const Fields = [
 const Columns = [
   {
     title: '区域名称',
-    dataIndex: 'areaName',
+    dataIndex: 'zoneName',
     align: 'center',
   },
   {
     title: '区域编号',
-    dataIndex: 'areaNumber',
+    dataIndex: 'zoneCode',
     align: 'center',
   },
   {
     title: '所属图层',
-    dataIndex: 'layer',
+    dataIndex: 'zoneType',
     align: 'center',
   },
   {
     title: '区域变更时间',
-    dataIndex: 'updateTime',
+    dataIndex: 'changeDate',
     render: time => time && moment(time).format(DEFAULT_FORMAT),
     align: 'center',
   },
   {
     title: '原复评周期（月）',
-    dataIndex: 'prevPeriod',
+    dataIndex: 'checkCircle',
     align: 'center',
   },
   {
     title: '变更后周期（月）',
-    dataIndex: 'period',
+    dataIndex: 'reviewCycle',
     align: 'center',
   },
   {
     title: '应复评时间',
-    dataIndex: 'planTime',
+    dataIndex: 'reviewDate',
     render: time => time && moment(time).format(DEFAULT_FORMAT),
     align: 'center',
   },
   {
     title: '实际复评时间',
-    dataIndex: 'realTime',
+    dataIndex: 'realityReviewDate',
     render: time => time && moment(time).format(DEFAULT_FORMAT),
     align: 'center',
   },
   {
     title: '复评人员',
-    dataIndex: 'reevaluators',
+    dataIndex: 'reviewPersonName',
     align: 'center',
+    render: (val) => Array.isArray(val) ? val.join('，') : '',
   },
   {
     title: '附件',
-    dataIndex: 'file',
+    dataIndex: 'otherFileList',
     align: 'center',
     render: value => <CustomUpload className={styles.customUpload} value={value} type="span" />,
   },
@@ -132,14 +133,12 @@ export default class ReevaluateWarningHistory extends Component {
 
   reload = () => {
     const {
-      match: {
-        params: { id },
-      },
+      location: { query: { zoneId } },
       history: { pagination: { pageNum = 1, pageSize = getPageSize() } = {} } = {},
       getHistory,
     } = this.props;
     getHistory({
-      id,
+      zoneId,
       pageNum,
       pageSize,
       ...this.prevValues,
@@ -151,15 +150,13 @@ export default class ReevaluateWarningHistory extends Component {
   // 查询按钮点击事件
   handleSearchButtonClick = values => {
     const {
-      match: {
-        params: { id },
-      },
+      location: { query: { zoneId } },
       history: { pagination: { pageSize = getPageSize() } = {} } = {},
       getHistory,
     } = this.props;
     this.prevValues = values;
     getHistory({
-      id,
+      zoneId,
       pageNum: 1,
       pageSize,
       ...values,
@@ -174,14 +171,12 @@ export default class ReevaluateWarningHistory extends Component {
   // 表格的change事件
   handleTableChange = ({ current, pageSize }) => {
     const {
-      match: {
-        params: { id },
-      },
+      location: { query: { zoneId } },
       history: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
       getHistory,
     } = this.props;
     getHistory({
-      id,
+      zoneId,
       pageNum: prevPageSize !== pageSize ? 1 : current,
       pageSize,
       ...this.prevValues,
@@ -234,8 +229,8 @@ export default class ReevaluateWarningHistory extends Component {
               }}
             />
           ) : (
-            <Empty />
-          )}
+              <Empty />
+            )}
         </Spin>
       </Card>
     );

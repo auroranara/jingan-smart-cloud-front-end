@@ -29,6 +29,10 @@ const warehouseImg = 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png';
 const gasometerImg = 'http://data.jingan-china.cn/v2/chem/screen/gasometer.png';
 const productDeviceImg = 'http://data.jingan-china.cn/v2/chem/screen/productDevice.png';
 const pipelineImg = 'http://data.jingan-china.cn/v2/chem/screen/pipeline.png';
+// 可燃气体图片
+const iconFlamGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/gas.png';
+// 有毒气体图片
+const iconToxicGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/poison.png';
 
 const renderEllipsis = val => (
   <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
@@ -1616,7 +1620,8 @@ export const MsgShowTypes = [
   100, // 监测设备
 ];
 
-export const TypeClickList = [100, 14, 15, 16, 17];
+// export const TypeClickList = [100, 14, 15, 16, 17];
+export const TypeClickList = [100];
 
 export const MonitorConfig = {
   '301': {
@@ -1819,6 +1824,37 @@ export const MonitorConfig = {
       { label: '设计压力（KPa）', value: 'designPressure' },
     ],
   },
+  '405': {
+    // 可燃气体监测
+    title: '可燃气体监测',
+    icon: ({ realValue }) => (
+      <div
+        className={styles.iconWrapper}
+        style={{ background: `url(${iconFlamGas}) center center / 100% auto no-repeat` }}
+      >
+        <div>LEL</div>
+        <div>{realValue}%</div>
+      </div>
+    ),
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      {
+        label: '编号',
+        value: 'code',
+      },
+      {
+        label: '浓度（%LEL）',
+        value: 'allMonitorParam',
+        render: val => (+val === 1 ? '是' : '否'),
+      },
+      { label: '更新时间', value: 'allMonitorParam' },
+    ],
+  },
 };
 
 export const DangerFactorsColumns = [
@@ -1915,8 +1951,8 @@ export const SafetyRiskColumns = [
   },
   {
     title: '可能导致事故类别',
-    dataIndex: 'consequence',
-    key: 'consequence',
+    dataIndex: 'consequenceMeasure',
+    key: 'consequenceMeasure',
     align: 'center',
     width: 340,
     render: renderEllipsis,

@@ -52,6 +52,8 @@ import {
   PoisonDrawer,
   MHDrawer,
   MonitorEquipDrawer,
+  IoTMonitorDrawer,
+  FireMonitorDrawer,
 } from './sections/Components';
 
 const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
@@ -101,7 +103,7 @@ const msgInfo = [
     title: '火警提示',
     icon: iconFire,
     color: '#f83329',
-    body: '发生报警，',
+    body: '发生火警，',
     bottom: '情况危急，请立即处理！',
     animation: styles.redShadow,
     types: [7, 38],
@@ -138,6 +140,12 @@ const SocketOptions = {
 };
 // const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
+const transformCondition = condition => {
+  if (condition === '>=') return '超过';
+  else if (condition === '<=') return '低于';
+  return condition;
+};
+
 @connect(
   ({
     unitSafety,
@@ -152,7 +160,9 @@ const SocketOptions = {
     baseInfo,
     materials,
     majorHazardInfo,
+    gasMonitor,
     emergencyManagement,
+    alarmWorkOrder,
   }) => ({
     unitSafety,
     bigPlatform,
@@ -165,9 +175,12 @@ const SocketOptions = {
     baseInfo,
     materials,
     majorHazardInfo,
+    gasMonitor,
     emergencyManagement,
+    alarmWorkOrder,
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
     riskPointLoading: loading.effects['unitSafety/fetchPoints'],
+    zoneLoading: loading.effects['chemical/fetchZoneContent'],
   })
 )
 export default class Chemical extends PureComponent {
@@ -229,6 +242,9 @@ export default class Chemical extends PureComponent {
       monitorEquipDrawerVisible: false,
       monitorMarker: {},
       dangerSourceDetail: {},
+      IoTMonitorDrawerVisible: false,
+      fireMonitorDrawerVisible: false,
+      selectedEquip: {},
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -276,15 +292,21 @@ export default class Chemical extends PureComponent {
         'fetchDangerSourceList',
         // 重点监管危化品生产存储场所
         'fetchMesageByMaterialId',
+        // 统计IoT监测各个类型的数量
+        'fetchMonitorEquipCount',
+        // 消防主机列表
+        'fetchFireDeviceList',
+        // 重大危险源存储物质
+        'fetchDangerSourceMaterials',
       ],
     });
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.init();
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.ws.close();
     notification.destroy();
   }
@@ -316,6 +338,8 @@ export default class Chemical extends PureComponent {
     this.fetchAllSpecialEquipList({ companyId });
     // 统计监测对象各个类型的数量
     this.fetchMonitorTargetCount({ companyId });
+    // 统计IoT监测各个类型的数量
+    this.fetchMonitorEquipCount({ companyId });
     // 到期提醒数量
     this.fetchPastStatusCount({ companyId });
     // 两重点一重大的数量
@@ -393,15 +417,20 @@ export default class Chemical extends PureComponent {
       try {
         const data = JSON.parse(e.data).data;
         console.log('e.data', data);
-        const { type } = data;
-        // if (
-        //   ['405', '406'].includes(`${data.monitorEquipmentType}`) &&
-        //   ['1', '2'].includes(`${data.warnLevel}`)
-        // ) {
-        +type === 100 && this.showNotification(data);
-        // }
+        const {
+          type,
+          monitorMessageDto: { monitorEquipmentId, statusType },
+        } = data;
+        // 更新消息
         this.fetchScreenMessage();
+        // 报警弹框
+        +type === 100 && this.showNotification(data);
+        // 地图点位弹跳
+        +type === 100 && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
+        // 更新监测对象各个类型的数量
         +type === 100 && this.fetchMonitorTargetCount({ companyId });
+        // 更新IoT监测各个类型的数量
+        +type === 100 && this.fetchMonitorEquipCount({ companyId });
       } catch (error) {
         console.log('error', error);
       }
@@ -425,7 +454,7 @@ export default class Chemical extends PureComponent {
     dispatch({
       type: 'newUnitFireControl/fetchScreenMessage',
       payload: { companyId },
-      success: res => { },
+      success: res => {},
     });
   };
 
@@ -444,7 +473,10 @@ export default class Chemical extends PureComponent {
         monitorEquipmentAreaLocation,
         monitorEquipmentName,
         faultTypeName,
+        condition,
         fixType,
+        monitorEquipmentType,
+        installAddress,
       },
     } = data;
     if (+statusType !== -1) return;
@@ -485,10 +517,11 @@ export default class Chemical extends PureComponent {
                 className={styles.alarm}
               >{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
                 ['预警', '告警'].includes(typeName)
-                  ? `，超过${typeName}值${Math.round(Math.abs(monitorValue - limitValue) * 100) /
-                  100}${paramUnit || ''}`
+                  ? `，${transformCondition(condition)}${typeName}值${Math.round(
+                      Math.abs(monitorValue - limitValue) * 100
+                    ) / 100}${paramUnit || ''}`
                   : ''
-                }`}</div>
+              }`}</div>
             )}
           {/* {![-2, -3].includes(+statusType) && (
             <div
@@ -503,8 +536,10 @@ export default class Chemical extends PureComponent {
           {[-3, 3].includes(+statusType) && (
             <div className={styles.alarm}>{`故障类型：${faultTypeName || ''}`}</div>
           )} */}
-          <div>{`监测设备：${monitorEquipmentName || ''}`}</div>
-          <div>{`区域位置：${monitorEquipmentAreaLocation || ''}`}</div>
+          {monitorEquipmentType !== '1' && <div>{`监测设备：${monitorEquipmentName || ''}`}</div>}
+          <div>{`区域位置：${
+            monitorEquipmentType !== '1' ? monitorEquipmentAreaLocation : installAddress || ''
+          }`}</div>
         </div>
       ),
       // duration: 30,
@@ -639,12 +674,12 @@ export default class Chemical extends PureComponent {
   };
 
   handleShowVideo = videoList => {
-    if(!videoList || !videoList.length) return;
+    if (!videoList || !videoList.length) return;
     this.setState({ videoList, videoVisible: true });
   };
 
-  handleParentChange = newState => {
-    this.setState({ ...newState });
+  handleParentChange = (newState, callback) => {
+    this.setState({ ...newState }, callback);
   };
 
   handleClickNotification = () => {
@@ -667,7 +702,7 @@ export default class Chemical extends PureComponent {
       ...options,
     });
 
-    this.childMap.handleUpdateMap();
+    this.childMap.handleUpdateMap('mgvmzd3bwa59qi4j', -1);
 
     setTimeout(() => {
       // 解决加入animation覆盖notification自身显示动效时长问题
@@ -1135,6 +1170,8 @@ export default class Chemical extends PureComponent {
   // 重大危险源详情
   handleShowDangerSourceDetail = detail => {
     this.setState({ dangerSourceDetail: detail });
+    this.setDrawerVisible('dangerSourceInfo');
+    this.fetchDangerSourceMaterials({ id: detail.id });
   };
 
   // 重点监管危化品生产存储场所
@@ -1144,10 +1181,51 @@ export default class Chemical extends PureComponent {
     this.handleMHOpen();
   };
 
+  // 监测设备列表
+  handleShowMonitorList = equip => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const { type } = equip;
+    this.setState({ selectedEquip: equip });
+    if (type === '1') {
+      // 消防主机
+      this.fetchFireDeviceList({ companyId, pageSize: 0, pageNum: 1 });
+      this.setDrawerVisible('fireMonitor');
+    } else {
+      dispatch({
+        type: 'gasMonitor/getRealTimeList',
+        payload: {
+          pageNum: 1,
+          pageSize: 0,
+          companyId,
+          equipmentType: type,
+        },
+      });
+      this.setDrawerVisible('IoTMonitor');
+    }
+  };
+
+  handleClickMsgEquip = equipmentId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'alarmWorkOrder/getDeviceDetail',
+      payload: { id: equipmentId },
+      callback: (success, deviceDetail) => {
+        if (success) {
+          this.handleClickMonitorIcon(deviceDetail);
+        }
+      },
+    });
+  };
+
   /**
    * 渲染
    */
-  render () {
+  render() {
     const {
       unitSafety: { points },
       bigPlatform: { hiddenDangerList },
@@ -1158,6 +1236,8 @@ export default class Chemical extends PureComponent {
       },
       chemical: {
         monitorTargetCount,
+        monitorEquipCount,
+        fireDeviceList,
         pastStatusCount,
         dangerSourceCount,
         tankList,
@@ -1172,6 +1252,7 @@ export default class Chemical extends PureComponent {
           tankManages = [],
           warehouseInfos = [],
         },
+        dangerSourceMaterials,
       },
       match: {
         params: { unitId: companyId },
@@ -1187,6 +1268,8 @@ export default class Chemical extends PureComponent {
         highRiskProcess: { list: highRiskProcessList = [] },
       },
       emergencyManagement: { specialEquipment: specialEquipDict = [] },
+      gasMonitor: { realTimeList },
+      zoneLoading,
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -1231,6 +1314,9 @@ export default class Chemical extends PureComponent {
       monitorEquipDrawerVisible,
       monitorMarker,
       dangerSourceDetail,
+      IoTMonitorDrawerVisible,
+      fireMonitorDrawerVisible,
+      selectedEquip,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1287,6 +1373,7 @@ export default class Chemical extends PureComponent {
               <div className={styles.leftBottom}>
                 <KeyPoints
                   monitorList={monitorTargetCount}
+                  monitorEquipList={monitorEquipCount}
                   dangerSourceCount={dangerSourceCount}
                   setDrawerVisible={this.setDrawerVisible}
                   handleGasOpen={this.handleGasOpen}
@@ -1296,6 +1383,7 @@ export default class Chemical extends PureComponent {
                   handleClickDangerSource={this.handleClickDangerSource}
                   handleShowChemicalList={this.handleShowChemicalList}
                   handleShowProcessList={this.handleShowProcessList}
+                  handleShowMonitorList={this.handleShowMonitorList}
                 />
               </div>
             </Col>
@@ -1319,18 +1407,19 @@ export default class Chemical extends PureComponent {
                     handleParentChange={this.handleParentChange}
                     handleGasOpen={this.handleGasOpen}
                     model={newUnitFireControl}
+                    handleClickMsgEquip={this.handleClickMsgEquip}
                   />
                 ) : (
-                    <div className={styles.msgContainer}>
-                      {/* <Badge count={3}> */}
-                      <Icon
-                        type="message"
-                        className={styles.msgIcon}
-                        onClick={() => this.setState({ msgVisible: true })}
-                      />
-                      {/* </Badge> */}
-                    </div>
-                  )}
+                  <div className={styles.msgContainer}>
+                    {/* <Badge count={3}> */}
+                    <Icon
+                      type="message"
+                      className={styles.msgIcon}
+                      onClick={() => this.setState({ msgVisible: true })}
+                    />
+                    {/* </Badge> */}
+                  </div>
+                )}
 
                 <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
               </div>
@@ -1378,6 +1467,7 @@ export default class Chemical extends PureComponent {
           zoneContent={zoneContent}
           handleClickHiddenDanger={this.handleClickHiddenDanger}
           handleShowRiskPoint={this.handleShowRiskPoint}
+          loading={zoneLoading}
         />
 
         <StorageAreaDrawer
@@ -1406,14 +1496,16 @@ export default class Chemical extends PureComponent {
           dict={specialEquipDict}
         />
 
-        <NewVideoPlay
-          showList={true}
-          videoList={videoList}
-          visible={videoVisible}
-          keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
-          handleVideoClose={() => this.setState({ videoVisible: false })}
-          isTree={false}
-        />
+        {videoVisible && (
+          <NewVideoPlay
+            showList={true}
+            videoList={videoList}
+            visible={videoVisible}
+            keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
+            handleVideoClose={() => this.setState({ videoVisible: false })}
+            isTree={false}
+          />
+        )}
 
         <MonitorDrawer
           visible={monitorDrawerVisible}
@@ -1424,8 +1516,8 @@ export default class Chemical extends PureComponent {
           monitorData={monitorData}
           handleClickMonitorDetail={this.handleClickMonitorDetail}
           setDrawerVisible={this.setDrawerVisible}
-        // handleGasOpen={this.handleGasOpen}
-        // handlePoisonOpen={this.handlePoisonOpen}
+          // handleGasOpen={this.handleGasOpen}
+          // handlePoisonOpen={this.handlePoisonOpen}
         />
 
         {/* <StorageDrawer
@@ -1478,6 +1570,8 @@ export default class Chemical extends PureComponent {
           }}
           setDrawerVisible={this.setDrawerVisible}
           dangerSourceDetail={dangerSourceDetail}
+          handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
+          dangerSourceMaterials={dangerSourceMaterials}
         />
 
         <DangerSourceLvlDrawer
@@ -1486,6 +1580,8 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('dangerSourceLvl');
           }}
           setDrawerVisible={this.setDrawerVisible}
+          dangerSourceDetail={dangerSourceDetail}
+          dangerSourceMaterials={dangerSourceMaterials}
         />
 
         <ChemicalDrawer
@@ -1577,11 +1673,17 @@ export default class Chemical extends PureComponent {
           visible={tankAreaDrawerVisible}
           data={monitorObjectDetail}
           tabs={[
-            { tab: '储罐监测', dataSourse: tanksUnderArea.filter(item => item.meList && item.meList.length), fields: TANK_FIELDS },
+            {
+              tab: '储罐监测',
+              dataSourse: tanksUnderArea.filter(item => item.meList && item.meList.length),
+              fields: TANK_FIELDS,
+            },
             { tab: '可燃气体', dataSourse: flameGasList, fields: GAS_FIELDS },
             { tab: '有毒气体', dataSourse: toxicGasList, fields: GAS_FIELDS },
           ].filter(({ dataSourse }) => dataSourse && dataSourse.length)}
-          onClose={() => { this.setState({ tankAreaDrawerVisible: false }) }}
+          onClose={() => {
+            this.setState({ tankAreaDrawerVisible: false });
+          }}
           onVideoClick={this.handleShowVideo}
         />
 
@@ -1591,11 +1693,17 @@ export default class Chemical extends PureComponent {
           visible={storehouseDrawerVisible}
           data={monitorObjectDetail}
           tabs={[
-            { tab: '库房监测', dataSourse: storeroomList.filter(item => item.meList && item.meList.length), fields: Treasury_FIELDS },
+            {
+              tab: '库房监测',
+              dataSourse: storeroomList.filter(item => item.meList && item.meList.length),
+              fields: Treasury_FIELDS,
+            },
             { tab: '可燃气体', dataSourse: flameGasList, fields: GAS_FIELDS },
             { tab: '有毒气体', dataSourse: toxicGasList, fields: GAS_FIELDS },
           ].filter(({ dataSourse }) => dataSourse && dataSourse.length)}
-          onClose={() => { this.setState({ storehouseDrawerVisible: false }) }}
+          onClose={() => {
+            this.setState({ storehouseDrawerVisible: false });
+          }}
           onVideoClick={this.handleShowVideo}
         />
 
@@ -1606,6 +1714,30 @@ export default class Chemical extends PureComponent {
             this.setDrawerVisible('monitorEquip');
           }}
           monitorMarker={monitorMarker}
+          handleShowVideo={this.handleShowVideo}
+          handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
+        />
+
+        {/* 监测设备弹窗 */}
+        <IoTMonitorDrawer
+          visible={IoTMonitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('IoTMonitor');
+          }}
+          selectedEquip={selectedEquip}
+          list={realTimeList}
+          handleShowVideo={this.handleShowVideo}
+          handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
+        />
+
+        {/* 主机监测设备弹窗 */}
+        <FireMonitorDrawer
+          visible={fireMonitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('fireMonitor');
+          }}
+          selectedEquip={selectedEquip}
+          list={fireDeviceList}
           handleShowVideo={this.handleShowVideo}
           handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
         />

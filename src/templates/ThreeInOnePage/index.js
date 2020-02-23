@@ -7,6 +7,7 @@ import InputOrSpan from '@/jingan-components/InputOrSpan';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import RadioOrSpan from '@/jingan-components/RadioOrSpan';
+import SwitchOrSpan from '@/jingan-components/SwitchOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import Text from '@/jingan-components/Text';
 import { connect } from 'dva';
@@ -72,13 +73,14 @@ const STYLE = {
           breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
           key: 'menu',
         }
-      );
+      ).breadcrumbList;
     }
     return {
       unitId,
       detail,
       loading,
       breadcrumbList,
+      isAdd: name === 'add',
       isNotDetail: name !== 'detail',
       isEdit: name === 'edit',
       hasEditAuthority: permissionCodes.includes(code.replace(name, 'edit')),
@@ -167,9 +169,12 @@ export default class ThreeInOnePage extends Component {
     setDetail();
     getDetail(undefined, (success, data) => {
       if (success) {
-        this.setState({
-          initialValues: initialize ? initialize(data) : data,
-        });
+        this.setState(
+          {
+            initialValues: initialize ? initialize(data) : data,
+          },
+          this.refresh
+        );
       }
     });
   }
@@ -249,7 +254,7 @@ export default class ThreeInOnePage extends Component {
         fields: item.fields.map(this.renderItem),
       };
     } else {
-      const { isEdit, isNotDetail, layout } = this.props;
+      const { isAdd, isEdit, isNotDetail, layout } = this.props;
       const { initialValues } = this.state;
       const {
         id,
@@ -358,6 +363,15 @@ export default class ThreeInOnePage extends Component {
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
+          } else if (component === 'Switch') {
+            return (
+              <SwitchOrSpan
+                type={isNotDetail || 'span'}
+                {...props}
+                className={classNames(styles.switch, props && props.className)}
+                onChange={this.generateChangeCallback(refreshEnable, props)}
+              />
+            );
           } else if (component === 'Text') {
             return <Text {...props} />;
           } else {
@@ -372,38 +386,35 @@ export default class ThreeInOnePage extends Component {
             );
           }
         },
-        options:
-          isNotDetail && required
-            ? options
-              ? {
-                  ...options,
-                  initialValue: initialValues[id],
-                }
-              : {
-                  initialValue: initialValues[id],
-                  rules: [
-                    {
-                      type: ['CompanySelect', 'DatePicker'].includes(component)
-                        ? 'object'
+        options: {
+          rules:
+            isNotDetail && required
+              ? [
+                  {
+                    type: ['CompanySelect', 'DatePicker'].includes(component)
+                      ? 'object'
+                      : undefined,
+                    required: true,
+                    whitespace: ['Input', 'TextArea'].includes(component) ? true : undefined,
+                    message: `${label}不能为空`,
+                    transform:
+                      component === 'RangePicker'
+                        ? value => value && value[0] && value[1]
                         : undefined,
-                      required: true,
-                      whitespace: ['Input', 'TextArea'].includes(component) ? true : undefined,
-                      message: `${label}不能为空`,
-                      transform:
-                        component === 'RangePicker'
-                          ? value => value && value[0] && value[1]
-                          : undefined,
-                      ...(component === 'CustomUpload' && {
-                        type: 'array',
-                        min: 1,
-                        // transform: value => value && value.filter(({ status }) => status === 'done'),
-                      }),
-                    },
-                  ],
-                }
-            : {
-                initialValue: initialValues[id],
-              },
+                    ...(component === 'CustomUpload' && {
+                      type: 'array',
+                      min: 1,
+                      // transform: value => value && value.filter(({ status }) => status === 'done'),
+                    }),
+                  },
+                ]
+              : undefined,
+          ...options,
+          initialValue:
+            isAdd && options && options.hasOwnProperty('initialValue')
+              ? options.initialValue
+              : initialValues[id],
+        },
       };
     }
   };

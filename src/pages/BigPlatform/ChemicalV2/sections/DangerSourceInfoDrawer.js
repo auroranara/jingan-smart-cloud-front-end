@@ -1,120 +1,19 @@
 import React, { PureComponent, Fragment } from 'react';
-import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceInfoDrawer.less';
 import { CardItem } from '../components/Components';
-import Wave from '@/jingan-components/Wave';
+import { MonitorConfig } from '../utils';
+import iconAlarm from '@/assets/icon-alarm.png';
 
-const basicList = [
-  {
-    code: '156487941654',
-    name: '危险品液体原料储罐区',
-    level: '四级',
-    RValue: 8,
-    location: '东厂区1号楼',
-    // time: '2019.01.01',
-    man: '李磊 13056177523',
-  },
-];
-const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
-
-const creatNum = (num, m) => {
-  return (Array(m).join(0) + num).slice(-m);
+const monitorTypes = ['302', '304', '311', '312', '314'];
+const nameLabels = ['储罐名称', '库房名称', '装置名称', '气柜名称', '管道名称'];
+const uniqueByid = array => {
+  return array.reduce((prev, next) => {
+    const ids = prev.map(item => item.id);
+    if (ids.indexOf(next.id) < 0) prev.push(next);
+    return prev;
+  }, []);
 };
-const list = [
-  {
-    store: '无水乙醇',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '5t',
-    max: '16t',
-  },
-  {
-    store: '无水乙醇',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '10t',
-    max: '16t',
-  },
-  {
-    store: '丙酮',
-    type: '第3.1类  低闪点易燃液体',
-    acture: '8t',
-    max: '16t',
-  },
-  {
-    store: '二甲苯',
-    type: '第3.3类  高闪点易燃液体',
-    acture: '8t',
-    max: '18t',
-  },
-  {
-    store: '乙酸乙酯',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '8t',
-    max: '18t',
-  },
-  {
-    store: '乙腈',
-    type: '第3类 易燃液体，有毒品',
-    acture: '10t',
-    max: '16t',
-  },
-  {
-    store: '甲醇',
-    type: '第3.2类 中闪点一级易燃液体，有毒品',
-    acture: '10t',
-    max: '16t',
-  },
-  {
-    store: 'N,N二甲基甲酰胺',
-    type: '第3.3类  高闪点易燃液体',
-    acture: '12t',
-    max: '20t',
-  },
-  {
-    store: '乙腈',
-    type: '第3类 易燃液体，有毒品',
-    acture: '10t',
-    max: '16t',
-  },
-  {
-    store: '二氯甲烷',
-    type: '第6.1类  毒害品',
-    acture: '10t',
-    max: '30t',
-  },
-  {
-    store: '无水乙醇',
-    type: '第3.2类 中闪点易燃液体',
-    acture: '10t',
-    max: '16t',
-  },
-].map((item, index) => ({
-  ...item,
-  name: `${index + 1}号储罐`,
-  number: creatNum(index + 1, 4),
-  icon: ({ name }) => (
-    <div
-      className={styles.iconWrapper}
-      style={{
-        background: `url(${storageImg}) center center / 100% auto no-repeat`,
-      }}
-    >
-      <Wave
-        frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
-        backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
-      />
-      <div className={styles.iconName}>{name}</div>
-    </div>
-  ),
-}));
-const fields = [
-  { label: '储罐', value: 'name' },
-  { label: '位号', value: 'number' },
-  { label: '存储物质', value: 'store' },
-  { label: '危险性类别', value: 'type' },
-  { label: '设计储量', value: 'max' },
-  { label: '实时储量', value: 'acture' },
-];
 
 export default class DangerSourceInfoDrawer extends PureComponent {
   constructor(props) {
@@ -128,8 +27,32 @@ export default class DangerSourceInfoDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, setDrawerVisible, dangerSourceDetail } = this.props;
-    // const {} = this.state;
+    const {
+      visible,
+      onClose,
+      dangerSourceDetail = {},
+      handleShowDangerSourceLvl,
+      handleClickShowMonitorDetail,
+      dangerSourceMaterials: { miList = [] },
+    } = this.props;
+    const {
+      dangerSourceList: {
+        productDevice = [],
+        industryPipeline = [],
+        gasHolderManage = [],
+        tankArea = [],
+        wareHouseArea = [],
+      } = {},
+      id,
+    } = dangerSourceDetail;
+    const tmList = tankArea.reduce((prev, next) => {
+      const { tmList } = next;
+      return [...prev, ...tmList];
+    }, []);
+    const warehouseInfos = wareHouseArea.reduce((prev, next) => {
+      const { warehouseInfos } = next;
+      return [...prev, ...warehouseInfos];
+    }, []);
     const basicFields = [
       { label: '统一编码', value: 'code' },
       { label: '重大危险源名称', value: 'name' },
@@ -147,6 +70,13 @@ export default class DangerSourceInfoDrawer extends PureComponent {
       { label: '责任人', value: 'dutyPerson' },
     ];
 
+    const monitors = [tmList, warehouseInfos, productDevice, gasHolderManage, industryPipeline];
+    const total = monitors.reduce((prev, next) => {
+      prev += next.length;
+      return prev;
+    }, 0);
+    const materials = uniqueByid(miList);
+
     return (
       <DrawerContainer
         // title="重大危险源监测"
@@ -163,27 +93,66 @@ export default class DangerSourceInfoDrawer extends PureComponent {
             <CardItem data={dangerSourceDetail} fields={basicFields} />
             <div className={styles.title}>防护要求：</div>
             <div className={styles.content}>
-              必须戴防护手套，必须戴防毒面具，必须穿防护服，必须戴防护眼镜
+              {/* 必须戴防护手套，必须戴防毒面具，必须穿防护服，必须戴防护眼镜 */}
+              {materials.length > 0
+                ? materials.map((item, index) => <div key={index}>{item.fhyq}</div>)
+                : '暂无数据'}
             </div>
             <div className={styles.title}>安全措施：</div>
             <div className={styles.content}>
-              严格按照规定穿戴劳动保护，定期进行巡查，发现泄露及时处理。作业时严格遵守安全操作过程，保持设备通风良好。
+              {/* 严格按照规定穿戴劳动保护，定期进行巡查，发现泄露及时处理。作业时严格遵守安全操作过程，保持设备通风良好。 */}
+              {materials.length > 0
+                ? materials.map((item, index) => <div key={index}>{item.aqcs}</div>)
+                : '暂无数据'}
             </div>
-            <div className={styles.title}>存储情况：</div>
-            {list.map((item, index) => (
-              <CardItem
-                key={index}
-                data={item}
-                fields={fields}
-                extraBtn={
-                  <Fragment>
-                    <div className={styles.more} onClick={() => setDrawerVisible('tankMonitor')}>
-                      监测详情>
-                    </div>
-                  </Fragment>
-                }
-              />
-            ))}
+            {total > 0 && (
+              <div>
+                <div className={styles.title}>存储情况：</div>
+                {monitors.map((dataList, index) => {
+                  const monitorType = monitorTypes[index];
+                  const { title, fields, icon } = MonitorConfig[monitorType] || {};
+
+                  return dataList.map((item, i) => {
+                    const { warnStatus } = item;
+                    const newItem = {
+                      ...item,
+                      icon: typeof icon === 'function' ? icon(item) : icon,
+                    };
+
+                    return (
+                      <CardItem
+                        key={i}
+                        data={newItem}
+                        fields={[
+                          { label: nameLabels[index], value: fields[0].value },
+                          ...fields.slice(1),
+                        ]}
+                        extraBtn={
+                          <Fragment>
+                            {+warnStatus === -1 && (
+                              <div
+                                className={styles.alarm}
+                                style={{
+                                  background: `url(${iconAlarm}) center center / 100% auto no-repeat`,
+                                }}
+                              />
+                            )}
+                            <div
+                              className={styles.more}
+                              onClick={() => {
+                                handleClickShowMonitorDetail(monitorType, item.id);
+                              }}
+                            >
+                              监测详情>
+                            </div>
+                          </Fragment>
+                        }
+                      />
+                    );
+                  });
+                })}
+              </div>
+            )}
           </div>
         }
       />

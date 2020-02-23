@@ -8,6 +8,20 @@
   margin-right: -15px;
   padding-right: 15px;
 
+  .spin {
+    height: 100%;
+
+    :global {
+      .ant-spin-container {
+        height: 100%;
+
+        &:after {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+
   .areaContainer {
     position: relative;
     line-height: 26px;
@@ -34,7 +48,7 @@
     padding-left: 25px;
 
     .rightIcon {
-      color: #4F6F96;
+      color: #4f6f96;
       font-size: 16px;
       position: absolute;
       right: 0;
@@ -95,7 +109,7 @@
           margin-left: 10px;
         }
 
-        &+.dotItem {
+        & + .dotItem {
           margin-left: 25px;
         }
       }
@@ -113,7 +127,7 @@
         }
 
         .rightIcon {
-          color: #4F6F96;
+          color: #4f6f96;
           font-size: 16px;
           position: absolute;
           right: 5px;
@@ -121,7 +135,7 @@
         }
 
         .tip {
-          color: #CCD0D9;
+          color: #ccd0d9;
           float: right;
           margin-right: 30px;
           font-size: 12px;
@@ -211,7 +225,7 @@
       box-shadow: 0 0 1.1em rgba(0, 255, 255, 0.2) inset;
     }
 
-    .ant-table-thead>tr>th {
+    .ant-table-thead > tr > th {
       // border-bottom-color: #0967d3;
       color: @light-white;
       background: transparent;
@@ -219,14 +233,14 @@
       padding: 10px 10px;
     }
 
-    .ant-table-tbody>tr>td {
+    .ant-table-tbody > tr > td {
       // border-bottom-color: #0967d3;
       color: @light-white;
       padding: 10px 10px;
       background-color: transparent !important;
     }
 
-    .ant-table-tbody>tr:hover {
+    .ant-table-tbody > tr:hover {
       & td {
         background: rgb(11, 52, 110);
       }
@@ -285,7 +299,7 @@
       background-color: rgba(9, 103, 211, 0.5);
     }
 
-    &+.switchBtn {
+    & + .switchBtn {
       margin-left: 15px;
     }
   }

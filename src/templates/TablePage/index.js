@@ -72,7 +72,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
             breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
             key: 'menu',
           }
-        );
+        ).breadcrumbList;
     }
     return {
       unitId,
@@ -191,6 +191,7 @@ export default class TablePage extends Component {
     return (
       nextProps.list !== this.props.list ||
       nextProps.loading !== this.props.loading ||
+      nextProps.children !== this.props.children ||
       nextState !== this.state
     );
   }
@@ -450,7 +451,7 @@ export default class TablePage extends Component {
                 pageSize,
                 total,
                 pageSizeOptions: ['5', '10', '15', '20'],
-                showTotal: showTotal && (total => `共 ${total} 条`),
+                showTotal: showTotal ? total => `共 ${total} 条` : undefined,
                 showQuickJumper: true,
                 showSizeChanger: true,
               }}

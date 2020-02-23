@@ -32,7 +32,7 @@ export default class Remind extends PureComponent {
     const speed = 30;
     const containerWidth = this.containerNode.offsetWidth;
     const scrollWidth = this.scrollNode.scrollWidth;
-    console.log('scrollWidth', scrollWidth);
+    // console.log('scrollWidth', scrollWidth);
     this.scrollNode.style.marginLeft = `${containerWidth}px`;
     this.num = containerWidth;
     this.timer = setInterval(() => {

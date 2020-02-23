@@ -26,6 +26,13 @@ const SPAN2 = {
   sm: 24,
   xs: 24,
 };
+const MAPPER = {
+  namespace: 'licensePlateRecognitionSystem',
+  detail: 'vehicleDetail',
+  getDetail: 'getVehicleDetail',
+  add: 'addVehicle',
+  edit: 'editVehicle',
+};
 
 export default class VehicleOther extends Component {
   shouldComponentUpdate(nextProps) {
@@ -96,7 +103,6 @@ export default class VehicleOther extends Component {
           label: '车牌号',
           required: true,
           component: 'Input',
-          labelCol: {},
           span: SPAN,
         },
         {
@@ -157,10 +163,13 @@ export default class VehicleOther extends Component {
           id: '当前状态',
           label: '当前状态',
           required: true,
-          component: 'Select',
+          component: 'Switch',
           span: SPAN,
           props: {
             list: STATUSES,
+          },
+          options: {
+            initialValue: STATUSES[0].key,
           },
         },
         {
@@ -221,13 +230,7 @@ export default class VehicleOther extends Component {
         fields={this.getFields}
         initialize={this.initialize}
         transform={this.transform}
-        mapper={{
-          namespace: 'licensePlateRecognitionSystem',
-          detail: 'vehicleDetail',
-          getDetail: 'getVehicleDetail',
-          add: 'addVehicle',
-          edit: 'editVehicle',
-        }}
+        mapper={MAPPER}
         layout="vertical"
         {...this.props}
       />

@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
+import { Button } from 'antd';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import TablePage from '@/templates/TablePage';
 import ReevaluateModal from '../components/ReevaluateModal';
 import moment from 'moment';
+import router from 'umi/router';
 import styles from './index.less';
 
 export const WARNING_STATUSES = [
-  { key: '1', value: '已过期', color: '#f5222d' },
-  { key: '2', value: '即将到期', color: '#faad14' },
-  { key: '3', value: '未到期' },
+  { key: '2', value: '已过期', color: '#f5222d' },
+  { key: '1', value: '即将到期', color: '#faad14' },
+  { key: '0', value: '未到期' },
 ];
 export const DEFAULT_FORMAT = 'YYYY-MM-DD';
 
@@ -23,9 +25,15 @@ export default class ReevaluateWarningList extends Component {
     this.page = page && page.getWrappedInstance();
   };
 
+  // 跳转到历史记录页面
+  handleViewHistory = id => {
+    const url = '/risk-control/reevaluate-warning/history';
+    router.push(id ? `${url}?id=${id}` : url);
+  }
+
   getFields = () => [
     {
-      id: 'area',
+      id: 'zoneName',
       label: '区域名称',
       transform: value => value.trim(),
       render: ({ handleSearch }) => (
@@ -33,7 +41,7 @@ export default class ReevaluateWarningList extends Component {
       ),
     },
     {
-      id: 'status',
+      id: 'paststatus',
       label: '预警状态',
       render: () => (
         <SelectOrSpan placeholder="请选择预警状态" list={WARNING_STATUSES} allowClear />
@@ -44,37 +52,37 @@ export default class ReevaluateWarningList extends Component {
   getColumns = ({ list, renderHistoryButton, renderReevaluateButton }) => [
     {
       title: '区域名称',
-      dataIndex: 'areaName',
+      dataIndex: 'zoneName',
       align: 'center',
     },
     {
       title: '区域编号',
-      dataIndex: 'areaNumber',
+      dataIndex: 'zoneCode',
       align: 'center',
     },
     {
       title: '所属图层',
-      dataIndex: 'layer',
+      dataIndex: 'zoneType',
       align: 'center',
     },
     {
       title: '区域变更时间',
-      dataIndex: 'updateTime',
+      dataIndex: 'changeDate',
       render: time => time && moment(time).format(DEFAULT_FORMAT),
       align: 'center',
     },
     {
       title: '复评周期（月）',
-      dataIndex: 'period',
+      dataIndex: 'checkCircle',
       align: 'center',
     },
     {
       title: '应复评时间',
-      dataIndex: 'planTime',
-      render: (time, { warningStatus }) => (
+      dataIndex: 'reviewDate',
+      render: (time, { paststatus }) => (
         <span
           style={{
-            color: (WARNING_STATUSES.find(({ key }) => key === `${warningStatus}`) || {}).color,
+            color: (WARNING_STATUSES.find(({ key }) => key === `${paststatus}`) || {}).color,
           }}
         >
           {time && moment(time).format(DEFAULT_FORMAT)}
@@ -84,7 +92,7 @@ export default class ReevaluateWarningList extends Component {
     },
     {
       title: '预警状态',
-      dataIndex: 'warningStatus',
+      dataIndex: 'paststatus',
       render: value => (
         <SelectOrSpan
           list={WARNING_STATUSES}
@@ -97,7 +105,7 @@ export default class ReevaluateWarningList extends Component {
     },
     {
       title: '历史复评次数',
-      dataIndex: 'historyCount',
+      dataIndex: 'historyReviewCount',
       width: 116,
       fixed: list && list.length ? 'right' : undefined,
       render: (_, data) => <div className={styles.buttonWrapper}>{renderHistoryButton(data)}</div>,
@@ -146,11 +154,17 @@ export default class ReevaluateWarningList extends Component {
       otherOperation: [
         {
           code: 'history',
-          name({ historyCount }) {
-            return +historyCount || 0;
+          name({ historyReviewCount }) {
+            return +historyReviewCount || 0;
           },
-          disabled({ historyCount }) {
-            return !+historyCount;
+          disabled({ historyReviewCount }) {
+            return !+historyReviewCount;
+          },
+          onClick: detail => {
+            router.push({
+              pathname: '/risk-control/reevaluate-warning/history',
+              query: { zoneId: detail.zoneId },
+            })
           },
         },
         {
@@ -160,6 +174,10 @@ export default class ReevaluateWarningList extends Component {
         },
       ],
       ref: this.setPageReference,
+      showTotal: false,
+      action: (
+        <Button type="primary" onClick={() => this.handleViewHistory()}>历史记录</Button>
+      ),
       ...this.props,
     };
 

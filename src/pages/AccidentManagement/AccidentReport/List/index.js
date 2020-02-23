@@ -362,7 +362,10 @@ export default class ReportList extends PureComponent {
       {
         title: '报送状态',
         dataIndex: 'reportStatus',
-        render: value => <SelectOrSpan list={REPORT_STATUSES} value={`${value}`} type="span" />,
+        render: (value, { reportType }) =>
+          +reportType === 1 && (
+            <SelectOrSpan list={REPORT_STATUSES} value={`${value}`} type="span" />
+          ),
         align: 'center',
       },
       {

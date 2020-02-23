@@ -10,22 +10,28 @@ import {
   getZoneContent,
   getNotice,
   getMesageByMaterialId,
+  monitorEquipmentTypeCountDto,
+  fireDeviceList,
+  getWZList,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
-import { queryAreaList } from '@/services/company/reservoirRegion';
+import { queryAreaList, queryDangerSourceList } from '@/services/company/reservoirRegion';
 import { queryStorehouseList } from '@/services/baseInfo/storehouse';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { getList } from '@/services/gasometer';
-import { queryDangerSourceList } from '../services/company/reservoirRegion';
 import { getList as getPipelineList } from '@/services/pipeline';
+import { getDeviceDetail } from '@/services/alarmWorkOrder';
 
 export default {
   namespace: 'chemical',
 
   state: {
+    zoneContent: {},
     pastStatusCount: {},
     monitorTargetCount: [],
+    monitorEquipCount: [],
+    fireDeviceList: [],
     dangerSourceCount: {},
     tankList: {
       list: [],
@@ -49,6 +55,7 @@ export default {
       tankManages: [],
       warehouseInfos: [],
     },
+    dangerSourceMaterials: {},
   },
 
   effects: {
@@ -77,6 +84,36 @@ export default {
           type: 'save',
           payload: {
             monitorTargetCount,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 统计IoT监测各个类型的数量
+    *fetchMonitorEquipCount({ payload, callback }, { call, put }) {
+      const response = yield call(monitorEquipmentTypeCountDto, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        const { list: monitorEquipCount } = data;
+        yield put({
+          type: 'save',
+          payload: {
+            monitorEquipCount,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 消防主机列表
+    *fetchFireDeviceList({ payload, callback }, { call, put }) {
+      const response = yield call(fireDeviceList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        const { list: fireDeviceList } = data;
+        yield put({
+          type: 'save',
+          payload: {
+            fireDeviceList,
           },
         });
       }
@@ -159,6 +196,12 @@ export default {
     },
     // 区域信息
     *fetchZoneContent({ payload, callback }, { call, put }) {
+      yield put({
+        type: 'save',
+        payload: {
+          zoneContent: {},
+        },
+      });
       const response = yield call(getZoneContent, payload);
       const { code, data } = response || {};
       if (code === 200 && data) {
@@ -287,6 +330,21 @@ export default {
           type: 'save',
           payload: {
             mesageByMaterialId,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 重大危险源存储物质
+    *fetchDangerSourceMaterials({ payload, callback }, { call, put }) {
+      const response = yield call(getWZList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const dangerSourceMaterials = data;
+        yield put({
+          type: 'save',
+          payload: {
+            dangerSourceMaterials,
           },
         });
       }

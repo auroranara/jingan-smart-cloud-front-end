@@ -692,10 +692,13 @@ export default class GasHistory extends Component {
    */
   renderTrend2Chart() {
     const {
+      match: {
+        params: { equipmentTypes },
+      },
       gasMonitor: { countTrend = [] },
     } = this.props;
-
-    const { warning, alarm } = (countTrend || []).reduce(
+    const isSmoke = equipmentTypes === '413';
+    const { warning, alarm, fire } = (countTrend || []).reduce(
       (result, { happenTime, redCount, yellowCount }) => {
         result.warning.push({
           name: happenTime,
@@ -705,16 +708,21 @@ export default class GasHistory extends Component {
           name: happenTime,
           value: [happenTime, redCount],
         });
+        result.fire.push({
+          name: happenTime,
+          value: [happenTime, yellowCount + redCount],
+        });
         return result;
       },
       {
         warning: [],
         alarm: [],
+        fire: [],
       }
     );
 
     const option = {
-      color: ['#faad14', '#f5222d'],
+      color: isSmoke ? ['#f5222d'] : ['#faad14', '#f5222d'],
       tooltip: {
         trigger: 'axis',
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
@@ -776,23 +784,31 @@ export default class GasHistory extends Component {
         },
         minInterval: 1,
       },
-      series: [
-        {
-          name: '预警次数',
-          type: 'line',
-          data: warning,
-        },
-        {
-          name: '告警次数',
-          type: 'line',
-          data: alarm,
-        },
-      ],
+      series: isSmoke
+        ? [
+            {
+              name: '火警次数',
+              type: 'line',
+              data: fire,
+            },
+          ]
+        : [
+            {
+              name: '预警次数',
+              type: 'line',
+              data: warning,
+            },
+            {
+              name: '告警次数',
+              type: 'line',
+              data: alarm,
+            },
+          ],
     };
 
     return (
       <Card className={styles.card}>
-        <div className={styles.cardTitle}>预警/告警次数趋势</div>
+        <div className={styles.cardTitle}>{isSmoke ? '火警次数趋势' : '预警/告警次数趋势'}</div>
         <div className={styles.cardContent}>
           {countTrend && countTrend.length ? (
             <ReactEcharts style={{ height: '100%' }} option={option} />

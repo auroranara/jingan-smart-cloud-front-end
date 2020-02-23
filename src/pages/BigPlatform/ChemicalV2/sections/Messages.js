@@ -13,7 +13,14 @@ export default class Messages extends PureComponent {
   componentDidMount() {}
 
   render() {
-    const { style = {}, setDrawerVisible, handleParentChange, handleGasOpen, model } = this.props;
+    const {
+      style = {},
+      setDrawerVisible,
+      handleParentChange,
+      handleGasOpen,
+      model,
+      handleClickMsgEquip,
+    } = this.props;
     return (
       <div className={styles.container} style={{ ...style }}>
         <div className={styles.shrinkContainer}>
@@ -30,6 +37,7 @@ export default class Messages extends PureComponent {
             showTypes={MsgShowTypes}
             typeClickList={TypeClickList}
             phoneVisible={true}
+            handleClickMsgEquip={handleClickMsgEquip}
           />
         </div>
       </div>

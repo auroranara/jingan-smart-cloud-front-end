@@ -57,3 +57,18 @@ export async function getNotice(params) {
 export async function getMesageByMaterialId(params) {
   return request(`${URL_PREFIX}/dangerSource/getMesageByMaterialId?${stringify(params)}`);
 }
+
+// 统计IoT监测各个类型的数量
+export async function monitorEquipmentTypeCountDto(params) {
+  return request(`${URL_PREFIX}/monitor/monitorEquipmentTypeCountDto/list?${stringify(params)}`);
+}
+
+// 消防主机列表
+export async function fireDeviceList(params) {
+  return request(`${URL_PREFIX}/fireControl/fireDevice/page?${stringify(params)}`);
+}
+
+// 重大危险源存储物质
+export async function getWZList(params) {
+  return request(`${URL_PREFIX}/dangerSource/getWZList?${stringify(params)}`);
+}

@@ -14,7 +14,6 @@ import {
   Tooltip,
   Icon,
   Cascader,
-  Upload,
 } from 'antd';
 import { connect } from 'dva';
 import { getToken } from 'utils/authority';
@@ -28,6 +27,8 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import codesMap from '@/utils/codes';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
+
+const { Group: RadioGroup } = Radio;
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -202,10 +203,10 @@ export default class SpecialEquipment extends PureComponent {
             location,
           });
           if (pointFixInfoList && pointFixInfoList.length) {
-            let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+            let { xnum, ynum, znum, groupId, areaId, isShow } = pointFixInfoList[0];
             const coord = { x: +xnum, y: +ynum, z: +znum };
             groupId = +groupId;
-            setFieldsValue({ mapLocation: { groupId, coord, areaId } });
+            setFieldsValue({ mapLocation: { groupId, coord, areaId }, isShow });
           }
         }
       );
@@ -238,7 +239,7 @@ export default class SpecialEquipment extends PureComponent {
     } = this.props;
     const { code, pointFixInfoList, fileList } = this.state;
 
-    validateFields((error, { mapLocation, ...resData }) => {
+    validateFields((error, { mapLocation, isShow, ...resData }) => {
       if (!error) {
         const payload = {
           ...resData,
@@ -260,11 +261,12 @@ export default class SpecialEquipment extends PureComponent {
         if (mapLocation && mapLocation.groupId && mapLocation.coord) {
           const { coord, ...resMap } = mapLocation;
           payload.pointFixInfoList = [
-            { imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },
+            { imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, isShow, ...resMap },
           ];
         }
         const success = () => {
-          message.success(id ? '编辑成功！' : '新增成功！');
+          // message.success(id ? '编辑成功！' : '新增成功！');
+          message.success(`${id ? '编辑' : '新增'}成功！风险变更，请对相应的风险分区重新进行风险评价，并在变更预警管理中标记为已评价。`);
           router.push(listUrl);
         };
         const error = () => {
@@ -930,6 +932,16 @@ export default class SpecialEquipment extends PureComponent {
               </Button>
               <FlatPic {...FlatPicProps} /> */}
               {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
+            </FormItem>
+          )}
+          {companyId && (
+            <FormItem label="是否在化工安全生产驾驶舱显示" {...formItemLayout}>
+              {getFieldDecorator('isShow')(
+                <RadioGroup>
+                  <Radio value="1">显示</Radio>
+                  <Radio value="0">不显示</Radio>
+                </RadioGroup>
+              )}
             </FormItem>
           )}
         </Form>

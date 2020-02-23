@@ -31,12 +31,19 @@ let map;
 const controls = [
   { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive, markerIcon: riskPoint },
   { label: '视频监控', icon: videoGray, activeIcon: videoActive, markerIcon: video },
-  { label: '监测设备', icon: monitorGray, activeIcon: monitorActive, markerIcon: monitor },
+  {
+    label: '监测设备',
+    icon: monitorGray,
+    activeIcon: monitorActive,
+    markerIcon: monitor,
+    alarmIcon: monitorAlarm,
+  },
 ];
 
-@connect(({ map, chemical }) => ({
+@connect(({ map, chemical, alarmWorkOrder }) => ({
   map,
   chemical,
+  alarmWorkOrder,
 }))
 export default class Map extends PureComponent {
   state = {
@@ -60,6 +67,10 @@ export default class Map extends PureComponent {
     this.fetchMap();
     const { onRef } = this.props;
     onRef && onRef(this);
+
+    // setTimeout(() => {
+    //   this.handleUpdateMap();
+    // }, 8000);
   }
 
   fetchMap = () => {
@@ -110,13 +121,14 @@ export default class Map extends PureComponent {
   renderPoints = (pointsInfo, iconType) => {
     if (!pointsInfo.length) return;
     pointsInfo.map(item => {
+      const { warnStatus } = item;
       const { groupId, xnum, ynum, znum, isShow } = item.pointFixInfoList[0];
       if (!+isShow) return null;
       this.addMarkers(+groupId, {
         x: +xnum,
         y: +ynum,
         z: +znum,
-        url: controls[iconType].markerIcon,
+        url: warnStatus === -1 ? controls[iconType].alarmIcon : controls[iconType].markerIcon,
         iconType,
         markerProps: item,
       });
@@ -125,7 +137,7 @@ export default class Map extends PureComponent {
   };
 
   // 获取点位信息
-  fetchPonits = (type, iconType, payload = {}) => {
+  fetchPonits = (type, iconType, payload = {}, isUpdate = false) => {
     if (!type) return null;
     const { dispatch, companyId } = this.props;
     dispatch({
@@ -136,8 +148,8 @@ export default class Map extends PureComponent {
         // .map(item => {
         //   return item.pointFixInfoList[0];
         // });
-        console.log('pointsInfo', pointsInfo);
-
+        console.log('pointsInfo', pointsInfo.filter(item => item.pointFixInfoList[0].isShow));
+        if (isUpdate) this.removeMarkersByType(iconType);
         this.renderPoints(pointsInfo, iconType);
       },
     });
@@ -234,7 +246,7 @@ export default class Map extends PureComponent {
       )
         return;
 
-      const { eventInfo: { coord } = {}, ID } = clickedObj;
+      const { eventInfo: { coord } = {}, ID, groupID } = clickedObj;
       if (coord) {
         // 点击区域
         for (let index = 0; index < this.polygonArray.length; index++) {
@@ -243,7 +255,10 @@ export default class Map extends PureComponent {
             polygonProps: { modelIds, id },
           } = polygon;
           const IDs = modelIds.split(',').map(item => +item);
-          if (this.isPointInPolygon(coord, polygon) || IDs.includes(ID)) {
+          if (
+            (groupID === polygon.groupID && this.isPointInPolygon(coord, polygon)) ||
+            IDs.includes(ID)
+          ) {
             handleShowAreaDrawer(id);
             break;
           }
@@ -272,7 +287,7 @@ export default class Map extends PureComponent {
 
   // 判断点是否在FMPolygonMarker区域内
   isPointInPolygon = (point, polygon) => {
-    return polygon.contain({ ...point, z: 1 });
+    return polygon.contain({ ...point });
   };
 
   //加载按钮型楼层切换控件
@@ -306,10 +321,107 @@ export default class Map extends PureComponent {
     btnFloorControl.changeFocusGroup(groupId);
   };
 
-  handleUpdateMap = () => {
+  removeMarkersByType = iconType => {
+    if (!map) return;
+    map.groupIDs.map(gId => {
+      const group = map.getFMGroup(gId);
+      //遍历图层
+      group.traverse(fm => {
+        if (fm instanceof fengmap.FMImageMarkerLayer) {
+          // console.log('fm', fm);
+          // console.log('fm.markers', fm.markers);
+          fm.markers.forEach(marker => {
+            const {
+              opts_: { iconType: type },
+            } = marker;
+            if (type === iconType) fm.removeMarker(marker);
+          });
+        }
+      });
+    });
+  };
+
+  removeMarkerById = equipmentId => {
+    if (!map) return;
+    map.groupIDs.map(gId => {
+      const group = map.getFMGroup(gId);
+      //遍历图层
+      group.traverse(fm => {
+        if (fm instanceof fengmap.FMImageMarkerLayer) {
+          // console.log('fm', fm);
+          // console.log('fm.markers', fm.markers);
+          fm.markers.forEach(marker => {
+            const {
+              opts_: {
+                markerProps: { id },
+              },
+            } = marker;
+            if (id === equipmentId) fm.removeMarker(marker);
+          });
+        }
+      });
+    });
+  };
+
+  // 监测设备状态图标变化
+  handleMarkerStatusChange = (equipmentId, statusType, warnStatus) => {
+    map.groupIDs.map(gId => {
+      const group = map.getFMGroup(gId);
+      //遍历图层
+      group.traverse(fm => {
+        if (fm instanceof fengmap.FMImageMarker) {
+          const {
+            opts_: { iconType, markerProps },
+          } = fm;
+          const { id } = markerProps;
+          if (iconType === 2 && id === equipmentId) {
+            if (statusType === -1) {
+              fm.url = monitorAlarm;
+              fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
+            } else if (statusType === 1) {
+              if (warnStatus !== -1) {
+                fm.url = monitor;
+                fm.stopJump();
+              }
+            }
+          }
+        }
+      });
+    });
+  };
+
+  // 监测设备状态变化
+  handleUpdateMap = (equipmentId, statusType) => {
     if (!map || !this.markerArray.length) return;
-    this.markerArray[5].url = monitorAlarm;
-    this.markerArray[5].jump({ times: 0, duration: 2, height: 2, delay: 0 });
+    // this.fetchPonits('chemical/fetchMonitorEquipment', 2, {}, true);
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'alarmWorkOrder/getDeviceDetail',
+      payload: { id: equipmentId },
+      callback: (success, deviceDetail) => {
+        if (success) {
+          const { warnStatus } = deviceDetail;
+          this.removeMarkerById(equipmentId);
+          this.renderPoints([deviceDetail], 2);
+          setTimeout(() => {
+            this.handleMarkerStatusChange(equipmentId, statusType, warnStatus);
+          }, 50);
+        }
+      },
+    });
+    // dispatch({
+    //   type: 'chemical/fetchMonitorEquipment',
+    //   payload: { companyId, pageNum: 1, pageSize: 0 },
+    //   callback: res => {
+    //     const pointsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
+    //     this.removeMarkersByType(2);
+    //     this.renderPoints(pointsInfo, 2);
+
+    //     setTimeout(() => {
+    //       this.handleMarkerStatusChange(equipmentId, status);
+    //     }, 50);
+    //   },
+    // });
   };
 
   setModelColor(groupId, polygon, color) {
@@ -335,9 +447,10 @@ export default class Map extends PureComponent {
     const groupId = gId || 1;
     if (!layer) {
       const groupLayer = map.getFMGroup(groupId);
-      const newLayer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
-      markerLayer = newLayer;
-      groupLayer.addLayer(markerLayer); //添加图片标注层到模型层。否则地图上不会显示
+      // const newLayer = new fengmap.FMImageMarkerLayer(); //实例化ImageMarkerLayer
+      // markerLayer = newLayer;
+      // groupLayer.addLayer(markerLayer); //添加图片标注层到模型层。否则地图上不会显示
+      markerLayer = groupLayer.getOrCreateLayer('imageMarker');
     }
     const im = new fengmap.FMImageMarker({
       size: 50, //设置图片显示尺寸
