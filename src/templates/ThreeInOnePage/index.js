@@ -101,8 +101,8 @@ const STYLE = {
     const { namespace: n, detail: d, getDetail: gd, edit: e, add: a, save: s } = mapper || {};
     const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     return {
-      getDetail(payload, callback) {
-        if (id) {
+      getDetail(payload, callback, hack) {
+        if (id || hack) {
           dispatch({
             type: `${namespace}/${gd || 'getDetail'}`,
             payload: {
@@ -165,18 +165,22 @@ export default class ThreeInOnePage extends Component {
   };
 
   componentDidMount() {
-    const { getDetail, setDetail, initialize } = this.props;
+    const { getDetail, setDetail, initialize, hack } = this.props;
     setDetail();
-    getDetail(undefined, (success, data) => {
-      if (success) {
-        this.setState(
-          {
-            initialValues: initialize ? initialize(data) : data,
-          },
-          this.refresh
-        );
-      }
-    });
+    getDetail(
+      undefined,
+      (success, data) => {
+        if (success) {
+          this.setState(
+            {
+              initialValues: initialize ? initialize(data) : data,
+            },
+            this.refresh
+          );
+        }
+      },
+      hack
+    );
   }
 
   shouldComponentUpdate(nextProps, nextState) {

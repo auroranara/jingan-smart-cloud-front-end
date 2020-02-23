@@ -19,6 +19,11 @@ const MAPPER = {
   getList: 'getParkList',
   remove: 'deletePark',
 };
+const COMPANY_MAPPER = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'parkCompanyList',
+  getList: 'getParkCompanyList',
+};
 
 @connect(({ user }) => ({
   user,
@@ -29,7 +34,7 @@ export default class ParkList extends Component {
   }
 
   transform = ({ unitId, ...props }) => ({
-    // unitId, // 这个接接口时重点关注一下
+    companyId: unitId,
     ...props,
   });
 
@@ -61,21 +66,21 @@ export default class ParkList extends Component {
     //   ),
     // },
     {
-      id: 'name',
+      id: 'parkName',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
         <Input placeholder="请输入车场名称" maxLength={50} onPressEnter={onSearch} />
       ),
     },
     {
-      id: 'contact',
+      id: 'managerName',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
         <Input placeholder="请输入联系人" maxLength={50} onPressEnter={onSearch} />
       ),
     },
     {
-      id: 'status',
+      id: 'parkStatus',
       render: () => <SelectOrSpan placeholder="请选择车场状态" list={STATUSES} allowClear />,
     },
   ];
@@ -84,44 +89,49 @@ export default class ParkList extends Component {
 
   getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
     {
+      title: '车场ID',
+      dataIndex: 'parkId',
+      align: 'center',
+    },
+    {
       title: '车场名称',
-      dataIndex: 'name',
+      dataIndex: 'parkName',
       align: 'center',
     },
     {
       title: '车场联系人',
-      dataIndex: 'concat',
+      dataIndex: 'managerName',
       align: 'center',
     },
     {
       title: '联系电话',
-      dataIndex: 'phone',
+      dataIndex: 'managerPhone',
       align: 'center',
     },
     {
       title: '车场状态',
-      dataIndex: 'status',
+      dataIndex: 'parkStatus',
       align: 'center',
       render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
     },
-    {
-      title: '区域（个）',
-      dataIndex: 'areaCount',
-      align: 'center',
-      render: value => value || 0,
-    },
+    // {
+    //   title: '区域（个）',
+    //   dataIndex: 'areaCount',
+    //   align: 'center',
+    //   render: value => value || 0,
+    // },
     {
       title: '通道（个）',
-      dataIndex: 'channelCount',
+      dataIndex: 'gateCount',
       align: 'center',
       render: value => value || 0,
     },
-    {
-      title: '设备（个）',
-      dataIndex: 'deviceCount',
-      align: 'center',
-      render: value => value || 0,
-    },
+    // {
+    //   title: '设备（个）',
+    //   dataIndex: 'deviceCount',
+    //   align: 'center',
+    //   render: value => value || 0,
+    // },
     {
       title: '操作',
       dataIndex: '操作',
@@ -156,6 +166,7 @@ export default class ParkList extends Component {
 
     return unitType === 4 || unitId ? (
       <TablePage
+        key={unitId}
         breadcrumbList={this.getBreadcrumbList}
         content={this.getContent}
         fields={this.getFields}
@@ -173,6 +184,7 @@ export default class ParkList extends Component {
           title: '单位车场信息',
           name: '单位车场信息',
         })}
+        mapper={COMPANY_MAPPER}
         {...props}
       />
     );

@@ -50,7 +50,7 @@ export default class Company extends Component {
 
   getFields = () => [
     {
-      id: 'name',
+      id: 'companyName',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
         <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
@@ -110,6 +110,7 @@ export default class Company extends Component {
     practicalAddress,
     safetyName,
     safetyPhone,
+    itemCount,
   }) => {
     const {
       name: menuName,
@@ -187,7 +188,7 @@ export default class Company extends Component {
               onClick={this.handleLinkClick} /*  target="_blank" */
             >
               <Button className={styles.cardCount} shape="circle">
-                {0}
+                {itemCount || 0}
               </Button>
             </Link>
           )}
@@ -197,7 +198,7 @@ export default class Company extends Component {
   };
 
   render() {
-    const { route, location, match, breadcrumbList } = this.props;
+    const { route, location, match, breadcrumbList, mapper = MAPPER } = this.props;
     const { visible } = this.state;
     const fields = [
       {
@@ -229,11 +230,11 @@ export default class Company extends Component {
         fields={this.getFields}
         action={this.getAction}
         renderItem={this.renderItem}
-        mapper={MAPPER}
+        mapper={mapper}
         {...props}
       >
         <Modal
-          title="新增单位"
+          title="选择新增单位"
           visible={visible}
           zIndex={1009}
           onOk={this.handleModalOk}
