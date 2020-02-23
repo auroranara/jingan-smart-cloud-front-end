@@ -10,6 +10,12 @@ import {
   queryTargetSettingDelete,
   queryExamView,
   queryExamAdd,
+  // 报表
+  queryMonthQuarterYear,
+  queryUnitPartGoal,
+  queryGoalChange,
+  queryYearGoal,
+  queryPartGoal,
 } from '../services/targetResponsibility.js';
 
 export default {
@@ -53,6 +59,17 @@ export default {
         value: '≤',
       },
     ],
+    mQYData:{},
+    partGoalData:{},
+    unitPartData:{
+      list:[],
+    },
+    goalChangeData:{
+      list:[],
+    },
+    yearGoalData:{
+      list:[],
+    },
   },
 
   effects: {
@@ -173,6 +190,58 @@ export default {
         error(response.msg);
       }
     },
+
+    /** 目标责任分析报表 */
+    *fetchMonQuarterYear({ payload }, { call, put }) {
+      const response = yield call(queryMonthQuarterYear, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveMonQuarterYear',
+          payload: response,
+        });
+      }
+    },
+
+    *fetchUnitPartGoal({ payload }, { call, put }) {
+      const response = yield call(queryUnitPartGoal, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveUnitPartGoal',
+          payload: response,
+        });
+      }
+    },
+
+    *fetchGoalChange({ payload }, { call, put }) {
+      const response = yield call(queryGoalChange, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveGoalChange',
+          payload: response,
+        });
+      }
+    },
+
+    *fetchYearGoal({ payload }, { call, put }) {
+      const response = yield call(queryYearGoal, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveYearGoal',
+          payload: response,
+        });
+      }
+    },
+
+    *fetchPartGoal({ payload }, { call, put }) {
+      const response = yield call(queryPartGoal, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'savePartGoal',
+          payload: response,
+        });
+      }
+    },
+    
   },
 
   reducers: {
@@ -255,5 +324,46 @@ export default {
         },
       };
     },
+
+    saveMonQuarterYear(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        mQYData: data,
+      };
+    },
+
+    saveUnitPartGoal(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        unitPartData: data,
+      };
+    },
+
+    saveGoalChange(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        goalChangeData: data,
+      };
+    },
+
+    savePartGoal(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        partGoalData: data,
+      };
+    },
+
+    saveYearGoal(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        yearGoalData: data,
+      };
+    },
+    
   },
 };

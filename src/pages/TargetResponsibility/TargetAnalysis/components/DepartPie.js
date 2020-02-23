@@ -3,11 +3,11 @@ import ReactEcharts from 'echarts-for-react';
 
 export default class DepartPie extends PureComponent {
     render() {
-      const { data = [] } = this.props;
+      const { data = [],partPassRate } = this.props;
   
       const option = {
         title: {
-          text: 8,
+          text: partPassRate,
           left: 'center',
           top: '42%',
           textStyle: {

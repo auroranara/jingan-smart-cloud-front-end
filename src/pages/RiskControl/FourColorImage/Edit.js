@@ -73,6 +73,7 @@ export default class TableList extends React.Component {
       detailList: {},
       pointList: [],
       points: [],
+      groupId: '', // 选中楼层id
       buildingId: [], // 新增时获取的区域Id
       modelIds: '', // 编辑时获取的区域Id
     };
@@ -108,6 +109,7 @@ export default class TableList extends React.Component {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
+          const { groupId } = currentList;
           const pointList = list.filter(item => item.id === id) || [];
           this.setState({
             detailList: currentList,
@@ -117,8 +119,9 @@ export default class TableList extends React.Component {
               x: +item.x,
               y: +item.y,
               z: +item.z,
-              groupID: 1,
+              groupID: groupId,
             })),
+            groupId,
           });
         },
       });
@@ -216,7 +219,7 @@ export default class TableList extends React.Component {
       },
     } = this.props;
 
-    const { points, detailList, buildingId } = this.state;
+    const { groupId, points, detailList, buildingId } = this.state;
     const { coordinateList } = detailList;
     if (!id ? points.length === 0 : coordinateList.length === 0) {
       return message.warning('请在地图上划分区域');
@@ -249,7 +252,7 @@ export default class TableList extends React.Component {
             points.length > 0
               ? JSON.stringify(points.map(({ x, y, z, groupID }) => ({ x, y, z, groupID })))
               : undefined,
-          groupId: 1,
+          groupId: groupId,
           modelIds: buildingId
             .filter(item => item.selected === true)
             .map(item => item.areaId)
@@ -284,8 +287,8 @@ export default class TableList extends React.Component {
   };
 
   // 获取地图上的坐标
-  getPoints = points => {
-    this.setState({ points });
+  getPoints = (groupId, points) => {
+    this.setState({ groupId, points });
   };
 
   getBuilding = (buildingId, s) => {
@@ -310,8 +313,8 @@ export default class TableList extends React.Component {
   };
 
   handleTagClick = (areaId, point, selected) => {
-    const { points } = this.state;
-    this.childMap.handleModelEdit(points, point, selected);
+    const { points,groupId } = this.state;
+    this.childMap.handleModelEdit(groupId,points, point, selected);
     const { buildingId } = this.state;
     buildingId.forEach(item => {
       if (item.areaId === areaId) {
@@ -352,7 +355,7 @@ export default class TableList extends React.Component {
       form: { getFieldDecorator },
       account: { list: personList = [] },
     } = this.props;
-    const { isDrawing, detailList, pointList, buildingId, modelIds } = this.state;
+    const { isDrawing, groupId, detailList, pointList, buildingId, modelIds } = this.state;
     const editTitle = id ? '编辑' : '新增';
     const {
       zoneCode,
@@ -373,6 +376,7 @@ export default class TableList extends React.Component {
               {this.renderDrawButton()}
               <Map
                 isDrawing={isDrawing}
+                groupId={groupId}
                 onRef={this.onRef}
                 getPoints={this.getPoints}
                 getBuilding={this.getBuilding}
@@ -469,7 +473,7 @@ export default class TableList extends React.Component {
                 {getFieldDecorator('checkCircle', {
                   initialValue: checkCircle,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入' }],
+                  rules: [{ required: true, message: '请输入整数',pattern:/^[0-9]*[1-9][0-9]*$/ }],
                 })(<Input placeholder="请输入" {...itemStyles} maxLength={4} />)}
               </FormItem>
               <FormItem label="开始时间" {...formItemLayout}>

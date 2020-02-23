@@ -40,6 +40,7 @@ const hosts = {
   ly: '192.168.10.19:8080',
   show: 'www.jinganyun.net',
   five: 'five.jinganyun.net',
+  tg2: '25.12.19.52:8080',
 };
 
 export default {
@@ -75,12 +76,12 @@ export default {
         dynamicImport: true,
         ...(os.platform() === 'darwin'
           ? {
-              dll: {
-                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-                exclude: ['@babel/runtime'],
-              },
-              hardSource: false,
-            }
+            dll: {
+              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+              exclude: ['@babel/runtime'],
+            },
+            hardSource: false,
+          }
           : {}),
       },
     ],

@@ -3,7 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 
 export default class IndexChartsLine extends PureComponent {
   render() {
-    const { data = [] } = this.props;
+    const { data = [],xData=[] } = this.props;
 
     const option = {
       textStyle: {
@@ -31,7 +31,7 @@ export default class IndexChartsLine extends PureComponent {
               color: '#d3d3d3', //更改坐标轴颜色
             },
           },
-          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月','8月','9月','10月','11月','12月'],
+          data: xData,
         },
       ],
       yAxis: [

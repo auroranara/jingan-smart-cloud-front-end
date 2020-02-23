@@ -158,6 +158,7 @@ const getQuarter = {
   1: '一季度',
   2: '二季度',
   3: '三季度',
+  4: '四季度',
 };
 
 export const DETAIL_COLUMNS = [
@@ -248,6 +249,10 @@ const quarterList = [
   {
     key: '3',
     value: '三季度',
+  },
+  {
+    key: '4',
+    value: '四季度',
   },
 ];
 

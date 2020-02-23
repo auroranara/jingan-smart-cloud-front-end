@@ -632,6 +632,12 @@ module.exports = env => {
                   component: './BaseInfo/MajorHazard/MajorHazardList',
                 },
                 {
+                  name: 'view',
+                  code: 'majorHazardInfo.majorHazard.view',
+                  path: '/major-hazard-info/major-hazard/detail/:id',
+                  component: './BaseInfo/MajorHazard/MajorHazardEdit',
+                },
+                {
                   name: 'add',
                   code: 'majorHazardInfo.majorHazard.add',
                   path: '/major-hazard-info/major-hazard/add',
@@ -2597,7 +2603,7 @@ module.exports = env => {
               name: 'targetAnalysis', // 目标责任分析报表
               code: 'targetResponsibility.targetAnalysis',
               path: '/target-responsibility/target-analysis',
-              // developing: true,
+              developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {

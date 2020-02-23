@@ -8,6 +8,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import TableTransFer from './TabTransfer';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 import styles from './MajorHazardEdit.less';
 
 const { TextArea } = Input;
@@ -19,6 +21,15 @@ const spanStyle = { md: 8, sm: 12, xs: 24 };
 const editTitle = '编辑重大危险源';
 // 添加页面标题
 const addTitle = '新增重大危险源';
+// 查看页面标题
+const detTitle = '查看重大危险源';
+
+// 权限
+const {
+  majorHazardInfo: {
+    majorHazard: { edit: editAuth },
+  },
+} = codes;
 
 @connect(
   ({
@@ -134,6 +145,13 @@ export default class MajorHazardEdit extends PureComponent {
 
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
+
+  isDetail = () => {
+    const {
+      match: { url },
+    } = this.props;
+    return url && url.includes('detail');
+  };
 
   goBack = () => {
     const { dispatch } = this.props;
@@ -559,6 +577,8 @@ export default class MajorHazardEdit extends PureComponent {
       },
     } = this.props;
 
+    const isDet = this.isDetail();
+
     const {
       detailList,
       tankAreaList,
@@ -624,9 +644,11 @@ export default class MajorHazardEdit extends PureComponent {
                   placeholder="请选择单位"
                 />
               )}
-              <Button type="primary" onClick={this.handleCompanyModal}>
-                选择单位
+              {!isDet && (
+                <Button type="primary" onClick={this.handleCompanyModal}>
+                  选择单位
               </Button>
+              )}
             </FormItem>
           )}
           <FormItem {...formItemLayout} label="统一编码">
@@ -741,9 +763,11 @@ export default class MajorHazardEdit extends PureComponent {
                       <Tag key={item.id}>{item.name}</Tag>
                     ))}
                   </span>
-                  <Button type="primary" size="small" onClick={this.handleDangerModal}>
-                    选择
+                  {!isDet && (
+                    <Button type="primary" size="small" onClick={this.handleDangerModal}>
+                      选择
                   </Button>
+                  )}
                 </div>
               </Fragment>
             )}
@@ -784,9 +808,11 @@ export default class MajorHazardEdit extends PureComponent {
                 maxLength="2000"
               />
             )}
-            <Button type="primary" size="small" onClick={this.handlePersonModal}>
-              选择
+            {!isDet && (
+              <Button type="primary" size="small" onClick={this.handlePersonModal}>
+                选择
             </Button>
+            )}
           </FormItem>
           <FormItem {...formItemLayout} label="防雷防静电设施是否定期接受检测">
             {getFieldDecorator('antiStatic', {
@@ -903,76 +929,6 @@ export default class MajorHazardEdit extends PureComponent {
             })(<Input {...itemStyles} placeholder="请输入周边环境人数" />)}
           </FormItem>
 
-          {/* <FormItem {...formItemLayout} label="生产经营活动类型">
-            {getFieldDecorator('manageType', {
-              initialValue: manageType,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择生产经营活动类型',
-                },
-              ],
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择生产经营活动类型">
-                {productTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem> */}
-          {/* <FormItem {...formItemLayout} label="生产存储场所产权">
-            {getFieldDecorator('memoryPlace', {
-              initialValue: memoryPlace,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择生产存储场所产权',
-                },
-              ],
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择生产存储场所产权">
-                {memoryPlaceList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem> */}
-          {/* <FormItem {...formItemLayout} label="危险化学品性质">
-            {getFieldDecorator('chemiclaNature', {
-              initialValue: chemiclaNature,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择危险化学品性质',
-                },
-              ],
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择危险化学品性质">
-                {dangerChemicalsList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem> */}
-          {/* <FormItem {...formItemLayout} label="所处装置或区域">
-            {getFieldDecorator('industryArea', {
-              initialValue: industryArea,
-              getValueFromEvent: this.handleTrim,
-            })(
-              <TextArea
-                {...itemStyles}
-                placeholder="请输入所处装置或区域"
-                rows={4}
-                maxLength="2000"
-              />
-            )}
-          </FormItem> */}
           <FormItem {...formItemLayout} label="周边环境与危险源最近距离(m)">
             {getFieldDecorator('dangerDistance', {
               initialValue: dangerDistance,
@@ -1000,12 +956,32 @@ export default class MajorHazardEdit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
+    const {
+      match: {
+        params: { id },
+      },
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
+
+    const editCode = hasAuthority(editAuth, permissionCodes);
+
     const { submitting } = this.state;
+    const isDet = this.isDetail();
+
     return (
       <FooterToolbar>
-        <Button type="primary" size="large" loading={submitting} onClick={this.handleClickValidate}>
-          提交
+        {isDet ? (
+          <Button type="primary" size="large" style={{ marginRight: 10}} disabled={!editCode} href={`#/major-hazard-info/major-hazard/edit/${id}`}>
+            编辑
         </Button>
+        ) : (
+            <Button type="primary" size="large" loading={submitting} onClick={this.handleClickValidate}>
+              提交
+        </Button>
+          )}
+
         <Button size="large" onClick={this.goBack}>
           返回
         </Button>
@@ -1041,7 +1017,9 @@ export default class MajorHazardEdit extends PureComponent {
 
     const { dangerType, targetKeys, dangerModalVisible, personModalVisible } = this.state;
 
-    const title = id ? editTitle : addTitle;
+    const isDet = this.isDetail();
+
+    const title = isDet ? detTitle : id ? editTitle : addTitle;
 
     // 面包屑
     const breadcrumbList = [

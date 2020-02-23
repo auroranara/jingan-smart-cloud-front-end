@@ -80,3 +80,30 @@ export async function queryTargetSettingDelete({ id }) {
     method: 'DELETE',
   });
 }
+
+/** 目标责任分析报表 */
+
+// 月，季度，年目标达成率
+export async function queryMonthQuarterYear(params) {
+  return request(`${URL_PREFIX}/goalDutyExcel/monthQuarterYear?${stringify(params)}`);
+}
+
+// 各单位部门指标达成情况
+export async function queryUnitPartGoal(params) {
+  return request(`${URL_PREFIX}/goalDutyExcel/unitPartGoal?${stringify(params)}`);
+}
+
+// 各指标变化趋势
+export async function queryGoalChange(params) {
+  return request(`${URL_PREFIX}/goalDutyExcel/goalChange?${stringify(params)}`);
+}
+
+// 年度目标达成率排名
+export async function queryYearGoal(params) {
+  return request(`${URL_PREFIX}/goalDutyExcel/yearGoal?${stringify(params)}`);
+}
+
+// 部门目标达成率
+export async function queryPartGoal(params) {
+  return request(`${URL_PREFIX}/goalDutyExcel/partGoal?${stringify(params)}`);
+}

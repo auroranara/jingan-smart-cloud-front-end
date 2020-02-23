@@ -663,6 +663,7 @@ export default {
       add: 'majorHazardInfo.majorHazard.add',
       edit: 'majorHazardInfo.majorHazard.edit',
       delete: 'majorHazardInfo.majorHazard.delete',
+      view: 'majorHazardInfo.majorHazard.view',
     },
   },
 

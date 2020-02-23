@@ -33,7 +33,7 @@ const breadcrumbList = [
 // 权限
 const {
   majorHazardInfo: {
-    majorHazard: { add: addAuth, edit: editAuth, delete: deleteAuth },
+    majorHazard: { add: addAuth, edit: editAuth, view:viewAuth,delete: deleteAuth },
   },
 } = codes;
 
@@ -169,6 +169,7 @@ export default class MajorHazardList extends PureComponent {
 
     // 权限
     const editCode = hasAuthority(editAuth, permissionCodes);
+    const viewCode = hasAuthority(viewAuth, permissionCodes);
     // const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
     const columns = [
@@ -293,6 +294,12 @@ export default class MajorHazardList extends PureComponent {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
+             {viewCode ? (
+              <Link to={`/major-hazard-info/major-hazard/detail/${row.id}`}>查看</Link>
+            ) : (
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
+            )}
+            <Divider type="vertical" />
             {editCode ? (
               <Link to={`/major-hazard-info/major-hazard/edit/${row.id}`}>编辑</Link>
             ) : (

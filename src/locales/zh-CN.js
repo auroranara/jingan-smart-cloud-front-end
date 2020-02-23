@@ -68,6 +68,7 @@ export default {
   'menu.majorHazardInfo': '重大危险源基本信息',
   'menu.majorHazardInfo.majorHazard': '重大危险源管理',
   'menu.majorHazardInfo.majorHazard.list': '重大危险源列表',
+  'menu.majorHazardInfo.majorHazard.view': '查看重大危险源',
   'menu.majorHazardInfo.majorHazard.add': '新增重大危险源',
   'menu.majorHazardInfo.majorHazard.edit': '编辑重大危险源',
   'menu.majorHazardInfo.materials': '物料信息',

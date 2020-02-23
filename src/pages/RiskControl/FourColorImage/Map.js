@@ -44,18 +44,18 @@ export default class Map extends React.Component {
     const newList = pointList.length > 0 ? pointList : [];
     newList.length > 0 &&
       pointList.map(item => {
-        const { zoneLevel, coordinateList, modelIds } = item;
+        const { zoneLevel, coordinateList, groupId, modelIds } = item;
         const cordPoints = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
         const modeIdList = modelIds ? modelIds.split(',').map(Number) : [];
         if (modeIdList.length > 0) {
-          const models = map.getDatasByAlias(1, 'model');
+          const models = map.getDatasByAlias(groupId, 'model');
           models.forEach(item => {
             if (item.ID && modeIdList.includes(item.ID)) {
               item.setColor(COLORS[zoneLevel], 1);
             }
           });
         }
-        this.drawPolygon(cordPoints, COLORS[zoneLevel]);
+        this.drawPolygon(groupId, cordPoints, COLORS[zoneLevel]);
         return null;
       });
   };
@@ -100,41 +100,80 @@ export default class Map extends React.Component {
       position: fengMap.controlPositon.LEFT_TOP,
       offset: { x: 0, y: 40 },
       //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-      clickCallBack: function(type, value) {
+      clickCallBack: function (type, value) {
         console.log(type, value);
       },
     });
 
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
+      console.log('clickedObj', clickedObj)
       if (!clickedObj || !clickedObj.eventInfo) return;
 
-      var { coord } = clickedObj.eventInfo;
+      const { coord } = clickedObj.eventInfo;
+      const groupId = clickedObj.groupID;
+
       if (this.props.isDrawing) {
         // 默认第一张地图
-        this.addPoint(1, coord);
+        this.addPoint(groupId, coord);
         points.push(coord);
         // 画线
-        this.drawLines(points);
+        this.drawLines(groupId, points);
         // 获取当前所选建筑物ID
       }
     });
 
+    //地图加载完回调事件
     map.on('loadComplete', () => {
+      const { pointList, init, getBuilding } = this.props;
+      //加载按钮型楼层切换控件
+      this.loadBtnFloorCtrl()
       this.getPointList(this.props.pointList);
-      this.props.pointList.length > 0 &&
-        this.props.pointList.map(item => {
-          const { coordinateList } = item;
+      pointList.length > 0 &&
+        pointList.map(item => {
+          const { coordinateList, groupId } = item;
           const cordList = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
-          const models = map.getDatasByAlias(1, 'model');
+          const models = map.getDatasByAlias(groupId, 'model');
           const arrayList = models
             .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
             .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
-          this.props.getBuilding && this.props.getBuilding(arrayList, 0);
+          getBuilding && getBuilding(arrayList, 0);
+          this.loadBtnFloorCtrl(init ? 1 : groupId);
           return null;
         });
     });
   };
+
+  //加载按钮型楼层切换控件
+  loadBtnFloorCtrl = (groupId = 1) => {
+    //楼层控制控件配置参数
+    const btnFloorCtlOpt = new fengMap.controlOptions({
+      //默认在右下角
+      position: fengMap.controlPositon.LEFT_TOP,
+      //初始楼层按钮显示个数配置。默认显示5层,其他的隐藏，可滚动查看
+      showBtnCount: 6,
+      //初始是否是多层显示，默认单层显示
+      allLayer: false,
+      //位置x,y的偏移量
+      offset: {
+        x: 0,
+        y: 100,
+      },
+    });
+    //不带单/双层楼层控制按钮,初始时只有1个按钮,点击后可弹出其他楼层按钮
+    const btnFloorControl = new fengMap.buttonGroupsControl(map, btnFloorCtlOpt);
+    //楼层切换
+    btnFloorControl.onChange(function (groups, allLayer) {
+      //groups 表示当前要切换的楼层ID数组,
+      //allLayer表示当前楼层是单层状态还是多层状态。
+    });
+    //默认是否展开楼层列表，true为展开，false为不展开
+    btnFloorControl.expand = true;
+    //楼层控件是否可点击，默认为true
+    btnFloorControl.enableExpand = true;
+    // 切换到指定楼层(可传入两个参数：目标层groupID,是否多层状态)
+    btnFloorControl.changeFocusGroup(groupId);
+  }
 
   //在点击的位置添加图片标注
   addPoint(gid, coord) {
@@ -147,15 +186,15 @@ export default class Map extends React.Component {
       url: 'https://webapi.amap.com/images/dd-via.png',
       height: 3, //defaultPolygonMarkerHeight,
       size: 10,
-      callback: function() {
+      callback: function () {
         im.alwaysShow();
       },
     });
     layer.addMarker(im);
   }
 
-  drawPolygon(points, color) {
-    var groupLayer = map.getFMGroup(1);
+  drawPolygon(groupId, points, color) {
+    var groupLayer = map.getFMGroup(groupId);
     //创建PolygonMarkerLayer
     var layer = new fengMap.FMPolygonMarkerLayer();
     groupLayer.addLayer(layer);
@@ -172,9 +211,9 @@ export default class Map extends React.Component {
   }
 
   // 设置model的颜色
-  setModelColor(points, color) {
+  setModelColor(groupId, points, color) {
     // 默认gid为1
-    const models = map.getDatasByAlias(1, 'model');
+    const models = map.getDatasByAlias(groupId, 'model');
     models
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
       .map(model => model.setColor(color));
@@ -186,8 +225,8 @@ export default class Map extends React.Component {
   }
 
   // 切换tag
-  handleModelEdit = (points, point, selected) => {
-    const models = map.getDatasByAlias(1, 'model');
+  handleModelEdit = (groupId, points, point, selected) => {
+    const models = map.getDatasByAlias(groupId, 'model');
     const orginList = models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points));
     if (!!selected) {
       const model = orginList.find(item => item.mapCoord === point);
@@ -198,20 +237,20 @@ export default class Map extends React.Component {
       const model = orginList.find(item => item.mapCoord === point);
       this.props.pointList.length > 0
         ? this.props.pointList.map(item => {
-            const { zoneLevel } = item;
-            return model.setColor(COLORS[zoneLevel]);
-          })
+          const { zoneLevel } = item;
+          return model.setColor(COLORS[zoneLevel]);
+        })
         : model.setColor(COLOR.blue);
       return null;
     }
   };
 
   // 删除分区
-  removeArea = index => {
-    const groupLayer = map.getFMGroup(1);
+  removeArea = (index, filterList) => {
+    const groupLayer = map.getFMGroup(filterList.groupId);
     groupLayer.removeLayer(this.polygonLayers[index]);
     this.polygonLayers.splice(index, 1);
-    const models = map.getDatasByAlias(1, 'model');
+    const models = map.getDatasByAlias(filterList.groupId, 'model');
     models.map(model => {
       const { mapCoord } = model;
       if (this.polygonMarkers[index].contain({ ...mapCoord, z: 1 })) model.setColorToDefault();
@@ -222,23 +261,24 @@ export default class Map extends React.Component {
 
   // 重置地图
   setRestMap = () => {
-    const group = map.getFMGroup(1);
+    const { groupId } = this.props;
+    const group = map.getFMGroup(groupId);
     const layerImg = group.getOrCreateLayer('imageMarker');
     group.removeLayer(layerImg);
     const layerPolygon = group.getOrCreateLayer('polygonMarker');
     group.removeLayer(layerPolygon);
-    const models = map.getDatasByAlias(1, 'model');
+    const models = map.getDatasByAlias(groupId, 'model');
     models.map(model => model.setColorToDefault());
     map.clearLineMark();
   };
 
   // 高亮对应区域颜色
-  selectedModelColor = (id, fun) => {
+  selectedModelColor = (id, filterList, fun) => {
     const { pointList } = this.props;
     pointList.filter(item => item.id === id).map(item => {
       const { modelIds } = item;
       const modeIdList = modelIds.split(',').map(Number);
-      const models = map.getDatasByAlias(1, 'model');
+      const models = map.getDatasByAlias(filterList.groupId, 'model');
       models.forEach(item => {
         if (item.ID && modeIdList.includes(item.ID)) {
           item.setColor(selectedColor, 1);
@@ -249,12 +289,12 @@ export default class Map extends React.Component {
   };
 
   // 恢复对应区域颜色
-  restModelColor = id => {
+  restModelColor = (id, filterList) => {
     const { pointList } = this.props;
     pointList.filter(item => item.id === id).map(item => {
       const { zoneLevel, modelIds } = item;
       const modeIdList = modelIds.split(',').map(Number);
-      const models = map.getDatasByAlias(1, 'model');
+      const models = map.getDatasByAlias(filterList.groupId, 'model');
       models.forEach(item => {
         if (item.ID && modeIdList.includes(item.ID)) {
           item.setColor(COLORS[zoneLevel], 1);
@@ -266,6 +306,7 @@ export default class Map extends React.Component {
 
   //绘制线图层
   drawLines(
+    groupId,
     points,
     lineStyle = {
       //设置线的宽度
@@ -289,16 +330,17 @@ export default class Map extends React.Component {
     var lineObject = map.drawLineMark(line, lineStyle);
     naviLines.push(lineObject);
     // 获取选中坐标点
-    this.props.getPoints(points);
+    this.props.getPoints(groupId, points);
   }
 
   render() {
     const { isDrawing } = this.props;
     if (!isDrawing && points.length > 0) {
+      const groupId = points.map(item => item.groupID)[0];
       // doDraw
-      this.drawPolygon(points, COLOR.blue);
+      this.drawPolygon(groupId, points, COLOR.blue);
       // 建筑物上色
-      this.setModelColor(points, COLOR.blue);
+      this.setModelColor(groupId, points, COLOR.blue);
       map.clearLineMark();
       points = [];
     }

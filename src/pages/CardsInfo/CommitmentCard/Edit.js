@@ -106,9 +106,9 @@ export default class Edit extends PureComponent {
         payload: id ? { id, ...vals } : vals,
         callback: (code, msg) => {
           if (code === 200) {
-            message.success('新增成功');
+            message.success(id?'编辑成功':'新增成功');
             router.push(LIST_URL);
-          } else message.error('新增失败');
+          } else message.error(id?'编辑失败':'新增失败');
         },
       });
     });
