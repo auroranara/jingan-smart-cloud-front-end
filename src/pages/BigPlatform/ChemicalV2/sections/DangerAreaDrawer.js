@@ -75,6 +75,7 @@ const threeCardData = [
   { label: '应知卡', value: 0, url: 'cards-info/know-card/list', images: [knowCard] },
   { label: '应急卡', value: 0, url: 'cards-info/emergency-card/list', images: [emergencyCard] },
 ];
+const monitorTypes = ['301', '303', '311', '312', '314'];
 
 export default class KeyPoints extends PureComponent {
   state = {
@@ -305,6 +306,8 @@ export default class KeyPoints extends PureComponent {
       handleClickHiddenDanger,
       handleShowRiskPoint,
       loading,
+      handleClickAreaDangerSource,
+      zoneEquip,
     } = this.props;
     // const {  } = this.state;
     const areaLvl = Levels[zoneLevel - 1] || {};
@@ -342,6 +345,8 @@ export default class KeyPoints extends PureComponent {
       prev += next.length;
       return prev;
     }, 0);
+    const gasList = zoneEquip['405'] || [];
+    const poisonList = zoneEquip['406'] || [];
 
     return (
       <Fragment>
@@ -454,6 +459,10 @@ export default class KeyPoints extends PureComponent {
                             // onClick={() => this.handleJump(url, images)}
                             onClick={() => {
                               // setDrawerVisible('dangerSourceInfo');
+                              handleClickAreaDangerSource(
+                                dangerSourceList[index],
+                                monitorTypes[index]
+                              );
                             }}
                           >
                             {label}
@@ -466,37 +475,40 @@ export default class KeyPoints extends PureComponent {
                   </div>
                 )}
 
-                {/* <div className={styles.wrapper}>
-              <div
-                className={styles.title}
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  // setDrawerVisible('monitor', { monitorType: 6, monitorData: MonitorList[6][0] });
-                  handleGasOpen();
-                }}
-              >
-                可燃气体
-                <div className={styles.extra}>
-                  <Icon type="right" className={styles.rightIcon} />
+                {/* {gasList.length > 0 && ( */}
+                <div className={styles.wrapper}>
+                  <div
+                    className={styles.title}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      handleClickAreaDangerSource(gasList, '405');
+                    }}
+                  >
+                    可燃气体
+                    <div className={styles.extra}>
+                      <Icon type="right" className={styles.rightIcon} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+                {/* )} */}
 
-            <div className={styles.wrapper}>
-              <div
-                className={styles.title}
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  // setDrawerVisible('monitor', { monitorType: 7, monitorData: MonitorList[7][0] });
-                  handlePoisonOpen();
-                }}
-              >
-                有毒气体
-                <div className={styles.extra}>
-                  <Icon type="right" className={styles.rightIcon} />
+                {/* {poisonList.length > 0 && ( */}
+                <div className={styles.wrapper}>
+                  <div
+                    className={styles.title}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      handleClickAreaDangerSource(poisonList, '406');
+                    }}
+                  >
+                    有毒气体
+                    <div className={styles.extra}>
+                      <Icon type="right" className={styles.rightIcon} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div> */}
+                {/*  )} */}
+
                 {dcList.length + scList.length > 0 && (
                   <div className={styles.wrapper}>
                     <div className={styles.title}>两单</div>

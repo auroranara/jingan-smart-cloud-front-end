@@ -45,6 +45,7 @@ export default {
     riskPoint: [],
     videoList: [],
     monitorData: {},
+    zoneEquip: {},
     noticeList: [],
     hiddenDangerTotal: 0,
     dangerSourceList: [],
@@ -174,6 +175,23 @@ export default {
           type: 'save',
           payload: {
             monitorEquipment,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 分区监测设备列表
+    *fetchZoneEquip({ payload, callback }, { call, put }) {
+      const { equipmentType } = payload;
+      const response = yield call(monitorEquipment, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const { list } = data;
+        yield put({
+          type: 'saveZoneEquip',
+          payload: {
+            list,
+            equipmentType,
           },
         });
       }
@@ -366,6 +384,13 @@ export default {
       monitorData: {
         ...state.monitorData,
         [monitorType]: list,
+      },
+    }),
+    saveZoneEquip: (state, { payload: { list, equipmentType } }) => ({
+      ...state,
+      zoneEquip: {
+        ...state.zoneEquip,
+        [equipmentType]: list,
       },
     }),
   },

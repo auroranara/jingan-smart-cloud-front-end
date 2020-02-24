@@ -150,7 +150,7 @@ export default class MonitorDetailDrawer extends Component {
                               ? `（${transformCondition(condition)}${limitValueStr}）`
                               : ''
                           }`} */}
-                          {`${STATUS[status]}`}
+                          {`${STATUS[+status]}`}
                         </div>
                       </div>
                     </div>
