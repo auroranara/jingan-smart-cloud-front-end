@@ -192,7 +192,7 @@ export default class AreaMonitorDrawer extends PureComponent {
   renderContent = () => {
     const { title, data, tabs, onVideoClick } = this.props;
     // TODO：
-    const statisticsProps = tabs.map(({ dataSourse = [], ...res }) => ({
+    const statisticsProps = tabs.map(({ dataSourse = [], fields, ...res }) => ({
       ...res,
       total: dataSourse.length,
       warn: dataSourse.filter(item => item.warnStatus === -1).length,
