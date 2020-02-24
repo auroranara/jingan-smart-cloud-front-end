@@ -25,7 +25,7 @@ export default class MonitorDrawer extends PureComponent {
         onClose={onClose}
         width={535}
         destroyOnClose={true}
-        zIndex={1222}
+        zIndex={1226}
         left={
           <div className={styles.container}>
             {list.map((item, index) => {
