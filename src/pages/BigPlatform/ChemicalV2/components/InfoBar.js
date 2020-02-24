@@ -34,7 +34,7 @@ export default function StatusBar(props) {
         </span>
         <span>
           状态：
-          <span style={{ color: STATUS_COLOR[status] }}>{STATUS[status]}</span>
+          <span style={{ color: STATUS_COLOR[status] }}>{STATUS[+status]}</span>
         </span>
       </p>
       <p className={styles.time}>

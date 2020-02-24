@@ -34,6 +34,14 @@ const iconFlamGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/gas.png';
 // 有毒气体图片
 const iconToxicGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/poison.png';
 
+const STATUS = ['正常', '预警', '告警'];
+
+const transformCondition = condition => {
+  if (condition === '>=') return '≥';
+  else if (condition === '<=') return '≤';
+  return condition;
+};
+
 const renderEllipsis = val => (
   <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
     {val}
@@ -1850,9 +1858,36 @@ export const MonitorConfig = {
       {
         label: '浓度（%LEL）',
         value: 'allMonitorParam',
-        render: val => (+val === 1 ? '是' : '否'),
+        render: (val = []) => {
+          const { realValueStr, status, condition, limitValueStr, fixType } = val[0] || {};
+          return (
+            <span>
+              <span style={{ color: +status !== 0 ? 'rgb(255, 72, 72)' : '#fff' }}>
+                {realValueStr}
+              </span>
+              {condition &&
+                limitValueStr &&
+                +fixType !== 5 && (
+                  <span style={{ display: 'inline-block', marginLeft: '20px' }}>
+                    (
+                    {condition && limitValueStr && +fixType !== 5
+                      ? transformCondition(condition) + limitValueStr
+                      : ''}
+                    )
+                  </span>
+                )}
+            </span>
+          );
+        },
       },
-      { label: '更新时间', value: 'allMonitorParam' },
+      {
+        label: '更新时间',
+        value: 'allMonitorParam',
+        render: (val = []) => {
+          const { dataUpdateTime } = val[0] || {};
+          return dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : '暂无数据';
+        },
+      },
     ],
   },
 };
