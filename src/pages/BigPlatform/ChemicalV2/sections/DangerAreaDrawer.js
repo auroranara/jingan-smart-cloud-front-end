@@ -308,6 +308,7 @@ export default class KeyPoints extends PureComponent {
       loading,
       handleClickAreaDangerSource,
       zoneEquip,
+      handleClickAreaGas,
     } = this.props;
     // const {  } = this.state;
     const areaLvl = Levels[zoneLevel - 1] || {};
@@ -475,39 +476,39 @@ export default class KeyPoints extends PureComponent {
                   </div>
                 )}
 
-                {/* {gasList.length > 0 && ( */}
-                <div className={styles.wrapper}>
-                  <div
-                    className={styles.title}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => {
-                      handleClickAreaDangerSource(gasList, '405');
-                    }}
-                  >
-                    可燃气体
-                    <div className={styles.extra}>
-                      <Icon type="right" className={styles.rightIcon} />
+                {gasList.length > 0 && (
+                  <div className={styles.wrapper}>
+                    <div
+                      className={styles.title}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        handleClickAreaGas(gasList, '405');
+                      }}
+                    >
+                      可燃气体
+                      <div className={styles.extra}>
+                        <Icon type="right" className={styles.rightIcon} />
+                      </div>
                     </div>
                   </div>
-                </div>
-                {/* )} */}
+                )}
 
-                {/* {poisonList.length > 0 && ( */}
-                <div className={styles.wrapper}>
-                  <div
-                    className={styles.title}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => {
-                      handleClickAreaDangerSource(poisonList, '406');
-                    }}
-                  >
-                    有毒气体
-                    <div className={styles.extra}>
-                      <Icon type="right" className={styles.rightIcon} />
+                {poisonList.length > 0 && (
+                  <div className={styles.wrapper}>
+                    <div
+                      className={styles.title}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        handleClickAreaGas(poisonList, '406');
+                      }}
+                    >
+                      有毒气体
+                      <div className={styles.extra}>
+                        <Icon type="right" className={styles.rightIcon} />
+                      </div>
                     </div>
                   </div>
-                </div>
-                {/*  )} */}
+                )}
 
                 {dcList.length + scList.length > 0 && (
                   <div className={styles.wrapper}>

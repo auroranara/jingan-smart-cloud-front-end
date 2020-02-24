@@ -1835,15 +1835,23 @@ export const MonitorConfig = {
   '405': {
     // 可燃气体监测
     title: '可燃气体监测',
-    icon: ({ realValue }) => (
-      <div
-        className={styles.iconWrapper}
-        style={{ background: `url(${iconFlamGas}) center center / 100% auto no-repeat` }}
-      >
-        <div>LEL</div>
-        <div>{realValue}%</div>
-      </div>
-    ),
+    icon: ({ allMonitorParam }) => {
+      const { realValueStr } = allMonitorParam[0] || {};
+      return (
+        <div
+          className={styles.iconWrapper}
+          style={{
+            background: `url(${iconFlamGas}) center center / 100% auto no-repeat`,
+            flexDirection: 'column',
+            lineHeight: '1em',
+            color: '#fff',
+          }}
+        >
+          <div style={{ marginTop: '-1em' }}>LEL</div>
+          <div>{realValueStr}%</div>
+        </div>
+      );
+    },
     fields: [
       {
         value: 'name',

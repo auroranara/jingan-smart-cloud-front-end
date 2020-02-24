@@ -27,6 +27,7 @@ import MHDrawer from './MHDrawer';
 import MonitorEquipDrawer from './MonitorEquipDrawer';
 import IoTMonitorDrawer from './IoTMonitorDrawer';
 import FireMonitorDrawer from './FireMonitorDrawer';
+import GasListDrawer from './GasListDrawer';
 
 export {
   Risk,
@@ -58,4 +59,5 @@ export {
   MonitorEquipDrawer,
   IoTMonitorDrawer,
   FireMonitorDrawer,
+  GasListDrawer,
 };
