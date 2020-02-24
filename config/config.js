@@ -29,7 +29,6 @@ const hosts = {
   mock: '118.126.110.115:3001/mock/28',
   jb: '192.168.10.3', // 杰宝
   gj: '192.168.10.9', //高进
-  gj2: '25.13.128.228',
   tw: '192.168.10.5', // 田伟
   cfm: '192.168.10.6', // 崔富民
   tg: '192.168.10.96:8080', // 汤归
@@ -46,7 +45,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.gj2}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },

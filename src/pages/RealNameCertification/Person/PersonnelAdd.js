@@ -19,6 +19,7 @@ import moment from 'moment';
 import { stringify } from 'qs';
 import { getToken } from '@/utils/authority';
 import { SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
+import { phoneReg } from '@/utils/validate';
 
 const FormItem = Form.Item;
 
@@ -54,21 +55,34 @@ export default class PersonnelAdd extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { validateFieldsAndScroll },
+      location: { query: { companyId } },
     } = this.props;
+    const tag = id ? '编辑' : '新增';
+    const callback = (success) => {
+      if (success) {
+        message.success(`${tag}人员成功`);
+        router.push(`/real-name-certification/personnel-management/person-list/${companyId}`);
+      } else {
+        message.error(`${tag}人员失败`);
+      }
+    }
     validateFieldsAndScroll((err, values) => {
       if (err) return;
+      if (!companyId) return;
       const { birthday, ...resValues } = values;
       const payload = {
         ...resValues,
         birthday: birthday ? birthday.unix() * 1000 : undefined,
+        companyId,
       };
-      console.log('payload', payload);
+      // console.log('payload', payload);
       if (id) {
         // 如果编辑
       } else {
         dispatch({
           type: 'realNameCertification/addPerson',
           payload,
+          callback,
         })
       }
     });
@@ -167,7 +181,7 @@ export default class PersonnelAdd extends PureComponent {
     } else callback('请上传人脸照片')
   }
 
-  render() {
+  render () {
     const {
       match: { params: { id } },
       location: { query: { companyId } },
@@ -239,7 +253,9 @@ export default class PersonnelAdd extends PureComponent {
               </Col>
               <Col {...colLayout}>
                 <FormItem label="证件类型">
-                  {getFieldDecorator('certificateType')(
+                  {getFieldDecorator('certificateType', {
+                    initialValue: '1',
+                  })(
                     <Select placeholder="请选择">
                       {[{ value: '1', label: '身份证' }].map(({ value, label }, index) => (
                         <Select.Option key={value} value={value}>{label}</Select.Option>
@@ -279,7 +295,10 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="手机号">
                   {getFieldDecorator('telephone', {
-                    rules: [{ required: true, message: '请输入手机号' }],
+                    rules: [
+                      { required: true, message: '请输入手机号', whitespace: true },
+                      { pattern: phoneReg, message: '联系电话格式不正确' },
+                    ],
                   })(
                     <Input placeholder="请输入" />
                   )}

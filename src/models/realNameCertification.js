@@ -31,7 +31,7 @@ export default {
   },
   effects: {
     // 获取企业列表
-    *fetchCompanyList({ payload }, { call, put }) {
+    *fetchCompanyList ({ payload }, { call, put }) {
       const res = yield call(fetchCompanyList, payload);
       if (res && res.code === 200 && res.data) {
         yield put({
@@ -41,18 +41,19 @@ export default {
       }
     },
     // 新增人员
-    *addPerson({ payload }, { call }) {
+    *addPerson ({ payload, callback }, { call }) {
       const res = yield call(addPerson, payload);
+      callback && callback(res && res.code === 200);
     },
   },
   reducers: {
-    save(state, action) {
+    save (state, action) {
       return {
         ...state,
         ...action.payload,
       }
     },
-    saveCompany(state, action) {
+    saveCompany (state, action) {
       const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
       return {
         ...state,

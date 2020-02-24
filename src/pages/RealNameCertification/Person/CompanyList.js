@@ -13,6 +13,7 @@ import {
   Select,
   message,
   Input,
+  AutoComplete,
 } from 'antd';
 import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
@@ -74,7 +75,7 @@ export default class CompanyList extends PureComponent {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.handleQuery();
   }
 
@@ -138,7 +139,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
     // 根据value判断是否是手动输入
     if (value && value.key === value.label) {
-      this.handleUnitIdChange.cancel();
+      this.onUnitChange.cancel();
       setFieldsValue({
         companyId: undefined,
       });
@@ -150,18 +151,24 @@ export default class CompanyList extends PureComponent {
   handleSubmit = () => {
     const {
       form: { validateFields },
-      dispatch,
     } = this.props;
     validateFields((err, values) => {
       if (err) return;
       const { companyId } = values;
-      console.log('sumbit', companyId)
+      if (companyId && companyId.key && companyId.key !== companyId.label) {
+        router.push({
+          pathname: '/real-name-certification/personnel-management/add',
+          query: { companyId: companyId.key },
+        })
+      } else this.handleUnitIdBlur(companyId)
     })
   }
 
   // 打开新增人员modal
   handleViewAdd = () => {
-    router.push('/real-name-certification/personnel-management/add');
+    this.setState({ modalVisible: true });
+    // 获取模糊搜索单位列表
+    this.fetchUnitList();
   }
 
   // 渲染筛选栏
@@ -197,16 +204,21 @@ export default class CompanyList extends PureComponent {
 
   // 渲染列表
   renderList = () => {
-    const list = [
-      {
-        companyId: '123',
-        companyName: '常熟市鑫博伟针纺织有限公司',
-        phone: '13815208877',
-        name: '张三',
-        num: '20',
-        address: '常熟市朝阳区北京路1号',
+    const {
+      realNameCertification: {
+        company: { list = [] },
       },
-    ];
+    } = this.props;
+    // const list = [
+    //   {
+    //     companyId: '123',
+    //     companyName: '常熟市鑫博伟针纺织有限公司',
+    //     phone: '13815208877',
+    //     name: '张三',
+    //     num: '20',
+    //     address: '常熟市朝阳区北京路1号',
+    //   },
+    // ];
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
@@ -216,28 +228,40 @@ export default class CompanyList extends PureComponent {
           renderItem={item => {
             const {
               companyId,
-              companyName,
-              phone,
-              name,
-              num,
-              address,
+              count = 0,
+              companyMessage: {
+                name,
+                safetyName,
+                safetyPhone,
+                practicalProvinceLabel,
+                practicalCityLabel,
+                practicalDistrictLabel,
+                practicalTownLabel,
+                practicalAddress,
+              },
             } = item;
+            const practicalAddressLabel =
+              (practicalProvinceLabel || '') +
+              (practicalCityLabel || '') +
+              (practicalDistrictLabel || '') +
+              (practicalTownLabel + '') +
+              (practicalAddress || '');
             return (
               <List.Item key={companyId}>
-                <Card title={companyName} className={styles.card}>
+                <Card title={name} className={styles.card}>
                   <Row>
                     <Col span={16}>
                       <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                         地址：
-                        {address || getEmptyData()}
+                        {practicalAddressLabel.replace('null', '') || getEmptyData()}
                       </Ellipsis>
                       <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                         安全负责人：
-                        {name || getEmptyData()}
+                        {safetyName || getEmptyData()}
                       </Ellipsis>
                       <p>
                         联系电话：
-                        {phone || getEmptyData()}
+                        {safetyPhone || getEmptyData()}
                       </p>
                     </Col>
 
@@ -246,7 +270,7 @@ export default class CompanyList extends PureComponent {
                         to={`/real-name-certification/personnel-management/person-list/${companyId}`}
                         target="_blank"
                       >
-                        <span className={styles.quantity}>{num}</span>
+                        <span className={styles.quantity}>{count}</span>
                       </Link>
                     </Col>
                   </Row>
@@ -259,13 +283,16 @@ export default class CompanyList extends PureComponent {
     )
   }
 
-  render() {
+  render () {
     const {
       loading,
+      form: { getFieldDecorator },
+      hiddenDangerReport: { unitIdes },
       realNameCertification: {
         company: { isLast },
       },
     } = this.props;
+    const { modalVisible } = this.state;
     return (
       <PageHeaderLayout
         title={title}
@@ -305,7 +332,7 @@ export default class CompanyList extends PureComponent {
         >
           {this.renderList()}
         </InfiniteScroll>
-        {/* <Modal
+        <Modal
           title="添加单位"
           visible={modalVisible}
           onCancel={() => { this.setState({ modalVisible: false }) }}
@@ -342,7 +369,7 @@ export default class CompanyList extends PureComponent {
               )}
             </FormItem>
           </Form>
-        </Modal> */}
+        </Modal>
       </PageHeaderLayout>
     )
   }
