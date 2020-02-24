@@ -30,7 +30,7 @@ const keyPointsData1 = [
 const keyPointsList = [
   { icon: iconDangerSource, label: '重大危险源', value: 0, key: 'dangerSource' },
   { icon: iconChemical, label: '重点监管危险化学品', value: 0, key: 'superviseChemicals' },
-  { icon: iconHigh, label: '重点监管危险化工工艺', value: 0, key: 'iskeySupervisionProcess' },
+  // { icon: iconHigh, label: '重点监管危险化工工艺', value: 0, key: 'iskeySupervisionProcess' },
 ];
 
 export default class KeyPoints extends PureComponent {
