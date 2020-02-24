@@ -85,8 +85,7 @@ function genFormItem(field, getFieldDecorator) {
 
   let child = null;
 
-  if (type === 'component') child = compt;
-  // 不经过getFieldDecorator包裹
+  if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
   else {
     const formOptions = formItemOptions || {};
     const opts = getOptions(options);
@@ -214,6 +213,29 @@ export function renderSections(
       {submitBtn}
     </Form>
   );
+}
+
+export function convertSections(secs, detail) {
+  return secs.map(({ title, fields }) => ({
+    title,
+    fields: fields.map(({ name, label, options }) => {
+      const value = detail[name];
+      const showValue = value === null || value === undefined || value === '' ? '-' : value;
+      const field = {
+        name,
+        label,
+        type: 'component',
+        component: options ? findValueInOptions(value, options) : showValue,
+      };
+      if (Array.isArray(options))
+        field.options = options;
+      return field;
+    }),
+  }))
+}
+
+function findValueInOptions(value, options) { // 暂时只有一种，字符串数组，以后有其他的在添加
+  return options[value];
 }
 
 export function getFieldLabels(sections) {
