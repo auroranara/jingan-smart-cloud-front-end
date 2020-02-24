@@ -301,35 +301,20 @@ export default {
       }
     },
     // 获取车场详情
-    *getParkDetail(
-      {
-        payload,
-        payload: { id },
-        callback,
-      },
-      { call, put }
-    ) {
-      if (id) {
-        const response = yield call(getParkDetail, payload);
-        const { code, data, msg } = response || {};
-        if (code === 200 && data) {
-          const parkDetail = data;
-          yield put({
-            type: 'save',
-            payload: {
-              parkDetail,
-            },
-          });
-          callback && callback(true, parkDetail);
-        } else {
-          callback && callback(false, msg);
-        }
+    *getParkDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getParkDetail, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const parkDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            parkDetail,
+          },
+        });
+        callback && callback(true, parkDetail);
       } else {
-        const response = yield call(getParkId, payload);
-        const { code, data } = response || {};
-        if (code === 200 && data) {
-          callback && callback(true, { parkId: data });
-        }
+        callback && callback(false, msg);
       }
     },
     // 删除车场

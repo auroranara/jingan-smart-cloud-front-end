@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
+import AsyncSelect from '@/jingan-components/AsyncSelect';
 import { isNumber } from '@/utils/utils';
+import { connect } from 'dva';
 import router from 'umi/router';
 import { BREADCRUMB_LIST, STATUSES } from '../List';
 import styles from './index.less';
@@ -12,7 +14,19 @@ const MAPPER = {
   add: 'addPark',
   edit: 'editPark',
 };
+const FIELDNAMES = {
+  key: 'id',
+  value: 'userName',
+};
+const MAPPER2 = {
+  namespace: 'common',
+  list: 'personList',
+  getList: 'getPersonList',
+};
 
+@connect(({ user }) => ({
+  user,
+}))
 export default class ParkOther extends Component {
   componentDidMount() {
     const {
@@ -40,17 +54,29 @@ export default class ParkOther extends Component {
     }
   }
 
-  initialize = ({ parkId, parkName, managerName, managerPhone, parkStatus }) => ({
+  shouldComponentUpdate(nextProps) {
+    return (
+      nextProps.match.params.unitId !== this.props.match.params.unitId ||
+      nextProps.match.params.id !== this.props.match.params.id
+    );
+  }
+
+  setPageReference = page => {
+    this.page = page && page.getWrappedInstance();
+  };
+
+  initialize = ({ parkId, parkName, managerId, managerName, managerPhone, parkStatus }) => ({
     parkId: parkId || undefined,
     parkName: parkName || undefined,
-    managerName: managerName || undefined,
+    manager: managerId ? { key: managerId, label: managerName } : undefined,
     managerPhone: managerPhone || undefined,
     parkStatus: isNumber(parkStatus) ? `${parkStatus}` : undefined,
   });
 
-  transform = ({ unitId, ...payload }) => {
+  transform = ({ unitId, manager, ...payload }) => {
     return {
       companyId: unitId,
+      managerId: manager && manager.key,
       ...payload,
     };
   };
@@ -75,12 +101,16 @@ export default class ParkOther extends Component {
       ].filter(v => v)
     );
 
-  getFields = () => [
-    {
-      id: 'parkId',
-      label: '车场ID',
-      component: 'Text',
-    },
+  getFields = ({ unitId, isDetail }) => [
+    ...(isDetail
+      ? [
+          {
+            id: 'parkId',
+            label: '车场ID',
+            component: 'Text',
+          },
+        ]
+      : []),
     {
       id: 'parkName',
       label: '车场名称',
@@ -88,9 +118,18 @@ export default class ParkOther extends Component {
       component: 'Input',
     },
     {
-      id: 'managerName',
+      id: 'manager',
       label: '车场联系人',
-      component: 'Input',
+      component: AsyncSelect,
+      props: {
+        fieldNames: FIELDNAMES,
+        mapper: MAPPER2,
+        params: {
+          unitId,
+        },
+        placeholder: '请选择车场联系人',
+        onSelect: this.handleManagerSelect,
+      },
     },
     {
       id: 'managerPhone',
@@ -111,6 +150,15 @@ export default class ParkOther extends Component {
     },
   ];
 
+  handleManagerSelect = value => {
+    const { phoneNumber } = value || {};
+    this.page &&
+      this.page.form &&
+      this.page.form.setFieldsValue({
+        managerPhone: phoneNumber ? `${phoneNumber}` : undefined,
+      });
+  };
+
   render() {
     const {
       route,
@@ -127,7 +175,8 @@ export default class ParkOther extends Component {
       initialize: this.initialize,
       transform: this.transform,
       mapper: MAPPER,
-      hack: true,
+      error: 1,
+      ref: this.setPageReference,
       route,
       location,
       match,

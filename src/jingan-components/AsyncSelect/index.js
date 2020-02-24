@@ -4,6 +4,10 @@ import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 
 const { Option } = AutoComplete;
+const FIELDNAMES = {
+  key: 'key',
+  value: 'value',
+};
 
 @connect(
   (state, { mapper }) => {
@@ -51,17 +55,32 @@ export default class AsyncSelect extends Component {
   }
 
   componentDidMount() {
-    const { getList } = this.props;
-    console.log(this.props);
-    getList();
+    const { getList, params } = this.props;
+    getList(params);
   }
 
+  handleChange = value => {
+    const {
+      list: { list },
+      onChange,
+      onSelect,
+      fieldNames,
+    } = this.props;
+    const { key: k } = { ...FIELDNAMES, ...fieldNames };
+    const { key, label } = value || {};
+    onChange && onChange(value);
+    if (key !== label) {
+      onSelect(list.find(item => item[k] === key));
+    }
+  };
+
   handleSearch = value => {
-    const { getList, setList, mapper } = this.props;
-    const { name } = mapper;
+    const { getList, setList, fieldNames, params } = this.props;
+    const { value: v } = { ...FIELDNAMES, ...fieldNames };
     setList();
     getList({
-      [name || 'name']: value && value.trim(),
+      [v]: value && value.trim(),
+      ...params,
     });
   };
 
@@ -69,8 +88,9 @@ export default class AsyncSelect extends Component {
     if (value) {
       const { key, label } = value;
       if (key === label) {
-        const { onChange } = this.props;
+        const { onChange, getList, params } = this.props;
         onChange && onChange();
+        getList(params);
       }
     }
   };
@@ -82,13 +102,12 @@ export default class AsyncSelect extends Component {
       style,
       loading,
       value,
-      onChange,
       disabled,
       placeholder = '请选择',
       type,
-      mapper,
+      fieldNames,
     } = this.props;
-    const { id, name } = mapper;
+    const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
 
     return type !== 'span' ? (
       <AutoComplete
@@ -97,7 +116,7 @@ export default class AsyncSelect extends Component {
         mode="combobox"
         labelInValue
         value={value}
-        onChange={onChange}
+        onChange={this.handleChange}
         optionLabelProp="children"
         placeholder={placeholder}
         defaultActiveFirstOption={false}
@@ -107,8 +126,8 @@ export default class AsyncSelect extends Component {
         notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
         disabled={disabled}
       >
-        {list.map(({ [id || 'id']: key, [name || 'name']: label }) => (
-          <Option key={key}>{label}</Option>
+        {list.map(({ [k]: key, [v]: value }) => (
+          <Option key={key}>{value}</Option>
         ))}
       </AutoComplete>
     ) : (

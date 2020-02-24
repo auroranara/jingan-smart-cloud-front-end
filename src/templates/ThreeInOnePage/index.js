@@ -83,6 +83,7 @@ const STYLE = {
       isAdd: name === 'add',
       isNotDetail: name !== 'detail',
       isEdit: name === 'edit',
+      isDetail: name === 'detail',
       hasEditAuthority: permissionCodes.includes(code.replace(name, 'edit')),
     };
   },
@@ -138,7 +139,9 @@ const STYLE = {
               message.success(`${id ? '编辑' : '新增'}成功！`);
               router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
             } else if (error) {
-              message.error(`${id ? '编辑' : '新增'}失败，请稍后重试或联系管理人员！`);
+              message.error(
+                `${id ? '编辑' : '新增'}失败，${error === 1 ? data : '请稍后重试或联系管理人员'}！`
+              );
             }
             callback && callback(success, data);
           },
@@ -429,6 +432,9 @@ export default class ThreeInOnePage extends Component {
       fields,
       editEnable = true,
       isNotDetail,
+      isAdd,
+      isEdit,
+      isDetail,
       hasEditAuthority,
       detail = {},
       unitId,
@@ -437,7 +443,13 @@ export default class ThreeInOnePage extends Component {
     } = this.props;
     const { submitting } = this.state;
     const showEdit = typeof editEnable === 'function' ? editEnable(detail) : editEnable;
-    const values = { unitId, ...(this.form && this.form.getFieldsValue()) }; // 这里有问题，但是不知道怎么解决
+    const values = {
+      unitId,
+      isAdd,
+      isEdit,
+      isDetail,
+      ...(this.form && this.form.getFieldsValue()),
+    }; // 这里有问题，但是不知道怎么解决
     let Fields = typeof fields === 'function' ? fields(values) : fields;
     const callback = (result, { id, component, fields }) => {
       if (fields) {
