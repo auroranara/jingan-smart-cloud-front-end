@@ -2622,18 +2622,24 @@ module.exports = env => {
               name: 'targetAnalysis', // 目标责任分析报表
               code: 'targetResponsibility.targetAnalysis',
               path: '/target-responsibility/target-analysis',
-              developing: true,
+              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
                   name: 'view',
                   path: '/target-responsibility/target-analysis',
-                  redirect: '/target-responsibility/target-analysis/index',
+                  redirect: '/target-responsibility/target-analysis/company-list',
                 },
                 {
                   name: 'view',
-                  code: 'targetResponsibility.targetAnalysis',
-                  path: '/target-responsibility/target-analysis/index',
+                  code: 'targetResponsibility.targetAnalysis.listView',
+                  path: '/target-responsibility/target-analysis/company-list',
+                  component: './TargetResponsibility/TargetAnalysis/CompanyList',
+                },
+                {
+                  name: 'view',
+                  code: 'targetResponsibility.targetAnalysis.view',
+                  path: '/target-responsibility/target-analysis/index/:id',
                   component: './TargetResponsibility/TargetAnalysis/index',
                 },
               ],

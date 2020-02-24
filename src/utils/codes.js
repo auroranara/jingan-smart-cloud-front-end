@@ -685,6 +685,11 @@ export default {
       delete: 'targetResponsibility.targetSetting.delete',
       result: 'targetResponsibility.targetSetting.result',
     },
+    // 报表
+    targetAnalysis: {
+      listView: 'targetResponsibility.targetAnalysis.listView',
+      view: 'targetResponsibility.targetAnalysis.view',
+    },
   },
 
   // 隐患排查治理

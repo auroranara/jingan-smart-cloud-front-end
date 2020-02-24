@@ -59,16 +59,16 @@ export default {
         value: '≤',
       },
     ],
-    mQYData:{},
-    partGoalData:{},
-    unitPartData:{
-      list:[],
+    mQYData: {},
+    partGoalData: {},
+    unitPartData: {
+      list: [],
     },
-    goalChangeData:{
-      list:[],
+    goalChangeData: {
+      list: [],
     },
-    yearGoalData:{
-      list:[],
+    yearGoalData: {
+      list: [],
     },
   },
 
@@ -202,23 +202,25 @@ export default {
       }
     },
 
-    *fetchUnitPartGoal({ payload }, { call, put }) {
+    *fetchUnitPartGoal({ payload, callback }, { call, put }) {
       const response = yield call(queryUnitPartGoal, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveUnitPartGoal',
           payload: response,
         });
+        if (callback) callback(response);
       }
     },
 
-    *fetchGoalChange({ payload }, { call, put }) {
+    *fetchGoalChange({ payload, callback }, { call, put }) {
       const response = yield call(queryGoalChange, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveGoalChange',
           payload: response,
         });
+        if (callback) callback(response);
       }
     },
 
@@ -241,7 +243,6 @@ export default {
         });
       }
     },
-    
   },
 
   reducers: {
@@ -364,6 +365,5 @@ export default {
         yearGoalData: data,
       };
     },
-    
   },
 };

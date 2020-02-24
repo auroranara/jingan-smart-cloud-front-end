@@ -206,6 +206,7 @@ export default class MajorHazardEdit extends PureComponent {
           environmentNum,
           dangerDistance,
           safetyDistance,
+          personNum,
           linkman,
           linkmanTel,
           recordDate,
@@ -222,6 +223,7 @@ export default class MajorHazardEdit extends PureComponent {
           memoryPlace,
           antiStatic,
           dangerTechnology,
+          personNum,
           location,
           useDate: useDate && useDate.format('YYYY-MM-DD'),
           recordDate: recordDate && recordDate.format('YYYY-MM-DD'),
@@ -601,7 +603,7 @@ export default class MajorHazardEdit extends PureComponent {
       r,
       dangerLevel,
       // chemiclaNature,
-      // industryArea,
+      personNum,
       environmentType,
       environmentName,
       environmentNum,
@@ -647,7 +649,7 @@ export default class MajorHazardEdit extends PureComponent {
               {!isDet && (
                 <Button type="primary" onClick={this.handleCompanyModal}>
                   选择单位
-              </Button>
+                </Button>
               )}
             </FormItem>
           )}
@@ -766,7 +768,7 @@ export default class MajorHazardEdit extends PureComponent {
                   {!isDet && (
                     <Button type="primary" size="small" onClick={this.handleDangerModal}>
                       选择
-                  </Button>
+                    </Button>
                   )}
                 </div>
               </Fragment>
@@ -811,7 +813,7 @@ export default class MajorHazardEdit extends PureComponent {
             {!isDet && (
               <Button type="primary" size="small" onClick={this.handlePersonModal}>
                 选择
-            </Button>
+              </Button>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="防雷防静电设施是否定期接受检测">
@@ -890,7 +892,7 @@ export default class MajorHazardEdit extends PureComponent {
                   message: '请填入周边500米内常住人口数量',
                 },
               ],
-              initialValue: safetyDistance,
+              initialValue: personNum,
               getValueFromEvent: this.handleTrim,
             })(
               <Input {...itemStyles} placeholder="请填入周边500米内常住人口数量" maxLength={10} />
@@ -973,14 +975,25 @@ export default class MajorHazardEdit extends PureComponent {
     return (
       <FooterToolbar>
         {isDet ? (
-          <Button type="primary" size="large" style={{ marginRight: 10}} disabled={!editCode} href={`#/major-hazard-info/major-hazard/edit/${id}`}>
+          <Button
+            type="primary"
+            size="large"
+            style={{ marginRight: 10 }}
+            disabled={!editCode}
+            href={`#/major-hazard-info/major-hazard/edit/${id}`}
+          >
             编辑
-        </Button>
+          </Button>
         ) : (
-            <Button type="primary" size="large" loading={submitting} onClick={this.handleClickValidate}>
-              提交
-        </Button>
-          )}
+          <Button
+            type="primary"
+            size="large"
+            loading={submitting}
+            onClick={this.handleClickValidate}
+          >
+            提交
+          </Button>
+        )}
 
         <Button size="large" onClick={this.goBack}>
           返回
