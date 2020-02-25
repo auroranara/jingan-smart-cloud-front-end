@@ -3,6 +3,7 @@ export const SRC_MAP = {
   'deviceManagement.monitoringDevice': 'equipment',
   'securityManage.videoIdentity': 'videoMonitor',
   'licensePlateRecognitionSystem.report': 'recognitionReport',
+  'realNameCertification.personnelManagement': 'personnel',
 };
 
 export function setBlocks(setting, routes) {
