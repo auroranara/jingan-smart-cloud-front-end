@@ -11,7 +11,6 @@ import {
   Col,
   Row,
   Select,
-  message,
   Input,
   AutoComplete,
 } from 'antd';
@@ -20,9 +19,9 @@ import debounce from 'lodash/debounce';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import codes from '@/utils/codes';
+// import codes from '@/utils/codes';
 import styles from './CompanyList.less';
-import { hasAuthority } from '@/utils/customAuth';
+// import { hasAuthority } from '@/utils/customAuth';
 import router from 'umi/router';
 
 const FormItem = Form.Item;
@@ -76,6 +75,16 @@ export default class CompanyList extends PureComponent {
   }
 
   componentDidMount () {
+    const {
+      user: {
+        isCompany,
+        currentUser: { companyId },
+      },
+    } = this.props;
+    if (isCompany) {
+      router.replace(`/real-name-certification/personnel-management/person-list/${companyId}`);
+      return;
+    }
     this.handleQuery();
   }
 
@@ -289,7 +298,10 @@ export default class CompanyList extends PureComponent {
       form: { getFieldDecorator },
       hiddenDangerReport: { unitIdes },
       realNameCertification: {
-        company: { isLast },
+        company: {
+          isLast,
+          pagination: { total },
+        },
       },
     } = this.props;
     const { modalVisible } = this.state;
@@ -301,12 +313,12 @@ export default class CompanyList extends PureComponent {
           <div>
             <span>
               单位总数：
-              {0}
+              {total}
             </span>
-            <span style={{ paddingLeft: 20 }}>
+            {/* <span style={{ paddingLeft: 20 }}>
               人员总数:
               <span style={{ paddingLeft: 8 }}>{0}</span>
-            </span>
+            </span> */}
           </div>
         }
       >

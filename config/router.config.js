@@ -4289,25 +4289,25 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              name: 'deviceManagement', // 设备管理
-              path: '/real-name-certification/device-management',
-              code: 'realNameCertification.deviceManagement',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path:'/real-name-certification/device-management',
-                  name:'list',
-                  redirect:'/real-name-certification/device-management/list',
-                },
-                {
-                  path:'/real-name-certification/device-management/list',
-                  name:'list',
-                  code:'realNameCertification.deviceManagement',
-                  component:'./RealNameCertification/Device/List',
-                },
-              ],
-            },
+            // {
+            //   name: 'deviceManagement', // 设备管理
+            //   path: '/real-name-certification/device-management',
+            //   code: 'realNameCertification.deviceManagement',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path:'/real-name-certification/device-management',
+            //       name:'list',
+            //       redirect:'/real-name-certification/device-management/list',
+            //     },
+            //     {
+            //       path:'/real-name-certification/device-management/list',
+            //       name:'list',
+            //       code:'realNameCertification.deviceManagement',
+            //       component:'./RealNameCertification/Device/List',
+            //     },
+            //   ],
+            // },
           ],
         },
       ],

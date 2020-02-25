@@ -37,8 +37,9 @@ const DEGREES = [
 ];
 
 @Form.create()
-@connect(({ realNameCertification }) => ({
+@connect(({ realNameCertification, loading }) => ({
   realNameCertification,
+  submitting: loading.effects['realNameCertification/addPerson'] || loading.effects['realNameCertification/editPerson'],
 }))
 export default class PersonnelAdd extends PureComponent {
 
@@ -47,6 +48,28 @@ export default class PersonnelAdd extends PureComponent {
     photoLoading: false, // 人脸照片是否上传中
     // photoFiles: [], // 人脸照片
     // diplomaFiles: [], // 学历证书
+    detail: {}, // 详情
+  }
+
+  componentDidMount () {
+    const {
+      dispatch,
+      match: { params: { id } },
+      form: { setFieldsValue },
+    } = this.props;
+    if (id) {
+      // 如果编辑
+      dispatch({
+        type: 'realNameCertification/fetchDetail',
+        payload: { id, pageNum: 1, pageSize: 0 },
+        callback: (detail) => {
+          const { photoDetails, educationCertificateDetails } = detail;
+          // console.log('detail', detail);
+          this.setState({ detail });
+          setFieldsValue({ photoDetails, educationCertificateDetails })
+        },
+      })
+    }
   }
 
   // 提交
@@ -57,13 +80,18 @@ export default class PersonnelAdd extends PureComponent {
       form: { validateFieldsAndScroll },
       location: { query: { companyId } },
     } = this.props;
+    const { diplomaLoading, photoLoading } = this.state;
+    if (diplomaLoading || photoLoading) {
+      message.warning('上传暂未结束');
+      return;
+    }
     const tag = id ? '编辑' : '新增';
-    const callback = (success) => {
+    const callback = (success, msg) => {
       if (success) {
         message.success(`${tag}人员成功`);
         router.push(`/real-name-certification/personnel-management/person-list/${companyId}`);
       } else {
-        message.error(`${tag}人员失败`);
+        message.error(msg || `${tag}人员失败`);
       }
     }
     validateFieldsAndScroll((err, values) => {
@@ -78,6 +106,11 @@ export default class PersonnelAdd extends PureComponent {
       // console.log('payload', payload);
       if (id) {
         // 如果编辑
+        dispatch({
+          type: 'realNameCertification/editPerson',
+          payload: { ...payload, id },
+          callback,
+        })
       } else {
         dispatch({
           type: 'realNameCertification/addPerson',
@@ -120,7 +153,7 @@ export default class PersonnelAdd extends PureComponent {
   handlePhotoUploadChange = ({ file, fileList }) => {
     const { form: { resetFields, setFieldsValue } } = this.props;
     const error = () => {
-      resetFields(['photoDetails']);
+      resetFields(['photoDetails'])
     };
     if (file.status === 'uploading') {
       this.setState({ photoLoading: true });
@@ -183,13 +216,15 @@ export default class PersonnelAdd extends PureComponent {
 
   render () {
     const {
+      submitting, // 提交状态
       match: { params: { id } },
       location: { query: { companyId } },
       form: { getFieldDecorator, getFieldsValue },
       realNameCertification: { personTypeDict, dutyDict },
     } = this.props;
-    const { photoLoading, diplomaLoading } = this.state;
-    const { photoDetails, educationCertificateDetails } = getFieldsValue();
+    const { photoLoading, diplomaLoading, detail } = this.state;
+    const { photoDetails = [], educationCertificateDetails = [] } = getFieldsValue();
+    console.log('photoDetails', photoDetails)
     const title = id ? '编辑人员信息' : '新增人员信息';
     //面包屑
     const breadcrumbList = [
@@ -223,6 +258,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="姓名">
                   {getFieldDecorator('name', {
+                    initialValue: id ? detail.name : undefined,
                     rules: [{ required: true, message: '请输入姓名' }],
                   })(
                     <Input placeholder="请输入" />
@@ -232,6 +268,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="性别">
                   {getFieldDecorator('sex', {
+                    initialValue: id ? detail.sex : undefined,
                     rules: [{ required: true, message: '请选择性别' }],
                   })(
                     <Select placeholder="请选择">
@@ -245,6 +282,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="民族">
                   {getFieldDecorator('ethnic', {
+                    initialValue: id ? detail.ethnic : undefined,
                     rules: [{ required: true, message: '请输入民族' }],
                   })(
                     <Input placeholder="请输入" />
@@ -254,7 +292,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="证件类型">
                   {getFieldDecorator('certificateType', {
-                    initialValue: '1',
+                    initialValue: id ? detail.ethnic : '1',
                   })(
                     <Select placeholder="请选择">
                       {[{ value: '1', label: '身份证' }].map(({ value, label }, index) => (
@@ -266,28 +304,36 @@ export default class PersonnelAdd extends PureComponent {
               </Col>
               <Col {...colLayout}>
                 <FormItem label="证件号">
-                  {getFieldDecorator('certificateNumber')(
+                  {getFieldDecorator('certificateNumber', {
+                    initialValue: id ? detail.certificateNumber : undefined,
+                  })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
               </Col>
               <Col {...colLayout}>
                 <FormItem label="生日">
-                  {getFieldDecorator('birthday')(
+                  {getFieldDecorator('birthday', {
+                    initialValue: id && detail.birthday ? moment(detail.birthday) : undefined,
+                  })(
                     <DatePicker placeholder="请选择生日" format="YYYY-MM-DD" style={{ width: '100%' }} />
                   )}
                 </FormItem>
               </Col>
               <Col {...colLayout}>
                 <FormItem label="所在地">
-                  {getFieldDecorator('location')(
+                  {getFieldDecorator('location', {
+                    initialValue: id ? detail.location : undefined,
+                  })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
               </Col>
               <Col {...colLayout}>
                 <FormItem label="详细地址">
-                  {getFieldDecorator('address')(
+                  {getFieldDecorator('address', {
+                    initialValue: id ? detail.address : undefined,
+                  })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
@@ -295,6 +341,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="手机号">
                   {getFieldDecorator('telephone', {
+                    initialValue: id ? detail.telephone : undefined,
                     rules: [
                       { required: true, message: '请输入手机号', whitespace: true },
                       { pattern: phoneReg, message: '联系电话格式不正确' },
@@ -306,7 +353,9 @@ export default class PersonnelAdd extends PureComponent {
               </Col>
               <Col {...colLayout}>
                 <FormItem label="邮箱">
-                  {getFieldDecorator('email')(
+                  {getFieldDecorator('email', {
+                    initialValue: id ? detail.email : undefined,
+                  })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
@@ -314,6 +363,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="人员类型">
                   {getFieldDecorator('personType', {
+                    initialValue: id ? detail.personType : undefined,
                     rules: [{ required: true, message: '请选择人员类型' }],
                   })(
                     <Select placeholder="请选择">
@@ -327,6 +377,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="单位名称">
                   {getFieldDecorator('personCompany', {
+                    initialValue: id ? detail.personCompany : undefined,
                     rules: [{ required: true, message: '请输入单位名称' }],
                   })(
                     <Input placeholder="请输入" />
@@ -335,7 +386,9 @@ export default class PersonnelAdd extends PureComponent {
               </Col>
               <Col {...colLayout}>
                 <FormItem label="职务">
-                  {getFieldDecorator('duty')(
+                  {getFieldDecorator('duty', {
+                    initialValue: id ? detail.duty : undefined,
+                  })(
                     <Select placeholder="请选择">
                       {dutyDict.map(({ key, label }) => (
                         <Select.Option key={key} value={key}>{label}</Select.Option>
@@ -346,14 +399,18 @@ export default class PersonnelAdd extends PureComponent {
               </Col>
               <Col {...colLayout}>
                 <FormItem label="工种">
-                  {getFieldDecorator('workType')(
+                  {getFieldDecorator('workType', {
+                    initialValue: id ? detail.workType : undefined,
+                  })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
               </Col>
               <Col {...colLayout}>
                 <FormItem label="学历">
-                  {getFieldDecorator('education')(
+                  {getFieldDecorator('education', {
+                    initialValue: id ? detail.education : undefined,
+                  })(
                     <Select placeholder="请选择" allowClear>
                       {DEGREES.map(({ key, label }) => (
                         <Select.Option value={key} key={key}>
@@ -366,21 +423,27 @@ export default class PersonnelAdd extends PureComponent {
               </Col>
               <Col {...colLayout}>
                 <FormItem label="专业">
-                  {getFieldDecorator('major')(
+                  {getFieldDecorator('major', {
+                    initialValue: id ? detail.major : undefined,
+                  })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
               </Col>
               <Col {...colLayout}>
                 <FormItem label="IC卡号">
-                  {getFieldDecorator('icnumber')(
+                  {getFieldDecorator('icnumber', {
+                    initialValue: id ? detail.icnumber : undefined,
+                  })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
               </Col>
               <Col {...colLayout}>
                 <FormItem label="门禁号">
-                  {getFieldDecorator('entranceNumber')(
+                  {getFieldDecorator('entranceNumber', {
+                    initialValue: id ? detail.entranceNumber : undefined,
+                  })(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
@@ -460,7 +523,8 @@ export default class PersonnelAdd extends PureComponent {
             >
               返回
           </Button>
-            <Button type="primary" onClick={this.handleSubmit}>
+            <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
+              {submitting && (<Icon type="loading" />)}
               确定
           </Button>
           </div>
