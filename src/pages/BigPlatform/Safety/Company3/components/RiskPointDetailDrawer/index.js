@@ -50,7 +50,7 @@ const INSPECTION_FIELDNAMES = {
   source: 'report_source', // 巡查来源
   person: 'check_user_names', // 巡查人
   status: 'status', // 巡查结果
-  result ({ data: { overTimeId = [], rectifyId = [], reviewId = [], finishId = [] } = {} }) {
+  result({ data: { overTimeId = [], rectifyId = [], reviewId = [], finishId = [] } = {} }) {
     return [overTimeId.length, rectifyId.length, reviewId.length, finishId.length];
   }, // 处理结果
 };
@@ -65,7 +65,9 @@ const INSPECTION_FIELDNAMES = {
   loading3: loading.effects['unitSafety/fetchRiskPointHiddenDangerCount'],
   loading4: loading.effects['unitSafety/fetchRiskPointInspectionCount'],
   // 标准及措施
-  loading5: loading.effects['unitSafety/fetchStandardsAndMeasuresList'] || loading.effects['unitSafety/fetchpointInspectionStandards'],
+  loading5:
+    loading.effects['unitSafety/fetchStandardsAndMeasuresList'] ||
+    loading.effects['unitSafety/fetchpointInspectionStandards'],
 }))
 export default class RiskPointDetailDrawer extends PureComponent {
   state = {
@@ -74,7 +76,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
     currentImage: 0,
   };
 
-  componentDidUpdate ({ visible: prevVisible }, { subTabKey: prevSubTabKey, tabKey: prevTabKey }) {
+  componentDidUpdate({ visible: prevVisible }, { subTabKey: prevSubTabKey, tabKey: prevTabKey }) {
     const { visible } = this.props;
     const { subTabKey, tabKey } = this.state;
     if (!prevVisible && visible) {
@@ -130,7 +132,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
         getRiskPointInspectionList({ checkStatus: subTabKey });
       } else if (tabKey === 'standard') {
         const { getStandardsAndMeasures } = this.props;
-        getStandardsAndMeasures()
+        getStandardsAndMeasures();
       }
     }
   };
@@ -209,7 +211,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
   /**
    * 图片详情
    */
-  renderImageDetail () {
+  renderImageDetail() {
     const { images, currentImage } = this.state;
     return (
       images &&
@@ -230,7 +232,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
     );
   }
 
-  render () {
+  render() {
     const {
       // 抽屉是否可见
       visible,
@@ -264,6 +266,8 @@ export default class RiskPointDetailDrawer extends PureComponent {
       loading3,
       loading4,
       loading5,
+      zIndex,
+      width,
     } = this.props;
     const { tabKey, subTabKey } = this.state;
     let subTabs, Item, list, fieldNames, key, restProps, backgroundImage, pageSize, pageNum, total;
@@ -352,6 +356,8 @@ export default class RiskPointDetailDrawer extends PureComponent {
           title: '风险点详情',
           visible,
           onClose,
+          zIndex,
+          width,
         }}
         sectionProps={{
           refScroll: this.setScrollReference,
@@ -379,13 +385,13 @@ export default class RiskPointDetailDrawer extends PureComponent {
                     ))}
                   </CustomCarousel>
                 ) : (
-                    <Empty
-                      image={defaultCard}
+                  <Empty
+                    image={defaultCard}
                     // imageStyle={{
                     //   height: 60,
                     // }}
-                    />
-                  )}
+                  />
+                )}
               </div>
               <div className={styles.tabList}>
                 <div
@@ -449,11 +455,11 @@ export default class RiskPointDetailDrawer extends PureComponent {
                 />
               ))
             ) : (
-                <div
-                  className={styles.defaultHiddenDanger}
-                  style={{ backgroundImage: `url(${backgroundImage})` }}
-                />
-              )}
+              <div
+                className={styles.defaultHiddenDanger}
+                style={{ backgroundImage: `url(${backgroundImage})` }}
+              />
+            )}
             {pageNum * pageSize < total && (
               <div className={styles.loadMoreWrapper}>
                 <Tooltip placement="top" title="加载更多">
@@ -464,14 +470,14 @@ export default class RiskPointDetailDrawer extends PureComponent {
             {this.renderImageDetail()}
           </div>
         ) : (
-            <div style={{ padding: '1em 0' }}>
-              <StandardsAndMeasures
-                standardsAndMeasuresList={standardList}
-                pointInspectionStandardsList={pointInspectionStandardsList}
-                itemName={itemName}
-              />
-            </div>
-          )}
+          <div style={{ padding: '1em 0' }}>
+            <StandardsAndMeasures
+              standardsAndMeasuresList={standardList}
+              pointInspectionStandardsList={pointInspectionStandardsList}
+              itemName={itemName}
+            />
+          </div>
+        )}
       </SectionDrawer>
     );
   }

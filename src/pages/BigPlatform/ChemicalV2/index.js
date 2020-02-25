@@ -398,7 +398,7 @@ export default class Chemical extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId,
-      env: 'v2_test',
+      env,
       type: 1,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
@@ -1471,6 +1471,7 @@ export default class Chemical extends PureComponent {
           loading={riskPointLoading}
           zIndex={1266}
           width={535}
+          handleClickCard={this.handleClickRiskPoint}
         />
 
         {/* 当前隐患抽屉 */}
@@ -1587,6 +1588,8 @@ export default class Chemical extends PureComponent {
           getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
           getRiskPointInspectionCount={this.getRiskPointInspectionCount}
           getStandardsAndMeasures={this.getStandardsAndMeasures}
+          zIndex={1288}
+          width={535}
         />
 
         <DangerSourceDrawer
