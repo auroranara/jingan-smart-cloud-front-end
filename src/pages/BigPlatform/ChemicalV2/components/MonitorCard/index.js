@@ -155,15 +155,15 @@ export class TankCard extends MonitorCard {
           </div>
           <div className={styles.flexCenter}>
             <div className={styles.labelContainer}>
-              {this.renderLabel({ label: `设计储量${capacityUnit ? `（${capacityUnit}）` : ''}`, value: capacity })}
-              {this.renderLabel({ label: '设计压力（MPa）', value: pressure })}
+              {this.renderLabel({ label: `设计储量${capacityUnit ? `(${capacityUnit})` : ''}`, value: capacity })}
+              {this.renderLabel({ label: '设计压力(MPa)', value: pressure })}
               {monitorParams.map(({ paramDesc, paramUnit, realValue, status, condition, limitValueStr, dataUpdateTime, linkStatus }, index) => (
                 this.renderLabelWithTime({
-                  label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                  label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                   value: realValue,
                   time: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING,
                   status: +linkStatus === -1 ? 0 : status,
-                  statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                  statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
                   key: index,
                 })
               ))}
@@ -197,14 +197,14 @@ export class ReservoirAreaCard extends MonitorCard {
           <div className={styles.gasImgContainer} style={{ background: `url(${iconReservoir}) no-repeat center center / 100% 100%` }}></div>
           <div className={styles.flexCenter}>
             <div className={styles.labelContainer}>
-              {this.renderLabel({ label: '设计储量（t）', value: capacity || EMPTY_FILLING })}
+              {this.renderLabel({ label: '设计储量(t)', value: capacity || EMPTY_FILLING })}
               {monitorParams.map(({ paramDesc, paramUnit, realValue, status, condition, limitValueStr, dataUpdateTime, linkStatus }, index) => (
                 this.renderLabelWithTime({
-                  label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                  label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                   value: realValue,
                   time: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING,
                   status: +linkStatus === -1 ? 0 : status,
-                  statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                  statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
                   key: index,
                 })
               ))}
@@ -251,19 +251,19 @@ export class GasCard extends MonitorCard {
                 <Fragment key={index}>
                   {this.renderLabel({ label: '更新时间', value: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING })}
                   {this.renderLabel({
-                    label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                    label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                     value: realValue || EMPTY_FILLING,
                     status,
-                    statusLabel: `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                    statusLabel: `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
                   })}
                 </Fragment>
               ))} */}
               {this.renderLabel({ label: '更新时间', value: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING })}
               {this.renderLabel({
-                label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                 value: realValue,
                 status: +linkStatus === -1 ? 0 : status,
-                statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
               })}
             </div>
           </div>
