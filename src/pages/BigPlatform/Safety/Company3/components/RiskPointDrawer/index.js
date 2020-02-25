@@ -60,8 +60,7 @@ const getTitleSuffix = (key, value) => {
       default:
         return null;
     }
-  }
-  else if (key === 'level'){
+  } else if (key === 'level') {
     switch (value) {
       case '红':
         return <span style={{ color: redLevelColor }}>红</span>;
@@ -113,25 +112,16 @@ const getLevelLabel = value => {
       break;
   }
   return (
-    <div
-      className={styles.riskPointItemLabel}
-      style={style}
-    >
+    <div className={styles.riskPointItemLabel} style={style}>
       {value}
     </div>
   );
 };
 /* 风险点渲染函数 */
-const renderRiskPoint = ({
-  item_id: id,
-  object_title: name,
-  user_name: checkPerson,
-  last_check_date: checkTime,
-  status,
-}, {
-  level,
-  showStatus,
-}) => (
+const renderRiskPoint = (
+  { item_id: id, object_title: name, user_name: checkPerson, last_check_date: checkTime, status },
+  { level, showStatus }
+) => (
   <div className={styles.riskPointItem} key={id}>
     {level}
     <div className={styles.riskPointItemNameWrapper}>
@@ -144,7 +134,9 @@ const renderRiskPoint = ({
     </div>
     <div className={styles.riskPointItemNameWrapper}>
       <div className={styles.riskPointItemName}>检查时间</div>
-      <div className={styles.riskPointItemValue}>{checkTime && moment(checkTime).format('YYYY-MM-DD')}</div>
+      <div className={styles.riskPointItemValue}>
+        {checkTime && moment(checkTime).format('YYYY-MM-DD')}
+      </div>
     </div>
     {showStatus && (
       <div className={styles.riskPointItemNameWrapper}>
@@ -156,7 +148,13 @@ const renderRiskPoint = ({
 );
 // 获取偏移天数
 const getOffsetDays = ({ nextCheckDate }) => {
-  return nextCheckDate ? Math.abs(moment().startOf('day').diff(moment(+nextCheckDate), 'days')) : '';
+  return nextCheckDate
+    ? Math.abs(
+        moment()
+          .startOf('day')
+          .diff(moment(+nextCheckDate), 'days')
+      )
+    : '';
 };
 
 /**
@@ -170,9 +168,9 @@ export default class RiskPointDrawer extends PureComponent {
     }
   }
 
-  refScroll = (scroll) => {
-    this.scroll = scroll && scroll.dom || scroll;
-  }
+  refScroll = scroll => {
+    this.scroll = (scroll && scroll.dom) || scroll;
+  };
 
   render() {
     const {
@@ -182,65 +180,90 @@ export default class RiskPointDrawer extends PureComponent {
       onClose,
       // 数据
       data: {
-        redNormalPointList=[],
-        redAbnormalPointList=[],
-        redPendingPointList=[],
-        redOvertimePointList=[],
-        orangeNormalPointList=[],
-        orangeAbnormalPointList=[],
-        orangePendingPointList=[],
-        orangeOvertimePointList=[],
-        yellowNormalPointList=[],
-        yellowAbnormalPointList=[],
-        yellowPendingPointList=[],
-        yellowOvertimePointList=[],
-        blueNormalPointList=[],
-        blueAbnormalPointList=[],
-        bluePendingPointList=[],
-        blueOvertimePointList=[],
-        grayNormalPointList=[],
-        grayAbnormalPointList=[],
-        grayPendingPointList=[],
-        grayOvertimePointList=[],
-        redRiskyPointList=[],
-        orangeRiskyPointList=[],
-        yellowRiskyPointList=[],
-        blueRiskyPointList=[],
-        grayRiskyPointList=[],
+        redNormalPointList = [],
+        redAbnormalPointList = [],
+        redPendingPointList = [],
+        redOvertimePointList = [],
+        orangeNormalPointList = [],
+        orangeAbnormalPointList = [],
+        orangePendingPointList = [],
+        orangeOvertimePointList = [],
+        yellowNormalPointList = [],
+        yellowAbnormalPointList = [],
+        yellowPendingPointList = [],
+        yellowOvertimePointList = [],
+        blueNormalPointList = [],
+        blueAbnormalPointList = [],
+        bluePendingPointList = [],
+        blueOvertimePointList = [],
+        grayNormalPointList = [],
+        grayAbnormalPointList = [],
+        grayPendingPointList = [],
+        grayOvertimePointList = [],
+        redRiskyPointList = [],
+        orangeRiskyPointList = [],
+        yellowRiskyPointList = [],
+        blueRiskyPointList = [],
+        grayRiskyPointList = [],
       },
       // 要展示的内容的类型
-      riskPointType: { key, value }={},
+      riskPointType: { key, value } = {},
       loading = false,
+      handleClickCard,
       ...restProps
     } = this.props;
     // 1.如果key为undefined，则显示所有的风险点
     // 2.如果key为status，则根据value值显示对应检查状态的风险点
     // 3.如果key为level，则根据value值显示对应风险等级的风险点
-    let redPointList=[], orangePointList=[], yellowPointList=[], bluePointList=[], grayPointList=[];
-    switch(key) {
+    let redPointList = [],
+      orangePointList = [],
+      yellowPointList = [],
+      bluePointList = [],
+      grayPointList = [];
+    switch (key) {
       case 'level':
-        switch(value) {
+        switch (value) {
           case '红':
-          redPointList = redAbnormalPointList.concat(redOvertimePointList, redPendingPointList, redNormalPointList);
-          break;
+            redPointList = redAbnormalPointList.concat(
+              redOvertimePointList,
+              redPendingPointList,
+              redNormalPointList
+            );
+            break;
           case '橙':
-          orangePointList = orangeAbnormalPointList.concat(orangeOvertimePointList, orangePendingPointList, orangeNormalPointList);
-          break;
+            orangePointList = orangeAbnormalPointList.concat(
+              orangeOvertimePointList,
+              orangePendingPointList,
+              orangeNormalPointList
+            );
+            break;
           case '黄':
-          yellowPointList = yellowAbnormalPointList.concat(yellowOvertimePointList, yellowPendingPointList, yellowNormalPointList);
-          break;
+            yellowPointList = yellowAbnormalPointList.concat(
+              yellowOvertimePointList,
+              yellowPendingPointList,
+              yellowNormalPointList
+            );
+            break;
           case '蓝':
-          bluePointList = blueAbnormalPointList.concat(blueOvertimePointList, bluePendingPointList, blueNormalPointList);
-          break;
+            bluePointList = blueAbnormalPointList.concat(
+              blueOvertimePointList,
+              bluePendingPointList,
+              blueNormalPointList
+            );
+            break;
           case '未评级':
           default:
-          grayPointList = grayAbnormalPointList.concat(grayOvertimePointList, grayPendingPointList, grayNormalPointList);
-          break;
+            grayPointList = grayAbnormalPointList.concat(
+              grayOvertimePointList,
+              grayPendingPointList,
+              grayNormalPointList
+            );
+            break;
         }
         break;
       case 'status':
       default:
-        switch(value) {
+        switch (value) {
           case '正常':
             redPointList = redNormalPointList;
             orangePointList = orangeNormalPointList;
@@ -254,21 +277,21 @@ export default class RiskPointDrawer extends PureComponent {
             yellowPointList = yellowAbnormalPointList;
             bluePointList = blueAbnormalPointList;
             grayPointList = grayAbnormalPointList;
-          break;
+            break;
           case '待检查':
             redPointList = redPendingPointList;
             orangePointList = orangePendingPointList;
             yellowPointList = yellowPendingPointList;
             bluePointList = bluePendingPointList;
             grayPointList = grayPendingPointList;
-          break;
+            break;
           case '已超时':
             redPointList = redOvertimePointList;
             orangePointList = orangeOvertimePointList;
             yellowPointList = yellowOvertimePointList;
             bluePointList = blueOvertimePointList;
             grayPointList = grayOvertimePointList;
-          break;
+            break;
           case '有隐患':
             redPointList = redRiskyPointList;
             orangePointList = orangeRiskyPointList;
@@ -277,11 +300,31 @@ export default class RiskPointDrawer extends PureComponent {
             grayPointList = grayRiskyPointList;
             break;
           default:
-            redPointList = redAbnormalPointList.concat(redOvertimePointList, redPendingPointList, redNormalPointList);
-            orangePointList = orangeAbnormalPointList.concat(orangeOvertimePointList, orangePendingPointList, orangeNormalPointList);
-            yellowPointList = yellowAbnormalPointList.concat(yellowOvertimePointList, yellowPendingPointList, yellowNormalPointList);
-            bluePointList = blueAbnormalPointList.concat(blueOvertimePointList, bluePendingPointList, blueNormalPointList);
-            grayPointList = grayAbnormalPointList.concat(grayOvertimePointList, grayPendingPointList, grayNormalPointList);
+            redPointList = redAbnormalPointList.concat(
+              redOvertimePointList,
+              redPendingPointList,
+              redNormalPointList
+            );
+            orangePointList = orangeAbnormalPointList.concat(
+              orangeOvertimePointList,
+              orangePendingPointList,
+              orangeNormalPointList
+            );
+            yellowPointList = yellowAbnormalPointList.concat(
+              yellowOvertimePointList,
+              yellowPendingPointList,
+              yellowNormalPointList
+            );
+            bluePointList = blueAbnormalPointList.concat(
+              blueOvertimePointList,
+              bluePendingPointList,
+              blueNormalPointList
+            );
+            grayPointList = grayAbnormalPointList.concat(
+              grayOvertimePointList,
+              grayPendingPointList,
+              grayNormalPointList
+            );
             break;
         }
         break;
@@ -299,7 +342,7 @@ export default class RiskPointDrawer extends PureComponent {
     // // 是否显示状态
     // const showStatus = !titleSuffix || !showLevel;
     // 显示未评级文本
-    const showNotRated = showLevel && (red + orange + yellow + blue > 0);
+    const showNotRated = showLevel && red + orange + yellow + blue > 0;
     return (
       <SectionDrawer
         drawerProps={{
@@ -356,7 +399,10 @@ export default class RiskPointDrawer extends PureComponent {
                   {gray !== 0 && (
                     <div className={styles.riskLevelItem}>
                       <div className={styles.riskLevelItemValue}>{gray}</div>
-                      <div className={styles.riskLevelItemName} style={{ color: noteRatedLevelColor }}>
+                      <div
+                        className={styles.riskLevelItemName}
+                        style={{ color: noteRatedLevelColor }}
+                      >
                         未评级
                       </div>
                     </div>
@@ -365,10 +411,10 @@ export default class RiskPointDrawer extends PureComponent {
               ) : (
                 <div className={styles.riskLevelList}>
                   <div className={`${styles.notRatedItem} ${styles.riskLevelItem}`}>
-                    <div className={styles.riskLevelItemValue}>{red + orange + yellow + blue + gray}</div>
-                    <div className={styles.riskLevelItemName}>
-                      总计
+                    <div className={styles.riskLevelItemValue}>
+                      {red + orange + yellow + blue + gray}
                     </div>
+                    <div className={styles.riskLevelItemName}>总计</div>
                   </div>
                 </div>
               )}
@@ -376,7 +422,7 @@ export default class RiskPointDrawer extends PureComponent {
           ),
         }}
       >
-        <Spin  spinning={loading} wrapperClassName={styles.spin}>
+        <Spin spinning={loading} wrapperClassName={styles.spin}>
           <div className={styles.container}>
             {/* {redPointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('红'), showStatus }))}
             {orangePointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('橙'), showStatus }))}
@@ -384,7 +430,13 @@ export default class RiskPointDrawer extends PureComponent {
             {bluePointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('蓝'), showStatus }))}
             {grayPointList.map(info => renderRiskPoint(info, { level: showNotRated && getLevelLabel('未评级'), showStatus }))} */}
             {/* {red + orange + yellow + blue + gray === 0 && <div className={styles.empty} style={{ backgroundImage: `url(${defaultRiskPoint})` }} />} */}
-            {[...redPointList, ...orangePointList, ...yellowPointList, ...bluePointList, ...grayPointList].map((point) => {
+            {[
+              ...redPointList,
+              ...orangePointList,
+              ...yellowPointList,
+              ...bluePointList,
+              ...grayPointList,
+            ].map(point => {
               return (
                 <PointCard
                   key={point.item_id}
@@ -399,9 +451,11 @@ export default class RiskPointDrawer extends PureComponent {
                     extendedDays: getOffsetDays, // 超期天数
                     expiryDays: getOffsetDays, // 距到期天数
                     status: 'status', // 检查状态
-                    cycle: ({ checkCycleCode, check_cycle, cycle_type }) => +cycle_type === 1 ? checkCycleCode : check_cycle, // 检查周期
+                    cycle: ({ checkCycleCode, check_cycle, cycle_type }) =>
+                      +cycle_type === 1 ? checkCycleCode : check_cycle, // 检查周期
                     type: 'item_type', // 点位类型
                   }}
+                  onClick={() => handleClickCard(point.item_id, point.status)}
                 />
               );
             })}

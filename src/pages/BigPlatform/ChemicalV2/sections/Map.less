@@ -5,14 +5,24 @@
 
   .controlContainer {
     position: absolute;
-    top: 26px;
-    left: 70px;
-    color: #E4E6E6;
+    top: 15px;
+    left: calc(~'50% - 200px');
+    color: #676868;
     // color: #0ff;
     cursor: pointer;
 
     .controlItem {
       float: left;
+      background-color: #fff;
+      border-radius: 5px;
+      width: 120px;
+      height: 42px;
+      line-height: 42px;
+      text-align: center;
+
+      &:hover {
+        opacity: 0.8;
+      }
 
       &+.controlItem {
         margin-left: 20px;
@@ -23,24 +33,26 @@
         height: 24px;
         display: inline-block;
         margin-right: 6px;
+        position: relative;
+        top: 6px;
       }
     }
 
     .active {
       color: #116fda;
     }
+  }
 
-    .positionBtn {
-      position: absolute;
-      left: -60px;
-      top: -10px;
-      height: 42px;
-      width: 42px;
-      padding: 0px;
-      cursor: pointer;
-      box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 3px;
-      border-radius: 2px;
-    }
+  .positionBtn {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    height: 42px;
+    width: 42px;
+    padding: 0px;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 3px;
+    border-radius: 2px;
   }
 
   .dotIcon {
@@ -106,8 +118,23 @@
     }
 
     .fm-control-popmarker {
-      color: #000;
+      color: #fff;
       padding: 10px 15px !important;
+      background-color: rgba(22, 22, 22, 0.9) !important;
+      border: 1px solid #f83329 !important;
+      border-radius: 3px !important;
+
+      &>div {
+        height: 100% !important;
+      }
+
+      &>input {
+        background: none !important;
+      }
+    }
+
+    .fm-control-popmarker-top {
+      border-color: rgba(22, 22, 22, 0.9) transparent transparent !important;
     }
   }
 }

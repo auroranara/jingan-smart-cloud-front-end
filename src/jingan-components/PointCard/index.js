@@ -52,21 +52,29 @@ export default class PointCard extends BigPlatformCard {
       label: '下次巡查时间',
       render: ({ nextCheckTime, cycle }) => (
         <Fragment>
-          <span className={styles.nextCheckTime}>{nextCheckTime && moment(+nextCheckTime).format(TIME_FORMAT)}</span>
-          <span className={styles.checkCycle}>{cycle && CHECKCYCLE[cycle] && `(${CHECKCYCLE[cycle]})`}</span>
+          <span className={styles.nextCheckTime}>
+            {nextCheckTime && moment(+nextCheckTime).format(TIME_FORMAT)}
+          </span>
+          <span className={styles.checkCycle}>
+            {cycle && CHECKCYCLE[cycle] && `(${CHECKCYCLE[cycle]})`}
+          </span>
         </Fragment>
       ),
       hidden: ({ status }) => +status !== 3 && +status !== 4,
     },
     {
       label: '超期天数',
-      render: ({ extendedDays }) => <span className={styles.days}>{extendedDays && `${extendedDays}天`}</span>,
+      render: ({ extendedDays }) => (
+        <span className={styles.days}>{extendedDays && `${extendedDays}天`}</span>
+      ),
       labelWrapperClassName: styles.extendedDaysLabelWrapper,
       hidden: ({ status }) => +status !== 4,
     },
     {
       label: '距到期天数',
-      render: ({ expiryDays }) => <span className={styles.days}>{expiryDays && `${expiryDays}天`}</span>,
+      render: ({ expiryDays }) => (
+        <span className={styles.days}>{expiryDays && `${expiryDays}天`}</span>
+      ),
       labelWrapperClassName: styles.expiryDaysLabelWrapper,
       hidden: ({ status }) => +status !== 3,
     },
@@ -78,32 +86,32 @@ export default class PointCard extends BigPlatformCard {
    */
   renderLevel(level) {
     let label, backgroundColor, color;
-    switch(+level) {
+    switch (+level) {
       case 1:
-      label = '红';
-      backgroundColor = '#FF4848';
-      color = '#fff';
-      break;
+        label = '红';
+        backgroundColor = '#FF4848';
+        color = '#fff';
+        break;
       case 2:
-      label = '橙';
-      backgroundColor = '#F17A0A';
-      color = '#fff';
-      break;
+        label = '橙';
+        backgroundColor = '#F17A0A';
+        color = '#fff';
+        break;
       case 3:
-      label = '黄';
-      backgroundColor = '#FBF719';
-      color = '#000';
-      break;
+        label = '黄';
+        backgroundColor = '#FBF719';
+        color = '#000';
+        break;
       case 4:
-      label = '蓝';
-      backgroundColor = '#1E60FF';
-      color = '#fff';
-      break;
+        label = '蓝';
+        backgroundColor = '#1E60FF';
+        color = '#fff';
+        break;
       default:
-      label = '未评级';
-      backgroundColor = '#4F6793';
-      color = '#fff';
-      break;
+        label = '未评级';
+        backgroundColor = '#4F6793';
+        color = '#fff';
+        break;
     }
     return (
       <div className={styles.level} style={{ backgroundColor, color }}>
@@ -116,6 +124,7 @@ export default class PointCard extends BigPlatformCard {
     const {
       className, // 容器类名
       style, // 容器样式
+      onClick,
     } = this.props;
     const fieldsValue = this.getFieldsValue();
     const { level, type } = fieldsValue;
@@ -123,7 +132,8 @@ export default class PointCard extends BigPlatformCard {
     return (
       <Container
         className={className}
-        style={style}
+        style={{ ...style, cursor: onClick && 'pointer' }}
+        onClick={onClick}
       >
         {+type === 2 && this.renderLevel(level)}
         {this.renderFields(fieldsValue)}

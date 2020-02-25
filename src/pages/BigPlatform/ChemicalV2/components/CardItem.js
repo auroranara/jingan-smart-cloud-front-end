@@ -10,7 +10,7 @@ export default class CardItem extends PureComponent {
   }
 
   render() {
-    const { data = {}, fields, onClick, style = {}, extraBtn } = this.props;
+    const { data = {}, fields, onClick, style = {}, extraBtn, iconStyle = {} } = this.props;
     const { icon, name } = data;
     return (
       <div
@@ -25,7 +25,9 @@ export default class CardItem extends PureComponent {
         }}
       >
         {icon && (
-          <div className={styles.icon}>{typeof icon === 'function' ? icon(data) : icon}</div>
+          <div className={styles.icon} style={{ ...iconStyle }}>
+            {typeof icon === 'function' ? icon(data) : icon}
+          </div>
         )}
         <div className={styles.infoWrapper}>
           {fields.map((item, index) => {

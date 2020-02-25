@@ -350,7 +350,8 @@ export default class NewMenuReveal extends Component {
             showChemical && (
               <div
                 className={styles.linkItem}
-                onClick={() => router.push(`/big-platform/chemical/${companyId}`)}
+                // onClick={() => router.push(`/big-platform/chemical/${companyId}`)}
+                onClick={() => window.open(`${window.publicPath}#/big-platform/chemical/${companyId}`, '_blank')}
               >
                 <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
                 <div>驾驶舱</div>

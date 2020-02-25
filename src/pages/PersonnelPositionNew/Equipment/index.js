@@ -29,6 +29,7 @@ export default class Equipment extends PureComponent {
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
+        className={styles.container}
       >
         <iframe className={styles.iframe} title="equipment" src={src} />
       </PageHeaderLayout>

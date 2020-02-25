@@ -155,6 +155,10 @@ export default class Map extends PureComponent {
     });
   };
 
+  handleJumpChangeWarning = () => {
+    window.open(`${window.publicPath}#/risk-control/change-warning/list`, `_blank`);
+  };
+
   // 初始化地图定位
   initMap = ({ appName, key, mapId, isInit }, fun) => {
     if (!appName || !key || !mapId) return;
@@ -218,6 +222,33 @@ export default class Map extends PureComponent {
       }
       return true;
     };
+
+    // 风险变更预警弹窗
+    const ctlOpt = new fengmap.controlOptions({
+      mapCoord: {
+        //设置弹框的x轴
+        x: 13224097.37958329,
+        //设置弹框的y轴
+        y: 3771542.8635400063,
+        //设置弹框位于的楼层
+        groupID: 1,
+        height: 1,
+      },
+      //设置弹框的宽度
+      width: 330,
+      //设置弹框的高度
+      height: 100,
+      marginTop: 10,
+      //设置弹框的内容
+      content: `<div style="line-height: 24px;">
+          <div>风险变更预警</div>
+          <div>此区域有变更，请对该区域重新进行风险评价。</div>
+          <div style="text-align: right;color: #0ff;" onclick="window.open('${
+            window.publicPath
+          }#/risk-control/change-warning/list','_blank');"><span style="cursor: pointer;">查看详情>></span></div>
+        </div>`,
+    });
+    const popMarker = new fengmap.FMPopInfoWindow(map, ctlOpt);
 
     map.on('mapClickNode', event => {
       const {
@@ -597,15 +628,15 @@ export default class Map extends PureComponent {
                 </div>
               );
             })}
-            <div
-              className={styles.positionBtn}
-              style={{
-                background: `url(${position}) center center / auto 80% no-repeat #fff`,
-              }}
-              onClick={this.handlePosition}
-            />
           </div>
         )}
+        <div
+          className={styles.positionBtn}
+          style={{
+            background: `url(${position}) center center / auto 80% no-repeat #fff`,
+          }}
+          onClick={this.handlePosition}
+        />
         <NewVideoPlay
           showList={true}
           videoList={videoList.map(item => ({ ...item, key_id: item.keyId }))}
