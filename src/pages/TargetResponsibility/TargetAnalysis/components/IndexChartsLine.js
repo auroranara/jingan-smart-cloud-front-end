@@ -37,8 +37,6 @@ export default class IndexChartsLine extends PureComponent {
       yAxis: [
         {
           type: 'value',
-          min: 0,
-          max: 80,
           splitLine: {
             show: false,
           },

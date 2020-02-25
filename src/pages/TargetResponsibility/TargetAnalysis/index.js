@@ -460,7 +460,9 @@ export default class TableList extends PureComponent {
       },
     } = this.props;
 
-    const { chartLineList } = this.state;
+    const { chartLineList, departSelect, indexSelect } = this.state;
+    const isSelectVal = departSelect !== undefined && indexSelect !== undefined;
+
     const departList = settingList.filter(item => item.dutyMajor.substr(0, 1) === '2');
 
     const lineXData = [];
@@ -471,11 +473,12 @@ export default class TableList extends PureComponent {
       });
     });
 
-    const yData = lineXData.map(item => item.actualValue);
-    const xData =
-      (typeIndex === '1' && lineXData.map(item => moment(item.examtime).format('M月'))) ||
-      (typeIndex === '2' && lineXData.map(item => getQuarter[item.examtime.substr(5, 6)])) ||
-      (typeIndex === '3' && lineXData.map(item => item.examtime.substr(0, 4) + '年'));
+    const yData = isSelectVal ? lineXData.map(item => item.actualValue) : [];
+    const xData = isSelectVal
+      ? (typeIndex === '1' && lineXData.map(item => moment(item.examtime).format('M月'))) ||
+        (typeIndex === '2' && lineXData.map(item => getQuarter[item.examtime.substr(5, 6)])) ||
+        (typeIndex === '3' && lineXData.map(item => item.examtime.substr(0, 4) + '年'))
+      : [];
 
     return (
       <div className={styles.thirdSection}>
@@ -494,7 +497,7 @@ export default class TableList extends PureComponent {
             <span className={styles.select}>
               <Select
                 placeholder="请选择"
-                value={this.state.indexSelect}
+                value={indexSelect}
                 style={{ width: 150, marginRight: 10 }}
                 onChange={this.handleSelectChange}
               >
@@ -506,7 +509,7 @@ export default class TableList extends PureComponent {
               </Select>
               <Select
                 placeholder="请选择"
-                value={this.state.departSelect}
+                value={departSelect}
                 style={{ width: 150 }}
                 onChange={this.handleDepartChange}
               >
@@ -525,13 +528,13 @@ export default class TableList extends PureComponent {
             <span>
               目标值：
               <span style={{ fontWeight: 'bold' }}>
-                {chartLineList.map(item => item.goalValue).join(',') || 0}
+                {isSelectVal ? chartLineList.map(item => item.goalValue).join(',') || 0 : 0}
               </span>
             </span>
             <span style={{ marginLeft: 15 }}>
               平均值：
               <span style={{ fontWeight: 'bold' }}>
-                {chartLineList.map(item => item.avgValue).join(',') || 0}
+                {isSelectVal ? chartLineList.map(item => item.avgValue).join(',') || 0 : 0}
               </span>
             </span>
           </div>

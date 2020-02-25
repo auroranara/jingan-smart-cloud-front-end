@@ -207,7 +207,7 @@ export const DETAIL_COLUMNS = [
               )) ||
               (+checkFrequency === 2 && (
                 <div key={index}>
-                  {getQuarter[examtime]}：{actualValue}
+                  {getQuarter[examtime.substr(5, 6)]}：{actualValue}
                 </div>
               )) ||
               (+checkFrequency === 3 && (

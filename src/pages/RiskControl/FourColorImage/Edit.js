@@ -19,7 +19,7 @@ import { phoneReg } from '@/utils/validate';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
 import moment from 'moment';
-import styles from './TableList.less';
+// import styles from './TableList.less';
 import Map from './Map';
 
 const FormItem = Form.Item;
@@ -76,6 +76,7 @@ export default class TableList extends React.Component {
       groupId: '', // 选中楼层id
       buildingId: [], // 新增时获取的区域Id
       modelIds: '', // 编辑时获取的区域Id
+      levelId: '4', // 所选风险分级
     };
   }
 
@@ -109,9 +110,10 @@ export default class TableList extends React.Component {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { groupId } = currentList;
+          const { groupId, zoneLevel } = currentList;
           const pointList = list.filter(item => item.id === id) || [];
           this.setState({
+            levelId: zoneLevel,
             detailList: currentList,
             pointList,
             modelIds: currentList.modelIds,
@@ -313,8 +315,8 @@ export default class TableList extends React.Component {
   };
 
   handleTagClick = (areaId, point, selected) => {
-    const { points,groupId } = this.state;
-    this.childMap.handleModelEdit(groupId,points, point, selected);
+    const { points, groupId } = this.state;
+    this.childMap.handleModelEdit(groupId, points, point, selected);
     const { buildingId } = this.state;
     buildingId.forEach(item => {
       if (item.areaId === areaId) {
@@ -326,13 +328,18 @@ export default class TableList extends React.Component {
     });
   };
 
+  handleLevelChange = levelId => {
+    this.setState({ levelId });
+  };
+
   renderDrawButton = () => {
-    const { isDrawing, points } = this.state;
+    const { isDrawing, points, levelId } = this.state;
     return (
       <Fragment>
         <Button
           style={{ marginLeft: 40 }}
           onClick={() => {
+            // if (levelId === '') return message.warning('请先选择风险分级！');
             if (!!isDrawing && points.length <= 2) return message.error('区域至少三个坐标点！');
             this.setState({ isDrawing: !isDrawing });
           }}
@@ -355,7 +362,9 @@ export default class TableList extends React.Component {
       form: { getFieldDecorator },
       account: { list: personList = [] },
     } = this.props;
-    const { isDrawing, groupId, detailList, pointList, buildingId, modelIds } = this.state;
+
+    const { isDrawing, groupId, detailList, pointList, buildingId, modelIds, levelId } = this.state;
+
     const editTitle = id ? '编辑' : '新增';
     const {
       zoneCode,
@@ -378,6 +387,7 @@ export default class TableList extends React.Component {
                 isDrawing={isDrawing}
                 groupId={groupId}
                 onRef={this.onRef}
+                levelId={levelId}
                 getPoints={this.getPoints}
                 getBuilding={this.getBuilding}
                 pointList={pointList}
@@ -406,7 +416,12 @@ export default class TableList extends React.Component {
                   initialValue: zoneLevel ? +zoneLevel : undefined,
                   rules: [{ required: true, message: '请选择' }],
                 })(
-                  <Select placeholder="请选择" {...itemStyles} allowClear>
+                  <Select
+                    placeholder="请选择"
+                    {...itemStyles}
+                    allowClear
+                    onChange={this.handleLevelChange}
+                  >
                     {['红', '橙', '黄', '蓝'].map((item, index) => (
                       <Select.Option key={index + 1} value={index + 1}>
                         {item}
@@ -473,7 +488,9 @@ export default class TableList extends React.Component {
                 {getFieldDecorator('checkCircle', {
                   initialValue: checkCircle,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入整数',pattern:/^[0-9]*[1-9][0-9]*$/ }],
+                  rules: [
+                    { required: true, message: '请输入整数', pattern: /^[0-9]*[1-9][0-9]*$/ },
+                  ],
                 })(<Input placeholder="请输入" {...itemStyles} maxLength={4} />)}
               </FormItem>
               <FormItem label="开始时间" {...formItemLayout}>

@@ -100,14 +100,13 @@ export default class Map extends React.Component {
       position: fengMap.controlPositon.LEFT_TOP,
       offset: { x: 0, y: 40 },
       //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-      clickCallBack: function (type, value) {
+      clickCallBack: function(type, value) {
         console.log(type, value);
       },
     });
 
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
-      console.log('clickedObj', clickedObj)
       if (!clickedObj || !clickedObj.eventInfo) return;
 
       const { coord } = clickedObj.eventInfo;
@@ -127,7 +126,7 @@ export default class Map extends React.Component {
     map.on('loadComplete', () => {
       const { pointList, init, getBuilding } = this.props;
       //加载按钮型楼层切换控件
-      this.loadBtnFloorCtrl()
+      this.loadBtnFloorCtrl();
       this.getPointList(this.props.pointList);
       pointList.length > 0 &&
         pointList.map(item => {
@@ -163,7 +162,7 @@ export default class Map extends React.Component {
     //不带单/双层楼层控制按钮,初始时只有1个按钮,点击后可弹出其他楼层按钮
     const btnFloorControl = new fengMap.buttonGroupsControl(map, btnFloorCtlOpt);
     //楼层切换
-    btnFloorControl.onChange(function (groups, allLayer) {
+    btnFloorControl.onChange(function(groups, allLayer) {
       //groups 表示当前要切换的楼层ID数组,
       //allLayer表示当前楼层是单层状态还是多层状态。
     });
@@ -173,7 +172,7 @@ export default class Map extends React.Component {
     btnFloorControl.enableExpand = true;
     // 切换到指定楼层(可传入两个参数：目标层groupID,是否多层状态)
     btnFloorControl.changeFocusGroup(groupId);
-  }
+  };
 
   //在点击的位置添加图片标注
   addPoint(gid, coord) {
@@ -186,7 +185,7 @@ export default class Map extends React.Component {
       url: 'https://webapi.amap.com/images/dd-via.png',
       height: 3, //defaultPolygonMarkerHeight,
       size: 10,
-      callback: function () {
+      callback: function() {
         im.alwaysShow();
       },
     });
@@ -237,9 +236,9 @@ export default class Map extends React.Component {
       const model = orginList.find(item => item.mapCoord === point);
       this.props.pointList.length > 0
         ? this.props.pointList.map(item => {
-          const { zoneLevel } = item;
-          return model.setColor(COLORS[zoneLevel]);
-        })
+            const { zoneLevel } = item;
+            return model.setColor(COLORS[zoneLevel]);
+          })
         : model.setColor(COLOR.blue);
       return null;
     }
@@ -334,13 +333,14 @@ export default class Map extends React.Component {
   }
 
   render() {
-    const { isDrawing } = this.props;
+    const { isDrawing, levelId } = this.props;
     if (!isDrawing && points.length > 0) {
       const groupId = points.map(item => item.groupID)[0];
+      const currColor = COLORS[levelId];
       // doDraw
-      this.drawPolygon(groupId, points, COLOR.blue);
+      this.drawPolygon(groupId, points, currColor);
       // 建筑物上色
-      this.setModelColor(groupId, points, COLOR.blue);
+      this.setModelColor(groupId, points, currColor);
       map.clearLineMark();
       points = [];
     }
