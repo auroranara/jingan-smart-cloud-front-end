@@ -72,7 +72,7 @@ export default class MonitorEquipDrawer extends PureComponent {
         onClose={onClose}
         width={535}
         destroyOnClose={true}
-        zIndex={1222}
+        zIndex={1288}
         left={
           <div className={styles.container}>
             <div className={styles.wrapper}>

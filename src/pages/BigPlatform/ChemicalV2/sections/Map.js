@@ -219,6 +219,30 @@ export default class Map extends PureComponent {
       return true;
     };
 
+    // 风险变更预警弹窗
+    const ctlOpt = new fengmap.controlOptions({
+      mapCoord: {
+        //设置弹框的x轴
+        x: 13224097.37958329,
+        //设置弹框的y轴
+        y: 3771542.8635400063,
+        //设置弹框位于的楼层
+        groupID: 1,
+        height: 1,
+      },
+      //设置弹框的宽度
+      width: 260,
+      //设置弹框的高度
+      height: 105,
+      marginTop: 10,
+      //设置弹框的内容
+      content: `<div>
+          <div>风险变更预警</div>
+          <div>此区域有变更，请对该区域重新进行风险评价。</div>
+        </div>`,
+    });
+    const popMarker = new fengmap.FMPopInfoWindow(map, ctlOpt);
+
     map.on('mapClickNode', event => {
       const {
         handleClickRiskPoint,

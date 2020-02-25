@@ -71,16 +71,14 @@ class MonitorCard extends PureComponent {
   /**
   * 跳转到工单详情
   **/
-  jumpToAlarmWorkOrder = () => {
-    const { data: { id } } = this.props;
+  jumpToAlarmWorkOrder = id => {
     window.open(`${window.publicPath}#/company-iot/alarm-work-order/detail/${id}`);
   }
 
   /**
    * 跳转到监测趋势
    **/
-  jumpToMonitorTrend = () => {
-    const { data: { id } } = this.props;
+  jumpToMonitorTrend = id => {
     window.open(`${window.publicPath}#/company-iot/alarm-work-order/monitor-trend/${id}`);
   }
 
@@ -89,11 +87,10 @@ class MonitorCard extends PureComponent {
    **/
   renderLocation = ({ location }) => {
     const {
-      data: {
-        videoList = [],
-      },
+      data: { videoList = [], meList = [] },
       onVideoClick,
     } = this.props;
+    const { noFinishWarningProcessId, id } = meList[0] || {};
     return (
       <Row className={styles.mb10}>
         <Col className={styles.location} span={16}>
@@ -104,10 +101,20 @@ class MonitorCard extends PureComponent {
         </Col>
         <Col span={8} className={styles.logoContainer}>
           {videoList && videoList.length > 0 && (
-            <img onClick={() => onVideoClick(videoList)} className={styles.fl} src={cameraImg} alt="img" />
+            <img
+              onClick={() => onVideoClick(videoList)}
+              className={styles.fl}
+              src={cameraImg}
+              alt="img" />
           )}
-          <img onClick={this.jumpToMonitorTrend} className={styles.fr} src={iconChart} alt="img" />
-          <img onClick={this.jumpToAlarmWorkOrder} className={classNames(styles.fr, styles.mr10)} src={iconList} alt="img" />
+          {id && (<img onClick={() => this.jumpToMonitorTrend(id)} className={styles.fr} src={iconChart} alt="img" />)}
+          {noFinishWarningProcessId && (
+            <img
+              onClick={() => this.jumpToAlarmWorkOrder(noFinishWarningProcessId)}
+              className={classNames(styles.fr, styles.mr10)}
+              src={iconList}
+              alt="img" />
+          )}
         </Col>
       </Row>
     )
@@ -148,15 +155,15 @@ export class TankCard extends MonitorCard {
           </div>
           <div className={styles.flexCenter}>
             <div className={styles.labelContainer}>
-              {this.renderLabel({ label: `设计储量${capacityUnit ? `（${capacityUnit}）` : ''}`, value: capacity })}
-              {this.renderLabel({ label: '设计压力（MPa）', value: pressure })}
-              {monitorParams.map(({ paramDesc, paramUnit, realValue, status, condition, limitValueStr, dataUpdateTime }, index) => (
+              {this.renderLabel({ label: `设计储量${capacityUnit ? `(${capacityUnit})` : ''}`, value: capacity })}
+              {this.renderLabel({ label: '设计压力(MPa)', value: pressure })}
+              {monitorParams.map(({ paramDesc, paramUnit, realValue, status, condition, limitValueStr, dataUpdateTime, linkStatus }, index) => (
                 this.renderLabelWithTime({
-                  label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                  label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                   value: realValue,
                   time: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING,
-                  status,
-                  statusLabel: `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                  status: +linkStatus === -1 ? 0 : status,
+                  statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
                   key: index,
                 })
               ))}
@@ -190,14 +197,14 @@ export class ReservoirAreaCard extends MonitorCard {
           <div className={styles.gasImgContainer} style={{ background: `url(${iconReservoir}) no-repeat center center / 100% 100%` }}></div>
           <div className={styles.flexCenter}>
             <div className={styles.labelContainer}>
-              {this.renderLabel({ label: '设计储量（t）', value: capacity || EMPTY_FILLING })}
-              {monitorParams.map(({ paramDesc, paramUnit, realValue, status, condition, limitValueStr, dataUpdateTime }, index) => (
+              {this.renderLabel({ label: '设计储量(t)', value: capacity || EMPTY_FILLING })}
+              {monitorParams.map(({ paramDesc, paramUnit, realValue, status, condition, limitValueStr, dataUpdateTime, linkStatus }, index) => (
                 this.renderLabelWithTime({
-                  label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                  label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                   value: realValue,
                   time: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING,
-                  status,
-                  statusLabel: `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                  status: +linkStatus === -1 ? 0 : status,
+                  statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
                   key: index,
                 })
               ))}
@@ -225,7 +232,8 @@ export class GasCard extends MonitorCard {
     const imgUrl = this.generateFieldValue(data, fields.imgUrl);// 图片地址
     const monitorParams = this.generateFieldValue(data, fields.monitorParams) || []; // 监测的参数
     // const status = this.generateFieldValue(data, fields.status); // 状态 0 报警 1 正常
-    const { dataUpdateTime, paramDesc, paramUnit, realValue, status, condition, limitValueStr } = monitorParams && monitorParams.length ? monitorParams[0] : {};
+    const { dataUpdateTime, paramDesc, paramUnit, realValue, status, condition, limitValueStr, linkStatus } = monitorParams && monitorParams.length ? monitorParams[0] : {};
+    // 状态：先判断linkStatus，0正常 -1失联，当正常时再判断status 参照STATUS
     return (
       <div className={styles.cardContainer} ref={ref => { this.container = ref }}>
         {this.renderLocation({ location })}
@@ -243,19 +251,19 @@ export class GasCard extends MonitorCard {
                 <Fragment key={index}>
                   {this.renderLabel({ label: '更新时间', value: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING })}
                   {this.renderLabel({
-                    label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
+                    label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                     value: realValue || EMPTY_FILLING,
                     status,
-                    statusLabel: `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                    statusLabel: `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
                   })}
                 </Fragment>
               ))} */}
               {this.renderLabel({ label: '更新时间', value: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING })}
               {this.renderLabel({
-                label: `${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`,
-                value: realValue || EMPTY_FILLING,
-                status,
-                statusLabel: `${STATUS[status]}${condition && limitValueStr ? `（${condition}${limitValueStr}）` : ''}`,
+                label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
+                value: realValue,
+                status: +linkStatus === -1 ? 0 : status,
+                statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
               })}
             </div>
           </div>

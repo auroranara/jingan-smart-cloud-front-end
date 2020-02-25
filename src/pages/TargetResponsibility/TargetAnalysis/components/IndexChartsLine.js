@@ -3,7 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 
 export default class IndexChartsLine extends PureComponent {
   render() {
-    const { data = [],xData=[] } = this.props;
+    const { data = [], xData = [] } = this.props;
 
     const option = {
       textStyle: {
@@ -20,7 +20,7 @@ export default class IndexChartsLine extends PureComponent {
         left: '3%',
         right: '4%',
         bottom: '3%',
-        top:'9%',
+        top: '9%',
         containLabel: true,
       },
       xAxis: [
@@ -52,7 +52,7 @@ export default class IndexChartsLine extends PureComponent {
       ],
       series: [
         {
-          name: '',
+          name: '实际值',
           type: 'line',
           barWidth: '20%',
           data: data.map(item => item),
