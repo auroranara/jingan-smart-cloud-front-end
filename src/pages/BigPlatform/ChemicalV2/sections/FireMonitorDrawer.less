@@ -12,7 +12,7 @@
     position: relative;
     border: 1px solid #0ff;
 
-    & + .item {
+    &+.item {
       margin-top: 15px;
     }
   }
@@ -69,17 +69,23 @@
   .name {
     position: relative;
 
-    .video {
-      display: inline-block;
+    .iconsWrapper {
       position: absolute;
-      top: 6px;
-      left: 60%;
-      width: 1.4em;
-      height: 1em;
-      background: url('../imgs/icon-video.png') no-repeat center;
-      background-size: auto 1em;
-      vertical-align: top;
-      cursor: pointer;
+      height: 100%;
+      right: 10px;
+      top: 0;
+
+      .icon {
+        display: inline-block;
+        width: 40px;
+        height: 100%;
+        vertical-align: top;
+        cursor: pointer;
+
+        &+.icon {
+          margin-left: 8px;
+        }
+      }
     }
   }
 
@@ -119,7 +125,7 @@
     align-items: center;
     justify-content: center;
 
-    & + .paramsWrapper {
+    &+.paramsWrapper {
       margin-top: 15px;
     }
 
