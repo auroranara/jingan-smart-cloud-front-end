@@ -8,18 +8,17 @@ const { TextArea, Search } = Input;
 // span和Input互相转换
 export default class InputOrSpan extends Component {
   render() {
-    const {
-      className,
-      type,
-      value,
-      ...restProps
-    } = this.props;
+    const { className, style, type, value, ...restProps } = this.props;
 
     if (type !== 'span') {
-      const Item = ({ InputNumber, TextArea, Search })[type] || Input;
-      return <Item className={className} value={value} {...restProps} />
+      const Item = { InputNumber, TextArea, Search }[type] || Input;
+      return <Item className={className} style={style} value={value} {...restProps} />;
     } else {
-      return <span className={classNames(styles.span, className)} {...restProps}>{value}</span>
+      return (
+        <span className={classNames(styles.span, className)} style={style}>
+          {value}
+        </span>
+      );
     }
   }
 }

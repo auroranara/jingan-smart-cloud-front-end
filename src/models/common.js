@@ -4,6 +4,7 @@ import {
   getMonitorTypeList,
   getMonitorEquipmentList,
   setMonitorEquipmentBindStatus,
+  getPersonList,
 } from '@/services/common';
 
 const transformMonitorTypeList = list => {
@@ -38,6 +39,7 @@ export default {
     areaList: [],
     monitorTypeList: [],
     monitorEquipmentList: {},
+    personList: {},
   },
 
   effects: {
@@ -114,6 +116,23 @@ export default {
       const response = yield call(setMonitorEquipmentBindStatus, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
+    },
+    // 获取人员列表
+    *getPersonList({ payload, callback }, { call, put }) {
+      const response = yield call(getPersonList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const personList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            personList,
+          },
+        });
+        callback && callback(true, personList);
+      } else {
+        callback && callback(false, msg);
+      }
     },
   },
 

@@ -17,6 +17,31 @@
         width: 0;
         flex: 1;
       }
+
+      .ant-switch {
+        margin: 5px 0 !important;
+        vertical-align: baseline !important;
+      }
+    }
+
+    textarea {
+      margin-top: 4px;
+    }
+
+    &.verticalForm {
+      :global {
+        .ant-form-item {
+          display: block;
+        }
+
+        .ant-form-item-control-wrapper {
+          width: auto;
+        }
+      }
+
+      textarea {
+        margin-top: 0;
+      }
     }
   }
 }

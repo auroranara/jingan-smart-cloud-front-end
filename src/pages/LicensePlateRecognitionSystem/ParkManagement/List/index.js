@@ -6,7 +6,6 @@ import Company from '../../Company';
 import { connect } from 'dva';
 import styles from './index.less';
 
-export const URL_PREFIX = '/license-plate-recognition-system/park-management/index';
 export const STATUSES = [{ key: '1', value: '启用' }, { key: '0', value: '停用' }];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
@@ -20,6 +19,11 @@ const MAPPER = {
   getList: 'getParkList',
   remove: 'deletePark',
 };
+const COMPANY_MAPPER = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'parkCompanyList',
+  getList: 'getParkCompanyList',
+};
 
 @connect(({ user }) => ({
   user,
@@ -29,10 +33,19 @@ export default class ParkList extends Component {
     return nextProps.match.params.unitId !== this.props.match.params.unitId;
   }
 
+  transform = ({ unitId, ...props }) => ({
+    companyId: unitId,
+    ...props,
+  });
+
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车场信息', name: '单位车场信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位车场信息',
+          name: '单位车场信息',
+          href: this.props.route.path.replace(/\/:[^\/]*/g, ''),
+        },
         { title: '车场信息', name: '车场信息' },
       ].filter(v => v)
     );
@@ -53,71 +66,78 @@ export default class ParkList extends Component {
     //   ),
     // },
     {
-      id: 'name',
+      id: 'parkName',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
         <Input placeholder="请输入车场名称" maxLength={50} onPressEnter={onSearch} />
       ),
     },
     {
-      id: 'contact',
+      id: 'managerName',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
         <Input placeholder="请输入联系人" maxLength={50} onPressEnter={onSearch} />
       ),
     },
     {
-      id: 'status',
+      id: 'parkStatus',
       render: () => <SelectOrSpan placeholder="请选择车场状态" list={STATUSES} allowClear />,
     },
   ];
 
   getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车场' });
 
-  getColumns = ({ renderDetailButton, renderEditButton, renderDeleteButton }) => [
+  getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
+    {
+      title: '车场ID',
+      dataIndex: 'parkId',
+      align: 'center',
+    },
     {
       title: '车场名称',
-      dataIndex: 'name',
+      dataIndex: 'parkName',
       align: 'center',
     },
     {
       title: '车场联系人',
-      dataIndex: 'concat',
+      dataIndex: 'managerName',
       align: 'center',
     },
     {
       title: '联系电话',
-      dataIndex: 'phone',
+      dataIndex: 'managerPhone',
       align: 'center',
     },
     {
       title: '车场状态',
-      dataIndex: 'status',
+      dataIndex: 'parkStatus',
       align: 'center',
-      render: value => <SelectOrSpan list={STATUSES} value={value} type="span" />,
+      render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
     },
-    {
-      title: '区域（个）',
-      dataIndex: 'areaCount',
-      align: 'center',
-      render: value => value || 0,
-    },
+    // {
+    //   title: '区域（个）',
+    //   dataIndex: 'areaCount',
+    //   align: 'center',
+    //   render: value => value || 0,
+    // },
     {
       title: '通道（个）',
-      dataIndex: 'channelCount',
+      dataIndex: 'gateCount',
       align: 'center',
       render: value => value || 0,
     },
-    {
-      title: '设备（个）',
-      dataIndex: 'deviceCount',
-      align: 'center',
-      render: value => value || 0,
-    },
+    // {
+    //   title: '设备（个）',
+    //   dataIndex: 'deviceCount',
+    //   align: 'center',
+    //   render: value => value || 0,
+    // },
     {
       title: '操作',
       dataIndex: '操作',
       align: 'center',
+      width: 148,
+      fixed: list && list.length ? 'right' : undefined,
       render: (_, data) => (
         <div className={styles.buttonWrapper}>
           {renderDetailButton(data)}
@@ -146,23 +166,26 @@ export default class ParkList extends Component {
 
     return unitType === 4 || unitId ? (
       <TablePage
+        key={unitId}
         breadcrumbList={this.getBreadcrumbList}
         content={this.getContent}
         fields={this.getFields}
         action={this.getAction}
         columns={this.getColumns}
-        showTotal={false}
+        transform={this.transform}
         mapper={MAPPER}
+        showTotal={false}
+        withUnitId
         {...props}
       />
     ) : (
       <Company
         name="车场"
-        urlPrefix={URL_PREFIX}
         breadcrumbList={BREADCRUMB_LIST.concat({
           title: '单位车场信息',
           name: '单位车场信息',
         })}
+        mapper={COMPANY_MAPPER}
         {...props}
       />
     );

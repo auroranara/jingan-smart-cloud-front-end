@@ -1,40 +1,46 @@
 import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
-import ProvinceSelect from './components/ProvinceSelect';
-import CitySelect from './components/CitySelect';
+import AsyncSelect from '@/jingan-components/AsyncSelect';
 import { isNumber } from '@/utils/utils';
-import { BREADCRUMB_LIST, URL_PREFIX, STATUSES } from '../List';
+import { BREADCRUMB_LIST, TYPES } from '../List';
 import styles from './index.less';
 
 const MAPPER = {
   namespace: 'licensePlateRecognitionSystem',
-  detail: 'parkDetail',
-  getDetail: 'getParkDetail',
-  add: 'addPark',
-  edit: 'editPark',
+  detail: 'areaDetail',
+  getDetail: 'getAreaDetail',
+  add: 'addArea',
+  edit: 'editArea',
+};
+const MAPPER2 = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'parkList',
+  getList: 'getParkList',
+};
+const MAPPER3 = {
+  // 这里需要排除自己
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'areaList',
+  getList: 'getAreaList',
 };
 
-export default class ParkOther extends Component {
+export default class AreaOther extends Component {
   shouldComponentUpdate(nextProps) {
     return nextProps.match.params.unitId !== this.props.match.params.unitId;
   }
 
-  setProvinceSelectReference = provinceSelect => {
-    this.provinceSelect = provinceSelect && provinceSelect.getWrappedInstance();
-  };
-
-  initialize = ({ 车场名称, 车场联系人, 联系电话, 车场状态, 车场所在省份, 车场所在城市 }) => ({
-    车场名称: 车场名称 || undefined,
-    车场联系人: 车场联系人 || undefined,
-    联系电话: 联系电话 || undefined,
-    车场状态: isNumber(车场状态) ? `${车场状态}` : undefined,
-    车场所在省份: 车场所在省份 || undefined,
-    车场所在城市: 车场所在城市 || undefined,
+  initialize = ({ parkId, parkName, name, parentId, parentName, type }) => ({
+    park: parkId ? { key: parkId, label: parkName } : undefined,
+    name: name || undefined,
+    parent: parentId ? { key: parentId, label: parentName } : undefined,
+    type: isNumber(type) ? `${type}` : undefined,
   });
 
-  transform = ({ unitId, ...payload }) => {
+  transform = ({ unitId, park, parent, ...payload }) => {
     return {
       unitId, // 这里接接口的时候重点关注一下
+      parkId: park && park.key,
+      parentId: parent && parent.key,
       ...payload,
     };
   };
@@ -42,70 +48,68 @@ export default class ParkOther extends Component {
   getBreadcrumbList = ({ isUnit, unitId, title }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车场信息', name: '单位车场信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位区域信息',
+          name: '单位区域信息',
+          href: this.props.route.path.replace(/:unitId.*/, 'list'),
+        },
         {
-          title: '车场信息',
-          name: '车场信息',
-          href: isUnit ? `${URL_PREFIX}/list` : `${URL_PREFIX}/${unitId}/list`,
+          title: '区域信息',
+          name: '区域信息',
+          href: this.props.location.pathname.replace(
+            new RegExp(`${this.props.route.name}.*`),
+            'list'
+          ),
         },
         { title, name: title },
       ].filter(v => v)
     );
 
-  getFields = ({ 车场所在省份 }) => [
+  getFields = () => [
     {
-      id: '车场名称',
-      label: '车场名称',
+      id: 'park',
+      label: '所在车场',
       required: true,
-      component: 'Input',
-    },
-    {
-      id: '车场联系人',
-      label: '车场联系人',
-      component: 'Input',
-    },
-    {
-      id: '联系电话',
-      label: '联系电话',
-      component: 'Input',
-    },
-    {
-      id: '车场状态',
-      label: '车场状态',
-      required: true,
-      component: 'Switch',
+      component: AsyncSelect,
       props: {
-        list: STATUSES,
+        mapper: MAPPER2,
+        placeholder: '请选择所在车场',
       },
       options: {
-        initialValue: STATUSES[0].key,
+        rules: [
+          {
+            type: 'object',
+            required: true,
+            message: '所在车场不能为空',
+          },
+        ],
       },
     },
     {
-      id: '车场所在省份',
-      label: '车场所在省份',
+      id: 'name',
+      label: '区域名称',
       required: true,
-      refreshEnable: true,
-      component: ProvinceSelect,
+      component: 'Input',
+    },
+    {
+      id: 'parent',
+      label: '父区域',
+      component: AsyncSelect,
       props: {
-        ref: this.setProvinceSelectReference,
+        mapper: MAPPER3,
+        placeholder: '请选择父区域',
       },
     },
     {
-      id: '车场所在城市',
-      label: '车场所在城市',
+      id: 'type',
+      label: '区域类型',
       required: true,
-      component: CitySelect,
+      component: 'Select',
       props: {
-        cityIds: 车场所在省份,
-        focus: this.handleFocus,
+        list: TYPES,
       },
     },
   ];
-
-  handleFocus = () => {
-    this.provinceSelect && this.provinceSelect.focus();
-  };
 
   render() {
     const { route, location, match } = this.props;

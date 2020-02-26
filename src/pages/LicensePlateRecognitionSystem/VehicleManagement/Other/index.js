@@ -2,18 +2,9 @@ import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import moment from 'moment';
 import { isNumber } from '@/utils/utils';
-import { BREADCRUMB_LIST, URL_PREFIX, STATUSES } from '../List';
+import { BREADCRUMB_LIST, STATUSES, VEHICLE_TYPES, LICENCE_PLATE_TYPES } from '../List';
 import styles from './index.less';
 
-const VEHICLE_TYPES = [{ key: '0', value: '小车' }, { key: '1', value: '大车' }];
-const LICENCE_PLATE_TYPES = [
-  { key: '0', value: '临时车' },
-  { key: '1', value: '月租车' },
-  { key: '2', value: '充值车' },
-  { key: '3', value: '贵宾车' },
-  { key: '4', value: '免费车' },
-  { key: '8', value: '收费月租车' },
-];
 const SPAN = {
   xl: 8,
   lg: 12,
@@ -83,11 +74,18 @@ export default class VehicleOther extends Component {
   getBreadcrumbList = ({ isUnit, unitId, title }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车辆信息', name: '单位车辆信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位车辆信息',
+          name: '单位车辆信息',
+          href: this.props.route.path.replace(/:unitId.*/, 'list'),
+        },
         {
           title: '车辆信息',
           name: '车辆信息',
-          href: isUnit ? `${URL_PREFIX}/list` : `${URL_PREFIX}/${unitId}/list`,
+          href: this.props.location.pathname.replace(
+            new RegExp(`${this.props.route.name}.*`),
+            'list'
+          ),
         },
         { title, name: title },
       ].filter(v => v)

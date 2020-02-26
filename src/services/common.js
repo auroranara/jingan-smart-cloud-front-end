@@ -28,3 +28,8 @@ export async function setMonitorEquipmentBindStatus(params) {
     body: params,
   });
 }
+
+// 获取人员列表
+export async function getPersonList(params) {
+  return request(`/acloud_new/v2/rolePermission/user?${stringify(params)}`);
+}
