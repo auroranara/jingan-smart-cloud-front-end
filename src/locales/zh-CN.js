@@ -638,7 +638,7 @@ export default {
   'menu.licensePlateRecognitionSystem.config': '参数配置',
   'menu.licensePlateRecognitionSystem.config.displayAndVoice': '显示与语言配置',
   'menu.licensePlateRecognitionSystem.report': '报表查询',
-  'menu.licensePlateRecognitionSystem.report.presenceRecord': '在场记录',
+  'menu.licensePlateRecognitionSystem.report.presenceRecord': '出入场记录',
   'menu.licensePlateRecognitionSystem.report.abnormalRecord': '异常抬杆记录',
   'menu.licensePlateRecognitionSystem.channelStatus': '通道状态',
   'menu.licensePlateRecognitionSystem.channelStatus.channelMonitor': '通道监控',

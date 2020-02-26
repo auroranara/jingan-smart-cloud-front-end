@@ -3,6 +3,7 @@ import { Input } from 'antd';
 import TablePage from '@/templates/TablePage';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
+import ImagePreview from '@/jingan-components/ImagePreview';
 import Company from '../../Company';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -22,15 +23,26 @@ const MAPPER = {
   getList: 'getAbnormalRecordList',
   exportList: 'exportAbnormalRecordList',
 };
+const COMPANY_MAPPER = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'companyList',
+  getList: 'getCompanyList',
+};
 
 @connect(({ user }) => ({
   user,
 }))
 export default class AbnormalRecord extends Component {
+  state = {
+    images: null,
+  };
+
   empty = true;
 
-  shouldComponentUpdate(nextProps) {
-    return nextProps.match.params.unitId !== this.props.match.params.unitId;
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextProps.match.params.unitId !== this.props.match.params.unitId || nextState !== this.state
+    );
   }
 
   getRangeFromEvent = range => {
@@ -40,8 +52,10 @@ export default class AbnormalRecord extends Component {
     return result;
   };
 
-  transform = ({ unitId, ...props }) => ({
-    // unitId, // 这个接接口时重点关注一下
+  transform = ({ unitId, range: [openTimeStart, openTimeEnd] = [], ...props }) => ({
+    companyId: unitId,
+    openTimeStart: openTimeStart && openTimeStart.format(DEFAULT_FORMAT),
+    openTimeEnd: openTimeEnd && openTimeEnd.format(DEFAULT_FORMAT),
     ...props,
   });
 
@@ -80,20 +94,14 @@ export default class AbnormalRecord extends Component {
       ),
     },
     {
-      id: 'areaName',
-      render: ({ onSearch }) => (
-        <Input placeholder="请输入区域名称" maxLength={50} onPressEnter={onSearch} />
-      ),
-    },
-    {
-      id: 'channelName',
+      id: 'gateName',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
         <Input placeholder="请输入通道名称" maxLength={50} onPressEnter={onSearch} />
       ),
     },
     {
-      id: 'direction',
+      id: 'ioState',
       render: () => <SelectOrSpan placeholder="请选择通道方向" list={DIRECTIONS} allowClear />,
     },
     {
@@ -114,7 +122,7 @@ export default class AbnormalRecord extends Component {
     },
   ];
 
-  getAction = ({ renderExportButton }) => renderExportButton({ name: '导出报表' });
+  // getAction = ({ renderExportButton }) => renderExportButton({ name: '导出报表' });
 
   getColumns = () => [
     {
@@ -123,31 +131,44 @@ export default class AbnormalRecord extends Component {
       align: 'center',
     },
     {
-      title: '区域名称',
-      dataIndex: 'areaName',
-      align: 'center',
-    },
-    {
       title: '通道名称',
-      dataIndex: 'channelName',
+      dataIndex: 'gateName',
       align: 'center',
     },
     {
       title: '通道方向',
-      dataIndex: 'direction',
+      dataIndex: 'ioState',
       align: 'center',
       render: value => <SelectOrSpan list={DIRECTIONS} value={`${value}`} type="span" />,
     },
     {
-      title: '相机序列号',
-      dataIndex: 'number',
+      title: '开闸时间',
+      dataIndex: 'openTime',
+      align: 'center',
+      render: value => value && moment(value).format(DEFAULT_FORMAT),
+    },
+    {
+      title: '开闸原因',
+      dataIndex: 'reason',
       align: 'center',
     },
     {
-      title: '时间',
-      dataIndex: 'time',
+      title: '图片',
+      dataIndex: '图片',
       align: 'center',
-      render: value => value && moment(value).format(DEFAULT_FORMAT),
+      render: (value, { picInfoList }) =>
+        picInfoList && picInfoList.length ? (
+          <img
+            className={styles.img}
+            src={`data:image/png;base64,${picInfoList[0].content}`}
+            alt=""
+            onClick={() =>
+              this.setState({ images: [`data:image/png;base64,${picInfoList[0].content}`] })
+            }
+          />
+        ) : (
+          '——'
+        ),
     },
   ];
 
@@ -161,6 +182,7 @@ export default class AbnormalRecord extends Component {
       location,
       match,
     } = this.props;
+    const { images } = this.state;
     const props = {
       route,
       location,
@@ -169,6 +191,7 @@ export default class AbnormalRecord extends Component {
 
     return unitType === 4 || unitId ? (
       <TablePage
+        key={unitId}
         breadcrumbList={this.getBreadcrumbList}
         content={this.getContent}
         fields={this.getFields}
@@ -178,15 +201,17 @@ export default class AbnormalRecord extends Component {
         showTotal={false}
         withUnitId
         {...props}
-      />
+      >
+        <ImagePreview images={images} />
+      </TablePage>
     ) : (
       <Company
-        name="异常抬杆记录"
         breadcrumbList={BREADCRUMB_LIST.concat({
           title: '单位异常抬杆记录',
           name: '单位异常抬杆记录',
         })}
         addEnable={false}
+        mapper={COMPANY_MAPPER}
         {...props}
       />
     );

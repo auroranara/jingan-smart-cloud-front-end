@@ -3,10 +3,11 @@ import { Input } from 'antd';
 import TablePage from '@/templates/TablePage';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
+import ImagePreview from '@/jingan-components/ImagePreview';
 import Company from '../../Company';
 import { connect } from 'dva';
 import moment from 'moment';
-import { LICENCE_PLATE_TYPES } from '../../VehicleManagement/List';
+import { VEHICLE_TYPES } from '../../VehicleManagement/List';
 import { DIRECTIONS } from '../../ChannelManagement/List';
 import styles from './index.less';
 
@@ -23,15 +24,28 @@ const MAPPER = {
   getList: 'getPresenceRecordList',
   exportList: 'exportPresenceRecordList',
 };
+const COMPANY_MAPPER = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'companyList',
+  getList: 'getCompanyList',
+};
 
 @connect(({ user }) => ({
   user,
 }))
 export default class PresenceRecord extends Component {
+  state = {
+    images: null,
+  };
+
   empty = true;
 
-  shouldComponentUpdate(nextProps) {
-    return nextProps.match.params.unitId !== this.props.match.params.unitId;
+  empty2 = true;
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextProps.match.params.unitId !== this.props.match.params.unitId || nextState !== this.state
+    );
   }
 
   getRangeFromEvent = range => {
@@ -41,8 +55,24 @@ export default class PresenceRecord extends Component {
     return result;
   };
 
-  transform = ({ unitId, ...props }) => ({
-    // unitId, // 这个接接口时重点关注一下
+  getRangeFromEvent2 = range => {
+    const empty = !(range && range.length);
+    const result = this.empty2 && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
+    this.empty2 = empty;
+    return result;
+  };
+
+  transform = ({
+    unitId,
+    range: [inTimeStart, inTimeEnd] = [],
+    range2: [outTimeStart, outTimeEnd] = [],
+    ...props
+  }) => ({
+    companyId: unitId,
+    inTimeStart: inTimeStart && inTimeStart.format(DEFAULT_FORMAT),
+    inTimeEnd: inTimeEnd && inTimeEnd.format(DEFAULT_FORMAT),
+    outTimeStart: outTimeStart && outTimeStart.format(DEFAULT_FORMAT),
+    outTimeEnd: outTimeEnd && outTimeEnd.format(DEFAULT_FORMAT),
     ...props,
   });
 
@@ -50,11 +80,11 @@ export default class PresenceRecord extends Component {
     BREADCRUMB_LIST.concat(
       [
         !isUnit && {
-          title: '单位在场记录',
-          name: '单位在场记录',
+          title: '单位出入场记录',
+          name: '单位出入场记录',
           href: this.props.route.path.replace(/\/:[^\/]*/g, ''),
         },
-        { title: '在场记录', name: '在场记录' },
+        { title: '出入场记录', name: '出入场记录' },
       ].filter(v => v)
     );
 
@@ -74,30 +104,28 @@ export default class PresenceRecord extends Component {
     //   ),
     // },
     {
-      id: 'licencePlate',
+      label: '车牌号',
+      id: 'carNumber',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
-        <Input placeholder="请输入车牌" maxLength={50} onPressEnter={onSearch} />
+        <Input placeholder="请输入车牌号" maxLength={50} onPressEnter={onSearch} />
       ),
     },
     {
-      id: 'licencePlateType',
-      render: () => (
-        <SelectOrSpan placeholder="请选择车牌类型" list={LICENCE_PLATE_TYPES} allowClear />
-      ),
+      label: '车辆类型',
+      id: 'carType',
+      render: () => <SelectOrSpan placeholder="请选择车辆类型" list={VEHICLE_TYPES} allowClear />,
     },
     {
-      id: 'channelName',
+      label: '通道名称',
+      id: 'queryGateName',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
         <Input placeholder="请输入通道名称" maxLength={50} onPressEnter={onSearch} />
       ),
     },
     {
-      id: 'direction',
-      render: () => <SelectOrSpan placeholder="请选择通道方向" list={DIRECTIONS} allowClear />,
-    },
-    {
+      label: '入场时间',
       id: 'range',
       render: () => (
         <DatePickerOrSpan
@@ -113,27 +141,38 @@ export default class PresenceRecord extends Component {
         getValueFromEvent: this.getRangeFromEvent,
       },
     },
+    {
+      label: '出场时间',
+      id: 'range2',
+      render: () => (
+        <DatePickerOrSpan
+          placeholder={['开始时间', '结束时间']}
+          format={DEFAULT_FORMAT}
+          showTime
+          allowClear
+          type="RangePicker"
+          style={{ width: '100%' }}
+        />
+      ),
+      options: {
+        getValueFromEvent: this.getRangeFromEvent2,
+      },
+    },
   ];
 
-  getAction = ({ renderExportButton }) => renderExportButton({ name: '导出报表' });
+  // getAction = ({ renderExportButton }) => renderExportButton({ name: '导出报表' });
 
   getColumns = () => [
     {
-      title: '车牌',
-      dataIndex: 'licencePlate',
+      title: '车牌号',
+      dataIndex: 'carNumber',
       align: 'center',
     },
     {
-      title: '车牌类型',
-      dataIndex: 'licencePlateType',
+      title: '车辆类型',
+      dataIndex: 'carType',
       align: 'center',
-      render: value => <SelectOrSpan list={LICENCE_PLATE_TYPES} value={`${value}`} type="span" />,
-    },
-    {
-      title: '放行时间',
-      dataIndex: 'releaseTime',
-      align: 'center',
-      render: value => value && moment(value).format(DEFAULT_FORMAT),
+      render: value => <SelectOrSpan list={VEHICLE_TYPES} value={`${value}`} type="span" />,
     },
     {
       title: '车场名称',
@@ -141,20 +180,78 @@ export default class PresenceRecord extends Component {
       align: 'center',
     },
     {
-      title: '区域名称',
-      dataIndex: 'areaName',
+      title: '出入时间',
+      dataIndex: '出入时间',
       align: 'center',
+      render: (value, { inOutRecordList: [{ inTime }, { outTime }] }) => (
+        <div className={styles.lineWrapper}>
+          <div>{inTime ? moment(inTime).format(DEFAULT_FORMAT) : '——'}</div>
+          <div>{outTime ? moment(inTime).format(DEFAULT_FORMAT) : '——'}</div>
+        </div>
+      ),
     },
     {
       title: '通道名称',
-      dataIndex: 'channelName',
+      dataIndex: '通道名称',
       align: 'center',
+      render: (value, { inOutRecordList: [{ gateInName }, { gateOutName }] }) => (
+        <div className={styles.lineWrapper}>
+          <div>{gateInName || '——'}</div>
+          <div>{gateOutName || '——'}</div>
+        </div>
+      ),
     },
     {
       title: '通道方向',
-      dataIndex: 'direction',
+      dataIndex: '通道方向',
       align: 'center',
-      render: value => <SelectOrSpan list={DIRECTIONS} value={`${value}`} type="span" />,
+      render: (value, { inOutRecordList: [{ recordType: r1 }, { recordType: r2 }] }) => (
+        <div className={styles.lineWrapper}>
+          <div>
+            {r1 >= 0 ? <SelectOrSpan list={DIRECTIONS} value={`${r1}`} type="span" /> : '——'}
+          </div>
+          <div>
+            {r2 >= 0 ? <SelectOrSpan list={DIRECTIONS} value={`${r2}`} type="span" /> : '——'}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: '图片',
+      dataIndex: '图片',
+      align: 'center',
+      render: (value, { inOutRecordList: [{ picInfoList: p1 }, { picInfoList: p2 }] }) => (
+        <div className={styles.lineWrapper}>
+          <div>
+            {p1 && p1.length ? (
+              <img
+                className={styles.img}
+                src={`data:image/png;base64,${p1[0].content}`}
+                alt=""
+                onClick={() =>
+                  this.setState({ images: [`data:image/png;base64,${p1[0].content}`] })
+                }
+              />
+            ) : (
+              '——'
+            )}
+          </div>
+          <div>
+            {p2 && p2.length ? (
+              <img
+                className={styles.img}
+                src={`data:image/png;base64,${p2[0].content}`}
+                alt=""
+                onClick={() =>
+                  this.setState({ images: [`data:image/png;base64,${p2[0].content}`] })
+                }
+              />
+            ) : (
+              '——'
+            )}
+          </div>
+        </div>
+      ),
     },
   ];
 
@@ -168,6 +265,7 @@ export default class PresenceRecord extends Component {
       location,
       match,
     } = this.props;
+    const { images } = this.state;
     const props = {
       route,
       location,
@@ -176,24 +274,28 @@ export default class PresenceRecord extends Component {
 
     return unitType === 4 || unitId ? (
       <TablePage
+        key={unitId}
         breadcrumbList={this.getBreadcrumbList}
         content={this.getContent}
         fields={this.getFields}
         action={this.getAction}
         columns={this.getColumns}
+        transform={this.transform}
         mapper={MAPPER}
         showTotal={false}
         withUnitId
         {...props}
-      />
+      >
+        <ImagePreview images={images} />
+      </TablePage>
     ) : (
       <Company
-        name="在场记录"
         breadcrumbList={BREADCRUMB_LIST.concat({
-          title: '单位在场记录',
-          name: '单位在场记录',
+          title: '单位出入场记录',
+          name: '单位出入场记录',
         })}
         addEnable={false}
+        MAPPER={COMPANY_MAPPER}
         {...props}
       />
     );

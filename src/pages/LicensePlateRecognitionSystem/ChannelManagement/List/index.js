@@ -9,7 +9,7 @@ import styles from './index.less';
 
 export const STATUSES = [{ key: '1', value: '启用' }, { key: '0', value: '停用' }];
 export const MODES = [{ key: '0', value: '无人值守' }, { key: '1', value: '有人值守' }];
-export const DIRECTIONS = [{ key: '0', value: '出口' }, { key: '1', value: '入口' }];
+export const DIRECTIONS = [{ key: '1', value: '入口' }, { key: '0', value: '出口' }];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员在岗在位管理', name: '人员在岗在位管理' },
@@ -180,6 +180,7 @@ export default class ChannelList extends Component {
         fields={this.getFields}
         action={this.getAction}
         columns={this.getColumns}
+        transform={this.transform}
         mapper={MAPPER}
         showTotal={false}
         withUnitId

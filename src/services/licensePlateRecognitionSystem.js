@@ -157,7 +157,7 @@ export async function getDeviceList(params) {
 
 /* 获取在场记录列表 */
 export async function getPresenceRecordList(params) {
-  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
+  return request(`/acloud_new/v2/carPlateRecognition/order/page?${stringify(params)}`);
 }
 
 /* 导出在场记录列表 */
@@ -167,7 +167,7 @@ export async function exportPresenceRecordList(params) {
 
 /* 获取异常抬杆记录列表 */
 export async function getAbnormalRecordList(params) {
-  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
+  return request(`/acloud_new/v2/carPlateRecognition/openStrobeRecord/page?${stringify(params)}`);
 }
 
 /* 导出异常抬杆记录列表 */

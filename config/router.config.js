@@ -4481,24 +4481,24 @@ module.exports = env => {
                 },
               ],
             },
-            // 参数配置
-            {
-              path: '/license-plate-recognition-system/config',
-              code: 'licensePlateRecognitionSystem.config',
-              name: 'config',
-              routes: [
-                {
-                  path: '/license-plate-recognition-system/config',
-                  redirect: '/license-plate-recognition-system/config/display-and-voice',
-                },
-                {
-                  path: '/license-plate-recognition-system/config/:unitId?/display-and-voice',
-                  code: 'licensePlateRecognitionSystem.config.displayAndVoice',
-                  name: 'displayAndVoice',
-                  component: './LicensePlateRecognitionSystem/Config/DisplayAndVoice',
-                },
-              ],
-            },
+            // // 参数配置
+            // {
+            //   path: '/license-plate-recognition-system/config',
+            //   code: 'licensePlateRecognitionSystem.config',
+            //   name: 'config',
+            //   routes: [
+            //     {
+            //       path: '/license-plate-recognition-system/config',
+            //       redirect: '/license-plate-recognition-system/config/display-and-voice',
+            //     },
+            //     {
+            //       path: '/license-plate-recognition-system/config/:unitId?/display-and-voice',
+            //       code: 'licensePlateRecognitionSystem.config.displayAndVoice',
+            //       name: 'displayAndVoice',
+            //       component: './LicensePlateRecognitionSystem/Config/DisplayAndVoice',
+            //     },
+            //   ],
+            // },
             // 报表查询
             {
               path: '/license-plate-recognition-system/report',
@@ -4523,24 +4523,24 @@ module.exports = env => {
                 },
               ],
             },
-            // 通道状态
-            {
-              path: '/license-plate-recognition-system/channel-status',
-              code: 'licensePlateRecognitionSystem.channelStatus',
-              name: 'channelStatus',
-              routes: [
-                {
-                  path: '/license-plate-recognition-system/channel-status',
-                  redirect: '/license-plate-recognition-system/channel-status/channel-monitor',
-                },
-                {
-                  path: '/license-plate-recognition-system/channel-status/:unitId?/channel-monitor',
-                  code: 'licensePlateRecognitionSystem.channelStatus.channelMonitor',
-                  name: 'channelMonitor',
-                  component: './LicensePlateRecognitionSystem/ChannelStatus/ChannelMonitor',
-                },
-              ],
-            },
+            // // 通道状态
+            // {
+            //   path: '/license-plate-recognition-system/channel-status',
+            //   code: 'licensePlateRecognitionSystem.channelStatus',
+            //   name: 'channelStatus',
+            //   routes: [
+            //     {
+            //       path: '/license-plate-recognition-system/channel-status',
+            //       redirect: '/license-plate-recognition-system/channel-status/channel-monitor',
+            //     },
+            //     {
+            //       path: '/license-plate-recognition-system/channel-status/:unitId?/channel-monitor',
+            //       code: 'licensePlateRecognitionSystem.channelStatus.channelMonitor',
+            //       name: 'channelMonitor',
+            //       component: './LicensePlateRecognitionSystem/ChannelStatus/ChannelMonitor',
+            //     },
+            //   ],
+            // },
           ],
         },
       ],

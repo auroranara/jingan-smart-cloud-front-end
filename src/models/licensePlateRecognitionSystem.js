@@ -75,7 +75,7 @@ export default {
   effects: {
     /* 获取企业列表 */
     *getCompanyList({ payload, callback }, { call, put }) {
-      const response = yield call(getCompanyList, payload);
+      const response = yield call(getParkCompanyList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         yield put({
@@ -636,14 +636,27 @@ export default {
       const response = yield call(getPresenceRecordList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const presenceRecordList = data;
         yield put({
           type: 'save',
           payload: {
-            presenceRecordList,
+            presenceRecordList: {
+              ...data,
+              list: data.list.map(item => ({
+                ...item,
+                inOutRecordList: item.inOutRecordList.reduce(
+                  (arr, cur) => {
+                    if (cur.recordType >= 0) {
+                      arr[cur.recordType ^ 1] = cur;
+                    }
+                    return arr;
+                  },
+                  [{}, {}]
+                ),
+              })),
+            },
           },
         });
-        callback && callback(true, presenceRecordList);
+        callback && callback(true, data);
       } else {
         callback && callback(false, msg);
       }

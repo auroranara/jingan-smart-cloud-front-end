@@ -271,6 +271,7 @@ export default class VehicleList extends Component {
         fields={this.getFields}
         action={this.getAction}
         renderItem={this.renderItem}
+        transform={this.transform}
         mapper={MAPPER}
         withUnitId
         {...props}

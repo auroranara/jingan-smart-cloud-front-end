@@ -172,6 +172,7 @@ export default class ParkList extends Component {
         fields={this.getFields}
         action={this.getAction}
         columns={this.getColumns}
+        transform={this.transform}
         mapper={MAPPER}
         showTotal={false}
         withUnitId
