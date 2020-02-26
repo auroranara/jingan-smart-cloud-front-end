@@ -12,9 +12,9 @@ const COLOR = {
 };
 
 const COLORS = {
-  1: 'rgb(252, 31, 2)',
-  2: 'rgb(237, 126, 17)',
-  3: 'rgb(251, 247, 24)',
+  1: 'rgb(255, 72, 72)',
+  2: 'rgb(241, 122, 10)',
+  3: 'rgb(251, 247, 25)',
   4: 'rgb(30, 96, 255)',
 };
 const selectedColor = 'rgb(245,245,245, 0.5)';
@@ -29,7 +29,9 @@ let naviLines = [];
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      newGroupId: '',
+    };
     this.polygonLayers = [];
     this.polygonMarkers = [];
   }
@@ -124,9 +126,9 @@ export default class Map extends React.Component {
 
     //地图加载完回调事件
     map.on('loadComplete', () => {
-      const { pointList, init, getBuilding } = this.props;
+      const { pointList, init, groupId, getBuilding } = this.props;
       //加载按钮型楼层切换控件
-      this.loadBtnFloorCtrl();
+      this.loadBtnFloorCtrl(init ? 1 : groupId);
       this.getPointList(this.props.pointList);
       pointList.length > 0 &&
         pointList.map(item => {
@@ -137,7 +139,6 @@ export default class Map extends React.Component {
             .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
             .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
           getBuilding && getBuilding(arrayList, 0);
-          this.loadBtnFloorCtrl(init ? 1 : groupId);
           return null;
         });
     });
@@ -200,7 +201,7 @@ export default class Map extends React.Component {
     var polygonMarker = new fengMap.FMPolygonMarker({
       alpha: 0.5, //设置透明度
       lineWidth: 1, //设置边框线的宽度
-      height: 2, //设置高度*/
+      height: 3, //设置高度*/
       points, //多边形坐标点
     });
     polygonMarker.setColor(color);

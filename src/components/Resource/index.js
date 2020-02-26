@@ -44,7 +44,7 @@ export default class Resource extends PureComponent {
       result = this.renderPdf();
     } else if (offices.indexOf(extension) > -1) {
       result = this.renderOffice();
-    } else if (extension === 'mp4') {
+    } else if (extension === 'mp4' || extension === 'MP4') {
       result = this.renderVideo();
     }
     return <div>{result}</div>;

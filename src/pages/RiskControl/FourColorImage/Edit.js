@@ -54,6 +54,14 @@ const itemStyles = {
     marginRight: '10px',
   },
 };
+
+const COLORS = {
+  1: 'rgb(255, 72, 72)',
+  2: 'rgb(241, 122, 10)',
+  3: 'rgb(251, 247, 25)',
+  4: 'rgb(30, 96, 255)',
+};
+
 @Form.create()
 @connect(({ fourColorImage, user, map, account, loading }) => ({
   fourColorImage,
@@ -329,11 +337,17 @@ export default class TableList extends React.Component {
   };
 
   handleLevelChange = levelId => {
-    this.setState({ levelId });
+    const { groupId, points } = this.state;
+    this.setState({ levelId }, () => {
+      if (points.length > 0) {
+        this.childMap.drawPolygon(groupId, points, COLORS[levelId]);
+        this.childMap.setModelColor(groupId, points, COLORS[levelId]);
+      }
+    });
   };
 
   renderDrawButton = () => {
-    const { isDrawing, points, levelId } = this.state;
+    const { isDrawing, points } = this.state;
     return (
       <Fragment>
         <Button
