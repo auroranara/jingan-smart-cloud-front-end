@@ -6,11 +6,11 @@ import {
   deletePerson,
 } from '@/services/realNameCertification';
 
-const defaultData = {
-  list: [],
-  pagination: { pageNum: 1, pageSize: 18, total: 0 },
-  isLast: true,
-};
+// const defaultData = {
+//   list: [],
+//   pagination: { pageNum: 1, pageSize: 18, total: 0 },
+//   isLast: true,
+// };
 
 export default {
   namespace: 'realNameCertification',
@@ -43,7 +43,7 @@ export default {
           id: "31ud_u2b79jsdhdq",
           remarks: null,
           companyId: "DccBRhlrSiu9gMV7fmvizw",
-          name: "测试",
+          name: "吴双",
           sex: "0",
           ethnic: "汉",
           certificateType: "汉",
@@ -54,7 +54,7 @@ export default {
           telephone: "13815205588",
           email: null,
           personType: "1",
-          personCompany: "测试单位",
+          personCompany: "晶安智慧",
           duty: "1",
           workType: null,
           education: "0",
