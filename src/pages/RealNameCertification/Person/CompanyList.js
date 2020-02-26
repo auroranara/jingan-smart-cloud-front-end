@@ -95,10 +95,10 @@ export default class CompanyList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const values = getFieldsValue();
-    dispatch({
-      type: 'realNameCertification/fetchCompanyList',
-      payload: { ...payload, ...values },
-    });
+    // dispatch({
+    //   type: 'realNameCertification/fetchCompanyList',
+    //   payload: { ...payload, ...values },
+    // });
   }
 
   handleLoadMore = () => {
@@ -231,7 +231,7 @@ export default class CompanyList extends PureComponent {
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
-          rowKey="id"
+          rowKey="companyId"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {

@@ -29,11 +29,6 @@ const defaultPageSize = 10;
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 
-const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 16 },
-};
-
 @connect(({ realNameCertification, user, loading }) => ({
   realNameCertification,
   user,
@@ -55,10 +50,10 @@ export default class PersonnelList extends PureComponent {
     } = this.props;
     const values = getFieldsValue();
     // console.log('query', values);
-    dispatch({
-      type: 'realNameCertification/fetchPersonList',
-      payload: { ...values, pageNum, pageSize, companyId },
-    })
+    // dispatch({
+    //   type: 'realNameCertification/fetchPersonList',
+    //   payload: { ...values, pageNum, pageSize, companyId },
+    // })
   }
 
   // 重置查询
