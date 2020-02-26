@@ -101,8 +101,8 @@ export default class ParkOther extends Component {
       ].filter(v => v)
     );
 
-  getFields = ({ unitId, isDetail }) => [
-    ...(isDetail
+  getFields = ({ unitId, isDetail, isEdit }) => [
+    ...(isDetail || isEdit
       ? [
           {
             id: 'parkId',
