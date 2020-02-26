@@ -17,7 +17,7 @@ import iconStorehouse from '../imgs/icon-storehouse.png';
 import iconChemical from '../imgs/icon-chemical.png';
 import iconDangerSource from '../imgs/icon-dangerSource.png';
 
-const LABELS = ['监测对象', 'IOT监测', '两重点一重大'];
+const LABELS = ['监测对象', 'IoT监测', '两重点一重大'];
 // const LABELS = ['监测对象', '两重点一重大'];
 const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 

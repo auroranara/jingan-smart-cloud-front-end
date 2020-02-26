@@ -6,40 +6,52 @@ import Company from '../../Company';
 import { connect } from 'dva';
 import styles from './index.less';
 
-export const URL_PREFIX = '/license-plate-recognition-system/park-management/index';
-export const STATUSES = [{ key: '1', value: '启用' }, { key: '0', value: '停用' }];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员在岗在位管理', name: '人员在岗在位管理' },
   { title: '车牌识别系统', name: '车牌识别系统' },
   { title: '车场管理', name: '车场管理' },
 ];
+export const TYPES = [
+  { key: '1', value: '外区域' },
+  { key: '2', value: '内区域' },
+  { key: '3', value: '不分区域' },
+];
 const MAPPER = {
   namespace: 'licensePlateRecognitionSystem',
-  list: 'parkList',
-  getList: 'getParkList',
-  remove: 'deletePark',
+  list: 'areaList',
+  getList: 'getAreaList',
+  remove: 'deleteArea',
 };
 
 @connect(({ user }) => ({
   user,
 }))
-export default class ParkList extends Component {
+export default class AreaList extends Component {
   shouldComponentUpdate(nextProps) {
     return nextProps.match.params.unitId !== this.props.match.params.unitId;
   }
 
+  transform = ({ unitId, ...props }) => ({
+    // unitId, // 这个接接口时重点关注一下
+    ...props,
+  });
+
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车场信息', name: '单位车场信息', href: `${URL_PREFIX}/list` },
-        { title: '车场信息', name: '车场信息' },
+        !isUnit && {
+          title: '单位区域信息',
+          name: '单位区域信息',
+          href: this.props.route.path.replace(/\/:[^\/]*/g, ''),
+        },
+        { title: '区域信息', name: '区域信息' },
       ].filter(v => v)
     );
 
   getContent = ({ list: { pagination: { total } = {} } = {} }) => (
     <span>
-      车场总数：
+      区域总数：
       {total || 0}
     </span>
   );
@@ -56,51 +68,38 @@ export default class ParkList extends Component {
       id: 'name',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
-        <Input placeholder="请输入车场名称" maxLength={50} onPressEnter={onSearch} />
+        <Input placeholder="请输入区域名称" maxLength={50} onPressEnter={onSearch} />
       ),
     },
     {
-      id: 'contact',
-      transform: v => v.trim(),
-      render: ({ onSearch }) => (
-        <Input placeholder="请输入联系人" maxLength={50} onPressEnter={onSearch} />
-      ),
-    },
-    {
-      id: 'status',
-      render: () => <SelectOrSpan placeholder="请选择车场状态" list={STATUSES} allowClear />,
+      id: 'type',
+      render: () => <SelectOrSpan placeholder="请选择区域类型" list={TYPES} allowClear />,
     },
   ];
 
-  getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车场' });
+  getAction = ({ renderAddButton }) => renderAddButton({ name: '新增区域' });
 
-  getColumns = ({ renderDetailButton, renderEditButton, renderDeleteButton }) => [
+  getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
     {
-      title: '车场名称',
+      title: '所在车场',
+      dataIndex: 'parkName',
+      align: 'center',
+    },
+    {
+      title: '区域名称',
       dataIndex: 'name',
       align: 'center',
     },
     {
-      title: '车场联系人',
-      dataIndex: 'concat',
+      title: '区域类型',
+      dataIndex: 'type',
       align: 'center',
+      render: value => <SelectOrSpan list={TYPES} value={`${value}`} type="span" />,
     },
     {
-      title: '联系电话',
-      dataIndex: 'phone',
+      title: '父区域',
+      dataIndex: 'parentName',
       align: 'center',
-    },
-    {
-      title: '车场状态',
-      dataIndex: 'status',
-      align: 'center',
-      render: value => <SelectOrSpan list={STATUSES} value={value} type="span" />,
-    },
-    {
-      title: '区域（个）',
-      dataIndex: 'areaCount',
-      align: 'center',
-      render: value => value || 0,
     },
     {
       title: '通道（个）',
@@ -109,15 +108,11 @@ export default class ParkList extends Component {
       render: value => value || 0,
     },
     {
-      title: '设备（个）',
-      dataIndex: 'deviceCount',
-      align: 'center',
-      render: value => value || 0,
-    },
-    {
       title: '操作',
       dataIndex: '操作',
       align: 'center',
+      width: 148,
+      fixed: list && list.length ? 'right' : undefined,
       render: (_, data) => (
         <div className={styles.buttonWrapper}>
           {renderDetailButton(data)}
@@ -151,17 +146,17 @@ export default class ParkList extends Component {
         fields={this.getFields}
         action={this.getAction}
         columns={this.getColumns}
-        showTotal={false}
         mapper={MAPPER}
+        showTotal={false}
+        withUnitId
         {...props}
       />
     ) : (
       <Company
-        name="车场"
-        urlPrefix={URL_PREFIX}
+        name="区域"
         breadcrumbList={BREADCRUMB_LIST.concat({
-          title: '单位车场信息',
-          name: '单位车场信息',
+          title: '单位区域信息',
+          name: '单位区域信息',
         })}
         {...props}
       />

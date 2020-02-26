@@ -36,12 +36,12 @@ const Annuals = [
   {
     label: '年消耗量',
     value: 'annualConsumption',
-    render: (val, row) => val + row.annualConsumptionUnit,
+    render: (val, row) => val + (row.annualConsumptionUnit === '1' ? 't' : 'm³'),
   },
   {
     label: '年生产能力',
     value: 'annualThroughput',
-    render: (val, row) => val + row.annualThroughputUnit,
+    render: (val, row) => val + (row.annualThroughputUnit === '1' ? 't' : 'm³'),
   },
 ];
 

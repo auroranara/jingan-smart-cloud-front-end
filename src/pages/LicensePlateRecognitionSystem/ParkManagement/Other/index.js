@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
-import ProvinceSelect from './components/ProvinceSelect';
-import CitySelect from './components/CitySelect';
+import AsyncSelect from '@/jingan-components/AsyncSelect';
 import { isNumber } from '@/utils/utils';
-import { BREADCRUMB_LIST, URL_PREFIX, STATUSES } from '../List';
+import { connect } from 'dva';
+import router from 'umi/router';
+import { BREADCRUMB_LIST, STATUSES } from '../List';
 import styles from './index.less';
 
 const MAPPER = {
@@ -13,64 +14,130 @@ const MAPPER = {
   add: 'addPark',
   edit: 'editPark',
 };
+const FIELDNAMES = {
+  key: 'id',
+  value: 'userName',
+};
+const MAPPER2 = {
+  namespace: 'common',
+  list: 'personList',
+  getList: 'getPersonList',
+};
 
+@connect(({ user }) => ({
+  user,
+}))
 export default class ParkOther extends Component {
-  shouldComponentUpdate(nextProps) {
-    return nextProps.match.params.unitId !== this.props.match.params.unitId;
+  componentDidMount() {
+    const {
+      user: { currentUser: { unitType } = {} },
+      match: {
+        params: { unitId },
+      },
+      route: { path },
+    } = this.props;
+    if (unitType !== 4 && !unitId) {
+      router.push(path.replace(/:unitId.*/, 'list'));
+    }
   }
 
-  setProvinceSelectReference = provinceSelect => {
-    this.provinceSelect = provinceSelect && provinceSelect.getWrappedInstance();
+  componentDidUpdate() {
+    const {
+      user: { currentUser: { unitType } = {} },
+      match: {
+        params: { unitId },
+      },
+      route: { path },
+    } = this.props;
+    if (unitType !== 4 && !unitId) {
+      router.push(path.replace(/:unitId.*/, 'list'));
+    }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return (
+      nextProps.match.params.unitId !== this.props.match.params.unitId ||
+      nextProps.match.params.id !== this.props.match.params.id
+    );
+  }
+
+  setPageReference = page => {
+    this.page = page && page.getWrappedInstance();
   };
 
-  initialize = ({ 车场名称, 车场联系人, 联系电话, 车场状态, 车场所在省份, 车场所在城市 }) => ({
-    车场名称: 车场名称 || undefined,
-    车场联系人: 车场联系人 || undefined,
-    联系电话: 联系电话 || undefined,
-    车场状态: isNumber(车场状态) ? `${车场状态}` : undefined,
-    车场所在省份: 车场所在省份 || undefined,
-    车场所在城市: 车场所在城市 || undefined,
+  initialize = ({ parkId, parkName, managerId, managerName, managerPhone, parkStatus }) => ({
+    parkId: parkId || undefined,
+    parkName: parkName || undefined,
+    manager: managerId ? { key: managerId, label: managerName } : undefined,
+    managerPhone: managerPhone || undefined,
+    parkStatus: isNumber(parkStatus) ? `${parkStatus}` : undefined,
   });
 
-  transform = ({ unitId, ...payload }) => {
+  transform = ({ unitId, manager, ...payload }) => {
     return {
-      unitId, // 这里接接口的时候重点关注一下
+      companyId: unitId,
+      managerId: manager && manager.key,
       ...payload,
     };
   };
 
-  getBreadcrumbList = ({ isUnit, unitId, title }) =>
+  getBreadcrumbList = ({ isUnit, title }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车场信息', name: '单位车场信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位车场信息',
+          name: '单位车场信息',
+          href: this.props.route.path.replace(/:unitId.*/, 'list'),
+        },
         {
           title: '车场信息',
           name: '车场信息',
-          href: isUnit ? `${URL_PREFIX}/list` : `${URL_PREFIX}/${unitId}/list`,
+          href: this.props.location.pathname.replace(
+            new RegExp(`${this.props.route.name}.*`),
+            'list'
+          ),
         },
         { title, name: title },
       ].filter(v => v)
     );
 
-  getFields = ({ 车场所在省份 }) => [
+  getFields = ({ unitId, isDetail, isEdit }) => [
+    ...(isDetail || isEdit
+      ? [
+          {
+            id: 'parkId',
+            label: '车场ID',
+            component: 'Text',
+          },
+        ]
+      : []),
     {
-      id: '车场名称',
+      id: 'parkName',
       label: '车场名称',
       required: true,
       component: 'Input',
     },
     {
-      id: '车场联系人',
+      id: 'manager',
       label: '车场联系人',
-      component: 'Input',
+      component: AsyncSelect,
+      props: {
+        fieldNames: FIELDNAMES,
+        mapper: MAPPER2,
+        params: {
+          unitId,
+        },
+        placeholder: '请选择车场联系人',
+        onSelect: this.handleManagerSelect,
+      },
     },
     {
-      id: '联系电话',
+      id: 'managerPhone',
       label: '联系电话',
       component: 'Input',
     },
     {
-      id: '车场状态',
+      id: 'parkStatus',
       label: '车场状态',
       required: true,
       component: 'Switch',
@@ -81,40 +148,35 @@ export default class ParkOther extends Component {
         initialValue: STATUSES[0].key,
       },
     },
-    {
-      id: '车场所在省份',
-      label: '车场所在省份',
-      required: true,
-      refreshEnable: true,
-      component: ProvinceSelect,
-      props: {
-        ref: this.setProvinceSelectReference,
-      },
-    },
-    {
-      id: '车场所在城市',
-      label: '车场所在城市',
-      required: true,
-      component: CitySelect,
-      props: {
-        cityIds: 车场所在省份,
-        focus: this.handleFocus,
-      },
-    },
   ];
 
-  handleFocus = () => {
-    this.provinceSelect && this.provinceSelect.focus();
+  handleManagerSelect = value => {
+    const { phoneNumber } = value || {};
+    this.page &&
+      this.page.form &&
+      this.page.form.setFieldsValue({
+        managerPhone: phoneNumber ? `${phoneNumber}` : undefined,
+      });
   };
 
   render() {
-    const { route, location, match } = this.props;
+    const {
+      route,
+      location,
+      match,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const props = {
+      key: id,
       breadcrumbList: this.getBreadcrumbList,
       fields: this.getFields,
       initialize: this.initialize,
       transform: this.transform,
       mapper: MAPPER,
+      error: 1,
+      ref: this.setPageReference,
       route,
       location,
       match,

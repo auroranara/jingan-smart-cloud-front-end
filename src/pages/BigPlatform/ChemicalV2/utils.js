@@ -1703,7 +1703,7 @@ export const MonitorConfig = {
         render: (val, row) => {
           const { buildingName, floorName, area, location } = row;
           return (
-            <span style={{ fontSize: 16 }}>
+            <span>
               {`${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` ||
                 '暂无数据'}
             </span>

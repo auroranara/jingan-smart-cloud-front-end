@@ -120,7 +120,7 @@ export default class CustomForm extends PureComponent {
 
     return (
       fields &&
-      fields.map(({ id, span = DEFAULT_SPAN, options, render, style, ...restProps }) => (
+      fields.map(({ id, span = DEFAULT_SPAN, options, render, style, transform, ...restProps }) => (
         <Col key={id} {...(typeof span === 'number' ? { span } : span)}>
           <FormItem style={{ ...DEFAULT_STYLE, ...style }} {...restProps}>
             {getFieldDecorator(id, options)(render(this))}
@@ -204,7 +204,10 @@ export default class CustomForm extends PureComponent {
     } = this.props;
 
     return (
-      <Form className={classNames(styles.form, className)} layout={layout}>
+      <Form
+        className={classNames(styles.form, layout === 'vertical' && styles.verticalForm, className)}
+        layout={layout}
+      >
         {mode === 'multiple' ? (
           <Fragment>
             {fields.map(({ key, title, fields: list }) => (

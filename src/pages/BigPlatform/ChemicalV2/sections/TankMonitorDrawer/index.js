@@ -104,7 +104,9 @@ export default class TankMonitorDrawer extends Component {
         monitorParams = [],
         videoList = [],
         meList = [],
-      },
+        area,
+        location,
+      } = {},
       onVideoClick,
     } = this.props;
     const { videoVisible, videoKeyId } = this.state;
@@ -158,7 +160,7 @@ export default class TankMonitorDrawer extends Component {
           <div className={styles.line}>
             <div className={styles.label}>区域位置：</div>
             <div className={styles.value}>
-              {buildingName ? buildingName + (floorName || '') : areaName || '暂无'}
+              {`${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` || '暂无'}
             </div>
           </div>
         </div>

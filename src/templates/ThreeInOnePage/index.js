@@ -83,6 +83,7 @@ const STYLE = {
       isAdd: name === 'add',
       isNotDetail: name !== 'detail',
       isEdit: name === 'edit',
+      isDetail: name === 'detail',
       hasEditAuthority: permissionCodes.includes(code.replace(name, 'edit')),
     };
   },
@@ -101,8 +102,8 @@ const STYLE = {
     const { namespace: n, detail: d, getDetail: gd, edit: e, add: a, save: s } = mapper || {};
     const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     return {
-      getDetail(payload, callback) {
-        if (id) {
+      getDetail(payload, callback, hack) {
+        if (id || hack) {
           dispatch({
             type: `${namespace}/${gd || 'getDetail'}`,
             payload: {
@@ -138,7 +139,9 @@ const STYLE = {
               message.success(`${id ? '编辑' : '新增'}成功！`);
               router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
             } else if (error) {
-              message.error(`${id ? '编辑' : '新增'}失败，请稍后重试或联系管理人员！`);
+              message.error(
+                `${id ? '编辑' : '新增'}失败，${error === 1 ? data : '请稍后重试或联系管理人员'}！`
+              );
             }
             callback && callback(success, data);
           },
@@ -165,18 +168,22 @@ export default class ThreeInOnePage extends Component {
   };
 
   componentDidMount() {
-    const { getDetail, setDetail, initialize } = this.props;
+    const { getDetail, setDetail, initialize, hack } = this.props;
     setDetail();
-    getDetail(undefined, (success, data) => {
-      if (success) {
-        this.setState(
-          {
-            initialValues: initialize ? initialize(data) : data,
-          },
-          this.refresh
-        );
-      }
-    });
+    getDetail(
+      undefined,
+      (success, data) => {
+        if (success) {
+          this.setState(
+            {
+              initialValues: initialize ? initialize(data) : data,
+            },
+            this.refresh
+          );
+        }
+      },
+      hack
+    );
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -368,7 +375,6 @@ export default class ThreeInOnePage extends Component {
               <SwitchOrSpan
                 type={isNotDetail || 'span'}
                 {...props}
-                className={classNames(styles.switch, props && props.className)}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
             );
@@ -426,6 +432,9 @@ export default class ThreeInOnePage extends Component {
       fields,
       editEnable = true,
       isNotDetail,
+      isAdd,
+      isEdit,
+      isDetail,
       hasEditAuthority,
       detail = {},
       unitId,
@@ -434,7 +443,13 @@ export default class ThreeInOnePage extends Component {
     } = this.props;
     const { submitting } = this.state;
     const showEdit = typeof editEnable === 'function' ? editEnable(detail) : editEnable;
-    const values = { unitId, ...(this.form && this.form.getFieldsValue()) }; // 这里有问题，但是不知道怎么解决
+    const values = {
+      unitId,
+      isAdd,
+      isEdit,
+      isDetail,
+      ...(this.form && this.form.getFieldsValue()),
+    }; // 这里有问题，但是不知道怎么解决
     let Fields = typeof fields === 'function' ? fields(values) : fields;
     const callback = (result, { id, component, fields }) => {
       if (fields) {
@@ -463,7 +478,6 @@ export default class ThreeInOnePage extends Component {
       >
         <Spin spinning={loading}>
           <CustomForm
-            className={isNotDetail && layout === 'vertical' ? styles.form : undefined}
             mode="multiple"
             layout={isNotDetail ? layout : undefined}
             fields={Fields}

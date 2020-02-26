@@ -10,8 +10,16 @@ import { connect } from 'dva';
 import styles from './index.less';
 const { Meta } = Card;
 
-export const URL_PREFIX = '/license-plate-recognition-system/vehicle-management/index';
 export const STATUSES = [{ key: '1', value: '正常' }, { key: '0', value: '停用' }];
+export const VEHICLE_TYPES = [{ key: '0', value: '小车' }, { key: '1', value: '大车' }];
+export const LICENCE_PLATE_TYPES = [
+  { key: '0', value: '临时车' },
+  { key: '1', value: '月租车' },
+  { key: '2', value: '充值车' },
+  { key: '3', value: '贵宾车' },
+  { key: '4', value: '免费车' },
+  { key: '8', value: '收费月租车' },
+];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员在岗在位管理', name: '人员在岗在位管理' },
@@ -24,6 +32,11 @@ const MAPPER = {
   getList: 'getVehicleList',
   remove: 'deleteVehicle',
   reloadList: 'reloadVehicleList',
+};
+const COMPANY_MAPPER = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'vehicleCompanyList',
+  getList: 'getVehicleCompanyList',
 };
 
 @connect(({ user }) => ({
@@ -40,10 +53,19 @@ export default class VehicleList extends Component {
     );
   }
 
+  transform = ({ unitId, ...props }) => ({
+    companyId: unitId, // 这个接接口时重点关注一下
+    ...props,
+  });
+
   getBreadcrumbList = ({ isUnit }) =>
     BREADCRUMB_LIST.concat(
       [
-        !isUnit && { title: '单位车辆信息', name: '单位车辆信息', href: `${URL_PREFIX}/list` },
+        !isUnit && {
+          title: '单位车辆信息',
+          name: '单位车辆信息',
+          href: this.props.route.path.replace(/\/:[^\/]*/g, ''),
+        },
         { title: '车辆信息', name: '车辆信息' },
       ].filter(v => v)
     );
@@ -64,7 +86,7 @@ export default class VehicleList extends Component {
     //   ),
     // },
     {
-      id: 'number',
+      id: 'carNumber',
       transform: v => v.trim(),
       render: ({ onSearch }) => (
         <Input placeholder="请输入车牌号" maxLength={50} onPressEnter={onSearch} />
@@ -76,28 +98,27 @@ export default class VehicleList extends Component {
     },
   ];
 
-  getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车辆' });
+  // getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车辆' });
 
   renderItem = (
-    {
-      id,
-      licencePlate = '苏B1234',
-      brand,
-      model,
-      name,
-      phone,
-      status = '1',
-      image = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    },
+    { id, carNumber, carType, cardType, carUserName, carUserTel, status },
     { renderDetailButton, renderEditButton, renderDeleteButton }
   ) => {
+    const vehicleType = (VEHICLE_TYPES.find(({ key }) => key === `${carType}`) || {}).value;
+    const licensePlateType = (LICENCE_PLATE_TYPES.find(({ key }) => key === `${cardType}`) || {})
+      .value;
     return (
       <Card
+        title={
+          <Ellipsis className={styles.ellipsis} lines={1} tooltip>
+            {carNumber}
+          </Ellipsis>
+        }
         className={styles.card}
-        actions={[renderDetailButton(id), renderEditButton(id), renderDeleteButton(id)]}
+        // actions={[renderDetailButton(id), renderEditButton(id), renderDeleteButton(id)]}
         hoverable
       >
-        <Meta
+        {/* <Meta
           avatar={
             <img
               className={styles.avatar}
@@ -108,17 +129,17 @@ export default class VehicleList extends Component {
           }
           title={
             <Ellipsis className={styles.ellipsis} lines={1} tooltip>
-              {licencePlate}
+              {carNumber}
             </Ellipsis>
           }
           description={
             <div className={styles.cardContent}>
               <div className={styles.cardRow}>
-                <div>品牌：</div>
+                <div>车辆类型：</div>
                 <div>
-                  {brand ? (
+                  {vehicleType ? (
                     <Ellipsis lines={1} tooltip>
-                      {brand}
+                      {vehicleType}
                     </Ellipsis>
                   ) : (
                     <EmptyData />
@@ -126,11 +147,11 @@ export default class VehicleList extends Component {
                 </div>
               </div>
               <div className={styles.cardRow}>
-                <div>型号：</div>
+                <div>车牌类型：</div>
                 <div>
-                  {model ? (
+                  {licensePlateType ? (
                     <Ellipsis lines={1} tooltip>
-                      {model}
+                      {licensePlateType}
                     </Ellipsis>
                   ) : (
                     <EmptyData />
@@ -140,9 +161,9 @@ export default class VehicleList extends Component {
               <div className={styles.cardRow}>
                 <div>驾驶员：</div>
                 <div>
-                  {name ? (
+                  {carUserName ? (
                     <Ellipsis lines={1} tooltip>
-                      {name}
+                      {carUserName}
                     </Ellipsis>
                   ) : (
                     <EmptyData />
@@ -152,9 +173,9 @@ export default class VehicleList extends Component {
               <div className={styles.cardRow}>
                 <div>联系电话：</div>
                 <div>
-                  {phone ? (
+                  {carUserTel ? (
                     <Ellipsis lines={1} tooltip>
-                      {phone}
+                      {carUserTel}
                     </Ellipsis>
                   ) : (
                     <EmptyData />
@@ -163,7 +184,57 @@ export default class VehicleList extends Component {
               </div>
             </div>
           }
-        />
+        /> */}
+        <div className={styles.cardContent}>
+          <div className={styles.cardRow}>
+            <div>车辆类型：</div>
+            <div>
+              {vehicleType ? (
+                <Ellipsis lines={1} tooltip>
+                  {vehicleType}
+                </Ellipsis>
+              ) : (
+                <EmptyData />
+              )}
+            </div>
+          </div>
+          <div className={styles.cardRow}>
+            <div>车牌类型：</div>
+            <div>
+              {licensePlateType ? (
+                <Ellipsis lines={1} tooltip>
+                  {licensePlateType}
+                </Ellipsis>
+              ) : (
+                <EmptyData />
+              )}
+            </div>
+          </div>
+          <div className={styles.cardRow}>
+            <div>驾驶员：</div>
+            <div>
+              {carUserName ? (
+                <Ellipsis lines={1} tooltip>
+                  {carUserName}
+                </Ellipsis>
+              ) : (
+                <EmptyData />
+              )}
+            </div>
+          </div>
+          <div className={styles.cardRow}>
+            <div>联系电话：</div>
+            <div>
+              {carUserTel ? (
+                <Ellipsis lines={1} tooltip>
+                  {carUserTel}
+                </Ellipsis>
+              ) : (
+                <EmptyData />
+              )}
+            </div>
+          </div>
+        </div>
         <SelectOrSpan
           className={styles.statusLabel}
           style={{ backgroundColor: status > 0 ? '#1890ff' : '#d9d9d9' }}
@@ -194,12 +265,15 @@ export default class VehicleList extends Component {
 
     return unitType === 4 || unitId ? (
       <ListPage
+        key={unitId}
         breadcrumbList={this.getBreadcrumbList}
         content={this.getContent}
         fields={this.getFields}
         action={this.getAction}
         renderItem={this.renderItem}
+        transform={this.transform}
         mapper={MAPPER}
+        withUnitId
         {...props}
       >
         <ImagePreview images={images} />
@@ -207,11 +281,12 @@ export default class VehicleList extends Component {
     ) : (
       <Company
         name="车辆"
-        urlPrefix={URL_PREFIX}
         breadcrumbList={BREADCRUMB_LIST.concat({
           title: '单位车辆信息',
           name: '单位车辆信息',
         })}
+        mapper={COMPANY_MAPPER}
+        addEnable={false}
         {...props}
       />
     );

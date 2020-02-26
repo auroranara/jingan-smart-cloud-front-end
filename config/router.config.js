@@ -4402,45 +4402,45 @@ module.exports = env => {
                     },
                   ],
                 },
-                // 区域管理
-                {
-                  path: '/license-plate-recognition-system/park-management/area',
-                  code: 'licensePlateRecognitionSystem.parkManagement.area',
-                  name: 'area',
-                  hideChildrenInMenu: true,
-                  routes: [
-                    {
-                      path: '/license-plate-recognition-system/park-management/area',
-                      redirect: '/license-plate-recognition-system/park-management/area/list',
-                    },
-                    {
-                      path: '/license-plate-recognition-system/park-management/area/:unitId?/list',
-                      code: 'licensePlateRecognitionSystem.parkManagement.area.list',
-                      name: 'list',
-                      component: './LicensePlateRecognitionSystem/AreaManagement/List',
-                    },
-                    {
-                      path: '/license-plate-recognition-system/park-management/area/:unitId?/add',
-                      code: 'licensePlateRecognitionSystem.parkManagement.area.add',
-                      name: 'add',
-                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
-                    },
-                    {
-                      path:
-                        '/license-plate-recognition-system/park-management/area/:unitId?/detail/:id',
-                      code: 'licensePlateRecognitionSystem.parkManagement.area.detail',
-                      name: 'detail',
-                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
-                    },
-                    {
-                      path:
-                        '/license-plate-recognition-system/park-management/area/:unitId?/edit/:id',
-                      code: 'licensePlateRecognitionSystem.parkManagement.area.edit',
-                      name: 'edit',
-                      component: './LicensePlateRecognitionSystem/AreaManagement/Other',
-                    },
-                  ],
-                },
+                // // 区域管理
+                // {
+                //   path: '/license-plate-recognition-system/park-management/area',
+                //   code: 'licensePlateRecognitionSystem.parkManagement.area',
+                //   name: 'area',
+                //   hideChildrenInMenu: true,
+                //   routes: [
+                //     {
+                //       path: '/license-plate-recognition-system/park-management/area',
+                //       redirect: '/license-plate-recognition-system/park-management/area/list',
+                //     },
+                //     {
+                //       path: '/license-plate-recognition-system/park-management/area/:unitId?/list',
+                //       code: 'licensePlateRecognitionSystem.parkManagement.area.list',
+                //       name: 'list',
+                //       component: './LicensePlateRecognitionSystem/AreaManagement/List',
+                //     },
+                //     {
+                //       path: '/license-plate-recognition-system/park-management/area/:unitId?/add',
+                //       code: 'licensePlateRecognitionSystem.parkManagement.area.add',
+                //       name: 'add',
+                //       component: './LicensePlateRecognitionSystem/AreaManagement/Other',
+                //     },
+                //     {
+                //       path:
+                //         '/license-plate-recognition-system/park-management/area/:unitId?/detail/:id',
+                //       code: 'licensePlateRecognitionSystem.parkManagement.area.detail',
+                //       name: 'detail',
+                //       component: './LicensePlateRecognitionSystem/AreaManagement/Other',
+                //     },
+                //     {
+                //       path:
+                //         '/license-plate-recognition-system/park-management/area/:unitId?/edit/:id',
+                //       code: 'licensePlateRecognitionSystem.parkManagement.area.edit',
+                //       name: 'edit',
+                //       component: './LicensePlateRecognitionSystem/AreaManagement/Other',
+                //     },
+                //   ],
+                // },
                 // 通道管理
                 {
                   path: '/license-plate-recognition-system/park-management/channel',
@@ -4482,48 +4482,173 @@ module.exports = env => {
                     },
                   ],
                 },
-                // 设备管理
+                // // 设备管理
+                // {
+                //   path: '/license-plate-recognition-system/park-management/device',
+                //   code: 'licensePlateRecognitionSystem.parkManagement.device',
+                //   name: 'device',
+                //   hideChildrenInMenu: true,
+                //   routes: [
+                //     {
+                //       path: '/license-plate-recognition-system/park-management/device',
+                //       redirect: '/license-plate-recognition-system/park-management/device/list',
+                //     },
+                //     {
+                //       path:
+                //         '/license-plate-recognition-system/park-management/device/:unitId?/list',
+                //       code: 'licensePlateRecognitionSystem.parkManagement.device.list',
+                //       name: 'list',
+                //       component: './LicensePlateRecognitionSystem/DeviceManagement/List',
+                //     },
+                //     {
+                //       path: '/license-plate-recognition-system/park-management/device/:unitId?/add',
+                //       code: 'licensePlateRecognitionSystem.parkManagement.device.add',
+                //       name: 'add',
+                //       component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
+                //     },
+                //     {
+                //       path:
+                //         '/license-plate-recognition-system/park-management/device/:unitId?/detail/:id',
+                //       code: 'licensePlateRecognitionSystem.parkManagement.device.detail',
+                //       name: 'detail',
+                //       component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
+                //     },
+                //     {
+                //       path:
+                //         '/license-plate-recognition-system/park-management/device/:unitId?/edit/:id',
+                //       code: 'licensePlateRecognitionSystem.parkManagement.device.edit',
+                //       name: 'edit',
+                //       component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
+                //     },
+                //   ],
+                // },
+              ],
+            },
+            // // 参数配置
+            // {
+            //   path: '/license-plate-recognition-system/config',
+            //   code: 'licensePlateRecognitionSystem.config',
+            //   name: 'config',
+            //   routes: [
+            //     {
+            //       path: '/license-plate-recognition-system/config',
+            //       redirect: '/license-plate-recognition-system/config/display-and-voice',
+            //     },
+            //     {
+            //       path: '/license-plate-recognition-system/config/:unitId?/display-and-voice',
+            //       code: 'licensePlateRecognitionSystem.config.displayAndVoice',
+            //       name: 'displayAndVoice',
+            //       component: './LicensePlateRecognitionSystem/Config/DisplayAndVoice',
+            //     },
+            //   ],
+            // },
+            // 报表查询
+            {
+              path: '/license-plate-recognition-system/report',
+              code: 'licensePlateRecognitionSystem.report',
+              name: 'report',
+              routes: [
                 {
-                  path: '/license-plate-recognition-system/park-management/device',
-                  code: 'licensePlateRecognitionSystem.parkManagement.device',
-                  name: 'device',
-                  hideChildrenInMenu: true,
-                  routes: [
-                    {
-                      path: '/license-plate-recognition-system/park-management/device',
-                      redirect: '/license-plate-recognition-system/park-management/device/list',
-                    },
-                    {
-                      path:
-                        '/license-plate-recognition-system/park-management/device/:unitId?/list',
-                      code: 'licensePlateRecognitionSystem.parkManagement.device.list',
-                      name: 'list',
-                      component: './LicensePlateRecognitionSystem/DeviceManagement/List',
-                    },
-                    {
-                      path: '/license-plate-recognition-system/park-management/device/:unitId?/add',
-                      code: 'licensePlateRecognitionSystem.parkManagement.device.add',
-                      name: 'add',
-                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
-                    },
-                    {
-                      path:
-                        '/license-plate-recognition-system/park-management/device/:unitId?/detail/:id',
-                      code: 'licensePlateRecognitionSystem.parkManagement.device.detail',
-                      name: 'detail',
-                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
-                    },
-                    {
-                      path:
-                        '/license-plate-recognition-system/park-management/device/:unitId?/edit/:id',
-                      code: 'licensePlateRecognitionSystem.parkManagement.device.edit',
-                      name: 'edit',
-                      component: './LicensePlateRecognitionSystem/DeviceManagement/Other',
-                    },
-                  ],
+                  path: '/license-plate-recognition-system/report',
+                  redirect: '/license-plate-recognition-system/report/presence-record',
+                },
+                {
+                  path: '/license-plate-recognition-system/report/:unitId?/presence-record',
+                  code: 'licensePlateRecognitionSystem.report.presenceRecord.list',
+                  name: 'presenceRecord',
+                  component: './LicensePlateRecognitionSystem/Report/PresenceRecord',
+                },
+                {
+                  path: '/license-plate-recognition-system/report/:unitId?/abnormal-record',
+                  code: 'licensePlateRecognitionSystem.report.abnormalRecord.list',
+                  name: 'abnormalRecord',
+                  component: './LicensePlateRecognitionSystem/Report/AbnormalRecord',
                 },
               ],
             },
+            // // 通道状态
+            // {
+            //   path: '/license-plate-recognition-system/channel-status',
+            //   code: 'licensePlateRecognitionSystem.channelStatus',
+            //   name: 'channelStatus',
+            //   routes: [
+            //     {
+            //       path: '/license-plate-recognition-system/channel-status',
+            //       redirect: '/license-plate-recognition-system/channel-status/channel-monitor',
+            //     },
+            //     {
+            //       path: '/license-plate-recognition-system/channel-status/:unitId?/channel-monitor',
+            //       code: 'licensePlateRecognitionSystem.channelStatus.channelMonitor',
+            //       name: 'channelMonitor',
+            //       component: './LicensePlateRecognitionSystem/ChannelStatus/ChannelMonitor',
+            //     },
+            //   ],
+            // },
+          ],
+        },
+        {
+          path: '/real-name-certification', // 实名制认证系统
+          code: 'realNameCertification',
+          icon: 'tag',
+          name: 'realNameCertification',
+          systemType: 3,
+          routes: [
+            {
+              name: 'personnelManagement', // 人员管理
+              code: 'realNameCertification.personnelManagement',
+              path: '/real-name-certification/personnel-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/personnel-management',
+                  redirect: '/real-name-certification/personnel-management/company-list',
+                },
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/personnel-management/company-list',
+                  code: 'realNameCertification.personnelManagement',
+                  component: './RealNameCertification/Person/CompanyList',
+                },
+                {
+                  name: 'personnelList',
+                  path: '/real-name-certification/personnel-management/person-list/:companyId',
+                  code: 'realNameCertification.personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelList',
+                },
+                {
+                  name: 'add',
+                  path: '/real-name-certification/personnel-management/add',
+                  code: 'realNameCertification.personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelAdd',
+                },
+                {
+                  name: 'edit',
+                  path: '/real-name-certification/personnel-management/edit/:id',
+                  code: 'realNameCertification.personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelAdd',
+                },
+              ],
+            },
+            // {
+            //   name: 'deviceManagement', // 设备管理
+            //   path: '/real-name-certification/device-management',
+            //   code: 'realNameCertification.deviceManagement',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path:'/real-name-certification/device-management',
+            //       name:'list',
+            //       redirect:'/real-name-certification/device-management/list',
+            //     },
+            //     {
+            //       path:'/real-name-certification/device-management/list',
+            //       name:'list',
+            //       code:'realNameCertification.deviceManagement',
+            //       component:'./RealNameCertification/Device/List',
+            //     },
+            //   ],
+            // },
           ],
         },
       ],

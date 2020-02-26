@@ -135,7 +135,10 @@ export default class EquipCard extends PureComponent {
                 condition,
                 limitValueStr,
                 fixType,
+                linkStatusUpdateTime,
+                linkStatus,
               } = item;
+              const updateTime = +linkStatus === -1 ? linkStatusUpdateTime : dataUpdateTime;
               return (
                 <div className={styles.paramsWrapper} key={index}>
                   <div
@@ -163,7 +166,7 @@ export default class EquipCard extends PureComponent {
                           className={styles.value}
                           style={{ color: +status > 0 ? '#ff4848' : '#11B409' }}
                         >
-                          {`${STATUS[+status]}${
+                          {`${+fixType === 5 ? '火警' : STATUS[+status]}${
                             condition && limitValueStr && +fixType !== 5
                               ? `(${transformCondition(condition)}${limitValueStr})`
                               : ''
@@ -173,7 +176,7 @@ export default class EquipCard extends PureComponent {
                     </div>
                     <div className={styles.updateTime}>
                       更新时间：
-                      {dataUpdateTime ? moment(dataUpdateTime).format(DEFAULT_FORMAT) : NO_DATA}
+                      {updateTime ? moment(updateTime).format(DEFAULT_FORMAT) : NO_DATA}
                     </div>
                   </div>
                 </div>

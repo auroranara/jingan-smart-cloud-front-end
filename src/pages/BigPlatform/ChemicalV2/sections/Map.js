@@ -637,14 +637,16 @@ export default class Map extends PureComponent {
           }}
           onClick={this.handlePosition}
         />
-        <NewVideoPlay
-          showList={true}
-          videoList={videoList.map(item => ({ ...item, key_id: item.keyId }))}
-          visible={videoVisible}
-          keyId={keyId} // keyId
-          handleVideoClose={() => this.setState({ videoVisible: false })}
-          isTree={false}
-        />
+        {videoVisible && (
+          <NewVideoPlay
+            showList={true}
+            videoList={videoList.map(item => ({ ...item, key_id: item.keyId }))}
+            visible={videoVisible}
+            keyId={keyId} // keyId
+            handleVideoClose={() => this.setState({ videoVisible: false })}
+            isTree={false}
+          />
+        )}
       </div>
     );
   }
