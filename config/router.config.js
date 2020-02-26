@@ -4526,6 +4526,71 @@ module.exports = env => {
             },
           ],
         },
+        {
+          path: '/real-name-certification', // 实名制认证系统
+          code: 'realNameCertification',
+          icon: 'tag',
+          name: 'realNameCertification',
+          systemType: 3,
+          routes: [
+            {
+              name: 'personnelManagement', // 人员管理
+              code: 'realNameCertification.personnelManagement',
+              path: '/real-name-certification/personnel-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/personnel-management',
+                  redirect: '/real-name-certification/personnel-management/company-list',
+                },
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/personnel-management/company-list',
+                  code: 'realNameCertification.personnelManagement',
+                  component: './RealNameCertification/Person/CompanyList',
+                },
+                {
+                  name: 'personnelList',
+                  path: '/real-name-certification/personnel-management/person-list/:companyId',
+                  code: 'realNameCertification.personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelList',
+                },
+                {
+                  name: 'add',
+                  path: '/real-name-certification/personnel-management/add',
+                  code: 'realNameCertification.personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelAdd',
+                },
+                {
+                  name: 'edit',
+                  path: '/real-name-certification/personnel-management/edit/:id',
+                  code: 'realNameCertification.personnelManagement',
+                  component: './RealNameCertification/Person/PersonnelAdd',
+                },
+              ],
+            },
+            // {
+            //   name: 'deviceManagement', // 设备管理
+            //   path: '/real-name-certification/device-management',
+            //   code: 'realNameCertification.deviceManagement',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path:'/real-name-certification/device-management',
+            //       name:'list',
+            //       redirect:'/real-name-certification/device-management/list',
+            //     },
+            //     {
+            //       path:'/real-name-certification/device-management/list',
+            //       name:'list',
+            //       code:'realNameCertification.deviceManagement',
+            //       component:'./RealNameCertification/Device/List',
+            //     },
+            //   ],
+            // },
+          ],
+        },
       ],
     },
   ];
