@@ -478,6 +478,7 @@ export default class Chemical extends PureComponent {
         fixType,
         monitorEquipmentType,
         installAddress,
+        monitorEquipmentId,
       },
     } = data;
     if (+statusType !== -1) return;
@@ -509,7 +510,10 @@ export default class Chemical extends PureComponent {
         >{`${typeName}提示`}</div>
       ),
       description: (
-        <div className={styles.notificationBody}>
+        <div
+          className={styles.notificationBody}
+          onClick={() => this.handleClickMsgEquip(monitorEquipmentId)}
+        >
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
           <div>{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
           {[-1].includes(+statusType) &&
@@ -965,7 +969,7 @@ export default class Chemical extends PureComponent {
     if (!MonitorConfig[monitorType]) return;
     dispatch({
       type: 'chemical/fetchMonitorData',
-      payload: { companyId, pageSize: 0, pageNum: 1, monitorType, hasMonitor: true, id },
+      payload: { companyId, pageSize: 0, pageNum: 1, monitorType, id },
       callback: res => {
         if (!res || !res.data) return;
         const {
@@ -1365,6 +1369,8 @@ export default class Chemical extends PureComponent {
       return prev;
     }, []);
 
+    console.log('videoVisible', videoVisible);
+
     return (
       <BigPlatformLayout
         title="五位一体信息化管理平台"
@@ -1757,7 +1763,7 @@ export default class Chemical extends PureComponent {
           handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
         />
 
-        {/* 监测设备弹窗 */}
+        {/* IoT监测设备弹窗 */}
         <IoTMonitorDrawer
           visible={IoTMonitorDrawerVisible}
           onClose={() => {
@@ -1778,7 +1784,6 @@ export default class Chemical extends PureComponent {
           selectedEquip={selectedEquip}
           list={fireDeviceList}
           handleShowVideo={this.handleShowVideo}
-          handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
         />
 
         <GasListDrawer

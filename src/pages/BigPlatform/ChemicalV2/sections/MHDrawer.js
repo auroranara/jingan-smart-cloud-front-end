@@ -31,7 +31,7 @@ export default class PoisonDrawer extends PureComponent {
         onClose={handleClose}
         zIndex={1322}
         width={535}
-        destroyOnClose={true}
+        // destroyOnClose={true}
       >
         <div className={styles.head}>
           <p>

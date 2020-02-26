@@ -56,7 +56,8 @@ export default class TypeCard extends PureComponent {
       304: [
         name,
         position,
-        `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` || NO_DATA,
+        // `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` || NO_DATA,
+        aname || NO_DATA,
       ],
       302: [tankName, number, aname],
       311: [name, location, +keyDevice === 1 ? '是' : '否', pressure],

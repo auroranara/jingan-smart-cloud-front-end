@@ -38,7 +38,7 @@ export default class MonitorDetailDrawer extends Component {
       loading = false,
       monitorType,
       monitorDetail,
-      monitorDetail: { emergencyMeasure, monitorParams = [], videoList = [], meList = [] },
+      monitorDetail: { emergencyMeasure, monitorParams = [], videoList = [], meList = [] } = {},
       onVideoClick,
     } = this.props;
     const { title = '', fields = [], icon } = MonitorConfig[monitorType] || {};

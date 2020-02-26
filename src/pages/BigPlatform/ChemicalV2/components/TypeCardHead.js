@@ -35,11 +35,11 @@ export default class TypeCardHead extends PureComponent {
         break;
       case 312:
         // 气柜
-        url = 'major-hazard-info/gasometer/edit';
+        url = 'major-hazard-info/gasometer/detail';
         break;
       case 314:
         // 管道
-        url = 'major-hazard-info/pipeline';
+        url = 'major-hazard-info/pipeline/detail';
         break;
       default:
         url = 'major-hazard-info/storage-management/edit';

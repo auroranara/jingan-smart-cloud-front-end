@@ -104,7 +104,7 @@ export default class TankMonitorDrawer extends Component {
         monitorParams = [],
         videoList = [],
         meList = [],
-      },
+      } = {},
       onVideoClick,
     } = this.props;
     const { videoVisible, videoKeyId } = this.state;
