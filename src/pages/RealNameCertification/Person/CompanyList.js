@@ -95,10 +95,10 @@ export default class CompanyList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const values = getFieldsValue();
-    dispatch({
-      type: 'realNameCertification/fetchCompanyList',
-      payload: { ...payload, ...values },
-    });
+    // dispatch({
+    //   type: 'realNameCertification/fetchCompanyList',
+    //   payload: { ...payload, ...values },
+    // });
   }
 
   handleLoadMore = () => {
@@ -187,25 +187,27 @@ export default class CompanyList extends PureComponent {
     } = this.props;
     return (
       <Card>
-        <Form layout="inline">
-          <FormItem>
-            {getFieldDecorator('companyName')(
-              <Input placeholder="单位名称" />
-            )}
-          </FormItem>
-          <FormItem>
-            <Button type="primary" onClick={() => this.handleQuery()}>
-              查询
-            </Button>
-          </FormItem>
-          <FormItem>
-            <Button onClick={this.handleReset}>重置</Button>
-          </FormItem>
-          <FormItem>
-            <Button type="primary" onClick={this.handleViewAdd}>
-              新增单位人员
-            </Button>
-          </FormItem>
+        <Form>
+          <Row gutter={16}>
+            <Col lg={8} md={12} sm={24} xs={24}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                {getFieldDecorator('companyName')(
+                  <Input placeholder="单位名称" />
+                )}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24} xs={24}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
+                  查询
+                </Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
+                <Button type="primary" onClick={this.handleViewAdd}>
+                  新增单位人员
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Card>
     )
@@ -231,7 +233,7 @@ export default class CompanyList extends PureComponent {
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
-          rowKey="id"
+          rowKey="companyId"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {

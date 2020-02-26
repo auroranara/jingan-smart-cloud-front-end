@@ -15,8 +15,73 @@ const defaultData = {
 export default {
   namespace: 'realNameCertification',
   state: {
-    company: defaultData, // 单位数据
-    person: defaultData, // 人员数据
+    // 单位数据
+    company: {
+      list: [
+        {
+          companyId: "DccBRhlrSiu9gMV7fmvizw",
+          count: 1,
+          companyMessage: {
+            name: '无锡晶安智慧科技有限公司',
+            safetyName: '张丽',
+            safetyPhone: '13852145201',
+            practicalProvinceLabel: '江苏省',
+            practicalCityLabel: '无锡市',
+            practicalDistrictLabel: '市辖区',
+            practicalTownLabel: null,
+            practicalAddress: null,
+          },
+        },
+      ],
+      pagination: { pageNum: 1, pageSize: 18, total: 1 },
+      isLast: true,
+    },
+    // 人员数据
+    person: {
+      list: [
+        {
+          id: "31ud_u2b79jsdhdq",
+          remarks: null,
+          companyId: "DccBRhlrSiu9gMV7fmvizw",
+          name: "测试",
+          sex: "0",
+          ethnic: "汉",
+          certificateType: "汉",
+          certificateNumber: null,
+          birthday: null,
+          location: null,
+          address: null,
+          telephone: "13815205588",
+          email: null,
+          personType: "1",
+          personCompany: "测试单位",
+          duty: "1",
+          workType: null,
+          education: "0",
+          major: null,
+          icnumber: "202002260913",
+          entranceNumber: "1413052022",
+          photo: "yaqj666bxokdt1pa",
+          educationCertificate: "",
+          guid: "67BB1EE3F0844928BA32BD8BB496A3F7",
+          photoDetails: [
+            {
+              id: "yaqj666bxokdt1pa",
+              remarks: null,
+              dbUrl: "@@IPEXP_IMP_FILES_WEB/gsafe/realname/200225-165746-eg6v.jpg",
+              fileName: "人脸照片.jpg",
+              webUrl: "http://data.jingan-china.cn/hello/gsafe/realname/200225-165746-eg6v.jpg",
+              photoGuid: "C7625D0C7FA64405B85CA0CAEB9B9025",
+              name: "人脸照片.jpg",
+            },
+          ],
+          educationCertificateDetails: [],
+          companyName: "无锡晶安智慧科技有限公司",
+        },
+      ],
+      pagination: { pageNum: 1, pageSize: 18, total: 1 },
+      isLast: true,
+    },
     personTypeDict: [ // 人员类型字典
       { key: '1', label: '员工' },
       { key: '2', label: '外协人员' },
