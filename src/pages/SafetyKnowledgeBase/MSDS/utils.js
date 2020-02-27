@@ -81,11 +81,13 @@ function genFormItem(field, getFieldDecorator) {
     component: compt,
     formExtraStyle,
     wrapperClassName,
+    onChange,
   } = field;
 
   let child = null;
 
-  if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
+  if (type === 'component') child = compt;
+  // 不经过getFieldDecorator包裹
   else {
     const formOptions = formItemOptions || {};
     const opts = getOptions(options);
@@ -105,7 +107,7 @@ function genFormItem(field, getFieldDecorator) {
       case 'select':
         placeholder = placeholder || `请选择${label}`;
         component = (
-          <Select placeholder={placeholder} disabled={disabled} allowClear>
+          <Select placeholder={placeholder} disabled={disabled} onChange={onChange} allowClear>
             {opts.map(({ key, value }) => (
               <Option key={key}>{value}</Option>
             ))}
@@ -227,14 +229,14 @@ export function convertSections(secs, detail) {
         type: 'component',
         component: options ? findValueInOptions(value, options) : showValue,
       };
-      if (Array.isArray(options))
-        field.options = options;
+      if (Array.isArray(options)) field.options = options;
       return field;
     }),
-  }))
+  }));
 }
 
-function findValueInOptions(value, options) { // 暂时只有一种，字符串数组，以后有其他的在添加
+function findValueInOptions(value, options) {
+  // 暂时只有一种，字符串数组，以后有其他的在添加
   return options[value];
 }
 
