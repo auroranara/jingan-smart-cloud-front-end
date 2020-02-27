@@ -52,10 +52,10 @@ export default class TableList extends PureComponent {
       targetId: '', // 所选指标id
       dutyMajorId: '', // 所选部门id
       isOpen: false, // 控制日期(年份)面板是否打开
-      departTime: '',
+      yearDateVal: undefined,
+      monthDateVal: undefined,
+      quarterDateVal: undefined,
       departIndex: '',
-      departMonth: '',
-      departQuaeter: '',
       chartLineList: [],
       indexSelect: undefined,
       departSelect: undefined,
@@ -123,6 +123,7 @@ export default class TableList extends PureComponent {
 
   // 各指标变化趋势
   fetchGoalChange = (id, departId, callback) => {
+    const { typeIndex } = this.state;
     const {
       dispatch,
       match: {
@@ -135,6 +136,7 @@ export default class TableList extends PureComponent {
         companyId,
         targetId: id,
         dutyMajorId: departId,
+        checkFrequency: typeIndex,
       },
       callback: callback,
     });
@@ -179,6 +181,7 @@ export default class TableList extends PureComponent {
         companyId: id,
         pageSize: 24,
         pageNum: 1,
+        goalYear: moment().format('YYYY'),
       },
     });
   };
@@ -197,7 +200,7 @@ export default class TableList extends PureComponent {
       nowQuarterGoal,
       previousYearGoal,
       previousQuarterGoal,
-      previousMontnGoal,
+      previousMonthGoal,
     } = mQYData;
     return (
       <div className={styles.firstSection}>
@@ -221,7 +224,7 @@ export default class TableList extends PureComponent {
                 )}
               </span>
               <span className={previousMonthFlag === '0' ? styles.number : styles.numbers}>
-                {previousMontnGoal}
+                {previousMonthGoal}
               </span>
               <span className={styles.write}>同比上月</span>
             </div>
@@ -268,7 +271,7 @@ export default class TableList extends PureComponent {
   // 部门指标时间选择
   handleRadioChange = e => {
     const mode = e.target.value;
-    this.setState({ type: mode, depatIndexSelect: undefined });
+    this.setState({ type: mode, depatIndexSelect: undefined, departIndex: '' });
     this.fetchIndexList(mode);
   };
 
@@ -284,38 +287,49 @@ export default class TableList extends PureComponent {
     const { departIndex } = this.state;
     const yDate = moment(v).format('YYYY');
     this.fetchUnitPartGoal(yDate, departIndex);
-    this.setState({ departTime: v, isOpen: false });
+    this.setState({ yearDateVal: v, isOpen: false });
   };
 
   // 清空日期选择框
   clearDateValue = d => {
-    this.setState({ departTime: null });
+    this.setState({ yearDateVal: null });
   };
 
   handleMonthChange = m => {
     const { departIndex } = this.state;
     const mDate = moment(m).format('YYYY-MM');
-    this.fetchUnitPartGoal(mDate, departIndex);
-    this.setState({ departMonth: m });
+    departIndex && m && this.fetchUnitPartGoal(mDate, departIndex);
+    this.setState({ monthDateVal: m });
   };
 
   handleQuarterChange = q => {
     const { departIndex } = this.state;
-    this.fetchUnitPartGoal(q, departIndex);
-    this.setState({ departQuaeter: q });
+    departIndex && q && this.fetchUnitPartGoal(q, departIndex);
+    this.setState({ quarterDateVal: q });
+  };
+
+  handlePanelChange = v => {
+    const { departIndex } = this.state;
+    const yDate = moment(v).format('YYYY');
+    departIndex && v && this.fetchUnitPartGoal(yDate, departIndex);
+    this.setState({ yearDateVal: v, isOpen: false });
+  };
+
+  // 清空日期选择框
+  clearDateValue = d => {
+    this.setState({ yearDateVal: null });
   };
 
   handleDepatIndexChange = id => {
-    const { type, departMonth, departQuaeter, departTime } = this.state;
-    const mDate = moment(departMonth).format('YYYY-MM');
-    const yDate = moment(departTime).format('YYYY');
-    const date = type === '1' ? mDate : type === '2' ? departQuaeter : yDate;
-    this.fetchUnitPartGoal(date, id);
+    const { type, monthDateVal, quarterDateVal, yearDateVal } = this.state;
+    const mDate = moment(monthDateVal).format('YYYY-MM');
+    const yDate = moment(yearDateVal).format('YYYY');
+    const date = type === '1' ? mDate : type === '2' ? quarterDateVal : yDate;
+    id && date && this.fetchUnitPartGoal(date, id);
     this.setState({ departIndex: id, depatIndexSelect: id });
   };
 
   renderSecondContent() {
-    const { type, isOpen, departTime } = this.state;
     const {
       targetResponsibility: {
         indexData: { list: iList = [] },
@@ -323,6 +337,16 @@ export default class TableList extends PureComponent {
         unitPartData: { list = [] },
       },
     } = this.props;
+    const {
+      type,
+      isOpen,
+      monthDateVal,
+      quarterDateVal,
+      yearDateVal,
+      depatIndexSelect,
+    } = this.state;
+
+    //const departSelect = monthDateVal || quarterDateVal || yearDateVal && depatIndexSelect
 
     const { passPart = 0, vetoPart = 0, count, partPassRate } = partGoalData;
     const avgValue = list.map(item => item.avgValue);
@@ -356,6 +380,7 @@ export default class TableList extends PureComponent {
               {type === '1' && (
                 <MonthPicker
                   style={{ width: 150, marginRight: 10 }}
+                  value={monthDateVal}
                   format={monthFormat}
                   onChange={this.handleMonthChange}
                 />
@@ -363,6 +388,7 @@ export default class TableList extends PureComponent {
               {type === '2' && (
                 <Select
                   placeholder="请选择"
+                  value={quarterDateVal}
                   style={{ width: 150, marginRight: 10, fontWeight: 'normal' }}
                   onChange={this.handleQuarterChange}
                 >
@@ -378,7 +404,7 @@ export default class TableList extends PureComponent {
                   placeholder="请选择"
                   style={{ width: 150, marginRight: 10 }}
                   open={isOpen}
-                  value={departTime}
+                  value={yearDateVal}
                   onOpenChange={s => this.handleOpenChange(s)}
                   onChange={this.clearDateValue}
                   onPanelChange={v => this.handlePanelChange(v)}
@@ -388,7 +414,7 @@ export default class TableList extends PureComponent {
               )}
               <Select
                 placeholder="请选择"
-                value={this.state.depatIndexSelect}
+                value={depatIndexSelect}
                 style={{ width: 150, fontWeight: 'normal' }}
                 onChange={this.handleDepatIndexChange}
               >
@@ -428,24 +454,28 @@ export default class TableList extends PureComponent {
   // 指标切换
   handleSelectChange = id => {
     const { dutyMajorId } = this.state;
-    this.fetchGoalChange(id, dutyMajorId, res => {
-      const {
-        data: { list },
-      } = res;
-      this.setState({ chartLineList: list });
-    });
+    dutyMajorId &&
+      id &&
+      this.fetchGoalChange(id, dutyMajorId, res => {
+        const {
+          data: { list },
+        } = res;
+        this.setState({ chartLineList: list });
+      });
     this.setState({ targetId: id, indexSelect: id });
   };
 
   // 部门切换
   handleDepartChange = id => {
     const { targetId } = this.state;
-    this.fetchGoalChange(targetId, id, res => {
-      const {
-        data: { list },
-      } = res;
-      this.setState({ chartLineList: list });
-    });
+    id &&
+      targetId &&
+      this.fetchGoalChange(targetId, id, res => {
+        const {
+          data: { list },
+        } = res;
+        this.setState({ chartLineList: list });
+      });
     this.setState({ dutyMajorId: id, departSelect: id });
   };
 

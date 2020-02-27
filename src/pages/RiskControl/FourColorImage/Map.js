@@ -35,8 +35,9 @@ export default class Map extends React.Component {
   }
 
   componentDidMount() {
-    const { onRef } = this.props;
+    const { onRef, mapInfo } = this.props;
     onRef && onRef(this);
+    mapInfo && this.initMap({ ...mapInfo });
     // this.initMap();
   }
 
@@ -332,7 +333,7 @@ export default class Map extends React.Component {
   }
 
   render() {
-    const { isDrawing, levelId } = this.props;
+    const { isDrawing, levelId, cardStyle } = this.props;
     if (!isDrawing && points.length > 0) {
       const groupId = points.map(item => item.groupID)[0];
       const currColor = COLORS[levelId];
@@ -343,6 +344,6 @@ export default class Map extends React.Component {
       map.clearLineMark();
       points = [];
     }
-    return <div style={{ height: '80vh' }} id="fengMap" />;
+    return <div style={{ height: cardStyle ? '52vh' : '80vh' }} id="fengMap" />;
   }
 }
