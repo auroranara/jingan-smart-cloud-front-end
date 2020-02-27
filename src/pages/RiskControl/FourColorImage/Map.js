@@ -29,9 +29,7 @@ let naviLines = [];
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      newGroupId: '',
-    };
+    this.state = {};
     this.polygonLayers = [];
     this.polygonMarkers = [];
   }
