@@ -160,7 +160,7 @@ export function getColumns(genConfirmEvaluate) {
       fixed: 'right',
       render(id, { status }) {
         return status === '0'
-          ? <AuthSpan onClick={genConfirmEvaluate(id)} style={{ color: '#1890ff', cursor: 'pointer' }} code={codes.changeWarning.evaluate}>标为已评价</AuthSpan>
+          ? <AuthSpan onClick={genConfirmEvaluate(id)} style={{ color: '#1890ff', cursor: 'pointer' }} code={codes.riskControl.changeWarning.evaluate}>标为已评价</AuthSpan>
           : null;
       },
     },
