@@ -15,9 +15,9 @@ import {
 } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
-import Link from 'umi/link';
+// import Link from 'umi/link';
 
-import { hasAuthority, AuthA } from '@/utils/customAuth';
+import { hasAuthority, AuthA, AuthUmiLink as AuthLink } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
@@ -26,7 +26,7 @@ import { getColorVal, paststatusVal } from '../utils';
 
 const {
   baseInfo: {
-    specialEquipment: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
+    specialEquipment: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode, inspection: inspectionCode },
   },
 } = codes;
 const addUrl = '/facility-management/special-equipment/add';
@@ -507,9 +507,9 @@ export default class SpecialEquipmentList extends PureComponent {
         width: 120,
         align: 'center',
         render: (val, text) => (
-          <Link to={`/facility-management/special-equipment/inspection-report/${text.id}`} target="_blank">
+          <AuthLink to={`/facility-management/special-equipment/inspection-report/${text.id}`} target="_blank" code={inspectionCode}>
             查看详情
-          </Link>
+          </AuthLink>
         ),
       },
       {

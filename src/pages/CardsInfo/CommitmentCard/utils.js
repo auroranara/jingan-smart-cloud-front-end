@@ -4,9 +4,9 @@ import moment from 'moment';
 import { Input, Divider } from 'antd';
 
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
-import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
+// import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import codes from '@/utils/codes';
-import { AuthPopConfirm, AuthLink } from '@/utils/customAuth';
+import { AuthA, AuthPopConfirm, AuthLink } from '@/utils/customAuth';
 
 const MAX_LENGTH = 50;
 const DATE_FORMAT = 'YYYY-MM-DD';
@@ -114,6 +114,7 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
             e.preventDefault();
             showModal(record);
           }}
+          // code={viewCode}
         >
           预览
         </a>

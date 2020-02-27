@@ -3,7 +3,7 @@ import { Input, InputNumber } from 'antd';
 import classNames from 'classnames';
 import styles from './index.less';
 
-const { TextArea, Search } = Input;
+const { TextArea, Search, Password } = Input;
 
 // span和Input互相转换
 export default class InputOrSpan extends Component {
@@ -11,7 +11,7 @@ export default class InputOrSpan extends Component {
     const { className, style, type, value, ...restProps } = this.props;
 
     if (type !== 'span') {
-      const Item = { InputNumber, TextArea, Search }[type] || Input;
+      const Item = { InputNumber, TextArea, Search, Password }[type] || Input;
       return <Item className={className} style={style} value={value} {...restProps} />;
     } else {
       return (

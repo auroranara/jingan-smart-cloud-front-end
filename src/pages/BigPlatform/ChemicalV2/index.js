@@ -130,7 +130,7 @@ const msgInfo = [
 ];
 notification.config({
   placement: 'bottomRight',
-  duration: 30,
+  duration: null,
   bottom: 6,
 });
 const SocketOptions = {
@@ -482,7 +482,7 @@ export default class Chemical extends PureComponent {
       },
     } = data;
     if (+statusType !== -1) return;
-    const typeName = GET_STATUS_NAME({ statusType, warnLevel });
+    const typeName = GET_STATUS_NAME({ statusType, warnLevel, fixType });
     const style = {
       boxShadow: `0px 0px 20px #f83329`,
       padding: '14px 20px',
@@ -494,7 +494,7 @@ export default class Chemical extends PureComponent {
     const options = {
       key: id,
       className: styles.notification,
-      style: { ...style, width: screen.availWidth / 5 },
+      style: { ...style, width: 'auto' },
       icon: (
         <span
           className={classNames(
@@ -1369,12 +1369,10 @@ export default class Chemical extends PureComponent {
       return prev;
     }, []);
 
-    console.log('videoVisible', videoVisible);
-
     return (
       <BigPlatformLayout
         title="五位一体信息化管理平台"
-        extra={'无锡市'}
+        // extra={'无锡市'}
         style={{
           background: `url(${bgImg}) no-repeat center`,
           backgroundSize: '100% 100%',

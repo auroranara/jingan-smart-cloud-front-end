@@ -9,9 +9,9 @@ import styles from './index.less';
 
 const emptyData = 'http://data.jingan-china.cn/v2/chem/assets/empty_data.png';
 const STATUS_MAPPER = {
-  '正常': 0,
-  '报警': 2,
-  '失联': -1,
+  正常: 0,
+  报警: 2,
+  失联: -1,
 };
 const FIELDNAMES = {
   name: 'deviceName', // 点位名称
@@ -38,7 +38,7 @@ const FIELDNAMES = {
 export default class HumiturePointListDrawer extends Component {
   state = {
     activeKey: '全部',
-  }
+  };
 
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
@@ -48,15 +48,11 @@ export default class HumiturePointListDrawer extends Component {
     }
   }
 
-  getHumiturePointList = (activeKey) => {
+  getHumiturePointList = activeKey => {
     const {
       dispatch,
       unitSafety: {
-        humiturePointList: {
-          pagination: {
-            pageNum,
-          }={},
-        },
+        humiturePointList: { pagination: { pageNum } = {} },
       },
       companyId,
     } = this.props;
@@ -70,7 +66,7 @@ export default class HumiturePointListDrawer extends Component {
         status: STATUS_MAPPER[activeKey || prevActiveKey],
       },
     });
-  }
+  };
 
   getHumiturePointCount = () => {
     const { dispatch, companyId } = this.props;
@@ -82,52 +78,51 @@ export default class HumiturePointListDrawer extends Component {
         pageNum: 1,
       },
     });
-  }
+  };
 
   setScrollReference = scroll => {
-    this.scroll = scroll && scroll.dom || scroll;
-  }
+    this.scroll = (scroll && scroll.dom) || scroll;
+  };
 
-  handleTabClick = (activeKey) => {
+  handleTabClick = activeKey => {
     this.getHumiturePointList(activeKey);
     this.setState({
       activeKey,
     });
     this.scroll && this.scroll.scrollTop();
-  }
+  };
 
   handleLoadMore = () => {
     this.getHumiturePointList();
-  }
+  };
 
   handleClick = ({ deviceId }) => {
     const { onClick } = this.props;
     onClick && onClick(deviceId);
-  }
+  };
 
-  handleVideoClick = (videoList) => {
+  handleVideoClick = videoList => {
     const { onVideoClick } = this.props;
     const [{ key_id }] = videoList;
-    onVideoClick && onVideoClick(key_id, videoList);
-  }
+    onVideoClick &&
+      onVideoClick(
+        key_id,
+        Object.values(
+          videoList.reduce((result, item) => {
+            if (!result[item.key_id]) {
+              result[item.key_id] = item;
+            }
+            return result;
+          }, {})
+        )
+      );
+  };
 
   render() {
     const {
       unitSafety: {
-        humiturePointList: {
-          list=[],
-          pagination: {
-            total,
-            pageNum,
-            pageSize,
-          }={},
-        },
-        humiturePointCount: {
-          all=0,
-          normal=0,
-          alarm=0,
-          loss=0,
-        },
+        humiturePointList: { list = [], pagination: { total, pageNum, pageSize } = {} },
+        humiturePointCount: { all = 0, normal = 0, alarm = 0, loss = 0 },
       },
       visible,
       onClose,
@@ -139,19 +134,39 @@ export default class HumiturePointListDrawer extends Component {
     const tabs = [
       {
         key: '全部',
-        value: <span>全部<span className={styles.allCount}>（{all}）</span></span>,
+        value: (
+          <span>
+            全部
+            <span className={styles.allCount}>（{all}）</span>
+          </span>
+        ),
       },
       {
         key: '正常',
-        value: <span>正常<span className={styles.normalCount}>（{normal}）</span></span>,
+        value: (
+          <span>
+            正常
+            <span className={styles.normalCount}>（{normal}）</span>
+          </span>
+        ),
       },
       {
         key: '报警',
-        value: <span>报警<span className={styles.alarmCount}>（{alarm}）</span></span>,
+        value: (
+          <span>
+            报警
+            <span className={styles.alarmCount}>（{alarm}）</span>
+          </span>
+        ),
       },
       {
         key: '失联',
-        value: <span>失联<span className={styles.lossCount}>（{loss}）</span></span>,
+        value: (
+          <span>
+            失联
+            <span className={styles.lossCount}>（{loss}）</span>
+          </span>
+        ),
       },
     ];
 
@@ -180,7 +195,7 @@ export default class HumiturePointListDrawer extends Component {
       >
         <div className={styles.container}>
           {Array.isArray(list) && list.length > 0 ? (
-            list.map((item) => (
+            list.map(item => (
               <HumiturePointCard
                 key={item.deviceId}
                 className={styles.card}
@@ -196,9 +211,7 @@ export default class HumiturePointListDrawer extends Component {
               <div>暂无数据</div>
             </div>
           )}
-          {total > pageNum * pageSize && (
-            <LoadMore onClick={this.handleLoadMore} />
-          )}
+          {total > pageNum * pageSize && <LoadMore onClick={this.handleLoadMore} />}
         </div>
       </CustomDrawer>
     );

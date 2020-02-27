@@ -65,12 +65,25 @@ export default class ParkOther extends Component {
     this.page = page && page.getWrappedInstance();
   };
 
-  initialize = ({ parkId, parkName, managerId, managerName, managerPhone, parkStatus }) => ({
+  initialize = ({
+    parkId,
+    parkName,
+    managerId,
+    managerName,
+    managerPhone,
+    parkStatus,
+    dbUrl,
+    dbUserName,
+    dbPassword,
+  }) => ({
     parkId: parkId || undefined,
     parkName: parkName || undefined,
     manager: managerId ? { key: managerId, label: managerName } : undefined,
     managerPhone: managerPhone || undefined,
     parkStatus: isNumber(parkStatus) ? `${parkStatus}` : undefined,
+    dbUrl: dbUrl || undefined,
+    dbUserName: dbUserName || undefined,
+    dbPassword: dbPassword || undefined,
   });
 
   transform = ({ unitId, manager, ...payload }) => {
@@ -101,7 +114,7 @@ export default class ParkOther extends Component {
       ].filter(v => v)
     );
 
-  getFields = ({ unitId, isDetail, isEdit }) => [
+  getFields = ({ unitType, unitId, isDetail, isEdit }) => [
     ...(isDetail || isEdit
       ? [
           {
@@ -148,6 +161,29 @@ export default class ParkOther extends Component {
         initialValue: STATUSES[0].key,
       },
     },
+    ...(unitType === 3
+      ? [
+          {
+            id: 'dbUrl',
+            label: '数据库连接地址',
+            component: 'Input',
+          },
+          {
+            id: 'dbUserName',
+            label: '数据库用户名',
+            component: 'Input',
+          },
+          {
+            id: 'dbPassword',
+            label: '数据库密码',
+            component: 'Input',
+            props: {
+              type: 'Password',
+              password: true,
+            },
+          },
+        ]
+      : []),
   ];
 
   handleManagerSelect = value => {

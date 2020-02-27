@@ -45,7 +45,8 @@ export default class KeyPoints extends PureComponent {
     handleClickMonitor(type);
   };
 
-  handleClickKey = index => {
+  handleClickKey = (index, value) => {
+    if (+value === 0) return null;
     const { handleShowProcessList, handleClickDangerSource, handleShowChemicalList } = this.props;
     index === 0 && handleClickDangerSource();
     index === 1 && handleShowChemicalList();
@@ -111,7 +112,7 @@ export default class KeyPoints extends PureComponent {
                         onClick={() => {
                           active === 0 && this.handleClickMonitor(type);
                           active === 1 && handleShowMonitorList(item);
-                          active === 2 && this.handleClickKey(index);
+                          active === 2 && this.handleClickKey(index, value);
                         }}
                       >
                         <div className={styles.countLabel}>

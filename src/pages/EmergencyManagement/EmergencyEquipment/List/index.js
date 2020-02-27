@@ -119,12 +119,12 @@ export default class EmergencyEquipmentList extends PureComponent {
         transform,
       },
       {
-        id: 'deviceCode',
+        id: 'paststatus',
         render() {
           const options = [
-            { value: '1', name: '未到期' },
-            { value: '2', name: '即将到期' },
-            { value: '3', name: '已过期' },
+            { value: 0, name: '未到期' },
+            { value: 1, name: '即将到期' },
+            { value: 2, name: '已过期' },
           ];
           return (
             <Select

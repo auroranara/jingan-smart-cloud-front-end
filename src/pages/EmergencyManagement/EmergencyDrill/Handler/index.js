@@ -223,14 +223,12 @@ export default class EmergencyDrillHandler extends PureComponent {
       emergencyManagement: { emergencyDrill = [] },
     } = this.props;
     let treeData = emergencyDrill;
-    const typeCode = value
-      .map(id => {
-        const val = treeData.find(item => item.id === id) || {};
-        treeData = val.children || [];
-        return val.value;
-      })
-      .join('.');
-    this.setState({ typeCode });
+    const typeCodes = value.map(id => {
+      const val = treeData.find(item => item.id === id) || {};
+      treeData = val.children || [];
+      return val.value;
+    });
+    this.setState({ typeCode: typeCodes[typeCodes.length - 1] });
   };
 
   /**

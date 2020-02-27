@@ -267,7 +267,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
       loading4,
       loading5,
       zIndex,
-      width,
+      width = '512',
     } = this.props;
     const { tabKey, subTabKey } = this.state;
     let subTabs, Item, list, fieldNames, key, restProps, backgroundImage, pageSize, pageNum, total;

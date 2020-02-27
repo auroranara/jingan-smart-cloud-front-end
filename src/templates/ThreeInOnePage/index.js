@@ -76,6 +76,7 @@ const STYLE = {
       ).breadcrumbList;
     }
     return {
+      unitType,
       unitId,
       detail,
       loading,
@@ -437,6 +438,7 @@ export default class ThreeInOnePage extends Component {
       isDetail,
       hasEditAuthority,
       detail = {},
+      unitType,
       unitId,
       getLoading,
       layout,
@@ -444,6 +446,7 @@ export default class ThreeInOnePage extends Component {
     const { submitting } = this.state;
     const showEdit = typeof editEnable === 'function' ? editEnable(detail) : editEnable;
     const values = {
+      unitType,
       unitId,
       isAdd,
       isEdit,

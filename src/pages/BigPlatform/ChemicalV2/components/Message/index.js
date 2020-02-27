@@ -486,13 +486,16 @@ export default class Messages extends PureComponent {
               if (+statusType === -1 && +fixType === 5) return null;
               else if ([-1, 1].includes(+statusType))
                 return (
-                  <div>{`监测数值：当前${paramDesc}为${monitorValue}${paramUnit || ''}${
-                    ['预警', '告警'].includes(typeName)
-                      ? `，${transformCondition(monitorCondition)}${typeName}值${Math.round(
-                          Math.abs(monitorValue - limitValue) * 100
-                        ) / 100}${paramUnit || ''}`
-                      : ''
-                  }`}</div>
+                  <div>
+                    <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>监测数值：</span>
+                    {`当前${paramDesc}为${monitorValue}${paramUnit || ''}${
+                      ['预警', '告警'].includes(typeName)
+                        ? `，${transformCondition(monitorCondition)}${typeName}值${Math.round(
+                            Math.abs(monitorValue - limitValue) * 100
+                          ) / 100}${paramUnit || ''}`
+                        : ''
+                    }`}
+                  </div>
                 );
               else if ([-3, 3].includes(+statusType))
                 return (
