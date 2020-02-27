@@ -202,7 +202,7 @@ export default {
       const response = yield call(videoList, payload);
       const { code, data } = response || {};
       if (code === 200 && data) {
-        const videoList = data.list;
+        const videoList = data.list.filter(item => +item.status === 1);
         yield put({
           type: 'save',
           payload: {

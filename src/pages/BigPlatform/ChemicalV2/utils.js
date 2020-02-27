@@ -1848,7 +1848,7 @@ export const MonitorConfig = {
           }}
         >
           <div style={{ marginTop: '-1em' }}>LEL</div>
-          <div>{realValueStr}%</div>
+          <div>{realValueStr || '--'}%</div>
         </div>
       );
     },
@@ -1871,7 +1871,73 @@ export const MonitorConfig = {
           return (
             <span>
               <span style={{ color: +status !== 0 ? 'rgb(255, 72, 72)' : '#fff' }}>
-                {realValueStr}
+                {realValueStr || '--'}
+              </span>
+              {condition &&
+                limitValueStr &&
+                +fixType !== 5 && (
+                  <span style={{ display: 'inline-block', marginLeft: '20px' }}>
+                    (
+                    {condition && limitValueStr && +fixType !== 5
+                      ? transformCondition(condition) + limitValueStr
+                      : ''}
+                    )
+                  </span>
+                )}
+            </span>
+          );
+        },
+      },
+      {
+        label: '更新时间',
+        value: 'allMonitorParam',
+        render: (val = []) => {
+          const { dataUpdateTime } = val[0] || {};
+          return dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : '暂无数据';
+        },
+      },
+    ],
+  },
+  '406': {
+    // 可燃气体监测
+    title: '有毒气体监测',
+    icon: ({ allMonitorParam }) => {
+      const { realValueStr } = allMonitorParam[0] || {};
+      return (
+        <div
+          className={styles.iconWrapper}
+          style={{
+            background: `url(${iconToxicGas}) center center / 100% auto no-repeat`,
+            flexDirection: 'column',
+            lineHeight: '1em',
+            color: '#fff',
+          }}
+        >
+          <div style={{ marginTop: '-1em' }}>LEL</div>
+          <div>{realValueStr || '--'}%</div>
+        </div>
+      );
+    },
+    fields: [
+      {
+        value: 'name',
+        render: val => {
+          return <span style={{ fontSize: 16 }}>{val}</span>;
+        },
+      },
+      {
+        label: '编号',
+        value: 'code',
+      },
+      {
+        label: '浓度（%LEL）',
+        value: 'allMonitorParam',
+        render: (val = []) => {
+          const { realValueStr, status, condition, limitValueStr, fixType } = val[0] || {};
+          return (
+            <span>
+              <span style={{ color: +status !== 0 ? 'rgb(255, 72, 72)' : '#fff' }}>
+                {realValueStr || '--'}
               </span>
               {condition &&
                 limitValueStr &&

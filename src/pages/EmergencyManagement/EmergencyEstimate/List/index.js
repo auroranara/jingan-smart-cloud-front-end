@@ -200,7 +200,9 @@ export default class EmergencyEstimateList extends PureComponent {
       emergencyManagement: {
         estimate: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {}, a },
       },
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const { currentPage, scrollX } = this.state;
 
@@ -210,7 +212,7 @@ export default class EmergencyEstimateList extends PureComponent {
         dataIndex: 'companyName',
         key: 'companyName',
         align: 'center',
-        width: 160,
+        width: 250,
       },
       {
         title: '演练计划',
@@ -239,7 +241,7 @@ export default class EmergencyEstimateList extends PureComponent {
         dataIndex: 'drillInfo',
         key: 'drillInfo',
         align: 'center',
-        width: 200,
+        width: 300,
         render: (data, record) => {
           const { assessName, planCode } = record;
           return (
@@ -261,13 +263,14 @@ export default class EmergencyEstimateList extends PureComponent {
         dataIndex: 'assessMem',
         key: 'assessMem',
         align: 'center',
+        width: 350,
       },
       {
         title: '评估信息',
         dataIndex: 'assessInfo',
         key: 'assessInfo',
         align: 'center',
-        width: 200,
+        width: 300,
         render: (data, record) => {
           const { drillReportList, assessUnit, assessDate } = record;
           const fileNames = drillReportList.length ? drillReportList[0].fileName.split('.') : [];
@@ -341,7 +344,7 @@ export default class EmergencyEstimateList extends PureComponent {
               columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
               dataSource={list}
               pagination={false}
-              // scroll={{ x: true }}
+              scroll={{ x: 'max-content' }}
             />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}
