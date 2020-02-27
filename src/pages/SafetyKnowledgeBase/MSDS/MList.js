@@ -9,6 +9,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './MList.less';
 import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
 import { deleteEmptyProps, handleTableData, INDEXES, RISK_CATEGORIES } from './utils';
+import codes from '@/utils/codes';
+import { AuthButton, AuthLink, AuthSpan } from '@/utils/customAuth';
 
 const { Option } = Select;
 
@@ -90,7 +92,7 @@ function getColumns(genHandleDelete) {
       key: 'bookCode',
       align: 'center',
       render(txt, record) {
-        return <Link to={`/safety-knowledge-base/msds/detail/${record.id}`} target="_blank">{txt}</Link>;
+        return <AuthLink to={`/safety-knowledge-base/msds/detail/${record.id}`} target="_blank" code={codes.safetyKnowledgeBase.msds.view}>{txt}</AuthLink>;
       },
     },
     {
@@ -101,13 +103,13 @@ function getColumns(genHandleDelete) {
       render(id, record) {
         return (
           <Fragment>
-            <Link to={`/safety-knowledge-base/msds/edit/${id}`} target="_blank">编辑</Link>
+            <AuthLink to={`/safety-knowledge-base/msds/edit/${id}`} target="_blank" code={codes.safetyKnowledgeBase.msds.edit}>编辑</AuthLink>
             <Popconfirm
               title="确定删除当前项目？"
               onConfirm={genHandleDelete(id)}
               okText="确定"
               cancelText="取消"
-            ><span className={styles.delete}>删除</span></Popconfirm>
+            ><AuthSpan className={styles.delete} code={codes.safetyKnowledgeBase.msds.delete}>删除</AuthSpan></Popconfirm>
           </Fragment>
         );
       },
@@ -186,9 +188,9 @@ export default class MList extends PureComponent {
     const indexBase = (currentPage - 1) * PAGE_SIZE;
 
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <AuthButton type="primary" code={codes.safetyKnowledgeBase.msds.add} onClick={this.handleAdd} style={{ marginTop: '8px' }}>
         新增MSDS
-      </Button>
+      </AuthButton>
     );
 
     return (

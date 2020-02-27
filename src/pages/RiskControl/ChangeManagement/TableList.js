@@ -9,6 +9,8 @@ import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { PAGE_SIZE } from '../ChangeWarning/utils';
 import { BREADCRUMBLIST, STATUS_MAP, STYLE, getSearchFields } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+import codes from '@/utils/codes';
+import { AuthSpan } from '@/utils/customAuth';
 
 const { confirm } = Modal;
 const { Item: FormItem } = Form;
@@ -304,7 +306,7 @@ export default class TableList extends PureComponent {
         dataIndex: 'id',
         key: 'id',
         align: 'center',
-        render: id => <span onClick={this.showLog(id)} style={STYLE}>查看</span>,
+        render: id => <AuthSpan onClick={this.showLog(id)} style={STYLE} code={codes.riskControl.changeManagement.view}>查看</AuthSpan>,
       },
       {
         title: '操作',
@@ -316,7 +318,7 @@ export default class TableList extends PureComponent {
         render: (dataId, { id, status, isEvaluate }) => {
           return status === '1'
             ? null
-            : <span onClick={isEvaluate === '0' ? this.showEvaluate(id) : this.showApproval(id)} style={STYLE}>审批</span>;
+            : <AuthSpan onClick={isEvaluate === '0' ? this.showEvaluate(id) : this.showApproval(id)} style={STYLE} code={codes.riskControl.changeManagement.approve}>审批</AuthSpan>;
         },
       },
     ];

@@ -247,7 +247,7 @@ export default class TableList extends PureComponent {
         render: (id, row) => {
           return (
             <Fragment>
-              <AuthLink code={editCode} to={`${ROUTER}/edit/${id}`}>编辑</AuthLink>
+              <AuthLink code={editCode} to={`${ROUTER}/edit/${id}`} target="_blank">编辑</AuthLink>
               <Divider type="vertical" />
               <AuthPopConfirm
                 title="确定删除当前数据？"

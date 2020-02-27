@@ -8,6 +8,8 @@ import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
 import { genListLink, genOperateCallback, TAB_LIST, POINT_INDEX, EQUIPMENT_INDEX, SCREEN_INDEX, TABS } from './utils';
+import codes from '@/utils/codes';
+import { AuthButton } from '@/utils/customAuth';
 
 const title = '卡口列表';
 const breadcrumbList = [
@@ -283,9 +285,9 @@ export default class CheckList extends PureComponent {
 
     const list = lists[tabIndex];
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <AuthButton type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }} code={codes.personnelManagement.checkPoint.add}>
         新增
-      </Button>
+      </AuthButton>
     );
     const fields = [
       {

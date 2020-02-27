@@ -19,9 +19,10 @@ import {
 import { Link, routerRedux } from 'dva/router';
 import router from 'umi/router';
 import InfiniteScroll from 'react-infinite-scroller';
+
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthButton, AuthUmiLink as AuthLink } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import titles from '@/utils/titles';
@@ -29,8 +30,6 @@ import safe from '../../../assets/safe.png';
 import safeGray from '../../../assets/safe-gray.png';
 import fire from '../../../assets/fire.png';
 import fireGray from '../../../assets/fire-gray.png';
-
-// import codesMap from '@/utils/codes';
 import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
@@ -57,7 +56,6 @@ const {
     detail: detailCode,
     edit: editCode,
     add: addCode,
-    delete: deleteCode,
     department: { list: viewDepCode },
   },
 } = codes;
@@ -407,7 +405,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
     // 是否有新增权限
     // const hasAddAuthority = hasAuthority(addCode, permissionCodes);
-    const hasAddAuthority = true;
+    // const hasAddAuthority = true;
 
     return (
       <Card>
@@ -558,9 +556,9 @@ export default class CompanyList extends PureComponent {
                 <Button onClick={this.handleClickToReset} style={{ marginRight: '16px' }}>
                   重置
                 </Button>
-                <Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>
+                <AuthButton type="primary" onClick={goToAdd} code={addCode}>
                   新增
-                </Button>
+                </AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -619,33 +617,30 @@ export default class CompanyList extends PureComponent {
                   title={name}
                   className={styles.card}
                   actions={[
-                    <Link
+                    <AuthLink
                       to={detailUrl + id}
                       onClick={hasDetailAuthority ? null : preventDefault}
-                      // disabled={!hasDetailAuthority}
-                      disabled={false}
+                      code={detailCode}
                       target="_blank"
                     >
                       查看
-                    </Link>,
-                    <Link
+                    </AuthLink>,
+                    <AuthLink
                       to={editUrl + id}
                       onClick={hasEditAuthority ? null : preventDefault}
-                      // disabled={!hasEditAuthority}
-                      disabled={false}
+                      code={editCode}
                       target="_blank"
                     >
                       编辑
-                    </Link>,
-                    <Link
+                    </AuthLink>,
+                    <AuthLink
                       to={departmentUrl + id}
                       onClick={hasViewDepAuthority ? null : preventDefault}
-                      // disabled={!hasViewDepAuthority}
-                      disabled={false}
+                      code={viewDepCode}
                       target="_blank"
                     >
                       部门
-                    </Link>,
+                    </AuthLink>,
                   ]}
                 // extra={hasDeleteAuthority ? (
                 //   <Button

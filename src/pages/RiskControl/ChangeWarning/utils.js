@@ -1,6 +1,8 @@
 import { Select } from 'antd';
 
 import CompanySelect from '@/jingan-components/CompanySelect';
+import codes from '@/utils/codes';
+import { AuthSpan } from '@/utils/customAuth';
 
 const { Option } = Select;
 
@@ -158,7 +160,7 @@ export function getColumns(genConfirmEvaluate) {
       fixed: 'right',
       render(id, { status }) {
         return status === '0'
-          ? <span onClick={genConfirmEvaluate(id)} style={{ color: '#1890ff', cursor: 'pointer' }}>标为已评价</span>
+          ? <AuthSpan onClick={genConfirmEvaluate(id)} style={{ color: '#1890ff', cursor: 'pointer' }} code={codes.changeWarning.evaluate}>标为已评价</AuthSpan>
           : null;
       },
     },

@@ -412,6 +412,11 @@ export default {
       edit: 'riskControl.fourColorImage.edit',
       delete: 'riskControl.fourColorImage.delete',
     },
+    changeWarning: { evaluate: 'riskControl.changeWarning.evaluate' },
+    changeManagement: {
+      view: 'riskControl.changeManagement.view',
+      approve: 'riskControl.changeManagement.approve',
+    },
   },
 
   /** 安防管理 */
@@ -445,6 +450,13 @@ export default {
       edit: 'personnelManagement.vehicleInfo.edit',
       detail: 'personnelManagement.vehicleInfo.detail',
       delete: 'personnelManagement.vehicleInfo.delete',
+    },
+    checkPoint: {
+      list: 'personnelManagement.checkPoint.listView',
+      add: 'personnelManagement.checkPoint.add',
+      view: 'personnelManagement.checkPoint.view',
+      edit: 'personnelManagement.checkPoint.edit',
+      delete: 'personnelManagement.checkPoint.delete',
     },
   },
 
@@ -523,6 +535,7 @@ export default {
       edit: 'facilityManagement.specialEquipment.edit',
       detail: 'facilityManagement.specialEquipment.detail',
       delete: 'facilityManagement.specialEquipment.delete',
+      inspection: 'facilityManagement.specialEquipment.inspectionReport',
     },
 
     // 库区管理
@@ -623,6 +636,12 @@ export default {
       add: 'safetyKnowledgeBase.typicalAccidentCase.add',
       edit: 'safetyKnowledgeBase.typicalAccidentCase.edit',
       delete: 'safetyKnowledgeBase.typicalAccidentCase.delete',
+    },
+    msds: {
+      view: 'safetyKnowledgeBase.msds.view',
+      add: 'safetyKnowledgeBase.msds.add',
+      edit: 'safetyKnowledgeBase.msds.edit',
+      delete: 'safetyKnowledgeBase.msds.delete',
     },
   },
 

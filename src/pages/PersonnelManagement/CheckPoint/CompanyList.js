@@ -10,6 +10,8 @@ import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
 import { getAddress, FORMITEM_LAYOUT, TAB_LIST } from './utils';
+import codes from '@/utils/codes';
+import { AuthButton, AuthLink } from '@/utils/customAuth';
 
 const title = '单位列表';
 const breadcrumbList = [
@@ -122,7 +124,7 @@ export default class CompanyList extends PureComponent {
   };
 
   genActions = companyId => (label, index) => {
-    return <Link to={`/personnel-management/check-point/list/${companyId}/${index}`}>{label}</Link>;
+    return <AuthLink to={`/personnel-management/check-point/list/${companyId}/${index}`} target="_blank" code={codes.personnelManagement.checkPoint.list}>{label}</AuthLink>;
   };
 
   showModal = () => {
@@ -204,9 +206,9 @@ export default class CompanyList extends PureComponent {
     } = this.props;
 
     const toolBarAction = (
-      <Button type="primary" onClick={this.showModal} style={{ marginTop: '8px' }}>
+      <AuthButton type="primary" onClick={this.showModal} style={{ marginTop: '8px' }} code={codes.personnelManagement.checkPoint.add}>
         新增卡口信息
-      </Button>
+      </AuthButton>
     );
     const fields = [
       {

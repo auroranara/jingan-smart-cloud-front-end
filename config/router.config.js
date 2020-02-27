@@ -1820,7 +1820,7 @@ module.exports = env => {
                 },
                 {
                   path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
-                  code: 'personnelManagement.checkPoint.add',
+                  code: 'personnelManagement.checkPoint.edit',
                   name: 'edit',
                   component: './PersonnelManagement/CheckPoint/CheckEdit',
                 },
@@ -2459,7 +2459,7 @@ module.exports = env => {
                 },
                 {
                   path: '/facility-management/special-equipment/inspection-report/:id',
-                  code: 'facilityManagement.specialEquipment.detail',
+                  code: 'facilityManagement.specialEquipment.inspectionReport',
                   name: 'report',
                   component: './BaseInfo/SpecialEquipment/InspectionReport',
                 },
