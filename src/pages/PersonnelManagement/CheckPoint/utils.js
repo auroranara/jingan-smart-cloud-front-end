@@ -2,6 +2,9 @@ import router from 'umi/router';
 import Link from 'umi/link';
 import { Icon, message, Popconfirm } from 'antd';
 
+import codes from '@/utils/codes';
+import { AuthLink, AuthSpan } from '@/utils/customAuth';
+
 export const FOLDER = 'checkPoints';
 export const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
 
@@ -84,15 +87,15 @@ export function genListLink(dispatch, companyId, index, id) {
   };
 
   return [
-    <Link to={`/personnel-management/check-point/detail/${companyId}/${index}/${id}`}>查看</Link>,
-    <Link to={`/personnel-management/check-point/edit/${companyId}/${index}/${id}`}>编辑</Link>,
+    <AuthLink to={`/personnel-management/check-point/detail/${companyId}/${index}/${id}`} code={codes.personnelManagement.checkPoint.view}>查看</AuthLink>,
+    <AuthLink to={`/personnel-management/check-point/edit/${companyId}/${index}/${id}`} code={codes.personnelManagement.checkPoint.edit}>编辑</AuthLink>,
     (<Popconfirm
       title="确定删除当前项目？"
       onConfirm={handleDelete}
       okText="确定"
       cancelText="取消"
     >
-      删除
+      <AuthSpan code={codes.personnelManagement.checkPoint.delete}>删除</AuthSpan>
     </Popconfirm>),
   ];
 }
