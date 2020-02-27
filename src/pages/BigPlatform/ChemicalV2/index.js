@@ -417,17 +417,17 @@ export default class Chemical extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data).data;
-        console.log('e.data', data);
+        // console.log('e.data', data);
         const {
           type,
           monitorMessageDto: { monitorEquipmentId, statusType },
         } = data;
         // 更新消息
-        this.fetchScreenMessage();
+        this.fetchScreenMessage(data);
         // 报警弹框
         +type === 100 && this.showNotification(data);
         // 地图点位弹跳
-        +type === 100 && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
+        +type === 100 && monitorEquipmentId && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
         // 更新监测对象各个类型的数量
         +type === 100 && this.fetchMonitorTargetCount({ companyId });
         // 更新IoT监测各个类型的数量
@@ -445,7 +445,9 @@ export default class Chemical extends PureComponent {
   /**
    * 获取大屏消息
    */
-  fetchScreenMessage = () => {
+  fetchScreenMessage = data => {
+    console.log('data', data);
+
     const {
       match: {
         params: { unitId: companyId },
@@ -494,7 +496,7 @@ export default class Chemical extends PureComponent {
     const options = {
       key: id,
       className: styles.notification,
-      style: { ...style, width: 'auto' },
+      style: { ...style },
       icon: (
         <span
           className={classNames(
@@ -555,7 +557,7 @@ export default class Chemical extends PureComponent {
       // 解决加入animation覆盖notification自身显示动效时长问题
       notification.open({
         ...options,
-        style: { ...styleAnimation, width: screen.availWidth / 5 },
+        style: { ...styleAnimation },
         onClose: () => {
           notification.open({
             ...options,
