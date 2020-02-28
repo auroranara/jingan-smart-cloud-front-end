@@ -22,7 +22,6 @@
     justify-content: center;
     border-right: 1px solid #ccc;
 
-
     .imgLeft {
       width: 75px;
       height: 75px;
@@ -32,12 +31,19 @@
 
     .valueRight {
       padding-top: 15px;
+      padding-left: 10px;
       line-height: 1.3;
-      font-size: 14px;
+      font-size: 15px;
+
+      .name {
+        color: rgb(0, 0, 0);
+      }
 
       .value {
-        font-weight: bold;
-        font-size: 20px;
+        font-weight: 700;
+        font-size: 28px;
+        text-align: center;
+        color: rgb(28, 145, 253);
       }
     }
   }
@@ -50,36 +56,49 @@
 
     .section {
       flex: 1;
-      padding-left: 8%;
+      // padding-left: 8%;
+      display: flex;
+      justify-content: center;
 
-      .name {
-        font-size: 14px;
+      .imgLeft {
+        width: 75px;
+        height: 75px;
+        background: no-repeat center;
+        background-size: 55px 55px;
       }
 
-      .value {
-        font-weight: bold;
-        font-size: 20px;
+      .valueRight {
+        padding-left: 2%;
+
+        .name {
+          font-size: 14px;
+          color: rgb(0, 0, 0);
+        }
+
+        .value {
+          font-weight: bold;
+          font-size: 21px;
+          text-align: center;
+        }
+
+        .label {
+          .number {
+            padding-left: 3px;
+            color: rgb(46, 186, 7);
+          }
+
+          .numbers {
+            padding-left: 3px;
+            color: rgb(254, 80, 0);
+          }
+
+          .write {
+            padding-left: 6px;
+            font-size: 13px;
+            color: rgb(151, 151, 151);
+          }
+        }
       }
-
-      .label {
-
-        .number {
-          padding-left: 3px;
-          color: rgb(46, 186, 7);
-        }
-
-        .numbers {
-          padding-left: 3px;
-          color: rgb(254,80,0);
-        }
-
-        .write {
-          padding-left: 6px;
-          font-size: 13px;
-          color: #ccc;
-        }
-      }
-
     }
   }
 }
@@ -95,7 +114,7 @@
     height: 360px;
 
     .itemLeft {
-      width: 38%;
+      width: 34%;
       margin-right: 2%;
       background-color: rgb(255, 255, 255);
       padding: 15px 12px;
@@ -123,29 +142,37 @@
             width: 50%;
             text-align: center;
             line-height: 27px;
-            border-right: 1px solid #d3d3d3;
-          }
+            // border-right: 1px solid #d3d3d3;
 
-          .number {
-            font-size: 24px;
+            .number {
+              font-size: 28px;
+              font-weight: 600;
+              color: rgb(28, 145, 253);
+            }
           }
 
           .title {
-            color: #949494;
-            font-size: 12px;
+            color: rgb(0, 0, 0);
+            font-size: 14px;
           }
 
           .labelSecond {
             width: 50%;
             text-align: center;
             line-height: 27px;
+
+            .number {
+              font-size: 28px;
+              font-weight: 600;
+              color: rgb(246, 93, 124);
+            }
           }
         }
       }
     }
 
     .itemRight {
-      width: 60%;
+      width: 64%;
       background-color: rgb(255, 255, 255);
       padding: 15px 12px;
 
@@ -178,7 +205,6 @@
     display: flex;
     width: 100%;
     height: 430px;
-
 
     .itemLeft {
       width: 60%;
@@ -222,12 +248,16 @@
         overflow-y: auto;
 
         .title {
-          height: 9%;
+          height: 14%;
+          background-color: rgb(242, 242, 242);
           border-bottom: 1px solid #eee;
+          color: rgb(80, 135, 189);
+          line-height: 39px;
+          text-align: center;
         }
 
         .dataCard {
-          height: 75%;
+          height: 70%;
         }
 
         .row {
@@ -235,6 +265,7 @@
           border-bottom: 1px solid #eee;
           padding-top: 14px;
           line-height: 12px;
+          text-align: center;
         }
       }
     }

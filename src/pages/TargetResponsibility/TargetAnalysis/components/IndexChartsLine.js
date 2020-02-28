@@ -9,7 +9,7 @@ export default class IndexChartsLine extends PureComponent {
       textStyle: {
         color: '#666666',
       },
-      color: ['#af7a94'],
+      color: ['#b768c5'],
       tooltip: {
         trigger: 'axis',
         axisPointer: {

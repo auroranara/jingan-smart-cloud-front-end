@@ -5,7 +5,16 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 // import router from 'umi/router';
 import moment from 'moment';
 import { Icon, Select, Col, Radio, Row, DatePicker } from 'antd';
-import { BREADCRUMBLIST, DepartNumIcon, DepartPie, DepartLine, IndexChartsLine } from './utils';
+import {
+  BREADCRUMBLIST,
+  DepartNumIcon,
+  MonthIcon,
+  QuarterIcon,
+  YearIcon,
+  DepartPie,
+  DepartLine,
+  IndexChartsLine,
+} from './utils';
 import styles from './index.less';
 
 const monthFormat = 'YYYY/MM';
@@ -213,54 +222,63 @@ export default class TableList extends PureComponent {
         </div>
         <div className={styles.itemRight}>
           <div className={styles.section}>
-            <div className={styles.name}>本月目标达成率</div>
-            <div className={styles.value}>{nowMonthGoal}</div>
-            <div className={styles.label}>
-              <span className={styles.icon}>
-                {previousMonthFlag === '0' ? (
-                  <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
-                ) : (
-                  <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
-                )}
-              </span>
-              <span className={previousMonthFlag === '0' ? styles.number : styles.numbers}>
-                {previousMonthGoal}
-              </span>
-              <span className={styles.write}>同比上月</span>
+            <div className={styles.imgLeft} style={{ backgroundImage: `url(${MonthIcon})` }} />
+            <div className={styles.valueRight}>
+              <div className={styles.name}>本月目标达成率</div>
+              <div className={styles.value}>{nowMonthGoal}</div>
+              <div className={styles.label}>
+                <span className={styles.icon}>
+                  {previousMonthFlag === '0' ? (
+                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
+                  ) : (
+                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
+                  )}
+                </span>
+                <span className={previousMonthFlag === '0' ? styles.number : styles.numbers}>
+                  {previousMonthGoal}
+                </span>
+                <span className={styles.write}>同比上月</span>
+              </div>
             </div>
           </div>
           <div className={styles.section}>
-            <div className={styles.name}>本季度目标达成率</div>
-            <div className={styles.value}>{nowQuarterGoal}</div>
-            <div className={styles.label}>
-              <span className={styles.icon}>
-                {previousQuarterFlag === '0' ? (
-                  <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
-                ) : (
-                  <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
-                )}
-              </span>
-              <span className={previousQuarterFlag === '0' ? styles.number : styles.numbers}>
-                {previousQuarterGoal}
-              </span>
-              <span className={styles.write}>同比上季度</span>
+            <div className={styles.imgLeft} style={{ backgroundImage: `url(${QuarterIcon})` }} />
+            <div className={styles.valueRight}>
+              <div className={styles.name}>本季度目标达成率</div>
+              <div className={styles.value}>{nowQuarterGoal}</div>
+              <div className={styles.label}>
+                <span className={styles.icon}>
+                  {previousQuarterFlag === '0' ? (
+                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
+                  ) : (
+                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
+                  )}
+                </span>
+                <span className={previousQuarterFlag === '0' ? styles.number : styles.numbers}>
+                  {previousQuarterGoal}
+                </span>
+                <span className={styles.write}>同比上季度</span>
+              </div>
             </div>
           </div>
           <div className={styles.section}>
-            <div className={styles.name}>本年目标达成率</div>
-            <div className={styles.value}>{nowYearGoal}</div>
-            <div className={styles.label}>
-              <span className={styles.icon}>
-                {previousYearFlag === '0' ? (
-                  <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
-                ) : (
-                  <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
-                )}
-              </span>
-              <span className={previousQuarterFlag === '0' ? styles.number : styles.numbers}>
-                {previousYearGoal}
-              </span>
-              <span className={styles.write}>同比去年</span>
+            <div className={styles.imgLeft} style={{ backgroundImage: `url(${YearIcon})` }} />
+            <div className={styles.valueRight}>
+              <div className={styles.name}>本年目标达成率</div>
+              <div className={styles.value}>{nowYearGoal}</div>
+              <div className={styles.label}>
+                <span className={styles.icon}>
+                  {previousYearFlag === '0' ? (
+                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
+                  ) : (
+                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
+                  )}
+                </span>
+                <span className={previousQuarterFlag === '0' ? styles.number : styles.numbers}>
+                  {previousYearGoal}
+                </span>
+                <span className={styles.write}>同比去年</span>
+              </div>
             </div>
           </div>
         </div>

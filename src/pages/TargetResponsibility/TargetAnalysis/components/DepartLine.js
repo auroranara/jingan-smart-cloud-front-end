@@ -25,7 +25,8 @@ export default class DepartLine extends PureComponent {
       },
       legend: {
         show: true,
-        icon: 'circle',
+        orient: 'vertical',
+        icon: 'rect',
         itemWidth: 12,
         itemHeight: 12,
         x: 'right',

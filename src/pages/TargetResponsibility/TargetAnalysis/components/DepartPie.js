@@ -4,6 +4,7 @@ import ReactEcharts from 'echarts-for-react';
 export default class DepartPie extends PureComponent {
   render() {
     const { data = [], partPassRate } = this.props;
+    const isNumber = data[0] === 0 && data[1] === 0;
 
     const option = {
       title: {
@@ -11,7 +12,7 @@ export default class DepartPie extends PureComponent {
         left: 'center',
         top: '42%',
         textStyle: {
-          color: '#5b5b5b',
+          color: '#1a91ff',
           fontSize: 32,
           fontWeight: 400,
         },
@@ -20,7 +21,10 @@ export default class DepartPie extends PureComponent {
           fontSize: 12,
         },
       },
-      color: ['#2db7f5', '#f4f4f4'],
+      color: [
+        !isNumber ? 'rgb(28, 145, 253)' : 'rgb(242, 242, 242)',
+        !isNumber ? 'rgb(246, 93, 124)' : 'rgb(242, 242, 242)',
+      ],
       series: [
         {
           type: 'pie',
@@ -35,7 +39,10 @@ export default class DepartPie extends PureComponent {
               position: 'center',
             },
           },
-          data: [{ value: data[0], name: '' }, { value: data[1], name: '' }],
+          data: [
+            { value: !isNumber && data[0], name: '达成目标的部门' },
+            { value: !isNumber && data[1], name: '未达成目标的部门' },
+          ],
         },
       ],
     };

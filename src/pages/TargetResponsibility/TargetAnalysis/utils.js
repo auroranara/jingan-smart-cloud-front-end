@@ -1,10 +1,14 @@
-import DepartNumIcon from './departNum.png';
+import DepartNumIcon from './image/departNum.png';
+import MonthIcon from './image/monthIcon.png';
+import QuarterIcon from './image/quarterIcon.png';
+import YearIcon from './image/yearIcon.png';
+
 import DepartPie from './components/DepartPie';
 import DepartLine from './components/DepartLine';
 import IndexChartsLine from './components/IndexChartsLine';
 const LIST_URL = '/target-responsibility/target-analysis/company-list';
 
-export { DepartNumIcon, DepartPie, DepartLine, IndexChartsLine };
+export { DepartNumIcon, DepartPie, DepartLine, MonthIcon, YearIcon, QuarterIcon, IndexChartsLine };
 
 export const BREADCRUMBLIST = [
   // modify
