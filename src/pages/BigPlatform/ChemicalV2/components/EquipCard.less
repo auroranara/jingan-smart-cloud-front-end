@@ -1,7 +1,8 @@
 .container {
   position: relative;
   border: 1px solid #0ff;
-  & + .container {
+
+  &+.container {
     margin-top: 15px;
   }
 
@@ -25,6 +26,7 @@
       height: 100%;
       right: 10px;
       top: 0;
+
       .icon {
         display: inline-block;
         width: 40px;
@@ -32,10 +34,11 @@
         vertical-align: top;
         cursor: pointer;
 
-        & + .icon {
+        &+.icon {
           margin-left: 8px;
         }
       }
+
       //   .video {
       //     display: inline-block;
       //     // position: absolute;
@@ -86,7 +89,7 @@
     align-items: center;
     justify-content: center;
 
-    & + .paramsWrapper {
+    &+.paramsWrapper {
       margin-top: 15px;
     }
 
@@ -129,6 +132,7 @@
 
       .value {
         flex: 1;
+        white-space: nowrap;
       }
 
       .number {

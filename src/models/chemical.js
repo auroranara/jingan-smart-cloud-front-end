@@ -13,6 +13,7 @@ import {
   monitorEquipmentTypeCountDto,
   fireDeviceList,
   getWZList,
+  getFireDevice,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
@@ -57,6 +58,7 @@ export default {
       warehouseInfos: [],
     },
     dangerSourceMaterials: {},
+    fireDevice: [],
   },
 
   effects: {
@@ -363,6 +365,21 @@ export default {
           type: 'save',
           payload: {
             dangerSourceMaterials,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 获取消防主机点位
+    *fetchFireDevice({ payload, callback }, { call, put }) {
+      const response = yield call(getFireDevice, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const fireDevice = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            fireDevice,
           },
         });
       }

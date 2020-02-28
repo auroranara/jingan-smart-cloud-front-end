@@ -55,6 +55,7 @@ import {
   IoTMonitorDrawer,
   FireMonitorDrawer,
   GasListDrawer,
+  FireMonitorDetailDrawer,
 } from './sections/Components';
 
 const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
@@ -130,7 +131,7 @@ const msgInfo = [
 ];
 notification.config({
   placement: 'bottomRight',
-  duration: null,
+  duration: 30,
   bottom: 6,
 });
 const SocketOptions = {
@@ -246,6 +247,8 @@ export default class Chemical extends PureComponent {
       fireMonitorDrawerVisible: false,
       selectedEquip: {},
       gasListDrawerVisible: false,
+      fireMonitorDetailDrawerVisible: false,
+      fireDetail: {},
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -427,7 +430,9 @@ export default class Chemical extends PureComponent {
         // 报警弹框
         +type === 100 && this.showNotification(data);
         // 地图点位弹跳
-        +type === 100 && monitorEquipmentId && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
+        +type === 100 &&
+          monitorEquipmentId &&
+          this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
         // 更新监测对象各个类型的数量
         +type === 100 && this.fetchMonitorTargetCount({ companyId });
         // 更新IoT监测各个类型的数量
@@ -1260,6 +1265,11 @@ export default class Chemical extends PureComponent {
     this.setState({ monitorType, gasListDrawerVisible: true });
   };
 
+  handleClickFireMonitor = fireDetail => {
+    this.setState({ fireDetail });
+    this.setDrawerVisible('fireMonitorDetail');
+  };
+
   /**
    * 渲染
    */
@@ -1356,6 +1366,8 @@ export default class Chemical extends PureComponent {
       fireMonitorDrawerVisible,
       selectedEquip,
       gasListDrawerVisible,
+      fireMonitorDetailDrawerVisible,
+      fireDetail,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1438,6 +1450,7 @@ export default class Chemical extends PureComponent {
                   handleClickTank={this.handleClickTank}
                   handleShowAreaDrawer={this.handleShowAreaDrawer}
                   handleClickMonitorIcon={this.handleClickMonitorIcon}
+                  handleClickFireMonitor={this.handleClickFireMonitor}
                 />
 
                 {msgVisible ? (
@@ -1796,6 +1809,16 @@ export default class Chemical extends PureComponent {
           handleClickMonitorDetail={this.handleClickMonitorDetail}
           setDrawerVisible={this.setDrawerVisible}
           handleClickMonitorIcon={this.handleClickMonitorIcon}
+        />
+
+        {/* 主机监测详情 */}
+        <FireMonitorDetailDrawer
+          visible={fireMonitorDetailDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('fireMonitorDetail');
+          }}
+          fireDetail={fireDetail}
+          handleShowVideo={this.handleShowVideo}
         />
       </BigPlatformLayout>
     );

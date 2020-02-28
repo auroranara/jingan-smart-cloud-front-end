@@ -53,13 +53,12 @@ export default class TypeCard extends PureComponent {
     } = target;
 
     const TYPE_VALUES = {
-      304: [
-        name,
-        position,
-        // `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` || NO_DATA,
-        aname || NO_DATA,
+      304: [name, position, aname || NO_DATA],
+      302: [
+        tankName,
+        number,
+        `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` || NO_DATA,
       ],
-      302: [tankName, number, aname],
       311: [name, location, +keyDevice === 1 ? '是' : '否', pressure],
       312: [gasholderName, regionalLocation, designCapacity, designKpa],
       314: [

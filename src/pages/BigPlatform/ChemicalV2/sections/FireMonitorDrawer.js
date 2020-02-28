@@ -48,7 +48,7 @@ export default class FireMonitorDrawer extends PureComponent {
               const pointCount = pointCountMap || {};
 
               return (
-                <div className={styles.item}>
+                <div className={styles.item} key={index}>
                   <div className={styles.wrapper}>
                     <div className={styles.name}>
                       <span className={styles.label}>主机编号：</span>
