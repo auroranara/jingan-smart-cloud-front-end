@@ -345,7 +345,7 @@ export default class TableList extends PureComponent {
       monthDateVal !== undefined || quarterDateVal !== undefined || yearDateVal !== undefined;
     const departSelect = dateVale && depatIndexSelect !== undefined;
 
-    const { passPart = 0, vetoPart = 0, count, partPassRate } = partGoalData;
+    const { passPart = 0, vetoPart = 0, partPassRate } = partGoalData;
     const avgValue = departSelect ? list.map(item => item.actualValue) : [];
     const goalValue = departSelect ? list.map(item => item.goalValue) : [];
     const departName = departSelect ? list.map(item => item.name) : [];
@@ -356,7 +356,7 @@ export default class TableList extends PureComponent {
           <div className={styles.top}>部门目标达成率</div>
           <div className={styles.bottom}>
             <div className={styles.echarts}>
-              <DepartPie data={[passPart, count]} partPassRate={partPassRate} />
+              <DepartPie data={[passPart, vetoPart]} partPassRate={partPassRate} />
             </div>
             <div className={styles.label}>
               <div className={styles.labelFirst}>
