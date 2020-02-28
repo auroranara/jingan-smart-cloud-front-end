@@ -40,10 +40,11 @@ const controls = [
   },
 ];
 
-@connect(({ map, chemical, alarmWorkOrder }) => ({
+@connect(({ map, chemical, alarmWorkOrder, user }) => ({
   map,
   chemical,
   alarmWorkOrder,
+  user,
 }))
 export default class Map extends PureComponent {
   state = {
@@ -90,6 +91,7 @@ export default class Map extends PureComponent {
             this.fetchPonits(type, index);
             return null;
           });
+          this.fetchPonits('chemical/fetchFireDevice', 2);
         });
       },
     });
@@ -144,7 +146,9 @@ export default class Map extends PureComponent {
       type,
       payload: { companyId, pageNum: 1, pageSize: 0, ...payload },
       callback: res => {
-        const pointsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
+        const pointsInfo = res.data.list.filter(
+          item => item.pointFixInfoList && item.pointFixInfoList.length > 0
+        );
         // .map(item => {
         //   return item.pointFixInfoList[0];
         // });
@@ -250,12 +254,14 @@ export default class Map extends PureComponent {
     });
     const popMarker = new fengmap.FMPopInfoWindow(map, ctlOpt);
 
+    // 地图点击事件
     map.on('mapClickNode', event => {
       const {
         handleClickRiskPoint,
         setDrawerVisible,
         handleShowAreaDrawer,
         handleClickMonitorIcon,
+        handleClickFireMonitor,
       } = this.props;
       const clickedObj = event.target;
       console.log('clickedObj', clickedObj);
@@ -310,7 +316,14 @@ export default class Map extends PureComponent {
           this.handleShowVideo(keyId);
         } else if (iconType === 2) {
           // 监测设备
-          handleClickMonitorIcon(markerProps);
+          const { deviceCode } = markerProps;
+          if (deviceCode || deviceCode === 0) {
+            // 消防主机
+            handleClickFireMonitor(markerProps);
+          } else {
+            // 监测设备
+            handleClickMonitorIcon(markerProps);
+          }
         }
       }
     });
@@ -571,6 +584,11 @@ export default class Map extends PureComponent {
     const { gdMapVisible, visibles, videoVisible, keyId } = this.state;
     const {
       chemical: { videoList },
+      user: {
+        currentUser: {
+          companyBasicInfo: { mapIp },
+        },
+      },
     } = this.props;
 
     return (
@@ -630,13 +648,15 @@ export default class Map extends PureComponent {
             })}
           </div>
         )}
-        <div
-          className={styles.positionBtn}
-          style={{
-            background: `url(${position}) center center / auto 80% no-repeat #fff`,
-          }}
-          onClick={this.handlePosition}
-        />
+        {mapIp && (
+          <div
+            className={styles.positionBtn}
+            style={{
+              background: `url(${position}) center center / auto 80% no-repeat #fff`,
+            }}
+            onClick={this.handlePosition}
+          />
+        )}
         {videoVisible && (
           <NewVideoPlay
             showList={true}

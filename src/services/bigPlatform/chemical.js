@@ -72,3 +72,8 @@ export async function fireDeviceList(params) {
 export async function getWZList(params) {
   return request(`${URL_PREFIX}/dangerSource/getWZList?${stringify(params)}`);
 }
+
+// 获取消防主机点位
+export async function getFireDevice(params) {
+  return request(`${URL_PREFIX}/ci/zone/getFireDevice?${stringify(params)}`);
+}
