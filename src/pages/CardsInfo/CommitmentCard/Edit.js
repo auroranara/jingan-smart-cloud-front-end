@@ -144,6 +144,7 @@ export default class Edit extends PureComponent {
     return url && url.includes('view');
   };
 
+  // 单位切换选择
   onSelectChange = e => {
     const {
       form: { setFieldsValue },
@@ -156,6 +157,7 @@ export default class Edit extends PureComponent {
     this.fetchRiskList({ companyId: e.key });
   };
 
+  // 风险分区切换选择
   handleRiskChange = e => {
     // const {
     //   fourColorImage: {

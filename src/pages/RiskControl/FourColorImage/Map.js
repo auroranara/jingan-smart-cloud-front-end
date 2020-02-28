@@ -344,6 +344,6 @@ export default class Map extends React.Component {
       map.clearLineMark();
       points = [];
     }
-    return <div style={{ height: cardStyle ? '52vh' : '80vh' }} id="fengMap" />;
+    return <div style={{ height: cardStyle ? '45vh' : '80vh' }} id="fengMap" />;
   }
 }

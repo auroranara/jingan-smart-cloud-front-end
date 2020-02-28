@@ -271,7 +271,14 @@ export default class TableList extends PureComponent {
   // 部门指标时间选择
   handleRadioChange = e => {
     const mode = e.target.value;
-    this.setState({ type: mode, depatIndexSelect: undefined, departIndex: '' });
+    this.setState({
+      type: mode,
+      depatIndexSelect: undefined,
+      departIndex: '',
+      yearDateVal: undefined,
+      monthDateVal: undefined,
+      quarterDateVal: undefined,
+    });
     this.fetchIndexList(mode);
   };
 
@@ -281,18 +288,6 @@ export default class TableList extends PureComponent {
     } else {
       this.setState({ isOpen: false });
     }
-  };
-
-  handlePanelChange = v => {
-    const { departIndex } = this.state;
-    const yDate = moment(v).format('YYYY');
-    this.fetchUnitPartGoal(yDate, departIndex);
-    this.setState({ yearDateVal: v, isOpen: false });
-  };
-
-  // 清空日期选择框
-  clearDateValue = d => {
-    this.setState({ yearDateVal: null });
   };
 
   handleMonthChange = m => {
@@ -346,12 +341,14 @@ export default class TableList extends PureComponent {
       depatIndexSelect,
     } = this.state;
 
-    //const departSelect = monthDateVal || quarterDateVal || yearDateVal && depatIndexSelect
+    const dateVale =
+      monthDateVal !== undefined || quarterDateVal !== undefined || yearDateVal !== undefined;
+    const departSelect = dateVale && depatIndexSelect !== undefined;
 
     const { passPart = 0, vetoPart = 0, count, partPassRate } = partGoalData;
-    const avgValue = list.map(item => item.avgValue);
-    const goalValue = list.map(item => item.goalValue);
-    const departName = list.map(item => item.name);
+    const avgValue = departSelect ? list.map(item => item.actualValue) : [];
+    const goalValue = departSelect ? list.map(item => item.goalValue) : [];
+    const departName = departSelect ? list.map(item => item.name) : [];
 
     return (
       <div className={styles.secondSection}>
