@@ -166,7 +166,7 @@ export default class EquipCard extends PureComponent {
                           className={styles.value}
                           style={{ color: +status > 0 ? '#ff4848' : '#11B409' }}
                         >
-                          {`${+fixType === 5 ? '火警' : STATUS[+status]}${
+                          {`${+fixType === 5 && +status !== 0 ? '火警' : STATUS[+status]}${
                             condition && limitValueStr && +fixType !== 5
                               ? `(${transformCondition(condition)}${limitValueStr})`
                               : ''
