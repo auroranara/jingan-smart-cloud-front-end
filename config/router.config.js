@@ -983,6 +983,43 @@ module.exports = env => {
                 },
               ],
             },
+            // 周边环境信息
+            {
+              path: '/major-hazard-info/surrounding-environment-info',
+              code: 'majorHazardInfo.surroundingEnvironmentInfo',
+              name: 'surroundingEnvironmentInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/major-hazard-info/surrounding-environment-info',
+                  redirect: '/major-hazard-info/surrounding-environment-info/list',
+                },
+                {
+                  name: 'list',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.list',
+                  path: '/major-hazard-info/surrounding-environment-info/list',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/List',
+                },
+                // {
+                //   name: 'detail',
+                //   code: 'majorHazardInfo.surroundingEnvironmentInfo.view',
+                //   path: '/major-hazard-info/surrounding-environment-info/detail/:id',
+                //   component: './BaseInfo/SurroundingEnvironmentInfo/Other',
+                // },
+                {
+                  name: 'add',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.add',
+                  path: '/major-hazard-info/surrounding-environment-info/add',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
+                },
+                {
+                  name: 'edit',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.edit',
+                  path: '/major-hazard-info/surrounding-environment-info/edit/:id',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
+                },
+              ],
+            },
           ],
         },
 
