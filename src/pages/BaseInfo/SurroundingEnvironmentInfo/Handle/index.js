@@ -35,16 +35,16 @@ const defaultPosition = { longitude: 120.30, latitude: 31.57 };
 }))
 @Form.create()
 export default class Edit extends PureComponent {
-  state = { 
-      areaCode:'', // 区号
-      fixedPhone:'', // 固定电话
-      photoList: [],  // 上传照片
-      map: { // 地图参数
-        visible: false,
-        center: undefined,
-        point: undefined,
-      },
-    };
+  state = {
+    areaCode: '', // 区号
+    fixedPhone: '', // 固定电话
+    photoList: [],  // 上传照片
+    map: { // 地图参数
+      visible: false,
+      center: undefined,
+      point: undefined,
+    },
+  };
 
   componentDidMount() {
     const {
@@ -75,11 +75,11 @@ export default class Edit extends PureComponent {
         const det = { ...detail };
         const list = Array.isArray(contentDetails)
           ? contentDetails.map(({ id, fileName, webUrl, dbUrl }) => ({
-              uid: id,
-              name: fileName,
-              url: webUrl,
-              dbUrl,
-            }))
+            uid: id,
+            name: fileName,
+            url: webUrl,
+            dbUrl,
+          }))
           : [];
         det.contentDetails = list.length ? { fileList: list } : null;
         setFieldsValue(handleDetails(det));
@@ -169,10 +169,14 @@ export default class Edit extends PureComponent {
   };
 
   /*获取区号*/
-  handleAreaCodeClick=e=>{
-      console.log('eeeee',e)
+  handleAreaCodeChange = event => {
+    this.setState({ areaCode: event.target.value })
   }
 
+  /**获取固定电话 */
+  handleFixedPhoneChange = event => {
+    this.setState({ fixedPhone: event.target.value })
+  }
   /**从表单中个获取经纬度 */
   getCoordinateFromInput = () => {
     const {
@@ -217,7 +221,7 @@ export default class Edit extends PureComponent {
       },
     } = this.state;
     // 将选中点的坐标放入输入框
-    setFieldsValue({coordinate: `${longitude},${latitude}`})
+    setFieldsValue({ coordinate: `${longitude},${latitude}` })
     // 隐藏地图模态框
     this.handleHideMap();
   };
@@ -305,7 +309,7 @@ export default class Edit extends PureComponent {
       },
     } = this.props;
 
-    const { photoList,areaCode,fixedPhone } = this.state;
+    const { photoList, areaCode, fixedPhone } = this.state;
     const editAuth = hasAuthority(editCode, permissionCodes);
 
     // const isDet = this.isDetail();
@@ -358,11 +362,11 @@ export default class Edit extends PureComponent {
         type: 'compt',
         component: (
           <div className={style.mutil}>
-            <Input defaultValue={areaCode} placeholder="区号" className={style.itemF} onChange = {(e)=>this.handleAreaCodeClick(e)}/>
+            <Input value={areaCode} placeholder="区号" className={style.itemF} onChange={this.handleAreaCodeChange} />
             <span className={style.itemS}>
               <Divider />
             </span>
-            <Input value={fixedPhone} placeholder="电话号码" className={style.itemT} />
+            <Input value={fixedPhone} placeholder="电话号码" className={style.itemT} onChange={this.handleFixedPhoneChange} />
           </div>
         ),
       },
