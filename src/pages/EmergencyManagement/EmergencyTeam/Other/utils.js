@@ -16,34 +16,31 @@ const {
   },
 } = codes;
 
-const envirType = [
-  { key: '0', value: '住宅区' },
-  { key: '1', value: '生产单位' },
-  { key: '2', value: '机关团体' },
-  { key: '3', value: '公共场所' },
-  { key: '4', value: '交通要道' },
-  { key: '5', value: '其他' },
+const teamType = [
+  { key: '1', value: '公司' },
+  { key: '2', value: '工厂-车间' },
+  { key: '3', value: '工序=班组' },
 ];
-export { envirType };
+export { teamType };
 
-export const ROUTER = '/major-hazard-info/surrounding-environment-info'; // modify
+export const ROUTER = '/emergency-management/emergency-team'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 
 export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '重大危险源基本信息', name: '重大危险源基本信息' },
-  { title: '周边环境信息', name: '周边环境信息', href: LIST_URL },
+  { title: '应急管理', name: '应急管理' },
+  { title: '应急队伍管理', name: '应急队伍管理', href: LIST_URL },
 ];
 
 export function getSearchFields(unitType) {
   const fields = [
     {
-      id: 'name',
-      label: '周边环境类型',
+      id: 'teamType',
+      label: '队伍级别',
       render: () => (
         <Select placeholder="请选择" allowClear>
-          {envirType.map(({ key, value }) => (
+          {teamType.map(({ key, value }) => (
             <Option key={key} value={key}>
               {value}
             </Option>
