@@ -128,6 +128,11 @@ export function getTableColumns(handleConfirmDelete, unitType) {
       align: 'center',
       render: (val, row) => {
         const { contact, areaCode, telNumber, contactPhone, contactMail } = row;
+
+        const isPhone = areaCode || telNumber;
+        const isAreaCode = areaCode !== 'null' ? areaCode : '';
+        const isTelPhone = telNumber !== 'null' ? telNumber : '';
+
         return (
           <div className={styles.multi}>
             <div className={styles.item}>
@@ -136,7 +141,7 @@ export function getTableColumns(handleConfirmDelete, unitType) {
             </div>
             <div className={styles.item}>
               <span className={styles.label}>固定电话：</span>
-              <span>{areaCode && telNumber ? areaCode + '-' + telNumber : '-'}</span>
+              <span>{isPhone ? isAreaCode + '-' + isTelPhone : '-'}</span>
             </div>
             <div className={styles.item}>
               <span className={styles.label}>移动电话：</span>
