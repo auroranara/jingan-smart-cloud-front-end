@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import Link from 'umi/link';
+// import Link from 'umi/link';
 import { Input, Divider, Select } from 'antd';
 
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
@@ -12,7 +12,7 @@ const { Option } = Select;
 // 权限
 const {
   baseInfo: {
-    surroundingEnvironmentInfo: { edit: editCode, delete: deleteCode },
+    surroundingEnvironmentInfo: { view: viewCode, edit: editCode, delete: deleteCode },
   },
 } = codes;
 
@@ -61,7 +61,7 @@ export function getSearchFields(unitType) {
   return fields;
 }
 
-export function getTableColumns(handleConfirmDelete, showModal, unitType) {
+export function getTableColumns(handleConfirmDelete, unitType) {
   const columns = [
     {
       title: '单位名称',
@@ -71,7 +71,19 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       width: 250,
     },
     {
-      title: '周边环境',
+      title: '队伍名称',
+      dataIndex: 'teamName',
+      key: 'teamName',
+      align: 'center',
+    },
+    {
+      title: '队伍级别',
+      dataIndex: 'teamLevel',
+      key: 'teamLevel',
+      align: 'center',
+    },
+    {
+      title: '队伍负责人',
       dataIndex: 'surroundEnvir',
       key: 'surroundEnvir',
       align: 'center',
@@ -80,15 +92,19 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
         return (
           <div className={styles.multi}>
             <div className={styles.item}>
-              <span className={styles.label}>类型:</span>
+              <span className={styles.label}>姓名:</span>
               <span>{'即使对方开始'}</span>
             </div>
             <div className={styles.item}>
-              <span className={styles.label}>名称:</span>
+              <span className={styles.label}>部门:</span>
               <span>{234234}</span>
             </div>
             <div className={styles.item}>
-              <span className={styles.label}>方位:</span>
+              <span className={styles.label}>手机:</span>
+              <span>{324234}</span>
+            </div>
+            <div className={styles.item}>
+              <span className={styles.label}>固定电话:</span>
               <span>{324234}</span>
             </div>
           </div>
@@ -96,45 +112,16 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       },
     },
     {
-      title: '与本企业最小距离(m)',
-      dataIndex: 'minDistance',
-      key: 'minDistance',
+      title: '队伍描述',
+      dataIndex: 'note',
+      key: 'note',
       align: 'center',
     },
     {
-      title: '人员数量',
+      title: '队伍人员',
       dataIndex: 'personNum',
       key: 'personNum',
       align: 'center',
-    },
-    {
-      title: '联系人',
-      dataIndex: 'preview',
-      key: 'preview',
-      width: 100,
-      align: 'center',
-      render: (val, row) => {
-        return (
-          <div className={styles.multi}>
-            <div className={styles.item}>
-              <span className={styles.label}>姓名:</span>
-              <span>{''}</span>
-            </div>
-            <div className={styles.item}>
-              <span className={styles.label}>固定电话:</span>
-              <span>{''}</span>
-            </div>
-            <div className={styles.item}>
-              <span className={styles.label}>移动电话:</span>
-              <span>{''}</span>
-            </div>
-            <div className={styles.item}>
-              <span className={styles.label}>电子邮箱:</span>
-              <span>{''}</span>
-            </div>
-          </div>
-        );
-      },
     },
     {
       title: '操作',
@@ -146,10 +133,10 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       render(id) {
         return (
           <Fragment>
-            {/* <AuthLink code={viewCode} to={`${ROUTER}/view/${id}`} target="_blank">
-                            查看
-                        </AuthLink>
-                        <Divider type="vertical" /> */}
+            <AuthLink code={viewCode} to={`${ROUTER}/view/${id}`} target="_blank">
+              查看
+            </AuthLink>
+            <Divider type="vertical" />
             <AuthLink
               code={editCode}
               to={`${ROUTER}/edit/${id}`}
@@ -179,7 +166,7 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
 }
 
 export function handleDetails(values, deletedProps = ['companyName']) {
-  const { companyId, companyName, pointFixInfoList } = values;
+  const { companyId, companyName } = values;
   // const vals = { ...values };
   // deletedProps.forEach(p => delete vals[p]);
   console.log('values', values);
@@ -187,6 +174,5 @@ export function handleDetails(values, deletedProps = ['companyName']) {
   return {
     ...values,
     companyId: { key: companyId, label: companyName },
-    section: pointFixInfoList.map(item => item.areaId).join(''),
   };
 }
