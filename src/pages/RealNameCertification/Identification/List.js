@@ -96,8 +96,9 @@ export default class IdentificationRecord extends PureComponent {
 
   /* tab列表点击变化 */
   handleTabChange = key => {
-    this.setState({ tabActiveKey: key });
-    this.handleQuery();
+    this.setState({ tabActiveKey: key }, () => {
+      this.handleQuery();
+    });
   };
 
   // 渲染筛选栏
@@ -238,9 +239,6 @@ export default class IdentificationRecord extends PureComponent {
                 </Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
-                </Button>
-                <Button type="primary" onClick={() => { router.push('/real-name-certification/authorization/add') }}>
-                  新增授权
                 </Button>
               </FormItem>
             </Col>
