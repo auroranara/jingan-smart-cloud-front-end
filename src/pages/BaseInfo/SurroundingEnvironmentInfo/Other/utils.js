@@ -73,7 +73,7 @@ export function getSearchFields(unitType) {
   return fields;
 }
 
-export function getTableColumns(handleConfirmDelete, showModal, unitType) {
+export function getTableColumns(handleConfirmDelete, unitType) {
   const columns = [
     {
       title: '单位名称',
@@ -187,7 +187,6 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       },
     },
   ];
-
   if (isCompanyUser(+unitType)) columns.shift();
   return columns;
 }
