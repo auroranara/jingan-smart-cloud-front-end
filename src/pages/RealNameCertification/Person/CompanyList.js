@@ -95,10 +95,10 @@ export default class CompanyList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const values = getFieldsValue();
-    // dispatch({
-    //   type: 'realNameCertification/fetchCompanyList',
-    //   payload: { ...payload, ...values },
-    // });
+    dispatch({
+      type: 'realNameCertification/fetchCompanyList',
+      payload: { ...payload, ...values },
+    });
   }
 
   handleLoadMore = () => {
