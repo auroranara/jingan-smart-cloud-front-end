@@ -628,6 +628,15 @@ export default {
       bindSensor: 'majorHazardInfo.productionEquipments.bindSensor',
       unbindSensor: 'majorHazardInfo.productionEquipments.unbindSensor',
     },
+
+    // 周边环境信息
+    surroundingEnvironmentInfo:{
+      list: 'majorHazardInfo.surroundingEnvironmentInfo.listView',
+      view: 'majorHazardInfo.surroundingEnvironmentInfo.view',
+      add: 'majorHazardInfo.surroundingEnvironmentInfo.add',
+      edit: 'majorHazardInfo.surroundingEnvironmentInfo.edit',
+      delete: 'majorHazardInfo.surroundingEnvironmentInfo.delete',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例

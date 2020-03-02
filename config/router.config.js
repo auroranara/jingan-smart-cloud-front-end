@@ -983,6 +983,43 @@ module.exports = env => {
                 },
               ],
             },
+            // 周边环境信息
+            {
+              path: '/major-hazard-info/surrounding-environment-info',
+              code: 'majorHazardInfo.surroundingEnvironmentInfo',
+              name: 'surroundingEnvironmentInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/major-hazard-info/surrounding-environment-info',
+                  redirect: '/major-hazard-info/surrounding-environment-info/list',
+                },
+                {
+                  name: 'list',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.list',
+                  path: '/major-hazard-info/surrounding-environment-info/list',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/List',
+                },
+                // {
+                //   name: 'detail',
+                //   code: 'majorHazardInfo.surroundingEnvironmentInfo.view',
+                //   path: '/major-hazard-info/surrounding-environment-info/detail/:id',
+                //   component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
+                // },
+                {
+                  name: 'add',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.add',
+                  path: '/major-hazard-info/surrounding-environment-info/add',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
+                },
+                {
+                  name: 'edit',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.edit',
+                  path: '/major-hazard-info/surrounding-environment-info/edit/:id',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
+                },
+              ],
+            },
           ],
         },
 
@@ -4185,6 +4222,56 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/emergency-management/emergency-team', // 应急队伍管理
+              code: 'emergencyManagement.emergencyTeam',
+              name: 'emergencyTeam',
+              developing: true,
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-team',
+                  name: 'emergencyTeam',
+                  redirect: '/emergency-management/emergency-team/list',
+                },
+                {
+                  path: '/emergency-management/emergency-team/list',
+                  code: 'emergencyManagement.emergencyTeam.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyTeam/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/add',
+                  code: 'emergencyManagement.emergencyTeam.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/edit/:id',
+                  code: 'emergencyManagement.emergencyTeam.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/detail/:id',
+                  code: 'emergencyManagement.emergencyTeam.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/person-list/:id',
+                  code: 'emergencyManagement.emergencyTeam.teamPersonList',
+                  name: 'personList',
+                  component: './EmergencyManagement/EmergencyTeam/List/PersonList',
+                },
+                {
+                  path: '/emergency-management/emergency-team/person-list/:id',
+                  code: 'emergencyManagement.emergencyTeam.teamPersonList',
+                  name: 'personList',
+                  component: './EmergencyManagement/EmergencyTeam/List/PersonList',
+                },
+              ],
+            },
           ],
         },
 
@@ -4649,6 +4736,50 @@ module.exports = env => {
             //     },
             //   ],
             // },
+            {
+              name: 'authorization',
+              path: '/real-name-certification/authorization',
+              code: 'realNameCertification.authorization',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/real-name-certification/authorization',
+                  name: 'list',
+                  redirect: '/real-name-certification/authorization/list',
+                },
+                {
+                  path: '/real-name-certification/authorization/list',
+                  name: 'list',
+                  code: 'realNameCertification.authorization',
+                  component: './RealNameCertification/Authorization/List',
+                },
+                {
+                  path: '/real-name-certification/authorization/add',
+                  name: 'add',
+                  code: 'realNameCertification.authorization',
+                  component: './RealNameCertification/Authorization/Add',
+                },
+              ],
+            },
+            {
+              name: 'identificationRecord',
+              path: '/real-name-certification/identification-record',
+              code: 'realNameCertification.identificationRecord',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/real-name-certification/identification-record',
+                  name: 'list',
+                  redirect: '/real-name-certification/identification-record/list',
+                },
+                {
+                  path: '/real-name-certification/identification-record/list',
+                  name: 'list',
+                  code: 'realNameCertification.identificationRecord',
+                  component: './RealNameCertification/Identification/List',
+                },
+              ],
+            },
           ],
         },
       ],
