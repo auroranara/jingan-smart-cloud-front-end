@@ -12,7 +12,7 @@
     position: relative;
     // border: 1px solid #0ff;
 
-    &+.item {
+    & + .item {
       margin-top: 15px;
     }
   }
@@ -82,7 +82,7 @@
         vertical-align: top;
         cursor: pointer;
 
-        &+.icon {
+        & + .icon {
           margin-left: 8px;
         }
       }
@@ -125,7 +125,7 @@
     align-items: center;
     justify-content: center;
 
-    &+.paramsWrapper {
+    & + .paramsWrapper {
       margin-top: 15px;
     }
 
@@ -198,20 +198,25 @@
       display: inline-block;
       padding: 0 0.5em;
       width: 1.5em;
-      height: 1.5em;
-      background: no-repeat center;
-      background-size: auto 1.5em;
+      height: 1em;
+      // background: no-repeat center;
+      // background-size: auto 1em;
       vertical-align: top;
       cursor: pointer;
       box-sizing: content-box;
-
-      &:first-child {
-        background-image: url('../imgs/icon-work-order.png');
-      }
-
-      &:nth-child(2) {
-        background-image: url('../imgs/icon-trend.png');
-      }
+      // background: url('../imgs/icon-video.png') no-repeat center;
     }
+    // .video {
+    //   display: inline-block;
+    //   position: absolute;
+    //   top: 6px;
+    //   left: 60%;
+    //   width: 1.4em;
+    //   height: 1em;
+    //   background: url('../imgs/icon-video.png') no-repeat center;
+    //   background-size: auto 1em;
+    //   vertical-align: top;
+    //   cursor: pointer;
+    // }
   }
 }
