@@ -21,6 +21,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import { stringify } from 'qs';
 import { SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
+import ImagePreview from '@/jingan-components/ImagePreview';
 
 const FormItem = Form.Item;
 
@@ -37,6 +38,11 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 @Form.create()
 export default class PersonnelList extends PureComponent {
 
+  state = {
+    images: [],
+    currentImage: 0,
+  };
+
   componentDidMount () {
     this.handleQuery();
   }
@@ -50,10 +56,10 @@ export default class PersonnelList extends PureComponent {
     } = this.props;
     const values = getFieldsValue();
     // console.log('query', values);
-    // dispatch({
-    //   type: 'realNameCertification/fetchPersonList',
-    //   payload: { ...values, pageNum, pageSize, companyId },
-    // })
+    dispatch({
+      type: 'realNameCertification/fetchPersonList',
+      payload: { ...values, pageNum, pageSize, companyId },
+    })
   }
 
   // 重置查询
@@ -215,9 +221,30 @@ export default class PersonnelList extends PureComponent {
         width: 200,
       },
       {
+        title: '照片',
+        dataIndex: 'photoDetails',
+        align: 'center',
+        width: 200,
+        render: (val) => (
+          <div>
+            {val.map((item, i) => (
+              <img
+                onClick={() => { this.setState({ images: val.map(item => item.webUrl), currentImage: i }) }}
+                style={{ width: '50px', height: '50px', objectFit: 'contain', cursor: 'pointer', margin: '5px' }}
+                key={i}
+                src={item.webUrl}
+                alt="照片"
+              />
+            ))}
+          </div>
+        ),
+      },
+      {
         title: '操作',
         key: '操作',
         align: 'center',
+        fixed: 'right',
+        width: 150,
         render: (val, record) => (
           <Fragment>
             <a onClick={() => this.handleToEdit(record.id)}>编辑</a>
@@ -242,7 +269,7 @@ export default class PersonnelList extends PureComponent {
           columns={columns}
           dataSource={list}
           bordered
-          // scroll={{ x: 'max-content' }}
+          scroll={{ x: 'max-content' }}
           pagination={{
             current: pageNum,
             pageSize,
@@ -265,6 +292,7 @@ export default class PersonnelList extends PureComponent {
       user: { isCompany },
       realNameCertification: { person: { pagination: { total = 0 } } },
     } = this.props;
+    const { images, currentImage } = this.state;
     //面包屑
     const breadcrumbList = [
       {
@@ -304,6 +332,7 @@ export default class PersonnelList extends PureComponent {
         <BackTop />
         {this.renderFilter()}
         {this.renderList()}
+        <ImagePreview images={images} currentImage={currentImage} />
       </PageHeaderLayout>
     )
   }

@@ -597,6 +597,11 @@ export default {
   'menu.realNameCertification.personnelManagement.edit': '编辑人员信息',
   'menu.realNameCertification.deviceManagement': '设备管理',
   'menu.realNameCertification.deviceManagement.list': '设备管理',
+  'menu.realNameCertification.authorization': '授权管理',
+  'menu.realNameCertification.authorization.list': '授权管理',
+  'menu.realNameCertification.authorization.add': '新增授权',
+  'menu.realNameCertification.identificationRecord': '识别记录',
+  'menu.realNameCertification.identificationRecord.list': '识别记录',
   // demo自带
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',

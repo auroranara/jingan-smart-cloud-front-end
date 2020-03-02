@@ -4736,6 +4736,50 @@ module.exports = env => {
             //     },
             //   ],
             // },
+            {
+              name: 'authorization',
+              path: '/real-name-certification/authorization',
+              code: 'realNameCertification.authorization',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/real-name-certification/authorization',
+                  name: 'list',
+                  redirect: '/real-name-certification/authorization/list',
+                },
+                {
+                  path: '/real-name-certification/authorization/list',
+                  name: 'list',
+                  code: 'realNameCertification.authorization',
+                  component: './RealNameCertification/Authorization/List',
+                },
+                {
+                  path: '/real-name-certification/authorization/add',
+                  name: 'add',
+                  code: 'realNameCertification.authorization',
+                  component: './RealNameCertification/Authorization/Add',
+                },
+              ],
+            },
+            {
+              name: 'identificationRecord',
+              path: '/real-name-certification/identification-record',
+              code: 'realNameCertification.identificationRecord',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/real-name-certification/identification-record',
+                  name: 'list',
+                  redirect: '/real-name-certification/identification-record/list',
+                },
+                {
+                  path: '/real-name-certification/identification-record/list',
+                  name: 'list',
+                  code: 'realNameCertification.identificationRecord',
+                  component: './RealNameCertification/Identification/List',
+                },
+              ],
+            },
           ],
         },
       ],
