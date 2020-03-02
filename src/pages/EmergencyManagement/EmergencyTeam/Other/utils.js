@@ -16,22 +16,13 @@ const {
   },
 } = codes;
 
-const getEnvirType = {
-  1: '住宅区',
-  2: '生产单位',
-  3: '机关团体',
-  4: '公共场所',
-  5: '交通要道',
-  6: '其他',
-};
-
 const envirType = [
-  { key: '1', value: '住宅区' },
-  { key: '2', value: '生产单位' },
-  { key: '3', value: '机关团体' },
-  { key: '4', value: '公共场所' },
-  { key: '5', value: '交通要道' },
-  { key: '6', value: '其他' },
+  { key: '0', value: '住宅区' },
+  { key: '1', value: '生产单位' },
+  { key: '2', value: '机关团体' },
+  { key: '3', value: '公共场所' },
+  { key: '4', value: '交通要道' },
+  { key: '5', value: '其他' },
 ];
 export { envirType };
 
@@ -48,7 +39,7 @@ export const BREADCRUMBLIST = [
 export function getSearchFields(unitType) {
   const fields = [
     {
-      id: 'environmentType',
+      id: 'name',
       label: '周边环境类型',
       render: () => (
         <Select placeholder="请选择" allowClear>
@@ -87,22 +78,21 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       dataIndex: 'surroundEnvir',
       key: 'surroundEnvir',
       align: 'center',
-      width: 200,
+      width: 180,
       render: (val, row) => {
-        const { environmentType, environmentName, environmentBear } = row;
         return (
           <div className={styles.multi}>
             <div className={styles.item}>
-              <span className={styles.label}>类型：</span>
-              <span>{getEnvirType[environmentType]}</span>
+              <span className={styles.label}>类型:</span>
+              <span>{'即使对方开始'}</span>
             </div>
             <div className={styles.item}>
-              <span className={styles.label}>名称：</span>
-              <span>{environmentName}</span>
+              <span className={styles.label}>名称:</span>
+              <span>{234234}</span>
             </div>
             <div className={styles.item}>
-              <span className={styles.label}>方位：</span>
-              <span>{environmentBear}</span>
+              <span className={styles.label}>方位:</span>
+              <span>{324234}</span>
             </div>
           </div>
         );
@@ -110,41 +100,40 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
     },
     {
       title: '与本企业最小距离(m)',
-      dataIndex: 'minSpace',
-      key: 'minSpace',
+      dataIndex: 'minDistance',
+      key: 'minDistance',
       align: 'center',
     },
     {
       title: '人员数量',
-      dataIndex: 'perNumber',
-      key: 'perNumber',
+      dataIndex: 'personNum',
+      key: 'personNum',
       align: 'center',
     },
     {
       title: '联系人',
-      dataIndex: 'contact',
-      key: 'contact',
-      width: 230,
+      dataIndex: 'preview',
+      key: 'preview',
+      width: 100,
       align: 'center',
       render: (val, row) => {
-        const { contact, areaCode, telNumber, contactPhone, contactMail } = row;
         return (
           <div className={styles.multi}>
             <div className={styles.item}>
-              <span className={styles.label}>姓名：</span>
-              <span>{contact}</span>
+              <span className={styles.label}>姓名:</span>
+              <span>{''}</span>
             </div>
             <div className={styles.item}>
-              <span className={styles.label}>固定电话：</span>
-              <span>{areaCode && telNumber ? areaCode + '-' + telNumber : '-'}</span>
+              <span className={styles.label}>固定电话:</span>
+              <span>{''}</span>
             </div>
             <div className={styles.item}>
-              <span className={styles.label}>移动电话：</span>
-              <span>{contactPhone}</span>
+              <span className={styles.label}>移动电话:</span>
+              <span>{''}</span>
             </div>
             <div className={styles.item}>
-              <span className={styles.label}>电子邮箱：</span>
-              <span>{contactMail}</span>
+              <span className={styles.label}>电子邮箱:</span>
+              <span>{''}</span>
             </div>
           </div>
         );
@@ -160,10 +149,10 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       render(id) {
         return (
           <Fragment>
-            {/* <AuthLink code={viewCode} to={`${ROUTER}/Handle/${id}`} target="_blank">
-                    查看
-                </AuthLink>
-                <Divider type="vertical" /> */}
+            {/* <AuthLink code={viewCode} to={`${ROUTER}/view/${id}`} target="_blank">
+                            查看
+                        </AuthLink>
+                        <Divider type="vertical" /> */}
             <AuthLink
               code={editCode}
               to={`${ROUTER}/edit/${id}`}
@@ -193,14 +182,14 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
 }
 
 export function handleDetails(values, deletedProps = ['companyName']) {
-  const { companyId, companyName, latitude, longitude } = values;
+  const { companyId, companyName, pointFixInfoList } = values;
   // const vals = { ...values };
   // deletedProps.forEach(p => delete vals[p]);
-  // console.log('values', values);
+  console.log('values', values);
 
   return {
     ...values,
     companyId: { key: companyId, label: companyName },
-    coordinate: latitude + ',' + longitude,
+    section: pointFixInfoList.map(item => item.areaId).join(''),
   };
 }

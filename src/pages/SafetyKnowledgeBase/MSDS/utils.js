@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import router from 'umi/router';
 import { Button, Cascader, DatePicker, Form, Input, Radio, Select } from 'antd';
+import { phoneReg, emailReg } from '@/utils/validate';
 
 import CompanySelect from '@/jingan-components/CompanySelect';
 
@@ -82,6 +83,8 @@ function genFormItem(field, getFieldDecorator) {
     formExtraStyle,
     wrapperClassName,
     onChange,
+    phoneRule,
+    emailRule,
   } = field;
 
   let child = null;
@@ -92,6 +95,10 @@ function genFormItem(field, getFieldDecorator) {
     const formOptions = formItemOptions || {};
     const opts = getOptions(options);
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
+
+    const phoneRules = { pattern: phoneReg, message: '格式不正确' };
+    const emailRules = { pattern: emailReg, message: '格式不正确' };
+    const extrsRule = (phoneRule && phoneRules) || (emailRule && emailRules);
 
     let component = null;
     const rules = [];
@@ -137,7 +144,7 @@ function genFormItem(field, getFieldDecorator) {
         break;
       default:
         placeholder = placeholder || `请输入${label}`;
-        rules.push(whiteSpaceRule);
+        rules.push(extrsRule || whiteSpaceRule);
         component = <Input placeholder={placeholder} disabled={disabled} allowClear />;
     }
 
@@ -192,6 +199,7 @@ export function renderSections(
   getFieldDecorator,
   handleSubmit,
   listUrl,
+  fileLoading = false,
   loading = false
 ) {
   const secs = getSections(sections);
@@ -202,7 +210,7 @@ export function renderSections(
       <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>
         取消
       </Button>
-      <Button type="primary" htmlType="submit" loading={loading}>
+      <Button type="primary" htmlType="submit" loading={fileLoading || loading}>
         提交
       </Button>
     </FormItem>

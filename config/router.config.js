@@ -1004,7 +1004,7 @@ module.exports = env => {
                 //   name: 'detail',
                 //   code: 'majorHazardInfo.surroundingEnvironmentInfo.view',
                 //   path: '/major-hazard-info/surrounding-environment-info/detail/:id',
-                //   component: './BaseInfo/SurroundingEnvironmentInfo/Other',
+                //   component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
                 // },
                 {
                   name: 'add',
@@ -4219,6 +4219,56 @@ module.exports = env => {
                   code: 'emergencyManagement.emergencyEstimate.detail',
                   name: 'detail',
                   component: './EmergencyManagement/EmergencyEstimate/Detail/index',
+                },
+              ],
+            },
+            {
+              path: '/emergency-management/emergency-team', // 应急队伍管理
+              code: 'emergencyManagement.emergencyTeam',
+              name: 'emergencyTeam',
+              developing: true,
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-team',
+                  name: 'emergencyTeam',
+                  redirect: '/emergency-management/emergency-team/list',
+                },
+                {
+                  path: '/emergency-management/emergency-team/list',
+                  code: 'emergencyManagement.emergencyTeam.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyTeam/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/add',
+                  code: 'emergencyManagement.emergencyTeam.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/edit/:id',
+                  code: 'emergencyManagement.emergencyTeam.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/detail/:id',
+                  code: 'emergencyManagement.emergencyTeam.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/person-list/:id',
+                  code: 'emergencyManagement.emergencyTeam.teamPersonList',
+                  name: 'personList',
+                  component: './EmergencyManagement/EmergencyTeam/List/PersonList',
+                },
+                {
+                  path: '/emergency-management/emergency-team/person-list/:id',
+                  code: 'emergencyManagement.emergencyTeam.teamPersonList',
+                  name: 'personList',
+                  component: './EmergencyManagement/EmergencyTeam/List/PersonList',
                 },
               ],
             },

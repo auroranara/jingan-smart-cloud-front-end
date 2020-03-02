@@ -204,7 +204,7 @@ export default class MajorHazardEdit extends PureComponent {
           environmentType,
           environmentName,
           environmentNum,
-          dangerDistance,
+          minSpace,
           safetyDistance,
           personNum,
           linkman,
@@ -239,7 +239,7 @@ export default class MajorHazardEdit extends PureComponent {
           environmentType,
           environmentName,
           environmentNum,
-          dangerDistance,
+          minSpace,
           safetyDistance,
           linkman,
           linkmanTel,
@@ -604,13 +604,13 @@ export default class MajorHazardEdit extends PureComponent {
       dangerLevel,
       // chemiclaNature,
       personNum,
-      environmentType,
-      environmentName,
-      environmentNum,
-      dangerDistance,
+      // environmentType,
+      // environmentName,
+      // environmentNum,
+      minSpace,
       safetyDistance,
-      linkman,
-      linkmanTel,
+      // linkman,
+      // linkmanTel,
       recordDate,
       dutyPerson,
     } = detailList;
@@ -900,8 +900,8 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label="周边防护目标最近距离(m)">
-            {getFieldDecorator('dangerDistance', {
-              initialValue: dangerDistance,
+            {getFieldDecorator('minSpace', {
+              initialValue: minSpace,
               getValueFromEvent: this.handleTrim,
             })(<Input {...itemStyles} placeholder="请填入专家评估算出的距离" maxLength={10} />)}
           </FormItem>
