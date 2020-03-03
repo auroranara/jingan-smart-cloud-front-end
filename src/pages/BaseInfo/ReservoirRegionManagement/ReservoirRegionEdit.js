@@ -43,7 +43,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   };
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -195,7 +195,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   };
 
   // 渲染企业模态框
-  renderModal() {
+  renderModal () {
     const {
       videoMonitor: { modal },
       loading,
@@ -265,7 +265,16 @@ export default class ReservoirRegionEdit extends PureComponent {
     this.setState({ wareHouseIds: item.map(item => item.id).join(',') });
   };
 
-  renderInfo() {
+  // 清空包含的库房
+  handleResetWareHouse = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ wareHouseName: '' });
+    this.setState({ wareHouseIds: '' });
+  }
+
+  renderInfo () {
     const {
       form: { getFieldDecorator },
       reservoirRegion: { envirTypeList },
@@ -410,8 +419,11 @@ export default class ReservoirRegionEdit extends PureComponent {
                 maxLength="2000"
               />
             )}
-            <Button type="primary" size="small" onClick={this.handleShowModal}>
+            <Button style={{ marginRight: '10px' }} type="primary" size="small" onClick={this.handleShowModal}>
               选择
+            </Button>
+            <Button type="primary" size="small" onClick={this.handleResetWareHouse}>
+              清空
             </Button>
           </FormItem>
 
@@ -459,7 +471,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 渲染错误信息
-  renderErrorInfo() {
+  renderErrorInfo () {
     const {
       form: { getFieldsError },
     } = this.props;
@@ -503,7 +515,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 渲染底部工具栏
-  renderFooterToolbar(isDetail, id) {
+  renderFooterToolbar (isDetail, id) {
     const { submitting } = this.state;
     return (
       <FooterToolbar>
@@ -517,15 +529,15 @@ export default class ReservoirRegionEdit extends PureComponent {
             编辑
           </Button>
         ) : (
-          <Button
-            type="primary"
-            size="large"
-            loading={submitting}
-            onClick={this.handleClickValidate}
-          >
-            提交
+            <Button
+              type="primary"
+              size="large"
+              loading={submitting}
+              onClick={this.handleClickValidate}
+            >
+              提交
           </Button>
-        )}
+          )}
         <Button size="large" onClick={this.goBack}>
           返回
         </Button>
@@ -534,7 +546,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 渲染页面所有信息
-  render() {
+  render () {
     const {
       storeHouseLoading,
       match: {
@@ -601,19 +613,19 @@ export default class ReservoirRegionEdit extends PureComponent {
     const shFields = [
       {
         id: 'name',
-        render() {
+        render () {
           return <Input placeholder="请输入库房名称" />;
         },
-        transform(value) {
+        transform (value) {
           return value.trim();
         },
       },
       {
         id: 'code',
-        render() {
+        render () {
           return <Input placeholder="请输入库房编号" />;
         },
-        transform(value) {
+        transform (value) {
           return value.trim();
         },
       },

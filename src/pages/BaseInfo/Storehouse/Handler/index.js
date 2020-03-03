@@ -3,28 +3,23 @@ import {
   Card,
   Form,
   Input,
-  Select,
   Button,
   Radio,
   Row,
-  Modal,
-  Col,
   message,
   InputNumber,
   DatePicker,
-  Cascader,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+// import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import router from 'umi/router';
 import moment from 'moment';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import styles from './index.less';
+// import styles from './index.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
-const Option = Select.Option;
 const { Group: RadioGroup } = Radio;
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
@@ -51,19 +46,19 @@ const regionColumns = [
 const regionFields = [
   {
     id: 'number',
-    render() {
+    render () {
       return <Input placeholder="库区编号" />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
   {
     id: 'name',
-    render() {
+    render () {
       return <Input placeholder="库区名称" />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
@@ -94,19 +89,19 @@ const dangerSourceColumns = [
 const dangerSourceFields = [
   {
     id: 'code',
-    render() {
+    render () {
       return <Input placeholder="统一编码" />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
   {
     id: 'name',
-    render() {
+    render () {
       return <Input placeholder="危险源名称" />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
@@ -142,7 +137,7 @@ export default class StorehouseHandler extends PureComponent {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       form: { setFieldsValue },
       match: { params: { id = null } = {} },
@@ -170,9 +165,9 @@ export default class StorehouseHandler extends PureComponent {
               produceDate, //* 投产日期
               spary, //是否设置自动喷淋
               lowTemperature, //是否低温仓储仓库
-              dangerSource, //是否构成重大危险源
-              dangerSourceUnit, //所属危险化学品重大危险源单元
-              unitCode, //所属重大危险源单元编号
+              // dangerSource, //是否构成重大危险源
+              // dangerSourceUnit, //所属危险化学品重大危险源单元
+              // unitCode, //所属重大危险源单元编号
               anumber, //库区编号
               aname, //库区名
               // dangerSourceMessage,
@@ -440,6 +435,12 @@ export default class StorehouseHandler extends PureComponent {
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
 
+  // 清空库区名称
+  handleResetArea = () => {
+    this.props.form.setFieldsValue({ areaId: undefined });
+    this.setState({ selectedRegion: {} });
+  }
+
   /**
    * 渲染表单
    */
@@ -452,9 +453,9 @@ export default class StorehouseHandler extends PureComponent {
     } = this.props;
     const {
       selectedCompany,
-      dangerSourceUnitVisible,
+      // dangerSourceUnitVisible,
       selectedRegion,
-      selectedDangerSource,
+      // selectedDangerSource,
       selectedMaterials,
       materialsNum,
     } = this.state;
@@ -508,8 +509,11 @@ export default class StorehouseHandler extends PureComponent {
                   value={selectedRegion.name}
                   placeholder="请选择库区名称"
                 />
-                <Button type="primary" onClick={this.handleViewRegionModal}>
+                <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleViewRegionModal}>
                   选择
+                </Button>
+                <Button type="primary" onClick={this.handleResetArea}>
+                  清空
                 </Button>
               </Fragment>
             )}
@@ -692,7 +696,7 @@ export default class StorehouseHandler extends PureComponent {
     );
   };
 
-  render() {
+  render () {
     const {
       companyLoading,
       regionLoading,
@@ -702,7 +706,7 @@ export default class StorehouseHandler extends PureComponent {
       company: { companyModal },
       storehouse: { regionModal, dangerSourceModal },
       materials,
-      form: { getFieldValue },
+      // form: { getFieldValue },
     } = this.props;
     const {
       companyModalVisible,
@@ -711,8 +715,8 @@ export default class StorehouseHandler extends PureComponent {
       materialsModalVisible,
       selectedMaterials,
       materialsNum,
+      selectedRegion,
     } = this.state;
-
     const title = id ? '编辑库房' : '新增库房';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -779,19 +783,19 @@ export default class StorehouseHandler extends PureComponent {
     const materialsFields = [
       {
         id: 'casNo',
-        render() {
+        render () {
           return <Input placeholder="CAS号" />;
         },
-        transform(value) {
+        transform (value) {
           return value.trim();
         },
       },
       {
         id: 'chineName',
-        render() {
+        render () {
           return <Input placeholder="品名" />;
         },
-        transform(value) {
+        transform (value) {
           return value.trim();
         },
       },
@@ -824,6 +828,9 @@ export default class StorehouseHandler extends PureComponent {
           onClose={() => {
             this.setState({ regionModalVisible: false });
           }}
+        // rowSelection={{
+        //   selectedRowKeys: selectedRegion && selectedRegion.id ? [selectedRegion.id] : [],
+        // }}
         />
         {/* 重大危险源 */}
         <CompanyModal

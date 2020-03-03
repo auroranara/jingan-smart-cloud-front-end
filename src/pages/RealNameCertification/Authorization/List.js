@@ -364,7 +364,6 @@ export default class AuthorizationList extends PureComponent {
           list,
           pagination: { pageNum = 1, pageSize = 10, total = 0 },
         },
-        storageLocationDict,
         deviceTypeDict,
       },
     } = this.props;
@@ -381,10 +380,7 @@ export default class AuthorizationList extends PureComponent {
         dataIndex: 'type',
         align: 'center',
         width: 150,
-        render: (val) => {
-          const target = storageLocationDict.find(item => +item.key === +val);
-          return target ? target.label : '';
-        },
+        render: (val) => '本地',
       },
       {
         title: '照片',

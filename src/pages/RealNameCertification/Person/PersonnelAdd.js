@@ -315,7 +315,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="证件类型">
                   {getFieldDecorator('certificateType', {
-                    initialValue: id ? detail.ethnic : '1',
+                    initialValue: id ? detail.certificateType : '1',
                   })(
                     <Select placeholder="请选择">
                       {[{ value: '1', label: '身份证' }].map(({ value, label }, index) => (
