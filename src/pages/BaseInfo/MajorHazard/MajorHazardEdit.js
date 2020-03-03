@@ -204,7 +204,7 @@ export default class MajorHazardEdit extends PureComponent {
           environmentType,
           environmentName,
           environmentNum,
-          dangerDistance,
+          minSpace,
           safetyDistance,
           personNum,
           linkman,
@@ -239,7 +239,7 @@ export default class MajorHazardEdit extends PureComponent {
           environmentType,
           environmentName,
           environmentNum,
-          dangerDistance,
+          minSpace,
           safetyDistance,
           linkman,
           linkmanTel,
@@ -604,13 +604,13 @@ export default class MajorHazardEdit extends PureComponent {
       dangerLevel,
       // chemiclaNature,
       personNum,
-      environmentType,
-      environmentName,
-      environmentNum,
-      dangerDistance,
+      // environmentType,
+      // environmentName,
+      // environmentNum,
+      minSpace,
       safetyDistance,
-      linkman,
-      linkmanTel,
+      // linkman,
+      // linkmanTel,
       recordDate,
       dutyPerson,
     } = detailList;
@@ -898,58 +898,12 @@ export default class MajorHazardEdit extends PureComponent {
               <Input {...itemStyles} placeholder="请填入周边500米内常住人口数量" maxLength={10} />
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="周边环境类型">
-            {getFieldDecorator('environmentType', {
-              initialValue: environmentType,
-              getValueFromEvent: this.handleTrim,
-            })(
-              <TextArea
-                {...itemStyles}
-                placeholder="请输入周边环境类型"
-                rows={4}
-                maxLength="2000"
-              />
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="周边环境名称">
-            {getFieldDecorator('environmentName', {
-              initialValue: environmentName,
-              getValueFromEvent: this.handleTrim,
-            })(
-              <TextArea
-                {...itemStyles}
-                placeholder="请输入周边环境名称"
-                rows={4}
-                maxLength="2000"
-              />
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="周边环境人数">
-            {getFieldDecorator('environmentNum', {
-              initialValue: environmentNum,
-              getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} placeholder="请输入周边环境人数" />)}
-          </FormItem>
 
-          <FormItem {...formItemLayout} label="周边环境与危险源最近距离(m)">
-            {getFieldDecorator('dangerDistance', {
-              initialValue: dangerDistance,
+          <FormItem {...formItemLayout} label="周边防护目标最近距离(m)">
+            {getFieldDecorator('minSpace', {
+              initialValue: minSpace,
               getValueFromEvent: this.handleTrim,
-            })(
-              <Input {...itemStyles} placeholder="请输入周边环境与危险源最近距离" maxLength={10} />
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="周边环境联系人">
-            {getFieldDecorator('linkman', {
-              initialValue: linkman,
-              getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} placeholder="请输入周边环境联系人" maxLength={10} />)}
-          </FormItem>
-          <FormItem {...formItemLayout} label="周边环境联系人电话">
-            {getFieldDecorator('linkmanTel', {
-              initialValue: linkmanTel,
-              getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} placeholder="请输入周边环境联系人电话" maxLength={15} />)}
+            })(<Input {...itemStyles} placeholder="请填入专家评估算出的距离" maxLength={10} />)}
           </FormItem>
         </Form>
       </Card>

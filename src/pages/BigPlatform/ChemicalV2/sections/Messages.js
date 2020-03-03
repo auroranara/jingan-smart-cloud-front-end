@@ -20,6 +20,7 @@ export default class Messages extends PureComponent {
       handleGasOpen,
       model,
       handleClickMsgEquip,
+      ...restProps
     } = this.props;
     return (
       <div className={styles.container} style={{ ...style }}>
@@ -38,6 +39,7 @@ export default class Messages extends PureComponent {
             typeClickList={TypeClickList}
             phoneVisible={true}
             handleClickMsgEquip={handleClickMsgEquip}
+            {...restProps}
           />
         </div>
       </div>
