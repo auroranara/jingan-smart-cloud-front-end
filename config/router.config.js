@@ -4255,7 +4255,7 @@ module.exports = env => {
                 {
                   path: '/emergency-management/emergency-team/detail/:id',
                   code: 'emergencyManagement.emergencyTeam.view',
-                  name: 'detail',
+                  name: 'view',
                   component: './EmergencyManagement/EmergencyTeam/Handle/index',
                 },
                 {
