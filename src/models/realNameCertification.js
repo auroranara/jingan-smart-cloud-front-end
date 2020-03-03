@@ -109,14 +109,14 @@ export default {
     ],
     // 有效期判断字典
     validateDict: [
-      { key: '1', label: '有效期内' },
-      { key: '2', label: '未在有效期' },
+      { key: '1', label: '有效期内', color: '#2bbb59' },
+      { key: '2', label: '未在有效期', color: 'red' },
       { key: '3', label: '未设置' },
     ],
     // 准入时间判断字典
     accessDict: [
-      { key: '1', label: '准入时间内' },
-      { key: '2', label: '未在准入时间' },
+      { key: '1', label: '准入时间内', color: '#2bbb59' },
+      { key: '2', label: '未在准入时间', color: 'red' },
       { key: '3', label: '未设置' },
     ],
     // 人员权限字典
@@ -125,6 +125,12 @@ export default {
       { value: 'idCardPermission', label: '刷卡权限' },
       { value: 'faceAndCardPermission', label: '人卡合一权限' },
       { value: 'idCardFacePermission', label: '认证对比权限' },
+    ],
+    // 照片状态
+    picStateDict: [
+      { value: 1, label: '授权成功' },
+      { value: 2, label: '销权中' },
+      { value: 3, label: '授权中（可能原因：设备离线）' },
     ],
   },
   effects: {
@@ -180,10 +186,10 @@ export default {
     // 获取授权列表
     *fetchAuthorizationList ({ payload }, { call, put }) {
       const res = yield call(fetchAuthorizationList, payload);
-      if (res && res.code === 200) {
+      if (res && res.code === 200 && res.data) {
         yield put({
           type: 'saveAuthorization',
-          payload: res.data,
+          payload: res.data.data || { content: [], index: 1, length: 10, total: 0 },
         })
       }
     },
@@ -237,7 +243,7 @@ export default {
       }
     },
     saveAuthorization (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+      const { content: list = [], index: pageNum = 1, length: pageSize = 10, total = 0 } = action.payload;
       return {
         ...state,
         authorization: {

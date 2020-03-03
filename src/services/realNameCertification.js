@@ -43,8 +43,13 @@ export async function authorizationPerson (body) {
 }
 
 // 获取授权列表
+// export async function fetchAuthorizationList (params) {
+//   return request(`/acloud_new/v2/ci/HGFace/hgAuthorizationInfoForPage?${stringify(params)}`)
+// }
+
+// 获取授权列表
 export async function fetchAuthorizationList (params) {
-  return request(`/acloud_new/v2/ci/HGFace/hgAuthorizationInfoForPage?${stringify(params)}`)
+  return request(`/acloud_new/v2/ci/HGFace/Authorization/hgAuthorizationManage/list?${stringify(params)}`)
 }
 
 // 全部销权

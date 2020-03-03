@@ -63,7 +63,7 @@ const breadcrumbList = [
 
 @connect(({ realNameCertification, loading }) => ({
   realNameCertification,
-  // loading: loading.effects['realNameCertification/'],
+  loading: loading.effects['realNameCertification/fetchAuthorizationList'],
 }))
 @Form.create()
 export default class AuthorizationList extends PureComponent {
@@ -98,11 +98,13 @@ export default class AuthorizationList extends PureComponent {
       type: 'realNameCertification/fetchAuthorizationList',
       payload: {
         ...resValues,
-        pageNum,
-        pageSize,
-        startTime: time ? time[0].unix() * 1000 : undefined,
-        endTime: time ? time[1].unix() * 1000 : undefined,
-        isAuthorization: 1,
+        index: pageNum,
+        length: pageSize,
+        // startTime: time ? time[0].unix() * 1000 : undefined,
+        // endTime: time ? time[1].unix() * 1000 : undefined,
+        startTime: time ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        endTime: time ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        // isAuthorization: 1,
       },
     })
   }
@@ -151,20 +153,21 @@ export default class AuthorizationList extends PureComponent {
     const callback = (success, msg) => {
       if (success) {
         message.success('销权成功');
+        this.setState({ deviceModalVisible: false });
       } else {
         message.error('销权失败')
       }
     }
     if (deleteLocation.includes('1')) {
       dispatch({
-        type: 'realNameCertification/deleteAuthorization',
+        type: 'realNameCertification/deleteAllAuthorization',
         payload: { deviceKey, type: '1' },
         callback,
       })
     }
     if (deleteLocation.includes('2')) {
       dispatch({
-        type: 'realNameCertification/deleteAuthorization',
+        type: 'realNameCertification/deleteAllAuthorization',
         payload: { deviceKey, type: '2' },
         callback,
       })
@@ -173,22 +176,49 @@ export default class AuthorizationList extends PureComponent {
 
   // 点击编辑
   handleClickEdit = (detail) => {
+    const {
+      passTime,
+      permissionTime,
+      facePermission,
+      idCardPermission,
+      faceAndCardPermission,
+      idCardFacePermission,
+    } = detail;
+    let permissions = [];
+    if (+facePermission === 2) { permissions.push('facePermission') };
+    if (+idCardPermission === 2) { permissions.push('idCardPermission') };
+    if (+faceAndCardPermission === 2) { permissions.push('faceAndCardPermission') };
+    if (+idCardFacePermission === 2) { permissions.push('idCardFacePermission') };
+    let accessTime = [];
+    if (passTime) {
+      const temp = passTime.split(',');
+      for (let i = 0; i < temp.length; i += 2) {
+        accessTime.push([this.generateMoment(temp[i]), this.generateMoment(temp[i + 1])]);
+      }
+    }
     this.setState({
       detail,
       editModalVisible: true,
-      validType: '1',
-      validateTime: [], // 有效期
-      accessType: '1',
-      accessTime: [], // 准入时间
-      permissions: ['facePermission', 'idCardPermission', 'faceAndCardPermission', 'idCardFacePermission'], // 人员权限
+      validType: permissionTime ? '2' : '1',
+      validateTime: permissionTime ? permissionTime.split(',').map(item => moment(+item)) : [], // 有效期
+      accessType: passTime ? '2' : '1',
+      accessTime, // 准入时间
+      permissions, // 人员权限
     })
+  }
+
+  // 将 HH:mm:ss 转化为moment对象
+  generateMoment = (str) => {
+    if (!str) return null;
+    const [hour, minute, second] = str.split(':');
+    return moment().set({ hour, minute, second });
   }
 
   renderFormLine = ({ label, value, key = 0, isDivider = false }) => isDivider ? (
     <Divider key={key} type="horizontal" />
   ) : (
       <Row key={key} gutter={16} style={{ marginBottom: '20px' }}>
-        <Col style={{ color: '#909399' }} span={5}>{label}</Col>
+        <Col style={{ color: '#909399' }} span={6}>{label}</Col>
         <Col span={15}>{value}</Col>
       </Row>
     )
@@ -268,13 +298,13 @@ export default class AuthorizationList extends PureComponent {
       <Card>
         <Form>
           <Row gutter={16}>
-            {/* <Col {...colWrapper}>
+            <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('personName')(
                   <Input placeholder="姓名" />
                 )}
               </FormItem>
-            </Col> */}
+            </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('personGuid')(
@@ -358,7 +388,7 @@ export default class AuthorizationList extends PureComponent {
   // 渲染列表
   renderList = () => {
     const {
-      // loading,
+      loading,
       realNameCertification: {
         authorization: {
           list,
@@ -370,33 +400,41 @@ export default class AuthorizationList extends PureComponent {
     const columns = [
       {
         title: '姓名',
-        dataIndex: 'name',
+        dataIndex: 'personName',
         align: 'center',
         width: 200,
-        render: (val, row) => row.hgFaceInfo ? row.hgFaceInfo.name : '',
       },
       {
         title: '储存位置',
         dataIndex: 'type',
         align: 'center',
         width: 150,
-        render: (val) => '本地',
+        render: (val) => (+val === 1 && '本地') || (+val === 2 && '云端') || '',
       },
       {
         title: '照片',
-        key: 'photoDetails',
+        dataIndex: 'faceOutputs',
         align: 'center',
         width: 250,
-        render: (val, row) => (
+        render: (val) => (
           <div>
-            {row.hgFaceInfo && Array.isArray(row.hgFaceInfo.photoDetails) ? row.hgFaceInfo.photoDetails.map((item, i) => (
-              <img
-                onClick={() => { this.setState({ images: row.hgFaceInfo.photoDetails.map(item => item.webUrl), currentImage: i }) }}
-                style={{ width: '50px', height: '50px', objectFit: 'contain', cursor: 'pointer', margin: '5px' }}
-                key={i}
-                src={item.webUrl}
-                alt="照片"
-              />
+            {Array.isArray(val) ? val.map(({ faceUrl, state }, i) => (
+              <div className={styles.imageShower} key={i}>
+                <img
+                  onClick={() => { this.setState({ images: val.map(item => item.faceUrl), currentImage: i }) }}
+                  src={faceUrl}
+                  alt="照片"
+                />
+                {state === 3 && (
+                  <Tooltip placement="right" title="授权成功"><Icon style={{ color: '#2bbb59' }} type="check-circle" theme="filled" /></Tooltip>
+                )}
+                {state === 2 && (
+                  <Tooltip placement="right" title="销权中"><Icon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
+                )}
+                {state === 1 && (
+                  <Tooltip placement="right" title="授权中（可能原因：设备离线）"><Icon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
+                )}
+              </div>
             )) : null}
           </div>
         ),
@@ -432,10 +470,10 @@ export default class AuthorizationList extends PureComponent {
       },
       {
         title: '操作时间',
-        dataIndex: 'confirmTime',
+        dataIndex: 'createTime',
         align: 'center',
         width: 200,
-        render: (val) => val ? moment(val).format('YYYY-MM-DD') : '',
+        render: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '',
       },
       {
         title: '操作',
@@ -463,8 +501,8 @@ export default class AuthorizationList extends PureComponent {
     return list && list.length ? (
       <Card style={{ marginTop: '24px' }}>
         <Table
-          rowKey="id"
-          // loading={loading}
+          rowKey="createTime"
+          loading={loading}
           columns={columns}
           dataSource={list}
           bordered
@@ -616,31 +654,41 @@ export default class AuthorizationList extends PureComponent {
         <Modal
           title="查看"
           visible={viewModalVisible}
-          width={500}
+          width={560}
           footer={null}
           onCancel={() => { this.setState({ viewModalVisible: false }) }}
         >
           {[
-            { label: '姓名', value: ({ hgFaceInfo }) => hgFaceInfo ? hgFaceInfo.name : '' },
+            { label: '姓名', value: 'personName' },
             { label: '人员编号(GUID)', value: 'personGuid' },
             {
               label: '照片',
-              value: ({ hgFaceInfo: { photoDetails = [] } = {} }) => (
+              value: ({ faceOutputs }) => (
                 <div>
-                  {Array.isArray(photoDetails) ? photoDetails.map((item, i) => (
-                    <img
-                      onClick={() => { this.setState({ images: photoDetails.map(item => item.webUrl), currentImage: i }) }}
-                      style={{ width: '50px', height: '50px', objectFit: 'contain', margin: '0 5px', cursor: 'pointer' }}
-                      key={i}
-                      src={item.webUrl}
-                      alt="照片"
-                    />
+                  {Array.isArray(faceOutputs) ? faceOutputs.map(({ faceUrl, state }, i) => (
+                    <div className={styles.imageShower} key={i}>
+                      <img
+                        style={{ width: '90px', height: '90px' }}
+                        onClick={() => { this.setState({ images: faceOutputs.map(item => item.faceUrl), currentImage: i }) }}
+                        src={faceUrl}
+                        alt="照片"
+                      />
+                      {state === 3 && (
+                        <Tooltip placement="right" title="授权成功"><Icon style={{ color: '#2bbb59' }} type="check-circle" theme="filled" /></Tooltip>
+                      )}
+                      {state === 2 && (
+                        <Tooltip placement="right" title="销权中"><Icon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
+                      )}
+                      {state === 1 && (
+                        <Tooltip placement="right" title="授权中（可能原因：设备离线）"><Icon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
+                      )}
+                    </div>
                   )) : null}
                 </div>
               ),
             },
             { isDivider: true },
-            { label: '设备名称', value: () => '测试' },
+            { label: '设备名称', value: 'deviceName' },
             {
               label: '设备类型',
               value: ({ deviceType }) => {
@@ -649,12 +697,18 @@ export default class AuthorizationList extends PureComponent {
               },
             },
             { label: '设备序列号', value: 'deviceKey' },
-            { label: '识别方式', value: () => 'common_recType_local' },
+            { label: '识别方式', value: ({ recType }) => (+recType === 1 && '本地') || (+recType === 2 && '云端') || '' },
             { isDivider: true },
-            { label: '储存位置', value: () => '本地' },
-            { label: '权限有效期', value: 'personName' },
-            { label: '准入时间', value: 'personName' },
-            { label: '操作时间', value: ({ confirmTime }) => confirmTime ? moment(confirmTime).format('YYYY-MM-DD') : '' },
+            { label: '储存位置', value: ({ type }) => (+type === 1 && '本地') || (+type === 2 && '云端') || '' },
+            {
+              label: '权限有效期', value: ({ permissionTime }) => {
+                if (!permissionTime) return '不限制';
+                const temp = permissionTime.split(',');
+                return `${moment(+temp[0]).format('YYYY-MM-DD HH:mm:ss')}-${moment(+temp[1]).format('YYYY-MM-DD HH:mm:ss')}`;
+              },
+            },
+            { label: '准入时间', value: ({ passTime }) => passTime || '不限制' },
+            { label: '操作时间', value: ({ createTime }) => createTime ? moment(createTime).format('YYYY-MM-DD HH:mm:ss') : '' },
           ].map(({ label, value, isDivider = false }, i) => this.renderFormLine({ label, value: typeof (value) === 'function' ? value(detail) : detail[value], key: i, isDivider }))}
         </Modal>
 
@@ -669,11 +723,11 @@ export default class AuthorizationList extends PureComponent {
           <Row gutter={16} className={styles.addContainer}>
             <Col span={12}>
               <div className={styles.prompt}>姓名</div>
-              <Input value={detail.hgFaceInfo ? detail.hgFaceInfo.name : ''} disabled />
+              <Input value={detail.personName || ''} disabled />
             </Col>
             <Col span={12}>
               <div className={styles.prompt}>设备名</div>
-              <Input value={'测试'} disabled />
+              <Input value={detail.deviceName || ''} disabled />
             </Col>
 
             <Col span={24}>
@@ -690,6 +744,7 @@ export default class AuthorizationList extends PureComponent {
               {validType === '2' && (
                 <RangePicker
                   value={validateTime}
+                  disabledDate={(current) => current && current < moment().startOf('day')}
                   style={{ width: '100%' }}
                   format="YYYY-MM-DD"
                   placeholder={['开始时间', '结束时间']}
