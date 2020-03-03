@@ -4226,7 +4226,7 @@ module.exports = env => {
               path: '/emergency-management/emergency-team', // 应急队伍管理
               code: 'emergencyManagement.emergencyTeam',
               name: 'emergencyTeam',
-              developing: true,
+              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -4236,7 +4236,7 @@ module.exports = env => {
                 },
                 {
                   path: '/emergency-management/emergency-team/list',
-                  code: 'emergencyManagement.emergencyTeam.listView',
+                  code: 'emergencyManagement.emergencyTeam.list',
                   name: 'list',
                   component: './EmergencyManagement/EmergencyTeam/List/index',
                 },
@@ -4254,15 +4254,9 @@ module.exports = env => {
                 },
                 {
                   path: '/emergency-management/emergency-team/detail/:id',
-                  code: 'emergencyManagement.emergencyTeam.detail',
+                  code: 'emergencyManagement.emergencyTeam.view',
                   name: 'detail',
                   component: './EmergencyManagement/EmergencyTeam/Handle/index',
-                },
-                {
-                  path: '/emergency-management/emergency-team/person-list/:id',
-                  code: 'emergencyManagement.emergencyTeam.teamPersonList',
-                  name: 'personList',
-                  component: './EmergencyManagement/EmergencyTeam/List/PersonList',
                 },
                 {
                   path: '/emergency-management/emergency-team/person-list/:id',

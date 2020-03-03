@@ -10,18 +10,8 @@ import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
-import { phoneReg, emailReg } from '@/utils/validate';
-// import { hasAuthority } from '@/utils/customAuth';
 import MapModal from '@/components/MapModal';
-// import codes from '@/utils/codes';
 import style from './index.less';
-
-// 权限
-// const {
-//   baseInfo: {
-//     surroundingEnvironmentInfo: { edit: editCode },
-//   },
-// } = codes;
 
 const FOLDER = 'envirInfo';
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -168,13 +158,6 @@ export default class Edit extends PureComponent {
       });
     });
   };
-
-  //   isDetail = () => {
-  //     const {
-  //       match: { url },
-  //     } = this.props;
-  //     return url && url.includes('detail');
-  //   };
 
   handleUploadPhoto = info => {
     const {
@@ -340,14 +323,12 @@ export default class Edit extends PureComponent {
       },
       form: { getFieldDecorator },
       user: {
-        currentUser: { permissionCodes, unitType },
+        currentUser: { unitType },
       },
     } = this.props;
 
     const { photoList, areaCode, fixedPhone, fileLoading } = this.state;
-    // const editAuth = hasAuthority(editCode, permissionCodes);
 
-    // const isDet = this.isDetail();
     const title = id ? '编辑' : '新增';
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
@@ -422,7 +403,6 @@ export default class Edit extends PureComponent {
       {
         name: 'contactMail',
         label: '联系人电子邮箱',
-        rules: [{ pattern: emailReg, message: '格式不正确' }],
         emailRule: true,
         required: false,
       },
