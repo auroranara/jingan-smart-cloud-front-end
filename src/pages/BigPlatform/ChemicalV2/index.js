@@ -302,6 +302,8 @@ export default class Chemical extends PureComponent {
         'fetchFireDeviceList',
         // 重大危险源存储物质
         'fetchDangerSourceMaterials',
+        // 消防主机详情
+        'fetchFireDeviceDetail',
       ],
     });
   }
@@ -519,7 +521,11 @@ export default class Chemical extends PureComponent {
       description: (
         <div
           className={styles.notificationBody}
-          onClick={() => this.handleClickMsgEquip(monitorEquipmentId)}
+          onClick={() => {
+            monitorEquipmentType === '1'
+              ? this.handleClickFireMsg(monitorEquipmentId)
+              : this.handleClickMsgEquip(monitorEquipmentId);
+          }}
         >
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
           <div>{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
@@ -1265,9 +1271,36 @@ export default class Chemical extends PureComponent {
     this.setState({ monitorType, gasListDrawerVisible: true });
   };
 
+  // 点击地图消防主机
   handleClickFireMonitor = fireDetail => {
     this.setState({ fireDetail });
     this.setDrawerVisible('fireMonitorDetail');
+  };
+
+  // 点击消防主机消息
+  handleClickFireMsg = monitorEquipmentId => {
+    // return null;
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    this.fetchFireDeviceDetail(
+      {
+        id: monitorEquipmentId,
+        pageNum: 1,
+        pageSize: 0,
+        companyId,
+      },
+      res => {
+        const { code, data } = res || {};
+        if (code === 200 && data && data.list) {
+          const { list: fireDeviceList = [] } = data;
+          const fireDeviceDetail = fireDeviceList[0] || {};
+          this.handleClickFireMonitor(fireDeviceDetail);
+        }
+      }
+    );
   };
 
   /**
@@ -1460,6 +1493,7 @@ export default class Chemical extends PureComponent {
                     handleGasOpen={this.handleGasOpen}
                     model={newUnitFireControl}
                     handleClickMsgEquip={this.handleClickMsgEquip}
+                    handleClickFireMsg={this.handleClickFireMsg}
                   />
                 ) : (
                   <div className={styles.msgContainer}>
