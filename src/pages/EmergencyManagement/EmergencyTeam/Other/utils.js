@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 // import Link from 'umi/link';
 import { Input, Divider, Select, Form, Modal } from 'antd';
+import Ellipsis from '@/components/Ellipsis';
 
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import codes from '@/utils/codes';
@@ -89,19 +90,21 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
       dataIndex: 'companyName',
       key: 'companyName',
       align: 'center',
-      width: 250,
+      width: 260,
     },
     {
       title: '队伍名称',
       dataIndex: 'treamName',
       key: 'treamName',
       align: 'center',
+      width: 200,
     },
     {
       title: '队伍级别',
       dataIndex: 'treamLevel',
       key: 'treamLevel',
       align: 'center',
+      width: 150,
       render: val => getLevel[val],
     },
     {
@@ -109,7 +112,7 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
       dataIndex: 'charger',
       key: 'charger',
       align: 'center',
-      width: 180,
+      width: 220,
       render: (val, row) => {
         const { treamHead, areaCode, telNumber, headPartName, headPhone } = row;
 
@@ -144,12 +147,20 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
       dataIndex: 'treamDescription',
       key: 'treamDescription',
       align: 'center',
+      width: 260,
+      render: val => (
+        <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
+          {val}
+        </Ellipsis>
+      ),
     },
     {
       title: '队伍人员',
       dataIndex: 'personNumber',
       key: 'personNumber',
       align: 'center',
+      // fixed: 'right',
+      width: 120,
       render: (val, row) => {
         return (
           <AuthSpan
