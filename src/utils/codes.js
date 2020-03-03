@@ -497,6 +497,18 @@ export default {
       detail: 'emergencyManagement.emergencyProcess.view',
       delete: 'emergencyManagement.emergencyProcess.delete',
     },
+    // 应急队伍
+    emergencyTeam: {
+      list: 'emergencyManagement.emergencyTeam.list',
+      add: 'emergencyManagement.emergencyTeam.add',
+      edit: 'emergencyManagement.emergencyTeam.edit',
+      view: 'emergencyManagement.emergencyTeam.view',
+      delete: 'emergencyManagement.emergencyTeam.delete',
+      teamPersonList: 'emergencyManagement.emergencyTeam.teamPersonList',
+      addTeamPerson: 'emergencyManagement.emergencyTeam.addTeamPerson',
+      editTeamPerson: 'emergencyManagement.emergencyTeam.editTeamPerson',
+      deleteTeamPerson: 'emergencyManagement.emergencyTeam.deleteTeamPerson',
+    },
   },
 
   baseInfo: {
@@ -630,7 +642,7 @@ export default {
     },
 
     // 周边环境信息
-    surroundingEnvironmentInfo:{
+    surroundingEnvironmentInfo: {
       list: 'majorHazardInfo.surroundingEnvironmentInfo.listView',
       view: 'majorHazardInfo.surroundingEnvironmentInfo.view',
       add: 'majorHazardInfo.surroundingEnvironmentInfo.add',
