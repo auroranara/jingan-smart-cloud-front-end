@@ -3,7 +3,7 @@ import request from '../../utils/request';
 
 const URL_PREFIX = '/acloud_new/v2/surroundEnvironment';
 
-/** 生产装置 */
+/** 周边环境信息 */
 
 // 列表
 export async function queryEnvirInfoList(params) {
