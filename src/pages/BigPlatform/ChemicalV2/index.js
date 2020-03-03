@@ -521,7 +521,11 @@ export default class Chemical extends PureComponent {
       description: (
         <div
           className={styles.notificationBody}
-          onClick={() => this.handleClickMsgEquip(monitorEquipmentId)}
+          onClick={() => {
+            monitorEquipmentType === '1'
+              ? this.handleClickFireMsg(monitorEquipmentId)
+              : this.handleClickMsgEquip(monitorEquipmentId);
+          }}
         >
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
           <div>{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
