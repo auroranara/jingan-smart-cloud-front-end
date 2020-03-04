@@ -45,10 +45,11 @@ const defaultUploadProps = {
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 
 @Form.create()
-@connect(({ sensor, majorHazardInfo, materials, loading }) => ({
+@connect(({ sensor, majorHazardInfo, materials, user, loading }) => ({
   sensor,
   majorHazardInfo,
   materials,
+  user,
   companyLoading: loading.effects['sensor/fetchModelList'],
   middleLoading: loading.effects['materials/fetchMaterialsList'],
 }))
@@ -84,6 +85,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: { isCompany, currentUser },
     } = this.props;
     if (id) {
       // 如果编辑
@@ -98,8 +100,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
           flowChartControlPointDetails,
           equipmentListDetails,
           equipmentLayoutDetails,
+          iskeySupervisionProcess,
+          keySupervisionProcess,
         }) => {
-          setFieldsValue({ companyId });
+          !isCompany && setFieldsValue({ companyId });
+          +iskeySupervisionProcess === 1 && setFieldsValue({ keySupervisionProcess });
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
             selectedMiddle: middleList || [],
@@ -122,9 +127,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
               url: item.webUrl,
               name: item.fileName,
             })) : [],
-          })
+          });
         },
       })
+    } else if (isCompany) {
+      this.setState({ selectedCompany: { id: currentUser.companyId, name: currentUser.companyName } });
     }
   }
 
@@ -161,11 +168,17 @@ export default class EmergencySuppliesHandler extends PureComponent {
       equipmentList,
       // 设备布置图
       equipmentLayoutList,
+      selectedCompany,
     } = this.state;
+    if (!selectedCompany || !selectedCompany.id) {
+      message.warn('companyId缺失');
+      return;
+    }
     validateFields((err, formData) => {
       if (err) return;
       const payload = {
         ...formData,
+        companyId: selectedCompany.id,
         flowChartControlPoint: JSON.stringify(flowChartList),
         equipmentList: JSON.stringify(equipmentList),
         equipmentLayout: JSON.stringify(equipmentLayoutList),
@@ -242,6 +255,13 @@ export default class EmergencySuppliesHandler extends PureComponent {
     });
   }
 
+  // 验证是否数字
+  validateNumber = (rule, value, callback) => {
+    if (value && !isNaN(value)) {
+      callback();
+    } else callback('请输入数字')
+  }
+
   handleFileUploadChange = ({ file, fileList }, listTag, loadingTag) => {
     let newState = {};
     if (file.status === 'uploading') {
@@ -301,14 +321,17 @@ export default class EmergencySuppliesHandler extends PureComponent {
    */
   renderForm = () => {
     const {
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
       match: { params: { id } },
       majorHazardInfo: {
         // 详情
         highRiskProcessDetail: detail,
         // 重点监管危险化工工艺选项
         keySupervisionProcessOptions,
+        qualificationLevelDict,
+        SILLevelDict,
       },
+      user: { isCompany },
     } = this.props;
     // 是否是详情
     const isDetail = /detail/i.test(window.location.href);
@@ -326,27 +349,29 @@ export default class EmergencySuppliesHandler extends PureComponent {
       equipmentListLoading,
       equipmentLayoutLoading,
     } = this.state;
-
+    const iskeySupervisionProcess = getFieldValue('iskeySupervisionProcess');
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
+          {!isCompany && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位名称"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
                 </Button>
-              </Fragment>
-            )}
-          </FormItem>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="统一编码" {...formItemLayout}>
             {getFieldDecorator('unifiedCode', {
               initialValue: id ? detail.unifiedCode : undefined,
@@ -359,6 +384,28 @@ export default class EmergencySuppliesHandler extends PureComponent {
               rules: [{ required: true, message: '请输入生产工艺名称' }],
             })(<Input placeholder="请输入生产工艺名称" {...itemStyles} />)}
           </FormItem>
+          <FormItem label="是否重点监管危险化工工艺" {...formItemLayout}>
+            {getFieldDecorator('iskeySupervisionProcess', {
+              initialValue: id ? detail.iskeySupervisionProcess : undefined,
+              rules: [{ required: true, message: '请选择是否重点监管危险化工工艺' }],
+            })(
+              <RadioGroup {...itemStyles}>
+                <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          {+iskeySupervisionProcess === 1 && (
+            <FormItem label="重点监管危险化工工艺" {...formItemLayout}>
+              {getFieldDecorator('keySupervisionProcess')(
+                <Select placeholder="重点监管危险化工工艺" {...itemStyles}>
+                  {keySupervisionProcessOptions.map(({ value, label }) => (
+                    <Option key={value} value={value}>{label}</Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          )}
           <FormItem label="反应类型" {...formItemLayout}>
             {getFieldDecorator('reactionType', {
               initialValue: id ? detail.reactionType : undefined,
@@ -375,7 +422,6 @@ export default class EmergencySuppliesHandler extends PureComponent {
                   value={selectedMiddle && selectedMiddle.length ? selectedMiddle.map(({ chineName }) => chineName).join('、') : undefined}
                   {...itemStyles}
                   disabled
-                  TextArea
                   rows={4}
                   placeholder="请选择中间产品" />
                 <Button type="primary" onClick={this.handleViewMiddle}>选择</Button>
@@ -392,7 +438,6 @@ export default class EmergencySuppliesHandler extends PureComponent {
                   value={selectedFinal && selectedFinal.length ? selectedFinal.map(({ chineName }) => chineName).join('、') : undefined}
                   {...itemStyles}
                   disabled
-                  TextArea
                   rows={4}
                   placeholder="请选择最终产品" />
                 <Button type="primary" onClick={this.handleViewFinal}>选择</Button>
@@ -415,38 +460,28 @@ export default class EmergencySuppliesHandler extends PureComponent {
               <TextArea rows={4} placeholder="请输入工艺危险特点"  {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="安全控制基本要求" {...formItemLayout}>
-            {getFieldDecorator('basicControlRequire', {
-              initialValue: id ? detail.basicControlRequire : undefined,
-              rules: [{ required: true, message: '请输入安全控制基本要求' }],
+          <FormItem label="工艺系统简况" {...formItemLayout}>
+            {getFieldDecorator('processBrief', {
+              initialValue: id ? detail.processBrief : undefined,
+              rules: [{ required: true, message: '请输入工艺系统简况' }],
             })(
-              <TextArea
-                rows={4}
-                placeholder="请输入安全控制基本要求"
-                {...itemStyles}
-              />
+              <TextArea rows={4} placeholder="请输入工艺系统简况" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="是否重点监管危险化工工艺" {...formItemLayout}>
-            {getFieldDecorator('iskeySupervisionProcess', {
-              initialValue: id ? detail.iskeySupervisionProcess : undefined,
-              rules: [{ required: true, message: '请选择是否重点监管危险化工工艺' }],
+          <FormItem label="最高温度（℃）" {...formItemLayout}>
+            {getFieldDecorator('maxTemperature', {
+              initialValue: id ? detail.maxTemperature : undefined,
+              rules: [{ required: true, validator: this.validateNumber }],
             })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="1">是</Radio>
-                <Radio value="2">否</Radio>
-              </RadioGroup>
+              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="重点监管危险化工工艺" {...formItemLayout}>
-            {getFieldDecorator('keySupervisionProcess', {
-              initialValue: id ? detail.keySupervisionProcess : undefined,
+          <FormItem label="最高压力（KPa）" {...formItemLayout}>
+            {getFieldDecorator('maxPressure', {
+              initialValue: id ? detail.maxPressure : undefined,
+              rules: [{ required: true, validator: this.validateNumber }],
             })(
-              <Select placeholder="请选择规格型号" {...itemStyles}>
-                {keySupervisionProcessOptions.map(({ value, label }) => (
-                  <Option key={value} value={value}>{label}</Option>
-                ))}
-              </Select>
+              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="岗位操作人数" {...formItemLayout}>
@@ -491,22 +526,34 @@ export default class EmergencySuppliesHandler extends PureComponent {
               <TextArea rows={4} placeholder="请输入设计单位" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="工艺系统简况" {...formItemLayout}>
-            {getFieldDecorator('processBrief', {
-              initialValue: id ? detail.processBrief : undefined,
-              rules: [{ required: true, message: '请输入工艺系统简况' }],
-            })(
-              <TextArea rows={4} placeholder="请输入工艺系统简况" {...itemStyles} />
-            )}
-          </FormItem>
           <FormItem label="设计单位资质等级" {...formItemLayout}>
             {getFieldDecorator('qualificationGrade', {
               initialValue: id ? detail.qualificationGrade : undefined,
               rules: [{ required: true, message: '请输入设计单位资质等级' }],
             })(
+              <Select placeholder="请选择设计单位资质等级" {...itemStyles}>
+                {qualificationLevelDict.map(({ value, label }) => (
+                  <Option key={value} value={value}>{label}</Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label="资质等级描述" {...formItemLayout}>
+            {getFieldDecorator('qualifGradeDescription', {
+              initialValue: id ? detail.qualifGradeDescription : undefined,
+              rules: [{ required: true, message: '请输入资质等级描述' }],
+            })(
+              <TextArea rows={4} placeholder="请输入资质等级描述" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="安全控制基本要求" {...formItemLayout}>
+            {getFieldDecorator('basicControlRequire', {
+              initialValue: id ? detail.basicControlRequire : undefined,
+              rules: [{ required: true, message: '请输入安全控制基本要求' }],
+            })(
               <TextArea
                 rows={4}
-                placeholder="请输入设计单位资质等级"
+                placeholder="请输入安全控制基本要求"
                 {...itemStyles}
               />
             )}
@@ -531,20 +578,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
               initialValue: id ? detail.sisLevel : undefined,
               rules: [{ required: true, message: '请选择SIL等级' }],
             })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="1">1级</Radio>
-                <Radio value="2">2级</Radio>
-                <Radio value="3">3级</Radio>
-                <Radio value="4">4级</Radio>
-              </RadioGroup>
-            )}
-          </FormItem>
-          <FormItem label="资质等级描述" {...formItemLayout}>
-            {getFieldDecorator('qualifGradeDescription', {
-              initialValue: id ? detail.qualifGradeDescription : undefined,
-              rules: [{ required: true, message: '请输入资质等级描述' }],
-            })(
-              <TextArea rows={4} placeholder="请输入资质等级描述" {...itemStyles} />
+              <Select placeholder="请选择SIL等级" {...itemStyles}>
+                {SILLevelDict.map(({ value, label }) => (
+                  <Option key={value} value={value}>{label}</Option>
+                ))}
+              </Select>
             )}
           </FormItem>
           <FormItem label="安全阀/爆破片" {...formItemLayout}>
@@ -619,10 +657,10 @@ export default class EmergencySuppliesHandler extends PureComponent {
               编辑
             </Button>
           ) : (
-            <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
-              提交
+              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+                提交
             </Button>
-          )}
+            )}
         </Row>
       </Card>
     );

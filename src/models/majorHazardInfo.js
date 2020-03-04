@@ -22,6 +22,19 @@ export default {
     },
     // 高危工艺流程详情
     highRiskProcessDetail: {},
+    // 设计单位资质等级字典
+    qualificationLevelDict: [
+      { value: '0', label: '甲' },
+      { value: '1', label: '乙' },
+      { value: '2', label: '丙' },
+    ],
+    // SIL等级字典
+    SILLevelDict: [
+      { value: '0', label: '1级' },
+      { value: '1', label: '2级' },
+      { value: '2', label: '3级' },
+      { value: '3', label: '4级' },
+    ],
   },
   effects: {
     // 获取高危工艺流程列表
