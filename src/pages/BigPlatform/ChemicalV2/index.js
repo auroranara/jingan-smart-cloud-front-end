@@ -425,20 +425,26 @@ export default class Chemical extends PureComponent {
         // console.log('e.data', data);
         const {
           type,
-          monitorMessageDto: { monitorEquipmentId, statusType },
+          monitorMessageDto: { monitorEquipmentId, statusType } = {},
+          messageContent = '{}',
         } = data;
         // 更新消息
         this.fetchScreenMessage(data);
-        // 报警弹框
-        +type === 100 && this.showNotification(data);
-        // 地图点位弹跳
-        +type === 100 &&
-          monitorEquipmentId &&
-          this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
-        // 更新监测对象各个类型的数量
-        +type === 100 && this.fetchMonitorTargetCount({ companyId });
-        // 更新IoT监测各个类型的数量
-        +type === 100 && this.fetchMonitorEquipCount({ companyId });
+        if (+type === 100) {
+          // 报警弹框
+          this.showNotification(data);
+          // 地图点位弹跳
+          monitorEquipmentId && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
+          // 更新监测对象各个类型的数量
+          this.fetchMonitorTargetCount({ companyId });
+          // 更新IoT监测各个类型的数量
+          this.fetchMonitorEquipCount({ companyId });
+        } else if (+type === 101) {
+          // 变更预警消息
+          this.childMap.handleChangeWarning();
+          // 添加/替换特种设备图标及信息
+          this.childMap.handleAddSpecialEquipment(JSON.parse(messageContent));
+        }
       } catch (error) {
         console.log('error', error);
       }
@@ -1507,7 +1513,7 @@ export default class Chemical extends PureComponent {
                   </div>
                 )}
 
-                <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
+                {/* <div className={styles.fadeBtn} onClick={this.handleClickNotification} /> */}
               </div>
             </Col>
           </Row>
