@@ -81,8 +81,10 @@ export default class IdentificationRecord extends PureComponent {
         pageNum,
         pageSize,
         type: tabActiveKey,
-        startTime: time && time.length ? time[0].unix() * 1000 : undefined,
-        endTime: time && time.length ? time[1].unix() * 1000 : undefined,
+        // startTime: time && time.length ? time[0].unix() * 1000 : undefined,
+        // endTime: time && time.length ? time[1].unix() * 1000 : undefined,
+        startTime: time ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        endTime: time ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
       },
     })
   }
@@ -354,7 +356,7 @@ export default class IdentificationRecord extends PureComponent {
         width: 150,
         render: (val) => {
           const target = validateDict.find(item => +item.key === +val);
-          return target ? target.label : '';
+          return target ? (<span style={{ color: target.color || 'inherit' }}>{target.label}</span>) : '';
         },
       },
       {
@@ -364,7 +366,7 @@ export default class IdentificationRecord extends PureComponent {
         width: 150,
         render: (val) => {
           const target = accessDict.find(item => +item.key === +val);
-          return target ? target.label : '';
+          return target ? (<span style={{ color: target.color || 'inherit' }}>{target.label}</span>) : '';
         },
       },
     ];

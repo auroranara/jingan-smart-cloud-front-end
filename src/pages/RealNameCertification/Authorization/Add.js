@@ -21,6 +21,7 @@ import styles from './Add.less';
 import classNames from 'classnames';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import router from 'umi/router';
+import moment from 'moment';
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
@@ -347,6 +348,7 @@ export default class AddAuthorization extends PureComponent {
                     <RangePicker
                       value={validateTime}
                       style={{ width: '100%' }}
+                      disabledDate={(current) => current && current < moment().startOf('day')}
                       format="YYYY-MM-DD"
                       placeholder={['开始时间', '结束时间']}
                       onChange={(validateTime) => { this.setState({ validateTime }) }}

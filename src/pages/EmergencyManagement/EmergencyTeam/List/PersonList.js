@@ -146,7 +146,6 @@ export default class PersonList extends PureComponent {
     const addAuth = hasAuthority(addCode, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLISTPER);
-    breadcrumbList.push({ title: '列表', name: '列表' });
 
     const columns = getPersonColumns(this.handleDelete, this.handleShowModal);
 

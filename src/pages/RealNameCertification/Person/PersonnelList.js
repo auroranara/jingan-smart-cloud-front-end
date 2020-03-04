@@ -224,7 +224,7 @@ export default class PersonnelList extends PureComponent {
         title: '照片',
         dataIndex: 'photoDetails',
         align: 'center',
-        width: 200,
+        width: 250,
         render: (val) => (
           <div>
             {val.map((item, i) => (
@@ -261,7 +261,7 @@ export default class PersonnelList extends PureComponent {
         ),
       },
     ];
-    return (
+    return list && list.length ? (
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
@@ -284,7 +284,9 @@ export default class PersonnelList extends PureComponent {
           }}
         />
       </Card>
-    )
+    ) : (
+        <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
+      )
   }
 
   render () {

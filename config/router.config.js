@@ -876,7 +876,7 @@ module.exports = env => {
               path: '/major-hazard-info/high-risk-process', // 工艺流程
               code: 'majorHazardInfo.highRiskProcess',
               name: 'highRiskProcess',
-              developing: true,
+              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -4255,7 +4255,7 @@ module.exports = env => {
                 {
                   path: '/emergency-management/emergency-team/detail/:id',
                   code: 'emergencyManagement.emergencyTeam.view',
-                  name: 'detail',
+                  name: 'view',
                   component: './EmergencyManagement/EmergencyTeam/Handle/index',
                 },
                 {
