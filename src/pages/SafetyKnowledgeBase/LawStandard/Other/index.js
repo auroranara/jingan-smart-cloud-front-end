@@ -1,118 +1,170 @@
 import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
+import { TYPEDICT, JUDGEDICT, COERCIONDEGREEDICT, RESULTDICT } from '../List';
 import moment from 'moment';
-import { DEFAULT_FORMAT, RESULTS } from '../List';
-import styles from './index.less';
+// import styles from './index.less';
 
 export default class OperationRecordOther extends Component {
   initialize = ({
     companyId,
     companyName,
-    lawName,
-    number,
-    publishDate,
-    enforceDate,
-    publishUnit,
-    content,
-    activity,
-    evaluatResult,
-    note,
-    otherFileList,
+    code,
+    classify,
+    coerciveProcedure,
+    organization,
+    releaseDate,
+    commissionDate,
+    regulations,
+    abolishDate,
+    identifyDate,
+    digest,
+    correspondingActivities,
+    result,
+    remark,
+    accessoryDetails,
+    name,
   }) => ({
     company: companyId ? { key: companyId, label: companyName } : undefined,
-    lawName: lawName || undefined,
-    number: number || undefined,
-    publishDate: publishDate ? moment(publishDate) : undefined,
-    enforceDate: enforceDate ? moment(enforceDate) : undefined,
-    publishUnit: publishUnit || undefined,
-    content: content || undefined,
-    activity: activity || undefined,
-    evaluatResult: evaluatResult ? `${evaluatResult}` : undefined,
-    note: note || undefined,
-    otherFileList: otherFileList || undefined,
+    name: name || undefined,
+    code: code || undefined,
+    classify: classify || undefined,
+    coerciveProcedure: coerciveProcedure || undefined,
+    organization: organization || undefined,
+    releaseDate: releaseDate ? moment(releaseDate) : undefined,
+    commissionDate: commissionDate ? moment(commissionDate) : undefined,
+    regulations: regulations || undefined,
+    abolishDate: abolishDate ? moment(abolishDate) : undefined,
+    identifyDate: identifyDate ? moment(identifyDate) : undefined,
+    digest: digest || undefined,
+    correspondingActivities: correspondingActivities || undefined,
+    result: result || undefined,
+    remark: remark || undefined,
+    accessoryDetails: accessoryDetails || undefined,
   });
 
   transform = ({ unitId, company, publishDate, enforceDate, ...rest }) => ({
     companyId: unitId || company.key,
     // publishDate: publishDate && publishDate.format(DEFAULT_FORMAT),
     // enforceDate: enforceDate && enforceDate.format(DEFAULT_FORMAT),
-    publishDate: +publishDate,
-    enforceDate: +enforceDate,
+    // publishDate: +publishDate,
+    // enforceDate: +enforceDate,
     ...rest,
   });
 
-  getFields = ({ unitId }) => [
+  getFields = ({ unitId, regulations }) => [
     ...(!unitId
       ? [
-          {
-            id: 'company',
-            label: '单位名称',
-            required: true,
-            component: 'CompanySelect',
-          },
-        ]
+        {
+          id: 'company',
+          label: '单位名称',
+          required: true,
+          component: 'CompanySelect',
+        },
+      ]
       : []),
     {
-      id: 'lawName',
-      label: '法律法规标准名称',
+      id: 'name',
+      label: '文件名称',
       required: true,
       component: 'Input',
     },
     {
-      id: 'number',
-      label: '文号',
+      id: 'code',
+      label: '法规编号',
       required: true,
       component: 'Input',
     },
     {
-      id: 'publishDate',
-      label: '公布日期',
+      id: 'classify',
+      label: '分类',
+      required: true,
+      component: 'Select',
+      props: {
+        list: TYPEDICT,
+      },
+    },
+    {
+      id: 'coerciveProcedure',
+      label: '强制程度',
+      required: true,
+      component: 'Select',
+      props: {
+        list: COERCIONDEGREEDICT,
+      },
+    },
+    {
+      id: 'organization',
+      label: '发布机构',
+      required: true,
+      component: 'Input',
+    },
+    {
+      id: 'releaseDate',
+      label: '发布日期',
       required: true,
       component: 'DatePicker',
     },
     {
-      id: 'enforceDate',
-      label: '实施日期',
+      id: 'commissionDate',
+      label: '启用日期',
       required: true,
       component: 'DatePicker',
     },
     {
-      id: 'publishUnit',
-      label: '发布机关',
-      component: 'Input',
+      id: 'regulations',
+      label: '现行法规',
+      required: true,
+      component: 'Select',
+      props: {
+        list: JUDGEDICT,
+      },
+      refreshEnable: true,
+    },
+    ...(+regulations === 0 ? [{
+      id: 'abolishDate',
+      label: '废止日期',
+      required: true,
+      component: 'DatePicker',
+    }] : []),
+    {
+      id: 'identifyDate',
+      label: '辨识日期',
+      required: true,
+      component: 'DatePicker',
     },
     {
-      id: 'content',
-      label: '内容摘要',
+      id: 'digest',
+      label: '摘要',
+      required: true,
       component: 'TextArea',
     },
     {
-      id: 'activity',
+      id: 'correspondingActivities',
       label: '对应活动',
       component: 'TextArea',
     },
     {
-      id: 'evaluatResult',
+      id: 'result',
       label: '评价结果',
       required: true,
       component: 'Radio',
       props: {
-        list: RESULTS,
+        list: RESULTDICT,
       },
     },
     {
-      id: 'note',
+      id: 'remark',
       label: '备注',
       component: 'TextArea',
     },
     {
-      id: 'otherFileList',
+      id: 'accessoryDetails',
       label: '附件',
       component: 'CustomUpload',
     },
   ];
 
-  render() {
+  render () {
     const props = {
       initialize: this.initialize,
       transform: this.transform,
