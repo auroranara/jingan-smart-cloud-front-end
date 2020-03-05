@@ -257,3 +257,8 @@ export async function deleteElectronicWaybill({ id }) {
     method: 'DELETE',
   });
 }
+
+/* 测试数据库连接 */
+export async function testLink(params) {
+  return request(`/acloud_new/v2/carPlateRecognition/testDbConnect?${stringify(params)}`);
+}

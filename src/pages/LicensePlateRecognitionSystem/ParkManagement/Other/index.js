@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button, message } from 'antd';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import AsyncSelect from '@/jingan-components/AsyncSelect';
 import { isNumber } from '@/utils/utils';
@@ -24,9 +25,27 @@ const MAPPER2 = {
   getList: 'getPersonList',
 };
 
-@connect(({ user }) => ({
-  user,
-}))
+@connect(
+  ({ user }) => ({
+    user,
+  }),
+  dispatch => ({
+    testLink(payload, callback) {
+      dispatch({
+        type: 'licensePlateRecognitionSystem/testLink',
+        payload,
+        callback: (success, data) => {
+          if (success) {
+            message.success('连接成功！');
+          } else {
+            message.error('连接失败！');
+          }
+          callback && callback(success, data);
+        },
+      });
+    },
+  })
+)
 export default class ParkOther extends Component {
   componentDidMount() {
     const {
@@ -86,7 +105,7 @@ export default class ParkOther extends Component {
     dbPassword: dbPassword || undefined,
   });
 
-  transform = ({ unitId, manager, ...payload }) => {
+  transform = ({ unitId, manager, test, ...payload }) => {
     return {
       companyId: unitId,
       managerId: manager && manager.key,
@@ -114,7 +133,7 @@ export default class ParkOther extends Component {
       ].filter(v => v)
     );
 
-  getFields = ({ unitType, unitId, isDetail, isEdit }) => [
+  getFields = ({ unitType, unitId, isDetail, isEdit, isAdd }) => [
     ...(isDetail || isEdit
       ? [
           {
@@ -179,9 +198,22 @@ export default class ParkOther extends Component {
             component: 'Input',
             props: {
               type: 'Password',
-              password: true,
             },
           },
+          ...(isEdit || isAdd
+            ? [
+                {
+                  id: 'test',
+                  label: '测试连接',
+                  component: Button,
+                  props: {
+                    type: 'primary',
+                    children: '测试',
+                    onClick: this.handleClick,
+                  },
+                },
+              ]
+            : []),
         ]
       : []),
   ];
@@ -193,6 +225,12 @@ export default class ParkOther extends Component {
       this.page.form.setFieldsValue({
         managerPhone: phoneNumber ? `${phoneNumber}` : undefined,
       });
+  };
+
+  handleClick = () => {
+    const { testLink } = this.props;
+    const values = this.page && this.page.form && this.page.form.getFieldsValue();
+    testLink(values);
   };
 
   render() {

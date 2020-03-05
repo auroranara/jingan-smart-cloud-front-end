@@ -54,6 +54,7 @@ import {
   addElectronicWaybill,
   editElectronicWaybill,
   deleteElectronicWaybill,
+  testLink,
 } from '@/services/licensePlateRecognitionSystem';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -917,6 +918,12 @@ export default {
     // 删除电子运单
     *deleteElectronicWaybill({ payload, callback }, { call, put }) {
       const response = yield call(deleteElectronicWaybill, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    /* 测试数据库连接 */
+    *testLink({ payload, callback }, { call, put }) {
+      const response = yield call(testLink, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },

@@ -186,7 +186,7 @@ export default class PresenceRecord extends Component {
       render: (value, { inOutRecordList: [{ inTime }, { outTime }] }) => (
         <div className={styles.lineWrapper}>
           <div>{inTime ? moment(inTime).format(DEFAULT_FORMAT) : '——'}</div>
-          <div>{outTime ? moment(inTime).format(DEFAULT_FORMAT) : '——'}</div>
+          <div>{outTime ? moment(outTime).format(DEFAULT_FORMAT) : '——'}</div>
         </div>
       ),
     },
@@ -286,7 +286,7 @@ export default class PresenceRecord extends Component {
         withUnitId
         {...props}
       >
-        <ImagePreview images={images} />
+        <ImagePreview images={images} hidden />
       </TablePage>
     ) : (
       <Company
