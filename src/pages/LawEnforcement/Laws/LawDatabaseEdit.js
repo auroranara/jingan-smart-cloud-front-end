@@ -73,12 +73,25 @@ export default class LawDatabaseEdit extends PureComponent {
     const {
       dispatch,
       match: { params: { id } },
+      form: { setFieldsValue },
     } = this.props;
     if (id) {
       // 根据id获取详情
       dispatch({
         type: 'lawDatabase/fetchLawDetail',
         payload: { id, pageNum: 1, pageSize: 0 },
+        callback: ({
+          regulations, // 是否现行法规
+          abolishDate,// 废止日期
+          accessoryDetails,
+        }) => {
+          setFieldsValue({ regulations, fileList: Array.isArray(accessoryDetails) ? accessoryDetails : [] });
+          if (+regulations === 0) {
+            setTimeout(() => {
+              setFieldsValue({ abolishDate: abolishDate ? moment(abolishDate) : undefined });
+            }, 0);
+          }
+        },
       });
     }
   }
@@ -138,6 +151,8 @@ export default class LawDatabaseEdit extends PureComponent {
   // 将moment转化为时间戳
   generateTimeStamp = obj => obj ? obj.unix() * 1000 : undefined
 
+  trim = e => e.target.value.replace(/\s/, '')
+
   handleFileUploadChange = ({ file, fileList }, listTag, loadingTag) => {
     let newState = {};
     if (file.status === 'uploading') {
@@ -182,7 +197,7 @@ export default class LawDatabaseEdit extends PureComponent {
   renderLawsInfo () {
     const {
       submitting,
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
       match: { params: { id } },
       lawDatabase: {
         detail = {},
@@ -190,7 +205,7 @@ export default class LawDatabaseEdit extends PureComponent {
         coercionDegreeDict,
       },
     } = this.props;
-
+    const regulations = getFieldValue('regulations');
     const { fileList, uploading } = this.state;
 
     return (
@@ -200,6 +215,7 @@ export default class LawDatabaseEdit extends PureComponent {
             {getFieldDecorator('name', {
               initialValue: id ? detail.name : undefined,
               rules: [{ required: true, message: '请输入文件名称' }],
+              getValueFromEvent: this.trim,
             })(
               <Input placeholder="请输入" />
             )}
@@ -209,6 +225,7 @@ export default class LawDatabaseEdit extends PureComponent {
             {getFieldDecorator('code', {
               initialValue: id ? detail.code : undefined,
               rules: [{ required: true, message: '请输入法规编号' }],
+              getValueFromEvent: this.trim,
             })(
               <Input placeholder="请输入" />
             )}
@@ -244,6 +261,7 @@ export default class LawDatabaseEdit extends PureComponent {
             {getFieldDecorator('organization', {
               initialValue: id ? detail.organization : undefined,
               rules: [{ required: true, message: '请输入法规编号' }],
+              getValueFromEvent: this.trim,
             })(
               <Input placeholder="请输入" />
             )}
@@ -269,7 +287,6 @@ export default class LawDatabaseEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label="现行法规">
             {getFieldDecorator('regulations', {
-              initialValue: id ? detail.regulations : undefined,
               rules: [{ required: true, message: '请选择是否现行法规' }],
             })(
               <RadioGroup>
@@ -279,18 +296,21 @@ export default class LawDatabaseEdit extends PureComponent {
             )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label="废止日期">
-            {getFieldDecorator('abolishDate', {
-              initialValue: id && detail.abolishDate ? moment(detail.abolishDate) : undefined,
-              rules: [{ required: true, message: '请选择废止日期' }],
-            })(
-              <DatePicker />
-            )}
-          </FormItem>
+          {+regulations === 0 && (
+            <FormItem {...formItemLayout} label="废止日期">
+              {getFieldDecorator('abolishDate', {
+                rules: [{ required: true, message: '请选择废止日期' }],
+              })(
+                <DatePicker />
+              )}
+            </FormItem>
+          )}
 
           <FormItem {...formItemLayout} label="备注">
             {getFieldDecorator('remark', {
               initialValue: id ? detail.remark : undefined,
+              getValueFromEvent: this.trim,
+              rules: [{ max: 100, message: '请输入不超过50个字符' }],
             })(
               <TextArea rows={3} placeholder="请输入" />
             )}

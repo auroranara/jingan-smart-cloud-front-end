@@ -7,6 +7,7 @@ import TablePage from '@/templates/TablePage';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './index.less';
 
 export const DEFAULT_FORMAT = 'YYYY-MM-DD';
@@ -84,52 +85,6 @@ export default class AlarmMessage extends Component {
   formateDate = val => val ? moment(val).format('YYYY-MM-DD') : ''
 
   getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
-    // {
-    //   title: '法律法规标准名称',
-    //   dataIndex: 'lawName',
-    //   align: 'center',
-    // },
-    // {
-    //   title: '文号',
-    //   dataIndex: 'number',
-    //   align: 'center',
-    // },
-    // {
-    //   title: '公布日期',
-    //   dataIndex: 'publishDate',
-    //   render: time => time && moment(time).format(DEFAULT_FORMAT),
-    //   align: 'center',
-    // },
-    // {
-    //   title: '实施日期',
-    //   dataIndex: 'enforceDate',
-    //   render: time => time && moment(time).format(DEFAULT_FORMAT),
-    //   align: 'center',
-    // },
-    // {
-    //   title: '内容摘要',
-    //   dataIndex: 'content',
-    //   render: this.renderEllipsis,
-    //   align: 'center',
-    // },
-    // {
-    //   title: '对应活动',
-    //   dataIndex: 'activity',
-    //   render: this.renderEllipsis,
-    //   align: 'center',
-    // },
-    // {
-    //   title: '评价结果',
-    //   dataIndex: 'evaluatResult',
-    //   render: value => <RadioOrSpan type="span" list={RESULTS} value={value} />,
-    //   align: 'center',
-    // },
-    // {
-    //   title: '内容附件',
-    //   dataIndex: 'otherFileList',
-    //   render: value => <CustomUpload type="span" value={value} />,
-    //   align: 'center',
-    // },
     {
       title: '文件名称',
       dataIndex: 'name',
@@ -162,16 +117,22 @@ export default class AlarmMessage extends Component {
       title: '摘要',
       dataIndex: 'digest',
       align: 'center',
+      render: value => (<Ellipsis tooltip length={20}>{value}</Ellipsis>),
     },
     {
       title: '对应活动',
       dataIndex: 'correspondingActivities',
       align: 'center',
+      render: value => (<Ellipsis tooltip length={20}>{value}</Ellipsis>),
     },
     {
       title: '评价结果',
       dataIndex: 'result',
       align: 'center',
+      render: value => {
+        const target = RESULTDICT.find(item => +item.key === +value);
+        return target ? target.value : ''
+      },
     },
     {
       title: '附件',

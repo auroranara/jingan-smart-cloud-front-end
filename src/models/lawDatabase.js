@@ -154,12 +154,14 @@ export default {
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取法律法规库详情
-    *fetchLawDetail ({ payload }, { call, put }) {
+    *fetchLawDetail ({ payload, callback }, { call, put }) {
       const res = yield call(fetchLawList, payload);
+      const detail = res && res.code === 200 && res.data && res.data.list ? res.data.list[0] : {};
       yield put({
         type: 'saveDetail',
-        payload: res && res.code === 200 && res.data && res.data.list ? res.data.list[0] : {},
-      })
+        payload: detail,
+      });
+      callback && callback(detail);
     },
     // 删除法律法规库
     *deleteLaw ({ payload, callback }, { call }) {

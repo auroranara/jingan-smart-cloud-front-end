@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -9,7 +9,6 @@ import {
   Select,
   Divider,
   Col,
-  Popconfirm,
   message,
   Row,
 } from 'antd';
@@ -159,6 +158,7 @@ export default class lawDatabaseList extends PureComponent {
       lawDatabase: {
         typeDict, // 分类字典
         judgeDict,
+        coercionDegreeDict,
       },
     } = this.props;
 
@@ -196,7 +196,7 @@ export default class lawDatabaseList extends PureComponent {
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('coerciveProcedure')(
                   <Select placeholder="强制程度" allowClear>
-                    {judgeDict.map(({ value, label }) => (
+                    {coercionDegreeDict.map(({ value, label }) => (
                       <Option value={value} key={value}>
                         {label}
                       </Option>
@@ -214,7 +214,7 @@ export default class lawDatabaseList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>
+                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
                   查询
               </Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
