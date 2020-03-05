@@ -227,8 +227,8 @@ export default class ArticleList extends PureComponent {
 
     return (
       <div>
-        <Row gutter={8}>
-          <Form>
+        <Form>
+          <Row gutter={8}>
             <Col span={6}>
               <FormItem>
                 {getFieldDecorator('name', {
@@ -264,22 +264,22 @@ export default class ArticleList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-          </Form>
-          <Col span={4}>
-            <FormItem>
-              <Button type="primary" onClick={this.handleArticleQuery}>
-                查询
-              </Button>
-              <Button
-                type="primary"
-                style={{ marginLeft: '10px' }}
-                onClick={this.handleArticleReset}
-              >
-                重置
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
+            <Col span={4}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleArticleQuery}>
+                  查询
+                </Button>
+                <Button
+                  type="primary"
+                  style={{ marginLeft: '10px' }}
+                  onClick={this.handleArticleReset}
+                >
+                  重置
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
 
         <List
           grid={{ gutter: 16, column: 1 }}

@@ -945,7 +945,7 @@ export default class SpecialEquipment extends PureComponent {
             </FormItem>
           )}
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           {isDetail ? (
             <Button
               type="primary"

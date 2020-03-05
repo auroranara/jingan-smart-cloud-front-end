@@ -234,8 +234,8 @@ export default class CoursewareList extends PureComponent {
 
     return (
       <div className={styles.learningCourseWare}>
-        <Row gutter={8}>
-          <Form>
+        <Form>
+          <Row gutter={8}>
             <Col {...colWrapper}>
               <FormItem>
                 {getFieldDecorator('name', {
@@ -288,18 +288,18 @@ export default class CoursewareList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-          </Form>
-          <Col {...colWrapper}>
-            <FormItem>
-              <Button type="primary" onClick={this.handleQuery}>
-                查询
-              </Button>
-              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleReset}>
-                重置
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
+            <Col {...colWrapper}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleQuery}>
+                  查询
+                </Button>
+                <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleReset}>
+                  重置
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
 
         <List
           grid={{ gutter: 16, column: 1 }}

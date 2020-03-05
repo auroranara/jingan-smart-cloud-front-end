@@ -268,8 +268,8 @@ export default class ArticleList extends PureComponent {
       user: { currentUser: { permissionCodes } },
     } = this.props
     return (
-      <Row gutter={8}>
-        <Form>
+      <Form>
+        <Row gutter={8}>
           <Col {...colWrapper}>
             <FormItem>
               {getFieldDecorator('name')(
@@ -302,15 +302,15 @@ export default class ArticleList extends PureComponent {
               )}
             </FormItem>
           </Col>
-        </Form>
-        <Col {...colWrapper}>
-          <FormItem>
-            <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
-            <Button style={{ marginRight: '10px' }} onClick={this.handleResetQuery}>重置</Button>
-            <Button disabled={!hasAuthority(addCode, permissionCodes)} type="primary" onClick={this.handleAddArticle}>新增</Button>
-          </FormItem>
-        </Col>
-      </Row>
+          <Col {...colWrapper}>
+            <FormItem>
+              <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
+              <Button style={{ marginRight: '10px' }} onClick={this.handleResetQuery}>重置</Button>
+              <Button disabled={!hasAuthority(addCode, permissionCodes)} type="primary" onClick={this.handleAddArticle}>新增</Button>
+            </FormItem>
+          </Col>
+        </Row>
+      </Form>
     )
   }
 

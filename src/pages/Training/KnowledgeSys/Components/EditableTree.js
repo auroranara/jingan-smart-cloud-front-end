@@ -198,10 +198,10 @@ class EditableTree extends PureComponent {
           style={{ width: '450px', display: 'inline-block' }}
         >
           <Row gutter={20}>
-            <Col span={18}>
+            <Col span={16}>
               <FormItem>{getFieldDecorator('name', { initialValue: name })(<Input />)}</FormItem>
             </Col>
-            <Col span={6} style={{ height: '24px' }}>
+            <Col span={8} style={{ height: '24px' }}>
               <Button
                 type="primary"
                 size={'small'}

@@ -180,15 +180,13 @@ export default class AddEquipmentType extends PureComponent {
             })(
               <Checkbox.Group >
                 {deviceTypeList.map(({ id, name }) => (
-                  <Col span={8} key={id}>
-                    <Checkbox disabled={disabledKeys.includes(id)} value={id}>{name}</Checkbox>
-                  </Col>
+                  <Checkbox disabled={disabledKeys.includes(id)} value={id}>{name}</Checkbox>
                 ))}
               </Checkbox.Group>
             )}
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button onClick={() => { router.push(listUrl) }}>取消</Button>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>确定</Button>
         </Row>

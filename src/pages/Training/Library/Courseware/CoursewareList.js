@@ -41,7 +41,7 @@ const defaultPageSize = 10;
 
 // 筛选栏grid配置
 const colWrapper = {
-  xl: 12, md: 12, sm: 24, xs: 24,
+  xl: 8, md: 12, sm: 24, xs: 24,
 }
 const statusList = [
   { value: '1', label: '发布' },
@@ -257,8 +257,8 @@ export default class CoursewareList extends PureComponent {
       user: { currentUser: { permissionCodes } },
     } = this.props
     return (
-      <Row gutter={8}>
-        <Form>
+      <Form>
+        <Row gutter={8}>
           <Col {...colWrapper}>
             <FormItem>
               {getFieldDecorator('name')(
@@ -298,8 +298,8 @@ export default class CoursewareList extends PureComponent {
               <Button disabled={!hasAuthority(addCode, permissionCodes)} onClick={this.handleToAdd} type="primary">新增</Button>
             </FormItem>
           </Col>
-        </Form>
-      </Row>
+        </Row>
+      </Form>
     )
   }
 

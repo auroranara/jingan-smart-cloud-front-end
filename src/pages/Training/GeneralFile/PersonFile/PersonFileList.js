@@ -246,8 +246,8 @@ export default class PersonFileList extends PureComponent {
     ];
     return (
       <div>
-        <Row gutter={8}>
-          <Form>
+        <Form>
+          <Row gutter={8}>
             <Col span={6}>
               <FormItem>
                 {getFieldDecorator('studentName', {
@@ -256,18 +256,18 @@ export default class PersonFileList extends PureComponent {
                 })(<Input placeholder="请输入姓名" />)}
               </FormItem>
             </Col>
-          </Form>
-          <Col span={4}>
-            <FormItem>
-              <Button type="primary" onClick={this.handleQuery}>
-                查询
-              </Button>
-              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleReset}>
-                重置
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
+            <Col span={4}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleQuery}>
+                  查询
+                </Button>
+                <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleReset}>
+                  重置
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
 
         <Card title="人员汇总" style={{ marginTop: '20px' }}>
           {list && list.length ? (

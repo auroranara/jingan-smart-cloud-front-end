@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Card, Row, Col, Tabs, Input, Button } from 'antd';
+import { Card, Tabs, Input, Button } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -232,34 +232,30 @@ export default class GeneralFileLayout extends PureComponent {
           </div>
         }
       >
-        <Row gutter={16}>
-          <Col>
-            <Card>
-              {this.companyId ? (
-                <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
-                  <TabPane tab="考试档案" key="examFile">
-                    {activeKey === 'examFile' && (
-                      <ExamFile
-                        handleExamFileList={this.handleExamFileList}
-                        companyId={this.companyId}
-                      />
-                    )}
-                  </TabPane>
-                  <TabPane tab="人员档案" key="personFile">
-                    {activeKey === 'personFile' && (
-                      <PersonFile
-                        handlePersonFileList={this.handlePersonFileList}
-                        companyId={this.companyId}
-                      />
-                    )}
-                  </TabPane>
-                </Tabs>
-              ) : (
-                <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
-              )}
-            </Card>
-          </Col>
-        </Row>
+        <Card>
+          {this.companyId ? (
+            <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
+              <TabPane tab="考试档案" key="examFile">
+                {activeKey === 'examFile' && (
+                  <ExamFile
+                    handleExamFileList={this.handleExamFileList}
+                    companyId={this.companyId}
+                  />
+                )}
+              </TabPane>
+              <TabPane tab="人员档案" key="personFile">
+                {activeKey === 'personFile' && (
+                  <PersonFile
+                    handlePersonFileList={this.handlePersonFileList}
+                    companyId={this.companyId}
+                  />
+                )}
+              </TabPane>
+            </Tabs>
+          ) : (
+            <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
+          )}
+        </Card>
         {!companyId && this.renderModal()}
       </PageHeaderLayout>
     );

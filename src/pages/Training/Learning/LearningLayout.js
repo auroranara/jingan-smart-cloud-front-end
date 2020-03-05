@@ -225,34 +225,30 @@ export default class LearningLayout extends PureComponent {
           )
         }
       >
-        <Row gutter={16}>
-          <Col>
-            <Card>
-              {this.companyId ? (
-                <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
-                  <TabPane tab="文章" key="article">
-                    {activeKey === 'article' && (
-                      <Article
-                        handleArticleList={this.handleArticleList}
-                        companyId={this.companyId}
-                      />
-                    )}
-                  </TabPane>
-                  <TabPane tab="课件" key="courseware">
-                    {activeKey === 'courseware' && (
-                      <Courseware
-                        handleCoursewareList={this.handleCoursewareList}
-                        companyId={this.companyId}
-                      />
-                    )}
-                  </TabPane>
-                </Tabs>
-              ) : (
-                <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
-              )}
-            </Card>
-          </Col>
-        </Row>
+        <Card>
+          {this.companyId ? (
+            <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
+              <TabPane tab="文章" key="article">
+                {activeKey === 'article' && (
+                  <Article
+                    handleArticleList={this.handleArticleList}
+                    companyId={this.companyId}
+                  />
+                )}
+              </TabPane>
+              <TabPane tab="课件" key="courseware">
+                {activeKey === 'courseware' && (
+                  <Courseware
+                    handleCoursewareList={this.handleCoursewareList}
+                    companyId={this.companyId}
+                  />
+                )}
+              </TabPane>
+            </Tabs>
+          ) : (
+            <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
+          )}
+        </Card>
         {!companyId && this.renderModal()}
       </PageHeaderLayout>
     );
