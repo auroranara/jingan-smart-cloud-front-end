@@ -70,7 +70,7 @@ export default class AsyncSelect extends Component {
     const { key, label } = value || {};
     onChange && onChange(value);
     if (key !== label) {
-      onSelect(list.find(item => item[k] === key));
+      onSelect && onSelect(list.find(item => item[k] === key));
     }
   };
 

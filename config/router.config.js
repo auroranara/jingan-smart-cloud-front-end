@@ -4665,6 +4665,80 @@ module.exports = env => {
             //     },
             //   ],
             // },
+            // 运输公司管理
+            {
+              path: '/license-plate-recognition-system/transport-company',
+              code: 'licensePlateRecognitionSystem.transportCompany',
+              name: 'transportCompany',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/license-plate-recognition-system/transport-company',
+                  redirect: '/license-plate-recognition-system/transport-company/list',
+                },
+                {
+                  path: '/license-plate-recognition-system/transport-company/:unitId?/list',
+                  code: 'licensePlateRecognitionSystem.transportCompany.list',
+                  name: 'list',
+                  component: './LicensePlateRecognitionSystem/TransportCompany/List',
+                },
+                {
+                  path: '/license-plate-recognition-system/transport-company/:unitId?/detail/:id',
+                  code: 'licensePlateRecognitionSystem.transportCompany.detail',
+                  name: 'detail',
+                  component: './LicensePlateRecognitionSystem/TransportCompany/Other',
+                },
+                {
+                  path: '/license-plate-recognition-system/transport-company/:unitId?/add',
+                  code: 'licensePlateRecognitionSystem.transportCompany.add',
+                  name: 'add',
+                  component: './LicensePlateRecognitionSystem/TransportCompany/Other',
+                },
+                {
+                  path: '/license-plate-recognition-system/transport-company/:unitId?/edit/:id',
+                  code: 'licensePlateRecognitionSystem.transportCompany.edit',
+                  name: 'edit',
+                  component: './LicensePlateRecognitionSystem/TransportCompany/Other',
+                },
+              ],
+            },
+            // 电子运单管理
+            {
+              path: '/license-plate-recognition-system/electronic-waybill',
+              code: 'licensePlateRecognitionSystem.electronicWaybill',
+              name: 'electronicWaybill',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill',
+                  redirect: '/license-plate-recognition-system/electronic-waybill/list',
+                },
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill/:unitId?/list',
+                  code: 'licensePlateRecognitionSystem.electronicWaybill.list',
+                  name: 'list',
+                  component: './LicensePlateRecognitionSystem/ElectronicWaybill/List',
+                },
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill/:unitId?/detail/:id',
+                  code: 'licensePlateRecognitionSystem.electronicWaybill.detail',
+                  name: 'detail',
+                  component: './LicensePlateRecognitionSystem/ElectronicWaybill/Other',
+                },
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill/:unitId?/add',
+                  code: 'licensePlateRecognitionSystem.electronicWaybill.add',
+                  name: 'add',
+                  component: './LicensePlateRecognitionSystem/ElectronicWaybill/Other',
+                },
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill/:unitId?/edit/:id',
+                  code: 'licensePlateRecognitionSystem.electronicWaybill.edit',
+                  name: 'edit',
+                  component: './LicensePlateRecognitionSystem/ElectronicWaybill/Other',
+                },
+              ],
+            },
           ],
         },
         {

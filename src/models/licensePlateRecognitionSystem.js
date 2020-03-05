@@ -1,5 +1,4 @@
 import {
-  getCompanyList,
   getVehicleCompanyList,
   getCompanyVehicleCount,
   getVehicleList,
@@ -42,6 +41,19 @@ import {
   getAbnormalRecordList,
   exportAbnormalRecordList,
   getLiftRecordList,
+  getChannelAuthorizationTree,
+  getTransportCompanyCompanyList,
+  getTransportCompanyList,
+  getTransportCompanyDetail,
+  addTransportCompany,
+  editTransportCompany,
+  deleteTransportCompany,
+  getElectronicWaybillCompanyList,
+  getElectronicWaybillList,
+  getElectronicWaybillDetail,
+  addElectronicWaybill,
+  editElectronicWaybill,
+  deleteElectronicWaybill,
 } from '@/services/licensePlateRecognitionSystem';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -70,6 +82,13 @@ export default {
     presenceRecordList: {},
     abnormalRecordList: {},
     liftRecordList: {},
+    channelAuthorizationTree: [],
+    transportCompanyCompanyList: {},
+    transportCompanyList: {},
+    transportCompanyDetail: {},
+    electronicWaybillCompanyList: {},
+    electronicWaybillList: {},
+    electronicWaybillDetail: {},
   },
 
   effects: {
@@ -197,13 +216,31 @@ export default {
       if (code === 200 && data) {
         const vehicleDetail = {
           ...data,
-          // 车辆照片: (data.车辆照片 || []).map((item, index) => ({
-          //   ...item,
-          //   status: 'done',
-          //   uid: -1 - index,
-          //   name: item.fileName,
-          //   url: item.webUrl,
-          // })),
+          carPhotoList: (data.carPhotoList || []).map((item, index) => ({
+            ...item,
+            status: 'done',
+            uid: -1 - index,
+            name: item.fileName,
+            url: item.webUrl,
+          })),
+          driverPhotoList: (data.driverPhotoList || []).map((item, index) => ({
+            ...item,
+            status: 'done',
+            uid: -1 - index,
+            name: item.fileName,
+            url: item.webUrl,
+          })),
+          supercargoPhotoList: (data.supercargoPhotoList || []).map((item, index) => ({
+            ...item,
+            status: 'done',
+            uid: -1 - index,
+            name: item.fileName,
+            url: item.webUrl,
+          })),
+          ...(`${data.cardType}` === '4' && {
+            startDate: undefined,
+            validDate: undefined,
+          }),
         };
         yield put({
           type: 'save',
@@ -704,6 +741,184 @@ export default {
       } else {
         callback && callback(false, msg);
       }
+    },
+    // 获取通道授权树
+    *getChannelAuthorizationTree({ payload, callback }, { call, put }) {
+      const response = yield call(getChannelAuthorizationTree, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const channelAuthorizationTree = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            channelAuthorizationTree,
+          },
+        });
+        callback && callback(true, channelAuthorizationTree);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    /* 获取运输公司企业列表 */
+    *getTransportCompanyCompanyList(
+      {
+        payload,
+        payload: { pageNum },
+        callback,
+      },
+      { call, put, all }
+    ) {
+      const response = yield call(getTransportCompanyCompanyList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        yield put({
+          type: 'append',
+          payload: {
+            name: 'transportCompanyCompanyList',
+            data,
+          },
+        });
+        callback && callback(true, data);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    /* 获取运输公司列表 */
+    *getTransportCompanyList({ payload, callback }, { call, put }) {
+      const response = yield call(getTransportCompanyList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const transportCompanyList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            transportCompanyList,
+          },
+        });
+        callback && callback(true, transportCompanyList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取运输公司详情
+    *getTransportCompanyDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getTransportCompanyDetail, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const transportCompanyDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            transportCompanyDetail,
+          },
+        });
+        callback && callback(true, transportCompanyDetail);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 新增运输公司
+    *addTransportCompany({ payload, callback }, { call, put }) {
+      const response = yield call(addTransportCompany, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 编辑运输公司
+    *editTransportCompany({ payload, callback }, { call, put }) {
+      const response = yield call(editTransportCompany, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 删除运输公司
+    *deleteTransportCompany({ payload, callback }, { call, put }) {
+      const response = yield call(deleteTransportCompany, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    /* 获取电子运单企业列表 */
+    *getElectronicWaybillCompanyList(
+      {
+        payload,
+        payload: { pageNum },
+        callback,
+      },
+      { call, put, all }
+    ) {
+      const response = yield call(getElectronicWaybillCompanyList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        yield put({
+          type: 'append',
+          payload: {
+            name: 'electronicWaybillCompanyList',
+            data,
+          },
+        });
+        callback && callback(true, data);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    /* 获取电子运单列表 */
+    *getElectronicWaybillList({ payload, callback }, { call, put }) {
+      const response = yield call(getElectronicWaybillList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const electronicWaybillList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            electronicWaybillList,
+          },
+        });
+        callback && callback(true, electronicWaybillList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取电子运单详情
+    *getElectronicWaybillDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getElectronicWaybillDetail, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const electronicWaybillDetail = {
+          ...data,
+          fileList: (data.fileList || []).map((item, index) => ({
+            ...item,
+            status: 'done',
+            uid: -1 - index,
+            name: item.fileName,
+            url: item.webUrl,
+          })),
+        };
+        yield put({
+          type: 'save',
+          payload: {
+            electronicWaybillDetail,
+          },
+        });
+        callback && callback(true, electronicWaybillDetail);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 新增电子运单
+    *addElectronicWaybill({ payload, callback }, { call, put }) {
+      const response = yield call(addElectronicWaybill, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 编辑电子运单
+    *editElectronicWaybill({ payload, callback }, { call, put }) {
+      const response = yield call(editElectronicWaybill, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    // 删除电子运单
+    *deleteElectronicWaybill({ payload, callback }, { call, put }) {
+      const response = yield call(deleteElectronicWaybill, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
     },
   },
 

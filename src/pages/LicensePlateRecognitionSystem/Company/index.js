@@ -37,13 +37,14 @@ export default class Company extends Component {
           单位总数：
           {total || 0}
         </span>
-        {name && (
-          <span>
-            {name}
-            总数：
-            {a || 0}
-          </span>
-        )}
+        {name &&
+          a !== undefined && (
+            <span>
+              {name}
+              总数：
+              {a || 0}
+            </span>
+          )}
       </div>
     );
   };

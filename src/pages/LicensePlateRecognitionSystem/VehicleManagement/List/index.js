@@ -1,25 +1,19 @@
 import React, { Component } from 'react';
-import { Input, Card } from 'antd';
-import ListPage from '@/templates/ListPage';
-import Ellipsis from '@/components/Ellipsis';
+import { Input } from 'antd';
+import TablePage from '@/templates/TablePage';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import EmptyData from '@/jingan-components/EmptyData';
 import Company from '../../Company';
 import { connect } from 'dva';
 import styles from './index.less';
-const { Meta } = Card;
 
-export const STATUSES = [{ key: '1', value: '正常' }, { key: '0', value: '停用' }];
-export const VEHICLE_TYPES = [{ key: '0', value: '小车' }, { key: '1', value: '大车' }];
-export const LICENCE_PLATE_TYPES = [
-  { key: '0', value: '临时车' },
-  { key: '1', value: '月租车' },
-  { key: '2', value: '充值车' },
-  { key: '3', value: '贵宾车' },
-  { key: '4', value: '免费车' },
-  { key: '8', value: '收费月租车' },
+export const STATUSES = [
+  { key: '0', value: '有效' },
+  { key: '-1', value: '未生效' },
+  { key: '1', value: '已过期' },
 ];
+export const VEHICLE_TYPES = [{ key: '0', value: '小车' }, { key: '1', value: '大车' }];
+export const LICENCE_PLATE_TYPES = [{ key: '4', value: '固定车' }, { key: '0', value: '临时车' }];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员在岗在位管理', name: '人员在岗在位管理' },
@@ -42,7 +36,7 @@ const COMPANY_MAPPER = {
 @connect(({ user }) => ({
   user,
 }))
-export default class VehicleList extends Component {
+export default class ParkList extends Component {
   state = {
     images: null,
   };
@@ -54,7 +48,7 @@ export default class VehicleList extends Component {
   }
 
   transform = ({ unitId, ...props }) => ({
-    companyId: unitId, // 这个接接口时重点关注一下
+    companyId: unitId,
     ...props,
   });
 
@@ -78,13 +72,13 @@ export default class VehicleList extends Component {
   );
 
   getFields = () => [
-    // {
-    //   id: 'name',
-    //   transform: v => v.trim(),
-    //   render: ({ onSearch }) => (
-    //     <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
-    //   ),
-    // },
+    {
+      id: 'queryCompanyName',
+      transform: v => v.trim(),
+      render: ({ onSearch }) => (
+        <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
+      ),
+    },
     {
       id: 'carNumber',
       transform: v => v.trim(),
@@ -93,158 +87,98 @@ export default class VehicleList extends Component {
       ),
     },
     {
+      id: 'cardType',
+      render: () => (
+        <SelectOrSpan placeholder="请选择车牌类型" list={LICENCE_PLATE_TYPES} allowClear />
+      ),
+    },
+    {
       id: 'status',
       render: () => <SelectOrSpan placeholder="请选择状态" list={STATUSES} allowClear />,
     },
   ];
 
-  // getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车辆' });
+  getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车辆' });
 
-  renderItem = (
-    { id, carNumber, carType, cardType, carUserName, carUserTel, status },
-    { renderDetailButton, renderEditButton, renderDeleteButton }
-  ) => {
-    const vehicleType = (VEHICLE_TYPES.find(({ key }) => key === `${carType}`) || {}).value;
-    const licensePlateType = (LICENCE_PLATE_TYPES.find(({ key }) => key === `${cardType}`) || {})
-      .value;
-    return (
-      <Card
-        title={
-          <Ellipsis className={styles.ellipsis} lines={1} tooltip>
-            {carNumber}
-          </Ellipsis>
-        }
-        className={styles.card}
-        // actions={[renderDetailButton(id), renderEditButton(id), renderDeleteButton(id)]}
-        hoverable
-      >
-        {/* <Meta
-          avatar={
-            <img
-              className={styles.avatar}
-              src={image}
-              alt=""
-              onClick={() => this.setState({ images: [image] })}
-            />
-          }
-          title={
-            <Ellipsis className={styles.ellipsis} lines={1} tooltip>
-              {carNumber}
-            </Ellipsis>
-          }
-          description={
-            <div className={styles.cardContent}>
-              <div className={styles.cardRow}>
-                <div>车辆类型：</div>
-                <div>
-                  {vehicleType ? (
-                    <Ellipsis lines={1} tooltip>
-                      {vehicleType}
-                    </Ellipsis>
-                  ) : (
-                    <EmptyData />
-                  )}
-                </div>
-              </div>
-              <div className={styles.cardRow}>
-                <div>车牌类型：</div>
-                <div>
-                  {licensePlateType ? (
-                    <Ellipsis lines={1} tooltip>
-                      {licensePlateType}
-                    </Ellipsis>
-                  ) : (
-                    <EmptyData />
-                  )}
-                </div>
-              </div>
-              <div className={styles.cardRow}>
-                <div>驾驶员：</div>
-                <div>
-                  {carUserName ? (
-                    <Ellipsis lines={1} tooltip>
-                      {carUserName}
-                    </Ellipsis>
-                  ) : (
-                    <EmptyData />
-                  )}
-                </div>
-              </div>
-              <div className={styles.cardRow}>
-                <div>联系电话：</div>
-                <div>
-                  {carUserTel ? (
-                    <Ellipsis lines={1} tooltip>
-                      {carUserTel}
-                    </Ellipsis>
-                  ) : (
-                    <EmptyData />
-                  )}
-                </div>
-              </div>
-            </div>
-          }
-        /> */}
-        <div className={styles.cardContent}>
-          <div className={styles.cardRow}>
-            <div>车辆类型：</div>
-            <div>
-              {vehicleType ? (
-                <Ellipsis lines={1} tooltip>
-                  {vehicleType}
-                </Ellipsis>
-              ) : (
-                <EmptyData />
-              )}
-            </div>
-          </div>
-          <div className={styles.cardRow}>
-            <div>车牌类型：</div>
-            <div>
-              {licensePlateType ? (
-                <Ellipsis lines={1} tooltip>
-                  {licensePlateType}
-                </Ellipsis>
-              ) : (
-                <EmptyData />
-              )}
-            </div>
-          </div>
-          <div className={styles.cardRow}>
-            <div>驾驶员：</div>
-            <div>
-              {carUserName ? (
-                <Ellipsis lines={1} tooltip>
-                  {carUserName}
-                </Ellipsis>
-              ) : (
-                <EmptyData />
-              )}
-            </div>
-          </div>
-          <div className={styles.cardRow}>
-            <div>联系电话：</div>
-            <div>
-              {carUserTel ? (
-                <Ellipsis lines={1} tooltip>
-                  {carUserTel}
-                </Ellipsis>
-              ) : (
-                <EmptyData />
-              )}
-            </div>
-          </div>
+  getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
+    {
+      title: '所属单位',
+      dataIndex: '所属单位',
+      align: 'center',
+      render: (_, { ownerType, ownerCompanyName }) => (+ownerType ? ownerCompanyName : '本单位'),
+    },
+    {
+      title: '车牌号',
+      dataIndex: 'carNumber',
+      align: 'center',
+    },
+    {
+      title: '品牌',
+      dataIndex: 'brand',
+      align: 'center',
+    },
+    {
+      title: '型号',
+      dataIndex: 'model',
+      align: 'center',
+    },
+    {
+      title: '驾驶员',
+      dataIndex: 'driver',
+      align: 'center',
+    },
+    {
+      title: '联系电话',
+      dataIndex: 'driverTel',
+      align: 'center',
+    },
+    // {
+    //   title: '定位卡号',
+    //   dataIndex: 'locationCardCode',
+    //   align: 'center',
+    // },
+    {
+      title: '车牌类型',
+      dataIndex: 'cardType',
+      align: 'center',
+      render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      align: 'center',
+      render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
+    },
+    {
+      title: '车辆照片',
+      dataIndex: 'carPhotoList',
+      align: 'center',
+      render: value =>
+        value &&
+        value.length > 0 && (
+          <img
+            className={styles.img}
+            src={value[0].webUrl}
+            alt={value[0].fileName}
+            onClick={() => this.setState({ images: value.map(({ webUrl }) => webUrl) })}
+          />
+        ),
+    },
+    {
+      title: '操作',
+      dataIndex: '操作',
+      align: 'center',
+      width: 148,
+      fixed: list && list.length ? 'right' : undefined,
+      render: (_, data) => (
+        <div className={styles.buttonWrapper}>
+          {renderDetailButton(data)}
+          {renderEditButton(data)}
+          {renderDeleteButton(data)}
         </div>
-        <SelectOrSpan
-          className={styles.statusLabel}
-          style={{ backgroundColor: status > 0 ? '#1890ff' : '#d9d9d9' }}
-          type="span"
-          list={STATUSES}
-          value={`${status}`}
-        />
-      </Card>
-    );
-  };
+      ),
+    },
+  ];
 
   render() {
     const {
@@ -264,20 +198,21 @@ export default class VehicleList extends Component {
     };
 
     return unitType === 4 || unitId ? (
-      <ListPage
+      <TablePage
         key={unitId}
         breadcrumbList={this.getBreadcrumbList}
         content={this.getContent}
         fields={this.getFields}
         action={this.getAction}
-        renderItem={this.renderItem}
+        columns={this.getColumns}
         transform={this.transform}
         mapper={MAPPER}
+        showTotal={false}
         withUnitId
         {...props}
       >
         <ImagePreview images={images} />
-      </ListPage>
+      </TablePage>
     ) : (
       <Company
         name="车辆"
@@ -286,7 +221,6 @@ export default class VehicleList extends Component {
           name: '单位车辆信息',
         })}
         mapper={COMPANY_MAPPER}
-        addEnable={false}
         {...props}
       />
     );
