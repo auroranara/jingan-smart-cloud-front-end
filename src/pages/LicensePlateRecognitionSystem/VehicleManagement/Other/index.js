@@ -369,6 +369,9 @@ export default class VehicleOther extends Component {
         {
           id: 'grantList',
           component: ChannelAuthorization,
+          props: {
+            unitId,
+          },
         },
       ],
     },

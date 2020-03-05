@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Input } from 'antd';
 import TablePage from '@/templates/TablePage';
+import TextAreaEllipsis from '@/jingan-components/TextAreaEllipsis';
 import Company from '../../Company';
 import { connect } from 'dva';
 import styles from './index.less';
@@ -91,6 +92,7 @@ export default class TransportCompanyList extends Component {
       title: '公司描述',
       dataIndex: 'companyDesc',
       align: 'center',
+      render: value => <TextAreaEllipsis value={value} />,
     },
     {
       title: '操作',
