@@ -681,7 +681,7 @@ export default class StorehouseHandler extends PureComponent {
             </Fragment>
           )} */}
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
           </Button>
