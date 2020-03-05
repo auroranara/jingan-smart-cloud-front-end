@@ -202,7 +202,7 @@ export default class AbnormalRecord extends Component {
         withUnitId
         {...props}
       >
-        <ImagePreview images={images} />
+        <ImagePreview images={images} hidden />
       </TablePage>
     ) : (
       <Company

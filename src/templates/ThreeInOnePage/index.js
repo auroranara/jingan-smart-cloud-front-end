@@ -385,8 +385,8 @@ export default class ThreeInOnePage extends Component {
             const DefaultComponent = component;
             return (
               <DefaultComponent
-                type={isNotDetail || 'span'}
                 {...props}
+                type={isNotDetail ? props && props.type : 'span'}
                 className={itemClassName}
                 onChange={this.generateChangeCallback(refreshEnable, props)}
               />
@@ -394,9 +394,10 @@ export default class ThreeInOnePage extends Component {
           }
         },
         options: {
+          ...options,
           rules:
             isNotDetail && required
-              ? [
+              ? (options && options.rules) || [
                   {
                     type: ['CompanySelect', 'DatePicker'].includes(component)
                       ? 'object'
@@ -416,7 +417,6 @@ export default class ThreeInOnePage extends Component {
                   },
                 ]
               : undefined,
-          ...options,
           initialValue:
             isAdd && options && options.hasOwnProperty('initialValue')
               ? options.initialValue
