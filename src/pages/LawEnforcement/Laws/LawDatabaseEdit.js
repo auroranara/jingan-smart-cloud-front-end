@@ -1,38 +1,65 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Form, Input, Button, Card, Col, Switch, Select, message } from 'antd';
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Select,
+  message,
+  DatePicker,
+  Upload,
+  Icon,
+  Radio,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-
+import { getToken } from 'utils/authority';
+import moment from 'moment';
 import styles from './LawDatabase.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
-const { Option } = Select;
+const { Group: RadioGroup } = Radio;
 
 // 编辑页面标题
 const editTitle = '编辑法律法规';
 // 添加页面标题
 const addTitle = '新增法律法规';
 
-// 表单标签
-const fieldLabels = {
-  businessClassify: '所属业务分类',
-  lawsRegulations: '所属法律法规',
-  subClause: '所属条款',
-  lawsRegulationsInput: '法律法规内容',
-  isUse: '是否启用',
+// 上传文件地址
+const uploadAction = '/acloud_new/v2/uploadFile';
+// 上传文件夹
+const folder = 'safetyinfo';
+const defaultUploadProps = {
+  name: 'files',
+  data: { folder },
+  multiple: true,
+  action: uploadAction,
+  headers: { 'JA-Token': getToken() },
+};
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 7 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 12 },
+    md: { span: 10 },
+  },
 };
 
 @connect(({ lawDatabase, user, loading }) => ({
   lawDatabase,
   user,
-  loading: loading.models.lawDatabase,
+  submitting: loading.effects['lawDatabase/addLaw'] || loading.effects['lawDatabase/editLaw'],
 }))
 @Form.create()
 export default class LawDatabaseEdit extends PureComponent {
   state = {
-    submitting: false,
+    fileList: [],
+    uploading: false,
   };
 
   // 返回到列表页面
@@ -42,192 +69,250 @@ export default class LawDatabaseEdit extends PureComponent {
   };
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
+      match: { params: { id } },
     } = this.props;
     if (id) {
       // 根据id获取详情
       dispatch({
-        type: 'lawDatabase/fetchLawsDetail',
-        payload: {
-          id,
-        },
-      });
-    } else {
-      // 清空详情
-      dispatch({
-        type: 'lawDatabase/clearDetail',
+        type: 'lawDatabase/fetchLawDetail',
+        payload: { id, pageNum: 1, pageSize: 0 },
       });
     }
-    // 获取初始化选项
-    dispatch({
-      type: 'lawDatabase/fetchOptions',
-    });
   }
-
-  /* 去除左右两边空白 */
-  handleTrim = e => e.target.value.trim();
 
   // 点击提交按钮验证表单信息
   handleClickValidate = () => {
     const {
       form: { validateFieldsAndScroll },
-      match: {
-        params: { id },
-      },
+      match: { params: { id } },
       dispatch,
     } = this.props;
     validateFieldsAndScroll((error, values) => {
-      if (!error) {
-        this.setState({
-          submitting: true,
+      if (error) return;
+      const { fileList } = this.state;
+      const {
+        releaseDate,// 发布日期
+        commissionDate, // 启用日期
+        abolishDate, // 废止日期
+        ...resValues
+      } = values;
+      const payload = {
+        ...resValues,
+        releaseDate: this.generateTimeStamp(releaseDate),
+        commissionDate: this.generateTimeStamp(commissionDate),
+        abolishDate: this.generateTimeStamp(abolishDate),
+        accessoryDetails: fileList,
+      };
+      const tag = id ? '编辑' : '新增';
+      const callback = (success, msg) => {
+        if (success) {
+          message.success(`${tag}法律法规成功`);
+          this.goBack();
+        } else {
+          message.error(msg || `${tag}法律法规失败`)
+        }
+      };
+      // console.log('payload', payload);
+      // 如果id存在的话，为编辑
+      if (id) {
+        dispatch({
+          type: 'lawDatabase/editLaw',
+          payload: { ...payload, id },
+          callback,
         });
-        const { businessType, lawType, article, content, status } = values;
-        const payload = {
-          id,
-          businessType,
-          lawType,
-          article,
-          content,
-          status: +status,
-        };
-        const success = () => {
-          const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
-        };
-        const error = () => {
-          const msg = id ? '系统中已有该条法律法规，修改失败' : '系统中已有该条法律法规，新增失败';
-          message.error(msg, 1);
-          this.setState({
-            submitting: false,
-          });
-        };
-        // 如果id存在的话，为编辑
-        if (id) {
-          dispatch({
-            type: 'lawDatabase/editLaws',
-            payload: {
-              id,
-              ...payload,
-            },
-            success,
-            error,
-          });
-        }
-        // 不存在id,则为新增
-        else {
-          dispatch({
-            type: 'lawDatabase/insertLaws',
-            payload,
-            success,
-            error,
-          });
-        }
+      }
+      // 不存在id,则为新增
+      else {
+        dispatch({
+          type: 'lawDatabase/addLaw',
+          payload,
+          callback,
+        });
       }
     });
   };
 
+  // 将moment转化为时间戳
+  generateTimeStamp = obj => obj ? obj.unix() * 1000 : undefined
+
+  handleFileUploadChange = ({ file, fileList }, listTag, loadingTag) => {
+    let newState = {};
+    if (file.status === 'uploading') {
+      newState[loadingTag] = true;
+      newState[listTag] = fileList;
+    } else if (file.status === 'done') {
+      if (file.response && file.response.code === 200) {
+        const result = file.response.data.list[0]
+        const list = fileList.map((item, index) => {
+          if (index === fileList.length - 1) {
+            return {
+              ...result,
+              uid: item.uid,
+              url: result.webUrl,
+              name: result.fileName,
+            }
+          } else return item
+        })
+        newState[loadingTag] = false;
+        newState[listTag] = list;
+      } else {
+        message.error('上传失败！');
+        newState[listTag] = fileList.filter(item => {
+          return !item.response || item.response.code !== 200;
+        });
+      }
+      newState[loadingTag] = false;
+    } else if (file.status === 'removed') {
+      // 删除
+      newState[loadingTag] = false;
+      newState[listTag] = fileList.filter(item => {
+        return item.status !== 'removed';
+      });
+    } else {
+      message.error('上传失败')
+      newState[loadingTag] = false;
+    }
+    this.setState(newState)
+  }
+
   // 渲染信息
-  renderLawsInfo() {
+  renderLawsInfo () {
     const {
+      submitting,
       form: { getFieldDecorator },
+      match: { params: { id } },
       lawDatabase: {
-        detail: { businessType, lawType, article, content, status },
-        businessTypes,
-        lawTypes,
+        detail = {},
+        typeDict,
+        coercionDegreeDict,
       },
     } = this.props;
 
-    const { submitting } = this.state;
-
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 12 },
-        md: { span: 10 },
-      },
-    };
+    const { fileList, uploading } = this.state;
 
     return (
       <Card className={styles.card} bordered={false}>
-        <Form hideRequiredMark style={{ marginTop: 8 }}>
-          <FormItem {...formItemLayout} label={fieldLabels.businessClassify}>
-            <Col span={24}>
-              {getFieldDecorator('businessType', {
-                initialValue: businessType,
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择业务分类',
-                  },
-                ],
-              })(
-                <Select placeholder="请选择业务分类">
-                  {businessTypes.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.label}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </Col>
+        <Form style={{ marginTop: 8 }}>
+          <FormItem {...formItemLayout} label="文件名称">
+            {getFieldDecorator('name', {
+              initialValue: id ? detail.name : undefined,
+              rules: [{ required: true, message: '请输入文件名称' }],
+            })(
+              <Input placeholder="请输入" />
+            )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={fieldLabels.lawsRegulations}>
-            {getFieldDecorator('lawType', {
-              initialValue: lawType,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择法律法规',
-                },
-              ],
+          <FormItem {...formItemLayout} label="法规编号">
+            {getFieldDecorator('code', {
+              initialValue: id ? detail.code : undefined,
+              rules: [{ required: true, message: '请输入法规编号' }],
             })(
-              <Select placeholder="请选择法律法规">
-                {lawTypes.map(item => (
-                  <Option value={item.id} key={item.id}>
-                    {item.label}
-                  </Option>
+              <Input placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label="分类">
+            {getFieldDecorator('classify', {
+              initialValue: id ? detail.classify : undefined,
+              rules: [{ required: true, message: '请选择分类' }],
+            })(
+              <Select placeholder="请选择">
+                {typeDict.map(({ value, label }) => (
+                  <Select.Option value={value} key={value}>{label}</Select.Option>
                 ))}
               </Select>
             )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={fieldLabels.subClause}>
-            {getFieldDecorator('article', {
-              initialValue: article,
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入所属条款',
-                  whitespace: true,
-                },
-              ],
-            })(<Input placeholder="请输入所属条款" />)}
+          <FormItem {...formItemLayout} label="强制程度">
+            {getFieldDecorator('coerciveProcedure', {
+              initialValue: id ? detail.coerciveProcedure : undefined,
+              rules: [{ required: true, message: '请选择强制程度' }],
+            })(
+              <Select placeholder="请选择">
+                {coercionDegreeDict.map(({ value, label }) => (
+                  <Select.Option value={value} key={value}>{label}</Select.Option>
+                ))}
+              </Select>
+            )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={fieldLabels.lawsRegulationsInput}>
-            {getFieldDecorator('content', {
-              initialValue: content,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入法律法规内容', whitespace: true }],
-            })(<TextArea rows={4} placeholder="请输入法律法规内容" maxLength="2000" />)}
+          <FormItem {...formItemLayout} label="发布机构">
+            {getFieldDecorator('organization', {
+              initialValue: id ? detail.organization : undefined,
+              rules: [{ required: true, message: '请输入法规编号' }],
+            })(
+              <Input placeholder="请输入" />
+            )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={fieldLabels.isUse}>
-            {getFieldDecorator('status', {
-              valuePropName: 'checked',
-              initialValue: +status,
-            })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
+          <FormItem {...formItemLayout} label="发布日期">
+            {getFieldDecorator('releaseDate', {
+              initialValue: id && detail.releaseDate ? moment(detail.releaseDate) : undefined,
+              rules: [{ required: true, message: '请选择发布日期' }],
+            })(
+              <DatePicker />
+            )}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label="启用日期">
+            {getFieldDecorator('commissionDate', {
+              initialValue: id && detail.commissionDate ? moment(detail.commissionDate) : undefined,
+              rules: [{ required: true, message: '请选择启用日期' }],
+            })(
+              <DatePicker />
+            )}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label="现行法规">
+            {getFieldDecorator('regulations', {
+              initialValue: id ? detail.regulations : undefined,
+              rules: [{ required: true, message: '请选择是否现行法规' }],
+            })(
+              <RadioGroup>
+                <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label="废止日期">
+            {getFieldDecorator('abolishDate', {
+              initialValue: id && detail.abolishDate ? moment(detail.abolishDate) : undefined,
+              rules: [{ required: true, message: '请选择废止日期' }],
+            })(
+              <DatePicker />
+            )}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label="备注">
+            {getFieldDecorator('remark', {
+              initialValue: id ? detail.remark : undefined,
+            })(
+              <TextArea rows={3} placeholder="请输入" />
+            )}
+          </FormItem>
+
+          <FormItem label="附件" {...formItemLayout}>
+            {getFieldDecorator('accessoryDetails')(
+              <Fragment>
+                <Upload
+                  {...defaultUploadProps}
+                  fileList={fileList}
+                  disabled={uploading}
+                  // accept="image/*" // 接收的文件格式
+                  onChange={(info) => this.handleFileUploadChange(info, 'fileList', 'uploading')}
+                >
+                  <Button type="primary">
+                    {uploading ? <Icon type="loading" /> : <Icon type="upload" />}
+                    点击上传
+                  </Button>
+                </Upload>
+              </Fragment>
+            )}
           </FormItem>
         </Form>
 
@@ -235,6 +320,7 @@ export default class LawDatabaseEdit extends PureComponent {
           <Button
             type="primary"
             loading={submitting}
+            disabled={uploading}
             size="large"
             onClick={this.handleClickValidate}
           >
@@ -246,7 +332,7 @@ export default class LawDatabaseEdit extends PureComponent {
   }
 
   // 渲染页面所有信息
-  render() {
+  render () {
     const {
       match: {
         params: { id },
