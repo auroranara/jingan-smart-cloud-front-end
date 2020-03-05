@@ -1,6 +1,20 @@
 .card:not(:last-child) {
   margin-bottom: 24px;
 }
+.form {
+  :global {
+    .ant-form-item-label {
+      line-height: 40px;
+    }
+  }
+  &.verticalForm {
+    :global {
+      .ant-form-item-label {
+        line-height: 1.5;
+      }
+    }
+  }
+}
 @media screen and (min-width: 576px) {
   /* 表单 */
   .form {

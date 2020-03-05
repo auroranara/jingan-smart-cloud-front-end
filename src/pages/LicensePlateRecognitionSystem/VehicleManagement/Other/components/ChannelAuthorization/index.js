@@ -30,6 +30,7 @@ const TYPES = [{ key: '0', value: '全部通道' }, { key: '1', value: '部分�
         type: API,
         payload: {
           companyId: unitId,
+          parkStatus: '1',
           ...payload,
         },
         callback,
@@ -120,16 +121,55 @@ export default class ChannelAuthorization extends Component {
     );
   }
 
-  render() {
-    const { channelAuthorizationTree, loading } = this.props;
+  renderItem2({ id, type, children }) {
+    let { channelAuthorizationTree } = this.props;
+    channelAuthorizationTree = channelAuthorizationTree || [];
+    const { parkName, gateInfoList } =
+      channelAuthorizationTree.find(item => item.parkId === id) || {};
+    const channelList = gateInfoList || [];
+    const checkedChannelList =
+      type === TYPES[0].key
+        ? channelList
+        : (children || []).map(({ id }) => channelList.find(item => item.id === id)).filter(v => v);
 
     return (
+      <div>
+        <div className={styles.fieldWrapper}>
+          <div className={styles.fieldName}>车场：</div>
+          <div className={styles.fieldValue}>
+            {parkName}（<SelectOrSpan list={TYPES} value={`${type}`} type="span" />）
+          </div>
+        </div>
+        <div className={styles.fieldWrapper}>
+          <div className={styles.fieldName}>通道：</div>
+          <div className={styles.fieldValue}>
+            {checkedChannelList.map(({ id, gateName }) => (
+              <div key={id}>{gateName}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  render() {
+    const { channelAuthorizationTree, loading, type, value } = this.props;
+
+    return type !== 'span' ? (
       <List
         className={styles.list}
         grid={GRID}
         loading={loading}
         dataSource={channelAuthorizationTree}
         renderItem={item => <List.Item>{this.renderItem(item)}</List.Item>}
+      />
+    ) : (
+      <List
+        className={styles.list}
+        grid={GRID}
+        loading={loading}
+        dataSource={value}
+        renderItem={item => <List.Item>{this.renderItem2(item)}</List.Item>}
       />
     );
   }

@@ -76,10 +76,10 @@ export default class AsyncSelect extends Component {
 
   handleSearch = value => {
     const { getList, setList, fieldNames, params } = this.props;
-    const { value: v } = { ...FIELDNAMES, ...fieldNames };
+    const { value: v, [v]: name = v } = { ...FIELDNAMES, ...fieldNames };
     setList();
     getList({
-      [v]: value && value.trim(),
+      [name]: value && value.trim(),
       ...params,
     });
   };

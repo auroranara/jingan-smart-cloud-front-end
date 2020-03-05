@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Input } from 'antd';
+import { Input, Modal, message } from 'antd';
 import TablePage from '@/templates/TablePage';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import Company from '../../Company';
 import { connect } from 'dva';
+import router from 'umi/router';
 import styles from './index.less';
 
 export const STATUSES = [
@@ -32,20 +33,69 @@ const COMPANY_MAPPER = {
   list: 'vehicleCompanyList',
   getList: 'getVehicleCompanyList',
 };
+const API = 'licensePlateRecognitionSystem/getParkList';
+const COMPANY_MAPPER2 = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'companyList',
+  getList: 'getCompanyList',
+};
+const FIELDNAMES = {
+  key: 'id',
+  value: 'name',
+  name: 'companyName',
+};
 
-@connect(({ user }) => ({
-  user,
-}))
+@connect(
+  ({
+    user,
+    licensePlateRecognitionSystem: { parkList },
+    loading: {
+      effects: { [API]: loading },
+    },
+  }) => ({
+    user,
+    parkList,
+    loading,
+  }),
+  dispatch => ({
+    getParkList(payload, callback) {
+      dispatch({
+        type: API,
+        payload: {
+          pageNum: 1,
+          pageSize: 1,
+          ...payload,
+        },
+        callback: (success, data) => {
+          if (!success) {
+            message.error('检查车场是否存在失败，请稍后重试！');
+          }
+          callback && callback(success, data);
+        },
+      });
+    },
+  })
+)
 export default class ParkList extends Component {
   state = {
     images: null,
+    visible: false,
   };
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      nextProps.match.params.unitId !== this.props.match.params.unitId || nextState !== this.state
+      nextProps.match.params.unitId !== this.props.match.params.unitId ||
+      nextProps.loading !== this.props.loading ||
+      nextState !== this.state
     );
   }
+
+  initialize = ({ unitId }) => {
+    const { getParkList } = this.props;
+    getParkList({
+      companyId: unitId,
+    });
+  };
 
   transform = ({ unitId, ...props }) => ({
     companyId: unitId,
@@ -98,7 +148,10 @@ export default class ParkList extends Component {
     },
   ];
 
-  getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车辆' });
+  getAction = ({ renderAddButton }) => {
+    const { loading } = this.props;
+    return renderAddButton({ name: '新增车辆', onClick: this.handleAddButtonClick, loading });
+  };
 
   getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
     {
@@ -141,7 +194,7 @@ export default class ParkList extends Component {
       title: '车牌类型',
       dataIndex: 'cardType',
       align: 'center',
-      render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
+      render: value => <SelectOrSpan list={LICENCE_PLATE_TYPES} value={`${value}`} type="span" />,
     },
     {
       title: '状态',
@@ -180,6 +233,30 @@ export default class ParkList extends Component {
     },
   ];
 
+  handleAddButtonClick = goToAdd => {
+    const { parkList: { pagination: { total } = {} } = {} } = this.props;
+    if (total) {
+      goToAdd();
+    } else {
+      this.setState({
+        visible: true,
+      });
+    }
+  };
+
+  handleCancel = () => {
+    this.setState({
+      visible: false,
+    });
+  };
+
+  handleOk = () => {
+    const {
+      location: { pathname },
+    } = this.props;
+    router.push(pathname.replace('vehicle', 'park').replace('list', 'add'));
+  };
+
   render() {
     const {
       user: { currentUser: { unitType } = {} },
@@ -190,7 +267,7 @@ export default class ParkList extends Component {
       location,
       match,
     } = this.props;
-    const { images } = this.state;
+    const { images, visible } = this.state;
     const props = {
       route,
       location,
@@ -205,13 +282,24 @@ export default class ParkList extends Component {
         fields={this.getFields}
         action={this.getAction}
         columns={this.getColumns}
+        initialize={this.initialize}
         transform={this.transform}
         mapper={MAPPER}
         showTotal={false}
         withUnitId
         {...props}
       >
-        <ImagePreview images={images} />
+        <ImagePreview images={images} hidden />
+        <Modal
+          title="提示信息"
+          zIndex={1009}
+          visible={visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          okText="新增车场"
+        >
+          请先新建车场后再新增车辆
+        </Modal>
       </TablePage>
     ) : (
       <Company
@@ -221,6 +309,8 @@ export default class ParkList extends Component {
           name: '单位车辆信息',
         })}
         mapper={COMPANY_MAPPER}
+        mapper2={COMPANY_MAPPER2}
+        fieldNames={FIELDNAMES}
         {...props}
       />
     );

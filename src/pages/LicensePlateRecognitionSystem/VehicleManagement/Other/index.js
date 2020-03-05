@@ -44,6 +44,10 @@ export default class VehicleOther extends Component {
     return nextProps.match.params.unitId !== this.props.match.params.unitId;
   }
 
+  setPageReference = page => {
+    this.page = page && page.getWrappedInstance();
+  };
+
   initialize = ({
     carNumber,
     brand,
@@ -149,7 +153,7 @@ export default class VehicleOther extends Component {
       ].filter(v => v)
     );
 
-  getFields = ({ unitId, ownerType, cardType, startDate }) => [
+  getFields = ({ unitId, ownerType, cardType, startDate, isDetail }) => [
     {
       key: '车辆基本信息',
       title: '车辆基本信息',
@@ -164,7 +168,7 @@ export default class VehicleOther extends Component {
             rules: [
               { required: true, whitespace: true, message: '车牌号不能为空' },
               {
-                pattern: /^(([\u4e00-\u9fa5][a-zA-Z]|[\u4e00-\u9fa5]{2}\d{2}|[\u4e00-\u9fa5]{2}[a-zA-Z])[-]?|([wW][Jj][\u4e00-\u9fa5]{1}[-]?)|([a-zA-Z]{2}))([A-Za-z0-9]{5}|[DdFf][A-HJ-NP-Za-hj-np-z0-9][0-9]{4}|[0-9]{5}[DdFf])$/,
+                pattern: /^([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼]{1}(([A-HJ-Z]{1}[A-HJ-NP-Z0-9]{5})|([A-HJ-Z]{1}(([DF]{1}[A-HJ-NP-Z0-9]{1}[0-9]{4})|([0-9]{5}[DF]{1})))|([A-HJ-Z]{1}[A-D0-9]{1}[0-9]{3}警)))|([0-9]{6}使)|((([沪粤川云桂鄂陕蒙藏黑辽渝]{1}A)|鲁B|闽D|蒙E|蒙H)[0-9]{4}领)|(WJ[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼·•]{1}[0-9]{4}[TDSHBXJ0-9]{1})|([VKHBSLJNGCE]{1}[A-DJ-PR-TVY]{1}[0-9]{5})$/,
                 message: '车牌号格式不正确',
               },
             ],
@@ -246,12 +250,18 @@ export default class VehicleOther extends Component {
           label: '购买日期',
           component: 'DatePicker',
           span: SPAN,
+          props: {
+            unknown: '',
+          },
         },
         {
           id: 'produceDate',
           label: '生产日期',
           component: 'DatePicker',
           span: SPAN,
+          props: {
+            unknown: '',
+          },
         },
         {
           id: 'cardType',
@@ -270,10 +280,13 @@ export default class VehicleOther extends Component {
                 id: 'startDate',
                 label: '生效日期',
                 required: true,
+                refreshEnable: true,
                 component: 'DatePicker',
                 span: SPAN,
                 props: {
-                  disabledDate: this.disabledDate,
+                  disabledDate: current => +current - moment().startOf('day') < 0,
+                  unknown: '',
+                  onChange: this.handleChange,
                 },
               },
               {
@@ -283,7 +296,8 @@ export default class VehicleOther extends Component {
                 component: 'DatePicker',
                 span: SPAN,
                 props: {
-                  disabledDate: this.disabledDate,
+                  disabledDate: current => +current - (startDate || moment()).startOf('day') < 0,
+                  unknown: '',
                 },
               },
             ]
@@ -306,7 +320,6 @@ export default class VehicleOther extends Component {
     },
     {
       key: '人员信息',
-      title: '人员信息',
       fields: [
         {
           id: 'driver',
@@ -354,31 +367,59 @@ export default class VehicleOther extends Component {
     },
     {
       key: '车场通道授权',
-      title: (
+      title: isDetail ? (
         <Fragment>
           <span style={{ marginRight: 8 }}>车场通道授权</span>
           <Tooltip
             placement="bottom"
             title="选中车场会将车辆信息同步至车场，全部通道表示该车可以在选中车场的全部通道口进出；部分通道表示只能在选择的通道进出，未选通道不得进出。"
           >
-            <Icon style={{ color: '#f5222d' }} type="question-circle" />
+            <Icon style={{ color: '#f5222d', verticalAlign: 'baseline' }} type="question-circle" />
           </Tooltip>
         </Fragment>
+      ) : (
+        undefined
       ),
       fields: [
         {
           id: 'grantList',
+          label: !isDetail ? (
+            <Fragment>
+              <span style={{ marginRight: 8 }}>车场通道授权</span>
+              <Tooltip
+                placement="bottom"
+                title="选中车场会将车辆信息同步至车场，全部通道表示该车可以在选中车场的全部通道口进出；部分通道表示只能在选择的通道进出，未选通道不得进出。"
+              >
+                <Icon
+                  style={{ color: '#f5222d', verticalAlign: 'baseline' }}
+                  type="question-circle"
+                />
+              </Tooltip>
+            </Fragment>
+          ) : (
+            undefined
+          ),
+          required: true,
           component: ChannelAuthorization,
           props: {
             unitId,
+          },
+          options: {
+            rules: [{ required: true, type: 'array', min: 1, message: '车场通道授权不能为空' }],
           },
         },
       ],
     },
   ];
 
-  disabledDate = current => {
-    return +current - moment().startOf('day') < 0;
+  handleChange = value => {
+    const { getFieldValue, setFieldsValue } = this.page && this.page.form && this.page.form;
+    const validDate = getFieldValue('validDate');
+    if (+validDate - value.startOf(moment) < 0) {
+      setFieldsValue({
+        validDate: undefined,
+      });
+    }
   };
 
   render() {
@@ -399,6 +440,7 @@ export default class VehicleOther extends Component {
       mapper: MAPPER,
       layout: 'vertical',
       error: 1,
+      ref: this.setPageReference,
       route,
       location,
       match,
