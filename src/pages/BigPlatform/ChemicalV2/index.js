@@ -726,7 +726,7 @@ export default class Chemical extends PureComponent {
       ...options,
     });
 
-    this.childMap.handleUpdateMap('mgvmzd3bwa59qi4j', -1);
+    // this.childMap.handleUpdateMap('mgvmzd3bwa59qi4j', -1);
 
     setTimeout(() => {
       // 解决加入animation覆盖notification自身显示动效时长问题
@@ -759,7 +759,10 @@ export default class Chemical extends PureComponent {
 
   renderNotificationMsg = () => {
     return (
-      <div className={styles.notificationBody} onClick={() => this.setDrawerVisible('tankMonitor')}>
+      <div
+        className={styles.notificationBody}
+        onClick={() => this.handleClickShowMonitorDetail('302', 'wzebvd6dwgfukxh5')}
+      >
         <div>
           <span className={styles.time}>刚刚</span>{' '}
           {/* <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '} */}
@@ -1513,7 +1516,7 @@ export default class Chemical extends PureComponent {
                   </div>
                 )}
 
-                {/* <div className={styles.fadeBtn} onClick={this.handleClickNotification} /> */}
+                <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
               </div>
             </Col>
           </Row>
