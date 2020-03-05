@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
-import { Layout, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Layout } from 'antd';
 import GlobalFooter from 'components/GlobalFooter';
 
 const { Footer } = Layout;
@@ -30,7 +31,7 @@ const FooterView = () => (
       }
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2020
+          Copyright <LegacyIcon type="copyright" /> 2020
         </Fragment>
       }
     />

@@ -1,17 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import {
-  Row,
-  Col,
-  Button,
-  message,
-  Input,
-  Select,
-  Card,
-  Form,
-  DatePicker,
-  Upload,
-  Icon,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Col, Button, message, Input, Select, Card, DatePicker, Upload } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
@@ -473,7 +463,7 @@ export default class PersonnelAdd extends PureComponent {
                           />
                         ) : (
                             <div>
-                              <Icon type={photoLoading ? 'loading' : 'plus'} />
+                              <LegacyIcon type={photoLoading ? 'loading' : 'plus'} />
                               <div className="ant-upload-text">上传</div>
                             </div>
                           )}
@@ -505,7 +495,7 @@ export default class PersonnelAdd extends PureComponent {
                           />
                         ) : (
                             <div>
-                              <Icon type={diplomaLoading ? 'loading' : 'plus'} />
+                              <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
                               <div className="ant-upload-text">上传</div>
                             </div>
                           )}
@@ -524,12 +514,12 @@ export default class PersonnelAdd extends PureComponent {
               返回
           </Button>
             <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
-              {submitting && (<Icon type="loading" />)}
+              {submitting && (<LegacyIcon type="loading" />)}
               确定
           </Button>
           </div>
         </Card>
       </PageHeaderLayout>
-    )
+    );
   }
 }

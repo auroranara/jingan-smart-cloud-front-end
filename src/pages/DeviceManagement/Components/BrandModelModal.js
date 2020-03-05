@@ -1,6 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Modal, Table, Button, Input, TreeSelect, Form, Card, Row, Col } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Table, Button, Input, TreeSelect, Card, Row, Col } from 'antd';
 
 const FormItem = Form.Item;
 const { TreeNode } = TreeSelect;

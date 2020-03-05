@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Input, Pagination, Select, DatePicker, Table, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Pagination, Select, DatePicker, Table, Spin } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';

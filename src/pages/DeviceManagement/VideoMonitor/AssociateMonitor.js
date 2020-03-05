@@ -1,18 +1,8 @@
 import { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Spin,
-  Form,
-  Input,
-  Button,
-  Select,
-  Row,
-  Col,
-  Table,
-  Popconfirm,
-  message,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Spin, Input, Button, Select, Row, Col, Table, Popconfirm, message } from 'antd';
 import router from 'umi/router';
 import codes from '@/utils/codes';
 import { AuthPopConfirm, AuthButton } from '@/utils/customAuth';

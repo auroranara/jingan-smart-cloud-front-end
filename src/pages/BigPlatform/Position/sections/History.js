@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Button, DatePicker, Icon, Select, TreeSelect, message } from 'antd';
+import { Button, DatePicker, Select, TreeSelect, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';

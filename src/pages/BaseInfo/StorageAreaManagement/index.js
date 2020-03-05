@@ -1,17 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  Input,
-  Select,
-  Table,
-  Divider,
-  Pagination,
-  Spin,
-  message,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Select, Table, Divider, Pagination, Spin, message } from 'antd';
 import router from 'umi/router';
 import { hasAuthority, AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import ToolBar from '@/components/ToolBar';

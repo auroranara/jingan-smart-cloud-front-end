@@ -1,12 +1,12 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Input,
   Button,
   Card,
-  Icon,
   Popover,
   DatePicker,
   Select,
@@ -1235,7 +1235,7 @@ export default class StorageEdit extends PureComponent {
                 fileList={uploadPics}
               >
                 <Button>
-                  <Icon type={picUploading ? 'loading' : "upload"} />
+                  <LegacyIcon type={picUploading ? 'loading' : "upload"} />
                   点击上传
                 </Button>
               </Upload>
@@ -1252,7 +1252,7 @@ export default class StorageEdit extends PureComponent {
                 onChange={this.handleUploadFileChange}
               >
                 <Button>
-                  <Icon type={fileUploading ? 'loading' : "upload"} />
+                  <LegacyIcon type={fileUploading ? 'loading' : "upload"} />
                   点击上传
                 </Button>
               </Upload>
@@ -1295,7 +1295,7 @@ export default class StorageEdit extends PureComponent {
                     </Col>
                     <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
                       <Button onClick={() => this.handleRefreshBuilding(true)}>
-                        <Icon type="reload" />
+                        <LegacyIcon type="reload" />
                       </Button>
                     </Tooltip>
                     <AuthButton
@@ -1380,7 +1380,7 @@ export default class StorageEdit extends PureComponent {
       }
       return (
         <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles.errorIcon} />
           <div className={styles.errorMessage}>{errors[key][0]}</div>
           <div className={styles.errorField}>{fieldLabels[key]}</div>
         </li>
@@ -1395,7 +1395,7 @@ export default class StorageEdit extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" style={{ marginRight: '5px' }} />
+          <LegacyIcon type="exclamation-circle" style={{ marginRight: '5px' }} />
           {errorCount}
         </Popover>
       </span>

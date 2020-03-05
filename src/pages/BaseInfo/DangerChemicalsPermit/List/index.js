@@ -1,18 +1,8 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Button,
-  Form,
-  Table,
-  Input,
-  Select,
-  Divider,
-  Row,
-  Col,
-  message,
-  Popconfirm,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Table, Input, Select, Divider, Row, Col, message, Popconfirm } from 'antd';
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';

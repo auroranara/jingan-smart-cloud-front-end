@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Row,
   Col,
   Input,
@@ -9,7 +10,6 @@ import {
   Cascader,
   Upload,
   Button,
-  Icon,
   message,
   AutoComplete,
   Spin,
@@ -324,10 +324,10 @@ export default class App extends PureComponent {
                     addonAfter={
                       <Fragment>
                         <Tooltip title="复制" >
-                          <Icon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
+                          <LegacyIcon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
                         </Tooltip>
                         <Tooltip title="打开地图" >
-                          <Icon type="environment" onClick={handleShowMap} />
+                          <LegacyIcon type="environment" onClick={handleShowMap} />
                         </Tooltip>
                       </Fragment>
                     }
@@ -540,7 +540,7 @@ export default class App extends PureComponent {
                     headers={{ 'JA-Token': getToken() }}
                   >
                     <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                      <Icon type="plus" style={{ fontSize: '32px' }} />
+                      <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                       <div style={{ marginTop: '8px' }}>点击上传</div>
                     </Button>
                   </Upload>

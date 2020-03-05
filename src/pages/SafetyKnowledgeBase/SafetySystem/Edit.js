@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 // import { connect } from 'dva';
 import router from 'umi/router';
-import { Card, Form, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';

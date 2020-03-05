@@ -1,6 +1,8 @@
 import { PureComponent, useImperativeHandle } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Form, Input, Select, Upload, DatePicker, Icon, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Select, Upload, DatePicker, message } from 'antd';
 import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
@@ -546,7 +548,7 @@ export default class RegSafetyEngEdit extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={reqUploading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>
@@ -571,7 +573,7 @@ export default class RegSafetyEngEdit extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={regUploading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>

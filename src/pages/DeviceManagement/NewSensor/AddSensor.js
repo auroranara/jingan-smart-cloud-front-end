@@ -1,7 +1,8 @@
 import { Component, Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -12,7 +13,6 @@ import {
   DatePicker,
   TreeSelect,
   Upload,
-  Icon,
   Tooltip,
 } from 'antd';
 import { connect } from 'dva';
@@ -819,7 +819,7 @@ export default class AddNewSensor extends Component {
             </Fragment>
           )}
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button onClick={() => { router.push('/device-management/new-sensor/list') }}>取消</Button>
           <Button type="primary" className={styles.ml10} onClick={this.handleSubmit}>确定</Button>
         </Row>

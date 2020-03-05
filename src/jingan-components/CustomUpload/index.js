@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Upload, Button, Icon, message } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Upload, Button, message } from 'antd';
 import classNames from 'classnames';
 import { getToken } from '@/utils/authority';
 import styles from './index.less';
@@ -96,7 +97,7 @@ export default class CustomUpload extends Component {
         {...restProps}
       >
         <Button type="primary">
-          <Icon type="upload" /> 点击上传
+          <LegacyIcon type="upload" /> 点击上传
         </Button>
       </Upload>
     ) : (

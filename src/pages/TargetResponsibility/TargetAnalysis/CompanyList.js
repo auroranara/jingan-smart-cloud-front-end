@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin, Col, Row, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { List, Card, Button, Input, BackTop, Spin, Col, Row, message } from 'antd';
 import { routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 

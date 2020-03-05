@@ -1,5 +1,7 @@
 import { PureComponent } from 'react';
-import { Card, Form, Select, message, Upload, Button, Icon, Table, Spin, Popover } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Select, message, Upload, Button, Table, Spin, Popover } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Result from '@/components/Result';
 import router from 'umi/router';
@@ -136,7 +138,7 @@ export default class ImportTag extends PureComponent {
         const result = rows.error.find(item => item.key === key);
         return (
           <Popover content={result.value} title="错误提示" trigger="hover">
-            <Icon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
+            <LegacyIcon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
             <span style={{ color: 'red' }}>{val}</span>
           </Popover>
         );
@@ -155,7 +157,7 @@ export default class ImportTag extends PureComponent {
               content={<div>{rows.error.map((item, i) => (<p key={i}>（{index + 1}）{item.value}</p>))}</div>}
               title="错误提示"
               trigger="hover">
-              <Icon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
+              <LegacyIcon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
               <span style={{ color: 'red' }}>{val}</span>
             </Popover>
           );
@@ -231,11 +233,11 @@ export default class ImportTag extends PureComponent {
             <FormItem label="批量上传" {...formItemLayout}>
               {sysId ? (
                 <Upload {...props} fileList={fileList} >
-                  <Button type="primary" loading={loading}><Icon type="upload" /> 选择文件</Button>
+                  <Button type="primary" loading={loading}><LegacyIcon type="upload" /> 选择文件</Button>
                 </Upload>
               ) : (
                   <Button type="primary" onClick={() => { message.warning('请先选择所属系统！') }}>
-                    <Icon type="upload" /> 选择文件
+                    <LegacyIcon type="upload" /> 选择文件
                   </Button>
                 )}
             </FormItem>
@@ -271,6 +273,6 @@ export default class ImportTag extends PureComponent {
           )}
         </Spin>
       </PageHeaderLayout>
-    )
+    );
   }
 }

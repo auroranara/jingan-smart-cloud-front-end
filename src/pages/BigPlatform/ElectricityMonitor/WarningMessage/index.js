@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import moment from 'moment';
 import NewSection from '@/components/NewSection';
 // 引入样式文件
@@ -48,7 +48,7 @@ const Message = function({
         )}
         <div className={styles.detail} onClick={genHandleClick(companyId, messageFlag, paramName)}>
           详情
-          <Icon type="double-right" />
+          <LegacyIcon type="double-right" />
         </div>
       </div>
     </div>
@@ -116,7 +116,7 @@ export default class WarningMessage extends PureComponent {
         }}
         other={
           data.length > 3 && (
-            <Icon
+            <LegacyIcon
               type={isExpanded ? 'double-left' : 'double-right'}
               className={styles.expandButton}
               onClick={this.handleClickExpandButton}

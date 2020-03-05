@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
-import { Button, Input, Row, Col, Table, TreeSelect, Icon, message } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Input, Row, Col, Table, TreeSelect, message } from 'antd';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './SectionList.less';
@@ -133,8 +134,8 @@ export default class SectionList extends PureComponent {
   renderExpandIcon = (args) => {
     const { expandable, expanded, onExpand, record } = args;
     return expandable ? (expanded ?
-      <Icon type="caret-down" style={{ marginLeft: record.indentLevel*8, marginRight: 6, cursor: 'pointer' }} onClick={(e) => {onExpand(record, e);}} /> :
-      <Icon type="caret-right" style={{ marginLeft: record.indentLevel*8, marginRight: 6, cursor: 'pointer' }} onClick={(e) => {onExpand(record, e);}} />
+      <LegacyIcon type="caret-down" style={{ marginLeft: record.indentLevel*8, marginRight: 6, cursor: 'pointer' }} onClick={(e) => {onExpand(record, e);}} /> :
+      <LegacyIcon type="caret-right" style={{ marginLeft: record.indentLevel*8, marginRight: 6, cursor: 'pointer' }} onClick={(e) => {onExpand(record, e);}} />
     ) : <span style={{ marginLeft: 20+record.indentLevel*8 }} />;
   };
 

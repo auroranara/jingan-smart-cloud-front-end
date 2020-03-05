@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import styles from './index.less';
 
 /**
@@ -8,7 +8,7 @@ import styles from './index.less';
 export default function LoadMoreButton({ onClick }) {
   return (
     <div className={styles.button} onClick={onClick}>
-      <span className={styles.buttonLabel}>加载更多</span><Icon type="double-right" className={styles.buttonIcon} />
+      <span className={styles.buttonLabel}>加载更多</span><LegacyIcon type="double-right" className={styles.buttonIcon} />
     </div>
   );
 }

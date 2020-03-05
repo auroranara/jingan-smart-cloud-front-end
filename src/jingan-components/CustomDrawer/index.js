@@ -1,5 +1,6 @@
 import React from 'react';
-import { Drawer, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Drawer } from 'antd';
 import classNames from 'classnames';
 import CustomSection from '@/jingan-components/CustomSection';
 // 引入样式文件
@@ -29,7 +30,7 @@ export default function CustomDrawer({
     >
       <CustomSection
         title={title}
-        action={<Icon type="close" className={styles.closeButton} onClick={onClose} />}
+        action={<LegacyIcon type="close" className={styles.closeButton} onClick={onClose} />}
         {...sectionProps}
       >
         {children}

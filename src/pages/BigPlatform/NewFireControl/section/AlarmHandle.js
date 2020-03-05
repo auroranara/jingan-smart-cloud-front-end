@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Timeline, Col, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Timeline, Col } from 'antd';
 import moment from 'moment';
 
 import FcSection from './FcSection';
@@ -310,7 +311,7 @@ export default class AlarmHandle extends Component {
               {magImgs}
             </Slider>
           </div>
-          <Icon
+          <LegacyIcon
             type="left"
             style={{
               left: 10,
@@ -322,7 +323,7 @@ export default class AlarmHandle extends Component {
             }}
             onClick={magIndex ? () => this.handleLeft('magIndex') : null}
           />
-          <Icon
+          <LegacyIcon
             type="right"
             style={{
               right: 10,
@@ -333,7 +334,7 @@ export default class AlarmHandle extends Component {
             }}
             onClick={isMagEnd ? null : () => this.handleRight('magIndex')}
           />
-          <Icon
+          <LegacyIcon
             type="close"
             onClick={this.handleCloseImg}
             style={{ right: 10, top: 10, cursor: 'pointer', ...ICON_STYLE }}

@@ -3,9 +3,10 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Button,
   Row,
   Col,
@@ -16,7 +17,6 @@ import {
   Transfer,
   Modal,
   Table,
-  Icon,
   message,
   Tag,
 } from 'antd';
@@ -629,7 +629,7 @@ export default class ExaminationMissionAdd extends PureComponent {
                   rules: [{ required: true, message: '请选择考试人员', type: 'array' }],
                 })(
                   <Fragment>
-                    <Icon
+                    <LegacyIcon
                       onClick={this.handleViewStudentsModal}
                       type="search"
                       className={styles.iconSelectStudents}

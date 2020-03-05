@@ -1,7 +1,8 @@
 import { Component, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -10,7 +11,6 @@ import {
   message,
   Radio,
   DatePicker,
-  Icon,
   Tooltip,
   InputNumber,
   Checkbox,
@@ -778,7 +778,7 @@ export default class AddEquipment extends Component {
                     </Col>
                     <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
                       <Button onClick={() => this.handleRefreshBuilding(true)}>
-                        <Icon type="reload" />
+                        <LegacyIcon type="reload" />
                       </Button>
                     </Tooltip>
                     <AuthButton

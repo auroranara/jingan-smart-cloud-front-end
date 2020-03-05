@@ -1,19 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  List,
-  Card,
-  Button,
-  Input,
-  Spin,
-  Col,
-  Row,
-  Select,
-  Icon,
-  message,
-  Modal,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { List, Card, Button, Input, Spin, Col, Row, Select, message, Modal } from 'antd';
 // import { routerRedux } from 'dva/router';
 // import { AuthLink } from '@/utils/customAuth';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -423,7 +412,7 @@ export default class BuildingInfoList extends PureComponent {
                         top: '12px',
                       }}
                     >
-                      <Icon type="close" />
+                      <LegacyIcon type="close" />
                     </AuthButton>
                   }
                 >

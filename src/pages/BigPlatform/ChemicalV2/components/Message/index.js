@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Divider, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Divider } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 import { GET_STATUS_NAME } from '@/pages/IoT/AlarmMessage';
 import NewSection from '@/components/NewSection';
@@ -672,11 +673,11 @@ export default class Messages extends PureComponent {
     if (+type === 100 && monitorEquipmentType === '1') items.splice(1, 1);
     const handleClick = !typeClickList || typeClickList.includes(+type) ? onClick : undefined;
     const detailBtn = cssType ? (
-      <Icon type="right" className={styles.detailArrow} />
+      <LegacyIcon type="right" className={styles.detailArrow} />
     ) : (
       <a className={styles.detailBtn} onClick={handleClick}>
         详情
-        <Icon type="double-right" />
+        <LegacyIcon type="double-right" />
       </a>
     );
 

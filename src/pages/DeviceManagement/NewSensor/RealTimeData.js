@@ -1,11 +1,7 @@
 import { Component, Fragment } from 'react';
-import {
-  Card,
-  Form,
-  Row,
-  Col,
-  Table,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Col, Table } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import moment from 'moment';
@@ -278,6 +274,6 @@ export default class RealTimeData extends Component {
           </Card>
         </div>
       </PageHeaderLayout>
-    )
+    );
   }
 }

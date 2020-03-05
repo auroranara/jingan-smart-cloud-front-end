@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Table, Pagination, Col, Button, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Table, Pagination, Col, Button } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
 import Switcher from '@/components/Switcher'
@@ -154,7 +155,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
               {list.length > 0 && !isLast ? (
                 <Col span={24} >
                   <div className={styles.moreButton} onClick={handlePageChange}>
-                    {moreLoading ? (<Fragment><Icon style={{ marginRight: '0.5em' }} type="loading" /><span>加载中...</span></Fragment>) : (
+                    {moreLoading ? (<Fragment><LegacyIcon style={{ marginRight: '0.5em' }} type="loading" /><span>加载中...</span></Fragment>) : (
                       <span>加载更多</span>
                     )}
                   </div>
@@ -217,6 +218,6 @@ export default class ModalOfInspectionStatistics extends PureComponent {
           )}
         </div>
       </NewModal >
-    )
+    );
   }
 }

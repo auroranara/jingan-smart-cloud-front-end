@@ -1,24 +1,15 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  List,
-  Card,
-  Button,
-  DatePicker,
-  Modal,
-  BackTop,
-  Spin,
-  Col,
-  Row,
-  message,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { List, Card, Button, DatePicker, Modal, BackTop, Spin, Col, Row, message } from 'antd';
 // import debounce from 'lodash/debounce';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroller';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import styles from './companyList.less';
+import styles1 from './FaceDatabase.less';
 
 const FormItem = Form.Item;
 
@@ -204,38 +195,46 @@ export default class AlarmRecord extends PureComponent {
       form: { getFieldDecorator },
     } = this.props;
 
+    const defaultSpan = { xl: 8, md: 12, sm: 24, xs: 24 };
+
     return (
       <Card>
-        <Form layout="inline">
-          <FormItem label="开始时间">
-            {getFieldDecorator('startDate')(
-              <DatePicker
-                showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                format="YYYY-MM-DD HH:mm:ss"
-                placeholder="请选择开始时间"
-                style={{ width: 260 }}
-              />
-            )}
-          </FormItem>
-          <FormItem label="结束时间">
-            {getFieldDecorator('endDate')(
-              <DatePicker
-                showTime={{ defaultValue: moment('23:59:59', 'HH:mm:ss') }}
-                // showToday={false}
-                format="YYYY-MM-DD HH:mm:ss"
-                placeholder="请选择结束时间"
-                style={{ width: 260 }}
-              />
-            )}
-          </FormItem>
-          <FormItem>
-            <Button type="primary" onClick={this.handleClickToQuery}>
-              查询
-            </Button>
-          </FormItem>
-          <FormItem>
-            <Button onClick={this.handleClickToReset}>重置</Button>
-          </FormItem>
+        <Form className={styles1.form}>
+          <Row>
+            <Col {...defaultSpan}>
+              <FormItem label="开始时间">
+                {getFieldDecorator('startDate')(
+                  <DatePicker
+                    showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    placeholder="请选择开始时间"
+                    style={{ width: 260 }}
+                  />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...defaultSpan}>
+              <FormItem label="结束时间">
+                {getFieldDecorator('endDate')(
+                  <DatePicker
+                    showTime={{ defaultValue: moment('23:59:59', 'HH:mm:ss') }}
+                    // showToday={false}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    placeholder="请选择结束时间"
+                    style={{ width: 260 }}
+                  />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...defaultSpan}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleClickToQuery}>
+                  查询
+                </Button>
+                <Button onClick={this.handleClickToReset} style={{ marginLeft: 10 }}>重置</Button>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Card>
     );

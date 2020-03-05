@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 // import DangerCard from './DangerCard';
 import DangerCard from '@/jingan-components/HiddenDangerCard';
@@ -94,7 +94,7 @@ export default class DrawerStretchCard extends PureComponent {
                   className={!list.length && loading ? styles.none : loading ? styles.more : styles.more1}
                   onClick={loading ? null : this.loadMore}
                 >
-                  {loading ? <Icon type="sync" spin /> : <Icon type="double-right" className={styles.doubleRight}/>}
+                  {loading ? <LegacyIcon type="sync" spin /> : <LegacyIcon type="double-right" className={styles.doubleRight}/>}
                 </p>
               )}
             </div>

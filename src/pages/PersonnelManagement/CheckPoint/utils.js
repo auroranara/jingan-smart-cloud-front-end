@@ -1,6 +1,7 @@
 import router from 'umi/router';
 import Link from 'umi/link';
-import { Icon, message, Popconfirm } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { message, Popconfirm } from 'antd';
 
 import codes from '@/utils/codes';
 import { AuthLink, AuthSpan } from '@/utils/customAuth';
@@ -45,10 +46,10 @@ export function getFieldDecConfig(msg, required=true) {
 export function UploadButton(props) {
   return (
     <div>
-      <Icon type="plus" />
+      <LegacyIcon type="plus" />
       <div className="ant-upload-text">上传</div>
     </div>
-  )
+  );
 }
 
 export function uploadConvertToOrigin(list) {

@@ -1,6 +1,8 @@
 import { Fragment } from 'react';
 import router from 'umi/router';
-import { Button, Cascader, DatePicker, Form, Input, Radio, Select } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Cascader, DatePicker, Input, Radio, Select } from 'antd';
 
 import CompanySelect from '@/jingan-components/CompanySelect';
 

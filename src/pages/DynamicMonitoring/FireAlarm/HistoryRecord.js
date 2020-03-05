@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { Button, Card, Table, Select, Form, Input, DatePicker, Pagination, Modal } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Table, Select, Input, DatePicker, Pagination, Modal } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 
 const FormItem = Form.Item;

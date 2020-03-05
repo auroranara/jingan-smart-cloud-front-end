@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Select, Button, Icon, Tooltip } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Select, Button, Tooltip } from 'antd';
 import { connect } from 'dva';
 import styles from './index.less';
 
@@ -183,7 +184,7 @@ export default class BuildingFloorSelect extends Component {
           新增建筑物楼层
         </Button>
         <Tooltip title="刷新建筑物列表">
-          <Icon className={styles.reloadIcon} type="reload" onClick={this.handleReload} />
+          <LegacyIcon className={styles.reloadIcon} type="reload" onClick={this.handleReload} />
         </Tooltip>
       </div>
     );

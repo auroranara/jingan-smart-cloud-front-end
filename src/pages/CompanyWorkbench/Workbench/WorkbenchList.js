@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Tabs, DatePicker, Icon, Progress } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tabs, DatePicker, Progress } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from '@/components/Ellipsis';
 import { routerRedux } from 'dva/router';
@@ -118,7 +119,7 @@ function TabCardTotal(props) {
           <div className={styles.label}>
             <span className={styles.title}>报警率</span>
             <span className={styles.rate}>
-              <Icon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
+              <LegacyIcon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
             </span>
           </div>
           <div className={styles.labelNum}>
@@ -132,7 +133,7 @@ function TabCardTotal(props) {
           <div className={styles.label}>
             <span className={styles.title}>报警次数</span>
             <span className={styles.rate}>
-              <Icon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
+              <LegacyIcon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
             </span>
           </div>
           <div className={styles.labelNum}>
@@ -149,7 +150,7 @@ function TabCardTotal(props) {
           <div className={styles.label}>
             <span className={styles.title}>产生工单</span>
             <span className={styles.rate}>
-              <Icon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
+              <LegacyIcon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
             </span>
           </div>
           <div className={styles.labelNum}>
@@ -164,7 +165,7 @@ function TabCardTotal(props) {
           <div className={styles.label}>
             <span className={styles.title}>工单完成率</span>
             <span className={styles.rate}>
-              <Icon type="caret-down" style={{ lineHeight: '40px' }} /> 0.8% 同比上周
+              <LegacyIcon type="caret-down" style={{ lineHeight: '40px' }} /> 0.8% 同比上周
             </span>
           </div>
           <div className={styles.labelNum}>

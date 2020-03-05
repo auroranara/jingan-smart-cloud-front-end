@@ -1,17 +1,7 @@
 import { Component, Fragment } from 'react';
-import {
-  Card,
-  Form,
-  Input,
-  Select,
-  Button,
-  Row,
-  Col,
-  message,
-  Radio,
-  Icon,
-  Tooltip,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Select, Button, Row, Col, message, Radio, Tooltip } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
@@ -329,7 +319,7 @@ export default class HandleVirtualMonitoringDevice extends Component {
                             onClick={() => this.handleRefreshBuilding(true)}
                             style={{ marginRight: '10px' }}
                           >
-                            <Icon type="reload" />
+                            <LegacyIcon type="reload" />
                           </Button>
                         </Tooltip>
                         <AuthButton
@@ -375,7 +365,7 @@ export default class HandleVirtualMonitoringDevice extends Component {
           </Button>
         </Row>
       </Fragment>
-    )
+    );
   }
 
   render () {

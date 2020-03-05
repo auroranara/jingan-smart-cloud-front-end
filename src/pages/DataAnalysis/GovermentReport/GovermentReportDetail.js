@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Spin, Table, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Card, Spin, Table } from 'antd';
 import { connect } from 'dva';
 import Lightbox from 'react-images';
 import Link from 'umi/link';
@@ -339,7 +340,7 @@ export default class App extends PureComponent {
                 <span className={styles.title}>点位名称：{pointName}</span>
                 <span className={styles.titleDesc}>上报隐患{dangerCount}条</span>
                 <span className={styles.titleDesc}>检查时间：{moment(checkDate).format('MM-DD HH:mm')}</span>
-                <Icon
+                <LegacyIcon
                   onClick={() => {
                     router.push(`/data-analysis/goverment-report/govermentCheckDetail/${
                       dangerId
@@ -370,7 +371,7 @@ export default class App extends PureComponent {
                     pagination={false}
                   />
                 </Card>
-              )
+              );
           }) : <div style={{ textAlign: 'center' }}>暂无数据</div>}
           {this.renderOther()}
           {this.renderImageDetail()}

@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   List,
   Card,
   Button,
@@ -14,7 +15,6 @@ import {
   Select,
   DatePicker,
   Upload,
-  Icon,
   message,
   Cascader,
   Popconfirm,
@@ -731,7 +731,7 @@ export default class FaceDatabase extends PureComponent {
               </FormItem>
             </Col>
             <Col xl={8} md={12} sm={24} xs={24}>
-              <FormItem label={fieldLabels.birthEndTime} style={{ paddingLeft: '15px' }}>
+              <FormItem label={fieldLabels.birthEndTime}>
                 {getFieldDecorator('endDate')(
                   <DatePicker
                     // showTime
@@ -915,12 +915,12 @@ export default class FaceDatabase extends PureComponent {
     } = this.state;
     const uploadButton = (
       <div>
-        <Icon type={faceLoading ? 'loading' : 'plus'} />
+        <LegacyIcon type={faceLoading ? 'loading' : 'plus'} />
         <div className="ant-upload-text">上传</div>
       </div>
     );
 
-    const uploadExportButton = <Icon type={exportLoading ? 'loading' : 'upload'} />;
+    const uploadExportButton = <LegacyIcon type={exportLoading ? 'loading' : 'upload'} />;
 
     const formItemLayout = {
       labelCol: { span: 4 },

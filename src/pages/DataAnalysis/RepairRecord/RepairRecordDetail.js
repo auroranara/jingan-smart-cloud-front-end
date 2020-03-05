@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 // import moment from 'moment';
 import { connect } from 'dva';
-import { Card, Form, Divider, Row, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Divider, Row, Spin } from 'antd';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './RepairRecordDetail.less';

@@ -1,7 +1,9 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Checkbox, Form, Input, Select, Spin, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Checkbox, Input, Select, Spin, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ImageDraw from '@/components/ImageDraw';

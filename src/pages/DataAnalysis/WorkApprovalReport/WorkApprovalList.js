@@ -1,5 +1,7 @@
 import { PureComponent } from 'react';
-import { Card, Form, Input, DatePicker, Select, Table, Badge, TreeSelect, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, DatePicker, Select, Table, Badge, TreeSelect, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm'

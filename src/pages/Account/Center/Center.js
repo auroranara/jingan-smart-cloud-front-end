@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Link, routerRedux } from 'dva/router';
-import { Card, Row, Col, Icon, Avatar, Tag, Divider, Spin, Input } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Card, Row, Col, Avatar, Tag, Divider, Spin, Input } from 'antd';
 import GridContent from '@/layouts/GridContent';
 import styles from './Center.less';
 
@@ -168,7 +169,7 @@ export default class Center extends PureComponent {
                         onClick={this.showInput}
                         style={{ background: '#fff', borderStyle: 'dashed' }}
                       >
-                        <Icon type="plus" />
+                        <LegacyIcon type="plus" />
                       </Tag>
                     )}
                   </div>

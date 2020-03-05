@@ -1,6 +1,20 @@
 import React, { PureComponent } from 'react';
 import _ from 'lodash';
-import { Checkbox, Form, Card, Input, Button, Select, Spin, Table, Tabs, Tree, TreeSelect, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+  Checkbox,
+  Card,
+  Input,
+  Button,
+  Select,
+  Spin,
+  Table,
+  Tabs,
+  Tree,
+  TreeSelect,
+  message,
+} from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './Role.less';

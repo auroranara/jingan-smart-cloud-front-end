@@ -1,18 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import {
-  Button,
-  Card,
-  Form,
-  Row,
-  Col,
-  Radio,
-  Input,
-  TreeSelect,
-  Upload,
-  Icon,
-  message,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Row, Col, Radio, Input, TreeSelect, Upload, message } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { getToken } from '@/utils/authority';
@@ -311,7 +301,7 @@ export default class CoursewareAdd extends PureComponent {
     const type = getFieldValue('type') || '2';
     const uploadButton = (
       <div>
-        <Icon type={coverLoading ? 'loading' : 'plus'} />
+        <LegacyIcon type={coverLoading ? 'loading' : 'plus'} />
         <div className="ant-upload-text">上传</div>
       </div>
     );
@@ -393,7 +383,7 @@ export default class CoursewareAdd extends PureComponent {
                     fileList={fileList}
                   >
                     <Button type="primary">
-                      <Icon type={courseLoading ? 'loading' : 'upload'} /> 浏览
+                      <LegacyIcon type={courseLoading ? 'loading' : 'upload'} /> 浏览
                     </Button>
                   </Upload>
                 </Fragment>

@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Checkbox, Card, Form, Input, Icon, Select, Button, Modal, Upload, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Checkbox, Card, Input, Select, Button, Modal, Upload, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
@@ -138,7 +140,7 @@ const CreateForm = Form.create()(props => {
         {form.getFieldDecorator('upload')(
           <Upload {...uploadProps}>
             <Button>
-              <Icon type="upload" />
+              <LegacyIcon type="upload" />
               上传文件
             </Button>
           </Upload>
@@ -494,7 +496,7 @@ export default class AppManagement extends PureComponent {
               </Select>
             </div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button icon={<LegacyIcon type="plus" />} type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button>
               {selectedRows.length > 0 && (

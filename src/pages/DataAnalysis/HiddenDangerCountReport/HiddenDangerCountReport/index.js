@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Card, Form, Button, Select, DatePicker, TreeSelect, Radio, Table, Empty, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Select, DatePicker, TreeSelect, Radio, Table, Empty, Spin } from 'antd';
 import Echarts from 'echarts-for-react';
 import fileDownload from 'js-file-download';
 import moment from 'moment';

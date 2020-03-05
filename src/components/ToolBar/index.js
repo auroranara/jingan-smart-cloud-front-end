@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Form, Button, Row, Col } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Row, Col } from 'antd';
 // 引入样式文件
 import styles from './index.less';
 

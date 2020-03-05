@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Card,
   Button,
   Spin,
@@ -12,7 +13,6 @@ import {
   Select,
   DatePicker,
   Upload,
-  Icon,
   AutoComplete,
 } from 'antd';
 import moment from 'moment';
@@ -476,7 +476,7 @@ export default class ContractHandler extends PureComponent {
         headers={{ 'JA-Token': getToken() }}
       >
         <Button type="primary">
-          <Icon type="upload" /> 上传附件
+          <LegacyIcon type="upload" /> 上传附件
         </Button>
       </Upload>
     );

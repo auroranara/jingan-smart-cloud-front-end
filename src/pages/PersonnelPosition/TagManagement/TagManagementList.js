@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Button, Card, Input, Form, Row, Col, Select, List, Spin, Modal, Radio, Table } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Input, Row, Col, Select, List, Spin, Modal, Radio, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { connect } from 'dva';
 import codes from '@/utils/codes';

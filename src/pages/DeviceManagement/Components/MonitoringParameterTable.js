@@ -1,15 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Form,
-  Table,
-  Button,
-  Modal,
-  Input,
-  Select,
-  Col,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Table, Button, Modal, Input, Select, Col } from 'antd';
 import HistoryModal from '@/pages/DeviceManagement/Components/ParameterHistoryModal';
 
 const FormItem = Form.Item;

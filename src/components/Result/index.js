@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import styles from './index.less';
 
 export default function Result({
@@ -13,8 +13,8 @@ export default function Result({
   ...restProps
 }) {
   const iconMap = {
-    error: <Icon className={styles.error} type="close-circle" theme="filled" />,
-    success: <Icon className={styles.success} type="check-circle" theme="filled" />,
+    error: <LegacyIcon className={styles.error} type="close-circle" theme="filled" />,
+    success: <LegacyIcon className={styles.success} type="check-circle" theme="filled" />,
   };
   const clsString = classNames(styles.result, className);
   return (

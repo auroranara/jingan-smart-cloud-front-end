@@ -1,5 +1,6 @@
 import React from 'react';
-import { Drawer, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Drawer } from 'antd';
 import classNames from 'classnames';
 import Section from '../Section';
 // 引入样式文件
@@ -30,7 +31,7 @@ export default function SectionDrawer({
     >
       <Section
         title={title}
-        action={<Icon type="close" className={styles.closeButton} onClick={onClose} />}
+        action={<LegacyIcon type="close" className={styles.closeButton} onClick={onClose} />}
         className={styles.sectionContainer}
         contentClassName={styles.sectionContent}
         {...sectionProps}

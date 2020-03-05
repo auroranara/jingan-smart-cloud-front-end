@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd'
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { isArray } from '@/utils/utils';
 import styles from './index.less';
 
@@ -36,15 +36,15 @@ export default class App extends PureComponent {
 
     return visible && length > 0 ? (
       <div className={styles.container} style={style}>
-        <div className={styles.closeButton} onClick={onClose}><Icon type="close" /></div>
+        <div className={styles.closeButton} onClick={onClose}><LegacyIcon type="close" /></div>
         {/* 左移按钮 */
           !isFirst && (
-            <div className={styles.leftButton} onClick={() => this.setState({ index: index - 1 })}><Icon type="left" style={{ verticalAlign: 'top' }} /></div>
+            <div className={styles.leftButton} onClick={() => this.setState({ index: index - 1 })}><LegacyIcon type="left" style={{ verticalAlign: 'top' }} /></div>
           )
         }
         {/* 右移按钮 */
           !isLast && (
-            <div className={styles.rightButton} onClick={() => this.setState({ index: index + 1 })}><Icon type="right" style={{ verticalAlign: 'top' }} /></div>
+            <div className={styles.rightButton} onClick={() => this.setState({ index: index + 1 })}><LegacyIcon type="right" style={{ verticalAlign: 'top' }} /></div>
           )
         }
         {/* 分页按钮 */

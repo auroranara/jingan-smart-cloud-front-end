@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, Icon, BackTop, Spin, message, Modal } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { List, Card, Button, Input, BackTop, Spin, message, Modal } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
@@ -290,7 +292,7 @@ export default class UnitDivisionList extends PureComponent {
                         fontSize: '16px',
                       }}
                     >
-                      <Icon type="close" />
+                      <LegacyIcon type="close" />
                     </AuthButton>
                   }
                 >

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Button, Icon, Input } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Input } from 'antd';
 
 import styles from './AlarmHandle.less';
 
@@ -58,7 +59,7 @@ export default class AlarmHandle extends PureComponent {
           {prefix}
           <span className={styles.titleText}>{title}</span>
         </h3>
-        <Icon type="close" className={styles.close} onClick={this.onClose} />
+        <LegacyIcon type="close" className={styles.close} onClick={this.onClose} />
         <TextArea
           rows={4}
           placeholder="填写处理信息（30字以内）"

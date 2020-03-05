@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Input, Modal, Icon, Tooltip, AutoComplete } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Input, Modal, Tooltip, AutoComplete } from 'antd';
 import { Map, Marker } from 'react-amap';
 import { isNumber } from '@/utils/utils';
 import { debounce, bind } from 'lodash-decorators';
@@ -145,7 +146,7 @@ export default class MapCoordinate extends Component {
             placeholder="请输入经纬度"
             addonAfter={(
               <Tooltip title="打开地图">
-                <Icon className={styles.icon} type="environment" onClick={this.handleShowModal} />
+                <LegacyIcon className={styles.icon} type="environment" onClick={this.handleShowModal} />
               </Tooltip>
             )}
           />

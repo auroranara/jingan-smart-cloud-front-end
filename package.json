@@ -34,11 +34,12 @@
     }
   },
   "dependencies": {
+    "@ant-design/compatible": "^1.0.1",
     "@antv/data-set": "^0.10.0",
     "@babel/runtime": "^7.3.1",
     "@commitlint/cli": "^7.0.0",
     "@commitlint/config-conventional": "^7.0.1",
-    "antd": "^3.26.0",
+    "antd": "^4.0.0",
     "braft-editor": "^2.1.28",
     "classnames": "^2.2.6",
     "coordtransform": "^2.1.2",

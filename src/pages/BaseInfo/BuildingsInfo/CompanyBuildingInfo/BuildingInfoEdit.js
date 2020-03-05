@@ -2,7 +2,10 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 
-import { Button, Card, Col, Form, Icon, Input, Upload, Select, InputNumber, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+
+import { Button, Card, Col, Input, Upload, Select, InputNumber, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import CompanyModal from '../../../BaseInfo/Company/CompanyModal';
@@ -25,7 +28,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
 const folder = 'buildingsinfo';
 
-const UploadIcon = <Icon type="upload" />;
+const UploadIcon = <LegacyIcon type="upload" />;
 
 const itemLayout = {
   labelCol: {

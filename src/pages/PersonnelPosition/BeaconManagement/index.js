@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Row, Col, Input, Button, List, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Col, Input, Button, List, Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { Link } from 'dva/router';
 import Ellipsis from 'components/Ellipsis';

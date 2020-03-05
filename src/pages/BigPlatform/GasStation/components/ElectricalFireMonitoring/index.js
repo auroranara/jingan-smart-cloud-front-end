@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Tooltip, Carousel, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip, Carousel } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import ReactEcharts from "echarts-for-react";
 import { connect } from 'dva';
@@ -231,7 +232,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
             <Tooltip
               title={isFirst ? '没有上一页' : params[currentIndex-1].name}
             >
-              <Icon
+              <LegacyIcon
                 className={styles.prevButton}
                 style={isFirst ? { color: 'rgba(0, 114, 224, 0.5)', cursor: 'auto' } : undefined}
                 type="left"
@@ -241,7 +242,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
             <Tooltip
               title={isLast ? '没有下一页' : params[currentIndex+1].name}
             >
-              <Icon
+              <LegacyIcon
                 className={styles.nextButton}
                 style={isLast ? { color: 'rgba(0, 114, 224, 0.5)', cursor: 'auto' } : undefined}
                 type="right"

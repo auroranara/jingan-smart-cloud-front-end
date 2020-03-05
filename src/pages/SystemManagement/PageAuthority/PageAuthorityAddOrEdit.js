@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, TreeSelect, Select, Input, Form, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, TreeSelect, Select, Input, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { METHODS, NODE_TYPES, formItemLayout, tailFormItemLayout, getIdMap, sortTree, addProps, getSortValue } from './utils';

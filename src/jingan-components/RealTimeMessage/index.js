@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import classNames from 'classnames';
 import { Section2 as CustomSection } from '@/jingan-components/CustomSection';
 // 引入样式文件
@@ -37,7 +37,7 @@ export default class RealTimeMessage extends PureComponent {
       <CustomSection
         className={classNames("real-time-message-container", className)}
         title="实时消息"
-        extra={arr.length > length && <Icon type={expanded ? "double-left" : "double-right"} className="real-time-message-button" onClick={this.handleClick} />}
+        extra={arr.length > length && <LegacyIcon type={expanded ? "double-left" : "double-right"} className="real-time-message-button" onClick={this.handleClick} />}
         {...restProps}
       >
         <div className="real-time-message-list">

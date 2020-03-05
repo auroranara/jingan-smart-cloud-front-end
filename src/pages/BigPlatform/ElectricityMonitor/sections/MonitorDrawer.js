@@ -1,5 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import {
   DrawerContainer,
@@ -44,7 +44,7 @@ GAUGE_LABEL_OBJS[0] = GAUGE_LABEL_OBJS[1];
 GAUGE_LABEL_OBJS[1] = temp;
 
 function DoubleRight(props) {
-  return <Icon type="double-right" style={{ color: '#0FF' }} />;
+  return <LegacyIcon type="double-right" style={{ color: '#0FF' }} />;
 }
 
 export default class MonitorDrawer extends PureComponent {

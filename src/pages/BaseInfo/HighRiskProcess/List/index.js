@@ -1,6 +1,8 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Input, Pagination, Select, Modal, Table, Spin, Divider, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Pagination, Select, Modal, Table, Spin, Divider, message } from 'antd';
 import router from 'umi/router';
 import { AuthButton, AuthA, AuthPopConfirm, hasAuthority } from '@/utils/customAuth';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm';

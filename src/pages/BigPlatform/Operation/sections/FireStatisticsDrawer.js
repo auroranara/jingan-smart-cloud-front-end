@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 // import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import styles from './FireStatisticsDrawer.less';
 import {
@@ -353,9 +353,9 @@ export default class FireStatisticsDrawer extends PureComponent {
             onClick={loading ? null : this.getMoreFireList}
           >
             {loading ? (
-              <Icon type="sync" spin className={styles.sync} />
+              <LegacyIcon type="sync" spin className={styles.sync} />
             ) : (
-              <Icon type="double-right" className={styles.doubleRight} />
+              <LegacyIcon type="double-right" className={styles.doubleRight} />
             )}
           </p>
         )}

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { notification, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { notification } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
@@ -457,7 +458,7 @@ export default class Smoke extends PureComponent {
       className: styles.notification,
       message: (
         <div className={styles.notificationTitle}>
-          <Icon type="warning" theme="filled" className={styles.notificationIcon} />
+          <LegacyIcon type="warning" theme="filled" className={styles.notificationIcon} />
           警情提示
         </div>
       ),

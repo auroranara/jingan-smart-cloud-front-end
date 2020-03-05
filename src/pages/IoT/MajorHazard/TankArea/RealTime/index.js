@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { Spin, message, List, Card, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Spin, message, List, Card } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -128,7 +129,7 @@ export default class TankAreaRealTime extends Component {
         <div className={styles.paramValue} style={{ color: over && '#f5222d' }}>{typeof value === 'number' ? value : '--'}</div>
         {over && (
           <div className={styles.paramTrendWrapper}>
-            <Icon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
+            <LegacyIcon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
             <div className={styles.paramTrendValue} style={{ color: '#f5222d' }}>{value >= largeUpper ? value - largeUpper : value - normalUpper}</div>
             <div className={styles.paramTrendDescription}>{value >= largeUpper ? '超过报警阈值' : '超过预警阈值'}</div>
           </div>

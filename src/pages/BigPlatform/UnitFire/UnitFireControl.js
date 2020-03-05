@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Tooltip, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import Section from './components/Section/Section.js';
@@ -1181,7 +1182,7 @@ export default class UnitFireControl extends PureComponent {
               >
                 <div className={styles.resetButton} onClick={this.handleShowResetSection}>
                   {/* <img src={resetKeyIcon} alt="" /> */}
-                  <Icon type="reload" style={{ marginRight: 8 }} />
+                  <LegacyIcon type="reload" style={{ marginRight: 8 }} />
                   一键复位
                 </div>
               </Tooltip>

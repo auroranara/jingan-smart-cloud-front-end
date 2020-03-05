@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Icon, Spin, Switch } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Spin, Switch } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
 
@@ -548,8 +549,8 @@ export default class LeafletMap extends PureComponent {
       <div className={styles.container}>
         {imgDraw}
         {/* <Icon type={fullScreen ? 'shrink' : 'arrows-alt'} onClick={fullScreen ? hideFullScreen : showFullScreen} className={styles.screen} /> */}
-        <Icon type="home" onClick={this.handleHome} className={styles.home} />
-        {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
+        <LegacyIcon type="home" onClick={this.handleHome} className={styles.home} />
+        {parentId && <LegacyIcon type="rollback" onClick={this.handleBack} className={styles.back} />}
         {/* <div className={styles.mapInfo}>
           <span className={styles.area}>当前区域: {fullName || '暂无'}</span>
           今日
@@ -570,8 +571,8 @@ export default class LeafletMap extends PureComponent {
         <div className={styles.beaconSwitch}>
           {/* <span className={styles.beaconLabel}>信标</span>
           <Switch size="small" checked={beaconOn} onChange={this.handleBeaconStateChange} /> */}
-          <Icon className={styles.switcher} type="switcher" onClick={showBoard} />
-          <Icon className={styles.iconBase} type={fullScreen ? 'shrink' : 'arrows-alt'} onClick={fullScreen ? hideFullScreen : showFullScreen} />
+          <LegacyIcon className={styles.switcher} type="switcher" onClick={showBoard} />
+          <LegacyIcon className={styles.iconBase} type={fullScreen ? 'shrink' : 'arrows-alt'} onClick={fullScreen ? hideFullScreen : showFullScreen} />
         </div>
       </div>
     );

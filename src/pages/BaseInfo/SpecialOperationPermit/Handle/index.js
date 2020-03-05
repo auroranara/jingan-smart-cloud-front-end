@@ -1,17 +1,8 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Button,
-  Form,
-  Input,
-  Select,
-  Upload,
-  DatePicker,
-  Icon,
-  Cascader,
-  message,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Select, Upload, DatePicker, Cascader, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
 import { getToken } from '@/utils/authority';
@@ -466,7 +457,7 @@ export default class specialOperationPermitHandle extends PureComponent {
                   onChange={this.handleFrontChange}
                 >
                   <Button>
-                    <Icon type={frontLoading ? 'loading' : "upload"} />
+                    <LegacyIcon type={frontLoading ? 'loading' : "upload"} />
                     点击上传
                 </Button>
                 </Upload>
@@ -486,7 +477,7 @@ export default class specialOperationPermitHandle extends PureComponent {
                   onChange={this.handleBackChange}
                 >
                   <Button>
-                    <Icon type={backLoading ? 'loading' : "upload"} />
+                    <LegacyIcon type={backLoading ? 'loading' : "upload"} />
                     点击上传
                 </Button>
                 </Upload>

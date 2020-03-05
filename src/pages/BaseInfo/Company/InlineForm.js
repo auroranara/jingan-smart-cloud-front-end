@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Form, Button, Row, Col, Checkbox } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Row, Col, Checkbox } from 'antd';
 import styles from './InlineForm.less';
 
 const FormItem = Form.Item;

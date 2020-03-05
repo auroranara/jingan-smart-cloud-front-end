@@ -1,17 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import {
-  Card,
-  Form,
-  Input,
-  Select,
-  Button,
-  Radio,
-  Row,
-  message,
-  InputNumber,
-  Upload,
-  Icon,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Select, Button, Radio, Row, message, InputNumber, Upload } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
@@ -570,7 +560,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
                   onChange={(info) => this.handleFileUploadChange(info, 'flowChartList', 'flowChartLoading')}
                 >
                   <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                     <div style={{ marginTop: '8px' }}>点击上传</div>
                   </Button>
                 </Upload>
@@ -587,7 +577,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
                   onChange={(info) => this.handleFileUploadChange(info, 'equipmentList', 'equipmentListLoading')}
                 >
                   <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                     <div style={{ marginTop: '8px' }}>点击上传</div>
                   </Button>
                 </Upload>
@@ -605,7 +595,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
                   onChange={(info) => this.handleFileUploadChange(info, 'equipmentLayoutList', 'equipmentLayoutLoading')}
                 >
                   <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                     <div style={{ marginTop: '8px' }}>点击上传</div>
                   </Button>
                 </Upload>

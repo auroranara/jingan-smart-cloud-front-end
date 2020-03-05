@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   List,
   Card,
   Button,
@@ -16,7 +17,6 @@ import {
   Row,
   Select,
   Tabs,
-  Icon,
   Tooltip,
 } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -653,7 +653,7 @@ export default class CheckContent extends PureComponent {
                         top: '12px',
                       }}
                     >
-                      <Icon type="close" />
+                      <LegacyIcon type="close" />
                     </AuthButton>
                   }
                 >
@@ -871,7 +871,7 @@ export default class CheckContent extends PureComponent {
           onClick={this.handleCloseImg}
           style={{ display: showImg ? 'block' : 'none', pointerEvents: 'auto' }}
         >
-          <Icon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
+          <LegacyIcon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
           <QRCode
             className={styles.qrcode}
             size={200}

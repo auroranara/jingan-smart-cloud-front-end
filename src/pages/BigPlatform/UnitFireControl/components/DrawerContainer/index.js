@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Col, Drawer, Row, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Col, Drawer, Row } from 'antd';
 
 import styles from './index.less';
 
@@ -39,7 +40,7 @@ export default class DrawerContainer extends PureComponent {
           </div>
           {closable && (
             <div className={styles.closeTag}>
-              <Icon onClick={onClose} type="close" />
+              <LegacyIcon onClick={onClose} type="close" />
             </div>
           )}
         </div>

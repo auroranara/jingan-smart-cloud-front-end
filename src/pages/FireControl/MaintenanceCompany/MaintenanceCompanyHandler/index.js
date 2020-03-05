@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Spin, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Spin, message } from 'antd';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';

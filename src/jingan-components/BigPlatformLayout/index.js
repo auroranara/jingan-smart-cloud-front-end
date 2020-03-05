@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import classNames from 'classnames';
 import moment from 'moment';
 import './index.less';
@@ -58,7 +58,7 @@ export default class BigPlatformLayout extends Component {
           <div className={c('title')}>{autoSpace ? title.split('').join(' ') : title}</div>
           <div className={c('time-wrapper')}><div className={c('time')}>{currentTime}</div></div>
           {extra && <div className={c('extra-wrapper')}><div className={c('extra')}>{extra}</div></div>}
-          {settable && <Icon className={c('set-button')} type="setting" onClick={onSet} />}
+          {settable && <LegacyIcon className={c('set-button')} type="setting" onClick={onSet} />}
         </div>
         <div className={c('content')}>
           {children}

@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import styles from './PendingInformation.less';
 import classNames from 'classnames';
-import { Row, Col, Icon, Radio, Spin } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col, Radio, Spin } from 'antd';
 import PropTypes from 'prop-types';
 import Ellipsis from '@/components/Ellipsis';
 
@@ -72,7 +73,7 @@ export default class PendingInformation extends PureComponent {
               </div>
               <div className={styles.lastLine}>
                 <span>
-                  <Icon type="environment" theme="outlined" />
+                  <LegacyIcon type="environment" theme="outlined" />
                 </span>
                 <Ellipsis lines={1} tooltip className={styles.location}>
                   <span>{device_address}</span>
@@ -145,7 +146,7 @@ export default class PendingInformation extends PureComponent {
               </div>
               <div className={styles.lastLine}>
                 <span>
-                  <Icon type="environment" theme="outlined" />
+                  <LegacyIcon type="environment" theme="outlined" />
                 </span>
                 <Ellipsis lines={1} tooltip className={styles.location}>
                   <span>{install_address}</span>

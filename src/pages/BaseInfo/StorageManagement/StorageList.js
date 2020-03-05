@@ -1,6 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, Divider, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Table, Divider, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import { AuthA, AuthPopConfirm, AuthButton, hasAuthority } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -272,14 +274,14 @@ export default class StorageList extends PureComponent {
       user: { currentUser: { unitType } },
     } = this.props
     const columns = [
-      ...unitType === 4 ? [] : [
+      ...(unitType === 4 ? [] : [
         {
           title: '单位名称',
           dataIndex: 'companyName',
           align: 'center',
           width: 300,
         },
-      ],
+      ]),
       {
         title: '基本信息',
         key: 'info',

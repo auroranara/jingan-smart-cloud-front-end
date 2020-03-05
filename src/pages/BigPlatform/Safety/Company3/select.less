@@ -4,11 +4,12 @@ div.select {
   font-size: 16px;
 
   :global {
-    .ant-select-selection {
-      height: 2em;
-      background-color: transparent;
-      border: 1px solid #00ffff;
-      border-radius: 2em;
+    // .ant-select-selection {
+    .ant-select-selector {
+      height: 2em !important;
+      background-color: transparent !important;
+      border: 1px solid #00ffff !important;
+      border-radius: 2em !important;
     }
     .ant-select-selection__rendered {
       margin-top: -1px;
@@ -47,7 +48,8 @@ div.dropdown {
         background-color: transparent;
       }
     }
-    .ant-select-dropdown-menu-item {
+    // .ant-select-dropdown-menu-item {
+    .ant-select-item {
       padding-left: 1em;
       padding-right: 1em;
       color: #fff;
@@ -56,7 +58,8 @@ div.dropdown {
       border-radius: 0;
       background-color: rgb(3, 48, 105);
 
-      &.ant-select-dropdown-menu-item-selected {
+      // &.ant-select-dropdown-menu-item-selected {
+      .ant-select-item-option-selected {
         color: #00ffff;
       }
 

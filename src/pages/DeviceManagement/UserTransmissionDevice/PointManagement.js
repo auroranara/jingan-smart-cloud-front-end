@@ -1,6 +1,21 @@
 import { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Table, Card, Form, Row, Col, Input, Select, Button, Divider, Spin, message, Popconfirm, Modal } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+  Table,
+  Card,
+  Row,
+  Col,
+  Input,
+  Select,
+  Button,
+  Divider,
+  Spin,
+  message,
+  Popconfirm,
+  Modal,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { AuthA, hasAuthority, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -419,7 +434,7 @@ export default class PointManagement extends Component {
           <Button type="primary" onClick={this.handleSubmit}>确认</Button>
         </div> */}
       </Modal>
-    )
+    );
   }
 
   render () {

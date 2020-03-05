@@ -1,7 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Button, Card, Form, Input, DatePicker, Col, Table, Pagination, Select } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Input, DatePicker, Col, Table, Pagination, Select } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Lightbox from 'react-images';
 import router from 'umi/router';

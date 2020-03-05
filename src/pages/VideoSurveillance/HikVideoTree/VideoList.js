@@ -1,11 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 // import { Link } from 'dva/router';
 import {
   Row,
   Col,
   Card,
-  Form,
   Input,
   Button,
   Table,
@@ -13,8 +14,8 @@ import {
   Checkbox,
   Divider,
   Modal,
-  message,
   // Select,
+  message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import FolderTree from './FolderTree';

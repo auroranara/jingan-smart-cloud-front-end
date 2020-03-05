@@ -1,10 +1,7 @@
 import React, { PureComponent } from 'react';
-import {
-  Modal,
-  message,
-  Spin,
-  Form,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, message, Spin } from 'antd';
 // import CustomForm from '@/jingan-components/CustomForm';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 // import SelectOrSpan from '@/jingan-components/SelectOrSpan';

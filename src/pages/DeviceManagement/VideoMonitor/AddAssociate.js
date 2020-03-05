@@ -1,7 +1,9 @@
 import { Component, Fragment } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { connect } from 'dva';
-import { Card, Button, Form, Row, Col, Table, message, Input, Select } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Row, Col, Table, message, Input, Select } from 'antd';
 import router from 'umi/router';
 
 const FormItem = Form.Item;

@@ -1,7 +1,5 @@
-import {
-  Collapse,
-  Icon,
-} from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Collapse } from 'antd';
 import styles from './index.less';
 // 隐患业务分类
 import { hiddenDangerType } from '@/utils/dict';
@@ -40,7 +38,7 @@ const InnerCollapse = (arr) => {
     <Collapse
       bordered={false}
       expandIconPosition="right"
-      expandIcon={({ isActive }) => <Icon style={{ color: '#02fcfa', fontSize: '17px' }} type="right" rotate={isActive ? 90 : 0} />}
+      expandIcon={({ isActive }) => <LegacyIcon style={{ color: '#02fcfa', fontSize: '17px' }} type="right" rotate={isActive ? 90 : 0} />}
     >
       {arr.map(({ object_title, object_id, business_type, flows }) => (
         <Panel header={renderSubTitle(object_title, hiddenDangerType[business_type].slice(0, 1))} key={object_id} extra={flows && flows.length || 0} style={customPanelStyle}>
@@ -50,7 +48,7 @@ const InnerCollapse = (arr) => {
         </Panel>
       ))}
     </Collapse>
-  )
+  );
 }
 
 // 标准及措施

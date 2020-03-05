@@ -4,7 +4,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 // import router from 'umi/router';
 import moment from 'moment';
-import { Icon, Select, Col, Radio, Row, DatePicker } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Select, Col, Radio, Row, DatePicker } from 'antd';
 import {
   BREADCRUMBLIST,
   DepartNumIcon,
@@ -229,9 +230,9 @@ export default class TableList extends PureComponent {
               <div className={styles.label}>
                 <span className={styles.icon}>
                   {previousMonthFlag === '0' ? (
-                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
+                    <LegacyIcon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
                   ) : (
-                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
+                    <LegacyIcon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
                   )}
                 </span>
                 <span className={previousMonthFlag === '0' ? styles.number : styles.numbers}>
@@ -249,9 +250,9 @@ export default class TableList extends PureComponent {
               <div className={styles.label}>
                 <span className={styles.icon}>
                   {previousQuarterFlag === '0' ? (
-                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
+                    <LegacyIcon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
                   ) : (
-                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
+                    <LegacyIcon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
                   )}
                 </span>
                 <span className={previousQuarterFlag === '0' ? styles.number : styles.numbers}>
@@ -269,9 +270,9 @@ export default class TableList extends PureComponent {
               <div className={styles.label}>
                 <span className={styles.icon}>
                   {previousYearFlag === '0' ? (
-                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
+                    <LegacyIcon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
                   ) : (
-                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
+                    <LegacyIcon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
                   )}
                 </span>
                 <span className={previousQuarterFlag === '0' ? styles.number : styles.numbers}>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Card, Spin, Row, Col, Table, Badge, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Card, Spin, Row, Col, Table, Badge } from 'antd';
 import Range from '../../../components/Range';
 import Ellipsis from '@/components/Ellipsis';
 import { MiniArea } from '@/components/Charts';
@@ -344,7 +345,7 @@ export default class DataStatistic extends Component {
           <div className={styles.compareChartValue}>{isNumber(leakageCount) ? leakageCount : 0}</div>
           {visible && (
             <div className={styles.compareChartTrend}>
-              <Icon className={styles.compareChartTrendIcon} type={icon} style={{ color }} />
+              <LegacyIcon className={styles.compareChartTrendIcon} type={icon} style={{ color }} />
               <div className={styles.compareChartTrendValue} style={{ color }}>{`${Math.abs(compare * 100)}%`}</div>
               <div className={styles.compareChartTrendDescription}>同比上周</div>
             </div>

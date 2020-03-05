@@ -1,5 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Button, Checkbox, Form, Input, Modal, Radio } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Checkbox, Input, Modal, Radio } from 'antd';
 
 import styles from './SettingModal.less';
 

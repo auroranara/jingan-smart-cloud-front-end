@@ -1,7 +1,8 @@
 import { Component, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -11,7 +12,6 @@ import {
   Radio,
   DatePicker,
   Upload,
-  Icon,
   Tooltip,
 } from 'antd';
 import { connect } from 'dva';
@@ -562,7 +562,7 @@ export default class AddMonitoringDevice extends Component {
                 className={styles.uploadList}
               >
                 <Button>
-                  <Icon type={uploading ? 'loading' : 'upload'} /> 上传
+                  <LegacyIcon type={uploading ? 'loading' : 'upload'} /> 上传
                 </Button>
               </Upload>
             </FormItem>
@@ -622,7 +622,7 @@ export default class AddMonitoringDevice extends Component {
                               onClick={() => this.handleRefreshBuilding(true)}
                               className={styles.mr10}
                             >
-                              <Icon type="reload" />
+                              <LegacyIcon type="reload" />
                             </Button>
                           </Tooltip>
                           <AuthButton

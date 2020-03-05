@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon, Tooltip } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip } from 'antd';
 import moment from 'moment';
 import classNames from 'classnames';
 import ImageDraw, { L } from '@/components/ImageDraw';
@@ -1306,8 +1307,8 @@ export default class MultipleHistoryPlay extends PureComponent {
             currentAreaId &&
             topLevelArea.id !== currentAreaId && (
               <Fragment>
-                <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />
-                <Icon
+                <LegacyIcon type="home" className={styles.homeButton} onClick={this.handleClickHome} />
+                <LegacyIcon
                   type="rollback"
                   className={styles.backButton}
                   onClick={this.handleClickBack}
@@ -1342,7 +1343,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             </Tooltip> */}
             {/* 减速按钮 */}
             <Tooltip title={`减速，当前${speed}x`}>
-              <Icon
+              <LegacyIcon
                 type="backward"
                 className={classNames(styles.button, isMinSpeed ? styles.disabled : undefined)}
                 onClick={isMinSpeed ? undefined : this.handleDecelerate}
@@ -1351,14 +1352,14 @@ export default class MultipleHistoryPlay extends PureComponent {
             <div className={styles.playButtonWrapper}>
               {/* 正在播放时显示暂停按钮，否则显示播放按钮 */}
               {playing ? (
-                <Icon
+                <LegacyIcon
                   type="pause-circle"
                   theme="filled"
                   className={playButtonClassName}
                   onClick={enable ? this.handlePause : undefined}
                 />
               ) : (
-                <Icon
+                <LegacyIcon
                   type="play-circle"
                   theme="filled"
                   className={playButtonClassName}
@@ -1368,7 +1369,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             </div>
             {/* 加速按钮 */}
             <Tooltip title={`加速，当前${speed}x`}>
-              <Icon
+              <LegacyIcon
                 type="forward"
                 className={classNames(styles.button, isMaxSpeed ? styles.disabled : undefined)}
                 onClick={isMaxSpeed ? undefined : this.handleAccelerate}

@@ -1,7 +1,8 @@
 import { PureComponent, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -12,7 +13,6 @@ import {
   InputNumber,
   DatePicker,
   Tooltip,
-  Icon,
   Cascader,
 } from 'antd';
 import { connect } from 'dva';
@@ -880,7 +880,7 @@ export default class SpecialEquipment extends PureComponent {
                           onClick={() => this.handleRefreshBuilding(true)}
                           style={{ marginRight: 10 }}
                         >
-                          <Icon type="reload" />
+                          <LegacyIcon type="reload" />
                         </Button>
                       </Tooltip>
                       <AuthButton

@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Card, Form, Row, Col, Input } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Col, Input } from 'antd';
 import { phoneReg, emailReg } from '@/utils/validate';
 
 /**

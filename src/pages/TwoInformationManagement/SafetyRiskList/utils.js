@@ -1,6 +1,8 @@
 import React from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 // import moment from 'moment';
-import { Input, Form, Modal, Table } from 'antd';
+import { Input, Modal, Table } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 

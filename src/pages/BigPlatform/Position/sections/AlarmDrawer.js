@@ -1,5 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import styles from './AlarmDrawer.less';
 import { DrawerContainer } from '../components/Components';
@@ -21,7 +21,7 @@ function AlarmCard(props) {
     <div className={styles.cardContainer} {...restProps}>
       <p className={styles.title}>{title}</p>
       <p>{desc}{isSOS ? '，请及时处理' : ''}。</p>
-      <span className={styles.detail} onClick={onClick}>详情<Icon type="double-right" /></span>
+      <span className={styles.detail} onClick={onClick}>详情<LegacyIcon type="double-right" /></span>
     </div>
   );
 }

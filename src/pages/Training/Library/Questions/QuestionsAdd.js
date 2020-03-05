@@ -1,15 +1,15 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Button,
   Card,
-  Form,
   Row,
   Col,
   Input,
   Select,
-  Icon,
   Radio,
   Checkbox,
   TreeSelect,
@@ -378,7 +378,7 @@ export default class QuestionsAdd extends PureComponent {
                                 { required: true, whitespace: true, message: '请输入子选项内容' },
                               ],
                             })(<Input style={{ width: '60%', marginRight: 8, marginLeft: 8 }} />)}
-                            <Icon
+                            <LegacyIcon
                               className={
                                 type !== '3' ? styles.deleteButton : styles.disabledDeleteButton
                               }

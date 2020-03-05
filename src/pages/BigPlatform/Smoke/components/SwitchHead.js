@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import styles from './SwitchHead.less';
 import leftLine from '../imgs/leftLine.png';
@@ -25,7 +25,7 @@ export default function SwitchHead(props) {
       {`${title}${INDEXES[index]}`}
       <span className={styles.leftLine} style={{ backgroundImage: `url(${leftLine})` }} />
       <span className={styles.rightLine} style={{ backgroundImage: `url(${rightLine})` }} />
-      <Icon
+      <LegacyIcon
         type="left"
         style={{
           left: 0,
@@ -35,7 +35,7 @@ export default function SwitchHead(props) {
         }}
         onClick={isFirst ? null : handleLeftClick}
       />
-      <Icon
+      <LegacyIcon
         type="right"
         style={{
           right: 0,

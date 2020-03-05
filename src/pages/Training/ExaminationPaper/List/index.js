@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { List, Spin, Card, Input, Button, Icon, Modal, message } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { List, Spin, Card, Input, Button, Modal, message } from 'antd';
 import { connect } from 'dva';
 import InfiniteScroll from 'react-infinite-scroller';
 import Debounce from 'lodash-decorators/debounce';
@@ -485,7 +486,7 @@ export default class App extends PureComponent {
                       shape="circle"
                       style={{ border: 'none', fontSize: '20px' }}
                     >
-                      <Icon type="close" />
+                      <LegacyIcon type="close" />
                     </Button>
                   ) : null
                 }

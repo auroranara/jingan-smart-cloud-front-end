@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { List, Icon, Avatar, Tag } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { List, Avatar, Tag } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
 import stylesArticles from '../../List/Articles.less';
@@ -15,7 +16,7 @@ export default class Center extends PureComponent {
     } = this.props;
     const IconText = ({ type, text }) => (
       <span>
-        <Icon type={type} style={{ marginRight: 8 }} />
+        <LegacyIcon type={type} style={{ marginRight: 8 }} />
         {text}
       </span>
     );

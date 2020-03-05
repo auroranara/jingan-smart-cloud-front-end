@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import NewSection from '@/components/NewSection';
 import moment from 'moment';
 import { vaguePhone } from '@/pages/BigPlatform/NewUnitFireControl/utils';
@@ -416,7 +416,7 @@ export default class Messages extends PureComponent {
             }}
           >
             详情
-            <Icon type="double-right" />
+            <LegacyIcon type="double-right" />
           </a>
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>【{elecMsg[type].elecTitle}】</div>
@@ -487,7 +487,7 @@ export default class Messages extends PureComponent {
               }}
             >
               详情
-              <Icon type="double-right" />
+              <LegacyIcon type="double-right" />
             </a>
           )}
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
@@ -523,7 +523,7 @@ export default class Messages extends PureComponent {
         {onClick && (
           <a className={styles.detailBtn} onClick={onClick}>
             详情
-            <Icon type="double-right" />
+            <LegacyIcon type="double-right" />
           </a>
         )}
         <div className={styles.msgTime}>{formatTime(addTime)}</div>
@@ -994,7 +994,7 @@ export default class Messages extends PureComponent {
         other={
           list &&
           list.length > 3 && (
-            <Icon
+            <LegacyIcon
               type={isExpanded ? 'double-left' : 'double-right'}
               className={styles.expandButton}
               onClick={this.handleClickExpandButton}

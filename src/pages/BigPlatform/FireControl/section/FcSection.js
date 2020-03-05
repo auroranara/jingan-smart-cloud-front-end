@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import styles from './FcSection.less';
 
@@ -35,7 +35,7 @@ export default class FcSection extends PureComponent {
             {backTitle && (
               <span className={styles.back} onClick={handleBack}>
                 {backTitle}
-                <Icon type="double-right" style={{ marginLeft: 3 }} />
+                <LegacyIcon type="double-right" style={{ marginLeft: 3 }} />
               </span>
             )}
           </h3>

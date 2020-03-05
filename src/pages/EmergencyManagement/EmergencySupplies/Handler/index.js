@@ -1,7 +1,8 @@
 import { PureComponent, Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -11,7 +12,6 @@ import {
   Col,
   message,
   InputNumber,
-  Icon,
   Cascader,
 } from 'antd';
 import { connect } from 'dva';

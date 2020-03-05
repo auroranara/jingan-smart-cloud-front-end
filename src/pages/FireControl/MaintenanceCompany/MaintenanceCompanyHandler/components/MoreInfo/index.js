@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Card, Form, Row, Col, Input, Cascader, Select, DatePicker } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Col, Input, Cascader, Select, DatePicker } from 'antd';
 import moment from 'moment';
 
 const { TextArea } = Input;

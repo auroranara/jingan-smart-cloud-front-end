@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon, Tooltip } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip } from 'antd';
 import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceLvlDrawer.less';
@@ -77,7 +78,7 @@ export default class DangerSourceLvlDrawer extends PureComponent {
                 placement={'right'}
               >
                 <span className={styles.question}>
-                  <Icon type="question-circle" />
+                  <LegacyIcon type="question-circle" />
                 </span>
               </Tooltip>
             </div>

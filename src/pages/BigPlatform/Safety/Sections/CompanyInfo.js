@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from 'antd';
 import classNames from 'classnames';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
@@ -140,9 +141,9 @@ class CompanyInfo extends PureComponent {
                   }}
                 >
                   {riskDetailFull ? (
-                    <Icon type="down" theme="outlined" />
+                    <LegacyIcon type="down" theme="outlined" />
                   ) : (
-                    <Icon type="up" theme="outlined" />
+                    <LegacyIcon type="up" theme="outlined" />
                   )}
                 </div>
                 <div

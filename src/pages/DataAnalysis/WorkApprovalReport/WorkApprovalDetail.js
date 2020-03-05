@@ -1,5 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import { Card, Form, Steps, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Steps, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import DescriptionList from '@/components/DescriptionList';
@@ -113,7 +115,7 @@ export default class WorkApprovalDetail extends PureComponent {
         <div style={{ marginTop: '5px', color: 'rgba(0, 0, 0, 0.65)' }}>{name}</div>
         <div style={{ color: 'rgba(0, 0, 0, 0.65)' }}>{time}</div>
       </Fragment>
-    )
+    );
   }
 
   formatDate = date => date ? moment(date).format('YYYY-MM-DD HH:mm') : ''

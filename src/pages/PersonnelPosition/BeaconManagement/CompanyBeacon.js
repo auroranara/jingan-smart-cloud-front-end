@@ -1,5 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
   Row,
@@ -7,13 +9,11 @@ import {
   Input,
   Button,
   Table,
-  Form,
   Select,
   Divider,
   Modal,
   message,
   Popconfirm,
-  Icon,
   Radio,
 } from 'antd';
 import router from 'umi/router';
@@ -625,7 +625,7 @@ export default class CompanyBeacon extends PureComponent {
                         className={styles.selectMap}
                         onClick={() => this.setState({ unitModalVisible: true })}
                       >
-                        <Icon type="plus" />
+                        <LegacyIcon type="plus" />
                       </div>
                     )}
                 </Fragment>

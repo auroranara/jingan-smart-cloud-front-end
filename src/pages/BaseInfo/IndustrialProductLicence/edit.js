@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
-import { Form, Input, Button, Card, DatePicker, Select, Upload, Icon, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Card, DatePicker, Select, Upload, message } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
@@ -439,7 +441,7 @@ export default class IndustriallicenceEdit extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={fileLoading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>

@@ -1,5 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import { Card, Button, Form, Input, Row, Col, Select, Divider, Table, Tag, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Row, Col, Select, Divider, Table, Tag, message } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { AuthButton, AuthA, AuthLink } from '@/utils/customAuth';

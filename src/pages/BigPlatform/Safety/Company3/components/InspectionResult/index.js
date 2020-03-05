@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { connect } from 'dva';
 import Lightbox from 'react-images';
 import CustomCarousel from '@/components/CustomCarousel';
@@ -152,7 +152,7 @@ export default class InspectionResult extends PureComponent {
             </div>
           ))}
         </CustomCarousel>
-        <div className={styles.closeButton} style={closeStyle} onClick={this.handleCloseSelf}><Icon type="close" /></div>
+        <div className={styles.closeButton} style={closeStyle} onClick={this.handleCloseSelf}><LegacyIcon type="close" /></div>
         {this.renderImageDetail()}
       </div>
     );

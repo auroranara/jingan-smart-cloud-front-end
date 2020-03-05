@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import styles from './WorkOrderDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
@@ -102,7 +102,7 @@ function OrderCard(props) {
   return (
     <div className={styles.outer}>
       <div className={styles.card} {...restProps}>
-        <Icon type="right" style={ARROW_STYLE} />
+        <LegacyIcon type="right" style={ARROW_STYLE} />
         <div className={styles.status}>
           <div
             style={{

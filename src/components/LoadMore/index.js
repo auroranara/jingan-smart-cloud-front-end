@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import classNames from 'classnames';
 // 引入样式文件
 import styles from './index.less';
@@ -15,7 +15,7 @@ export default function LoadMore({ className, style, onClick, children, ...restP
       onClick={onClick}
       {...restProps}
     >
-      {children || <Icon type="double-right" className={styles.buttonIcon} />}
+      {children || <LegacyIcon type="double-right" className={styles.buttonIcon} />}
     </div>
   );
 }

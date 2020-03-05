@@ -1,7 +1,25 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { List, Card, Row, Button, Icon, Divider, Popconfirm, Form, Col, Input, Tag, Drawer, Select, DatePicker, Spin, message, Tooltip } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+  List,
+  Card,
+  Row,
+  Button,
+  Divider,
+  Popconfirm,
+  Col,
+  Input,
+  Tag,
+  Drawer,
+  Select,
+  DatePicker,
+  Spin,
+  message,
+  Tooltip,
+} from 'antd';
 import router from 'umi/router';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -335,15 +353,15 @@ export default class ArticleList extends PureComponent {
                 <div className={styles.firstLine}>
                   <div className={styles.title}>{item.name}</div>
                   <div className={styles.rightIcon}>
-                    <Icon className={editDisabled(item.status) ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled(item.status) ? () => { this.handleToEdit(item.id) } : null} />
+                    <LegacyIcon className={editDisabled(item.status) ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled(item.status) ? () => { this.handleToEdit(item.id) } : null} />
                     <Divider type="vertical" />
-                    <Icon className={styles.icon} type="eye" onClick={() => { this.handleOpenDrawer(item) }} />
+                    <LegacyIcon className={styles.icon} type="eye" onClick={() => { this.handleOpenDrawer(item) }} />
                     <Divider type="vertical" />
                     {delDisabled(item.status) ? (
-                      <Icon className={styles.disabledIcon} type="close" />
+                      <LegacyIcon className={styles.disabledIcon} type="close" />
                     ) : (
                         <Popconfirm title="确认删除该文章吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled(item.status)) }}>
-                          <Icon className={styles.icon} type="close" />
+                          <LegacyIcon className={styles.icon} type="close" />
                         </Popconfirm>
                       )}
                   </div>
@@ -362,9 +380,9 @@ export default class ArticleList extends PureComponent {
                   <span>{item.createTime ? item.createTime.split(':').slice(0, -1).join(':') : '暂无数据'}</span>
                 </div>
                 <div className={styles.statistics}>
-                  <Tooltip title="阅读次数"><span><Icon className={styles.icon} type="eye" />{item.totalRead}</span></Tooltip>
+                  <Tooltip title="阅读次数"><span><LegacyIcon className={styles.icon} type="eye" />{item.totalRead}</span></Tooltip>
                   <Divider type="vertical" />
-                  <Tooltip title="阅读人数"><span><Icon className={styles.icon} type="user" />{item.totalPerson}</span></Tooltip>
+                  <Tooltip title="阅读人数"><span><LegacyIcon className={styles.icon} type="user" />{item.totalPerson}</span></Tooltip>
                 </div>
               </Card>
             </ListItem>

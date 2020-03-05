@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import styles from './InformationHistory.less';
-import { Icon, Row, Col, Spin } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col, Spin } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -96,7 +97,7 @@ export default class InformationHistory extends PureComponent {
               </div>
               <div className={styles.lastLine}>
                 <span>
-                  <Icon type="environment" theme="outlined" />
+                  <LegacyIcon type="environment" theme="outlined" />
                 </span>
                 <Ellipsis lines={1} tooltip className={styles.location}>
                   <span>{device_address}</span>
@@ -164,7 +165,7 @@ export default class InformationHistory extends PureComponent {
               </div>
               <div className={styles.lastLine}>
                 <span>
-                  <Icon type="environment" theme="outlined" />
+                  <LegacyIcon type="environment" theme="outlined" />
                 </span>
                 <Ellipsis lines={1} tooltip className={styles.location}>
                   <span>{install_address}</span>
@@ -196,7 +197,7 @@ export default class InformationHistory extends PureComponent {
               <div className={styles.sectionTitleIcon} />
               {title}
               <div className={styles.iconClose}>
-                <Icon onClick={handleClose} className={styles.icon} type="close" theme="outlined" />
+                <LegacyIcon onClick={handleClose} className={styles.icon} type="close" theme="outlined" />
               </div>
             </div>
             <Row className={styles.sectionFilter}>

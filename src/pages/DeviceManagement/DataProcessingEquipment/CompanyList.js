@@ -1,5 +1,7 @@
 import { PureComponent } from 'react';
-import { Card, Button, Form, Input, Row, Col, Select, Icon, Table } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Row, Col, Select, Table } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { AuthButton, AuthA, AuthLink } from '@/utils/customAuth';
@@ -185,11 +187,11 @@ export default class CompanyList extends PureComponent {
         {val.length >= 5 && (
           <div className={styles.iconContainer} onClick={() => this.handleExpand(row.id)}>
             <a>{isExpand ? '收起' : '展开'}</a>
-            <Icon className={isExpand ? styles.expandIcon : styles.icon} type="down" />
+            <LegacyIcon className={isExpand ? styles.expandIcon : styles.icon} type="down" />
           </div>
         )}
       </div>
-    )
+    );
   }
 
   renderTable = () => {

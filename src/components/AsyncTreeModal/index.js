@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Tree, /* Input, */ Modal, Icon, Spin, Button } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tree, /* Input, */ Modal, Spin, Button } from 'antd';
 
 const { TreeNode } = Tree;
 // const { Search } = Input;
@@ -116,9 +117,7 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
           dataRef={item}
           // selectable={false}
           icon={({ expanded }) => {
-            return (
-              <Icon type={expanded ? 'folder-open' : 'folder'} />
-            )
+            return <LegacyIcon type={expanded ? 'folder-open' : 'folder'} />;
           }}
         >
           {renderTreeNodes({
@@ -138,7 +137,7 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
         dataRef={item}
         isLeaf={isVideo}
         // selectable={false}
-        icon={<Icon type={isVideo ? fileIcon : "folder"} />}
+        icon={<LegacyIcon type={isVideo ? fileIcon : "folder"} />}
       />
     );
   });

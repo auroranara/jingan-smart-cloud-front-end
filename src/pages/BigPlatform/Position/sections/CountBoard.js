@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import DescriptionList from '@/components/DescriptionList';
 
 import styles from './CountBoard.less';
@@ -34,7 +34,7 @@ export default function CountBoard(props) {
   const eastQuantity = east && east.count ? east.count : 0;
   return (
     <div className={styles.container} style={{ height: HEIGHT }}>
-      <Icon type="switcher" className={styles.shrink} onClick={hideBoard} />
+      <LegacyIcon type="switcher" className={styles.shrink} onClick={hideBoard} />
       <div className={styles.inner}>
         <div className={styles.head}>全厂人数: {westQuantity + eastQuantity}</div>
         <div className={styles.section}>
@@ -47,5 +47,5 @@ export default function CountBoard(props) {
         </div>
       </div>
     </div>
-  )
-};
+  );
+}

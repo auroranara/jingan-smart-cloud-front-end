@@ -1,17 +1,10 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Card,
-  Button,
-  Form,
-  Table,
-  Input,
-  Select,
-  Divider,
-  Row,
-  Col,
-  // Cascader,
-  message,
+Card, Button, Table, Input, Select, Divider, Row, Col, // Cascader,
+message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
@@ -274,12 +267,12 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
       user: { isCompany },
     } = this.props;
     const columns = [
-      ...isCompany ? [] : [{
+      ...(isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      }],
+      }]),
       {
         title: '基本信息',
         key: '基本信息',

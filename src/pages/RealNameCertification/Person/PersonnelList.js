@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Card,
   Button,
   BackTop,
@@ -276,11 +277,11 @@ export default class PersonnelList extends PureComponent {
         title: '实名制认证系统',
         name: '实名制认证系统',
       },
-      ...isCompany ? [] : [{
+      ...(isCompany ? [] : [{
         title: '人员管理',
         name: '人员管理',
         href: '/real-name-certification/personnel-management/company-list',
-      }],
+      }]),
       {
         title,
         name: title,

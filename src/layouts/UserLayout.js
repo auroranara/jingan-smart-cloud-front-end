@@ -1,6 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
-import { Icon, Alert } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Alert } from 'antd';
 
 import GlobalFooter from 'components/GlobalFooter';
 import styles from './UserLayout.less';
@@ -65,7 +66,7 @@ export default class UserLayout extends PureComponent {
     const copyright = (
       <Fragment>
         <p>
-          Copyright <Icon type="copyright" /> 2020
+          Copyright <LegacyIcon type="copyright" /> 2020
         </p>
         {serviceSupport && (
           <p style={{ marginTop: '5px' }}>

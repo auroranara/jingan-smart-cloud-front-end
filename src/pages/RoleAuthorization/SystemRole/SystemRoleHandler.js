@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Checkbox, Form, Card, Input, Button, Select, Spin, Table, Tabs, Tree, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Checkbox, Card, Input, Button, Select, Spin, Table, Tabs, Tree, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';

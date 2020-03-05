@@ -1,18 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  message,
-  Row,
-  Col,
-  Input,
-  Select,
-  Upload,
-  Icon,
-  DatePicker,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, message, Row, Col, Input, Select, Upload, DatePicker } from 'antd';
 import router from 'umi/router';
 import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -278,7 +268,7 @@ export default class VehicleEdit extends PureComponent {
 
     const uploadButton = (
       <div>
-        <Icon type={picLoading ? 'loading' : 'plus'} />
+        <LegacyIcon type={picLoading ? 'loading' : 'plus'} />
         <div className="ant-upload-text">上传</div>
       </div>
     );

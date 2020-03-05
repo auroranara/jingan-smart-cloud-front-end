@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Card,
   Input,
   Button,

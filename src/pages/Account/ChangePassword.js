@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Button, Form, Card, Input, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Input, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { connect } from 'dva';
 import { aesEncrypt } from '@/utils/utils';

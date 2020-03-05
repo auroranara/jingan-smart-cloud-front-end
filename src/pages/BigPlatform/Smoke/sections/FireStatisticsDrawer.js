@@ -1,5 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-import { DatePicker, Form } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { DatePicker } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
 

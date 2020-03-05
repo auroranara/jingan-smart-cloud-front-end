@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Form } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import { connect } from 'dva';
 import QRCode from 'qrcode.react';
 import styles from './PrinterContent.less';

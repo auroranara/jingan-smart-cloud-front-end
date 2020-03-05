@@ -1,5 +1,6 @@
 import React, { PureComponent, createElement } from 'react';
 import PropTypes from 'prop-types';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Button } from 'antd';
 import styles from './index.less';
 
@@ -34,7 +35,7 @@ class EditableLinkGroup extends PureComponent {
           )
         )}
         {
-          <Button size="small" type="primary" ghost onClick={onAdd} icon="plus">
+          <Button size="small" type="primary" ghost onClick={onAdd} icon={<LegacyIcon type="plus" />}>
             添加
           </Button>
         }

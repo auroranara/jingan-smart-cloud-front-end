@@ -5,7 +5,9 @@ import 'braft-editor/dist/index.css';
 import { connect } from 'dva';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
-import { Card, Form, Row, Input, Col, Button, TreeSelect, Radio, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Input, Col, Button, TreeSelect, Radio, message } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 
 const FormItem = Form.Item;

@@ -1,6 +1,8 @@
 import React from 'react';
 import moment from 'moment';
-import { Input, Select, Form, Modal, DatePicker, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Select, Modal, DatePicker, message } from 'antd';
 import { AuthA } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 

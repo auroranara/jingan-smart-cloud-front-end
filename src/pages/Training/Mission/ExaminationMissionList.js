@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { Card, List, Button, Form, Col, Row, Input, Select, Spin, Popconfirm, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, List, Button, Col, Row, Input, Select, Spin, Popconfirm, message } from 'antd';
 import moment from 'moment';
 import Ellipsis from '@/components/Ellipsis';
 import { connect } from 'dva';

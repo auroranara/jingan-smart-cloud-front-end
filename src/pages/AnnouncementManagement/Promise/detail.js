@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';

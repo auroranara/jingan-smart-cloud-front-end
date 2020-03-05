@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Icon, Tooltip } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import styles from './index.less';
 
@@ -32,7 +33,7 @@ export default class CustomThumbnail extends Component {
     return (
       <div className={styles.container}>
         <Tooltip title={isFirst ? '没有上一张' : '上一张'}>
-          <Icon
+          <LegacyIcon
             type="left"
             className={classNames(styles.leftArrow, isFirst ? styles.disable : styles.enable)}
             onClick={isFirst ? undefined : () => onChange(index - 1)}
@@ -60,7 +61,7 @@ export default class CustomThumbnail extends Component {
           </div>
         </div>
         <Tooltip title={isLast ? '没有下一张' : '下一张'}>
-          <Icon
+          <LegacyIcon
             type="right"
             className={classNames(styles.rightArrow, isLast ? styles.disable : styles.enable)}
             onClick={isLast ? undefined : () => onChange(index + 1)}

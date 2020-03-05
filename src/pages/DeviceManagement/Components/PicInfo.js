@@ -1,13 +1,7 @@
 import { Fragment } from 'react';
-import {
-  Row,
-  Col,
-  Select,
-  Form,
-  Input,
-  Button,
-  Popconfirm,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Col, Select, Input, Button, Popconfirm } from 'antd';
 import Coordinate from '@/pages/RiskControl/RiskPointManage/Coordinate/index';
 
 const Option = Select.Option;

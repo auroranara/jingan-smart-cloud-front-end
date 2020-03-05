@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   List,
   Card,
   Button,
@@ -11,7 +12,6 @@ import {
   Col,
   Select,
   AutoComplete,
-  Icon,
   Modal,
   Table,
   Divider,
@@ -765,8 +765,8 @@ export default class accountManagementList extends React.Component {
                       <span>{loginName}</span>
                       {!!isBindWechat && (
                         <span style={{ paddingLeft: 10 }}>
-                          <span>{<Icon type="wechat" />}</span>
-                          <span style={{ paddingLeft: 6 }}>{<Icon type="mobile" />}</span>
+                          <span>{<LegacyIcon type="wechat" />}</span>
+                          <span style={{ paddingLeft: 6 }}>{<LegacyIcon type="mobile" />}</span>
                         </span>
                       )}
                     </div>
@@ -800,7 +800,7 @@ export default class accountManagementList extends React.Component {
                             onClick={() => this.handleToEdit(users[0].id)}
                             style={{ cursor: 'pointer' }}
                           >
-                            <Icon type="edit" />
+                            <LegacyIcon type="edit" />
                           </AuthSpan>
                         </Col>
                         {users[0].id !== userId && (
@@ -823,16 +823,16 @@ export default class accountManagementList extends React.Component {
                                 style={{ cursor: 'pointer' }}
                               >
                                 {!!users[0].accountStatus ? (
-                                  <Icon type="link" />
+                                  <LegacyIcon type="link" />
                                 ) : (
-                                  <Icon style={{ color: 'red' }} type="disconnect" />
+                                  <LegacyIcon style={{ color: 'red' }} type="disconnect" />
                                 )}
                               </AuthSpan>
                             </Popconfirm>
                           </Col>
                         )}
                         <Col span={2}>
-                          <Icon type="login" onClick={this.genHandleScreenModalOpen(users[0])} />
+                          <LegacyIcon type="login" onClick={this.genHandleScreenModalOpen(users[0])} />
                         </Col>
                       </Row>
                     ) : (
@@ -897,7 +897,7 @@ export default class accountManagementList extends React.Component {
                 onClick={() => this.handleToEdit(row.id)}
                 style={{ cursor: 'pointer' }}
               >
-                <Icon type="edit" />
+                <LegacyIcon type="edit" />
               </AuthSpan>
               {row.id !== userId && (
                 <Fragment>
@@ -918,16 +918,16 @@ export default class accountManagementList extends React.Component {
                       style={{ cursor: 'pointer' }}
                     >
                       {!!row.accountStatus ? (
-                        <Icon type="link" />
+                        <LegacyIcon type="link" />
                       ) : (
-                        <Icon style={{ color: 'red' }} type="disconnect" />
+                        <LegacyIcon style={{ color: 'red' }} type="disconnect" />
                       )}
                     </AuthSpan>
                   </Popconfirm>
                 </Fragment>
               )}
               <Divider type="vertical" />
-              <Icon type="login" onClick={this.genHandleScreenModalOpen(row)} />
+              <LegacyIcon type="login" onClick={this.genHandleScreenModalOpen(row)} />
             </Fragment>
           );
         },

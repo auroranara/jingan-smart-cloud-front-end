@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import styles from './UnitDangerDrawer.less';
 import DangerCard from '@/jingan-components/HiddenDangerCard';
@@ -100,7 +100,7 @@ export default function UnitDangerDrawer(props) {
               className={!list.length && loading ? styles.none : loading ? styles.more : styles.more1}
               onClick={loading ? null : e => fetchDangerRecords(companyId, labelIndex)}
             >
-              {loading ? <Icon type="sync" spin /> : <Icon type="double-right" className={styles.doubleRight} />}
+              {loading ? <LegacyIcon type="sync" spin /> : <LegacyIcon type="double-right" className={styles.doubleRight} />}
             </p>
           )}
       </div>

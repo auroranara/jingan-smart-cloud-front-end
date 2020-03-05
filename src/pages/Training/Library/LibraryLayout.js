@@ -1,5 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Row, Col, Tabs, Tree, Spin, Form, Input, Button } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Col, Tabs, Tree, Spin, Input, Button } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';

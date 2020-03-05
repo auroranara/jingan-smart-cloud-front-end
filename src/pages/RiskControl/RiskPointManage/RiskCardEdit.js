@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Form, Input, Button, Card, Col, Row, Select, Upload, Icon, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Card, Col, Row, Select, Upload, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
 import SignModal from './SignModal';
@@ -21,7 +23,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 
 // 上传文件夹
 const folder = 'riskInfo';
-const UploadIcon = <Icon type="upload" />;
+const UploadIcon = <LegacyIcon type="upload" />;
 
 /* 表单标签 */
 const fieldLabels = {
@@ -630,7 +632,7 @@ export default class RiskPointEdit extends PureComponent {
               <Row gutter={12}>
                 <Col span={16}>
                   <Button type="primary" onClick={this.handlePicModal} style={{ marginBottom: 10 }}>
-                    <Icon type="plus" />
+                    <LegacyIcon type="plus" />
                     选择国际标志
                   </Button>
                 </Col>

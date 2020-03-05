@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import debounce from 'lodash/debounce';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { isArray } from '@/utils/utils.js';
 import styles from './index.less';
 
 /* 默认的关闭按钮内容 */
 const defaultCloseContent = (
-  <Icon type="close" style={{ fontSize: 20, verticalAlign: 'top' }} />
+  <LegacyIcon type="close" style={{ fontSize: 20, verticalAlign: 'top' }} />
 );
 // 默认滚动样式
 const defaultScollStyle = {

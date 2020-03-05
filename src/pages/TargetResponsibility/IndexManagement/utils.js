@@ -1,5 +1,7 @@
 import React from 'react';
-import { Input, Form, Modal, Select } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Modal, Select } from 'antd';
 import CompanySelect from '@/jingan-components/CompanySelect';
 
 export const PAGE_SIZE = 1;

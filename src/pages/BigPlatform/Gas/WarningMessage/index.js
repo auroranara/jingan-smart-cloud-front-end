@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import moment from 'moment';
 import NewSection from '@/components/NewSection';
 // 引入样式文件
@@ -107,7 +107,7 @@ export default class WarningMessage extends PureComponent {
         scroll={{
           className: styles.scroll,
         }}
-        other={data.length > 3 && <Icon type={isExpanded?'double-left':'double-right'} className={styles.expandButton} onClick={this.handleClickExpandButton} />}
+        other={data.length > 3 && <LegacyIcon type={isExpanded?'double-left':'double-right'} className={styles.expandButton} onClick={this.handleClickExpandButton} />}
       >
         {list.length > 0 ? list.map(item => <Message key={item.messageId} data={item} />) : (
           <div className={styles.emptyData}>暂无消息</div>

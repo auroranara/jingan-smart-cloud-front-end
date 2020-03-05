@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import styles from './RealTimeAlarm.less'
 import classNames from 'classnames';
-import { Row, Col, Icon } from 'antd'
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 import Ellipsis from '@/components/Ellipsis';
 
@@ -49,14 +50,14 @@ export default class RealTimeAlarm extends PureComponent {
           </div>
           <div className={styles.location}>
             <span>
-              <Icon type="environment" theme="outlined" />
+              <LegacyIcon type="environment" theme="outlined" />
               {item.area}{item.area && item.location && '：'}{item.location}
             </span>
           </div>
         </div>
         {showVideo && (<div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>)}
       </Col>
-    ))
+    ));
   }
 
   render() {

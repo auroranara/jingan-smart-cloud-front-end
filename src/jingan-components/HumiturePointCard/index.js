@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import BigPlatformCard from '../BigPlatformCard';
 import videoCameraIcon from '@/assets/videoCamera.png';
 import alarmIcon from '@/assets/icon-alarm2.png';
@@ -91,7 +91,7 @@ export default class HumiturePointCard extends BigPlatformCard {
       <Container className={className} style={style}>
         <div className={styles.title}>{name}</div>
         {Array.isArray(videoList) && videoList.length > 0 && <div className={styles.video} style={{ backgroundImage: `url(${videoCameraIcon})` }} onClick={() => onVideoClick(videoList)} />}
-        <Icon type="right" className={styles.arrow} onClick={this.handleClick} />
+        <LegacyIcon type="right" className={styles.arrow} onClick={this.handleClick} />
         {this.renderStatus(status)}
         {this.renderFields(fieldsValue)}
       </Container>

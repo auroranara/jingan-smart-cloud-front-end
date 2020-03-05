@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Map as GDMap, Marker, InfoWindow, Polygon } from 'react-amap';
-import { Button, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button } from 'antd';
 // import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
 
@@ -210,7 +211,7 @@ export default class FireControlMap extends PureComponent {
           zIndex: 666,
         }}
       >
-        <Icon type="rollback" />
+        <LegacyIcon type="rollback" />
         返回
       </Button>
     );
@@ -276,7 +277,7 @@ export default class FireControlMap extends PureComponent {
           />
           {status}
         </p>
-        <Icon
+        <LegacyIcon
           type="close"
           onClick={handleInfoClose}
           style={{

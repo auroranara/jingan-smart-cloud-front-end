@@ -4,7 +4,9 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import Ellipsis from '@/components/Ellipsis';
-import { Button, Card, Form, Input, List, Modal, Select, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Input, List, Modal, Select, Spin } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';

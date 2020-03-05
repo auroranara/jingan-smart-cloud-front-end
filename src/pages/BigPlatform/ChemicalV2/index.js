@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Icon, Badge, notification } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col, Badge, notification } from 'antd';
 import { connect } from 'dva';
 // import moment from 'moment';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
@@ -1464,7 +1465,7 @@ export default class Chemical extends PureComponent {
                 ) : (
                   <div className={styles.msgContainer}>
                     {/* <Badge count={3}> */}
-                    <Icon
+                    <LegacyIcon
                       type="message"
                       className={styles.msgIcon}
                       onClick={() => this.setState({ msgVisible: true })}

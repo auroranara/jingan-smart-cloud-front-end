@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Table, Pagination, Radio, Row, Col, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Table, Pagination, Radio, Row, Col } from 'antd';
 import NewModal from '../components/NewModal';
 import Ellipsis from '@/components/Ellipsis';
 import styles from './ModalOfFireHost.less';
@@ -125,7 +126,7 @@ export default class ModalOfFireHost extends PureComponent {
                       </div>
                       <div className={styles.lastLine}>
                         <div className={styles.location}>
-                          <span><Icon type="environment" theme="outlined" />{install_address}</span>
+                          <span><LegacyIcon type="environment" theme="outlined" />{install_address}</span>
                         </div>
                         <div className={styles.time}><span>{t}</span></div>
                       </div>
@@ -138,6 +139,6 @@ export default class ModalOfFireHost extends PureComponent {
           ) : (<div className={styles.noContent}><span>暂无数据</span></div>)}
         </div>
       </NewModal>
-    )
+    );
   }
 }

@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Row, Button, Form, Col, Input, Card, Divider, Table } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Button, Col, Input, Card, Divider, Table } from 'antd';
 
 const FormItem = Form.Item;
 

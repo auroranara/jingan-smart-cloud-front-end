@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Card,
   Table,
   Tooltip,
@@ -8,7 +9,6 @@ import {
   Divider,
   Popconfirm,
   Modal,
-  Icon,
   Col,
   Button,
   message,
@@ -260,20 +260,20 @@ export default class RiskCard extends PureComponent {
           <span>
             <a onClick={() => this.goRiskCardEdit(rows.id)}>
               <Tooltip title="编辑" placement="bottom" overlayStyle={{ fontSize: '12px' }}>
-                <Icon type="edit" style={{ fontSize: '18px' }} />
+                <LegacyIcon type="edit" style={{ fontSize: '18px' }} />
               </Tooltip>
             </a>
             <Divider type="vertical" />
             <a onClick={() => this.handlePrint(rows.id)}>
               <Tooltip title="打印预览" placement="bottom" overlayStyle={{ fontSize: '12px' }}>
-                <Icon type="printer" style={{ fontSize: '18px' }} />
+                <LegacyIcon type="printer" style={{ fontSize: '18px' }} />
               </Tooltip>
             </a>
             <Divider type="vertical" />
             <Popconfirm title="确认要删除该信息吗？" onConfirm={() => this.handleDelete(rows.id)}>
               <a>
                 <Tooltip title="删除" placement="bottom" overlayStyle={{ fontSize: '12px' }}>
-                  <Icon type="delete" style={{ fontSize: '18px' }} />
+                  <LegacyIcon type="delete" style={{ fontSize: '18px' }} />
                 </Tooltip>
               </a>
             </Popconfirm>

@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Card,
   Button,
   Spin,
@@ -13,7 +14,6 @@ import {
   Divider,
   Input,
   DatePicker,
-  Icon,
   Dropdown,
   Menu,
   Modal,
@@ -256,7 +256,7 @@ export default class DeviceList extends PureComponent {
         title: (
           <span>
             操作
-          <Icon
+          <LegacyIcon
               onClick={() => { this.setState({ descriptionModalVisible: true }) }}
               style={iconStyle}
               type="question-circle" />
@@ -268,7 +268,7 @@ export default class DeviceList extends PureComponent {
         fixed: 'right',
         render: (val, record) => (
           <Fragment>
-            <a><Icon type="sync" /><span style={{ marginLeft: '0.5em' }}>升级</span></a>
+            <a><LegacyIcon type="sync" /><span style={{ marginLeft: '0.5em' }}>升级</span></a>
             <Divider type="vertical" />
             <a>修改配置</a>
             <Divider type="vertical" />

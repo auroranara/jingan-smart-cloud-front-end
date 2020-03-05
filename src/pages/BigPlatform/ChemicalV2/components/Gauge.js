@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Col, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Col } from 'antd';
 import echarts from 'echarts';
 import ReactEcharts from 'echarts-for-react';
 import styles from './Gauge.less';
@@ -105,7 +106,7 @@ export default class Gauge extends PureComponent {
         {extra && (
           <div className={styles.tips}>
             <div className={styles.overVal}>
-              <Icon type="caret-up" className={styles.icon} />
+              <LegacyIcon type="caret-up" className={styles.icon} />
               {/* 26 */}
               {extra}
             </div>

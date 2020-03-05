@@ -255,7 +255,7 @@ export default class NewMenuReveal extends Component {
       <div className={styles.innerContent}>
         {menuSys.length
           ? menuSys.map(block => (
-              <Row key={block.name}>
+              <div key={block.name}>
                 <div className={styles.blockTitle}>
                   <Divider /> {block.title}
                 </div>
@@ -279,7 +279,7 @@ export default class NewMenuReveal extends Component {
                       ))
                     : null}
                 </Row>
-              </Row>
+              </div>
             ))
           : null}
       </div>

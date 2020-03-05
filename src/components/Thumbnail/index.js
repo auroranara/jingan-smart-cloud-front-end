@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import styles from './index.less';
 
 /**
@@ -43,7 +43,7 @@ export default class App extends PureComponent {
           style={isFirst?disabledStyle:undefined}
           onClick={isFirst?undefined:() => onPage(pageNum-1)}
         >
-          <Icon type="left" />
+          <LegacyIcon type="left" />
         </div>
         <div className={styles.centerSection}>
           <div className={styles.list} style={{ width: `${urls.length / number * 100}%`, left: `${(pageNum-1) * -100}%` }}>
@@ -71,7 +71,7 @@ export default class App extends PureComponent {
           style={isLast?disabledStyle:undefined}
           onClick={isLast?undefined:() => onPage(pageNum+1)}
         >
-          <Icon type="right" />
+          <LegacyIcon type="right" />
         </div>
       </div>
     );

@@ -1,8 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Row,
   Col,
   Input,
@@ -500,7 +501,7 @@ export default class SectionManagement extends PureComponent {
               {addAuth && (
                 <Button
                   type="primary"
-                  icon="plus"
+                  icon={<LegacyIcon type="plus" />}
                   style={{ marginBottom: 16 }}
                   onClick={() => {
                     this.handleAdd();

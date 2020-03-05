@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Form, Modal, Table } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Table } from 'antd';
 
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 

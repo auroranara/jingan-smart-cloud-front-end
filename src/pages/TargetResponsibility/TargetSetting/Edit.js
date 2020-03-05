@@ -1,13 +1,13 @@
 import { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
   Button,
-  Form,
   Input,
   Select,
   Upload,
-  Icon,
   message,
   Row,
   Col,
@@ -760,7 +760,7 @@ export default class Edit extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={uploading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>

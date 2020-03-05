@@ -1,7 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 // import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { message, Button, Card, Col, Form, Icon, Modal, Upload, Radio } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { message, Button, Card, Col, Modal, Upload, Radio } from 'antd';
 import { getToken } from 'utils/authority';
 import Lightbox from 'react-images';
 
@@ -155,7 +157,7 @@ export default class FireControl extends PureComponent {
         disabled={uploading}
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-          <Icon type="plus" style={{ fontSize: '32px' }} />
+          <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
           <div style={{ marginTop: '8px' }}>点击上传</div>
         </Button>
         {tips && (

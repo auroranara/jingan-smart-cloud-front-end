@@ -1,10 +1,11 @@
 import { connect } from 'dva';
 import React, { Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Button,
   Row,
   Col,
-  Form,
   Input,
   Card,
   Select,

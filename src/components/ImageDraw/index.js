@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Modal, Input, Form } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Input } from 'antd';
 import {
   Map,
   FeatureGroup,
