@@ -85,7 +85,8 @@ export default class LawDatabaseEdit extends PureComponent {
           abolishDate,// 废止日期
           accessoryDetails,
         }) => {
-          setFieldsValue({ regulations, fileList: Array.isArray(accessoryDetails) ? accessoryDetails : [] });
+          setFieldsValue({ regulations });
+          this.setState({ fileList: Array.isArray(accessoryDetails) ? accessoryDetails.map(item => ({ ...item, uid: item.id, url: item.webUrl })) : [] });
           if (+regulations === 0) {
             setTimeout(() => {
               setFieldsValue({ abolishDate: abolishDate ? moment(abolishDate) : undefined });
