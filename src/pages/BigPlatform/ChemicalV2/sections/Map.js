@@ -191,6 +191,7 @@ export default class Map extends PureComponent {
             iconType: -1,
             markerProps: { zoneId: id },
             size: 25,
+            height: 1,
           });
           return null;
         });
