@@ -14,7 +14,6 @@ import {
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
-import TypeSelect from '../../components/TypeSelect';
 import { connect } from 'dva';
 import router from 'umi/router';
 import classNames from 'classnames';
@@ -35,18 +34,7 @@ export const ADD_PATH = '/accident-management/injury-report/add';
 export const EDIT_PATH = '/accident-management/injury-report/edit';
 export const DETAIL_PATH = '/accident-management/injury-report/detail';
 export { LEVELS };
-export const PROCESS_TYPES = [
-  { key: '0', value: '国务院领导做出批示' },
-  { key: '1', value: '中央办公厅或国务院办公厅要求上报' },
-  { key: '2', value: '总局领导明确要求' },
-  { key: '3', value: '省级领导作示' },
-  { key: '4', value: '省政府要求上报' },
-  { key: '5', value: '省安监局领导明确要求' },
-  { key: '6', value: '市级领导作出批示' },
-  { key: '7', value: '市政府要求上报' },
-  { key: '8', value: '市安监局领导明确要求' },
-  { key: '9', value: '其它' },
-];
+
 export const INJURY_TYPES = [
   { key: '0', value: '轻微伤' },
   { key: '1', value: '轻伤' },
@@ -54,7 +42,6 @@ export const INJURY_TYPES = [
   { key: '3', value: '死亡' },
 ];
 export const SEX = [{ key: '0', value: '男' }, { key: '1', value: '女' }];
-export const REPORT_STATUSES = [{ key: '0', value: '保存' }, { key: '1', value: '上报' }];
 const DEFAULT_FORMAT = 'YYYY-MM-DD';
 
 @connect(
