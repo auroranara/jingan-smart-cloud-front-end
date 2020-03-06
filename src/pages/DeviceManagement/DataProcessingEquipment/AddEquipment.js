@@ -835,7 +835,7 @@ export default class AddEquipment extends Component {
             </FormItem>
           )}
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button
             onClick={() => {
               router.goBack();

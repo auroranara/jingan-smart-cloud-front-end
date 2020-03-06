@@ -351,7 +351,7 @@ export default class HandleVirtualMonitoringDevice extends Component {
             </Fragment>
           )}
         </Card>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button
             style={{ marginRight: '10px' }}
             onClick={() => {

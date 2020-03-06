@@ -71,6 +71,8 @@ export default class CompanySelect extends Component {
       type,
     } = this.props;
 
+    console.log(value);
+
     return type !== 'span' ? (
       <AutoComplete
         className={className}

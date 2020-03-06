@@ -507,7 +507,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             </Upload>
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" onClick={this.handleSubmit}>
             提交
           </Button>

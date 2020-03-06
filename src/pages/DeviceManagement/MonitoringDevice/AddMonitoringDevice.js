@@ -687,7 +687,7 @@ export default class AddMonitoringDevice extends Component {
             </Card>
           </Fragment>
         )}
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button
             className={styles.mr10}
             onClick={() => {
