@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import moment from 'moment';
-import { Select, Radio, Col, Row, Table, DatePicker, Empty } from 'antd';
+import { Select, Radio, Col, Icon, Row, Table, DatePicker, Empty, Tooltip } from 'antd';
 import { BREADCRUMBLIST, DepartPie, ReachList, COLOUMNS } from './utils';
 import styles from './index.less';
 
@@ -18,31 +18,73 @@ export default class TableList extends PureComponent {
     super(props);
     this.state = {
       isOpen: false, // 控制日期(年份)面板是否打开
-      yearDateVal: '',
+      yearDateVal: moment().subtract(1, 'year'), // 初始化当前年份
       radioType: '1', // 默认为 图标
-      indexVal: undefined,
-      indexReachVal: undefined,
+      indexVal: undefined, // 初始化指标
+      indexReachVal: undefined, // 初始化指标达成情况
+      currentPage: 1,
     };
     this.pageNum = 1;
     this.pageSize = 10;
   }
 
   componentDidMount() {
+    const { yearDateVal } = this.state;
+    // this.fetchPartGoal(yearDateVal);
+    // this.fetchPartUnitGoal(yearDateVal);
+    // this.fetchIndexList();
+  }
+
+  // 获取图表数据
+  fetchPartGoal = time => {
     const {
+      dispatch,
       match: {
         params: { id },
       },
     } = this.props;
-    this.fetchYearGoal(id);
-  }
-
-  // 年度目标达成率排名
-  fetchYearGoal = id => {
-    const { dispatch } = this.props;
     dispatch({
-      type: 'targetResponsibility/fetchYearGoal',
+      type: 'targetResponsibility/fetchPartGoal',
       payload: {
         companyId: id,
+        goalYear: moment(time).format('YYYY'),
+      },
+    });
+  };
+
+  // 获取列表数据
+  fetchPartUnitGoal = (time, targetId, flag) => {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    dispatch({
+      type: 'targetResponsibility/fetchPartUnitGoal',
+      payload: {
+        companyId: id,
+        goalYear: moment(time).format('YYYY'),
+        targetId: targetId ? targetId : 0,
+        flag: flag ? flag : 0,
+      },
+    });
+  };
+
+  // 获取全部指标
+  fetchIndexList = () => {
+    const {
+      dispatch,
+      match: {
+        params: { id: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'targetResponsibility/fetchIndexManagementList',
+      payload: {
+        companyId,
+        pageSize: 24,
+        pageNum: 1,
       },
     });
   };
@@ -59,6 +101,8 @@ export default class TableList extends PureComponent {
   // 日历面板切换的回调
   handlePanelChange = v => {
     this.setState({ yearDateVal: v, isOpen: false });
+    // this.fetchPartGoal(v);
+    // this.fetchPartUnitGoal(v);
   };
 
   // 清空日期选择框
@@ -66,10 +110,9 @@ export default class TableList extends PureComponent {
     this.setState({ yearDateVal: undefined });
   };
 
-  handleDisabledDate = time => {
-    return time && time < moment().endOf('day');
-  };
+  handleDisabledDate = time => {};
 
+  // radio切换
   handleRadioBtn = e => {
     this.setState({ radioType: e.target.value });
   };
@@ -79,19 +122,48 @@ export default class TableList extends PureComponent {
     router.push('/target-responsibility/target-setting/index');
   };
 
+  // 指标选择
   handleIndexChange = val => {
+    const { yearDateVal, indexReachVal } = this.state;
     this.setState({ indexVal: val });
+    this.fetchPartUnitGoal(yearDateVal, val, indexReachVal);
   };
 
+  // 达成情况选择
   handleIndexReachChange = val => {
+    const { yearDateVal, indexVal } = this.state;
     this.setState({ indexReachVal: val });
+    this.fetchPartUnitGoal(yearDateVal, indexVal, val);
+  };
+
+  // 重置
+  handleRest = () => {
+    const { yearDateVal } = this.state;
+    this.fetchPartUnitGoal(yearDateVal);
+    this.setState({ indexVal: undefined, indexReachVal: undefined });
+  };
+
+  handleTableData = (list = [], indexBase) => {
+    return list.map((item, index) => {
+      return {
+        ...item,
+        index: indexBase + index + 1,
+      };
+    });
   };
 
   // 渲染图表
   renderPicContent() {
     const {
       targetResponsibility: {
-        yearGoalData: { list: indexList = [] },
+        partGoalData: {
+          passUnit = 0,
+          unitNumber = 0,
+          passPart = 0,
+          vetoPart = 0,
+          unitGoal = '0%',
+          rankList = [],
+        },
       },
     } = this.props;
 
@@ -101,7 +173,7 @@ export default class TableList extends PureComponent {
           <div className={styles.itemTop}>
             <div className={styles.headline}>单位目标达成情况</div>
             <div className={styles.echarts}>
-              <DepartPie data={[2, 4]} partPassRate={'20%'} />
+              <DepartPie data={[passUnit, unitNumber - passUnit]} partPassRate={unitGoal} />
             </div>
           </div>
 
@@ -109,11 +181,11 @@ export default class TableList extends PureComponent {
             <div className={styles.headline}>部门目标达成情况</div>
             <div className={styles.label}>
               <div className={styles.labelFirst}>
-                <div className={styles.number}>{3}</div>
+                <div className={styles.number}>{passPart}</div>
                 <div className={styles.title}>达成目标的部门</div>
               </div>
               <div className={styles.labelSecond}>
-                <div className={styles.number}>{3}</div>
+                <div className={styles.number}>{vetoPart}</div>
                 <div className={styles.title}>未达成目标的部门</div>
               </div>
             </div>
@@ -135,7 +207,7 @@ export default class TableList extends PureComponent {
               </Col>
             </div>
             <div className={styles.dataCard}>
-              {indexList.map(({ partName, goalValue }, index) => {
+              {rankList.map(({ partName, goalValue }, index) => {
                 return (
                   <Row key={index} className={styles.row}>
                     <Col span={7}>
@@ -159,17 +231,15 @@ export default class TableList extends PureComponent {
 
   // 渲染列表
   renderTableContent() {
-    const { indexVal, indexReachVal } = this.state;
-
-    const list = [
-      {
-        id: 1,
-        duty: '单位',
-        index: '火灾及重特大安全事故 ',
-        desc: '0起/年',
-        isReach: '1',
+    const {
+      targetResponsibility: {
+        indexData: { list: iList = [] },
+        unitGoalData: { list: tableList = [] },
       },
-    ];
+    } = this.props;
+
+    const { indexVal, indexReachVal, currentPage } = this.state;
+    const indexBase = (currentPage - 1) * 10;
 
     return (
       <div className={styles.sectionTable}>
@@ -180,7 +250,7 @@ export default class TableList extends PureComponent {
             style={{ width: 240, marginRight: 10 }}
             onChange={this.handleIndexChange}
           >
-            {[].map(({ id, targetName }) => (
+            {iList.map(({ id, targetName }) => (
               <Select.Option key={id} value={id}>
                 {targetName}
               </Select.Option>
@@ -198,10 +268,25 @@ export default class TableList extends PureComponent {
               </Select.Option>
             ))}
           </Select>
+          <div>
+            <Tooltip placement="top" title={'重置'}>
+              <Icon
+                style={{ fontSize: '16px', margin: '8px', cursor: 'pointer' }}
+                type="redo"
+                onClick={this.handleRest}
+              />
+            </Tooltip>
+          </div>
         </div>
         <div className={styles.table}>
-          {list.length > 0 ? (
-            <Table rowKey="id" columns={COLOUMNS} dataSource={list} bordered pagination={false} />
+          {tableList.length > 0 ? (
+            <Table
+              rowKey="index"
+              columns={COLOUMNS}
+              dataSource={this.handleTableData(tableList, indexBase)}
+              bordered
+              pagination={false}
+            />
           ) : (
             <Empty />
           )}
@@ -211,6 +296,9 @@ export default class TableList extends PureComponent {
   }
 
   render() {
+    const {
+      targetResponsibility: { partGoalData = {} },
+    } = this.props;
     const { isOpen, yearDateVal, radioType } = this.state;
 
     return (
@@ -253,8 +341,20 @@ export default class TableList extends PureComponent {
             </div>
           </div>
 
-          {+radioType === 1 && <div className={styles.content}>{this.renderPicContent()}</div>}
-          {+radioType === 2 && <div className={styles.content}>{this.renderTableContent()}</div>}
+          {+radioType === 1 && partGoalData === null ? (
+            <div className={styles.emptyArea}>
+              当前尚未形成年度目标责任分析报表，本报表可查看上一年度目标分析结果
+            </div>
+          ) : (
+            +radioType === 1 && <div className={styles.content}>{this.renderPicContent()}</div>
+          )}
+          {+radioType === 2 && partGoalData === null ? (
+            <div className={styles.emptyArea}>
+              当前尚未形成年度目标责任分析报表，本报表可查看上一年度目标分析结果
+            </div>
+          ) : (
+            +radioType === 2 && <div className={styles.content}>{this.renderTableContent()}</div>
+          )}
         </div>
       </PageHeaderLayout>
     );
