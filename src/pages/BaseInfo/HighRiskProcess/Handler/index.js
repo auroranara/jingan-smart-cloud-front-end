@@ -377,14 +377,20 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="统一编码" {...formItemLayout}>
             {getFieldDecorator('unifiedCode', {
               initialValue: id ? detail.unifiedCode : undefined,
-              rules: [{ required: true, message: '请输入统一编码' }],
+              rules: [
+                { required: true, message: '请输入统一编码' },
+                { max: 12, message: '请输入不超过12个字符' },
+              ],
               getValueFromEvent: this.trim,
             })(<Input placeholder="请输入统一编码" {...itemStyles} />)}
           </FormItem>
           <FormItem label="生产工艺名称" {...formItemLayout}>
             {getFieldDecorator('processName', {
               initialValue: id ? detail.processName : undefined,
-              rules: [{ required: true, message: '请输入生产工艺名称' }],
+              rules: [
+                { required: true, message: '请输入生产工艺名称' },
+                { max: 50, message: '请输入不超过50个字符' },
+              ],
               getValueFromEvent: this.trim,
             })(<Input placeholder="请输入生产工艺名称" {...itemStyles} />)}
           </FormItem>
@@ -413,7 +419,10 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="反应类型" {...formItemLayout}>
             {getFieldDecorator('reactionType', {
               initialValue: id ? detail.reactionType : undefined,
-              rules: [{ required: true, message: '请输入反应类型' }],
+              rules: [
+                { required: true, message: '请输入反应类型' },
+                { max: 12, message: '请输入不超过12个字符' },
+              ],
               getValueFromEvent: this.trim,
             })(<Input placeholder="请输入反应类型" {...itemStyles} />)}
           </FormItem>
@@ -470,7 +479,10 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="工艺系统简况" {...formItemLayout}>
             {getFieldDecorator('processBrief', {
               initialValue: id ? detail.processBrief : undefined,
-              rules: [{ required: true, message: '请输入工艺系统简况' }],
+              rules: [
+                { required: true, message: '请输入工艺系统简况' },
+                { max: 50, message: '请输入不超过50个字符' },
+              ],
               getValueFromEvent: this.trim,
             })(
               <TextArea rows={4} placeholder="请输入工艺系统简况" {...itemStyles} />

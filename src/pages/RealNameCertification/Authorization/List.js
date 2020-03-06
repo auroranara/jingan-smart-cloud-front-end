@@ -704,7 +704,7 @@ export default class AuthorizationList extends PureComponent {
               label: '权限有效期', value: ({ permissionTime }) => {
                 if (!permissionTime) return '不限制';
                 const temp = permissionTime.split(',');
-                return `${moment(+temp[0]).format('YYYY-MM-DD HH:mm:ss')}-${moment(+temp[1]).format('YYYY-MM-DD HH:mm:ss')}`;
+                return `${moment(+temp[0]).format('YYYY-MM-DD')}-${moment(+temp[1]).format('YYYY-MM-DD')}`;
               },
             },
             { label: '准入时间', value: ({ passTime }) => passTime || '不限制' },
