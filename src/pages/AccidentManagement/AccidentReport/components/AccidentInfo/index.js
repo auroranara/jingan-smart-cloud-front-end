@@ -10,6 +10,7 @@ import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
 const { Option } = Select;
 const GET_LIST = 'accidentReport/getList';
+const { RangePicker } = DatePicker;
 
 @connect(
   ({ accidentReport, loading }) => ({
@@ -38,6 +39,15 @@ export default class AccidentInfo extends Component {
   };
 
   prevValues = null;
+
+  empty = true;
+
+  getRangeFromEvent = range => {
+    const empty = !(range && range.length);
+    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
+    this.empty = empty;
+    return result;
+  };
 
   setFormReference = form => {
     this.form = form;
@@ -84,8 +94,11 @@ export default class AccidentInfo extends Component {
       getList,
     } = this.props;
     this.prevValues = values;
+    const { happenTime: [startTime, endTime] = [], ...payload } = values;
     getList({
-      ...values,
+      ...payload,
+      startTime: startTime && startTime.format(DEFAULT_FORMAT),
+      endTime: endTime && endTime.format(DEFAULT_FORMAT),
       pageSize,
       accidentCompanyId: companyId,
     });
@@ -157,14 +170,16 @@ export default class AccidentInfo extends Component {
         id: 'happenTime',
         label: '事故发生时间',
         render: () => (
-          <DatePicker
+          <RangePicker
             className={styles.datePicker}
-            placeholder="请选择事故发生时间"
-            format={DEFAULT_FORMAT}
+            placeholder={['开始时间', '结束时间']}
             showTime
             allowClear
           />
         ),
+        options: {
+          getValueFromEvent: this.getRangeFromEvent,
+        },
       },
     ];
     const columns = [

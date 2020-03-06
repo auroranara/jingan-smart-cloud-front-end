@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Icon, Tooltip } from 'antd';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import AsyncSelect from '@/jingan-components/AsyncSelect';
-import ChannelAuthorization from './components/ChannelAuthorization';
+import ChannelAuthorization from './components/ChannelAuthorization2';
 import moment from 'moment';
 import { isNumber } from '@/utils/utils';
 import { BREADCRUMB_LIST, STATUSES, VEHICLE_TYPES, LICENCE_PLATE_TYPES } from '../List';
