@@ -1,17 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  BackTop,
-  Col,
-  Row,
-  Select,
-  Table,
-  Input,
-  DatePicker,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, BackTop, Col, Row, Select, Table, Input, DatePicker } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import codes from '@/utils/codes';
 // import { hasAuthority } from '@/utils/customAuth';

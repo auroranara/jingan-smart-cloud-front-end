@@ -40,6 +40,10 @@ div.select {
 /* 表格 */
 .table {
   :global {
+    .ant-table {
+      background: transparent;
+    }
+
     .ant-table-small {
       color: #fff;
       border: none;
@@ -50,7 +54,8 @@ div.select {
         text-align: center;
         border-radius: 0;
 
-        & > .ant-table-thead > tr > th {
+        // & > .ant-table-thead > tr > th {
+        & > thead > tr > th {
           text-align: center;
           color: #fff;
           background-color: rgba(9, 103, 211, 0.2);

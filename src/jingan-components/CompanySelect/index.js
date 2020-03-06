@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { AutoComplete, Spin } from 'antd';
+import { AutoComplete, Spin, Select } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 
-const { Option } = AutoComplete;
+// const { Option } = AutoComplete;
+const { Option } = Select;
 
 @connect(({ common, loading }) => ({
   common,
@@ -71,29 +72,47 @@ export default class CompanySelect extends Component {
       type,
     } = this.props;
 
-    console.log(value);
-
     return type !== 'span' ? (
-      <AutoComplete
+      // <AutoComplete
+      //   className={className}
+      //   style={style}
+      //   mode="combobox"
+      //   labelInValue
+      //   value={value}
+      //   onChange={onChange}
+      //   optionLabelProp="children"
+      //   placeholder={placeholder}
+      //   defaultActiveFirstOption={false}
+      //   filterOption={false}
+      //   onSearch={this.debouncedHandleSearch}
+      //   onBlur={this.handleBlur}
+      //   notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
+      //   disabled={disabled}
+      // >
+      //   {list.map(({ id, name }) => (
+      //     <Option key={id}>{name}</Option>
+      //   ))}
+      // </AutoComplete>
+      <Select
+        showSearch
+        labelInValue
+        disabled={disabled}
         className={className}
         style={style}
-        mode="combobox"
-        labelInValue
         value={value}
-        onChange={onChange}
-        optionLabelProp="children"
         placeholder={placeholder}
         defaultActiveFirstOption={false}
+        showArrow={false}
         filterOption={false}
+        onChange={onChange}
         onSearch={this.debouncedHandleSearch}
-        onBlur={this.handleBlur}
+        // onBlur={this.handleBlur}
         notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
-        disabled={disabled}
       >
         {list.map(({ id, name }) => (
           <Option key={id}>{name}</Option>
         ))}
-      </AutoComplete>
+      </Select>
     ) : (
       <span>{value && value.label}</span>
     );

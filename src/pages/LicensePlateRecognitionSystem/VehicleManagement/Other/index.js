@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { Icon, Tooltip } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip } from 'antd';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import AsyncSelect from '@/jingan-components/AsyncSelect';
 import ChannelAuthorization from './components/ChannelAuthorization';
@@ -374,7 +375,7 @@ export default class VehicleOther extends Component {
             placement="bottom"
             title="选中车场会将车辆信息同步至车场，全部通道表示该车可以在选中车场的全部通道口进出；部分通道表示只能在选择的通道进出，未选通道不得进出。"
           >
-            <Icon style={{ color: '#f5222d', verticalAlign: 'baseline' }} type="question-circle" />
+            <LegacyIcon style={{ color: '#f5222d', verticalAlign: 'baseline' }} type="question-circle" />
           </Tooltip>
         </Fragment>
       ) : (
@@ -390,7 +391,7 @@ export default class VehicleOther extends Component {
                 placement="bottom"
                 title="选中车场会将车辆信息同步至车场，全部通道表示该车可以在选中车场的全部通道口进出；部分通道表示只能在选择的通道进出，未选通道不得进出。"
               >
-                <Icon
+                <LegacyIcon
                   style={{ color: '#f5222d', verticalAlign: 'baseline' }}
                   type="question-circle"
                 />

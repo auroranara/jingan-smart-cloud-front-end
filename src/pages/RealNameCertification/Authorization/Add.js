@@ -1,15 +1,15 @@
 import { PureComponent } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
   Table,
   Button,
   Row,
   Col,
-  Form,
   Tabs,
   Radio,
   Tooltip,
-  Icon,
   DatePicker,
   TimePicker,
   Checkbox,
@@ -337,7 +337,7 @@ export default class AddAuthorization extends PureComponent {
                   <div className={styles.prompt}>
                     <span>权限有效期 </span>
                     <Tooltip title="如：选择2015/01/01-2019/01/01,甲只在这个时间段内被设备识别">
-                      <Icon className={styles.tooltipIcon} type="question-circle" />
+                      <LegacyIcon className={styles.tooltipIcon} type="question-circle" />
                     </Tooltip>
                   </div>
                   <Radio.Group className={styles.mb10} onChange={this.handleValidTypeChange} value={validType} buttonStyle="solid" >
@@ -358,7 +358,7 @@ export default class AddAuthorization extends PureComponent {
                   <div className={classNames(styles.prompt, styles.mt15)}>
                     <span>准入时间</span>
                     <Tooltip title="如：0:00-18:00，甲只在一天的这个时间段被设备识别">
-                      <Icon className={styles.tooltipIcon} type="question-circle" />
+                      <LegacyIcon className={styles.tooltipIcon} type="question-circle" />
                     </Tooltip>
                   </div>
                   <Radio.Group className={styles.mb10} onChange={e => { this.setState({ accessType: e.target.value, accessTime: [[]] }) }} value={accessType} buttonStyle="solid" >
@@ -393,7 +393,7 @@ export default class AddAuthorization extends PureComponent {
                             />
                           </Col>
                           <Col className={styles.split} span={2}>
-                            <Icon style={{ cursor: 'pointer' }} type="close" onClick={() => this.handleDeleteTime(index)} />
+                            <LegacyIcon style={{ cursor: 'pointer' }} type="close" onClick={() => this.handleDeleteTime(index)} />
                           </Col>
                         </Row>
                       ))}
@@ -500,7 +500,7 @@ export default class AddAuthorization extends PureComponent {
                         <i></i>
                         操作失败
                         <Tooltip title="可能原因：设备本地空间不足" placement="right">
-                          <Icon style={{ color: '#1890ff' }} className={styles.tooltipIcon} type="question-circle" />
+                          <LegacyIcon style={{ color: '#1890ff' }} className={styles.tooltipIcon} type="question-circle" />
                         </Tooltip>
                       </span>
                     </div>
@@ -524,6 +524,6 @@ export default class AddAuthorization extends PureComponent {
         {/* 图片查看 */}
         <ImagePreview images={images} currentImage={currentImage} />
       </PageHeaderLayout>
-    )
+    );
   }
 }

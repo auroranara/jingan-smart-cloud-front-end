@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Spin, message, TreeSelect, Upload, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Spin, message, TreeSelect, Upload } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -663,7 +664,7 @@ export default class InjuryReportOther extends Component {
                     onChange={this.handleFileChange}
                   >
                     <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                      <Icon type="plus" style={{ fontSize: '32px' }} />
+                      <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                       <div style={{ marginTop: '8px' }}>点击上传</div>
                     </Button>
                   </Upload>

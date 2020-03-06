@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import {
   Card,
@@ -18,7 +18,6 @@ import {
   Checkbox,
   Popconfirm,
   Tooltip,
-  Icon,
   Radio,
   TimePicker,
 } from 'antd';
@@ -427,13 +426,13 @@ export default class AuthorizationList extends PureComponent {
                   alt="照片"
                 />
                 {state === 3 && (
-                  <Tooltip placement="right" title="授权成功"><Icon style={{ color: '#2bbb59' }} type="check-circle" theme="filled" /></Tooltip>
+                  <Tooltip placement="right" title="授权成功"><LegacyIcon style={{ color: '#2bbb59' }} type="check-circle" theme="filled" /></Tooltip>
                 )}
                 {state === 2 && (
-                  <Tooltip placement="right" title="销权中"><Icon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
+                  <Tooltip placement="right" title="销权中"><LegacyIcon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
                 )}
                 {state === 1 && (
-                  <Tooltip placement="right" title="授权中（可能原因：设备离线）"><Icon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
+                  <Tooltip placement="right" title="授权中（可能原因：设备离线）"><LegacyIcon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
                 )}
               </div>
             )) : null}
@@ -675,13 +674,13 @@ export default class AuthorizationList extends PureComponent {
                         alt="照片"
                       />
                       {state === 3 && (
-                        <Tooltip placement="right" title="授权成功"><Icon style={{ color: '#2bbb59' }} type="check-circle" theme="filled" /></Tooltip>
+                        <Tooltip placement="right" title="授权成功"><LegacyIcon style={{ color: '#2bbb59' }} type="check-circle" theme="filled" /></Tooltip>
                       )}
                       {state === 2 && (
-                        <Tooltip placement="right" title="销权中"><Icon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
+                        <Tooltip placement="right" title="销权中"><LegacyIcon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
                       )}
                       {state === 1 && (
-                        <Tooltip placement="right" title="授权中（可能原因：设备离线）"><Icon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
+                        <Tooltip placement="right" title="授权中（可能原因：设备离线）"><LegacyIcon style={{ color: '#f5a623' }} type="exclamation-circle" theme="filled" /></Tooltip>
                       )}
                     </div>
                   )) : null}
@@ -735,7 +734,7 @@ export default class AuthorizationList extends PureComponent {
               <div className={classNames(styles.prompt, styles.mt15)}>
                 <span>权限有效期 </span>
                 <Tooltip title="如：选择2015/01/01-2019/01/01,甲只在这个时间段内被设备识别">
-                  <Icon style={{ color: '#1890ff' }} className={styles.tooltipIcon} type="question-circle" />
+                  <LegacyIcon style={{ color: '#1890ff' }} className={styles.tooltipIcon} type="question-circle" />
                 </Tooltip>
               </div>
               <Radio.Group className={styles.mb10} onChange={this.handleValidTypeChange} value={validType} buttonStyle="solid" >
@@ -758,7 +757,7 @@ export default class AuthorizationList extends PureComponent {
               <div className={classNames(styles.prompt, styles.mt15)}>
                 <span>准入时间</span>
                 <Tooltip title="如：0:00-18:00，甲只在一天的这个时间段被设备识别">
-                  <Icon style={{ color: '#1890ff' }} className={styles.tooltipIcon} type="question-circle" />
+                  <LegacyIcon style={{ color: '#1890ff' }} className={styles.tooltipIcon} type="question-circle" />
                 </Tooltip>
               </div>
               <Radio.Group className={styles.mb10} onChange={e => { this.setState({ accessType: e.target.value, accessTime: [[]] }) }} value={accessType} buttonStyle="solid" >
@@ -791,7 +790,7 @@ export default class AuthorizationList extends PureComponent {
                         />
                       </Col>
                       <Col className={styles.split} span={2}>
-                        <Icon style={{ cursor: 'pointer' }} type="close" onClick={() => this.handleDeleteTime(index)} />
+                        <LegacyIcon style={{ cursor: 'pointer' }} type="close" onClick={() => this.handleDeleteTime(index)} />
                       </Col>
                     </Row>
                   ))}
@@ -819,6 +818,6 @@ export default class AuthorizationList extends PureComponent {
         {/* 图片查看 */}
         <ImagePreview images={images} currentImage={currentImage} />
       </PageHeaderLayout>
-    )
+    );
   }
 }

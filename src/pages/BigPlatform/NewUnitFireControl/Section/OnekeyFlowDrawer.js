@@ -50,8 +50,8 @@ export default class OnekeyFlowDrawer extends PureComponent {
     } = this.props;
     const { index } = this.state;
     const list = (Array.isArray(data) ? data : []).slice(0, 1);
-    console.log('list', list);
-    console.log('data', data);
+    // console.log('list', list);
+    // console.log('data', data);
 
     const length = list.length;
     const dataItem = list[0] || {};

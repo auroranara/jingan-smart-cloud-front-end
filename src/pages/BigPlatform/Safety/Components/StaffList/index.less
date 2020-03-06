@@ -27,10 +27,11 @@ div.select {
   vertical-align: top;
 
   :global {
-    .ant-select-selection {
-      background-color: transparent;
-      border-radius: 4px;
-      border-color: #00A9FF;
+    // .ant-select-selection {
+    .ant-select-selector {
+      background-color: transparent !important;
+      border-radius: 4px !important;
+      border-color: #00A9FF !important;
     }
     .ant-select-selection__rendered {
       margin-left: 11px;
@@ -63,7 +64,8 @@ div.dropDown {
       border-radius: 10px;
       background-color: rgba(9, 103, 211, 0.5);
     }
-    .ant-select-dropdown-menu-item {
+    // .ant-select-dropdown-menu-item {
+    .ant-select-item {
       padding-top: 1px;
       padding-bottom: 1px;
       padding-left: 12px;
@@ -91,6 +93,10 @@ div.dropDown {
 /* 表格 */
 .table {
   :global {
+    .ant-table {
+      background: transparent;
+    }
+
     .ant-table-small {
       color: #fff;
       border: none;
@@ -101,7 +107,8 @@ div.dropDown {
         text-align: center;
         border-radius: 0;
 
-        & > .ant-table-thead > tr > th {
+        // & > .ant-table-thead > tr > th {
+        & > thead > tr > th {
           text-align: center;
           color: #fff;
           background-color: rgba(9, 103, 211, 0.2);
