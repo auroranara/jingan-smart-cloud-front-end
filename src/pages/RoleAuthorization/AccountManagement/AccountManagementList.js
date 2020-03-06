@@ -75,6 +75,13 @@ const unitTypeList = {
   4: '社会单位',
 };
 
+const defaultSpan = {
+  xl: 8,
+  md: 12,
+  sm: 24,
+  xs: 24,
+};
+
 /* 获取root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 
@@ -572,34 +579,38 @@ export default class accountManagementList extends React.Component {
 
     return (
       <Card>
-        <Form layout="inline">
-          <Col span={18}>
-            <FormItem label="用户">
-              {getFieldDecorator('userName', {
-                getValueFromEvent: this.handleTrim,
-              })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
-            </FormItem>
-            {!isUnitUser && (
-              <FormItem label="单位类型">
-                {getFieldDecorator('unitType', {})(
-                  <Select
-                    placeholder="请选择单位类型"
-                    allowClear
-                    onChange={this.handleUnitTypeChange}
-                    style={{ width: 180 }}
-                  >
-                    {unitTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
+        <Form className={styles.form}>
+          <Row>
+            <Col {...defaultSpan}>
+              <FormItem label="用户">
+                {getFieldDecorator('userName', {
+                  getValueFromEvent: this.handleTrim,
+                })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
               </FormItem>
-            )}
+            </Col>
 
-            {!isUnitUser &&
-              unitTypeChecked !== GOV && (
+            {!isUnitUser && (
+              <Col {...defaultSpan}>
+                <FormItem label="单位类型">
+                  {getFieldDecorator('unitType', {})(
+                    <Select
+                      placeholder="请选择单位类型"
+                      allowClear
+                      onChange={this.handleUnitTypeChange}
+                      style={{ width: 180 }}
+                    >
+                      {unitTypes.map(item => (
+                        <Option value={item.id} key={item.id}>
+                          {item.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+            )}
+            {!isUnitUser && unitTypeChecked !== GOV && (
+              <Col {...defaultSpan}>
                 <FormItem label="所属单位">
                   {getFieldDecorator('unitId', {
                     rules: [
@@ -631,10 +642,10 @@ export default class accountManagementList extends React.Component {
                     </AutoComplete>
                   )}
                 </FormItem>
-              )}
-
-            {!isUnitUser &&
-              unitTypeChecked === GOV && (
+              </Col>
+            )}
+            {!isUnitUser && unitTypeChecked === GOV && (
+              <Col {...defaultSpan}>
                 <FormItem label="所属单位">
                   {getFieldDecorator('unitId')(
                     <TreeSelect
@@ -647,57 +658,57 @@ export default class accountManagementList extends React.Component {
                     </TreeSelect>
                   )}
                 </FormItem>
-              )}
-            <FormItem label="角色">
-              {getFieldDecorator('roleId')(
-                <Select placeholder="请选择角色" style={{ width: 180 }} allowClear>
-                  {roles.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.roleName}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-            {(unitTypeChecked === GOV || unitType === GOV) && (
-              <FormItem label="所属网格">
-                {getFieldDecorator('gridId')(
-                  <TreeSelect
-                    treeData={gridList}
-                    placeholder="请选择"
-                    getPopupContainer={getRootChild}
-                    allowClear
-                    dropdownStyle={{
-                      maxHeight: '50vh',
-                      zIndex: 50,
-                    }}
-                    style={{ width: 180 }}
-                  />
+              </Col>
+            )}
+            <Col {...defaultSpan}>
+              <FormItem label="角色">
+                {getFieldDecorator('roleId')(
+                  <Select placeholder="请选择角色" style={{ width: 180 }} allowClear>
+                    {roles.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.roleName}
+                      </Option>
+                    ))}
+                  </Select>
                 )}
               </FormItem>
+            </Col>
+            {(unitTypeChecked === GOV || unitType === GOV) && (
+              <Col {...defaultSpan}>
+                <FormItem label="所属网格">
+                  {getFieldDecorator('gridId')(
+                    <TreeSelect
+                      treeData={gridList}
+                      placeholder="请选择"
+                      getPopupContainer={getRootChild}
+                      allowClear
+                      dropdownStyle={{
+                        maxHeight: '50vh',
+                        zIndex: 50,
+                      }}
+                      style={{ width: 180 }}
+                    />
+                  )}
+                </FormItem>
+              </Col>
             )}
-          </Col>
-
-          {/* 按钮 */}
-          <Col span={6}>
-            <FormItem style={{ float: 'right' }}>
-              <AuthButton
-                code={codesMap.account.add}
-                type="primary"
-                href="#/role-authorization/account-management/add"
-              >
-                新增
-              </AuthButton>
-            </FormItem>
-            <FormItem style={{ float: 'right' }}>
-              <Button onClick={this.handleClickToReset}>重置</Button>
-            </FormItem>
-            <FormItem style={{ float: 'right' }}>
-              <Button type="primary" onClick={this.handleClickToQuery}>
-                查询
-              </Button>
-            </FormItem>
-          </Col>
+            {/* 按钮 */}
+            <Col {...defaultSpan}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleClickToQuery} className={styles.btn}>
+                  查询
+                </Button>
+                <Button onClick={this.handleClickToReset} className={styles.btn}>重置</Button>
+                <AuthButton
+                  code={codesMap.account.add}
+                  type="primary"
+                  href="#/role-authorization/account-management/add"
+                >
+                  新增
+                </AuthButton>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Card>
     );
