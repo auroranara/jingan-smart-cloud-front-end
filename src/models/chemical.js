@@ -23,6 +23,7 @@ import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { getList } from '@/services/gasometer';
 import { getList as getPipelineList } from '@/services/pipeline';
 import { getDeviceDetail } from '@/services/alarmWorkOrder';
+import { getWarningNewList } from '@/services/changeWarning';
 
 export default {
   namespace: 'chemical',
@@ -59,6 +60,8 @@ export default {
     },
     dangerSourceMaterials: {},
     fireDevice: [],
+    fireDeviceDetail: {},
+    warningNewList: [],
   },
 
   effects: {
@@ -380,6 +383,37 @@ export default {
           type: 'save',
           payload: {
             fireDevice,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 消防主机详情
+    *fetchFireDeviceDetail({ payload, callback }, { call, put }) {
+      const response = yield call(fireDeviceList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        const { list: fireDeviceList = [] } = data;
+        const fireDeviceDetail = fireDeviceList[0] || {};
+        yield put({
+          type: 'save',
+          payload: {
+            fireDeviceDetail,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 消防主机详情
+    *fetchWarningNewList({ payload, callback }, { call, put }) {
+      const response = yield call(getWarningNewList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        const { list: warningNewList = [] } = data;
+        yield put({
+          type: 'save',
+          payload: {
+            warningNewList,
           },
         });
       }

@@ -38,7 +38,11 @@ export default class PersonnelAdd extends PureComponent {
     photoLoading: false, // 人脸照片是否上传中
     // photoFiles: [], // 人脸照片
     // diplomaFiles: [], // 学历证书
-    detail: {}, // 详情
+    // 详情
+    detail: {
+      photoDetails: [],
+      educationCertificateDetails: [],
+    },
   }
 
   componentDidMount () {
@@ -53,10 +57,13 @@ export default class PersonnelAdd extends PureComponent {
         type: 'realNameCertification/fetchDetail',
         payload: { id, pageNum: 1, pageSize: 0 },
         callback: (detail) => {
-          const { photoDetails, educationCertificateDetails } = detail;
-          // console.log('detail', detail);
           this.setState({ detail });
-          setFieldsValue({ photoDetails, educationCertificateDetails })
+          const photoDetails = detail.photoDetails || [];
+          const educationCertificateDetails = detail.educationCertificateDetails || [];
+          setFieldsValue({
+            photoDetails: photoDetails.map(item => ({ ...item, uid: item.id, url: item.webUrl })),
+            educationCertificateDetails: educationCertificateDetails.map(item => ({ ...item, uid: item.id, url: item.webUrl })),
+          })
         },
       })
     }
@@ -141,12 +148,14 @@ export default class PersonnelAdd extends PureComponent {
 
   // 人脸照片上传
   handlePhotoUploadChange = ({ file, fileList }) => {
-    const { form: { resetFields, setFieldsValue } } = this.props;
+    const { form: { setFieldsValue } } = this.props;
     const error = () => {
-      resetFields(['photoDetails'])
+      this.setState({ photoLoading: false });
+      setFieldsValue({ photoDetails: [] })
     };
     if (file.status === 'uploading') {
       this.setState({ photoLoading: true });
+      setFieldsValue({ photoDetails: fileList });
     } else if (file.status === 'done') {
       if (file.response && file.response.code === 200) {
         const {
@@ -155,14 +164,28 @@ export default class PersonnelAdd extends PureComponent {
           },
         } = file.response;
         setFieldsValue({
-          photoDetails: [{ ...result, webUrl: result.webUrl, dbUrl: result.dbUrl }],
+          photoDetails: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...result,
+                uid: item.uid,
+                url: result.webUrl,
+              };
+            }
+            return item;
+          }),
         });
       } else {
         error();
       }
       this.setState({ photoLoading: false });
     } else if (file.status === 'removed') {
-      resetFields(['photoDetails']);
+      setFieldsValue({
+        photoDetails: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+      });
+      this.setState({ photoLoading: false });
     } else {
       error();
     }
@@ -209,12 +232,12 @@ export default class PersonnelAdd extends PureComponent {
       submitting, // 提交状态
       match: { params: { id } },
       location: { query: { companyId } },
-      form: { getFieldDecorator, getFieldsValue },
+      form: { getFieldDecorator, getFieldValue },
       realNameCertification: { personTypeDict, dutyDict },
     } = this.props;
     const { photoLoading, diplomaLoading, detail } = this.state;
-    const { photoDetails = [], educationCertificateDetails = [] } = getFieldsValue();
-    console.log('photoDetails', photoDetails)
+    const photoDetails = getFieldValue('photoDetails') || [];
+    const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const title = id ? '编辑人员信息' : '新增人员信息';
     //面包屑
     const breadcrumbList = [
@@ -282,7 +305,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="证件类型">
                   {getFieldDecorator('certificateType', {
-                    initialValue: id ? detail.ethnic : '1',
+                    initialValue: id ? detail.certificateType : '1',
                   })(
                     <Select placeholder="请选择">
                       {[{ value: '1', label: '身份证' }].map(({ value, label }, index) => (
@@ -450,23 +473,17 @@ export default class PersonnelAdd extends PureComponent {
                         headers={{ 'JA-Token': getToken() }}
                         accept=".jpg,.png" // 接收的文件格式
                         data={{ folder: 'realName' }} // 附带的参数
-                        showUploadList={false}
+                        fileList={photoDetails}
                         action={uploadAction} // 上传地址
                         beforeUpload={this.handleBeforeUploadPhoto}
                         onChange={this.handlePhotoUploadChange}
                       >
-                        {photoDetails && photoDetails.length > 0 ? (
-                          <img
-                            src={photoDetails.map(item => item.webUrl).join('')}
-                            alt="照片"
-                            style={{ width: '100%' }}
-                          />
-                        ) : (
-                            <div>
-                              <LegacyIcon type={photoLoading ? 'loading' : 'plus'} />
-                              <div className="ant-upload-text">上传</div>
-                            </div>
-                          )}
+                        {photoDetails.length < 3 ? (
+                          <div>
+                            <LegacyIcon type={photoLoading ? 'loading' : 'plus'} />
+                            <div className="ant-upload-text">上传</div>
+                          </div>
+                        ) : null}
                       </Upload>
                     </Fragment>
                   )}
@@ -491,7 +508,7 @@ export default class PersonnelAdd extends PureComponent {
                           <img
                             src={educationCertificateDetails.map(item => item.webUrl).join('')}
                             alt="照片"
-                            style={{ width: '100%' }}
+                            style={{ width: '86px', height: '86px', objectFit: 'contain' }}
                           />
                         ) : (
                             <div>

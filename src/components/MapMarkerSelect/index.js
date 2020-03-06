@@ -9,6 +9,13 @@ import styles from './index.less';
 import defaultMarkrtIcon from '@/assets/icon-marker.png';
 
 const fengMap = fengmap; // eslint-disable-line
+// 风险等级对应颜色
+const levelColor = {
+  '1': '#FF0000', // 红
+  '2': '#FF6600', // 橙
+  '3': '#FFFF00', // 黄
+  '4': '#0099FF', // 蓝
+};
 
 @connect(({ map }) => ({
   map,
@@ -70,8 +77,8 @@ export default class MapMarkerSelect extends PureComponent {
             type: 'map/fetchMapAreaList',
             payload: { companyId, pageNum: 1, pageSize: 0 },
             callback: ({ list }) => {
-              list.forEach(({ coordinateList, groupId, id }) => {
-                this.drawPolygon({ groupId, coords: coordinateList, id });
+              list.forEach(({ coordinateList, groupId, id, zoneLevel }) => {
+                this.drawPolygon({ groupId, coords: coordinateList, id, color: levelColor[zoneLevel] });
               })
             },
           })
@@ -190,7 +197,7 @@ export default class MapMarkerSelect extends PureComponent {
   }
 
   //创建自定义形状标注
-  drawPolygon = ({ coords, groupId, id }) => {
+  drawPolygon = ({ coords, groupId, id, color }) => {
     //添加多边形-圆形图层
     const groupLayer = this.map.getFMGroup(groupId);
     //返回当前层中第一个polygonMarker,如果没有，则自动创建
@@ -205,7 +212,7 @@ export default class MapMarkerSelect extends PureComponent {
       height: 6,
       //多边形的坐标点集数组
       points: coords,
-      // color: 'green',
+      color,
     });
     polygonMarker.areaId = id;
     this.polygonMarkers = [...this.polygonMarkers, polygonMarker];

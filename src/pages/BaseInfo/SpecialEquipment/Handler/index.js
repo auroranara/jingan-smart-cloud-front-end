@@ -266,7 +266,11 @@ export default class SpecialEquipment extends PureComponent {
         }
         const success = () => {
           // message.success(id ? '编辑成功！' : '新增成功！');
-          message.success(`${id ? '编辑' : '新增'}成功！风险变更，请对相应的风险分区重新进行风险评价，并在变更预警管理中标记为已评价。`);
+          message.success(
+            `${
+              id ? '编辑' : '新增'
+            }成功！风险变更，请对相应的风险分区重新进行风险评价，并在变更预警管理中标记为已评价。`
+          );
           router.push(listUrl);
         };
         const error = () => {
@@ -657,7 +661,7 @@ export default class SpecialEquipment extends PureComponent {
               />
             )}
           </FormItem>
-          <FormItem label="代码" {...formItemLayout}>
+          <FormItem label="设备代码" {...formItemLayout}>
             {getFieldDecorator('code', {
               // rules: [{ required: true, message: '请选择代码' }],
             })(<span>{code}</span>)}
@@ -735,9 +739,9 @@ export default class SpecialEquipment extends PureComponent {
               rules: [{ required: true, message: '请输入设备名称' }],
             })(<Input placeholder="请输入设备名称" {...itemStyles} />)}
           </FormItem>
-          <FormItem label="使用证编号" {...formItemLayout}>
+          <FormItem label="使用登记证编号" {...formItemLayout}>
             {getFieldDecorator('certificateNumber', { getValueFromEvent: this.handleTrim })(
-              <Input placeholder="请输入使用证编号" {...itemStyles} />
+              <Input placeholder="请输入使用登记证编号" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="注册登记号" {...formItemLayout}>
@@ -805,10 +809,10 @@ export default class SpecialEquipment extends PureComponent {
               />
             )}
           </FormItem>
-          <FormItem label="投入使用日" {...formItemLayout}>
+          <FormItem label="投入使用日期" {...formItemLayout}>
             {getFieldDecorator('useDate')(
               <DatePicker
-                placeholder="请选择投入使用日"
+                placeholder="请选择投入使用日期"
                 getCalendarContainer={getRootChild}
                 {...itemStyles}
               />

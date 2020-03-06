@@ -58,6 +58,9 @@ const breadcrumbList = [
   },
 ];
 
+@connect(({ realNameCertification }) => ({
+  realNameCertification,
+}))
 @Form.create()
 export default class DeviceList extends PureComponent {
 
@@ -87,7 +90,7 @@ export default class DeviceList extends PureComponent {
       //   disabled: true,
       // },
       cancelText: '取消',
-      onOk() {
+      onOk () {
         console.log('重置设备');
       },
     });
@@ -103,7 +106,7 @@ export default class DeviceList extends PureComponent {
       //   disabled: true,
       // },
       cancelText: '取消',
-      onOk() {
+      onOk () {
         console.log('禁用设备');
       },
     });
@@ -119,7 +122,7 @@ export default class DeviceList extends PureComponent {
       //   disabled: true,
       // },
       cancelText: '取消',
-      onOk() {
+      onOk () {
         console.log('删除设备');
       },
     });
@@ -129,6 +132,7 @@ export default class DeviceList extends PureComponent {
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
+      realNameCertification: { deviceTypeDict },
     } = this.props;
     return (
       <Card>
@@ -152,8 +156,8 @@ export default class DeviceList extends PureComponent {
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('type')(
                   <Select placeholder="设备类型">
-                    {['Uface 1', 'Uface 2', 'Uface 3'].map(item => (
-                      <Select.Option key={item} value={item}>{item}</Select.Option>
+                    {deviceTypeDict.map(({ key, label }) => (
+                      <Select.Option key={key} value={key}>{label}</Select.Option>
                     ))}
                   </Select>
                 )}
@@ -383,7 +387,7 @@ export default class DeviceList extends PureComponent {
     )
   }
 
-  render() {
+  render () {
     const { addModalVisible } = this.state;
     return (
       <PageHeaderLayout

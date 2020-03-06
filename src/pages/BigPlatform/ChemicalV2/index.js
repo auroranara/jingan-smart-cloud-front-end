@@ -303,6 +303,8 @@ export default class Chemical extends PureComponent {
         'fetchFireDeviceList',
         // 重大危险源存储物质
         'fetchDangerSourceMaterials',
+        // 消防主机详情
+        'fetchFireDeviceDetail',
       ],
     });
   }
@@ -424,20 +426,26 @@ export default class Chemical extends PureComponent {
         // console.log('e.data', data);
         const {
           type,
-          monitorMessageDto: { monitorEquipmentId, statusType },
+          monitorMessageDto: { monitorEquipmentId, statusType } = {},
+          messageContent = '{}',
         } = data;
         // 更新消息
         this.fetchScreenMessage(data);
-        // 报警弹框
-        +type === 100 && this.showNotification(data);
-        // 地图点位弹跳
-        +type === 100 &&
-          monitorEquipmentId &&
-          this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
-        // 更新监测对象各个类型的数量
-        +type === 100 && this.fetchMonitorTargetCount({ companyId });
-        // 更新IoT监测各个类型的数量
-        +type === 100 && this.fetchMonitorEquipCount({ companyId });
+        if (+type === 100) {
+          // 报警弹框
+          this.showNotification(data);
+          // 地图点位弹跳
+          monitorEquipmentId && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
+          // 更新监测对象各个类型的数量
+          this.fetchMonitorTargetCount({ companyId });
+          // 更新IoT监测各个类型的数量
+          this.fetchMonitorEquipCount({ companyId });
+        } else if (+type === 101) {
+          // 变更预警消息
+          this.childMap.handleChangeWarning();
+          // 添加/替换特种设备图标及信息
+          this.childMap.handleAddSpecialEquipment(JSON.parse(messageContent));
+        }
       } catch (error) {
         console.log('error', error);
       }
@@ -520,7 +528,11 @@ export default class Chemical extends PureComponent {
       description: (
         <div
           className={styles.notificationBody}
-          onClick={() => this.handleClickMsgEquip(monitorEquipmentId)}
+          onClick={() => {
+            monitorEquipmentType === '1'
+              ? this.handleClickFireMsg(monitorEquipmentId)
+              : this.handleClickMsgEquip(monitorEquipmentId);
+          }}
         >
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
           <div>{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
@@ -715,7 +727,7 @@ export default class Chemical extends PureComponent {
       ...options,
     });
 
-    this.childMap.handleUpdateMap('mgvmzd3bwa59qi4j', -1);
+    // this.childMap.handleUpdateMap('mgvmzd3bwa59qi4j', -1);
 
     setTimeout(() => {
       // 解决加入animation覆盖notification自身显示动效时长问题
@@ -748,7 +760,10 @@ export default class Chemical extends PureComponent {
 
   renderNotificationMsg = () => {
     return (
-      <div className={styles.notificationBody} onClick={() => this.setDrawerVisible('tankMonitor')}>
+      <div
+        className={styles.notificationBody}
+        onClick={() => this.handleClickShowMonitorDetail('302', 'wzebvd6dwgfukxh5')}
+      >
         <div>
           <span className={styles.time}>刚刚</span>{' '}
           {/* <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '} */}
@@ -1266,9 +1281,36 @@ export default class Chemical extends PureComponent {
     this.setState({ monitorType, gasListDrawerVisible: true });
   };
 
+  // 点击地图消防主机
   handleClickFireMonitor = fireDetail => {
     this.setState({ fireDetail });
     this.setDrawerVisible('fireMonitorDetail');
+  };
+
+  // 点击消防主机消息
+  handleClickFireMsg = monitorEquipmentId => {
+    // return null;
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    this.fetchFireDeviceDetail(
+      {
+        id: monitorEquipmentId,
+        pageNum: 1,
+        pageSize: 0,
+        companyId,
+      },
+      res => {
+        const { code, data } = res || {};
+        if (code === 200 && data && data.list) {
+          const { list: fireDeviceList = [] } = data;
+          const fireDeviceDetail = fireDeviceList[0] || {};
+          this.handleClickFireMonitor(fireDeviceDetail);
+        }
+      }
+    );
   };
 
   /**
@@ -1461,6 +1503,7 @@ export default class Chemical extends PureComponent {
                     handleGasOpen={this.handleGasOpen}
                     model={newUnitFireControl}
                     handleClickMsgEquip={this.handleClickMsgEquip}
+                    handleClickFireMsg={this.handleClickFireMsg}
                   />
                 ) : (
                   <div className={styles.msgContainer}>

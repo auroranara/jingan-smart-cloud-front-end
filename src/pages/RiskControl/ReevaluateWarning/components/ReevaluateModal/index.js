@@ -61,12 +61,13 @@ export default class ReevaluateModal extends PureComponent {
     this.props.form.validateFieldsAndScroll((error, values) => {
       if (!error) {
         const {
-          data: { id },
+          data: { id, zoneId },
         } = this.props;
         const { reviewPerson, ...resValues } = values;
         this.reevaluate(
           {
             id,
+            zoneId,
             reviewPerson: reviewPerson.join(','),
             ...resValues,
           },
@@ -90,7 +91,7 @@ export default class ReevaluateModal extends PureComponent {
     this.props.form.setFieldsValue({ reviewPerson: keys })
   }
 
-  render() {
+  render () {
     const {
       visible,
       onClose,

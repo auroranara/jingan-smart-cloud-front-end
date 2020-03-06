@@ -20,6 +20,10 @@ import videoActive from '../imgs/video-active.png';
 import videoGray from '../imgs/video-gray.png';
 import position from '../imgs/position.png';
 import monitorAlarm from '../imgs/monitor-alarm.png';
+import specialEquipment from '../imgs/special-equipment.png';
+import specialEquipmentActive from '../imgs/special-equipment-active.png';
+import specialEquipmentGray from '../imgs/special-equipment-gray.png';
+import iconTips from '../imgs/icon-tips.png';
 
 const fengMap = fengmap; // eslint-disable-line
 const TiltAngle = 50;
@@ -28,6 +32,7 @@ const MapScaleLevel = 21;
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = ['rgb(255, 72, 72)', 'rgb(241, 122, 10)', 'rgb(251, 247, 25)', 'rgb(30, 96, 255)'];
 let map;
+let popInfoWindow;
 const controls = [
   { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive, markerIcon: riskPoint },
   { label: '视频监控', icon: videoGray, activeIcon: videoActive, markerIcon: video },
@@ -38,18 +43,55 @@ const controls = [
     markerIcon: monitor,
     alarmIcon: monitorAlarm,
   },
+  {
+    label: '特种设备',
+    icon: specialEquipmentGray,
+    activeIcon: specialEquipmentActive,
+    markerIcon: specialEquipment,
+  },
 ];
+const paststatusVal = {
+  0: '',
+  1: '检验即将到期',
+  2: '检验已过期',
+  null: '',
+};
+function getColorVal(status) {
+  switch (+status) {
+    case 0:
+      return 'rgba(0, 0, 0, 0.65)';
+    case 1:
+      return 'rgb(250, 173, 20)';
+    case 2:
+      return '#f5222d';
+    default:
+      return;
+  }
+}
 
-@connect(({ map, chemical, alarmWorkOrder, user }) => ({
-  map,
-  chemical,
-  alarmWorkOrder,
-  user,
-}))
+@connect(
+  ({
+    map,
+    chemical,
+    alarmWorkOrder,
+    user,
+    specialEquipment,
+    emergencyManagement,
+    changeWarning,
+  }) => ({
+    map,
+    chemical,
+    alarmWorkOrder,
+    user,
+    specialEquipment,
+    emergencyManagement,
+    changeWarning,
+  })
+)
 export default class Map extends PureComponent {
   state = {
     gdMapVisible: false,
-    visibles: [true, true, true],
+    visibles: [true, true, true, true],
     videoVisible: false,
     videoList: [],
     keyId: undefined,
@@ -68,10 +110,7 @@ export default class Map extends PureComponent {
     this.fetchMap();
     const { onRef } = this.props;
     onRef && onRef(this);
-
-    // setTimeout(() => {
-    //   this.handleUpdateMap();
-    // }, 8000);
+    this.fetchDict({ type: 'specialEquipment' });
   }
 
   fetchMap = () => {
@@ -87,6 +126,7 @@ export default class Map extends PureComponent {
             'chemical/fetchRiskPoint',
             'chemical/fetchVideoList',
             'chemical/fetchMonitorEquipment',
+            'specialEquipment/fetchSpecialEquipList',
           ].map((type, index) => {
             this.fetchPonits(type, index);
             return null;
@@ -95,6 +135,11 @@ export default class Map extends PureComponent {
         });
       },
     });
+  };
+
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
   };
 
   // 获取区域列表
@@ -116,8 +161,49 @@ export default class Map extends PureComponent {
           );
           return null;
         });
+        // 变更预警管理
+        this.handleChangeWarning();
       },
     });
+  };
+
+  // 变更预警管理
+  handleChangeWarning = () => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/fetchWarningNewList',
+      payload: { companyId, pageNum: 1, pageSize: 0, status: 0 },
+      callback: response => {
+        const { code, data } = response || {};
+        if (!(code === 200 && data && data.list)) return;
+        const warningList = data.list;
+        this.removeMarkersByType(-1);
+        this.polygonArray.map(polygon => {
+          const {
+            polygonProps: { coordinateList, id, groupId },
+          } = polygon;
+          if (JSON.stringify(warningList).indexOf(id) < 0) return null;
+          this.addMarkers(+groupId, {
+            x: +coordinateList[0].x,
+            y: +coordinateList[0].y,
+            z: +coordinateList[0].z,
+            url: iconTips,
+            iconType: -1,
+            markerProps: { zoneId: id },
+            size: 25,
+            height: 1,
+          });
+          return null;
+        });
+      },
+    });
+  };
+
+  // 添加/替换特种设备图标及信息
+  handleAddSpecialEquipment = info => {
+    const { id } = info;
+    this.removeMarkerById(id);
+    this.renderPoints([info], 3);
   };
 
   renderPoints = (pointsInfo, iconType) => {
@@ -195,9 +281,7 @@ export default class Map extends PureComponent {
       position: fengmap.controlPositon.LEFT_TOP,
       offset: { x: 0, y: 40 },
       //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-      clickCallBack: function(type, value) {
-        // console.log(type,value);
-      },
+      clickCallBack: function(type, value) {},
     });
 
     // 地图加载完成事件
@@ -205,7 +289,7 @@ export default class Map extends PureComponent {
       map.tiltAngle = TiltAngle;
       map.rotateAngle = RotateAngle;
       map.mapScaleLevel = MapScaleLevel;
-      console.log('map.getFMGroup()', map.groupIDs);
+      // console.log('map.getFMGroup()', map.groupIDs);
       this.loadBtnFloorCtrl();
       // 四色图
       fun && fun();
@@ -226,33 +310,6 @@ export default class Map extends PureComponent {
       }
       return true;
     };
-
-    // 风险变更预警弹窗
-    const ctlOpt = new fengmap.controlOptions({
-      mapCoord: {
-        //设置弹框的x轴
-        x: 13224097.37958329,
-        //设置弹框的y轴
-        y: 3771542.8635400063,
-        //设置弹框位于的楼层
-        groupID: 1,
-        height: 1,
-      },
-      //设置弹框的宽度
-      width: 330,
-      //设置弹框的高度
-      height: 100,
-      marginTop: 10,
-      //设置弹框的内容
-      content: `<div style="line-height: 24px;">
-          <div>风险变更预警</div>
-          <div>此区域有变更，请对该区域重新进行风险评价。</div>
-          <div style="text-align: right;color: #0ff;" onclick="window.open('${
-            window.publicPath
-          }#/risk-control/change-warning/list','_blank');"><span style="cursor: pointer;">查看详情>></span></div>
-        </div>`,
-    });
-    const popMarker = new fengmap.FMPopInfoWindow(map, ctlOpt);
 
     // 地图点击事件
     map.on('mapClickNode', event => {
@@ -304,29 +361,216 @@ export default class Map extends PureComponent {
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
         // 点击图标
         const {
-          opts_: { iconType, markerProps },
+          opts_: { iconType, markerProps, x, y, z, height },
         } = clickedObj;
-        if (iconType === 0) {
-          // 风险点
-          const { itemId, status } = markerProps;
-          handleClickRiskPoint(itemId, status);
-        } else if (iconType === 1) {
-          // 视频监控
-          const { keyId } = markerProps;
-          this.handleShowVideo(keyId);
-        } else if (iconType === 2) {
-          // 监测设备
-          const { deviceCode } = markerProps;
-          if (deviceCode || deviceCode === 0) {
-            // 消防主机
-            handleClickFireMonitor(markerProps);
-          } else {
+        switch (iconType) {
+          case 0:
+            // 风险点
+            const { itemId, status } = markerProps;
+            handleClickRiskPoint(itemId, status);
+            break;
+          case 1:
+            // 视频监控
+            const { keyId } = markerProps;
+            this.handleShowVideo(keyId);
+            break;
+          case 2:
             // 监测设备
-            handleClickMonitorIcon(markerProps);
-          }
+            const { deviceCode } = markerProps;
+            if (deviceCode || deviceCode === 0) {
+              // 消防主机
+              handleClickFireMonitor(markerProps);
+            } else {
+              // 监测设备
+              handleClickMonitorIcon(markerProps);
+            }
+            break;
+          case 3:
+            // 特种设备
+            this.handleShowSpecialInfo(markerProps, { x, y, z, height, groupID });
+            break;
+          case -1:
+            // 变更预警
+            const { zoneId } = markerProps;
+            this.handleShowChangeWarning(zoneId, { x, y, z, height, groupID });
+            break;
+          default:
+            console.log('iconType', iconType);
+            break;
         }
       }
     });
+  };
+
+  // 变更预警
+  handleShowChangeWarning = (zoneId, mapCoord) => {
+    const { companyId } = this.props;
+    popInfoWindow && popInfoWindow.close();
+    const ctlOpt = new fengmap.controlOptions({
+      mapCoord: {
+        ...mapCoord,
+        z: 1,
+        height: 0,
+      },
+      //设置弹框的宽度
+      width: 400,
+      //设置弹框的高度
+      height: 105,
+      marginTop: 0,
+      //设置弹框的内容
+      content: `<div style="line-height: 24px;font-size: 14px;padding: 10px 15px;height: 100%;border: 1px solid #f83329;border-radius: 5px;">
+          <div style="font-size: 16px;">
+            <span style="display: inline-block;width: 20px;height: 20px;margin-right: 5px;position: relative;top: 4px;background: url(${iconTips}) center center / 100% 100% no-repeat;"></span>
+            风险变更预警
+          </div>
+          <div style="padding-left: 30px;">此区域有变更，请对该区域重新进行风险评价。</div>
+          <div style="text-align: right;color: #0ff;">
+            <span style="cursor: pointer;" onclick="window.open('${
+              window.publicPath
+            }#/risk-control/change-warning/list?companyId=${companyId}&status=0&zoneId=${zoneId}','_blank');">查看详情>></span></div>
+        </div>`,
+    });
+    popInfoWindow = new fengmap.FMPopInfoWindow(map, ctlOpt);
+  };
+
+  handleShowSpecialInfo = (info, mapCoord) => {
+    const {
+      emergencyManagement: { specialEquipment = [] },
+    } = this.props;
+    const { brand, equipName, factoryNumber, contact, endDate, category, paststatus, id } = info;
+    const pastColor = getColorVal(paststatus);
+    const paststatusStr = paststatusVal[paststatus]
+      ? `<span style="font-size: 12px;color: ${pastColor};border: 1px solid ${pastColor};padding: 0 8px;border-radius: 10px;margin-left: 25px;">${
+          paststatusVal[paststatus]
+        }</span>`
+      : '';
+    let treeData = specialEquipment;
+    const string = category
+      .split(',')
+      .map(id => {
+        const val = treeData.find(item => item.id === id) || {};
+        treeData = val.children || [];
+        return val.label;
+      })
+      .join('>');
+    popInfoWindow && popInfoWindow.close();
+    //添加绑定marker信息窗
+    const noData = '--';
+    const ctlOpt = {
+      mapCoord,
+      //设置弹框的宽度
+      width: 450,
+      //设置弹框的高度px
+      height: 210,
+      //设置弹框的内容，文本或html页面元素
+      content: `<div class="specContainer">
+        <div class="specTitle">特种设备${paststatusStr}</div>
+        <div class="specWrapper specOver">
+          <div class="specLabel">分类：</div>
+          <div class="specValue">${string || noData}</div>
+          <div class="specTip">
+            <span class="specTrigle"></span>
+            ${string || noData}
+          </div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">品牌：</div>
+          <div class="specValue">${brand || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">设备名称：</div>
+          <div class="specValue">${equipName || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">出厂编号：</div>
+          <div class="specValue">${factoryNumber || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">联系人：</div>
+          <div class="specValue">${contact || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">检验有效期至：</div>
+          <div class="specValue">${
+            endDate ? moment(endDate).format('YYYY年MM月DD日') : noData
+          }</div>
+        </div>
+        <div class="specFile" onclick="window.open('${
+          window.publicPath
+        }#/facility-management/special-equipment/inspection-report/${id}','_blank');">查看检验报告>></div>
+      </div>
+      <style>
+        .specContainer {
+          position: relative;
+          line-height: 24px;
+          color: #fff;
+          font-size: 14px;
+          padding: 10px 15px;
+          height: 100%;
+          border: 1px solid rgba(0,255,255,0.3);
+          border-radius: 5px;
+        }
+        .specTitle {
+          font-size: 16px;
+          line-height: 32px;
+        }
+        .specOver {
+          position: relative;
+        }
+        .specTip {
+          display: none;
+          position: absolute;
+          width: calc(100% - 11em);
+          left: 7em;
+          background: #116fda;
+          z-index: 6;
+          padding: 6px 12px;
+          border-radius: 5px;
+          top: 28px;
+        }
+        .specTrigle {
+          position: absolute;
+          top: -16px;
+          left: 15px;
+          width: 0;
+          height:0;
+          display: inline-block;
+          border-style: solid;
+          border-width: 10px;
+          border-color: #116fda transparent transparent;
+          width: 0px;
+          height: 0px;
+          transform: rotate(180deg);
+        }
+        .specOver:hover .specTip {
+          display: block;
+        }
+        .specLabel {
+          color: #979495;
+          display: inline-block;
+          width: 7em;
+          white-space: nowrap;
+          vertical-align: middle;
+        }
+        .specValue {
+          display: inline-block;
+          width: calc(100% - 7.5em);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          vertical-align: middle;
+        }
+        .specFile {
+          color: #0ff;
+          position: absolute;
+          bottom: 10px;
+          right: 15px;
+          cursor: pointer;
+        }
+      </style>`,
+    };
+    //添加弹框到地图上，绑定marker
+    popInfoWindow = new fengmap.FMPopInfoWindow(map, ctlOpt);
   };
 
   // 判断点是否在FMPolygonMarker区域内

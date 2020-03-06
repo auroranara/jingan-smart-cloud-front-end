@@ -16,11 +16,16 @@ const { confirm } = Modal;
   loading: loading.models.changeWarningNew,
 }))
 export default class TableList extends PureComponent {
-  state = { current: 1 };
+  state = { current: 1, params: {} };
   values = {};
   empty = true;
 
   componentDidMount() {
+    const {
+      location: { query },
+    } = this.props;
+    this.setState({ params: query });
+    this.values = query;
     this.getList();
   }
 
@@ -28,10 +33,10 @@ export default class TableList extends PureComponent {
     const { dispatch } = this.props;
     const { companyId } = this.values;
     const vals = { ...this.values };
-    if (companyId)
-      vals.companyId = companyId.key;
+    if (companyId) vals.companyId = companyId.key;
 
-    if (!pageNum) { // pageNum不存在，则为初始化
+    if (!pageNum) {
+      // pageNum不存在，则为初始化
       pageNum = 1;
       this.setState({ current: 1 });
       this.getZones(vals.companyId);
@@ -78,22 +83,24 @@ export default class TableList extends PureComponent {
       type: 'changeWarningNew/postEvaluate',
       payload: { id, status: '1' },
       callback: (code, msg) => {
-        if (code === 200)
-          this.getList(current);
-        else
-          message.error(msg);
+        if (code === 200) this.getList(current);
+        else message.error(msg);
       },
-    })
+    });
   };
 
-  getZones = id => { // id不存在时清空
+  getZones = id => {
+    // id不存在时清空
     const {
       dispatch,
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const isComUser = isCompanyUser(unitType);
 
-    if (isComUser || id) // id存在时或者当前用户为企业用户，companyId不需要
+    if (isComUser || id)
+      // id存在时或者当前用户为企业用户，companyId不需要
       dispatch({
         type: 'changeWarningNew/fetchZoneList',
         payload: { companyId: id, pageSize: 0, pageNum: 1 },
@@ -107,19 +114,21 @@ export default class TableList extends PureComponent {
 
   handleCompanyChange = c => {
     const { key, label } = c || {};
-    if (!key)
-      this.getZones();
-    if (key !== label) // key === label 时，为键盘输入的值，不相等时是选取到的值
+    if (!key) this.getZones();
+    if (key !== label)
+      // key === label 时，为键盘输入的值，不相等时是选取到的值
       this.getZones(key);
   };
 
   render() {
     const {
       loading,
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
       changeWarning: { total, list, zoneList },
     } = this.props;
-    const { current } = this.state;
+    const { current, params } = this.state;
     const isComUser = isCompanyUser(unitType);
     const fields = getSearchFields(isComUser, zoneList, this.handleCompanyChange);
     const cols = getColumns(this.genConfirmEvaluate);
@@ -127,16 +136,23 @@ export default class TableList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length -1].title}
+        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={BREADCRUMBLIST}
         content={
           <Fragment>
             <p className={styles1.total}>
-              共计：{total}
+              共计：
+              {total}
             </p>
             <p style={{ margin: 0, color: '#F00' }}>
               请对变更所属的风险区域重新进行风险评价，评价完成后可对变更进行审批（
-              <a href={`${window.publicPath}#/risk-control/change-management/list`} target="_blank" rel="noopener noreferrer">变更管理</a>
+              <a
+                href={`${window.publicPath}#/risk-control/change-management/list`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                变更管理
+              </a>
               ）
             </p>
           </Fragment>
@@ -149,6 +165,7 @@ export default class TableList extends PureComponent {
             onReset={this.handleReset}
             buttonStyle={{ textAlign: 'right' }}
             buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
+            values={params}
           />
         </Card>
         <div className={styles1.container}>
@@ -162,7 +179,9 @@ export default class TableList extends PureComponent {
               scroll={{ x: 1400 }} // 项目不多时注掉
               pagination={{ pageSize: PAGE_SIZE, total: total, current }}
             />
-          ) : <Empty />}
+          ) : (
+            <Empty />
+          )}
         </div>
       </PageHeaderLayout>
     );

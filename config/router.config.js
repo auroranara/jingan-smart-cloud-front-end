@@ -876,7 +876,7 @@ module.exports = env => {
               path: '/major-hazard-info/high-risk-process', // 工艺流程
               code: 'majorHazardInfo.highRiskProcess',
               name: 'highRiskProcess',
-              developing: true,
+              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -980,6 +980,43 @@ module.exports = env => {
                   code: 'majorHazardInfo.pipeline.edit',
                   path: '/major-hazard-info/pipeline/edit/:id',
                   component: './MajorHazardInfo/Pipeline/Other',
+                },
+              ],
+            },
+            // 周边环境信息
+            {
+              path: '/major-hazard-info/surrounding-environment-info',
+              code: 'majorHazardInfo.surroundingEnvironmentInfo',
+              name: 'surroundingEnvironmentInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/major-hazard-info/surrounding-environment-info',
+                  redirect: '/major-hazard-info/surrounding-environment-info/list',
+                },
+                {
+                  name: 'list',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.list',
+                  path: '/major-hazard-info/surrounding-environment-info/list',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/List',
+                },
+                // {
+                //   name: 'detail',
+                //   code: 'majorHazardInfo.surroundingEnvironmentInfo.view',
+                //   path: '/major-hazard-info/surrounding-environment-info/detail/:id',
+                //   component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
+                // },
+                {
+                  name: 'add',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.add',
+                  path: '/major-hazard-info/surrounding-environment-info/add',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
+                },
+                {
+                  name: 'edit',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.edit',
+                  path: '/major-hazard-info/surrounding-environment-info/edit/:id',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
                 },
               ],
             },
@@ -4185,6 +4222,50 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/emergency-management/emergency-team', // 应急队伍管理
+              code: 'emergencyManagement.emergencyTeam',
+              name: 'emergencyTeam',
+              // developing: true,
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-team',
+                  name: 'emergencyTeam',
+                  redirect: '/emergency-management/emergency-team/list',
+                },
+                {
+                  path: '/emergency-management/emergency-team/list',
+                  code: 'emergencyManagement.emergencyTeam.list',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyTeam/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/add',
+                  code: 'emergencyManagement.emergencyTeam.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/edit/:id',
+                  code: 'emergencyManagement.emergencyTeam.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/detail/:id',
+                  code: 'emergencyManagement.emergencyTeam.view',
+                  name: 'view',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/person-list/:id',
+                  code: 'emergencyManagement.emergencyTeam.teamPersonList',
+                  name: 'personList',
+                  component: './EmergencyManagement/EmergencyTeam/List/PersonList',
+                },
+              ],
+            },
           ],
         },
 
@@ -4265,6 +4346,43 @@ module.exports = env => {
                   code: 'accidentManagement.accidentReport.edit',
                   path: '/accident-management/accident-report/edit/:id',
                   component: './AccidentManagement/AccidentReport/Other',
+                },
+              ],
+            },
+            {
+              name: 'injuryReport', // 工伤申报
+              code: 'accidentManagement.injuryReport',
+              path: '/accident-management/injury-report',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/accident-management/injury-report',
+                  redirect: '/accident-management/injury-report/list',
+                },
+                {
+                  name: 'list',
+                  code: 'accidentManagement.injuryReport.list',
+                  path: '/accident-management/injury-report/list',
+                  component: './AccidentManagement/InjuryReport/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'accidentManagement.injuryReport.view',
+                  path: '/accident-management/injury-report/detail/:id',
+                  component: './AccidentManagement/InjuryReport/Other',
+                },
+                {
+                  name: 'add',
+                  code: 'accidentManagement.injuryReport.add',
+                  path: '/accident-management/injury-report/add',
+                  component: './AccidentManagement/InjuryReport/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'accidentManagement.injuryReport.edit',
+                  path: '/accident-management/injury-report/edit/:id',
+                  component: './AccidentManagement/InjuryReport/Other',
                 },
               ],
             },
@@ -4584,6 +4702,80 @@ module.exports = env => {
             //     },
             //   ],
             // },
+            // 运输公司管理
+            {
+              path: '/license-plate-recognition-system/transport-company',
+              code: 'licensePlateRecognitionSystem.transportCompany',
+              name: 'transportCompany',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/license-plate-recognition-system/transport-company',
+                  redirect: '/license-plate-recognition-system/transport-company/list',
+                },
+                {
+                  path: '/license-plate-recognition-system/transport-company/:unitId?/list',
+                  code: 'licensePlateRecognitionSystem.transportCompany.list',
+                  name: 'list',
+                  component: './LicensePlateRecognitionSystem/TransportCompany/List',
+                },
+                {
+                  path: '/license-plate-recognition-system/transport-company/:unitId?/detail/:id',
+                  code: 'licensePlateRecognitionSystem.transportCompany.detail',
+                  name: 'detail',
+                  component: './LicensePlateRecognitionSystem/TransportCompany/Other',
+                },
+                {
+                  path: '/license-plate-recognition-system/transport-company/:unitId?/add',
+                  code: 'licensePlateRecognitionSystem.transportCompany.add',
+                  name: 'add',
+                  component: './LicensePlateRecognitionSystem/TransportCompany/Other',
+                },
+                {
+                  path: '/license-plate-recognition-system/transport-company/:unitId?/edit/:id',
+                  code: 'licensePlateRecognitionSystem.transportCompany.edit',
+                  name: 'edit',
+                  component: './LicensePlateRecognitionSystem/TransportCompany/Other',
+                },
+              ],
+            },
+            // 电子运单管理
+            {
+              path: '/license-plate-recognition-system/electronic-waybill',
+              code: 'licensePlateRecognitionSystem.electronicWaybill',
+              name: 'electronicWaybill',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill',
+                  redirect: '/license-plate-recognition-system/electronic-waybill/list',
+                },
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill/:unitId?/list',
+                  code: 'licensePlateRecognitionSystem.electronicWaybill.list',
+                  name: 'list',
+                  component: './LicensePlateRecognitionSystem/ElectronicWaybill/List',
+                },
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill/:unitId?/detail/:id',
+                  code: 'licensePlateRecognitionSystem.electronicWaybill.detail',
+                  name: 'detail',
+                  component: './LicensePlateRecognitionSystem/ElectronicWaybill/Other',
+                },
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill/:unitId?/add',
+                  code: 'licensePlateRecognitionSystem.electronicWaybill.add',
+                  name: 'add',
+                  component: './LicensePlateRecognitionSystem/ElectronicWaybill/Other',
+                },
+                {
+                  path: '/license-plate-recognition-system/electronic-waybill/:unitId?/edit/:id',
+                  code: 'licensePlateRecognitionSystem.electronicWaybill.edit',
+                  name: 'edit',
+                  component: './LicensePlateRecognitionSystem/ElectronicWaybill/Other',
+                },
+              ],
+            },
           ],
         },
         {
@@ -4649,6 +4841,50 @@ module.exports = env => {
             //     },
             //   ],
             // },
+            {
+              name: 'authorization',
+              path: '/real-name-certification/authorization',
+              code: 'realNameCertification.authorization',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/real-name-certification/authorization',
+                  name: 'list',
+                  redirect: '/real-name-certification/authorization/list',
+                },
+                {
+                  path: '/real-name-certification/authorization/list',
+                  name: 'list',
+                  code: 'realNameCertification.authorization',
+                  component: './RealNameCertification/Authorization/List',
+                },
+                {
+                  path: '/real-name-certification/authorization/add',
+                  name: 'add',
+                  code: 'realNameCertification.authorization',
+                  component: './RealNameCertification/Authorization/Add',
+                },
+              ],
+            },
+            {
+              name: 'identificationRecord',
+              path: '/real-name-certification/identification-record',
+              code: 'realNameCertification.identificationRecord',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/real-name-certification/identification-record',
+                  name: 'list',
+                  redirect: '/real-name-certification/identification-record/list',
+                },
+                {
+                  path: '/real-name-certification/identification-record/list',
+                  name: 'list',
+                  code: 'realNameCertification.identificationRecord',
+                  component: './RealNameCertification/Identification/List',
+                },
+              ],
+            },
           ],
         },
       ],

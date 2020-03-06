@@ -182,6 +182,7 @@ export default class Messages extends PureComponent {
       handleClickWater,
       showCaptureDetailDrawer,
       handleClickMsgEquip,
+      handleClickFireMsg,
     } = this.props;
     const {
       type,
@@ -477,10 +478,8 @@ export default class Messages extends PureComponent {
           typeName}】`,
         onClick:
           monitorEquipmentType !== '1'
-            ? () => {
-                handleClickMsgEquip(monitorEquipmentId);
-              }
-            : null,
+            ? () => handleClickMsgEquip(monitorEquipmentId)
+            : () => handleClickFireMsg(monitorEquipmentId),
         items: [
           {
             value: () => {

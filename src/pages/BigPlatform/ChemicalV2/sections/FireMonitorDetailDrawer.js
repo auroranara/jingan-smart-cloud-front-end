@@ -32,7 +32,21 @@ export default class FireMonitorDetailDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title={<div className={styles.titleWrapper}>消防主机监测</div>}
+        title={
+          <div className={styles.titleWrapper}>
+            消防主机监测
+            <div className={styles.jumperWrapper}>
+              {videoList &&
+                videoList.length > 0 && (
+                  <span
+                    className={styles.video}
+                    style={{ background: `url(${iconVideo}) center center / auto 1em no-repeat` }}
+                    onClick={() => handleShowVideo(videoList)}
+                  />
+                )}
+            </div>
+          </div>
+        }
         visible={visible}
         onClose={onClose}
         width={535}
@@ -45,7 +59,7 @@ export default class FireMonitorDetailDrawer extends PureComponent {
                 <div className={styles.name}>
                   <span className={styles.label}>主机编号：</span>
                   {deviceCode.toString()}
-                  <div className={styles.iconsWrapper}>
+                  {/* <div className={styles.iconsWrapper}>
                     {videoList &&
                       videoList.length > 0 && (
                         <span
@@ -56,7 +70,7 @@ export default class FireMonitorDetailDrawer extends PureComponent {
                           onClick={() => handleShowVideo(videoList)}
                         />
                       )}
-                  </div>
+                  </div> */}
                 </div>
                 <div>
                   <span className={styles.locIcon} style={{ marginRight: '5px' }}>

@@ -26,7 +26,13 @@ import { getColorVal, paststatusVal } from '../utils';
 
 const {
   baseInfo: {
-    specialEquipment: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode, inspection: inspectionCode },
+    specialEquipment: {
+      detail: detailCode,
+      edit: editCode,
+      add: addCode,
+      delete: deleteCode,
+      inspection: inspectionCode,
+    },
   },
 } = codes;
 const addUrl = '/facility-management/special-equipment/add';
@@ -256,7 +262,7 @@ export default class SpecialEquipmentList extends PureComponent {
             <Select
               allowClear
               showSearch
-              placeholder="请选择到期状态"
+              placeholder="请选择检验到期状态"
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
             >
@@ -362,7 +368,7 @@ export default class SpecialEquipmentList extends PureComponent {
       user: {
         currentUser: { unitType },
       },
-      emergencyManagement: { specialEquipment=[] },
+      emergencyManagement: { specialEquipment = [] },
     } = this.props;
 
     const columns = [
@@ -434,7 +440,7 @@ export default class SpecialEquipmentList extends PureComponent {
         },
       },
       {
-        title: '使用证编号',
+        title: '使用登记证编号',
         dataIndex: 'certificateNumber',
         key: 'certificateNumber',
         align: 'center',
@@ -442,7 +448,7 @@ export default class SpecialEquipmentList extends PureComponent {
         render: val => val || '-',
       },
       {
-        title: '有效期至',
+        title: '检验有效期至',
         dataIndex: 'endDate',
         key: 'endDate',
         align: 'center',
@@ -457,6 +463,7 @@ export default class SpecialEquipmentList extends PureComponent {
               {/* {paststatus !== '0' && (
                 <div style={{ color: getColorVal(paststatus) }}>{paststatusVal[paststatus]}</div>
               )} */}
+              <div style={{ color: getColorVal(paststatus) }}>{paststatusVal[paststatus]}</div>
               <div>{moment(endDate).format('YYYY年MM月DD日')}</div>
             </div>
           ) : (
@@ -464,17 +471,15 @@ export default class SpecialEquipmentList extends PureComponent {
           );
         },
       },
-      {
-        title: '有效期状态',
-        dataIndex: 'paststatus',
-        width: 120,
-        align: 'center',
-        render: pastStatus => (
-          <span style={{ color: getColorVal(pastStatus) }}>
-            {paststatusVal[pastStatus]}
-          </span>
-        ),
-      },
+      // {
+      //   title: '检验到期状态',
+      //   dataIndex: 'paststatus',
+      //   width: 120,
+      //   align: 'center',
+      //   render: pastStatus => (
+      //     <span style={{ color: getColorVal(pastStatus) }}>{paststatusVal[pastStatus]}</span>
+      //   ),
+      // },
       // {
       //   title: '已绑传感器',
       //   dataIndex: 'sensorInfo',
@@ -507,7 +512,11 @@ export default class SpecialEquipmentList extends PureComponent {
         width: 120,
         align: 'center',
         render: (val, text) => (
-          <AuthLink to={`/facility-management/special-equipment/inspection-report/${text.id}`} target="_blank" code={inspectionCode}>
+          <AuthLink
+            to={`/facility-management/special-equipment/inspection-report/${text.id}`}
+            target="_blank"
+            code={inspectionCode}
+          >
             查看详情
           </AuthLink>
         ),

@@ -10,7 +10,7 @@ export default {
 
   effects: {
     // 获取列表
-    *getList({ payload, callback }, { call, put }) {
+    *getList ({ payload, callback }, { call, put }) {
       const response = yield call(getList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
@@ -27,16 +27,44 @@ export default {
       }
     },
     // 获取详情
-    *getDetail({ payload, callback }, { call, put }) {
-      const response = yield call(getDetail, payload);
+    // *getDetail({ payload, callback }, { call, put }) {
+    //   const response = yield call(getDetail, payload);
+    //   const { code, data, msg } = response || {};
+    //   if (code === 200 && data) {
+    //     const { otherFileList } = data;
+    //     const detail = {
+    //       ...data,
+    //       otherFileList:
+    //         otherFileList &&
+    //         otherFileList.map((item, index) => ({
+    //           ...item,
+    //           uid: -index - 1,
+    //           status: 'done',
+    //           name: item.fileName,
+    //           url: item.webUrl,
+    //         })),
+    //     };
+    //     yield put({
+    //       type: 'save',
+    //       payload: {
+    //         detail,
+    //       },
+    //     });
+    //     callback && callback(true, detail);
+    //   } else {
+    //     callback && callback(false, msg);
+    //   }
+    // },
+    *getDetail ({ payload, callback }, { call, put }) {
+      const response = yield call(getList, { ...payload, pageNum: 1, pageSize: 0 });
       const { code, data, msg } = response || {};
-      if (code === 200 && data) {
-        const { otherFileList } = data;
+      if (code === 200 && data && Array.isArray(data.list)) {
+        const item = data.list[0];
         const detail = {
-          ...data,
-          otherFileList:
-            otherFileList &&
-            otherFileList.map((item, index) => ({
+          ...item,
+          accessoryDetails:
+            item.accessoryDetails &&
+            item.accessoryDetails.map((item, index) => ({
               ...item,
               uid: -index - 1,
               status: 'done',
@@ -56,19 +84,19 @@ export default {
       }
     },
     // 新增
-    *add({ payload, callback }, { call }) {
+    *add ({ payload, callback }, { call }) {
       const response = yield call(add, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     // 编辑
-    *edit({ payload, callback }, { call }) {
+    *edit ({ payload, callback }, { call }) {
       const response = yield call(edit, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     // 删除
-    *remove({ payload, callback }, { call }) {
+    *remove ({ payload, callback }, { call }) {
       const response = yield call(remove, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);

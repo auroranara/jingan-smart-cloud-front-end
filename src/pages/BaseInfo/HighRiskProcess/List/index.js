@@ -79,13 +79,14 @@ export default class HighRiskProcessList extends PureComponent {
   }
 
   goToAdd = () => {
-    confirm({
-      title: '注意',
-      content: '请对影响到的对应区域重新进行风险评价',
-      okText: '确认',
-      cancelText: '取消',
-      onOk () { router.push(addUrl); },
-    });
+    // confirm({
+    //   title: '注意',
+    //   content: '请对影响到的对应区域重新进行风险评价',
+    //   okText: '确认',
+    //   cancelText: '取消',
+    //   onOk () { router.push(addUrl); },
+    // });
+    router.push(addUrl);
   };
 
 
@@ -111,13 +112,14 @@ export default class HighRiskProcessList extends PureComponent {
 
   // 点击编辑
   handleToEdit = id => {
-    confirm({
-      title: '注意',
-      content: '请对影响到的对应区域重新进行风险评价',
-      okText: '确认',
-      cancelText: '取消',
-      onOk () { router.push(editUrl + id); },
-    });
+    // confirm({
+    //   title: '注意',
+    //   content: '请对影响到的对应区域重新进行风险评价',
+    //   okText: '确认',
+    //   cancelText: '取消',
+    //   onOk () { router.push(editUrl + id); },
+    // });
+    router.push(editUrl + id);
   }
 
   /**
@@ -234,14 +236,17 @@ export default class HighRiskProcessList extends PureComponent {
   };
 
   renderForm = () => {
+    const {
+      user: { isCompany },
+    } = this.props;
     const fields = [
-      {
+      ...isCompany ? [] : [{
         id: 'processName',
         render () {
           return <Input placeholder="请输入高危工艺名称" />;
         },
         transform,
-      },
+      }],
       {
         id: 'unifiedCode',
         render () {
@@ -343,19 +348,20 @@ export default class HighRiskProcessList extends PureComponent {
           },
           companyNum, // 单位数量
         },
+        keySupervisionProcessOptions,
       },
-      user: { currentUser: { permissionCodes } },
+      user: { currentUser: { permissionCodes }, isCompany },
       device: { monitoringDevice },
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
 
     const columns = [
-      {
+      ...isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      },
+      }],
       {
         title: '基本信息',
         key: '基本信息',
@@ -394,18 +400,23 @@ export default class HighRiskProcessList extends PureComponent {
         dataIndex: 'keySupervisionProcess',
         align: 'center',
         width: 250,
+        render: (val, { iskeySupervisionProcess, keySupervisionProcess }) => {
+          if (+iskeySupervisionProcess === 0) return '否';
+          const target = keySupervisionProcessOptions.find(item => +item.value === +keySupervisionProcess);
+          return `是${target ? `，${target.label}` : ''}`;
+        },
       },
       {
         title: '已绑定监测设备',
         dataIndex: 'monitorEquipmentCount',
         align: 'center',
-        width: 120,
+        width: 150,
         render: (val, row) => (
           <span
             onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
             style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
           >
-            {val}
+            {val || 0}
           </span>
         ),
       },
@@ -421,13 +432,11 @@ export default class HighRiskProcessList extends PureComponent {
               绑定监测设备
             </AuthA>
             <Divider type="vertical" />
-            <AuthA code={detailCode} onClick={() => { router.push(detailUrl + row.id) }}>查看</AuthA>
-            <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row.id)}>编辑</AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
-              title="确定要删除吗，请对影响到的对应区域重新进行风险评价？"
+              title="确定要删除吗？"
               onConfirm={() => this.handleDelete(row.id)}
             >
               删除

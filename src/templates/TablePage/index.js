@@ -112,7 +112,11 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
       getList(payload, callback) {
         dispatch({
           type: `${namespace}/${gl || 'getList'}`,
-          payload,
+          payload: {
+            pageNum: 1,
+            pageSize: getPageSize(),
+            ...payload,
+          },
           callback: (success, data) => {
             if (!success && error) {
               message.error('获取列表数据失败，请稍后重试或联系管理人员！');
@@ -191,7 +195,10 @@ export default class TablePage extends Component {
   prevValues = null;
 
   componentDidMount() {
-    this.handleSearchButtonClick();
+    const { initialize, getList, transform, withUnitId, unitId } = this.props;
+    const payload = withUnitId ? { unitId } : {};
+    getList(transform ? transform(payload) : payload);
+    initialize && initialize({ unitId });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -302,13 +309,14 @@ export default class TablePage extends Component {
     });
   };
 
-  renderAddButton = ({ name = '新增', onClick } = {}) => {
+  renderAddButton = ({ name = '新增', onClick, ...props } = {}) => {
     const { hasAddAuthority, goToAdd } = this.props;
     return (
       <Button
         type="primary"
         onClick={onClick ? e => onClick(goToAdd, e) : goToAdd}
         disabled={!hasAddAuthority}
+        {...props}
       >
         {typeof name === 'function' ? name() : name}
       </Button>

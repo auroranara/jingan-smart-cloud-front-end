@@ -35,30 +35,27 @@ export default class Map extends React.Component {
   }
 
   componentDidMount() {
-    const { onRef, mapInfo } = this.props;
+    const { onRef } = this.props;
     onRef && onRef(this);
-    mapInfo && this.initMap({ ...mapInfo });
     // this.initMap();
   }
 
   getPointList = pointList => {
     const newList = pointList.length > 0 ? pointList : [];
-    newList.length > 0 &&
-      pointList.map(item => {
-        const { zoneLevel, coordinateList, groupId, modelIds } = item;
-        const cordPoints = coordinateList.map(item => ({ x: +item.x, y: +item.y }));
-        const modeIdList = modelIds ? modelIds.split(',').map(Number) : [];
-        if (modeIdList.length > 0) {
-          const models = map.getDatasByAlias(groupId, 'model');
-          models.forEach(item => {
-            if (item.ID && modeIdList.includes(item.ID)) {
-              item.setColor(COLORS[zoneLevel], 1);
-            }
-          });
-        }
-        this.drawPolygon(groupId, cordPoints, COLORS[zoneLevel]);
-        return null;
-      });
+    newList.map(item => {
+      const { zoneLevel, coordinateList, groupId, modelIds } = item;
+      const modeIdList = modelIds ? modelIds.split(',').map(Number) : [];
+      if (modeIdList.length > 0) {
+        const models = map.getDatasByAlias(groupId, 'model');
+        models.forEach(item => {
+          if (item.ID && modeIdList.includes(item.ID)) {
+            item.setColor(COLORS[zoneLevel], 1);
+          }
+        });
+      }
+      this.drawPolygon(groupId, coordinateList, COLORS[zoneLevel]);
+      return null;
+    });
   };
 
   handleDispose = () => {
@@ -128,7 +125,7 @@ export default class Map extends React.Component {
       const { pointList, init, groupId, getBuilding } = this.props;
       //加载按钮型楼层切换控件
       this.loadBtnFloorCtrl(init ? 1 : groupId);
-      this.getPointList(this.props.pointList);
+      this.getPointList(pointList);
       pointList.length > 0 &&
         pointList.map(item => {
           const { coordinateList, groupId } = item;
@@ -193,17 +190,17 @@ export default class Map extends React.Component {
   }
 
   drawPolygon(groupId, points, color) {
-    var groupLayer = map.getFMGroup(groupId);
+    const groupLayer = map.getFMGroup(groupId);
     //创建PolygonMarkerLayer
-    var layer = new fengMap.FMPolygonMarkerLayer();
+    const layer = new fengMap.FMPolygonMarkerLayer();
     groupLayer.addLayer(layer);
-    var polygonMarker = new fengMap.FMPolygonMarker({
+    const polygonMarker = new fengMap.FMPolygonMarker({
       alpha: 0.5, //设置透明度
       lineWidth: 1, //设置边框线的宽度
       height: 3, //设置高度*/
       points, //多边形坐标点
+      color,
     });
-    polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
     this.polygonLayers.push(layer);
     this.polygonMarkers.push(polygonMarker);
