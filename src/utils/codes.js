@@ -779,4 +779,22 @@ export default {
       delete: 'cardsInfo.knowCard.delete',
     },
   },
+  // 实名制认证系统
+  realNameCertification: {
+    // 人员管理
+    personnelManagement: {
+      list: 'realNameCertification.personnelManagement.listView',
+      add: 'realNameCertification.personnelManagement.add',
+      edit: 'realNameCertification.personnelManagement.edit',
+      delete: 'realNameCertification.personnelManagement.delete',
+    },
+    // 授权管理
+    authorization: {
+      list: 'realNameCertification.authorization.listView',
+      view: 'realNameCertification.authorization.view',
+      add: 'realNameCertification.authorization.add',
+      edit: 'realNameCertification.authorization.edit',
+      delete: 'realNameCertification.authorization.delete',
+    },
+  },
 };

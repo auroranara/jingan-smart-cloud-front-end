@@ -4762,25 +4762,25 @@ module.exports = env => {
                 {
                   name: 'companyList',
                   path: '/real-name-certification/personnel-management/company-list',
-                  code: 'realNameCertification.personnelManagement',
+                  code: 'realNameCertification.personnelManagement.listView',
                   component: './RealNameCertification/Person/CompanyList',
                 },
                 {
                   name: 'personnelList',
                   path: '/real-name-certification/personnel-management/person-list/:companyId',
-                  code: 'realNameCertification.personnelManagement',
+                  code: 'realNameCertification.personnelManagement.listView',
                   component: './RealNameCertification/Person/PersonnelList',
                 },
                 {
                   name: 'add',
                   path: '/real-name-certification/personnel-management/add',
-                  code: 'realNameCertification.personnelManagement',
+                  code: 'realNameCertification.personnelManagement.add',
                   component: './RealNameCertification/Person/PersonnelAdd',
                 },
                 {
                   name: 'edit',
                   path: '/real-name-certification/personnel-management/edit/:id',
-                  code: 'realNameCertification.personnelManagement',
+                  code: 'realNameCertification.personnelManagement.edit',
                   component: './RealNameCertification/Person/PersonnelAdd',
                 },
               ],
@@ -4805,7 +4805,7 @@ module.exports = env => {
             //   ],
             // },
             {
-              name: 'authorization',
+              name: 'authorization',// 授权管理
               path: '/real-name-certification/authorization',
               code: 'realNameCertification.authorization',
               hideChildrenInMenu: true,
@@ -4818,13 +4818,13 @@ module.exports = env => {
                 {
                   path: '/real-name-certification/authorization/list',
                   name: 'list',
-                  code: 'realNameCertification.authorization',
+                  code: 'realNameCertification.authorization.listView',
                   component: './RealNameCertification/Authorization/List',
                 },
                 {
                   path: '/real-name-certification/authorization/add',
                   name: 'add',
-                  code: 'realNameCertification.authorization',
+                  code: 'realNameCertification.authorization.add',
                   component: './RealNameCertification/Authorization/Add',
                 },
               ],

@@ -15,7 +15,6 @@ import {
   Input,
   DatePicker,
   Checkbox,
-  Popconfirm,
   Tooltip,
   Icon,
   Radio,
@@ -24,14 +23,25 @@ import {
 // import { Link } from 'dva/router';
 // import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-// import codes from '@/utils/codes';
-// import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+import { AuthButton, AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import router from 'umi/router';
 // import { stringify } from 'qs';
 import moment from 'moment';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import styles from './Add.less';
 import classNames from 'classnames';
+
+const {
+  realNameCertification: {
+    authorization: {
+      add: addCode,
+      edit: editCode,
+      delete: deleteCode,
+      view: viewCode,
+    },
+  },
+} = codes;
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -371,12 +381,12 @@ export default class AuthorizationList extends PureComponent {
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
                 </Button>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => { router.push('/real-name-certification/authorization/add') }}>
+                <AuthButton code={addCode} style={{ marginRight: '10px' }} type="primary" onClick={() => { router.push('/real-name-certification/authorization/add') }}>
                   新增授权
-                </Button>
-                <Button type="danger" onClick={() => { this.setState({ deleteLocation: [], deleteModalVisible: true }) }}>
+                </AuthButton>
+                <AuthButton code={deleteCode} type="danger" onClick={() => { this.setState({ deleteLocation: [], deleteModalVisible: true }) }}>
                   全部销权
-                </Button>
+                </AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -482,18 +492,17 @@ export default class AuthorizationList extends PureComponent {
         fixed: 'right',
         render: (val, record) => (
           <Fragment>
-            <a onClick={() => this.handleClickEdit(record)}>编辑</a>
+            <AuthA code={editCode} onClick={() => this.handleClickEdit(record)}>编辑</AuthA>
             <Divider type="vertical" />
-            <a onClick={() => { this.setState({ detail: record, viewModalVisible: true }) }}>查看</a>
+            <AuthA code={viewCode} onClick={() => { this.setState({ detail: record, viewModalVisible: true }) }}>查看</AuthA>
             <Divider type="vertical" />
-            <Popconfirm
+            <AuthPopConfirm
+              code={deleteCode}
               title="确认要销权吗？销权后，人员将不会被该设备识别。"
               onConfirm={() => this.handleDelete(record)}
-              okText="确认"
-              cancelText="取消"
             >
               <a style={{ color: '#ff4d4f' }}>销权</a>
-            </Popconfirm>
+            </AuthPopConfirm>
           </Fragment>
         ),
       },

@@ -23,7 +23,7 @@ import codesMap from '@/utils/codes';
 import moment from 'moment';
 import { phoneReg } from '@/utils/validate';
 // 平面图标注
-import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
+// import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 // 选择网关设备弹窗
 import GateWayModal from '@/pages/DeviceManagement/Components/GateWayModal';
 import { dataProcessingType } from '@/utils/dict'; // 数据处理设备类型枚举
@@ -68,7 +68,7 @@ export default class AddEquipment extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -655,78 +655,78 @@ export default class AddEquipment extends Component {
               </FormItem>
             </Fragment>
           ) : (
-            <Fragment>
-              <FormItem label="协议名称" {...formItemLayout}>
-                {getFieldDecorator('agreementType', {
-                  initialValue: id ? detail.agreementType : undefined,
-                })(
-                  <Select placeholder="请选择" {...itemStyles}>
-                    {agreementNameDict.map(({ value, desc }) => (
-                      <Option key={value} value={value}>
-                        {desc}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-              {/*
+              <Fragment>
+                <FormItem label="协议名称" {...formItemLayout}>
+                  {getFieldDecorator('agreementType', {
+                    initialValue: id ? detail.agreementType : undefined,
+                  })(
+                    <Select placeholder="请选择" {...itemStyles}>
+                      {agreementNameDict.map(({ value, desc }) => (
+                        <Option key={value} value={value}>
+                          {desc}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+                {/*
                 1、如果选择2G / 3G / 4G / 5G、GPRS或NB-IoT，则联动出现以下字段：运营商、上网卡卡号、卡失效日期、卡是否可插拔
                 2、如果选择的是非以上几个选项，则无其他字段
               */}
-              <FormItem label="联网方式" {...formItemLayout}>
-                {getFieldDecorator('networkingType', {
-                  initialValue: id ? detail.networkingType : undefined,
-                  rules: [{ required: true, message: '请选择联网方式' }],
-                })(
-                  <Select placeholder="请选择" {...itemStyles}>
-                    {networkTypeDict.map(({ value, desc }) => (
-                      <Option key={value} value={value}>
-                        {desc}
-                      </Option>
-                    ))}
-                  </Select>
+                <FormItem label="联网方式" {...formItemLayout}>
+                  {getFieldDecorator('networkingType', {
+                    initialValue: id ? detail.networkingType : undefined,
+                    rules: [{ required: true, message: '请选择联网方式' }],
+                  })(
+                    <Select placeholder="请选择" {...itemStyles}>
+                      {networkTypeDict.map(({ value, desc }) => (
+                        <Option key={value} value={value}>
+                          {desc}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+                {[1, 2, 3].includes(+networkingType) && (
+                  <Fragment>
+                    <FormItem label="运营商" {...formItemLayout}>
+                      {getFieldDecorator('operator', {
+                        initialValue: id ? detail.operator : undefined,
+                      })(
+                        <Select placeholder="请选择" {...itemStyles}>
+                          {operatorDict.map(({ value, desc }) => (
+                            <Option key={value} value={value}>
+                              {desc}
+                            </Option>
+                          ))}
+                        </Select>
+                      )}
+                    </FormItem>
+                    <FormItem label="上网卡卡号" {...formItemLayout}>
+                      {getFieldDecorator('cardNum', {
+                        initialValue: id ? detail.cardNum : undefined,
+                      })(<Input placeholder="请输入" {...itemStyles} />)}
+                    </FormItem>
+                    <FormItem label="卡失效日期" {...formItemLayout}>
+                      {getFieldDecorator('cardExpireDate', {
+                        initialValue:
+                          id && detail.cardExpireDate ? moment(detail.cardExpireDate) : undefined,
+                      })(<DatePicker />)}
+                    </FormItem>
+                    <FormItem label="卡是否可被插拔" {...formItemLayout}>
+                      {getFieldDecorator('cardSfp', {
+                        initialValue: id ? detail.cardSfp : undefined,
+                      })(
+                        <Radio.Group>
+                          <Radio value={'1'}>是</Radio>
+                          <Radio value={'0'}>否</Radio>
+                        </Radio.Group>
+                      )}
+                    </FormItem>
+                  </Fragment>
                 )}
-              </FormItem>
-              {[1, 2, 3].includes(+networkingType) && (
-                <Fragment>
-                  <FormItem label="运营商" {...formItemLayout}>
-                    {getFieldDecorator('operator', {
-                      initialValue: id ? detail.operator : undefined,
-                    })(
-                      <Select placeholder="请选择" {...itemStyles}>
-                        {operatorDict.map(({ value, desc }) => (
-                          <Option key={value} value={value}>
-                            {desc}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
-                  </FormItem>
-                  <FormItem label="上网卡卡号" {...formItemLayout}>
-                    {getFieldDecorator('cardNum', {
-                      initialValue: id ? detail.cardNum : undefined,
-                    })(<Input placeholder="请输入" {...itemStyles} />)}
-                  </FormItem>
-                  <FormItem label="卡失效日期" {...formItemLayout}>
-                    {getFieldDecorator('cardExpireDate', {
-                      initialValue:
-                        id && detail.cardExpireDate ? moment(detail.cardExpireDate) : undefined,
-                    })(<DatePicker />)}
-                  </FormItem>
-                  <FormItem label="卡是否可被插拔" {...formItemLayout}>
-                    {getFieldDecorator('cardSfp', {
-                      initialValue: id ? detail.cardSfp : undefined,
-                    })(
-                      <Radio.Group>
-                        <Radio value={'1'}>是</Radio>
-                        <Radio value={'0'}>否</Radio>
-                      </Radio.Group>
-                    )}
-                  </FormItem>
-                </Fragment>
-              )}
-            </Fragment>
-          )}
+              </Fragment>
+            )}
           <FormItem label="区域位置录入方式" {...formItemLayout}>
             {getFieldDecorator('locationType', {
               initialValue: id ? detail.locationType : 0,
@@ -858,14 +858,14 @@ export default class AddEquipment extends Component {
     );
   };
 
-  render() {
+  render () {
     const {
       gatewayLoading,
       match: {
         params: { id, type },
       },
       location: {
-        query: { companyId, companyName, gatewayId },
+        query: { companyId },
       },
     } = this.props;
     const { gateWayModalVisible } = this.state;
@@ -874,16 +874,14 @@ export default class AddEquipment extends Component {
       { title: '首页', name: '首页', href: '/' },
       { title: '物联设备管理', name: '物联设备管理' },
       {
-        title: '数据处理设备',
-        name: '数据处理设备',
+        title: '用户传输装置',
+        name: '用户传输装置',
         href: '/device-management/data-processing/list',
       },
       {
-        title: '设备列表',
-        name: '设备列表',
-        href: `/device-management/data-processing/list/${type}?companyId=${companyId}${
-          gatewayId ? '' : `&companyName=${companyName}`
-        }`,
+        title: '详情页',
+        name: '详情页',
+        href: `/device-management/user-transmission-device/${companyId}/detail`,
       },
       { title, name: title },
     ];

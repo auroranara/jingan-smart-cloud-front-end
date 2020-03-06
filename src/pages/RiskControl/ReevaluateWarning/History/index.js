@@ -106,11 +106,11 @@ const Columns = [
     loading: loading.effects[API],
   }),
   dispatch => ({
-    getHistory(payload, callback) {
+    getHistory (payload, callback) {
       dispatch({
         type: API,
         payload,
-        callback(success, data) {
+        callback (success, data) {
           if (!success) {
             message.error('获取历史记录失败，请稍后重试！');
           }
@@ -121,77 +121,57 @@ const Columns = [
   })
 )
 export default class ReevaluateWarningHistory extends Component {
+
   prevValues = null;
 
-  componentDidMount() {
-    this.handleSearchButtonClick(this.prevValues);
+  componentDidMount () {
+    this.handleQuery();
   }
 
   setFormReference = form => {
     this.form = form;
   };
 
-  reload = () => {
+  // 查询列表数据
+  handleQuery = (payload) => {
     const {
       location: { query: { zoneId } },
-      history: { pagination: { pageNum = 1, pageSize = getPageSize() } = {} } = {},
       getHistory,
     } = this.props;
+    const { reviewDate, realityReviewDate, ...resValues } = payload || {};
+    const values = {
+      ...resValues,
+      // reviewDate: reviewDate ? reviewDate.unix() * 1000 : undefined,
+      // realityReviewDate: realityReviewDate ? realityReviewDate.unix() * 1000 : undefined,
+      reviewDate: reviewDate ? moment(reviewDate).format('YYYY-MM-DD') : undefined,
+      realityReviewDate: realityReviewDate ? moment(realityReviewDate).format('YYYY-MM-DD') : undefined,
+    };
     getHistory({
-      zoneId,
-      pageNum,
-      pageSize,
-      ...this.prevValues,
-    });
-    this.form &&
-      (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
-  };
-
-  // 查询按钮点击事件
-  handleSearchButtonClick = values => {
-    const {
-      location: { query: { zoneId } },
-      history: { pagination: { pageSize = getPageSize() } = {} } = {},
-      getHistory,
-    } = this.props;
-    this.prevValues = values;
-    getHistory({
-      zoneId,
       pageNum: 1,
-      pageSize,
+      pageSize: 10,
       ...values,
+      zoneId,
     });
-  };
+  }
 
   // 重置按钮点击事件
   handleResetButtonClick = values => {
-    this.handleSearchButtonClick(values);
+    this.handleQuery();
   };
 
   // 表格的change事件
   handleTableChange = ({ current, pageSize }) => {
-    const {
-      location: { query: { zoneId } },
-      history: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
-      getHistory,
-    } = this.props;
-    getHistory({
-      zoneId,
-      pageNum: prevPageSize !== pageSize ? 1 : current,
-      pageSize,
-      ...this.prevValues,
-    });
     this.form &&
       (this.prevValues ? this.form.setFieldsValue(this.prevValues) : this.form.resetFields());
-    prevPageSize !== pageSize && setPageSize(pageSize);
+    this.handleQuery({ pageNum: current, pageSize });
   };
 
-  renderForm() {
+  renderForm () {
     return (
       <Card className={styles.card}>
         <CustomForm
           fields={Fields}
-          onSearch={this.handleSearchButtonClick}
+          onSearch={values => this.handleQuery(values)}
           onReset={this.handleResetButtonClick}
           ref={this.setFormReference}
         />
@@ -199,7 +179,7 @@ export default class ReevaluateWarningHistory extends Component {
     );
   }
 
-  renderTable() {
+  renderTable () {
     const {
       history: { list = [], pagination: { total, pageNum, pageSize } = {} } = {},
       loading = false,
@@ -236,7 +216,7 @@ export default class ReevaluateWarningHistory extends Component {
     );
   }
 
-  render() {
+  render () {
     const { history: { pagination: { total } = {} } = {} } = this.props;
 
     return (
