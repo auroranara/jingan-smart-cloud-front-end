@@ -1,23 +1,31 @@
 import {
   getCompany,
   getCompanySafety,
-  getTypeList,
-  getCompanyTypeList,
   getList,
   getDetail,
   add,
   edit,
   remove,
-} from '@/services/accidentReport';
+  getDepartmentDict,
+} from '@/services/injuryReport';
 
+function formatDict(dict, mapper) {
+  const { key = 'key', value = 'value', children = 'children' } = mapper;
+  return dict.map(({ [key]: k, [value]: v, [children]: c }) => {
+    return {
+      key: String(k),
+      value: v,
+      children: c ? formatDict(c, mapper) : [],
+    };
+  });
+}
 export default {
-  namespace: 'accidentReport',
+  namespace: 'injuryReport',
 
   state: {
     list: {},
     detail: {},
-    typeList: [],
-    companyTypeList: [],
+    departmentDict: [],
   },
 
   effects: {
@@ -32,56 +40,6 @@ export default {
           },
         });
         callback && callback(data);
-      }
-    },
-    *getTypeList({ payload, callback }, { call, put, select }) {
-      const { parentId } = payload;
-      const prevTypeList = parentId
-        ? yield select(state => state.accidentReport.typeList) || []
-        : [];
-      if (!prevTypeList.find(({ pId }) => pId === parentId)) {
-        const response = yield call(getTypeList, payload);
-        const { code, data } = response || {};
-        if (code === 200 && data && data.list) {
-          const typeList = prevTypeList.concat(
-            data.list.map(({ id, hasChild, value, label }) => ({
-              id,
-              pId: parentId,
-              value: id,
-              title: `${value} ${label}`,
-              isLeaf: !+hasChild,
-            }))
-          );
-          yield put({
-            type: 'save',
-            payload: {
-              typeList,
-            },
-          });
-          callback && callback(typeList);
-        }
-      } else {
-        callback && callback();
-      }
-    },
-    // 获取企业类型列表
-    *getCompanyTypeList({ payload, callback }, { call, put }) {
-      const response = yield call(getCompanyTypeList, payload);
-      const { code, data, msg } = response || {};
-      if (code === 200 && data && data.regulatoryClassification) {
-        const companyTypeList = data.regulatoryClassification.map(({ value, label }) => ({
-          key: value,
-          value: label,
-        }));
-        yield put({
-          type: 'save',
-          payload: {
-            companyTypeList,
-          },
-        });
-        callback && callback(true, companyTypeList);
-      } else {
-        callback && callback(false, msg);
       }
     },
     *getDetail({ payload, callback }, { call, put }) {
@@ -122,6 +80,23 @@ export default {
       const response = yield call(remove, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
+    },
+    *fetchDepartmentDict({ payload, callback }, { call, put }) {
+      const response = yield call(getDepartmentDict, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        const { list: departmentDict } = data;
+        yield put({
+          type: 'save',
+          payload: {
+            departmentDict: formatDict(departmentDict, {
+              key: 'departmentId',
+              value: 'departmentName',
+            }),
+          },
+        });
+        callback && callback(departmentDict);
+      }
     },
   },
 

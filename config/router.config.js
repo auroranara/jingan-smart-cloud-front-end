@@ -4349,6 +4349,43 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'injuryReport', // 工伤申报
+              code: 'accidentManagement.injuryReport',
+              path: '/accident-management/injury-report',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/accident-management/injury-report',
+                  redirect: '/accident-management/injury-report/list',
+                },
+                {
+                  name: 'list',
+                  code: 'accidentManagement.injuryReport.list',
+                  path: '/accident-management/injury-report/list',
+                  component: './AccidentManagement/InjuryReport/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'accidentManagement.injuryReport.view',
+                  path: '/accident-management/injury-report/detail/:id',
+                  component: './AccidentManagement/InjuryReport/Other',
+                },
+                {
+                  name: 'add',
+                  code: 'accidentManagement.injuryReport.add',
+                  path: '/accident-management/injury-report/add',
+                  component: './AccidentManagement/InjuryReport/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'accidentManagement.injuryReport.edit',
+                  path: '/accident-management/injury-report/edit/:id',
+                  component: './AccidentManagement/InjuryReport/Other',
+                },
+              ],
+            },
           ],
         },
         {

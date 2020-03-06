@@ -4,13 +4,12 @@ import CustomForm from '@/jingan-components/CustomForm';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import moment from 'moment';
 import TypeSelect from '../../../components/TypeSelect';
-import { LEVELS, DEFAULT_FORMAT } from '../../List';
+import { LEVELS, DEFAULT_FORMAT } from '../../../QuickReport/List';
 import { connect } from 'dva';
 import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
 const { Option } = Select;
 const GET_LIST = 'accidentReport/getList';
-const { RangePicker } = DatePicker;
 
 @connect(
   ({ accidentReport, loading }) => ({
@@ -39,15 +38,6 @@ export default class AccidentInfo extends Component {
   };
 
   prevValues = null;
-
-  empty = true;
-
-  getRangeFromEvent = range => {
-    const empty = !(range && range.length);
-    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
-    this.empty = empty;
-    return result;
-  };
 
   setFormReference = form => {
     this.form = form;
@@ -94,11 +84,8 @@ export default class AccidentInfo extends Component {
       getList,
     } = this.props;
     this.prevValues = values;
-    const { happenTime: [startTime, endTime] = [], ...payload } = values;
     getList({
-      ...payload,
-      startTime: startTime && startTime.format(DEFAULT_FORMAT),
-      endTime: endTime && endTime.format(DEFAULT_FORMAT),
+      ...values,
       pageSize,
       accidentCompanyId: companyId,
     });
@@ -134,57 +121,52 @@ export default class AccidentInfo extends Component {
       companyId,
       accidentReport: { list: { list = [], pagination: { pageNum, pageSize, total } = {} } = {} },
       loading,
+      ...restProps
     } = this.props;
     const { visible, selectedRowKeys } = this.state;
 
     const fields = [
       {
         id: 'accidentTitle',
-        label: '事故信息标题',
+        label: '事故名称',
         transform: value => value.trim(),
         render: _this => (
-          <Input
-            placeholder="请输入事故信息标题"
-            onPressEnter={_this.handleSearch}
-            maxLength={50}
-          />
+          <Input placeholder="请输入事故名称" onPressEnter={_this.handleSearch} maxLength={50} />
         ),
       },
-      {
-        id: 'accidentType',
-        label: '事故类型代码',
-        render: () => <TypeSelect allowClear />,
-      },
-      {
-        id: 'accidentLevel',
-        label: '事故级别',
-        render: () => (
-          <Select placeholder="请选择事故级别" allowClear>
-            {LEVELS.map(({ key, value }) => (
-              <Option key={key}>{value}</Option>
-            ))}
-          </Select>
-        ),
-      },
-      {
-        id: 'happenTime',
-        label: '事故发生时间',
-        render: () => (
-          <RangePicker
-            className={styles.datePicker}
-            placeholder={['开始时间', '结束时间']}
-            showTime
-            allowClear
-          />
-        ),
-        options: {
-          getValueFromEvent: this.getRangeFromEvent,
-        },
-      },
+      // {
+      //   id: 'accidentType',
+      //   label: '事故类型代码',
+      //   render: () => <TypeSelect allowClear />,
+      // },
+      // {
+      //   id: 'accidentLevel',
+      //   label: '事故级别',
+      //   render: () => (
+      //     <Select placeholder="请选择事故级别" allowClear>
+      //       {LEVELS.map(({ key, value }) => (
+      //         <Option key={key}>{value}</Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      // },
+      // {
+      //   id: 'happenTime',
+      //   label: '事故发生时间',
+      //   render: () => (
+      //     <DatePicker
+      //       className={styles.datePicker}
+      //       placeholder="请选择事故发生时间"
+      //       format={DEFAULT_FORMAT}
+      //       showTime
+      //       allowClear
+      //     />
+      //   ),
+      // },
     ];
     const columns = [
       {
-        title: '事故信息标题',
+        title: '事故名称',
         dataIndex: 'accidentTitle',
         align: 'center',
       },
@@ -194,11 +176,11 @@ export default class AccidentInfo extends Component {
         render: time => time && moment(time).format(DEFAULT_FORMAT),
         align: 'center',
       },
-      {
-        title: '事故类型代码',
-        dataIndex: 'accidentTypeDesc',
-        align: 'center',
-      },
+      // {
+      //   title: '事故类型代码',
+      //   dataIndex: 'accidentTypeDesc',
+      //   align: 'center',
+      // },
       {
         title: '事故级别',
         dataIndex: 'accidentLevel',
@@ -208,7 +190,7 @@ export default class AccidentInfo extends Component {
     ];
 
     return (
-      <div>
+      <div {...restProps}>
         <Button type="primary" onClick={this.handleButtonClick} disabled={!companyId}>
           选择
         </Button>

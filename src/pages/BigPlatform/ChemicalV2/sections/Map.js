@@ -191,6 +191,7 @@ export default class Map extends PureComponent {
             iconType: -1,
             markerProps: { zoneId: id },
             size: 25,
+            height: 1,
           });
           return null;
         });
@@ -599,6 +600,7 @@ export default class Map extends PureComponent {
     btnFloorControl.onChange(function(groups, allLayer) {
       //groups 表示当前要切换的楼层ID数组,
       //allLayer表示当前楼层是单层状态还是多层状态。
+      popInfoWindow && popInfoWindow.close();
     });
     //默认是否展开楼层列表，true为展开，false为不展开
     btnFloorControl.expand = true;
