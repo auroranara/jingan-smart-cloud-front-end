@@ -154,11 +154,7 @@ export default class Map extends PureComponent {
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
           // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
-          this.setModelColorById(
-            groupId,
-            modelIds.split(',').map(id => +id),
-            COLORS[zoneLevel - 1]
-          );
+          this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
           return null;
         });
         // 变更预警管理
@@ -340,7 +336,7 @@ export default class Map extends PureComponent {
       )
         return;
 
-      const { eventInfo: { coord } = {}, ID, groupID } = clickedObj;
+      const { eventInfo: { coord } = {}, FID, groupID } = clickedObj;
       if (coord) {
         // 点击区域
         for (let index = 0; index < this.polygonArray.length; index++) {
@@ -348,10 +344,10 @@ export default class Map extends PureComponent {
           const {
             polygonProps: { modelIds, id },
           } = polygon;
-          const IDs = modelIds.split(',').map(item => +item);
+          const FIDs = modelIds.split(',');
           if (
             (groupID === polygon.groupID && this.isPointInPolygon(coord, polygon)) ||
-            IDs.includes(ID)
+            FIDs.includes(FID)
           ) {
             handleShowAreaDrawer(id);
             break;
@@ -722,11 +718,11 @@ export default class Map extends PureComponent {
     });
   }
 
-  setModelColorById = (groupId, IDs, color) => {
+  setModelColorByFID = (groupId, FIDs, color) => {
     const models = map.getDatasByAlias(groupId, 'model');
     models.map(model => {
-      const { ID } = model;
-      if (IDs.includes(ID)) model.setColor(color);
+      const { FID } = model;
+      if (FIDs.includes(FID)) model.setColor(color);
       return null;
     });
   };
