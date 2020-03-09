@@ -109,25 +109,6 @@ export default class CheckDetail extends PureComponent {
     this.setState({ modalVisible: false, time: '' });
   };
 
-  validatorID = (rule, value, callback) => {
-    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
-    const patterDot = new RegExp(
-      "[`~!@#$^&*()=|{}':;',\\[\\]<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]"
-    );
-    if (value) {
-      if (
-        chineseRe.test(value) ||
-        /[a-z]/.test(value) ||
-        /[A-Z]/.test(value) ||
-        patterDot.test(value)
-      ) {
-        callback('注：只能输入数字');
-      } else {
-        callback();
-      }
-    }
-  };
-
   render() {
     const {
       loading = false,
@@ -160,7 +141,6 @@ export default class CheckDetail extends PureComponent {
       // handlePanelChange: this.handlePanelChange,
       // handleOpenChange: this.handleOpenChange,
       // clearDateValue: this.clearDateValue,
-      validatorID: this.validatorID,
       list,
     };
 

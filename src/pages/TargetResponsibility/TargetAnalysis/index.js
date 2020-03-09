@@ -30,9 +30,9 @@ export default class TableList extends PureComponent {
 
   componentDidMount() {
     const { yearDateVal } = this.state;
-    // this.fetchPartGoal(yearDateVal);
-    // this.fetchPartUnitGoal(yearDateVal);
-    // this.fetchIndexList();
+    this.fetchPartGoal(yearDateVal);
+    this.fetchPartUnitGoal(yearDateVal);
+    this.fetchIndexList();
   }
 
   // 获取图表数据
@@ -101,16 +101,14 @@ export default class TableList extends PureComponent {
   // 日历面板切换的回调
   handlePanelChange = v => {
     this.setState({ yearDateVal: v, isOpen: false });
-    // this.fetchPartGoal(v);
-    // this.fetchPartUnitGoal(v);
+    this.fetchPartGoal(v);
+    this.fetchPartUnitGoal(v);
   };
 
   // 清空日期选择框
   clearDateValue = () => {
     this.setState({ yearDateVal: undefined });
   };
-
-  handleDisabledDate = time => {};
 
   // radio切换
   handleRadioBtn = e => {
@@ -311,7 +309,7 @@ export default class TableList extends PureComponent {
             <span>
               <DatePicker
                 placeholder="请选择"
-                disabledDate={this.handleDisabledDate}
+                // disabledDate={this.handleDisabledDate}
                 style={{ width: 300, marginBottom: 10 }}
                 open={isOpen}
                 value={yearDateVal}
