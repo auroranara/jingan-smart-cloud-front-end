@@ -44,11 +44,11 @@ export default class Map extends React.Component {
     const newList = pointList.length > 0 ? pointList : [];
     newList.map(item => {
       const { zoneLevel, coordinateList, groupId, modelIds } = item;
-      const modeIdList = modelIds ? modelIds.split(',').map(Number) : [];
+      const modeIdList = modelIds ? modelIds.split(',') : [];
       if (modeIdList.length > 0) {
         const models = map.getDatasByAlias(groupId, 'model');
         models.forEach(item => {
-          if (item.ID && modeIdList.includes(item.ID)) {
+          if (item.FID && modeIdList.includes(item.FID)) {
             item.setColor(COLORS[zoneLevel], 1);
           }
         });
@@ -133,7 +133,7 @@ export default class Map extends React.Component {
           const models = map.getDatasByAlias(groupId, 'model');
           const arrayList = models
             .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
-            .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
+            .map(item => ({ buildingId: item.FID, points: item.mapCoord }));
           getBuilding && getBuilding(arrayList, 0);
           return null;
         });
@@ -216,7 +216,7 @@ export default class Map extends React.Component {
     // 获取当前选中区域所有ID
     const arrayList = models
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
-      .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
+      .map(item => ({ buildingId: item.FID, points: item.mapCoord }));
     this.props.getBuilding && this.props.getBuilding(arrayList, 1);
   }
 
@@ -276,7 +276,7 @@ export default class Map extends React.Component {
       const modeIdList = modelIds.split(',').map(Number);
       const models = map.getDatasByAlias(filterList.groupId, 'model');
       models.forEach(item => {
-        if (item.ID && modeIdList.includes(item.ID)) {
+        if (item.FID && modeIdList.includes(item.FID)) {
           item.setColor(selectedColor, 1);
         }
       });
@@ -292,7 +292,7 @@ export default class Map extends React.Component {
       const modeIdList = modelIds.split(',').map(Number);
       const models = map.getDatasByAlias(filterList.groupId, 'model');
       models.forEach(item => {
-        if (item.ID && modeIdList.includes(item.ID)) {
+        if (item.FID && modeIdList.includes(item.FID)) {
           item.setColor(COLORS[zoneLevel], 1);
         }
       });
