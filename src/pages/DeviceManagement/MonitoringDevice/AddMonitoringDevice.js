@@ -68,7 +68,7 @@ export default class AddMonitoringDevice extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -107,11 +107,11 @@ export default class AddMonitoringDevice extends Component {
               fileList:
                 fileList && fileList.length
                   ? fileList.map(item => ({
-                      ...item,
-                      uid: item.id,
-                      url: item.webUrl,
-                      name: item.fileName,
-                    }))
+                    ...item,
+                    uid: item.id,
+                    url: item.webUrl,
+                    name: item.fileName,
+                  }))
                   : [],
             },
             () => {
@@ -133,7 +133,7 @@ export default class AddMonitoringDevice extends Component {
             this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
         },
       });
-    }
+    } else { setFieldsValue({ isShow: '1' }) }
   }
 
   /**
@@ -701,7 +701,7 @@ export default class AddMonitoringDevice extends Component {
     );
   };
 
-  render() {
+  render () {
     const {
       companyLoading,
       sensor: { companyModal },
