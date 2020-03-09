@@ -222,21 +222,23 @@ export default class Map extends React.Component {
 
   // 切换tag
   handleModelEdit = (groupId, points, point, selected) => {
+    const { pointList, levelId } = this.props;
     const models = map.getDatasByAlias(groupId, 'model');
     const orginList = models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points));
-    if (!!selected) {
+
+    if (selected) {
       const model = orginList.find(item => item.mapCoord === point);
       model.setColorToDefault();
       return null;
     }
     if (!selected) {
       const model = orginList.find(item => item.mapCoord === point);
-      this.props.pointList.length > 0
-        ? this.props.pointList.map(item => {
+      pointList.length > 0
+        ? pointList.map(item => {
             const { zoneLevel } = item;
             return model.setColor(COLORS[zoneLevel]);
           })
-        : model.setColor(COLOR.blue);
+        : model.setColor(COLORS[levelId]);
       return null;
     }
   };
