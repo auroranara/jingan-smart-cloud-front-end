@@ -57,7 +57,7 @@ export default class ThreeDMap extends PureComponent {
           mapScaleLevelRangeList: mapScaleLevelRangeList || INIT_RANGE,
         };
         setFieldsValue(fieldsValue);
-        this.initMap(fieldsValue);
+        // this.initMap(fieldsValue); // 初始化有问题，手动点击
       }
     });
   }
@@ -172,6 +172,7 @@ export default class ThreeDMap extends PureComponent {
   }
 
   initMap = ({ appName, key, mapId, theme, defaultMapScaleLevel, defaultViewMode, defaultViewCenter }) => {
+    const isFirst = !this.map;
     this.map && this.map.dispose();
     const { form: { setFieldsValue } } = this.props;
 
@@ -202,8 +203,9 @@ export default class ThreeDMap extends PureComponent {
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
     map.on('loadComplete', e => {
-      // console.log('onload', defaultMapScaleLevel);
+      console.log('onload', defaultMapScaleLevel);
       this.map.mapScaleLevel = defaultMapScaleLevel;
+      // isFirst && this.handlePreview();
     })
     // map.on('mapScaleLevelChanged', e => { // 有问题，不要用
     //   setFieldsValue({ defaultMapScaleLevel: e.mapScale });
