@@ -9,6 +9,7 @@ export default class DepartPie extends PureComponent {
     const option = {
       title: {
         text: partPassRate,
+        subtext: '目标达成率',
         left: 'center',
         top: '42%',
         textStyle: {
@@ -21,10 +22,7 @@ export default class DepartPie extends PureComponent {
           fontSize: 12,
         },
       },
-      color: [
-        !isNumber ? 'rgb(28, 145, 253)' : 'rgb(242, 242, 242)',
-        !isNumber ? 'rgb(246, 93, 124)' : 'rgb(242, 242, 242)',
-      ],
+      color: [!isNumber ? 'rgb(28, 145, 253)' : 'rgb(242, 242, 242)', 'rgb(242, 242, 242)'],
       series: [
         {
           type: 'pie',
