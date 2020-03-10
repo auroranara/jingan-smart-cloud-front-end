@@ -1,50 +1,11 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-
-// import router from 'umi/router';
+import router from 'umi/router';
 import moment from 'moment';
-import { Icon, Select, Col, Radio, Row, DatePicker } from 'antd';
-import {
-  BREADCRUMBLIST,
-  DepartNumIcon,
-  MonthIcon,
-  QuarterIcon,
-  YearIcon,
-  DepartPie,
-  DepartLine,
-  IndexChartsLine,
-} from './utils';
+import { Select, Radio, Col, Icon, Row, Table, DatePicker, Empty, Tooltip } from 'antd';
+import { BREADCRUMBLIST, DepartPie, ReachList, COLOUMNS } from './utils';
 import styles from './index.less';
-
-const monthFormat = 'YYYY/MM';
-const { MonthPicker } = DatePicker;
-
-const quarterList = [
-  {
-    key: '1',
-    value: '一季度',
-  },
-  {
-    key: '2',
-    value: '二季度',
-  },
-  {
-    key: '3',
-    value: '三季度',
-  },
-  {
-    key: '4',
-    value: '四季度',
-  },
-];
-
-const getQuarter = {
-  1: '一季度',
-  2: '二季度',
-  3: '三季度',
-  4: '四季度',
-};
 
 @connect(({ targetResponsibility, department, user, loading }) => ({
   targetResponsibility,
@@ -56,114 +17,62 @@ export default class TableList extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      type: '1',
-      typeIndex: '1',
-      targetId: '', // 所选指标id
-      dutyMajorId: '', // 所选部门id
       isOpen: false, // 控制日期(年份)面板是否打开
-      yearDateVal: undefined,
-      monthDateVal: undefined,
-      quarterDateVal: undefined,
-      departIndex: '',
-      chartLineList: [],
-      indexSelect: undefined,
-      departSelect: undefined,
-      depatIndexSelect: undefined,
+      yearDateVal: moment().subtract(1, 'year'), // 初始化当前年份
+      radioType: '1', // 默认为 图标
+      indexVal: undefined, // 初始化指标
+      indexReachVal: undefined, // 初始化指标达成情况
+      currentPage: 1,
     };
     this.pageNum = 1;
     this.pageSize = 10;
   }
 
   componentDidMount() {
+    const { yearDateVal } = this.state;
+    this.fetchPartGoal(yearDateVal);
+    this.fetchPartUnitGoal(yearDateVal);
+    this.fetchIndexList();
+  }
+
+  // 获取图表数据
+  fetchPartGoal = time => {
     const {
+      dispatch,
       match: {
         params: { id },
       },
     } = this.props;
-    const { typeIndex } = this.state;
-    this.fetchMonQuarterYear(id);
-    this.fetchPartGoal(id);
-    this.fetchYearGoal(id);
-    this.fetchIndexList(typeIndex);
-    this.fetchSettingList(id);
-  }
-
-  // 月，季度，年目标达成率
-  fetchMonQuarterYear = id => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'targetResponsibility/fetchMonQuarterYear',
-      payload: {
-        companyId: id,
-      },
-    });
-  };
-
-  // 部门目标达成率
-  fetchPartGoal = id => {
-    const { dispatch } = this.props;
     dispatch({
       type: 'targetResponsibility/fetchPartGoal',
       payload: {
         companyId: id,
+        goalYear: moment(time).format('YYYY'),
       },
     });
   };
 
-  // 各单位部门指标达成情况
-  fetchUnitPartGoal = (date, id) => {
-    const { type } = this.state;
-    const {
-      match: {
-        params: { id: companyId },
-      },
-      dispatch,
-    } = this.props;
-    dispatch({
-      type: 'targetResponsibility/fetchUnitPartGoal',
-      payload: {
-        companyId,
-        targetId: id,
-        examtime: date,
-        checkFrequency: type,
-      },
-    });
-  };
-
-  // 各指标变化趋势
-  fetchGoalChange = (id, departId, callback) => {
-    const { typeIndex } = this.state;
+  // 获取列表数据
+  fetchPartUnitGoal = (time, targetId, flag) => {
     const {
       dispatch,
       match: {
-        params: { id: companyId },
+        params: { id },
       },
     } = this.props;
     dispatch({
-      type: 'targetResponsibility/fetchGoalChange',
-      payload: {
-        companyId,
-        targetId: id,
-        dutyMajorId: departId,
-        checkFrequency: typeIndex,
-      },
-      callback: callback,
-    });
-  };
-
-  // 年度目标达成率排名
-  fetchYearGoal = id => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'targetResponsibility/fetchYearGoal',
+      type: 'targetResponsibility/fetchPartUnitGoal',
       payload: {
         companyId: id,
+        goalYear: moment(time).format('YYYY'),
+        targetId: targetId ? targetId : 0,
+        flag: flag ? flag : 0,
       },
     });
   };
 
-  // 根据月份、季度、年获取指标
-  fetchIndexList = typeIndex => {
+  // 获取全部指标
+  fetchIndexList = () => {
     const {
       dispatch,
       match: {
@@ -174,132 +83,13 @@ export default class TableList extends PureComponent {
       type: 'targetResponsibility/fetchIndexManagementList',
       payload: {
         companyId,
-        checkFrequency: typeIndex,
         pageSize: 24,
         pageNum: 1,
       },
     });
   };
 
-  // 获取目标责任实施列表
-  fetchSettingList = id => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'targetResponsibility/fetchSettingList',
-      payload: {
-        companyId: id,
-        pageSize: 24,
-        pageNum: 1,
-        goalYear: moment().format('YYYY'),
-      },
-    });
-  };
-
-  renderFirstContent() {
-    const {
-      targetResponsibility: { mQYData = {} },
-    } = this.props;
-    const {
-      examDepartNumber,
-      nowMonthGoal,
-      previousMonthFlag,
-      previousYearFlag,
-      nowYearGoal,
-      previousQuarterFlag,
-      nowQuarterGoal,
-      previousYearGoal,
-      previousQuarterGoal,
-      previousMonthGoal,
-    } = mQYData;
-    return (
-      <div className={styles.firstSection}>
-        <div className={styles.itemLeft}>
-          <div className={styles.imgLeft} style={{ backgroundImage: `url(${DepartNumIcon})` }} />
-          <div className={styles.valueRight}>
-            <div className={styles.name}>考核部门数</div>
-            <div className={styles.value}>{examDepartNumber}</div>
-          </div>
-        </div>
-        <div className={styles.itemRight}>
-          <div className={styles.section}>
-            <div className={styles.imgLeft} style={{ backgroundImage: `url(${MonthIcon})` }} />
-            <div className={styles.valueRight}>
-              <div className={styles.name}>本月目标达成率</div>
-              <div className={styles.value}>{nowMonthGoal}</div>
-              <div className={styles.label}>
-                <span className={styles.icon}>
-                  {previousMonthFlag === '0' ? (
-                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
-                  ) : (
-                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
-                  )}
-                </span>
-                <span className={previousMonthFlag === '0' ? styles.number : styles.numbers}>
-                  {previousMonthGoal}
-                </span>
-                <span className={styles.write}>同比上月</span>
-              </div>
-            </div>
-          </div>
-          <div className={styles.section}>
-            <div className={styles.imgLeft} style={{ backgroundImage: `url(${QuarterIcon})` }} />
-            <div className={styles.valueRight}>
-              <div className={styles.name}>本季度目标达成率</div>
-              <div className={styles.value}>{nowQuarterGoal}</div>
-              <div className={styles.label}>
-                <span className={styles.icon}>
-                  {previousQuarterFlag === '0' ? (
-                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
-                  ) : (
-                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
-                  )}
-                </span>
-                <span className={previousQuarterFlag === '0' ? styles.number : styles.numbers}>
-                  {previousQuarterGoal}
-                </span>
-                <span className={styles.write}>同比上季度</span>
-              </div>
-            </div>
-          </div>
-          <div className={styles.section}>
-            <div className={styles.imgLeft} style={{ backgroundImage: `url(${YearIcon})` }} />
-            <div className={styles.valueRight}>
-              <div className={styles.name}>本年目标达成率</div>
-              <div className={styles.value}>{nowYearGoal}</div>
-              <div className={styles.label}>
-                <span className={styles.icon}>
-                  {previousYearFlag === '0' ? (
-                    <Icon type="caret-up" style={{ color: 'rgb(46,186,7)' }} />
-                  ) : (
-                    <Icon type="caret-down" style={{ color: 'rgb(254,80,0)' }} />
-                  )}
-                </span>
-                <span className={previousQuarterFlag === '0' ? styles.number : styles.numbers}>
-                  {previousYearGoal}
-                </span>
-                <span className={styles.write}>同比去年</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 部门指标时间选择
-  handleRadioChange = e => {
-    const mode = e.target.value;
-    this.setState({
-      type: mode,
-      depatIndexSelect: undefined,
-      departIndex: '',
-      yearDateVal: undefined,
-      monthDateVal: undefined,
-      quarterDateVal: undefined,
-    });
-    this.fetchIndexList(mode);
-  };
-
+  // 弹出日历和关闭日历的回调
   handleOpenChange = s => {
     if (s) {
       this.setState({ isOpen: true });
@@ -308,74 +98,85 @@ export default class TableList extends PureComponent {
     }
   };
 
-  handleMonthChange = m => {
-    const { departIndex } = this.state;
-    const mDate = moment(m).format('YYYY-MM');
-    departIndex && m && this.fetchUnitPartGoal(mDate, departIndex);
-    this.setState({ monthDateVal: m });
-  };
-
-  handleQuarterChange = q => {
-    const { departIndex } = this.state;
-    departIndex && q && this.fetchUnitPartGoal(q, departIndex);
-    this.setState({ quarterDateVal: q });
-  };
-
+  // 日历面板切换的回调
   handlePanelChange = v => {
-    const { departIndex } = this.state;
-    const yDate = moment(v).format('YYYY');
-    departIndex && v && this.fetchUnitPartGoal(yDate, departIndex);
     this.setState({ yearDateVal: v, isOpen: false });
+    this.fetchPartGoal(v);
+    this.fetchPartUnitGoal(v);
   };
 
   // 清空日期选择框
-  clearDateValue = d => {
-    this.setState({ yearDateVal: null });
+  clearDateValue = () => {
+    this.setState({ yearDateVal: undefined });
   };
 
-  handleDepatIndexChange = id => {
-    const { type, monthDateVal, quarterDateVal, yearDateVal } = this.state;
-    const mDate = moment(monthDateVal).format('YYYY-MM');
-    const yDate = moment(yearDateVal).format('YYYY');
-    const date = type === '1' ? mDate : type === '2' ? quarterDateVal : yDate;
-    id && date && this.fetchUnitPartGoal(date, id);
-    this.setState({ departIndex: id, depatIndexSelect: id });
+  // radio切换
+  handleRadioBtn = e => {
+    this.setState({ radioType: e.target.value });
   };
 
-  renderSecondContent() {
+  // 跳转到目标责任制定实施
+  hanldeLink = () => {
+    router.push('/target-responsibility/target-setting/index');
+  };
+
+  // 指标选择
+  handleIndexChange = val => {
+    const { yearDateVal, indexReachVal } = this.state;
+    this.setState({ indexVal: val });
+    this.fetchPartUnitGoal(yearDateVal, val, indexReachVal);
+  };
+
+  // 达成情况选择
+  handleIndexReachChange = val => {
+    const { yearDateVal, indexVal } = this.state;
+    this.setState({ indexReachVal: val });
+    this.fetchPartUnitGoal(yearDateVal, indexVal, val);
+  };
+
+  // 重置
+  handleRest = () => {
+    const { yearDateVal } = this.state;
+    this.fetchPartUnitGoal(yearDateVal);
+    this.setState({ indexVal: undefined, indexReachVal: undefined });
+  };
+
+  handleTableData = (list = [], indexBase) => {
+    return list.map((item, index) => {
+      return {
+        ...item,
+        index: indexBase + index + 1,
+      };
+    });
+  };
+
+  // 渲染图表
+  renderPicContent() {
     const {
       targetResponsibility: {
-        indexData: { list: iList = [] },
-        partGoalData = {},
-        unitPartData: { list = [] },
+        partGoalData: {
+          passUnit = 0,
+          unitNumber = 0,
+          passPart = 0,
+          vetoPart = 0,
+          unitGoal = '0%',
+          rankList = [],
+        },
       },
     } = this.props;
-    const {
-      type,
-      isOpen,
-      monthDateVal,
-      quarterDateVal,
-      yearDateVal,
-      depatIndexSelect,
-    } = this.state;
-
-    const dateVale =
-      monthDateVal !== undefined || quarterDateVal !== undefined || yearDateVal !== undefined;
-    const departSelect = dateVale && depatIndexSelect !== undefined;
-
-    const { passPart = 0, vetoPart = 0, partPassRate } = partGoalData;
-    const avgValue = departSelect ? list.map(item => item.actualValue) : [];
-    const goalValue = departSelect ? list.map(item => item.goalValue) : [];
-    const departName = departSelect ? list.map(item => item.name) : [];
 
     return (
-      <div className={styles.secondSection}>
-        <div className={styles.itemLeft}>
-          <div className={styles.top}>部门目标达成率</div>
-          <div className={styles.bottom}>
+      <div className={styles.sectionChart}>
+        <div className={styles.left}>
+          <div className={styles.itemTop}>
+            <div className={styles.headline}>单位目标达成情况</div>
             <div className={styles.echarts}>
-              <DepartPie data={[passPart, vetoPart]} partPassRate={partPassRate} />
+              <DepartPie data={[passUnit, unitNumber - passUnit]} partPassRate={unitGoal} />
             </div>
+          </div>
+
+          <div className={styles.itemBottom}>
+            <div className={styles.headline}>部门目标达成情况</div>
             <div className={styles.label}>
               <div className={styles.labelFirst}>
                 <div className={styles.number}>{passPart}</div>
@@ -388,206 +189,8 @@ export default class TableList extends PureComponent {
             </div>
           </div>
         </div>
-        <div className={styles.itemRight}>
-          <div className={styles.top}>
-            <span className={styles.label}>各单位部门指标达成情况</span>
-            <span className={styles.select}>
-              {type === '1' && (
-                <MonthPicker
-                  style={{ width: 150, marginRight: 10 }}
-                  value={monthDateVal}
-                  format={monthFormat}
-                  onChange={this.handleMonthChange}
-                />
-              )}
-              {type === '2' && (
-                <Select
-                  placeholder="请选择"
-                  value={quarterDateVal}
-                  style={{ width: 150, marginRight: 10, fontWeight: 'normal' }}
-                  onChange={this.handleQuarterChange}
-                >
-                  {quarterList.map(({ key, value }) => (
-                    <Select.Option key={key} value={key}>
-                      {value}
-                    </Select.Option>
-                  ))}
-                </Select>
-              )}
-              {type === '3' && (
-                <DatePicker
-                  placeholder="请选择"
-                  style={{ width: 150, marginRight: 10 }}
-                  open={isOpen}
-                  value={yearDateVal}
-                  onOpenChange={s => this.handleOpenChange(s)}
-                  onChange={this.clearDateValue}
-                  onPanelChange={v => this.handlePanelChange(v)}
-                  format="YYYY"
-                  mode="year"
-                />
-              )}
-              <Select
-                placeholder="请选择"
-                value={depatIndexSelect}
-                style={{ width: 150, fontWeight: 'normal' }}
-                onChange={this.handleDepatIndexChange}
-              >
-                {iList.map(({ id, targetName }) => (
-                  <Select.Option key={id} value={id}>
-                    {targetName}
-                  </Select.Option>
-                ))}
-              </Select>
-            </span>
-          </div>
-          <div className={styles.middle}>
-            <Radio.Group onChange={this.handleRadioChange} value={type} style={{ marginBottom: 8 }}>
-              <Radio.Button value="1">月度</Radio.Button>
-              <Radio.Button value="2">季度</Radio.Button>
-              <Radio.Button value="3">年度</Radio.Button>
-            </Radio.Group>
-          </div>
-          <div className={styles.bottom}>
-            <DepartLine dataGoal={goalValue} dataReal={avgValue} xData={departName} />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  // 指标月、季度、年切换
-  handleIndexChange = e => {
-    const mode = e.target.value;
-    this.fetchGoalChange('', '', res => {
-      this.setState({ chartLineList: [] });
-    });
-    this.setState({ typeIndex: mode, indexSelect: undefined, departSelect: undefined });
-    this.fetchIndexList(mode);
-  };
-
-  // 指标切换
-  handleSelectChange = id => {
-    const { dutyMajorId } = this.state;
-    dutyMajorId &&
-      id &&
-      this.fetchGoalChange(id, dutyMajorId, res => {
-        const {
-          data: { list },
-        } = res;
-        this.setState({ chartLineList: list });
-      });
-    this.setState({ targetId: id, indexSelect: id });
-  };
-
-  // 部门切换
-  handleDepartChange = id => {
-    const { targetId } = this.state;
-    id &&
-      targetId &&
-      this.fetchGoalChange(targetId, id, res => {
-        const {
-          data: { list },
-        } = res;
-        this.setState({ chartLineList: list });
-      });
-    this.setState({ dutyMajorId: id, departSelect: id });
-  };
-
-  renderThirdContent() {
-    const { typeIndex } = this.state;
-    const {
-      targetResponsibility: {
-        // goalChangeData: { list: lineList = [] },
-        yearGoalData: { list: indexList = [] },
-        indexData: { list: iList = [] },
-        settingData: { list: settingList = [] },
-      },
-    } = this.props;
-
-    const { chartLineList, departSelect, indexSelect } = this.state;
-    const isSelectVal = departSelect !== undefined && indexSelect !== undefined;
-
-    const departList = settingList.filter(item => item.dutyMajor.substr(0, 1) === '2');
-
-    const lineXData = [];
-    chartLineList.forEach(element => {
-      element.actualValueList.forEach(detail => {
-        const item = { ...detail };
-        lineXData.push(item);
-      });
-    });
-
-    const yData = isSelectVal ? lineXData.map(item => item.actualValue) : [];
-    const xData = isSelectVal
-      ? (typeIndex === '1' && lineXData.map(item => moment(item.examtime).format('M月'))) ||
-        (typeIndex === '2' && lineXData.map(item => getQuarter[item.examtime.substr(5, 6)])) ||
-        (typeIndex === '3' && lineXData.map(item => item.examtime.substr(0, 4) + '年'))
-      : [];
-
-    return (
-      <div className={styles.thirdSection}>
-        <div className={styles.itemLeft}>
-          <div className={styles.top}>各指标变化趋势</div>
-          <div className={styles.selectArea}>
-            <Radio.Group
-              onChange={this.handleIndexChange}
-              value={typeIndex}
-              style={{ marginBottom: 8 }}
-            >
-              <Radio.Button value="1">月度</Radio.Button>
-              <Radio.Button value="2">季度</Radio.Button>
-              <Radio.Button value="3">年度</Radio.Button>
-            </Radio.Group>
-            <span className={styles.select}>
-              <Select
-                placeholder="请选择"
-                value={indexSelect}
-                style={{ width: 150, marginRight: 10 }}
-                onChange={this.handleSelectChange}
-              >
-                {iList.map(({ id, targetName }) => (
-                  <Select.Option key={id} value={id}>
-                    {targetName}
-                  </Select.Option>
-                ))}
-              </Select>
-              <Select
-                placeholder="请选择"
-                value={departSelect}
-                style={{ width: 150 }}
-                onChange={this.handleDepartChange}
-              >
-                {departList.map(({ id, dutyMajor, name }) => {
-                  const dutyId = dutyMajor.split(',');
-                  return (
-                    <Select.Option key={dutyId[1]} value={dutyId[1]}>
-                      {name}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
-            </span>
-          </div>
-          <div className={styles.middle}>
-            <span>
-              目标值：
-              <span style={{ fontWeight: 'bold' }}>
-                {isSelectVal ? chartLineList.map(item => item.goalValue).join(',') || 0 : 0}
-              </span>
-            </span>
-            <span style={{ marginLeft: 15 }}>
-              平均值：
-              <span style={{ fontWeight: 'bold' }}>
-                {isSelectVal ? chartLineList.map(item => item.avgValue).join(',') || 0 : 0}
-              </span>
-            </span>
-          </div>
-          <div className={styles.echarts}>
-            <IndexChartsLine data={yData} xData={xData} />
-          </div>
-        </div>
-        <div className={styles.itemRight}>
+        <div className={styles.right}>
           <div className={styles.top}>年度目标达成率排名</div>
           <div className={styles.table}>
             <div className={styles.title}>
@@ -602,7 +205,7 @@ export default class TableList extends PureComponent {
               </Col>
             </div>
             <div className={styles.dataCard}>
-              {indexList.map(({ partName, goalValue }, index) => {
+              {rankList.map(({ partName, goalValue }, index) => {
                 return (
                   <Row key={index} className={styles.row}>
                     <Col span={7}>
@@ -624,16 +227,132 @@ export default class TableList extends PureComponent {
     );
   }
 
+  // 渲染列表
+  renderTableContent() {
+    const {
+      targetResponsibility: {
+        indexData: { list: iList = [] },
+        unitGoalData: { list: tableList = [] },
+      },
+    } = this.props;
+
+    const { indexVal, indexReachVal, currentPage } = this.state;
+    const indexBase = (currentPage - 1) * 10;
+
+    return (
+      <div className={styles.sectionTable}>
+        <div className={styles.selectArea}>
+          <Select
+            placeholder="全部指标"
+            value={indexVal}
+            style={{ width: 240, marginRight: 10 }}
+            onChange={this.handleIndexChange}
+          >
+            {iList.map(({ id, targetName }) => (
+              <Select.Option key={id} value={id}>
+                {targetName}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            placeholder="请选择指标达成情况"
+            value={indexReachVal}
+            style={{ width: 250 }}
+            onChange={this.handleIndexReachChange}
+          >
+            {ReachList.map(({ key, value }) => (
+              <Select.Option key={key} value={key}>
+                {value}
+              </Select.Option>
+            ))}
+          </Select>
+          <div>
+            <Tooltip placement="top" title={'重置'}>
+              <Icon
+                style={{ fontSize: '16px', margin: '8px', cursor: 'pointer' }}
+                type="redo"
+                onClick={this.handleRest}
+              />
+            </Tooltip>
+          </div>
+        </div>
+        <div className={styles.table}>
+          {tableList.length > 0 ? (
+            <Table
+              rowKey="index"
+              columns={COLOUMNS}
+              dataSource={this.handleTableData(tableList, indexBase)}
+              bordered
+              pagination={false}
+            />
+          ) : (
+            <Empty />
+          )}
+        </div>
+      </div>
+    );
+  }
+
   render() {
+    const {
+      targetResponsibility: { partGoalData = {} },
+    } = this.props;
+    const { isOpen, yearDateVal, radioType } = this.state;
+
     return (
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={BREADCRUMBLIST}
       >
         <div className={styles.container}>
-          <div className={styles.firstContent}>{this.renderFirstContent()}</div>
-          <div className={styles.secondContent}>{this.renderSecondContent()}</div>
-          <div className={styles.thirdContent}>{this.renderThirdContent()}</div>
+          <div className={styles.selectArea}>
+            <span>
+              <DatePicker
+                placeholder="请选择"
+                // disabledDate={this.handleDisabledDate}
+                style={{ width: 300, marginBottom: 10 }}
+                open={isOpen}
+                value={yearDateVal}
+                onOpenChange={s => this.handleOpenChange(s)}
+                onChange={this.clearDateValue}
+                onPanelChange={v => this.handlePanelChange(v)}
+                format="YYYY年"
+                mode="year"
+              />
+            </span>
+            <span className={styles.radioBtn}>
+              <Radio.Group
+                defaultValue={radioType}
+                buttonStyle="solid"
+                onChange={this.handleRadioBtn}
+              >
+                <Radio.Button value="1">图表</Radio.Button>
+                <Radio.Button value="2">列表</Radio.Button>
+              </Radio.Group>
+            </span>
+            <div className={styles.reminder}>
+              如果指标的考核结果未填写，则算未达标，请查看列表中指标未达标原因，到
+              <span className={styles.extrude} onClick={this.hanldeLink}>
+                目标责任制定实施
+              </span>
+              下完善考核结果
+            </div>
+          </div>
+
+          {+radioType === 1 && partGoalData === null ? (
+            <div className={styles.emptyArea}>
+              当前尚未形成年度目标责任分析报表，本报表可查看上一年度目标分析结果
+            </div>
+          ) : (
+            +radioType === 1 && <div className={styles.content}>{this.renderPicContent()}</div>
+          )}
+          {+radioType === 2 && partGoalData === null ? (
+            <div className={styles.emptyArea}>
+              当前尚未形成年度目标责任分析报表，本报表可查看上一年度目标分析结果
+            </div>
+          ) : (
+            +radioType === 2 && <div className={styles.content}>{this.renderTableContent()}</div>
+          )}
         </div>
       </PageHeaderLayout>
     );

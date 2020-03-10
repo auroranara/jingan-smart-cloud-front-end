@@ -16,6 +16,7 @@ import {
   queryGoalChange,
   queryYearGoal,
   queryPartGoal,
+  queryPartUnitGoal,
 } from '../services/targetResponsibility.js';
 
 export default {
@@ -70,6 +71,7 @@ export default {
     yearGoalData: {
       list: [],
     },
+    unitGoalData: {},
   },
 
   effects: {
@@ -243,6 +245,16 @@ export default {
         });
       }
     },
+
+    *fetchPartUnitGoal({ payload }, { call, put }) {
+      const response = yield call(queryPartUnitGoal, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'savePartUnitGoal',
+          payload: response,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -355,6 +367,14 @@ export default {
       return {
         ...state,
         partGoalData: data,
+      };
+    },
+
+    savePartUnitGoal(state, { payload }) {
+      const { data } = payload;
+      return {
+        ...state,
+        unitGoalData: data,
       };
     },
 

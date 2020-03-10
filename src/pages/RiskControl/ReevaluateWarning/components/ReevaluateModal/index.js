@@ -27,14 +27,15 @@ const formItemLayout = {
 export default class ReevaluateModal extends PureComponent {
 
   // 获取复评人员列表
-  fetchReevaluatorList = (pageNum = 1, pageSize = 10) => {
+  fetchReevaluatorList = (payload = {}) => {
     const { dispatch, data } = this.props;
     dispatch({
       type: 'reevaluateWarning/getReevaluatorList',
       payload: {
-        pageNum,
-        pageSize,
+        pageNum: 1,
+        pageSize: 10,
         unitId: data ? data.companyId : null,
+        ...payload,
       },
     });
   }

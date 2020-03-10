@@ -64,6 +64,7 @@ export default class ReevaluateWarningList extends Component {
       title: '所属图层',
       dataIndex: 'zoneType',
       align: 'center',
+      render: (val) => val ? ['风险四色图'][+val] : '',
     },
     {
       title: '区域变更时间',
@@ -143,10 +144,10 @@ export default class ReevaluateWarningList extends Component {
     this.page.reload();
   };
 
-  render() {
+  render () {
     const { visible, data } = this.state;
     const props = {
-      content({ list: { pagination: { total } = {} } = {} }) {
+      content ({ list: { pagination: { total } = {} } = {} }) {
         return `共计：${total || 0} 条`;
       },
       fields: this.getFields,
@@ -154,10 +155,10 @@ export default class ReevaluateWarningList extends Component {
       otherOperation: [
         {
           code: 'history',
-          name({ historyReviewCount }) {
+          name ({ historyReviewCount }) {
             return +historyReviewCount || 0;
           },
-          disabled({ historyReviewCount }) {
+          disabled ({ historyReviewCount }) {
             return !+historyReviewCount;
           },
           onClick: detail => {
