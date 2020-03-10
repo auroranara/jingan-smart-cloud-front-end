@@ -57,6 +57,7 @@ const Columns = [
     title: '所属图层',
     dataIndex: 'zoneType',
     align: 'center',
+    render: (val) => val ? ['风险四色图'][+val] : '',
   },
   {
     title: '区域变更时间',
