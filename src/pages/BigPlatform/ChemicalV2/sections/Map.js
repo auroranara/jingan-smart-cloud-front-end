@@ -286,7 +286,7 @@ export default class Map extends PureComponent {
       map.tiltAngle = TiltAngle;
       map.rotateAngle = RotateAngle;
       // map.mapScaleLevel = MapScaleLevel;
-      map.mapScaleLevel = defaultMapScaleLevel;
+      map.mapScaleLevel = defaultMapScaleLevel || MapScaleLevel;
       // console.log('map.getFMGroup()', map.groupIDs);
       this.loadBtnFloorCtrl();
       // 四色图
