@@ -364,7 +364,7 @@ export const ExamModal = Form.create()(props => {
           {getFieldDecorator('actualValue', {
             rules: [
               { required: true, message: '请输入实际值' },
-              { pattern: /^\d*$/, message: '请输入数字' },
+              { pattern: /^[0-9]+\.?[0-9]*$/, message: '请输入数字' },
             ],
             getValueFromEvent: e => e.target.value.trim(),
           })(<Input placeholder="请输入" />)}

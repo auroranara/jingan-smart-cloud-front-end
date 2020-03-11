@@ -64,7 +64,7 @@ export const COLOUMNS = [
     dataIndex: 'vetoFlag',
     align: 'center',
     render: (val, text) => {
-      const { reason, safeProductGoalValueList } = text;
+      const { reason, monthReason, safeProductGoalValueList } = text;
       const empty = <span>&nbsp;&nbsp;</span>;
       const valueIndex = safeProductGoalValueList
         ? safeProductGoalValueList.map((item, index) => {
@@ -72,24 +72,30 @@ export const COLOUMNS = [
             return (
               (+checkFrequency === 1 && (
                 <span>
-                  {moment(examtime).format('M月')}: {indexValue};{empty}
+                  <span>
+                    {moment(examtime).format('M月')}: {indexValue};{empty}
+                  </span>
                 </span>
               )) ||
               (+checkFrequency === 2 && (
                 <span>
-                  {getQuarter[examtime.substr(5, 6)]}: {indexValue};{empty}
+                  <span>
+                    {getQuarter[examtime.substr(5, 6)]}: {indexValue};{empty}
+                  </span>
                 </span>
               )) ||
-              (+checkFrequency === 2 && (
+              (+checkFrequency === 3 && (
                 <span>
-                  {examtime}
-                  年: {indexValue};{empty}
+                  <span>
+                    {examtime}
+                    年: {indexValue};{empty}
+                  </span>
                 </span>
               ))
             );
           })
         : '';
-      return +val === 0 ? reason : valueIndex;
+      return +val === 0 ? reason : valueIndex.concat(monthReason);
     },
   },
 ];
