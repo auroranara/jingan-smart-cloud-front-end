@@ -246,7 +246,8 @@ export default class Map extends PureComponent {
   };
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId, isInit }, fun) => {
+  initMap = ({ appName, key, mapId, isInit, defaultMapScaleLevel, theme }, fun) => {
+    console.log(defaultMapScaleLevel);
     if (!appName || !key || !mapId) return;
     const mapOptions = {
       //必要，地图容器
@@ -255,7 +256,7 @@ export default class Map extends PureComponent {
       mapServerURL: './data/' + mapId,
       // defaultViewMode: fengMap.FMViewMode.MODE_2D,
       //设置主题
-      defaultThemeName: '2001',
+      defaultThemeName: theme || '2001',
       modelSelectedEffect: false,
       //支持悬停模型高亮，默认为false悬停不高亮
       modelHoverEffect: true,
@@ -284,7 +285,8 @@ export default class Map extends PureComponent {
     map.on('loadComplete', () => {
       map.tiltAngle = TiltAngle;
       map.rotateAngle = RotateAngle;
-      map.mapScaleLevel = MapScaleLevel;
+      // map.mapScaleLevel = MapScaleLevel;
+      map.mapScaleLevel = defaultMapScaleLevel || MapScaleLevel;
       // console.log('map.getFMGroup()', map.groupIDs);
       this.loadBtnFloorCtrl();
       // 四色图
