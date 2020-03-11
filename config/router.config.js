@@ -4072,6 +4072,54 @@ module.exports = env => {
                   name: 'detail',
                   component: './EmergencyManagement/EmergencyEquipment/Detail/index',
                 },
+                {
+                  path: '/emergency-management/emergency-equipment/check/:equipId/list',
+                  code: 'emergencyManagement.emergencyEquipment.checkList',
+                  name: 'checkList',
+                  component: './EmergencyManagement/EmergencyEquipment/Check/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/check/:equipId/add',
+                  code: 'emergencyManagement.emergencyEquipment.checkAdd',
+                  name: 'checkAdd',
+                  component: './EmergencyManagement/EmergencyEquipment/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/check/:equipId/edit/:id',
+                  code: 'emergencyManagement.emergencyEquipment.checkEdit',
+                  name: 'checkEdit',
+                  component: './EmergencyManagement/EmergencyEquipment/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/check/:equipId/detail/:id',
+                  code: 'emergencyManagement.emergencyEquipment.checkDetail',
+                  name: 'checkDetail',
+                  component: './EmergencyManagement/EmergencyEquipment/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/maint/:equipId/list',
+                  code: 'emergencyManagement.emergencyEquipment.maintList',
+                  name: 'maintList',
+                  component: './EmergencyManagement/EmergencyEquipment/Maint/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/maint/:equipId/add',
+                  code: 'emergencyManagement.emergencyEquipment.maintAdd',
+                  name: 'maintAdd',
+                  component: './EmergencyManagement/EmergencyEquipment/Maint/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/maint/:equipId/edit/:id',
+                  code: 'emergencyManagement.emergencyEquipment.maintEdit',
+                  name: 'maintEdit',
+                  component: './EmergencyManagement/EmergencyEquipment/Maint/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/maint/:equipId/detail/:id',
+                  code: 'emergencyManagement.emergencyEquipment.maintDetail',
+                  name: 'maintDetail',
+                  component: './EmergencyManagement/EmergencyEquipment/Maint/Edit',
+                },
               ],
             },
             {
@@ -4108,6 +4156,55 @@ module.exports = env => {
                   code: 'emergencyManagement.emergencySupplies.detail',
                   name: 'detail',
                   component: './EmergencyManagement/EmergencySupplies/Detail/index',
+                },
+
+                {
+                  path: '/emergency-management/emergency-supplies/check/:materialId/list',
+                  code: 'emergencyManagement.emergencySupplies.checkList',
+                  name: 'checkList',
+                  component: './EmergencyManagement/EmergencySupplies/Check/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/check/:materialId/add',
+                  code: 'emergencyManagement.emergencySupplies.checkAdd',
+                  name: 'checkAdd',
+                  component: './EmergencyManagement/EmergencySupplies/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/check/:materialId/edit/:id',
+                  code: 'emergencyManagement.emergencySupplies.checkEdit',
+                  name: 'checkEdit',
+                  component: './EmergencyManagement/EmergencySupplies/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/check/:materialId/detail/:id',
+                  code: 'emergencyManagement.emergencySupplies.checkDetail',
+                  name: 'checkDetail',
+                  component: './EmergencyManagement/EmergencySupplies/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/maint/:materialId/list',
+                  code: 'emergencyManagement.emergencySupplies.maintList',
+                  name: 'maintList',
+                  component: './EmergencyManagement/EmergencySupplies/Maint/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/maint/:materialId/add',
+                  code: 'emergencyManagement.emergencySupplies.maintAdd',
+                  name: 'maintAdd',
+                  component: './EmergencyManagement/EmergencySupplies/Maint/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/maint/:materialId/edit/:id',
+                  code: 'emergencyManagement.emergencySupplies.maintEdit',
+                  name: 'maintEdit',
+                  component: './EmergencyManagement/EmergencySupplies/Maint/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/maint/:materialId/detail/:id',
+                  code: 'emergencyManagement.emergencySupplies.maintDetail',
+                  name: 'maintDetail',
+                  component: './EmergencyManagement/EmergencySupplies/Maint/Edit',
                 },
               ],
             },
@@ -4842,7 +4939,7 @@ module.exports = env => {
             //   ],
             // },
             {
-              name: 'authorization',// 授权管理
+              name: 'authorization', // 授权管理
               path: '/real-name-certification/authorization',
               code: 'realNameCertification.authorization',
               hideChildrenInMenu: true,
