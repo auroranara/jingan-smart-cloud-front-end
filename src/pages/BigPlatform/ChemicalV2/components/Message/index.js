@@ -473,7 +473,7 @@ export default class Messages extends PureComponent {
       },
       '100': {
         otherTitle: `【${monitorEquipmentTypeName +
-          (+statusType === -1 && +fixType === 5 ? '发生' : '') +
+          // (+statusType === -1 && +fixType === 5 ? '发生' : '') +
           typeName}】`,
         onClick:
           monitorEquipmentType !== '1'

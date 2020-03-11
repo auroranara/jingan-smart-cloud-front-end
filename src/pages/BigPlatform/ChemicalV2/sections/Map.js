@@ -178,7 +178,16 @@ export default class Map extends PureComponent {
           const {
             polygonProps: { coordinateList, id, groupId },
           } = polygon;
-          if (JSON.stringify(warningList).indexOf(id) < 0) return null;
+          if (JSON.stringify(warningList).indexOf(id) < 0) {
+            if (popInfoWindow) {
+              // 关闭风险变更的提示
+              const {
+                options_: { zoneId },
+              } = popInfoWindow;
+              if (id === zoneId) popInfoWindow.close();
+            }
+            return null;
+          }
           this.addMarkers(+groupId, {
             x: +coordinateList[0].x,
             y: +coordinateList[0].y,
@@ -205,8 +214,9 @@ export default class Map extends PureComponent {
   renderPoints = (pointsInfo, iconType) => {
     if (!pointsInfo.length) return;
     pointsInfo.map(item => {
-      const { warnStatus } = item;
+      const { warnStatus, status } = item;
       const { groupId, xnum, ynum, znum, isShow } = item.pointFixInfoList[0];
+      if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
       if (!+isShow) return null;
       this.addMarkers(+groupId, {
         x: +xnum,
@@ -247,7 +257,6 @@ export default class Map extends PureComponent {
 
   // 初始化地图定位
   initMap = ({ appName, key, mapId, isInit, defaultMapScaleLevel, theme }, fun) => {
-    console.log(defaultMapScaleLevel);
     if (!appName || !key || !mapId) return;
     const mapOptions = {
       //必要，地图容器
@@ -427,6 +436,7 @@ export default class Map extends PureComponent {
               window.publicPath
             }#/risk-control/change-warning/list?companyId=${companyId}&status=0&zoneId=${zoneId}','_blank');">查看详情>></span></div>
         </div>`,
+      zoneId,
     });
     popInfoWindow = new fengmap.FMPopInfoWindow(map, ctlOpt);
   };
@@ -689,7 +699,12 @@ export default class Map extends PureComponent {
         if (success) {
           const { warnStatus } = deviceDetail;
           this.removeMarkerById(equipmentId);
-          this.renderPoints([deviceDetail], 2);
+          this.renderPoints(
+            [deviceDetail].filter(
+              item => item.pointFixInfoList && item.pointFixInfoList.length > 0
+            ),
+            2
+          );
           setTimeout(() => {
             this.handleMarkerStatusChange(equipmentId, statusType, warnStatus);
           }, 50);

@@ -8,7 +8,6 @@ import monitor from '../imgs/monitor.png';
 import riskPoint from '../imgs/risk-point.png';
 import video from '../imgs/video.png';
 import mapDot from '@/pages/BigPlatform/NewFireControl/img/mapDot.png';
-import { MonitorList } from '../utils';
 import monitorActive from '../imgs/monitor-active.png';
 import monitorGray from '../imgs/monitor-gray.png';
 import riskPointActive from '../imgs/risk-point-active.png';
@@ -545,9 +544,7 @@ export default class Map extends PureComponent {
 
         if (iconType === 2) showVideo();
         else if (iconType === 0) handleClickRiskPoint(itemId, status);
-        else if (iconType === 1)
-          // setDrawerVisible('monitorDetail', { monitorType: 0, monitorData: MonitorList[0][0] });
-          setDrawerVisible('tankMonitor');
+        else if (iconType === 1) setDrawerVisible('tankMonitor');
       }
       // this.addMarkers(x, y, riskPoint, 0);
 
