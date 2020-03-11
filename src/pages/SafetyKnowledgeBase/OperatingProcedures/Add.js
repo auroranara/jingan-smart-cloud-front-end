@@ -15,6 +15,8 @@ import {
 } from './List';
 import { AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes'
+import { phoneReg } from '@/utils/validate';
+import moment from 'moment';
 import styles from './Add.less';
 
 const SPAN = { span: 24 };
@@ -36,6 +38,49 @@ const VERSION_CODE_MAPPER = value => `V${value}`;
 }))
 export default class AddOperatingProdures extends Component {
 
+  componentDidMount () {
+    const {
+      dispatch,
+      match: { params: { id } },
+    } = this.props;
+    const isNotDetail = !location.href.includes('detail');
+    if (id) {
+      dispatch({
+        type: 'safetyProductionRegulation/fetchOperatingProcedureDetail',
+        payload: { id },
+        callback: (success, detail) => {
+          if (success) {
+            const {
+              companyId,
+              companyName,
+              name,
+              phone,
+              accessoryContent,
+              startDate,
+              endDate,
+              status,
+              historyType,
+              editionCode,
+              operatingName,
+            } = detail;
+            this.form && this.form.setFieldsValue({
+              company: companyId ? { key: companyId, label: companyName } : undefined,
+              operatingName: operatingName || undefined,
+              historyType: isNotDetail && +status === 4 ? '2' : historyType || '1',
+              editionCode: isNotDetail && +status === 4 ? (+editionCode + 0.01).toFixed(2) : editionCode || '1.00',
+              name: name || undefined,
+              phone: phone || undefined,
+              expireDate: startDate && endDate ? [moment(startDate), moment(endDate)] : [],
+              accessoryContent: accessoryContent ? accessoryContent.map(item => ({ ...item, uid: item.id, url: item.webUrl })) : [],
+            });
+          } else {
+            message.error('获取详情失败，请稍后重试或联系管理人员！');
+          }
+        },
+      })
+    }
+  }
+
   // 上传前
   handleBeforeUpload = (file) => {
     const isJpgOrPng = file.type.includes('word') || file.type.includes('pdf');
@@ -50,15 +95,54 @@ export default class AddOperatingProdures extends Component {
   }
 
   // 跳转到编辑页面
-  handleEditButtonClick = () => { }
+  handleEditButtonClick = () => {
+    const { match: { params: { id } } } = this.props;
+    router.push(`/safety-production-regulation/operating-procedures/edit/${id}`)
+  }
 
   // 提交
   handleSubmitButtonClick = () => {
+    const {
+      dispatch,
+      match: { params: { id } },
+    } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((err, values) => {
-      console.log('values', values);
       if (err) return;
-
+      const {
+        company,
+        expireDate,
+        ...resValues
+      } = values;
+      const [startDate, endDate] = expireDate;
+      const payload = {
+        ...resValues,
+        companyId: company.key,
+        startDate: startDate.unix() * 1000,
+        endDate: endDate.unix() * 1000,
+      };
+      const callback = (success, msg) => {
+        if (success) {
+          message.success('操作成功');
+          router.push(LIST_PATH);
+        } else {
+          message.error(msg || '操作失败');
+        }
+      }
+      if (id) {
+        // 如果编辑
+        dispatch({
+          type: 'safetyProductionRegulation/editOperatingProcedure',
+          payload: { ...payload, id },
+          callback,
+        })
+      } else {
+        dispatch({
+          type: 'safetyProductionRegulation/addOperatingProcedure',
+          payload,
+          callback,
+        })
+      }
     })
   }
 
@@ -72,7 +156,7 @@ export default class AddOperatingProdures extends Component {
       match: { params: { id } },
       user: { isCompany },
       safetyProductionRegulation: {
-        detail: { approveList = [] } = {},
+        operatingProceduresDetail: { hgOperatingInstructionApproveList: approvalList = [] } = {},
       },
     } = this.props;
     const href = location.href;
@@ -120,7 +204,7 @@ export default class AddOperatingProdures extends Component {
             },
           }],
           {
-            id: 'safetyName',
+            id: 'operatingName',
             label: '操作规程名称',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -136,7 +220,7 @@ export default class AddOperatingProdures extends Component {
             },
           },
           {
-            id: 'versionType',
+            id: 'historyType',
             label: '版本类型',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -146,7 +230,7 @@ export default class AddOperatingProdures extends Component {
             },
           },
           {
-            id: 'versionCode',
+            id: 'editionCode',
             label: '版本号',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -156,7 +240,7 @@ export default class AddOperatingProdures extends Component {
             },
           },
           {
-            id: 'compaileName',
+            id: 'name',
             label: '编制人',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -172,7 +256,7 @@ export default class AddOperatingProdures extends Component {
             },
           },
           {
-            id: 'telephone',
+            id: 'phone',
             label: '联系电话',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -184,6 +268,7 @@ export default class AddOperatingProdures extends Component {
                   whitespace: true,
                   message: '联系电话不能为空',
                 },
+                { pattern: phoneReg, message: '联系电话格式不正确' },
               ] : undefined,
             },
           },
@@ -206,7 +291,7 @@ export default class AddOperatingProdures extends Component {
             },
           },
           {
-            id: 'otherFile',
+            id: 'accessoryContent',
             label: '附件',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -241,9 +326,9 @@ export default class AddOperatingProdures extends Component {
               ref={this.setFormReference}
             />
           </Card>
-          {!isNotDetail && approveList && approveList.length > 0 && (
+          {!isNotDetail && approvalList && approvalList.length > 0 && (
             <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
-              {approveList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
+              {approvalList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, approveAccessoryContent }, index) => (
                 <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
                   <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
                   <p>一级审批人：{firstApproveBy || ''}</p>
@@ -252,7 +337,7 @@ export default class AddOperatingProdures extends Component {
                   <p>经办人：{approveBy || ''}</p>
                   <div style={{ display: 'flex' }}>
                     <span>附件：</span>
-                    <div>{otherFileList.map(({ id, fileName, webUrl }) => (
+                    <div>{approveAccessoryContent.map(({ id, fileName, webUrl }) => (
                       <div key={id}><a href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></div>
                     ))}</div>
                   </div>

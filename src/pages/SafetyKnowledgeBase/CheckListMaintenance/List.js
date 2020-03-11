@@ -101,35 +101,130 @@ export default class CheckListMaintenance extends Component {
 
   state = {
     historyVisible: false,
+    reviewModalVisible: false,
     detail: null,
+    planId: null,
   }
 
-  // 点击新增按钮
-  handleAddButtonClick = () => { }
+  componentDidMount () {
+    this.handleQuery();
+  }
 
   setFormReference = form => {
     this.form = form;
   };
 
-  handleQuery = () => { }
+  // 查询列表
+  handleQuery = (payload = {}) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const values = getFieldsValue();
+    dispatch({
+      type: 'safetyProductionRegulation/fetchCheckList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        ...payload,
+        ...values,
+      },
+    })
+  }
 
-  handleReset = () => { }
+  handleReset = () => {
+    const { resetFields } = this.props;
+    resetFields();
+    this.handleQuery();
+  }
 
-  fetchHistory = () => { }
+  // 获取历史
+  fetchHistory = (payload = {}) => {
+    const {
+      dispatch,
+    } = this.props;
+    const { detail } = this.state;
+    dispatch({
+      type: 'safetyProductionRegulation/fetchCheckListHistory',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        relationId: detail.relationId,
+        ...payload,
+      },
+    })
+  }
 
   handleToAdd = () => { router.push(ADD_PATH) }
 
   // 点击打开历史版本
-  handleHistoryButtonClick = (data) => {
-
+  handleHistoryButtonClick = detail => {
+    this.setState({
+      historyVisible: true,
+      detail,
+    }, () => {
+      this.fetchHistory();
+    });
   }
 
   // 发布操作
-  handlePublishConfirm = () => { }
+  handlePublishConfirm = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'safetyProductionRegulation/publishCheckList',
+      payload: { id },
+      callback: (success, msg) => {
+        if (success) {
+          message.success('发布成功！');
+          this.handleQuery();
+        } else { message.error(msg || '发布失败，请稍后重试或联系管理人员！') }
+      },
+    })
+  }
 
-  // 关闭历史版本弹窗
-  handleCloseHistoryModal = () => {
+  // 点击查看
+  handleView = id => {
+    router.push(`/safety-production-regulation/check-list-maintenance/detail/${id}`)
+  }
 
+  // 点击编辑
+  handleEdit = id => {
+    router.push(`/safety-production-regulation/check-list-maintenance/edit/${id}`)
+  }
+
+  // 点击打开审核弹窗
+  handleViewReviewModal = (planId) => {
+    this.setState({ planId, reviewModalVisible: true })
+  }
+
+  // 提交审核
+  handleSubmitReview = values => {
+    const { dispatch } = this.props;
+    const { planId } = this.state;
+    if (!planId) {
+      message.error('参数planId不存在');
+      return;
+    }
+    const { otherFile, ...resValues } = values;
+    const payload = {
+      ...resValues,
+      planId,
+      approveAccessoryContent: otherFile ? JSON.parse(otherFile) : undefined,
+    };
+    // console.log('审核', payload);
+    dispatch({
+      type: 'safetyProductionRegulation/reviewCheckList',
+      payload: payload,
+      callback: (success, msg) => {
+        if (success) {
+          message.success('审核成功！');
+          this.setState({ reviewModalVisible: false });
+          this.handleQuery();
+        } else {
+          message.error(msg || '审核失败，请稍后重试或联系管理人员！')
+        }
+      },
+    })
   }
 
   renderForm = () => {
@@ -164,14 +259,21 @@ export default class CheckListMaintenance extends Component {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('person')(
-                  <Input placeholder="请输入编制人/联系电话" />
+                {getFieldDecorator('name')(
+                  <Input placeholder="请输入编制人" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('a')(
+                {getFieldDecorator('phone')(
+                  <Input placeholder="请输入联系电话" />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('paststatus')(
                   <Select placeholder="请选择到期状态">
                     {EXPIRE_STATUSES.map(({ key, value }) => (
                       <Select.Option key={key} value={key}>{value}</Select.Option>
@@ -182,7 +284,7 @@ export default class CheckListMaintenance extends Component {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('b')(
+                {getFieldDecorator('status')(
                   <Select placeholder="请选择审核状态">
                     {STATUSES.map(({ key, value }) => (
                       <Select.Option key={key} value={key}>{value}</Select.Option>
@@ -214,7 +316,7 @@ export default class CheckListMaintenance extends Component {
     const {
       user: { isCompany, currentUser: { permissionCodes } },
       safetyProductionRegulation: {
-        operatingProcedures: {
+        checkList: {
           list,
           pagination: { pageNum, pageSize, total },
         },
@@ -227,24 +329,31 @@ export default class CheckListMaintenance extends Component {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
+        width: 250,
       }],
       {
         title: '检查类型',
-        dataIndex: 'safetyName',
+        dataIndex: 'type',
         align: 'center',
+        width: 150,
+        render: (val) => {
+          const target = CHECK_TYPES.find(item => item.key === val);
+          return target ? target.value : '';
+        },
       },
       {
         title: '编制人',
         dataIndex: 'compaileName',
-        render: (_, { compaileName, telephone }) => (
+        width: 200,
+        render: (_, { name, phone }) => (
           <div className={styles.multi}>
             <div>
               <span className={styles.label}>姓名：</span>
-              {compaileName}
+              {name}
             </div>
             <div>
               <span className={styles.label}>联系电话：</span>
-              {telephone}
+              {phone}
             </div>
           </div>
         ),
@@ -253,6 +362,7 @@ export default class CheckListMaintenance extends Component {
       {
         title: '时间',
         dataIndex: 'time',
+        width: 200,
         render: (_, { startDate, endDate }) => (
           <div className={styles.multi}>
             <div>
@@ -270,6 +380,7 @@ export default class CheckListMaintenance extends Component {
       {
         title: '到期状态',
         dataIndex: 'paststatus',
+        width: 150,
         render: value => {
           const { value: label, color } =
             EXPIRE_STATUSES.find(({ key }) => key === `${value}`) || {};
@@ -279,20 +390,22 @@ export default class CheckListMaintenance extends Component {
       },
       {
         title: '附件',
-        dataIndex: 'otherFileList',
+        dataIndex: 'accessoryContent',
         render: value => <CustomUpload className={styles.fileList} value={value} type="span" />,
         align: 'center',
+        width: 200,
       },
       {
         title: '审核状态',
         dataIndex: 'status',
         render: value => <SelectOrSpan list={STATUSES} value={value} type="span" />,
         align: 'center',
+        width: 150,
       },
       {
         title: '历史版本',
         dataIndex: 'versionCount',
-        width: 88,
+        width: 100,
         fixed: list && list.length > 0 ? 'right' : false,
         render: (value, data) => (
           <span
@@ -307,18 +420,18 @@ export default class CheckListMaintenance extends Component {
       {
         title: '操作',
         dataIndex: 'id',
-        width: 120,
+        width: 200,
         align: 'center',
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
           <div style={{ textAlign: 'left' }}>
-            <AuthA code={viewCode} onClick={() => { }} data-id={id}>
+            <AuthA code={viewCode} onClick={() => this.handleView(id)} data-id={id}>
               查看
             </AuthA>
             <Divider type="vertical" />
             <AuthA
               hasAuthFn={() => +status === 1 && hasReviewAuthority}
-              onClick={() => { }}
+              onClick={() => this.handleViewReviewModal(id)}
             >
               审核
             </AuthA>
@@ -333,7 +446,7 @@ export default class CheckListMaintenance extends Component {
             {(+status === 3 || +status === 4) && (
               <Fragment>
                 <Divider type="vertical" />
-                <AuthA code={editCode} onClick={() => { }} data-id={id}>
+                <AuthA code={editCode} onClick={() => this.handleEdit(id)} data-id={id}>
                   编辑
                 </AuthA>
               </Fragment>
@@ -358,9 +471,11 @@ export default class CheckListMaintenance extends Component {
             showQuickJumper: true,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: this.handlePageChange,
-            onShowSizeChange: (num, size) => {
-              this.handlePageChange(1, size);
+            onChange: (pageNum, pageSize) => {
+              this.handleQuery({ pageNum, pageSize });
+            },
+            onShowSizeChange: (pageNum, pageSize) => {
+              this.handleQuery({ pageNum, pageSize });
             },
           }}
         />
@@ -374,14 +489,14 @@ export default class CheckListMaintenance extends Component {
   renderHistory () {
     const {
       safetyProductionRegulation: {
-        history: { list = [], pagination: { total, pageSize, pageNum } = {} },
+        checkListHistory: { list = [], pagination: { total, pageSize, pageNum } = {} },
       },
     } = this.props;
     const { historyVisible } = this.state;
     const columns = [
       {
         title: '版本号',
-        dataIndex: 'versionCode',
+        dataIndex: 'editionCode',
         render: value => `V${value}`,
         align: 'center',
       },
@@ -393,7 +508,7 @@ export default class CheckListMaintenance extends Component {
       },
       {
         title: '编制人',
-        dataIndex: 'compaileName',
+        dataIndex: 'name',
         align: 'center',
       },
       {
@@ -430,7 +545,7 @@ export default class CheckListMaintenance extends Component {
       <Modal
         title="历史版本"
         visible={historyVisible}
-        onCancel={this.handleCloseHistoryModal}
+        onCancel={() => { this.setState({ historyVisible: false }) }}
         footer={null}
         width="60%"
         className={styles.modal}
@@ -442,7 +557,6 @@ export default class CheckListMaintenance extends Component {
           columns={columns}
           rowKey="id"
           // loading={loadingHistory}
-          onChange={this.handleHistoryTableChange}
           scroll={{
             x: true,
           }}
@@ -453,9 +567,11 @@ export default class CheckListMaintenance extends Component {
             showQuickJumper: true,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: this.fetchHistory,
-            onShowSizeChange: (num, size) => {
-              this.fetchHistory(1, size);
+            onChange: (pageNum, pageSize) => {
+              this.fetchHistory({ pageNum, pageSize });
+            },
+            onShowSizeChange: (pageNum, pageSize) => {
+              this.fetchHistory({ pageNum, pageSize });
             },
           }}
         />
@@ -464,6 +580,14 @@ export default class CheckListMaintenance extends Component {
   }
 
   render () {
+    const { reviewModalVisible } = this.state;
+    const reviewModalProps = {
+      visible: reviewModalVisible,
+      onOk: this.handleSubmitReview,
+      onCancel: () => {
+        this.setState({ reviewModalVisible: false });
+      },
+    };
     return (
       <PageHeaderLayout
         title={TITLE}
@@ -474,7 +598,7 @@ export default class CheckListMaintenance extends Component {
         {this.renderTable()}
         {this.renderHistory()}
         {/* 审核提示弹窗 */}
-        {/* <ReviewModal {...reviewModalProps} /> */}
+        <ReviewModal {...reviewModalProps} />
       </PageHeaderLayout>
     )
   }
