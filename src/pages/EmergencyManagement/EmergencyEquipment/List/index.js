@@ -503,7 +503,7 @@ export default class EmergencyEquipmentList extends PureComponent {
         width: 120,
         render: (data, record) => {
           const { equipCount, equipUnit } = record;
-          return equipCount + (equipUnit || '个');
+          return equipCount + (equipUnit || '');
         },
       },
       // {

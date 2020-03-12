@@ -282,6 +282,7 @@ export default class EquipMaintList extends PureComponent {
         title: '维保评价',
         dataIndex: 'maintEstimate',
         align: 'center',
+        width: 300,
       },
       {
         title: '操作',

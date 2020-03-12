@@ -282,6 +282,7 @@ export default class EquipCheckList extends PureComponent {
         title: '检查评价',
         dataIndex: 'checkEstimate',
         align: 'center',
+        width: 300,
       },
       {
         title: '操作',

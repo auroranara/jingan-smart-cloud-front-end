@@ -440,7 +440,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             {getFieldDecorator('use', {
               getValueFromEvent: e => e.target.value.trim(),
               rules: [{ required: true, message: '请输入装备用途' }],
-            })(<TextArea rows={4} placeholder="请输入装备用途" maxLength="500" {...itemStyles} />)}
+            })(<TextArea rows={4} placeholder="请输入装备用途" maxLength={500} {...itemStyles} />)}
           </FormItem>
           <FormItem label="装备状态" {...formItemLayout}>
             {getFieldDecorator('status', {
@@ -492,7 +492,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
           <FormItem label="备注" {...formItemLayout}>
             {getFieldDecorator('remark', { getValueFromEvent: e => e.target.value.trim() })(
-              <TextArea rows={4} placeholder="请输入备注" maxLength="500" {...itemStyles} />
+              <TextArea rows={4} placeholder="请输入备注" maxLength={500} {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="图片" {...formItemLayout}>
