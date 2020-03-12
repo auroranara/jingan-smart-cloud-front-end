@@ -14,6 +14,7 @@ import {
   TimePicker,
   Checkbox,
   message,
+  Input,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -188,6 +189,7 @@ export default class AddAuthorization extends PureComponent {
   render () {
     const {
       personLoading,
+      form: { getFieldDecorator },
       realNameCertification: {
         // 人员数据
         person: {
@@ -289,12 +291,27 @@ export default class AddAuthorization extends PureComponent {
         <Card className={styles.addContainer}>
           <Tabs activeKey={activeKey}>
             <TabPane tab="Tab 1" key="1">
-              <Row gutter={16}>
+              <Row gutter={16} style={{ margin: '8px' }}>
                 <Col span={9}>
                   <div className={styles.prompt}>
                     <span>请选择人员</span>
                   </div>
                   <div className={styles.outerLine}>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        {getFieldDecorator('name')(
+                          <Input placeholder="姓名" allowClear />
+                        )}
+                      </Col>
+                      <Col span={8}>
+                        {getFieldDecorator('icnumber')(
+                          <Input placeholder="卡号" allowClear />
+                        )}
+                      </Col>
+                      <Col span={8}>
+                        <Button type="primary" onClick={() => this.fetchPersonList()}>查询</Button>
+                      </Col>
+                    </Row>
                     <Table
                       rowKey="id"
                       // size="small"
