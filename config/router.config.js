@@ -2837,6 +2837,78 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/safety-production-regulation/operating-procedures',// 操作规程
+              name: 'operatingProcedures',
+              code: 'safetyProductionRegulation.operatingProcedures',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-production-regulation/operating-procedures',
+                  redirect: '/safety-production-regulation/operating-procedures/list',
+                },
+                {
+                  path: '/safety-production-regulation/operating-procedures/list',
+                  name: 'list',
+                  code: 'safetyProductionRegulation.operatingProcedures.listView',
+                  component: './SafetyKnowledgeBase/OperatingProcedures/List',
+                },
+                {
+                  path: '/safety-production-regulation/operating-procedures/add',
+                  name: 'add',
+                  code: 'safetyProductionRegulation.operatingProcedures.add',
+                  component: './SafetyKnowledgeBase/OperatingProcedures/Add',
+                },
+                {
+                  path: '/safety-production-regulation/operating-procedures/edit/:id',
+                  name: 'edit',
+                  code: 'safetyProductionRegulation.operatingProcedures.edit',
+                  component: './SafetyKnowledgeBase/OperatingProcedures/Add',
+                },
+                {
+                  path: '/safety-production-regulation/operating-procedures/detail/:id',
+                  name: 'detail',
+                  code: 'safetyProductionRegulation.operatingProcedures.view',
+                  component: './SafetyKnowledgeBase/OperatingProcedures/Add',
+                },
+              ],
+            },
+            {
+              path: '/safety-production-regulation/check-list-maintenance', // 检查表维护
+              name: 'checkListMaintenance',
+              code: 'safetyProductionRegulation.checkListMaintenance',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-production-regulation/check-list-maintenance',
+                  redirect: '/safety-production-regulation/check-list-maintenance/list',
+                },
+                {
+                  path: '/safety-production-regulation/check-list-maintenance/list',
+                  name: 'list',
+                  code: 'safetyProductionRegulation.checkListMaintenance.listView',
+                  component: './SafetyKnowledgeBase/CheckListMaintenance/List',
+                },
+                {
+                  path: '/safety-production-regulation/check-list-maintenance/add',
+                  name: 'add',
+                  code: 'safetyProductionRegulation.checkListMaintenance.add',
+                  component: './SafetyKnowledgeBase/CheckListMaintenance/Add',
+                },
+                {
+                  path: '/safety-production-regulation/check-list-maintenance/edit/:id',
+                  name: 'edit',
+                  code: 'safetyProductionRegulation.checkListMaintenance.edit',
+                  component: './SafetyKnowledgeBase/CheckListMaintenance/Add',
+                },
+                {
+                  path: '/safety-production-regulation/check-list-maintenance/detail/:id',
+                  name: 'detail',
+                  code: 'safetyProductionRegulation.checkListMaintenance.view',
+                  component: './SafetyKnowledgeBase/CheckListMaintenance/Add',
+                },
+              ],
+            },
           ],
         },
 
@@ -3216,6 +3288,36 @@ module.exports = env => {
                   code: 'safetyRiskControl.promise.edit',
                   path: '/safety-risk-control/promise/edit/:id',
                   component: './AnnouncementManagement/Promise/Edit',
+                },
+              ],
+            },
+            {
+              name: 'keyPart', // 关键装置重点部位
+              path: '/safety-risk-control/key-part',
+              code: 'safetyRiskControl.keyPart',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-risk-control/key-part',
+                  redirect: '/safety-risk-control/key-part/list',
+                },
+                {
+                  path: '/safety-risk-control/key-part/list',
+                  name: 'list',
+                  code: 'safetyRiskControl.keyPart.listView',
+                  component: './KeyPart/List',
+                },
+                {
+                  path: '/safety-risk-control/key-part/add',
+                  name: 'add',
+                  code: 'safetyRiskControl.keyPart.add',
+                  component: './KeyPart/Add',
+                },
+                {
+                  path: '/safety-risk-control/key-part/edit/:id',
+                  name: 'edit',
+                  code: 'safetyRiskControl.keyPart.edit',
+                  component: './KeyPart/Add',
                 },
               ],
             },
