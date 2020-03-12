@@ -501,7 +501,7 @@ export default class OperationProcedures extends Component {
       },
       {
         title: '审核人',
-        dataIndex: 'approveBy',
+        dataIndex: 'approveName',
         align: 'center',
       },
       {
@@ -512,7 +512,7 @@ export default class OperationProcedures extends Component {
       },
       {
         title: '发布人',
-        dataIndex: 'publishBy',
+        dataIndex: 'publishName',
         align: 'center',
       },
       {
@@ -527,7 +527,7 @@ export default class OperationProcedures extends Component {
       <Modal
         title="历史版本"
         visible={historyVisible}
-        onCancel={this.handleCloseHistoryModal}
+        onCancel={() => { this.setState({ historyVisible: false }) }}
         footer={null}
         width="60%"
         className={styles.modal}
@@ -563,6 +563,12 @@ export default class OperationProcedures extends Component {
   }
 
   render () {
+    const {
+      user: { isCompany },
+      safetyProductionRegulation: {
+        operatingProcedures: { companyNum = 0 },
+      },
+    } = this.props;
     const { reviewModalVisible } = this.state;
     const reviewModalProps = {
       visible: reviewModalVisible,
@@ -575,7 +581,7 @@ export default class OperationProcedures extends Component {
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
-      // content={!isCompany && <span className={styles.count}>{`单位数量：${a}`}</span>}
+        content={!isCompany && <span className={styles.count}>{`单位数量：${companyNum}`}</span>}
       >
         {this.renderForm()}
         {this.renderTable()}

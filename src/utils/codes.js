@@ -293,6 +293,12 @@ export default {
       delete: 'lawEnforcement.illegal.delete',
     },
   },
+  keyPart: {
+    list: 'safetyRiskControl.keyPart.listView',
+    add: 'safetyRiskControl.keyPart.add',
+    edit: 'safetyRiskControl.keyPart.edit',
+    delete: 'safetyRiskControl.keyPart.delete',
+  },
   training: {
     examinationPaper: {
       list: 'training.examinationPaper.listView',

@@ -519,7 +519,7 @@ export default class CheckListMaintenance extends Component {
       },
       {
         title: '审核人',
-        dataIndex: 'approveBy',
+        dataIndex: 'approveName',
         align: 'center',
       },
       {
@@ -530,7 +530,7 @@ export default class CheckListMaintenance extends Component {
       },
       {
         title: '发布人',
-        dataIndex: 'publishBy',
+        dataIndex: 'publishName',
         align: 'center',
       },
       {
@@ -580,6 +580,12 @@ export default class CheckListMaintenance extends Component {
   }
 
   render () {
+    const {
+      user: { isCompany },
+      safetyProductionRegulation: {
+        checkList: { companyNum = 0 },
+      },
+    } = this.props;
     const { reviewModalVisible } = this.state;
     const reviewModalProps = {
       visible: reviewModalVisible,
@@ -592,7 +598,7 @@ export default class CheckListMaintenance extends Component {
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
-      // content={!isCompany && <span className={styles.count}>{`单位数量：${a}`}</span>}
+        content={!isCompany && <span className={styles.count}>{`单位数量：${companyNum}`}</span>}
       >
         {this.renderForm()}
         {this.renderTable()}

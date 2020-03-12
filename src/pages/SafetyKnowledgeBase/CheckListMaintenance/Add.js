@@ -453,9 +453,9 @@ export default class AddOperatingProdures extends Component {
                   <p>经办人：{approveBy || ''}</p>
                   <div style={{ display: 'flex' }}>
                     <span>附件：</span>
-                    <div>{approveAccessoryContent.map(({ id, fileName, webUrl }) => (
+                    <div>{approveAccessoryContent && approveAccessoryContent.length ? approveAccessoryContent.map(({ id, fileName, webUrl }) => (
                       <div key={id}><a href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></div>
-                    ))}</div>
+                    )) : null}</div>
                   </div>
                 </Card>
               ))}

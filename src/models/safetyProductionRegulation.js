@@ -24,13 +24,13 @@ export default {
 
   state: {
     // 操作规程
-    operatingProcedures: defaultData,
+    operatingProcedures: { ...defaultData, companyNum: 0 },
     // 操作规程详情
     operatingProceduresDetail: {},
     // 操作规程历史
     operatingProceduresHistory: defaultData,
     // 检查表维护
-    checkList: defaultData,
+    checkList: { ...defaultData, companyNum: 0 },
     // 检查表维护历史
     checkListHistory: defaultData,
     // 检查表维护详情
@@ -43,7 +43,7 @@ export default {
       const res = yield call(fetchCheckList, { ...payload, historyType: 1 });
       yield put({
         type: 'saveCheckList',
-        payload: res && res.code === 200 && res.data ? res.data : defaultData,
+        payload: res && res.code === 200 && res.data ? { data: res.data, companyNum: res.msg } : { data: defaultData, companyNum: 0 },
       })
     },
     // 检查表维护-新增
@@ -89,7 +89,7 @@ export default {
       const res = yield call(fetchOperatingProcedureList, { ...payload, historyType: 1 });
       yield put({
         type: 'saveOperatingProcedures',
-        payload: res && res.code === 200 && res.data ? res.data : defaultData,
+        payload: res && res.code === 200 && res.data ? { data: res.data, companyNum: res.msg } : { data: defaultData, companyNum: 0 },
       })
     },
     // 操作规程-新增
@@ -134,9 +134,10 @@ export default {
 
   reducers: {
     saveCheckList (state, action) {
+      const { data = defaultData, companyNum = 0 } = action.payload;
       return {
         ...state,
-        checkList: action.payload,
+        checkList: { ...data, companyNum },
       }
     },
     saveCheckListHistory (state, action) {
@@ -152,9 +153,10 @@ export default {
       }
     },
     saveOperatingProcedures (state, action) {
+      const { data = defaultData, companyNum = 0 } = action.payload;
       return {
         ...state,
-        operatingProcedures: action.payload,
+        operatingProcedures: { ...data, companyNum },
       }
     },
     saveOperatingProceduresDetail (state, action) {

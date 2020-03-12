@@ -3254,6 +3254,36 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'keyPart', // 关键装置重点部位
+              path: '/safety-risk-control/key-part',
+              code: 'safetyRiskControl.keyPart',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-risk-control/key-part',
+                  redirect: '/safety-risk-control/key-part/list',
+                },
+                {
+                  path: '/safety-risk-control/key-part/list',
+                  name: 'list',
+                  code: 'safetyRiskControl.keyPart.listView',
+                  component: './KeyPart/List',
+                },
+                {
+                  path: '/safety-risk-control/key-part/add',
+                  name: 'add',
+                  code: 'safetyRiskControl.keyPart.add',
+                  component: './KeyPart/Add',
+                },
+                {
+                  path: '/safety-risk-control/key-part/edit/:id',
+                  name: 'edit',
+                  code: 'safetyRiskControl.keyPart.edit',
+                  component: './KeyPart/Add',
+                },
+              ],
+            },
           ],
         },
 
