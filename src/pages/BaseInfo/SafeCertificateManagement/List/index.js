@@ -28,10 +28,10 @@ export const QUALIFICATION_TYPES = [
 ];
 export const CERTIFICATE_UNIT_TYPES = [
   { key: '1', value: '煤矿' },
-  { key: '2', value: '非煤矿' },
-  { key: '3', value: '危险生产' },
-  { key: '4', value: '危险经营' },
-  { key: '5', value: '烟花' },
+  { key: '2', value: '非煤矿山' },
+  { key: '3', value: '危险化学品生产' },
+  { key: '4', value: '危险化学品经营' },
+  { key: '5', value: '烟花爆竹生产烟花爆竹经营' },
 ];
 export const PAST_STATUS = [
   { key: '0', value: '未到期' },
@@ -458,6 +458,12 @@ export default class SafeCertificateList extends PureComponent {
   };
 
   render() {
+    const {
+      safeCertificateManagement: { list: { a = 0, pagination: { total } = {} } = {} },
+      user: {
+        currentUser: { unitType },
+      },
+    } = this.props;
     const title = '安全生产资格证管理';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -466,7 +472,24 @@ export default class SafeCertificateList extends PureComponent {
     ];
 
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            {unitType !== 4 && (
+              <span>
+                单位数量：
+                {a}
+              </span>
+            )}
+            <span style={{ marginLeft: unitType !== 4 ? 15 : 0 }}>
+              资格证数量：
+              {total}
+            </span>
+          </div>
+        }
+      >
         {this.renderForm()}
         {this.renderTable()}
       </PageHeaderLayout>

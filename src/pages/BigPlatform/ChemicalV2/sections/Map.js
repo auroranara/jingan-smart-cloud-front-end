@@ -103,6 +103,7 @@ export default class Map extends PureComponent {
   markerArray = [];
   markerLayers = [];
   lastTime = 0;
+  jumpEquipIds = [];
 
   /* eslint-disable*/
   componentDidMount() {
@@ -640,6 +641,7 @@ export default class Map extends PureComponent {
 
   removeMarkerById = equipmentId => {
     if (!map) return;
+    let isRemoved = false;
     map.groupIDs.map(gId => {
       const group = map.getFMGroup(gId);
       //遍历图层
@@ -653,11 +655,15 @@ export default class Map extends PureComponent {
                 markerProps: { id },
               },
             } = marker;
-            if (id === equipmentId) fm.removeMarker(marker);
+            if (id === equipmentId) {
+              fm.removeMarker(marker);
+              isRemoved = true;
+            }
           });
         }
       });
     });
+    return isRemoved;
   };
 
   // 监测设备状态图标变化
@@ -674,12 +680,15 @@ export default class Map extends PureComponent {
           if (iconType === 2 && id === equipmentId) {
             if (statusType === -1) {
               fm.url = monitorAlarm;
-              fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
+              // fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
             } else if (statusType === 1) {
               if (warnStatus !== -1) {
                 fm.url = monitor;
                 fm.stopJump();
               }
+            }
+            if (this.jumpEquipIds.indexOf(id) >= 0) {
+              fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
             }
           }
         }
@@ -699,6 +708,11 @@ export default class Map extends PureComponent {
         if (success) {
           const { warnStatus } = deviceDetail;
           this.removeMarkerById(equipmentId);
+          if (statusType === -1) {
+            if (this.jumpEquipIds.indexOf(equipmentId) < 0) this.jumpEquipIds.push(equipmentId);
+          } else if (statusType === 1 && warnStatus !== -1) {
+            this.jumpEquipIds = this.jumpEquipIds.filter(ids => ids !== equipmentId);
+          }
           this.renderPoints(
             [deviceDetail].filter(
               item => item.pointFixInfoList && item.pointFixInfoList.length > 0
