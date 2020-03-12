@@ -201,6 +201,8 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             dbUrl,
             name,
           })),
+          daySpace: formData.daySpace || '',
+          dayMaintSpace: formData.dayMaintSpace || '',
         };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');

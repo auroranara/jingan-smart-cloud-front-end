@@ -2340,6 +2340,43 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'safeCertificateManagement', // 安全生产资格证管理
+              code: 'baseInfo.safeCertificateManagement',
+              path: '/base-info/safe-certificate-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/safe-certificate-management',
+                  redirect: '/base-info/safe-certificate-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.safeCertificateManagement.list',
+                  path: '/base-info/safe-certificate-management/list',
+                  component: './BaseInfo/SafeCertificateManagement/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'baseInfo.safeCertificateManagement.view',
+                  path: '/base-info/safe-certificate-management/detail/:id',
+                  component: './BaseInfo/SafeCertificateManagement/Other',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.safeCertificateManagement.add',
+                  path: '/base-info/safe-certificate-management/add',
+                  component: './BaseInfo/SafeCertificateManagement/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.safeCertificateManagement.edit',
+                  path: '/base-info/safe-certificate-management/edit/:id',
+                  component: './BaseInfo/SafeCertificateManagement/Other',
+                },
+              ],
+            },
           ],
         },
 

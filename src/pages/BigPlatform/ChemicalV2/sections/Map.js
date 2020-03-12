@@ -711,19 +711,6 @@ export default class Map extends PureComponent {
         }
       },
     });
-    // dispatch({
-    //   type: 'chemical/fetchMonitorEquipment',
-    //   payload: { companyId, pageNum: 1, pageSize: 0 },
-    //   callback: res => {
-    //     const pointsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
-    //     this.removeMarkersByType(2);
-    //     this.renderPoints(pointsInfo, 2);
-
-    //     setTimeout(() => {
-    //       this.handleMarkerStatusChange(equipmentId, status);
-    //     }, 50);
-    //   },
-    // });
   };
 
   setModelColor(groupId, polygon, color) {
