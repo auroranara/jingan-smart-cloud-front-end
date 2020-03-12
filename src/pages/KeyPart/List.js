@@ -118,7 +118,21 @@ export default class KeypartList extends Component {
     router.push('/safety-risk-control/key-part/add')
   }
 
-  handleDelete = () => { }
+  handleDelete = (id) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'keyPart/deleteKeyPart',
+      payload: { id },
+      callback: (success, msg) => {
+        if (success) {
+          message.success('删除成功');
+          this.handleQuery();
+        } else {
+          message.error(msg || '删除失败');
+        }
+      },
+    })
+  }
 
   handleEdit = id => {
     router.push(`/safety-risk-control/key-part/edit/${id}`)
