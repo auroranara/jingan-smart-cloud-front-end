@@ -8,6 +8,7 @@ import router from 'umi/router';
 import classNames from 'classnames';
 import moment from 'moment';
 import { getPageSize, setPageSize } from '@/utils/utils';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './index.less';
 const { RangePicker } = DatePicker;
 const GET_LIST = 'emergencyManagement/fetchMaterialCheckList';
@@ -282,6 +283,20 @@ export default class SuppliesCheckList extends PureComponent {
         title: '检查评价',
         dataIndex: 'checkEstimate',
         align: 'center',
+        width: 300,
+        render: (text, record) => (
+          <div
+            style={{
+              wordWrap: 'break-word',
+              wordBreak: 'break-word',
+              whiteSpace: 'normal',
+            }}
+          >
+            <Ellipsis lines={3} tooltip>
+              {text}
+            </Ellipsis>
+          </div>
+        ),
       },
       {
         title: '操作',

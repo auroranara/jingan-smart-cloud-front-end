@@ -46,7 +46,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.ct}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -167,4 +167,5 @@ export default {
   cssnano: {
     mergeRules: false,
   },
+  devtool: 'none',
 };

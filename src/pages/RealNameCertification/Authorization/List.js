@@ -500,8 +500,9 @@ export default class AuthorizationList extends PureComponent {
               code={deleteCode}
               title="确认要销权吗？销权后，人员将不会被该设备识别。"
               onConfirm={() => this.handleDelete(record)}
+              style={{ color: '#ff4d4f' }}
             >
-              <a style={{ color: '#ff4d4f' }}>销权</a>
+              销权
             </AuthPopConfirm>
           </Fragment>
         ),
