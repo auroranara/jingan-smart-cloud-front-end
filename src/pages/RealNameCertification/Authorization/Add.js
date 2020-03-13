@@ -297,7 +297,7 @@ export default class AddAuthorization extends PureComponent {
                     <span>请选择人员</span>
                   </div>
                   <div className={styles.outerLine}>
-                    <Row gutter={16}>
+                    <Row gutter={16} style={{ margin: '8px' }}>
                       <Col span={8}>
                         {getFieldDecorator('name')(
                           <Input placeholder="姓名" allowClear />

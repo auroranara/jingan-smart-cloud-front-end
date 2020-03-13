@@ -1,11 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {
   Button,
   Input,
   Card,
   Table,
   message,
-  Modal,
   Divider,
   Form,
   Row,
@@ -14,11 +13,10 @@ import {
   TreeSelect,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import { connect } from 'dva';
 import router from 'umi/router';
-import moment from 'moment';
+// import moment from 'moment';
 import codes from '@/utils/codes'
 import CompanySelect from '@/jingan-components/CompanySelect';
 // 审核弹窗
@@ -83,18 +81,26 @@ export const treeData = (data) => {
 export default class KeypartList extends Component {
 
   componentDidMount () {
-    this.handleQuery()
+    this.handleQuery();
+    // 清空部门
+    this.resetDepartment();
   }
 
   // 查询列表
   handleQuery = (payload = {}) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const { company, ...resValues } = getFieldsValue();
     dispatch({
       type: 'keyPart/fetchKeyPartList',
       payload: {
         pageNum: 1,
         pageSize: 10,
+        companyId: company && company.key !== company.label ? company.key : undefined,
         ...payload,
+        ...resValues,
       },
     })
   }
@@ -111,6 +117,15 @@ export default class KeypartList extends Component {
     dispatch({
       type: 'account/fetchDepartmentList',
       ...actions,
+    })
+  }
+
+  // 清空部门列表
+  resetDepartment = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'account/queryDepartment',
+      payload: [],
     })
   }
 
@@ -186,7 +201,7 @@ export default class KeypartList extends Component {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('companyName')(
+                {getFieldDecorator('company')(
                   <CompanySelect
                     onChange={this.handleCompanyChange}
                   />

@@ -123,7 +123,7 @@ export default class OperationProcedures extends Component {
   }
 
   handleReset = () => {
-    const { resetFields } = this.props;
+    const { form: { resetFields } } = this.props;
     resetFields();
     this.handleQuery();
   }
@@ -519,6 +519,12 @@ export default class OperationProcedures extends Component {
         title: '发布时间',
         dataIndex: 'publishDate',
         render: time => time && moment(time).format(DEFAULT_FORMAT2),
+        align: 'center',
+      },
+      {
+        title: '查看',
+        dataIndex: 'id',
+        render: (val) => <AuthA code={viewCode} onClick={() => this.handleView(val)}>查看</AuthA>,
         align: 'center',
       },
     ];

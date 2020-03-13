@@ -75,6 +75,8 @@ export default class AddOperatingProdures extends Component {
       })
     } else if (isCompany) {
       this.fetchDepartmentList({ payload: { companyId: currentUser.companyId } });
+    } else {
+      this.resetDepartment();
     }
   }
 
@@ -84,6 +86,15 @@ export default class AddOperatingProdures extends Component {
     dispatch({
       type: 'account/fetchDepartmentList',
       ...actions,
+    })
+  }
+
+  // 清空部门列表
+  resetDepartment = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'account/queryDepartment',
+      payload: [],
     })
   }
 

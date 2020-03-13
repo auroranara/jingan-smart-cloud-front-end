@@ -27,8 +27,8 @@ const STATUS_OPTIONS = [
 ]
 
 const VERSION_TYPE_MAPPER = value => ({
-  1: '创建',
-  2: '修订',
+  0: '创建',
+  1: '修订',
 })[value];
 const VERSION_CODE_MAPPER = value => `V${value}`;
 
@@ -66,12 +66,12 @@ export default class AddOperatingProdures extends Component {
             this.form && this.form.setFieldsValue({
               company: companyId ? { key: companyId, label: companyName } : undefined,
               operatingName: operatingName || undefined,
-              historyType: isNotDetail && +status === 4 ? '2' : historyType || '1',
+              historyType: isNotDetail && +status === 4 ? '1' : historyType || '0',
               editionCode: isNotDetail && +status === 4 ? (+editionCode + 0.01).toFixed(2) : editionCode || '1.00',
               name: name || undefined,
               phone: phone || undefined,
               expireDate: startDate && endDate ? [moment(startDate), moment(endDate)] : [],
-              accessoryContent: accessoryContent ? accessoryContent.map(item => ({ ...item, uid: item.id, url: item.webUrl })) : [],
+              accessoryContent: accessoryContent ? accessoryContent.map((item) => ({ ...item, uid: item.id, url: item.webUrl, status: 'done' })) : [],
             });
           } else {
             message.error('获取详情失败，请稍后重试或联系管理人员！');
@@ -154,7 +154,6 @@ export default class AddOperatingProdures extends Component {
   render () {
     const {
       submitting = false,
-      match: { params: { id } },
       user: { isCompany },
       safetyProductionRegulation: {
         operatingProceduresDetail: { hgOperatingInstructionApproveList: approvalList = [] } = {},
@@ -227,7 +226,7 @@ export default class AddOperatingProdures extends Component {
             labelCol: LABEL_COL,
             render: () => <Text transform={VERSION_TYPE_MAPPER} />,
             options: {
-              initialValue: '1',
+              initialValue: '0',
             },
           },
           {
@@ -329,13 +328,13 @@ export default class AddOperatingProdures extends Component {
           </Card>
           {!isNotDetail && approvalList && approvalList.length > 0 && (
             <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
-              {approvalList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, approveAccessoryContent }, index) => (
+              {approvalList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveName, approveAccessoryContent }, index) => (
                 <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
                   <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
                   <p>一级审批人：{firstApproveBy || ''}</p>
                   <p>二级审批人：{secondApproveBy || ''}</p>
                   <p>三级审批人：{threeApproveBy || ''}</p>
-                  <p>经办人：{approveBy || ''}</p>
+                  <p>经办人：{approveName || ''}</p>
                   <div style={{ display: 'flex' }}>
                     <span>附件：</span>
                     <div>{approveAccessoryContent && approveAccessoryContent.length ? approveAccessoryContent.map(({ id, fileName, webUrl }) => (
