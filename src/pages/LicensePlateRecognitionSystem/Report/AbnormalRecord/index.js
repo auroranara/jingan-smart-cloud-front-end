@@ -3,6 +3,7 @@ import { Input } from 'antd';
 import TablePage from '@/templates/TablePage';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
+import RangePicker from '@/jingan-components/Form/RangePicker';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import Company from '../../Company';
 import { connect } from 'dva';
@@ -106,19 +107,7 @@ export default class AbnormalRecord extends Component {
     },
     {
       id: 'range',
-      render: () => (
-        <DatePickerOrSpan
-          placeholder={['开始时间', '结束时间']}
-          format={DEFAULT_FORMAT}
-          showTime
-          allowClear
-          type="RangePicker"
-          style={{ width: '100%' }}
-        />
-      ),
-      options: {
-        getValueFromEvent: this.getRangeFromEvent,
-      },
+      render: () => <RangePicker format={DEFAULT_FORMAT} allowClear />,
     },
   ];
 
