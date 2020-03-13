@@ -3366,6 +3366,55 @@ module.exports = env => {
                 },
               ],
             },
+            // 作业票管理
+            {
+              path: '/operation-safety/working-bill', // 作业许可管理(危险作业管理)
+              code: 'operationSafety.workingBill',
+              name: 'workingBill',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/operation-safety/working-bill',
+                  redirect: '/operation-safety/working-bill/list',
+                },
+                {
+                  path: '/operation-safety/working-bill/:type?/list',
+                  code: 'operationSafety.workingBill.list',
+                  name: 'list',
+                  component: './DataAnalysis/WorkingBill/List',
+                },
+                {
+                  path: '/operation-safety/working-bill/:type?/map',
+                  code: 'operationSafety.workingBill.list',
+                  name: 'list',
+                  component: './DataAnalysis/WorkingBill/Map',
+                },
+                {
+                  path: '/operation-safety/working-bill/:type?/detail/:id',
+                  code: 'operationSafety.workingBill.detail',
+                  name: 'detail',
+                  component: './DataAnalysis/WorkingBill/Other',
+                },
+                {
+                  path: '/operation-safety/working-bill/:type?/add',
+                  code: 'operationSafety.workingBill.add',
+                  name: 'add',
+                  component: './DataAnalysis/WorkingBill/Other',
+                },
+                {
+                  path: '/operation-safety/working-bill/:type?/edit/:id',
+                  code: 'operationSafety.workingBill.edit',
+                  name: 'edit',
+                  component: './DataAnalysis/WorkingBill/Other',
+                },
+                {
+                  path: '/operation-safety/working-bill/:type?/reapply/:id',
+                  code: 'operationSafety.workingBill.edit',
+                  name: 'reapply',
+                  component: './DataAnalysis/WorkingBill/Other',
+                },
+              ],
+            },
           ],
         },
 
@@ -4842,7 +4891,7 @@ module.exports = env => {
             //   ],
             // },
             {
-              name: 'authorization',// 授权管理
+              name: 'authorization', // 授权管理
               path: '/real-name-certification/authorization',
               code: 'realNameCertification.authorization',
               hideChildrenInMenu: true,

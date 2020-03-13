@@ -1,0 +1,43 @@
+.card {
+  margin-bottom: 24px;
+}
+.formItem {
+  width: 100% !important;
+}
+.buttonContainer {
+  margin: 0 -8px;
+  text-align: center;
+
+  .buttonWrapper {
+    display: inline-block;
+    padding: 0 8px;
+    vertical-align: top;
+  }
+}
+.companySelect {
+  :global {
+    .ant-input {
+      vertical-align: top;
+    }
+  }
+}
+.textArea {
+  margin-bottom: 0px !important;
+}
+.detailForm {
+  :global {
+    .ant-form-item {
+      display: flex;
+
+      .ant-form-item-label {
+        flex: none;
+        line-height: 40px;
+      }
+
+      .ant-form-item-control-wrapper {
+        flex: 1;
+        width: 0;
+      }
+    }
+  }
+}
