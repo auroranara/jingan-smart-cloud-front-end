@@ -40,7 +40,6 @@ const hosts = {
   ly: '192.168.10.19:8080',
   show: 'www.jinganyun.net',
   five: 'five.jinganyun.net',
-  tg2: '25.12.19.52:8080',
   demo: 'demo.jinganyun.net',
 };
 

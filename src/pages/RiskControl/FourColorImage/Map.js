@@ -28,12 +28,16 @@ export default class Map extends React.Component {
   }
 
   componentDidMount() {
-    const { onRef } = this.props;
+    const { onRef, mapInfo } = this.props;
     onRef && onRef(this);
-    // this.initMap();
+    console.log('map', mapInfo);
+
+    mapInfo && this.initMap(mapInfo);
   }
 
   getPointList = (pointList, getBuilding) => {
+    console.log('pointList', pointList);
+
     const newList = pointList.length > 0 ? pointList : [];
     newList.map(item => {
       const { zoneLevel, coordinateList, groupId, modelIds } = item;
@@ -212,7 +216,6 @@ export default class Map extends React.Component {
     const { pointList, levelId } = this.props;
     const models = map.getDatasByAlias(groupId, 'model');
     const orginList = models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points));
-
     if (selected) {
       const model = orginList.find(item => item.mapCoord === point);
       model.setColorToDefault();
@@ -319,7 +322,7 @@ export default class Map extends React.Component {
   }
 
   render() {
-    const { isDrawing, levelId } = this.props;
+    const { isDrawing, levelId, cardStyle } = this.props;
     if (!isDrawing && points.length > 0) {
       const groupId = points.map(item => item.groupID)[0];
       const currColor = COLORS[levelId];
@@ -330,6 +333,6 @@ export default class Map extends React.Component {
       map.clearLineMark();
       points = [];
     }
-    return <div style={{ height: '80vh' }} id="fengMap" />;
+    return <div style={{ height: cardStyle ? '45vh' : '70vh' }} id="fengMap" />;
   }
 }

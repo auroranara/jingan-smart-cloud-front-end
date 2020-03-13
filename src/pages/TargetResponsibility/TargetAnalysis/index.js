@@ -208,21 +208,23 @@ export default class TableList extends PureComponent {
               </Col>
             </div>
             <div className={styles.dataCard}>
-              {rankList.map(({ partName, goalValue }, index) => {
-                return (
-                  <Row key={index} className={styles.row}>
-                    <Col span={7}>
-                      <p className={styles.tableTitle}>{index + 1}</p>
-                    </Col>
-                    <Col span={10}>
-                      <p className={styles.tableTitle}>{partName}</p>
-                    </Col>
-                    <Col span={7}>
-                      <p className={styles.tableTitle}>{goalValue}</p>
-                    </Col>
-                  </Row>
-                );
-              })}
+              {rankList !== null
+                ? rankList.map(({ partName, goalValue }, index) => {
+                    return (
+                      <Row key={index} className={styles.row}>
+                        <Col span={7}>
+                          <p className={styles.tableTitle}>{index + 1}</p>
+                        </Col>
+                        <Col span={10}>
+                          <p className={styles.tableTitle}>{partName}</p>
+                        </Col>
+                        <Col span={7}>
+                          <p className={styles.tableTitle}>{goalValue}</p>
+                        </Col>
+                      </Row>
+                    );
+                  })
+                : []}
             </div>
           </div>
         </div>
