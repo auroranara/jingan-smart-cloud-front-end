@@ -265,7 +265,7 @@ export default class VehicleOther extends Component {
         },
         {
           id: 'cardType',
-          label: '车牌类型',
+          label: '车牌有效期',
           required: true,
           refreshEnable: true,
           component: 'Select',
