@@ -212,6 +212,8 @@ export default class SpecialEquipmentDrawer extends PureComponent {
               statusLabel={statusSetting[item.paststatus] ? statusSetting[item.paststatus].label : undefined}
               statusColor={statusSetting[item.paststatus] ? statusSetting[item.paststatus].color : undefined}
               showStatus={!!item.endDate}
+              url={`/facility-management/special-equipment/inspection-report/${item.id}`}
+              linkLabel="查看检验报告"
             />
           ))}
         </div>
