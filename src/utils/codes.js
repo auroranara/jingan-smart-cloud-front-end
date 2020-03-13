@@ -298,6 +298,7 @@ export default {
     add: 'safetyRiskControl.keyPart.add',
     edit: 'safetyRiskControl.keyPart.edit',
     delete: 'safetyRiskControl.keyPart.delete',
+    detail: 'safetyRiskControl.keyPart.view',
   },
   training: {
     examinationPaper: {

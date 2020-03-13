@@ -3319,6 +3319,12 @@ module.exports = env => {
                   code: 'safetyRiskControl.keyPart.edit',
                   component: './KeyPart/Add',
                 },
+                {
+                  path: '/safety-risk-control/key-part/detail/:id',
+                  name: 'detail',
+                  code: 'safetyRiskControl.keyPart.view',
+                  component: './KeyPart/Add',
+                },
               ],
             },
           ],

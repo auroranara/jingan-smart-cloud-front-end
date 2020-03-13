@@ -45,7 +45,8 @@ export default class SpecialEquipmentCard extends BigPlatformCard {
    * 渲染状态
    */
   renderStatus (status) {
-    const { statusLabel, statusColor = '#1E60FF' } = this.props;
+    const { statusLabel, statusColor = '#1E60FF', showStatus = true } = this.props;
+    if (!showStatus) return null;
     if (statusLabel) {
       return <div className={styles.status} style={{ backgroundColor: statusColor }}>{statusLabel}</div>
     }

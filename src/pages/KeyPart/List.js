@@ -30,6 +30,7 @@ const {
     add: addCode,
     edit: editCode,
     delete: deleteCode,
+    detail: detailCode,
   },
 } = codes;
 const TITLE = '关键装置重点部位';
@@ -82,8 +83,13 @@ export default class KeypartList extends Component {
 
   componentDidMount () {
     this.handleQuery();
-    // 清空部门
-    this.resetDepartment();
+    const { user: { isCompany, currentUser } } = this.props;
+    if (isCompany) {
+      this.fetchDepartmentList({ payload: { companyId: currentUser.companyId } })
+    } else {
+      // 清空部门
+      this.resetDepartment();
+    }
   }
 
   // 查询列表
@@ -153,6 +159,10 @@ export default class KeypartList extends Component {
     router.push(`/safety-risk-control/key-part/edit/${id}`)
   }
 
+  handleView = id => {
+    router.push(`/safety-risk-control/key-part/detail/${id}`)
+  }
+
   // 企业发生变化
   handleCompanyChange = company => {
     if (company && company.key !== company.label) {
@@ -172,15 +182,13 @@ export default class KeypartList extends Component {
       <Card bordered={false}>
         <Form>
           <Row gutter={30}>
-            {!isCompany && (
-              <Col {...colWrapper}>
-                <FormItem {...formItemStyle}>
-                  {getFieldDecorator('facilityName')(
-                    <Input placeholder="装置/部位名称" />
-                  )}
-                </FormItem>
-              </Col>
-            )}
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('facilityName')(
+                  <Input placeholder="装置/部位名称" />
+                )}
+              </FormItem>
+            </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('type')(
@@ -199,15 +207,17 @@ export default class KeypartList extends Component {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('company')(
-                  <CompanySelect
-                    onChange={this.handleCompanyChange}
-                  />
-                )}
-              </FormItem>
-            </Col>
+            {!isCompany && (
+              <Col {...colWrapper}>
+                <FormItem {...formItemStyle}>
+                  {getFieldDecorator('company')(
+                    <CompanySelect
+                      onChange={this.handleCompanyChange}
+                    />
+                  )}
+                </FormItem>
+              </Col>
+            )}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('department')(
@@ -301,6 +311,10 @@ export default class KeypartList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
           <div>
+            <AuthA code={detailCode} onClick={() => this.handleView(id)} >
+              查看
+            </AuthA>
+            <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleEdit(id)} >
               编辑
             </AuthA>

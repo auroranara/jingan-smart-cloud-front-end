@@ -446,6 +446,7 @@ export default {
   'menu.safetyRiskControl.keyPart.list': '关键装置重点部位',
   'menu.safetyRiskControl.keyPart.add': '新增关键装置重点部位',
   'menu.safetyRiskControl.keyPart.edit': '编辑关键装置重点部位',
+  'menu.safetyRiskControl.keyPart.detail': '查看关键装置重点部位',
   'menu.hiddenDangerControl': '隐患排查治理',
   'menu.hiddenDangerControl.dangerStandardDatabase': '隐患标准管理数据库',
   'menu.hiddenDangerControl.dangerStandardDatabase.list': '隐患标准管理数据库',

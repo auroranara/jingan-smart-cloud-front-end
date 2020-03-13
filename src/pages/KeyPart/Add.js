@@ -17,10 +17,11 @@ const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
 const LIST_PATH = '/safety-risk-control/key-part/list';
 
-@connect(({ safetyProductionRegulation, user, account }) => ({
+@connect(({ safetyProductionRegulation, user, account, keyPart }) => ({
   safetyProductionRegulation,
   user,
   account,
+  keyPart,
 }))
 export default class AddOperatingProdures extends Component {
 
@@ -187,6 +188,7 @@ export default class AddOperatingProdures extends Component {
       submitting = false,
       user: { isCompany },
       account: { departments },
+      keyPart: { detail = {} },
     } = this.props;
     const href = location.href;
     const isNotDetail = !href.includes('detail');
@@ -261,7 +263,7 @@ export default class AddOperatingProdures extends Component {
             label: '所属部门',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
+            render: () => isNotDetail ? (
               <TreeSelect
                 className={styles.item}
                 allowClear
@@ -270,7 +272,7 @@ export default class AddOperatingProdures extends Component {
               >
                 {treeList}
               </TreeSelect>
-            ),
+            ) : <span>{detail.departmentName}</span>,
             options: {
               rules: isNotDetail ? [
                 {
