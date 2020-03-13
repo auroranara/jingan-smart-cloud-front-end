@@ -4,13 +4,6 @@ import { isPointInPolygon } from '@/utils/map';
 
 const fengMap = fengmap; // eslint-disable-line
 // const fmapID = '100';
-const COLOR = {
-  orange: 'rgb(241, 122, 10)',
-  yellow: 'rgb(251, 247, 25)',
-  red: 'rgb(255, 72, 72)',
-  blue: 'rgb(30, 96, 255)',
-};
-
 const COLORS = {
   1: 'rgb(255, 72, 72)',
   2: 'rgb(241, 122, 10)',
@@ -40,19 +33,24 @@ export default class Map extends React.Component {
     // this.initMap();
   }
 
-  getPointList = pointList => {
+  getPointList = (pointList, getBuilding) => {
     const newList = pointList.length > 0 ? pointList : [];
     newList.map(item => {
       const { zoneLevel, coordinateList, groupId, modelIds } = item;
-      const modeIdList = modelIds ? modelIds.split(',').map(Number) : [];
+      const modeIdList = modelIds ? modelIds.split(',') : [];
+      const models = map.getDatasByAlias(groupId, 'model');
       if (modeIdList.length > 0) {
-        const models = map.getDatasByAlias(groupId, 'model');
         models.forEach(item => {
-          if (item.ID && modeIdList.includes(item.ID)) {
+          if (item.FID && modeIdList.includes(item.FID)) {
             item.setColor(COLORS[zoneLevel], 1);
           }
         });
       }
+      const cordList = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
+      const arrayList = models
+        .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
+        .map(item => ({ buildingId: item.FID, points: item.mapCoord }));
+      getBuilding && getBuilding(arrayList, 0);
       this.drawPolygon(groupId, coordinateList, COLORS[zoneLevel]);
       return null;
     });
@@ -125,18 +123,7 @@ export default class Map extends React.Component {
       const { pointList, init, groupId, getBuilding } = this.props;
       //加载按钮型楼层切换控件
       this.loadBtnFloorCtrl(init ? 1 : groupId);
-      this.getPointList(pointList);
-      pointList.length > 0 &&
-        pointList.map(item => {
-          const { coordinateList, groupId } = item;
-          const cordList = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
-          const models = map.getDatasByAlias(groupId, 'model');
-          const arrayList = models
-            .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
-            .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
-          getBuilding && getBuilding(arrayList, 0);
-          return null;
-        });
+      this.getPointList(pointList, getBuilding);
     });
   };
 
@@ -216,27 +203,29 @@ export default class Map extends React.Component {
     // 获取当前选中区域所有ID
     const arrayList = models
       .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
-      .map(item => ({ buildingId: item.ID, points: item.mapCoord }));
+      .map(item => ({ buildingId: item.FID, points: item.mapCoord }));
     this.props.getBuilding && this.props.getBuilding(arrayList, 1);
   }
 
   // 切换tag
   handleModelEdit = (groupId, points, point, selected) => {
+    const { pointList, levelId } = this.props;
     const models = map.getDatasByAlias(groupId, 'model');
     const orginList = models.filter(({ mapCoord }) => isPointInPolygon(mapCoord, points));
-    if (!!selected) {
+
+    if (selected) {
       const model = orginList.find(item => item.mapCoord === point);
       model.setColorToDefault();
       return null;
     }
     if (!selected) {
       const model = orginList.find(item => item.mapCoord === point);
-      this.props.pointList.length > 0
-        ? this.props.pointList.map(item => {
+      pointList.length > 0
+        ? pointList.map(item => {
             const { zoneLevel } = item;
             return model.setColor(COLORS[zoneLevel]);
           })
-        : model.setColor(COLOR.blue);
+        : model.setColor(COLORS[levelId]);
       return null;
     }
   };
@@ -269,14 +258,14 @@ export default class Map extends React.Component {
   };
 
   // 高亮对应区域颜色
-  selectedModelColor = (id, filterList, fun) => {
-    const { pointList } = this.props;
-    pointList.filter(item => item.id === id).map(item => {
+  selectedModelColor = filterList => {
+    const filterGroupId = filterList.map(item => item.groupId).join('');
+    filterList.map(item => {
       const { modelIds } = item;
-      const modeIdList = modelIds.split(',').map(Number);
-      const models = map.getDatasByAlias(filterList.groupId, 'model');
+      const modeIdList = modelIds.split(',');
+      const models = map.getDatasByAlias(filterGroupId, 'model');
       models.forEach(item => {
-        if (item.ID && modeIdList.includes(item.ID)) {
+        if (item.FID && modeIdList.includes(item.FID)) {
           item.setColor(selectedColor, 1);
         }
       });
@@ -285,14 +274,14 @@ export default class Map extends React.Component {
   };
 
   // 恢复对应区域颜色
-  restModelColor = (id, filterList) => {
-    const { pointList } = this.props;
-    pointList.filter(item => item.id === id).map(item => {
+  restModelColor = filterList => {
+    const filterGroupId = filterList.map(item => item.groupId).join('');
+    filterList.map(item => {
       const { zoneLevel, modelIds } = item;
-      const modeIdList = modelIds.split(',').map(Number);
-      const models = map.getDatasByAlias(filterList.groupId, 'model');
+      const modeIdList = modelIds.split(',');
+      const models = map.getDatasByAlias(filterGroupId, 'model');
       models.forEach(item => {
-        if (item.ID && modeIdList.includes(item.ID)) {
+        if (item.FID && modeIdList.includes(item.FID)) {
           item.setColor(COLORS[zoneLevel], 1);
         }
       });
@@ -330,7 +319,7 @@ export default class Map extends React.Component {
   }
 
   render() {
-    const { isDrawing, levelId, cardStyle } = this.props;
+    const { isDrawing, levelId } = this.props;
     if (!isDrawing && points.length > 0) {
       const groupId = points.map(item => item.groupID)[0];
       const currColor = COLORS[levelId];
@@ -341,6 +330,6 @@ export default class Map extends React.Component {
       map.clearLineMark();
       points = [];
     }
-    return <div style={{ height: cardStyle ? '45vh' : '80vh' }} id="fengMap" />;
+    return <div style={{ height: '80vh' }} id="fengMap" />;
   }
 }

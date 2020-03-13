@@ -178,11 +178,13 @@ export default class SpecialEquipmentDrawer extends PureComponent {
                   label: '分类',
                   render: ({ category }) => {
                     let dictData = dict;
-                    return category.split(',').reduce((arr, val) => {
-                      const target = dictData.find(item => item.id === val) || {};
-                      dictData = target.children;
-                      return [...arr, target.label];
-                    }, []).join('>>')
+                    return (
+                      <span style={{ paddingRight: '2em', display: 'inline-block' }}>{category.split(',').reduce((arr, val) => {
+                        const target = dictData.find(item => item.id === val) || {};
+                        dictData = target.children;
+                        return [...arr, target.label];
+                      }, []).join('>>')}</span>
+                    )
                   },
                 },
                 {
@@ -209,6 +211,7 @@ export default class SpecialEquipmentDrawer extends PureComponent {
               ]}
               statusLabel={statusSetting[item.paststatus] ? statusSetting[item.paststatus].label : undefined}
               statusColor={statusSetting[item.paststatus] ? statusSetting[item.paststatus].color : undefined}
+              showStatus={!!item.endDate}
             />
           ))}
         </div>

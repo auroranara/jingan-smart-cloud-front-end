@@ -391,6 +391,18 @@ export default class SafetySystemList extends Component {
         render: time => time && moment(time).format(DEFAULT_FORMAT2),
         align: 'center',
       },
+      {
+        title: '详情',
+        dataIndex: 'operation',
+        fixed: 'right',
+        render: (_, { id }) => (
+          <AuthA code={DETAIL_CODE} onClick={this.handleDetailButtonClick} data-id={id}>
+            查看
+          </AuthA>
+        ),
+        width: 80,
+        align: 'center',
+      },
     ];
 
     return (

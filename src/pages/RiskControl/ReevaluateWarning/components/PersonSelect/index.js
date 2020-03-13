@@ -4,28 +4,60 @@ import {
   Modal,
   Input,
   Button,
+  Form,
+  Row,
+  Col,
 } from 'antd';
 
+@Form.create()
 export default class PersonSelectModal extends PureComponent {
 
   state = {
     selected: [], // 保存选中对象
+    selectedKeys: [], // 保存选中的key
     visible: false,
+  }
+
+  handleQuery = (pageNum = 1, pageSize = 10) => {
+    const { form: { getFieldsValue }, fetch } = this.props;
+    const values = getFieldsValue();
+    fetch({
+      ...values,
+      pageNum,
+      pageSize,
+    })
+  }
+
+  handleReset = () => {
+    const { form: { resetFields }, fetch } = this.props;
+    resetFields();
+    fetch();
   }
 
   handleOk = () => {
     const { onOk } = this.props;
-    const { selected } = this.state;
+    const { selectedKeys, selected } = this.state;
     this.setState({ visible: false });
-    onOk(selected.map(item => item.key), selected);
+    onOk(selectedKeys, selected);
   }
 
   handleClick = () => {
-    this.props.fetch()
+    this.handleQuery();
     this.setState({ visible: true });
   }
 
-  render() {
+  handleTableChange = (keys, rows) => {
+    this.setState(({ selected }) => {
+      return {
+        selectedKeys: keys,
+        selected: [...selected, ...rows].filter((item, i, self) => {
+          return keys.includes(item.key) && self.findIndex(val => val.key === item.key) === i;
+        }),
+      }
+    });
+  }
+
+  render () {
     const {
       data: {
         list,
@@ -35,8 +67,9 @@ export default class PersonSelectModal extends PureComponent {
           total,
         },
       },
+      form: { getFieldDecorator },
     } = this.props;
-    const { selected, visible } = this.state;
+    const { selected, selectedKeys, visible } = this.state;
     const columns = [
       {
         title: '姓名',
@@ -54,12 +87,29 @@ export default class PersonSelectModal extends PureComponent {
         />
         <Button onClick={this.handleClick} type="primary">选择</Button>
         <Modal
-          width={600}
+          width={700}
           visible={visible}
           title="选择复评人员"
           onOk={this.handleOk}
           onCancel={() => { this.setState({ visible: false }) }}
         >
+          <Form>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item>
+                  {getFieldDecorator('userName')(
+                    <Input placeholder="人员名称" allowClear />
+                  )}
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item>
+                  <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
+                  <Button onClick={this.handleReset}>重置</Button>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
           <Table
             rowKey="key"
             dataSource={list}
@@ -67,8 +117,8 @@ export default class PersonSelectModal extends PureComponent {
             zIndex={1010}
             rowSelection={{
               type: 'checkbox',
-              selectedRowKeys: selected.map(item => item.key),
-              onChange: (keys, rows) => { this.setState({ selected: rows }) },
+              selectedRowKeys: selectedKeys,
+              onChange: this.handleTableChange,
             }}
             pagination={{
               current: pageNum,
@@ -77,9 +127,9 @@ export default class PersonSelectModal extends PureComponent {
               showQuickJumper: true,
               showSizeChanger: true,
               pageSizeOptions: ['5', '10', '15', '20'],
-              onChange: this.props.fetch,
+              onChange: this.handleQuery,
               onShowSizeChange: (pageNum, pageSize) => {
-                this.props.fetch(pageNum, pageSize)
+                this.handleQuery(pageNum, pageSize)
               },
             }}
           />

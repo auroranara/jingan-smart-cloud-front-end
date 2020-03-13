@@ -103,6 +103,7 @@ export default class Map extends PureComponent {
   markerArray = [];
   markerLayers = [];
   lastTime = 0;
+  jumpEquipIds = [];
 
   /* eslint-disable*/
   componentDidMount() {
@@ -154,11 +155,7 @@ export default class Map extends PureComponent {
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
           // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
-          this.setModelColorById(
-            groupId,
-            modelIds.split(',').map(id => +id),
-            COLORS[zoneLevel - 1]
-          );
+          this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
           return null;
         });
         // 变更预警管理
@@ -182,7 +179,16 @@ export default class Map extends PureComponent {
           const {
             polygonProps: { coordinateList, id, groupId },
           } = polygon;
-          if (JSON.stringify(warningList).indexOf(id) < 0) return null;
+          if (JSON.stringify(warningList).indexOf(id) < 0) {
+            if (popInfoWindow) {
+              // 关闭风险变更的提示
+              const {
+                options_: { zoneId },
+              } = popInfoWindow;
+              if (id === zoneId) popInfoWindow.close();
+            }
+            return null;
+          }
           this.addMarkers(+groupId, {
             x: +coordinateList[0].x,
             y: +coordinateList[0].y,
@@ -209,8 +215,9 @@ export default class Map extends PureComponent {
   renderPoints = (pointsInfo, iconType) => {
     if (!pointsInfo.length) return;
     pointsInfo.map(item => {
-      const { warnStatus } = item;
+      const { warnStatus, status } = item;
       const { groupId, xnum, ynum, znum, isShow } = item.pointFixInfoList[0];
+      if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
       if (!+isShow) return null;
       this.addMarkers(+groupId, {
         x: +xnum,
@@ -250,7 +257,7 @@ export default class Map extends PureComponent {
   };
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId, isInit }, fun) => {
+  initMap = ({ appName, key, mapId, isInit, defaultMapScaleLevel, theme }, fun) => {
     if (!appName || !key || !mapId) return;
     const mapOptions = {
       //必要，地图容器
@@ -259,7 +266,7 @@ export default class Map extends PureComponent {
       mapServerURL: './data/' + mapId,
       // defaultViewMode: fengMap.FMViewMode.MODE_2D,
       //设置主题
-      defaultThemeName: '2001',
+      defaultThemeName: theme || '2001',
       modelSelectedEffect: false,
       //支持悬停模型高亮，默认为false悬停不高亮
       modelHoverEffect: true,
@@ -288,7 +295,8 @@ export default class Map extends PureComponent {
     map.on('loadComplete', () => {
       map.tiltAngle = TiltAngle;
       map.rotateAngle = RotateAngle;
-      map.mapScaleLevel = MapScaleLevel;
+      // map.mapScaleLevel = MapScaleLevel;
+      map.mapScaleLevel = defaultMapScaleLevel || MapScaleLevel;
       // console.log('map.getFMGroup()', map.groupIDs);
       this.loadBtnFloorCtrl();
       // 四色图
@@ -340,7 +348,7 @@ export default class Map extends PureComponent {
       )
         return;
 
-      const { eventInfo: { coord } = {}, ID, groupID } = clickedObj;
+      const { eventInfo: { coord } = {}, FID, groupID } = clickedObj;
       if (coord) {
         // 点击区域
         for (let index = 0; index < this.polygonArray.length; index++) {
@@ -348,10 +356,10 @@ export default class Map extends PureComponent {
           const {
             polygonProps: { modelIds, id },
           } = polygon;
-          const IDs = modelIds.split(',').map(item => +item);
+          const FIDs = modelIds.split(',');
           if (
             (groupID === polygon.groupID && this.isPointInPolygon(coord, polygon)) ||
-            IDs.includes(ID)
+            FIDs.includes(FID)
           ) {
             handleShowAreaDrawer(id);
             break;
@@ -429,6 +437,7 @@ export default class Map extends PureComponent {
               window.publicPath
             }#/risk-control/change-warning/list?companyId=${companyId}&status=0&zoneId=${zoneId}','_blank');">查看详情>></span></div>
         </div>`,
+      zoneId,
     });
     popInfoWindow = new fengmap.FMPopInfoWindow(map, ctlOpt);
   };
@@ -632,6 +641,7 @@ export default class Map extends PureComponent {
 
   removeMarkerById = equipmentId => {
     if (!map) return;
+    let isRemoved = false;
     map.groupIDs.map(gId => {
       const group = map.getFMGroup(gId);
       //遍历图层
@@ -645,11 +655,15 @@ export default class Map extends PureComponent {
                 markerProps: { id },
               },
             } = marker;
-            if (id === equipmentId) fm.removeMarker(marker);
+            if (id === equipmentId) {
+              fm.removeMarker(marker);
+              isRemoved = true;
+            }
           });
         }
       });
     });
+    return isRemoved;
   };
 
   // 监测设备状态图标变化
@@ -666,12 +680,15 @@ export default class Map extends PureComponent {
           if (iconType === 2 && id === equipmentId) {
             if (statusType === -1) {
               fm.url = monitorAlarm;
-              fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
+              // fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
             } else if (statusType === 1) {
               if (warnStatus !== -1) {
                 fm.url = monitor;
                 fm.stopJump();
               }
+            }
+            if (this.jumpEquipIds.indexOf(id) >= 0) {
+              fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
             }
           }
         }
@@ -691,26 +708,23 @@ export default class Map extends PureComponent {
         if (success) {
           const { warnStatus } = deviceDetail;
           this.removeMarkerById(equipmentId);
-          this.renderPoints([deviceDetail], 2);
+          if (statusType === -1) {
+            if (this.jumpEquipIds.indexOf(equipmentId) < 0) this.jumpEquipIds.push(equipmentId);
+          } else if (statusType === 1 && warnStatus !== -1) {
+            this.jumpEquipIds = this.jumpEquipIds.filter(ids => ids !== equipmentId);
+          }
+          this.renderPoints(
+            [deviceDetail].filter(
+              item => item.pointFixInfoList && item.pointFixInfoList.length > 0
+            ),
+            2
+          );
           setTimeout(() => {
             this.handleMarkerStatusChange(equipmentId, statusType, warnStatus);
           }, 50);
         }
       },
     });
-    // dispatch({
-    //   type: 'chemical/fetchMonitorEquipment',
-    //   payload: { companyId, pageNum: 1, pageSize: 0 },
-    //   callback: res => {
-    //     const pointsInfo = res.data.list.filter(item => item.pointFixInfoList.length > 0);
-    //     this.removeMarkersByType(2);
-    //     this.renderPoints(pointsInfo, 2);
-
-    //     setTimeout(() => {
-    //       this.handleMarkerStatusChange(equipmentId, status);
-    //     }, 50);
-    //   },
-    // });
   };
 
   setModelColor(groupId, polygon, color) {
@@ -722,11 +736,11 @@ export default class Map extends PureComponent {
     });
   }
 
-  setModelColorById = (groupId, IDs, color) => {
+  setModelColorByFID = (groupId, FIDs, color) => {
     const models = map.getDatasByAlias(groupId, 'model');
     models.map(model => {
-      const { ID } = model;
-      if (IDs.includes(ID)) model.setColor(color);
+      const { FID } = model;
+      if (FIDs.includes(FID)) model.setColor(color);
       return null;
     });
   };

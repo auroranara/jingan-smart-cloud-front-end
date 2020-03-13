@@ -534,7 +534,7 @@ export default class Chemical extends PureComponent {
           }}
         >
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
-          <div>{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
+          <div>{`刚刚 ${monitorEquipmentTypeName}${typeName}`}</div>
           {[-1].includes(+statusType) &&
             fixType !== 5 && (
               <div

@@ -8,7 +8,6 @@ import LoadMore from '@/components/LoadMore';
 import ReactEcharts from 'echarts-for-react';
 import Lightbox from 'react-images';
 import styles from './CurrentHiddenDanger.less';
-import { DataList } from '../utils';
 
 const FIELDNAMES = {
   status: 'status', // 隐患状态

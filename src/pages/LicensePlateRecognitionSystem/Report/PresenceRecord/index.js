@@ -226,10 +226,10 @@ export default class PresenceRecord extends Component {
             {p1 && p1.length ? (
               <img
                 className={styles.img}
-                src={`data:image/png;base64,${p1[0].content}`}
+                src={`${p1[0].webUrl}`}
                 alt=""
                 onClick={() =>
-                  this.setState({ images: [`data:image/png;base64,${p1[0].content}`] })
+                  this.setState({ images: [`${p1[0].webUrl}`] })
                 }
               />
             ) : (
@@ -240,10 +240,10 @@ export default class PresenceRecord extends Component {
             {p2 && p2.length ? (
               <img
                 className={styles.img}
-                src={`data:image/png;base64,${p2[0].content}`}
+                src={`${p2[0].webUrl}`}
                 alt=""
                 onClick={() =>
-                  this.setState({ images: [`data:image/png;base64,${p2[0].content}`] })
+                  this.setState({ images: [`${p2[0].webUrl}`] })
                 }
               />
             ) : (

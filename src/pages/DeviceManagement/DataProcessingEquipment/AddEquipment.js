@@ -127,6 +127,7 @@ export default class AddEquipment extends Component {
     } else {
       // 如果新增 且从用户传输装置页面跳转过来
       gatewayCode && this.setState({ gatewayEquipment: { id: gatewayId, code: gatewayCode } });
+      setFieldsValue({ isShow: '1' });
     }
   }
 
@@ -870,13 +871,15 @@ export default class AddEquipment extends Component {
     } = this.props;
     const { gateWayModalVisible } = this.state;
     const title = `${id ? '编辑' : '新增'}${dataProcessingType[type]}`;
-    const breadcrumbList = [
+    // 是否用户传输装置
+    const isuserTransmission = location.href.includes('user-transmission-device');
+    const breadcrumbList = isuserTransmission ? [
       { title: '首页', name: '首页', href: '/' },
       { title: '物联设备管理', name: '物联设备管理' },
       {
         title: '用户传输装置',
         name: '用户传输装置',
-        href: '/device-management/data-processing/list',
+        href: '/device-management/user-transmission-device/list',
       },
       {
         title: '详情页',
@@ -884,7 +887,16 @@ export default class AddEquipment extends Component {
         href: `/device-management/user-transmission-device/${companyId}/detail`,
       },
       { title, name: title },
-    ];
+    ] : [
+        { title: '首页', name: '首页', href: '/' },
+        { title: '物联设备管理', name: '物联设备管理' },
+        {
+          title: '数据处理设备',
+          name: '数据处理设备',
+          href: '/device-management/data-processing/list',
+        },
+        { title, name: title },
+      ];
     const gatewayModalProps = {
       visible: gateWayModalVisible,
       handleSelect: this.handleGateSelect,

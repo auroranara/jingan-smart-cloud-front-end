@@ -2340,6 +2340,43 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'safeCertificateManagement', // 安全生产资格证管理
+              code: 'baseInfo.safeCertificateManagement',
+              path: '/base-info/safe-certificate-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/safe-certificate-management',
+                  redirect: '/base-info/safe-certificate-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.safeCertificateManagement.list',
+                  path: '/base-info/safe-certificate-management/list',
+                  component: './BaseInfo/SafeCertificateManagement/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'baseInfo.safeCertificateManagement.view',
+                  path: '/base-info/safe-certificate-management/detail/:id',
+                  component: './BaseInfo/SafeCertificateManagement/Other',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.safeCertificateManagement.add',
+                  path: '/base-info/safe-certificate-management/add',
+                  component: './BaseInfo/SafeCertificateManagement/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.safeCertificateManagement.edit',
+                  path: '/base-info/safe-certificate-management/edit/:id',
+                  component: './BaseInfo/SafeCertificateManagement/Other',
+                },
+              ],
+            },
           ],
         },
 
@@ -2800,6 +2837,78 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/safety-production-regulation/operating-procedures',// 操作规程
+              name: 'operatingProcedures',
+              code: 'safetyProductionRegulation.operatingProcedures',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-production-regulation/operating-procedures',
+                  redirect: '/safety-production-regulation/operating-procedures/list',
+                },
+                {
+                  path: '/safety-production-regulation/operating-procedures/list',
+                  name: 'list',
+                  code: 'safetyProductionRegulation.operatingProcedures.listView',
+                  component: './SafetyKnowledgeBase/OperatingProcedures/List',
+                },
+                {
+                  path: '/safety-production-regulation/operating-procedures/add',
+                  name: 'add',
+                  code: 'safetyProductionRegulation.operatingProcedures.add',
+                  component: './SafetyKnowledgeBase/OperatingProcedures/Add',
+                },
+                {
+                  path: '/safety-production-regulation/operating-procedures/edit/:id',
+                  name: 'edit',
+                  code: 'safetyProductionRegulation.operatingProcedures.edit',
+                  component: './SafetyKnowledgeBase/OperatingProcedures/Add',
+                },
+                {
+                  path: '/safety-production-regulation/operating-procedures/detail/:id',
+                  name: 'detail',
+                  code: 'safetyProductionRegulation.operatingProcedures.view',
+                  component: './SafetyKnowledgeBase/OperatingProcedures/Add',
+                },
+              ],
+            },
+            {
+              path: '/safety-production-regulation/check-list-maintenance', // 检查表维护
+              name: 'checkListMaintenance',
+              code: 'safetyProductionRegulation.checkListMaintenance',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-production-regulation/check-list-maintenance',
+                  redirect: '/safety-production-regulation/check-list-maintenance/list',
+                },
+                {
+                  path: '/safety-production-regulation/check-list-maintenance/list',
+                  name: 'list',
+                  code: 'safetyProductionRegulation.checkListMaintenance.listView',
+                  component: './SafetyKnowledgeBase/CheckListMaintenance/List',
+                },
+                {
+                  path: '/safety-production-regulation/check-list-maintenance/add',
+                  name: 'add',
+                  code: 'safetyProductionRegulation.checkListMaintenance.add',
+                  component: './SafetyKnowledgeBase/CheckListMaintenance/Add',
+                },
+                {
+                  path: '/safety-production-regulation/check-list-maintenance/edit/:id',
+                  name: 'edit',
+                  code: 'safetyProductionRegulation.checkListMaintenance.edit',
+                  component: './SafetyKnowledgeBase/CheckListMaintenance/Add',
+                },
+                {
+                  path: '/safety-production-regulation/check-list-maintenance/detail/:id',
+                  name: 'detail',
+                  code: 'safetyProductionRegulation.checkListMaintenance.view',
+                  component: './SafetyKnowledgeBase/CheckListMaintenance/Add',
+                },
+              ],
+            },
           ],
         },
 
@@ -3179,6 +3288,42 @@ module.exports = env => {
                   code: 'safetyRiskControl.promise.edit',
                   path: '/safety-risk-control/promise/edit/:id',
                   component: './AnnouncementManagement/Promise/Edit',
+                },
+              ],
+            },
+            {
+              name: 'keyPart', // 关键装置重点部位
+              path: '/safety-risk-control/key-part',
+              code: 'safetyRiskControl.keyPart',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-risk-control/key-part',
+                  redirect: '/safety-risk-control/key-part/list',
+                },
+                {
+                  path: '/safety-risk-control/key-part/list',
+                  name: 'list',
+                  code: 'safetyRiskControl.keyPart.listView',
+                  component: './KeyPart/List',
+                },
+                {
+                  path: '/safety-risk-control/key-part/add',
+                  name: 'add',
+                  code: 'safetyRiskControl.keyPart.add',
+                  component: './KeyPart/Add',
+                },
+                {
+                  path: '/safety-risk-control/key-part/edit/:id',
+                  name: 'edit',
+                  code: 'safetyRiskControl.keyPart.edit',
+                  component: './KeyPart/Add',
+                },
+                {
+                  path: '/safety-risk-control/key-part/detail/:id',
+                  name: 'detail',
+                  code: 'safetyRiskControl.keyPart.view',
+                  component: './KeyPart/Add',
                 },
               ],
             },
@@ -4121,6 +4266,54 @@ module.exports = env => {
                   name: 'detail',
                   component: './EmergencyManagement/EmergencyEquipment/Detail/index',
                 },
+                {
+                  path: '/emergency-management/emergency-equipment/check/:equipId/list',
+                  code: 'emergencyManagement.emergencyEquipment.checkList',
+                  name: 'checkList',
+                  component: './EmergencyManagement/EmergencyEquipment/Check/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/check/:equipId/add',
+                  code: 'emergencyManagement.emergencyEquipment.checkAdd',
+                  name: 'checkAdd',
+                  component: './EmergencyManagement/EmergencyEquipment/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/check/:equipId/edit/:id',
+                  code: 'emergencyManagement.emergencyEquipment.checkEdit',
+                  name: 'checkEdit',
+                  component: './EmergencyManagement/EmergencyEquipment/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/check/:equipId/detail/:id',
+                  code: 'emergencyManagement.emergencyEquipment.checkDetail',
+                  name: 'checkDetail',
+                  component: './EmergencyManagement/EmergencyEquipment/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/maint/:equipId/list',
+                  code: 'emergencyManagement.emergencyEquipment.maintList',
+                  name: 'maintList',
+                  component: './EmergencyManagement/EmergencyEquipment/Maint/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/maint/:equipId/add',
+                  code: 'emergencyManagement.emergencyEquipment.maintAdd',
+                  name: 'maintAdd',
+                  component: './EmergencyManagement/EmergencyEquipment/Maint/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/maint/:equipId/edit/:id',
+                  code: 'emergencyManagement.emergencyEquipment.maintEdit',
+                  name: 'maintEdit',
+                  component: './EmergencyManagement/EmergencyEquipment/Maint/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/maint/:equipId/detail/:id',
+                  code: 'emergencyManagement.emergencyEquipment.maintDetail',
+                  name: 'maintDetail',
+                  component: './EmergencyManagement/EmergencyEquipment/Maint/Edit',
+                },
               ],
             },
             {
@@ -4157,6 +4350,55 @@ module.exports = env => {
                   code: 'emergencyManagement.emergencySupplies.detail',
                   name: 'detail',
                   component: './EmergencyManagement/EmergencySupplies/Detail/index',
+                },
+
+                {
+                  path: '/emergency-management/emergency-supplies/check/:materialId/list',
+                  code: 'emergencyManagement.emergencySupplies.checkList',
+                  name: 'checkList',
+                  component: './EmergencyManagement/EmergencySupplies/Check/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/check/:materialId/add',
+                  code: 'emergencyManagement.emergencySupplies.checkAdd',
+                  name: 'checkAdd',
+                  component: './EmergencyManagement/EmergencySupplies/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/check/:materialId/edit/:id',
+                  code: 'emergencyManagement.emergencySupplies.checkEdit',
+                  name: 'checkEdit',
+                  component: './EmergencyManagement/EmergencySupplies/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/check/:materialId/detail/:id',
+                  code: 'emergencyManagement.emergencySupplies.checkDetail',
+                  name: 'checkDetail',
+                  component: './EmergencyManagement/EmergencySupplies/Check/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/maint/:materialId/list',
+                  code: 'emergencyManagement.emergencySupplies.maintList',
+                  name: 'maintList',
+                  component: './EmergencyManagement/EmergencySupplies/Maint/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/maint/:materialId/add',
+                  code: 'emergencyManagement.emergencySupplies.maintAdd',
+                  name: 'maintAdd',
+                  component: './EmergencyManagement/EmergencySupplies/Maint/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/maint/:materialId/edit/:id',
+                  code: 'emergencyManagement.emergencySupplies.maintEdit',
+                  name: 'maintEdit',
+                  component: './EmergencyManagement/EmergencySupplies/Maint/Edit',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/maint/:materialId/detail/:id',
+                  code: 'emergencyManagement.emergencySupplies.maintDetail',
+                  name: 'maintDetail',
+                  component: './EmergencyManagement/EmergencySupplies/Maint/Edit',
                 },
               ],
             },

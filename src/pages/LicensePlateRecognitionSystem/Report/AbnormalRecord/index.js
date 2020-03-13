@@ -197,6 +197,7 @@ export default class AbnormalRecord extends Component {
         fields={this.getFields}
         action={this.getAction}
         columns={this.getColumns}
+        transform={this.transform}
         mapper={MAPPER}
         showTotal={false}
         withUnitId

@@ -107,3 +107,8 @@ export async function queryYearGoal(params) {
 export async function queryPartGoal(params) {
   return request(`${URL_PREFIX}/goalDutyExcel/partGoal?${stringify(params)}`);
 }
+
+// 列表
+export async function queryPartUnitGoal(params) {
+  return request(`${URL_PREFIX}/goalDutyExcel/partUnitGoal?${stringify(params)}`);
+}
