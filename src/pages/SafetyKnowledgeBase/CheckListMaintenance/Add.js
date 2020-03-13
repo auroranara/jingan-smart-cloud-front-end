@@ -117,6 +117,7 @@ export default class AddOperatingProdures extends Component {
     const {
       dispatch,
       match: { params: { id } },
+      user: { isCompany, currentUser },
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((err, values) => {
@@ -129,7 +130,7 @@ export default class AddOperatingProdures extends Component {
       const [startDate, endDate] = expireDate;
       const payload = {
         ...resValues,
-        companyId: company.key,
+        companyId: isCompany ? currentUser.companyId : company.key,
         startDate: startDate.unix() * 1000,
         endDate: endDate.unix() * 1000,
       };

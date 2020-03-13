@@ -28,6 +28,7 @@ export default class AddOperatingProdures extends Component {
     const {
       dispatch,
       match: { params: { id } },
+      user: { isCompany, currentUser },
     } = this.props;
     if (id) {
       dispatch({
@@ -36,7 +37,6 @@ export default class AddOperatingProdures extends Component {
         callback: (success, detail) => {
           if (success) {
             const {
-              companyId,
               companyName,
               facilityName,
               department,
@@ -51,6 +51,7 @@ export default class AddOperatingProdures extends Component {
               accessoryContent,
               remark,
             } = detail;
+            const companyId = isCompany ? currentUser.companyId : detail.companyId;
             this.form && this.form.setFieldsValue({
               company: companyId ? { key: companyId, label: companyName } : undefined,
               facilityName: facilityName || undefined,
@@ -72,6 +73,8 @@ export default class AddOperatingProdures extends Component {
           }
         },
       })
+    } else if (isCompany) {
+      this.fetchDepartmentList({ payload: { companyId: currentUser.companyId } });
     }
   }
 
@@ -116,6 +119,8 @@ export default class AddOperatingProdures extends Component {
     const {
       dispatch,
       match: { params: { id } },
+      user: { isCompany, currentUser },
+
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((err, values) => {
@@ -126,7 +131,7 @@ export default class AddOperatingProdures extends Component {
       } = values;
       const payload = {
         ...resValues,
-        companyId: company.key,
+        companyId: isCompany ? currentUser.companyId : company.key,
       };
 
       const callback = (success, msg) => {
