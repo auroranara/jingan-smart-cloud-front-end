@@ -14,7 +14,10 @@ export const STATUSES = [
   { key: '1', value: '已过期' },
 ];
 export const VEHICLE_TYPES = [{ key: '0', value: '小车' }, { key: '1', value: '大车' }];
-export const LICENCE_PLATE_TYPES = [{ key: '4', value: '固定车' }, { key: '0', value: '临时车' }];
+export const LICENCE_PLATE_TYPES = [
+  { key: '4', value: '长期有效' },
+  { key: '0', value: '固定期限有效' },
+];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员在岗在位管理', name: '人员在岗在位管理' },
@@ -139,7 +142,7 @@ export default class ParkList extends Component {
     {
       id: 'cardType',
       render: () => (
-        <SelectOrSpan placeholder="请选择车牌类型" list={LICENCE_PLATE_TYPES} allowClear />
+        <SelectOrSpan placeholder="请选择车牌有效期" list={LICENCE_PLATE_TYPES} allowClear />
       ),
     },
     {
@@ -191,7 +194,7 @@ export default class ParkList extends Component {
     //   align: 'center',
     // },
     {
-      title: '车牌类型',
+      title: '车牌有效期',
       dataIndex: 'cardType',
       align: 'center',
       render: value => <SelectOrSpan list={LICENCE_PLATE_TYPES} value={`${value}`} type="span" />,
