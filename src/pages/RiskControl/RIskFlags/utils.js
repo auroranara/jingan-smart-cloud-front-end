@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import Link from 'umi/link';
-import { Input, Popconfirm, Select, message } from 'antd';
+import { Input, Popconfirm, Select } from 'antd';
 
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 
@@ -13,7 +13,7 @@ export const SIGN_TYPES = ['禁止标志', '警告标志', '指令标志', '提�
 
 export const BREADCRUMBLIST = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '父级一', name: '父级一' },
+  { title: '风险分级管控', name: '风险分级管控' },
   { title: '国际风险标志库', name: '国际风险标志库', href: LIST_URL },
 ];
 
@@ -31,7 +31,7 @@ export const SEARCH_FIELDS = [
   },
 ];
 
-export function getColumns(handleClick) {
+export function getColumns(genHandleDelete, handleClick) {
   return [
     {
       title: '标志名称',
@@ -51,7 +51,7 @@ export function getColumns(handleClick) {
       dataIndex: 'signUrl',
       key: 'signUrl',
       render(url, { signName }) {
-        return <img src={url} alt={signName} onClick={e => handleClick(url)} />;
+        return <img src={url} alt={signName} onClick={e => handleClick && handleClick(url)} />;
       },
     },
     {
@@ -65,7 +65,7 @@ export function getColumns(handleClick) {
             <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
             <Popconfirm
               title="确定删除当前项目？"
-              onConfirm={e => message.success('删除成功')}
+              onConfirm={genHandleDelete(id)}
               okText="确定"
               cancelText="取消"
             ><span className={styles1.delete}>删除</span></Popconfirm>

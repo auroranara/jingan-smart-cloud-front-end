@@ -56,8 +56,9 @@ export default class Edit extends PureComponent {
     e.preventDefault();
     validateFields((errors, values) => {
       if (!errors) {
-
         const params = { ...values, photoList: uploadConvertToResult(photoList) };
+        if (id)
+          params.signId = id;
         dispatch({
           type: `riskFlags/${id ? 'edit' : 'add'}`,
           payload: params,
@@ -114,7 +115,7 @@ export default class Edit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(formItems, getFieldDecorator, null, LIST_URL)}
+          {renderSections(formItems, getFieldDecorator, this.handleSubmit, LIST_URL)}
         </Card>
       </PageHeaderLayout>
     );

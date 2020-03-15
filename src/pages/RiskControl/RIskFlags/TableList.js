@@ -1,14 +1,19 @@
 import React, { PureComponent } from 'react';
-// import { connect } from 'dva';
+import { connect } from 'dva';
 import router from 'umi/router';
 import { Button, Card, Table, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, PAGE_SIZE, SEARCH_FIELDS as FIELDS, getColumns } from './utils';
+import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getColumns } from './utils';
 import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
 
+@connect(({ loading, user, riskFlags }) => ({
+  loading: loading.models.riskFlags,
+  user,
+  riskFlags,
+}))
 export default class TableList extends PureComponent {
   state = {
     currentPage: 1,
@@ -34,7 +39,7 @@ export default class TableList extends PureComponent {
     let payload = { pageSize: PAGE_SIZE, pageNum };
     if (values) payload = { ...payload, ...values };
     dispatch({
-      type: 'riskFlags/fetchTableList',
+      type: 'riskFlags/fetchList',
       payload,
       callback,
     });
@@ -46,7 +51,7 @@ export default class TableList extends PureComponent {
   };
 
   handleAdd = () => {
-    router.push(`/safety-knowledge-base/msds/add`);
+    router.push(`${ROUTER}/add`);
   };
 
   setPage = (code, current, msg) => {
@@ -107,7 +112,7 @@ export default class TableList extends PureComponent {
         </Card>
         <div className={styles1.container}>
           <Table
-            rowKey="id"
+            rowKey="signId"
             loading={loading}
             columns={getColumns(this.genHandleDelete)}
             dataSource={list}

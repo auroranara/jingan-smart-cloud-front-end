@@ -1,7 +1,7 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
-const URL_PREFIX = '/acloud_new/v2/warningSign/warningSignInfo';
+const URL_PREFIX = '/acloud_new/v2/riskFlags/warningSignInfo';
 
 // 获取列表
 export async function getTableList(params) {
