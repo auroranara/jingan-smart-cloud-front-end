@@ -65,7 +65,7 @@ export default {
   'menu.roleAuthorization.commonRole.add': '新增公共角色',
   'menu.roleAuthorization.commonRole.edit': '编辑公共角色',
   // 重大危险源监测预警系统
-  'menu.majorHazardInfo': '重大危险源基本信息',
+  'menu.majorHazardInfo': '基本信息',
   'menu.majorHazardInfo.majorHazard': '重大危险源管理',
   'menu.majorHazardInfo.majorHazard.list': '重大危险源列表',
   'menu.majorHazardInfo.majorHazard.view': '查看重大危险源',

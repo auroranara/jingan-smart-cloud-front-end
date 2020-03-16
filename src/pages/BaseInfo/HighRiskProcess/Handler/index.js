@@ -730,7 +730,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
     const title = id ? isDetail ? '高危工艺流程详情' : '编辑高危工艺流程' : '新增高危工艺流程';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '重大危险源基本信息', name: '重大危险源基本信息' },
+      { title: '基本信息', name: '基本信息' },
       { title: '高危工艺流程', name: '高危工艺流程', href: '/major-hazard-info/high-risk-process/list' },
       { title, name: title },
     ];

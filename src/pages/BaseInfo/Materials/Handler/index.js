@@ -851,7 +851,7 @@ export default class MaterialsHandler extends PureComponent {
     const title = id ? '编辑物料' : '新增物料';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '重大危险源基本信息', name: '重大危险源基本信息' },
+      { title: '基本信息', name: '基本信息' },
       { title: '物料信息', name: '物料信息', href: listUrl },
       { title, name: title },
     ];

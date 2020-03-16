@@ -1462,7 +1462,7 @@ export default class StorageEdit extends PureComponent {
     // 面包屑
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '重大危险源基本信息', name: '重大危险源基本信息' },
+      { title: '基本信息', name: '基本信息' },
       { title: '储罐管理', name: '储罐管理', href: '/major-hazard-info/storage-management/list' },
       { title, name: title },
     ];

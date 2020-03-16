@@ -87,7 +87,7 @@ export default {
   'menu.baseInfoManagement.buildingsInfo.floorAdd': '新增楼层',
   'menu.baseInfoManagement.buildingsInfo.floorEdit': '编辑楼层',
   'menu.baseInfoManagement.buildingsInfo.floorDetail': '楼层详情',
-  'menu.majorHazardInfo': '重大危险源基本信息',
+  'menu.majorHazardInfo': '基本信息',
   'menu.majorHazardInfo.majorHazard': '重大危险源管理',
   'menu.majorHazardInfo.majorHazard.list': '重大危险源列表',
   'menu.majorHazardInfo.majorHazard.add': '新增重大危险源',

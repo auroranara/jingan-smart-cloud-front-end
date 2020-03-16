@@ -14,7 +14,7 @@ export const LIST = [
 export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '重大危险源基本信息', name: '重大危险源基本信息' },
+  { title: '基本信息', name: '基本信息' },
   { title: '生产装置', name: '生产装置', href: LIST_URL },
 ];
 
