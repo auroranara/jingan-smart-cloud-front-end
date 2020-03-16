@@ -2,6 +2,23 @@ import Wave from '@/jingan-components/Wave';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 import styles from './sections/MonitorDrawer.less';
+import icon1 from './imgs/icon-1.png';
+import icon401 from './imgs/icon-401.png';
+import icon402 from './imgs/icon-402.png';
+import icon403 from './imgs/icon-403.png';
+import icon404 from './imgs/icon-404.png';
+import icon405 from './imgs/icon-405.png';
+import icon406 from './imgs/icon-406.png';
+import icon407 from './imgs/icon-407.png';
+import icon408 from './imgs/icon-408.png';
+import icon409 from './imgs/icon-409.png';
+import icon410 from './imgs/icon-410.png';
+import icon411 from './imgs/icon-411.png';
+import icon412 from './imgs/icon-412.png';
+import icon413 from './imgs/icon-413.png';
+import icon414 from './imgs/icon-414.png';
+import icon415 from './imgs/icon-415.png';
+import icon416 from './imgs/icon-416.png';
 
 const storageAreaImg = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
 const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
@@ -607,3 +624,23 @@ export const EmergencyCardFields = [
     value: 'needAttention',
   },
 ];
+
+export const MonitorEquipmentIcons = {
+  '1': icon1,
+  '401': icon401,
+  '402': icon402,
+  '403': icon403,
+  '404': icon404,
+  '405': icon405,
+  '406': icon406,
+  '407': icon407,
+  '408': icon408,
+  '409': icon409,
+  '410': icon410,
+  '411': icon411,
+  '412': icon412,
+  '413': icon413,
+  '414': icon414,
+  '415': icon415,
+  '416': icon416,
+};

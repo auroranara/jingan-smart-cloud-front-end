@@ -68,6 +68,24 @@ function getColorVal(status) {
       return;
   }
 }
+const FourColors = [
+  {
+    color: '#FE0003',
+    label: '重大风险',
+  },
+  {
+    color: '#EC6A34',
+    label: '较大风险',
+  },
+  {
+    color: '#ECF241',
+    label: '一般风险',
+  },
+  {
+    color: '#1423C4',
+    label: '低风险',
+  },
+];
 
 @connect(
   ({
@@ -907,6 +925,17 @@ export default class Map extends PureComponent {
             })}
           </div>
         )}
+        <div className={styles.fourColorsContainer}>
+          {FourColors.map((item, index) => {
+            const { label, color } = item;
+            return (
+              <div className={styles.fourColorsWrapper} key={index}>
+                <span className={styles.rect} style={{ backgroundColor: color }} />
+                {label}
+              </div>
+            );
+          })}
+        </div>
         {mapIp && (
           <div
             className={styles.positionBtn}
