@@ -276,7 +276,7 @@ export default class IdentificationRecord extends PureComponent {
       },
       {
         title: '识别时间',
-        dataIndex: 'showTime',
+        dataIndex: 'createTime',
         align: 'center',
         width: 200,
         render: (val) => val ? moment(val).format('YYYY-MM-DD') : '',
