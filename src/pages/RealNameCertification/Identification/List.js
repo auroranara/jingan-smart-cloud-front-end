@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -15,7 +15,7 @@ import {
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import codes from '@/utils/codes';
 // import { hasAuthority } from '@/utils/customAuth';
-import router from 'umi/router';
+// import router from 'umi/router';
 import moment from 'moment';
 import ImagePreview from '@/jingan-components/ImagePreview';
 
@@ -58,6 +58,7 @@ export default class IdentificationRecord extends PureComponent {
   state = {
     tabActiveKey: '1', // 当前标签key
     images: [],
+    currentImage: 0,
   };
 
   componentDidMount () {
@@ -274,6 +275,27 @@ export default class IdentificationRecord extends PureComponent {
         width: 150,
       },
       {
+        title: '识别时间',
+        dataIndex: 'createTime',
+        align: 'center',
+        width: 200,
+        render: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '',
+      },
+      {
+        title: '抓拍照片',
+        dataIndex: 'photoUrl',
+        align: 'center',
+        width: 180,
+        render: (val) => val ? (
+          <img
+            onClick={() => { this.setState({ images: [val] }) }}
+            style={{ width: '50px', height: '50px', objectFit: 'contain', cursor: 'pointer' }}
+            src={val}
+            alt="照片"
+          />
+        ) : null,
+      },
+      {
         title: '人员编号(GUID)',
         dataIndex: 'personGuid',
         align: 'center',
@@ -310,27 +332,6 @@ export default class IdentificationRecord extends PureComponent {
           const target = identificationDict.find(item => +item.key === +val);
           return target ? target.label : '';
         },
-      },
-      {
-        title: '识别时间',
-        dataIndex: 'showTime',
-        align: 'center',
-        width: 200,
-        render: (val) => val ? moment(val).format('YYYY-MM-DD') : '',
-      },
-      {
-        title: '抓拍照片',
-        dataIndex: 'photoUrl',
-        align: 'center',
-        width: 180,
-        render: (val) => val ? (
-          <img
-            onClick={() => { this.setState({ images: [val] }) }}
-            style={{ width: '50px', height: '50px', objectFit: 'contain', cursor: 'pointer' }}
-            src={val}
-            alt="照片"
-          />
-        ) : null,
       },
       {
         title: '活体',
@@ -399,7 +400,7 @@ export default class IdentificationRecord extends PureComponent {
   }
 
   render () {
-    const { tabActiveKey } = this.state;
+    const { tabActiveKey, images, currentImage } = this.state;
     return (
       <PageHeaderLayout
         title={title}
@@ -423,6 +424,8 @@ export default class IdentificationRecord extends PureComponent {
         <BackTop />
         {this.renderFilter()}
         {this.renderList()}
+        {/* 图片查看 */}
+        <ImagePreview images={images} currentImage={currentImage} />
       </PageHeaderLayout>
     )
   }
