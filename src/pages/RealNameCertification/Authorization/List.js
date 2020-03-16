@@ -460,7 +460,6 @@ export default class AuthorizationList extends PureComponent {
         dataIndex: 'deviceName',
         align: 'center',
         width: 200,
-        render: (val) => '测试',
       },
       {
         title: '设备类型',

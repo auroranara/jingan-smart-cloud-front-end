@@ -343,9 +343,9 @@ export default class AddAuthorization extends PureComponent {
                     <span>已选人员</span>
                     <span className={styles.statistics}>{personLen}/100</span>
                   </div>
-                  <Row style={{ padding: '10px', overflow: 'hidden' }} className={styles.outerLine}>
+                  <Row gutter={16} style={{ padding: '10px', overflow: 'hidden' }} className={styles.outerLine}>
                     {selectedPerson.map(({ id, name }) => (
-                      <Col span={8} key={id} className={styles.tag}>{name}</Col>
+                      <Col span={9} key={id} className={styles.tag}>{name}</Col>
                     ))}
                   </Row>
                 </Col>
