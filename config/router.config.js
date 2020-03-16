@@ -2018,42 +2018,42 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              name: 'patrol', // 巡检管理
-              path: '/personnel-position/patrol',
-              code: 'personnelPosition.patrol',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-position/patrol',
-                  redirect: '/personnel-position/patrol/index',
-                },
-                {
-                  name: 'index',
-                  code: 'personnelPosition.patrol.view',
-                  path: '/personnel-position/patrol/index',
-                  component: './PersonnelPositionNew/Patrol',
-                },
-              ],
-            },
-            {
-              name: 'contractor', // 承包商管理
-              path: '/personnel-position/contractor',
-              code: 'personnelPosition.contractor',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-position/contractor',
-                  redirect: '/personnel-position/contractor/index',
-                },
-                {
-                  name: 'index',
-                  code: 'personnelPosition.contractor.view',
-                  path: '/personnel-position/contractor/index',
-                  component: './PersonnelPositionNew/Contractor',
-                },
-              ],
-            },
+            // {
+            //   name: 'patrol', // 巡检管理
+            //   path: '/personnel-position/patrol',
+            //   code: 'personnelPosition.patrol',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/personnel-position/patrol',
+            //       redirect: '/personnel-position/patrol/index',
+            //     },
+            //     {
+            //       name: 'index',
+            //       code: 'personnelPosition.patrol.view',
+            //       path: '/personnel-position/patrol/index',
+            //       component: './PersonnelPositionNew/Patrol',
+            //     },
+            //   ],
+            // },
+            // {
+            //   name: 'contractor', // 承包商管理
+            //   path: '/personnel-position/contractor',
+            //   code: 'personnelPosition.contractor',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/personnel-position/contractor',
+            //       redirect: '/personnel-position/contractor/index',
+            //     },
+            //     {
+            //       name: 'index',
+            //       code: 'personnelPosition.contractor.view',
+            //       path: '/personnel-position/contractor/index',
+            //       component: './PersonnelPositionNew/Contractor',
+            //     },
+            //   ],
+            // },
             {
               name: 'map', // 地图管理
               path: '/personnel-position/map',
@@ -2090,24 +2090,24 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              name: 'workingBill', // 作业票管理
-              path: '/personnel-position/workingBill',
-              code: 'personnelPosition.workingBill',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-position/workingBill',
-                  redirect: '/personnel-position/workingBill/index',
-                },
-                {
-                  name: 'index',
-                  code: 'personnelPosition.workingBill.view',
-                  path: '/personnel-position/workingBill/index',
-                  component: './PersonnelPositionNew/WorkingBill',
-                },
-              ],
-            },
+            // {
+            //   name: 'workingBill', // 作业票管理
+            //   path: '/personnel-position/workingBill',
+            //   code: 'personnelPosition.workingBill',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/personnel-position/workingBill',
+            //       redirect: '/personnel-position/workingBill/index',
+            //     },
+            //     {
+            //       name: 'index',
+            //       code: 'personnelPosition.workingBill.view',
+            //       path: '/personnel-position/workingBill/index',
+            //       component: './PersonnelPositionNew/WorkingBill',
+            //     },
+            //   ],
+            // },
           ],
         },
 
