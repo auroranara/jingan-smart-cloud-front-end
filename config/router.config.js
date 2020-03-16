@@ -1982,24 +1982,24 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              name: 'personnel', // 人员管理
-              path: '/personnel-position/personnel',
-              code: 'personnelPosition.personnel',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-position/personnel',
-                  redirect: '/personnel-position/personnel/index',
-                },
-                {
-                  name: 'index',
-                  code: 'personnelPosition.personnel.view',
-                  path: '/personnel-position/personnel/index',
-                  component: './PersonnelPositionNew/Personnel',
-                },
-              ],
-            },
+            // {
+            //   name: 'personnel', // 人员管理
+            //   path: '/personnel-position/personnel',
+            //   code: 'personnelPosition.personnel',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/personnel-position/personnel',
+            //       redirect: '/personnel-position/personnel/index',
+            //     },
+            //     {
+            //       name: 'index',
+            //       code: 'personnelPosition.personnel.view',
+            //       path: '/personnel-position/personnel/index',
+            //       component: './PersonnelPositionNew/Personnel',
+            //     },
+            //   ],
+            // },
             {
               name: 'equipment', // 设备管理
               path: '/personnel-position/equipment',
