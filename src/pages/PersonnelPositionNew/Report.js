@@ -2,8 +2,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import styles from '../Monitor/index.less';
-import { getSrc } from '../utils';
+import styles from './index.less';
+import { getSrc } from './utils';
 
 const TITLE = '报表统计';
 const BREADCRUMB_LIST = [

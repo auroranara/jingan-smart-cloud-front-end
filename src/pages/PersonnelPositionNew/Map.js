@@ -2,10 +2,10 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import styles from '../Monitor/index.less';
-import { getSrc } from '../utils';
+import styles from './index.less';
+import { getSrc } from './utils';
 
-const TITLE = '人员管理';
+const TITLE = '地图管理';
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员定位', name: '人员定位' },
@@ -15,7 +15,7 @@ const BREADCRUMB_LIST = [
 @connect(({ user }) => ({
   user,
 }))
-export default class Personnel extends PureComponent {
+export default class Map extends PureComponent {
   render() {
     const {
       user: {
@@ -24,14 +24,14 @@ export default class Personnel extends PureComponent {
     } = this.props;
 
     const { mapIp, mapBuildId, mapSecret, appId } = companyBasicInfo || {};
-    const src = getSrc('staffManagement', mapIp, mapBuildId, mapSecret, appId);
+    const src = getSrc('mapManagement', mapIp, mapBuildId, mapSecret, appId);
     return (
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
         className={styles.container}
       >
-        <iframe className={styles.iframe} title="personnel" src={src} />
+        <iframe className={styles.iframe} title="map" src={src} />
       </PageHeaderLayout>
     );
   }

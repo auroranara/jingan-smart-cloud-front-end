@@ -3,9 +3,9 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
-import { getSrc } from '../utils';
+import { getSrc } from './utils';
 
-const TITLE = '定位监控';
+const TITLE = '目标跟踪';
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员定位', name: '人员定位' },
@@ -15,7 +15,7 @@ const BREADCRUMB_LIST = [
 @connect(({ user }) => ({
   user,
 }))
-export default class Monitor extends PureComponent {
+export default class Track extends PureComponent {
   render() {
     const {
       user: {
@@ -24,14 +24,14 @@ export default class Monitor extends PureComponent {
     } = this.props;
 
     const { mapIp, mapBuildId, mapSecret, appId } = companyBasicInfo || {};
-    const src = getSrc('location', mapIp, mapBuildId, mapSecret, appId);
+    const src = getSrc('trackSn', mapIp, mapBuildId, mapSecret, appId);
     return (
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
         className={styles.container}
       >
-        <iframe className={styles.iframe} title="monitor" src={src} />
+        <iframe className={styles.iframe} title="track" src={src} />
       </PageHeaderLayout>
     );
   }
