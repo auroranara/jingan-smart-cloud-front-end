@@ -1424,6 +1424,7 @@ export default class Chemical extends PureComponent {
       });
       return prev;
     }, []);
+    const href = location.href;
 
     return (
       <BigPlatformLayout
@@ -1516,7 +1517,9 @@ export default class Chemical extends PureComponent {
                   </div>
                 )}
 
-                <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
+                {href.indexOf('five.jinganyun.net') < 0 && (
+                  <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
+                )}
               </div>
             </Col>
           </Row>

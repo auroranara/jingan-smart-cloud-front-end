@@ -3,6 +3,33 @@
   height: 100%;
   border: 1px solid #0ff;
 
+  .fourColorsContainer {
+    position: absolute;
+    bottom: 15px;
+    color: #fff;
+    left: calc(~'50% - 260px');
+    text-align: center;
+
+    .fourColorsWrapper {
+      float: left;
+      line-height: 30px;
+      width: 130px;
+
+      // & + .fourColorsWrapper {
+      //   margin-left: 16px;
+      // }
+
+      .rect {
+        display: inline-block;
+        width: 30px;
+        height: 15px;
+        margin-right: 10px;
+        position: relative;
+        top: 2px;
+      }
+    }
+  }
+
   .controlContainer {
     position: absolute;
     top: 15px;

@@ -47,6 +47,51 @@
     border-radius: 10px;
     background-color: rgba(9, 103, 211, 0.5);
   }
+
+  .wrapper {
+    line-height: 4em;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #032758;
+    }
+
+    .icon {
+      position: relative;
+      top: 0.5em;
+      display: inline-block;
+      width: 3em;
+      height: 3em;
+    }
+
+    .valueIcon {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      position: relative;
+      top: 3px;
+      margin-right: 6px;
+    }
+
+    .alarmWrapper {
+      color: #e63b23;
+      font-size: 18px;
+
+      .alarm {
+        .valueIcon;
+        background: url('../imgs/value-alarm.png') center center / 100% 100% no-repeat;
+      }
+    }
+
+    .totalWrapper {
+      font-size: 18px;
+
+      .total {
+        .valueIcon;
+        background: url('../imgs/value-total.png') center center / 100% 100% no-repeat;
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 1450px) {
