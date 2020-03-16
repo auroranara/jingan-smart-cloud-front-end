@@ -279,7 +279,7 @@ export default class IdentificationRecord extends PureComponent {
         dataIndex: 'createTime',
         align: 'center',
         width: 200,
-        render: (val) => val ? moment(val).format('YYYY-MM-DD') : '',
+        render: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '',
       },
       {
         title: '抓拍照片',
