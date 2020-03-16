@@ -1,17 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import {
-  Button,
-  Input,
-  Card,
-  Table,
-  message,
-  Modal,
-  Divider,
-  Form,
-  Row,
-  Col,
-  Select,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Input, Card, Table, message, Modal, Divider, Row, Col, Select } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
@@ -325,12 +315,12 @@ export default class CheckListMaintenance extends Component {
     const hasReviewAuthority = permissionCodes.includes(reviewCode);
     const hasPublishAuthority = permissionCodes.includes(publishCode);
     const columns = [
-      ...isCompany ? [] : [{
+      ...(isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 250,
-      }],
+      }]),
       {
         title: '检查类型',
         dataIndex: 'type',

@@ -1,13 +1,7 @@
 import { PureComponent } from 'react';
-import {
-  Table,
-  Modal,
-  Input,
-  Button,
-  Form,
-  Row,
-  Col,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Table, Modal, Input, Button, Row, Col } from 'antd';
 
 @Form.create()
 export default class PersonSelectModal extends PureComponent {

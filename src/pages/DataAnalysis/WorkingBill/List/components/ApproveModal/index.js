@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Modal, Form, Input, Radio, DatePicker } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Input, Radio, DatePicker } from 'antd';
 import moment from 'moment';
 import { MINUTE_FORMAT, APPROVAL_OPINIONS } from '../../../config';
 import styles from './index.less';

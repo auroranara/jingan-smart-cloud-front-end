@@ -1,17 +1,7 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  Input,
-  Card,
-  Table,
-  message,
-  Divider,
-  Form,
-  Row,
-  Col,
-  Select,
-  TreeSelect,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Input, Card, Table, message, Divider, Row, Col, Select, TreeSelect } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import { connect } from 'dva';

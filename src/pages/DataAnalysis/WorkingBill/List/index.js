@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   message,
   Radio,
   Spin,
   Card,
   Table,
-  Form,
   Row,
   Col,
   Button,
