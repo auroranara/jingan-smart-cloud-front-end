@@ -9,6 +9,7 @@ import ToolBar from '@/components/ToolBar';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import TableTransFer from './TabTransfer';
 import { hasAuthority } from '@/utils/customAuth';
+import Map from '../../RiskControl/FourColorImage/Map';
 import codes from '@/utils/codes';
 import styles from './MajorHazardEdit.less';
 
@@ -42,6 +43,7 @@ const {
     user,
     pipeline,
     department,
+    map,
     loading,
   }) => ({
     reservoirRegion,
@@ -52,6 +54,7 @@ const {
     productionEquipments,
     pipeline,
     department,
+    map,
     gasometer,
     loading: loading.models.reservoirRegion,
     // personModalLoading:
@@ -81,6 +84,9 @@ export default class MajorHazardEdit extends PureComponent {
       productList: [], // 生产装置选中列表
       pipelineList: [], // 工业管道选中列表
       personModalVisible: false, // 重大危险源责任人弹框是否可见
+      isDrawing: false, // 地图是否开始画
+      pointList: [], // 地图列表
+      points: [],
     };
   }
 
@@ -142,6 +148,19 @@ export default class MajorHazardEdit extends PureComponent {
       });
     }
   }
+  onRef = ref => {
+    this.childMap = ref;
+  };
+
+  // 获取地图
+  fetchMap = (params, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'map/fetchMapList',
+      payload: { ...params },
+      callback,
+    });
+  };
 
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
@@ -321,6 +340,9 @@ export default class MajorHazardEdit extends PureComponent {
       gasHolderManageList: [],
       productList: [],
       pipelineList: [],
+    });
+    this.fetchMap({ companyId: id }, mapInfo => {
+      this.childMap.initMap({ ...mapInfo });
     });
   };
 
@@ -564,6 +586,26 @@ export default class MajorHazardEdit extends PureComponent {
     });
   };
 
+  renderDrawButton = () => {
+    const { isDrawing, points } = this.state;
+    return (
+      <Fragment>
+        <Button
+          style={{ marginLeft: 40 }}
+          onClick={() => {
+            if (!!isDrawing && points.length <= 2) return message.error('区域至少三个坐标点！');
+            this.setState({ isDrawing: !isDrawing });
+          }}
+        >
+          {!isDrawing ? '开始画' : '结束画'}
+        </Button>
+        <Button style={{ marginLeft: 10 }} disabled={!!isDrawing} onClick={this.handleReset}>
+          重置
+        </Button>
+      </Fragment>
+    );
+  };
+
   renderInfo() {
     const {
       form: { getFieldDecorator },
@@ -594,27 +636,20 @@ export default class MajorHazardEdit extends PureComponent {
       code,
       name,
       desc,
-      // manageType,
-      // memoryPlace,
+      isDrawing,
       antiStatic,
       dangerTechnology,
       location,
       useDate,
       r,
       dangerLevel,
-      // chemiclaNature,
       personNum,
-      // environmentType,
-      // environmentName,
-      // environmentNum,
       minSpace,
       safetyDistance,
-      // linkman,
-      // linkmanTel,
       recordDate,
       dutyPerson,
+      pointList,
     } = detailList;
-    // const dangerSourceList = getFieldValue('dangerSourceList') || [];
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -898,12 +933,24 @@ export default class MajorHazardEdit extends PureComponent {
               <Input {...itemStyles} placeholder="请填入周边500米内常住人口数量" maxLength={10} />
             )}
           </FormItem>
-
           <FormItem {...formItemLayout} label="周边防护目标最近距离(m)">
             {getFieldDecorator('minSpace', {
               initialValue: minSpace,
               getValueFromEvent: this.handleTrim,
             })(<Input {...itemStyles} placeholder="请填入专家评估算出的距离" maxLength={10} />)}
+          </FormItem>
+          <FormItem {...formItemLayout} label="划定重点危险源区域范围">
+            {this.renderDrawButton()}
+            <Map
+              isDrawing={isDrawing}
+              // groupId={groupId}
+              onRef={this.onRef}
+              // levelId={levelId}
+              getPoints={this.getPoints}
+              getBuilding={this.getBuilding}
+              pointList={pointList}
+              // modelIds={modelIds}
+            />
           </FormItem>
         </Form>
       </Card>
