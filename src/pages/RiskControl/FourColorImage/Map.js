@@ -118,7 +118,6 @@ export default class Map extends React.Component {
         points.push(coord);
         // 画线
         this.drawLines(groupId, points);
-        // 获取当前所选建筑物ID
       }
     });
 
@@ -226,9 +225,9 @@ export default class Map extends React.Component {
       pointList.length > 0
         ? pointList.map(item => {
             const { zoneLevel } = item;
-            return model.setColor(COLORS[zoneLevel]);
+            return model.setColor(zoneLevel ? COLORS[zoneLevel] : COLORS[4]);
           })
-        : model.setColor(COLORS[levelId]);
+        : model.setColor(levelId ? COLORS[levelId] : COLORS[4]);
       return null;
     }
   };
@@ -325,7 +324,7 @@ export default class Map extends React.Component {
     const { isDrawing, levelId, cardStyle } = this.props;
     if (!isDrawing && points.length > 0) {
       const groupId = points.map(item => item.groupID)[0];
-      const currColor = COLORS[levelId];
+      const currColor = levelId ? COLORS[levelId] : COLORS[4];
       // doDraw
       this.drawPolygon(groupId, points, currColor);
       // 建筑物上色
