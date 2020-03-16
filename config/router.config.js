@@ -5212,7 +5212,7 @@ module.exports = env => {
               ],
             },
             {
-              name: 'identificationRecord',
+              name: 'identificationRecord', // 识别记录
               path: '/real-name-certification/identification-record',
               code: 'realNameCertification.identificationRecord',
               hideChildrenInMenu: true,
@@ -5227,6 +5227,78 @@ module.exports = env => {
                   name: 'list',
                   code: 'realNameCertification.identificationRecord',
                   component: './RealNameCertification/Identification/List',
+                },
+              ],
+            },
+            {
+              name: 'channel', // 通道管理
+              path: '/real-name-certification/channel',
+              code: 'realNameCertification.channel',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/real-name-certification/channel',
+                  redirect: '/real-name-certification/channel/list',
+                },
+                {
+                  name: 'list',
+                  path: '/real-name-certification/channel/list',
+                  code: 'realNameCertification.channel.listView',
+                  component: './RealNameCertification/Channel/List',
+                },
+                {
+                  name: 'add',
+                  path: '/real-name-certification/channel/add',
+                  code: 'realNameCertification.channel.add',
+                  component: './RealNameCertification/Channel/Add',
+                },
+                {
+                  name: 'edit',
+                  path: '/real-name-certification/channel/edit/:id',
+                  code: 'realNameCertification.channel.edit',
+                  component: './RealNameCertification/Channel/Add',
+                },
+                {
+                  name: 'view',
+                  path: '/real-name-certification/channel/view/:id',
+                  code: 'realNameCertification.channel.view',
+                  component: './RealNameCertification/Channel/Add',
+                },
+              ],
+            },
+            {
+              name: 'channelDevice', // 通道设备
+              path: '/real-name-certification/channelDevice',
+              code: 'realNameCertification.channelDevice',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/real-name-certification/channelDevice',
+                  redirect: '/real-name-certification/channelDevice/list',
+                },
+                {
+                  name: 'list',
+                  path: '/real-name-certification/channelDevice/list',
+                  code: 'realNameCertification.channelDevice.listView',
+                  component: './RealNameCertification/ChannelDevice/List',
+                },
+                {
+                  name: 'add',
+                  path: '/real-name-certification/channelDevice/add',
+                  code: 'realNameCertification.channelDevice.add',
+                  component: './RealNameCertification/ChannelDevice/Add',
+                },
+                {
+                  name: 'edit',
+                  path: '/real-name-certification/channelDevice/edit/:id',
+                  code: 'realNameCertification.channelDevice.edit',
+                  component: './RealNameCertification/ChannelDevice/Add',
+                },
+                {
+                  name: 'view',
+                  path: '/real-name-certification/channelDevice/view/:id',
+                  code: 'realNameCertification.channelDevice.view',
+                  component: './RealNameCertification/ChannelDevice/Add',
                 },
               ],
             },

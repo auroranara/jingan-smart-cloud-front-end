@@ -30,6 +30,11 @@ export default {
       list: [],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
+    // 通道数据
+    channel: {
+      list: [],
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
+    },
     // 设备数据
     device: {
       list: [
@@ -155,11 +160,16 @@ export default {
       { value: 'faceAndCardPermission', label: '人卡合一权限' },
       { value: 'idCardFacePermission', label: '认证对比权限' },
     ],
-    // 照片状态
+    // 照片状态字典
     picStateDict: [
       { value: 1, label: '授权成功' },
       { value: 2, label: '销权中' },
       { value: 3, label: '授权中（可能原因：设备离线）' },
+    ],
+    // 通道类型字典
+    channelTypeDict: [
+      { key: 1, value: '双向' },
+      { key: 2, value: '单向' },
     ],
   },
   effects: {
