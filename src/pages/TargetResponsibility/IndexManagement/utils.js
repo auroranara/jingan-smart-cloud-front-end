@@ -91,7 +91,6 @@ export const EditModal = Form.create()(props => {
     handleModalAdd,
     handleModalEdit,
   } = props;
-  console.log('detail', detail);
 
   const formItemCol = {
     labelCol: {

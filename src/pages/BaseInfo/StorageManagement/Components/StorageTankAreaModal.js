@@ -19,6 +19,7 @@ const StorageTankAreaModal = Form.create()(props => {
     rowSelection,
     loading = false,
     handleSelect,
+    handleReset,
     model: {
       list = [],
       pagination: {
@@ -39,9 +40,10 @@ const StorageTankAreaModal = Form.create()(props => {
       },
     })
   }
-  const handleReset = () => {
-    resetFields()
-    handleQuery()
+  const handleClickReset = () => {
+    resetFields();
+    handleQuery();
+    handleReset && handleReset();
   }
   const columns = [
     {
@@ -86,7 +88,7 @@ const StorageTankAreaModal = Form.create()(props => {
           <Col {...colWrapper}>
             <FormItem {...formItemStyle}>
               <Button style={{ marginRight: '10px' }} type="primary" onClick={() => handleQuery()}>查询</Button>
-              <Button style={{ marginRight: '10px' }} onClick={handleReset}>重置</Button>
+              <Button style={{ marginRight: '10px' }} onClick={handleClickReset}>重置</Button>
               <Button type="primary" onClick={handleSelect} disabled={rowSelection.selectedRowKeys.length === 0}>选择</Button>
             </FormItem>
           </Col>

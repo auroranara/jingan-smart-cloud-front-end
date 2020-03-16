@@ -21,14 +21,23 @@ import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
+import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
 
 import styles from './index.less';
 
 const {
   emergencyManagement: {
-    emergencySupplies: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
+    emergencySupplies: {
+      detail: detailCode,
+      edit: editCode,
+      add: addCode,
+      delete: deleteCode,
+      checkList: checkListCode,
+      maintList: maintListCode,
+    },
   },
 } = codes;
+const NO_DATA = '暂无数据';
 const addUrl = '/emergency-management/emergency-supplies/add';
 
 const { Option } = Select;
@@ -201,6 +210,62 @@ export default class EmergencySuppliesList extends PureComponent {
         },
         transform,
       },
+      {
+        id: 'checkStatus',
+        render() {
+          const options = [
+            { value: 0, name: '未到期' },
+            { value: 1, name: '即将到期' },
+            { value: 2, name: '已过期' },
+          ];
+          return (
+            <Select
+              allowClear
+              showSearch
+              placeholder="请选择检查状态"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {options.map(item => {
+                const { value, name } = item;
+                return (
+                  <Option value={value} key={value}>
+                    {name}
+                  </Option>
+                );
+              })}
+            </Select>
+          );
+        },
+      },
+      {
+        id: 'maintStatus',
+        render() {
+          const options = [
+            { value: 0, name: '未到期' },
+            { value: 1, name: '即将到期' },
+            { value: 2, name: '已过期' },
+          ];
+          return (
+            <Select
+              allowClear
+              showSearch
+              placeholder="请选择维保状态"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {options.map(item => {
+                const { value, name } = item;
+                return (
+                  <Option value={value} key={value}>
+                    {name}
+                  </Option>
+                );
+              })}
+            </Select>
+          );
+        },
+      },
     ];
 
     // 是否有新增权限
@@ -209,7 +274,7 @@ export default class EmergencySuppliesList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
+          fields={unitType === 4 ? fields.filter(item => item.id !== 'companyName') : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -243,6 +308,14 @@ export default class EmergencySuppliesList extends PureComponent {
 
   goEdit = id => {
     router.push(`/emergency-management/emergency-supplies/edit/${id}`);
+  };
+
+  goCheck = id => {
+    router.push(`/emergency-management/emergency-supplies/check/${id}/list`);
+  };
+
+  goMaint = id => {
+    router.push(`/emergency-management/emergency-supplies/maint/${id}/list`);
   };
 
   // 表格改变触发，包含分页变动
@@ -352,10 +425,66 @@ export default class EmergencySuppliesList extends PureComponent {
         width: 100,
       },
       {
+        title: '定期检查',
+        dataIndex: 'daySpace',
+        key: 'daySpace',
+        align: 'center',
+        width: 280,
+        render: (data, record) => {
+          const { daySpace, checkDate, checkStatus } = record;
+          return (
+            <div className={styles.multi}>
+              <div style={{ color: getColorVal(checkStatus) }}>{paststatusVal[checkStatus]}</div>
+              <div>
+                检查间隔：
+                {daySpace || daySpace === 0 ? daySpace + '天' : NO_DATA}
+              </div>
+              <div>
+                下次检查日期：
+                {checkDate ? moment(checkDate).format('YYYY-MM-DD') : NO_DATA}
+              </div>
+              <div>
+                <AuthA code={checkListCode} onClick={() => this.goCheck(record.id)}>
+                  检查记录
+                </AuthA>
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        title: '定期维保',
+        dataIndex: 'dayMaintSpace',
+        key: 'dayMaintSpace',
+        align: 'center',
+        width: 280,
+        render: (data, record) => {
+          const { dayMaintSpace, maintDate, maintStatus } = record;
+          return (
+            <div className={styles.multi}>
+              <div style={{ color: getColorVal(maintStatus) }}>{paststatusVal[maintStatus]}</div>
+              <div>
+                维保间隔：
+                {dayMaintSpace || dayMaintSpace === 0 ? dayMaintSpace + '天' : NO_DATA}
+              </div>
+              <div>
+                下次维保日期：
+                {maintDate ? moment(maintDate).format('YYYY-MM-DD') : NO_DATA}
+              </div>
+              <div>
+                <AuthA code={maintListCode} onClick={() => this.goMaint(record.id)}>
+                  维保记录
+                </AuthA>
+              </div>
+            </div>
+          );
+        },
+      },
+      {
         title: '操作',
         dataIndex: 'operation',
         key: 'operation',
-        // fixed: 'right',
+        fixed: 'right',
         align: 'center',
         width: 160,
         render: (data, record) => (
@@ -406,7 +535,7 @@ export default class EmergencySuppliesList extends PureComponent {
               columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
               dataSource={list}
               pagination={false}
-              // scroll={{ x: scrollX }}
+              scroll={{ x: 'max-content' }}
             />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}

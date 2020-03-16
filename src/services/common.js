@@ -33,3 +33,8 @@ export async function setMonitorEquipmentBindStatus(params) {
 export async function getPersonList(params) {
   return request(`/acloud_new/v2/rolePermission/user?${stringify(params)}`);
 }
+
+// 获取部门列表
+export async function getDepartmentList(params) {
+  return request(`/acloud_new/v2/sys/sysDepartment?${stringify(params)}`);
+}

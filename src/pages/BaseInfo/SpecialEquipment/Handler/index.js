@@ -263,6 +263,8 @@ export default class SpecialEquipment extends PureComponent {
           payload.pointFixInfoList = [
             { imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, isShow, ...resMap },
           ];
+        } else {
+          payload.pointFixInfoList = [];
         }
         const success = () => {
           // message.success(id ? '编辑成功！' : '新增成功！');
@@ -553,6 +555,14 @@ export default class SpecialEquipment extends PureComponent {
       this.setState({ fileList });
     }
     return fileList;
+  };
+
+  // 地图重置按钮
+  handleClickReset = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ isShow: undefined, mapLocation: undefined });
   };
 
   /**
@@ -935,7 +945,9 @@ export default class SpecialEquipment extends PureComponent {
                 新增
               </Button>
               <FlatPic {...FlatPicProps} /> */}
-              {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
+              {getFieldDecorator('mapLocation')(
+                <MapMarkerSelect companyId={companyId} onChange={this.handleClickReset} />
+              )}
             </FormItem>
           )}
           {companyId && (

@@ -20,10 +20,18 @@ import debounce from 'lodash/debounce';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-// import codes from '@/utils/codes';
+import codes from '@/utils/codes';
 import styles from './CompanyList.less';
-// import { hasAuthority } from '@/utils/customAuth';
+import { AuthButton } from '@/utils/customAuth';
 import router from 'umi/router';
+
+const {
+  realNameCertification: {
+    personnelManagement: {
+      add: addCode,
+    },
+  },
+} = codes;
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -203,9 +211,9 @@ export default class CompanyList extends PureComponent {
                   查询
                 </Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" onClick={this.handleViewAdd}>
+                <AuthButton code={addCode} type="primary" onClick={this.handleViewAdd}>
                   新增单位人员
-                </Button>
+                </AuthButton>
               </FormItem>
             </Col>
           </Row>

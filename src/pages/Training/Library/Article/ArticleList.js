@@ -67,9 +67,10 @@ export default class ArticleList extends PureComponent {
       drawerVisible: false, // 控制预览抽屉的显示
       detail: {}, // 文章详情
     }
+    this.articleView = null
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       notCompany,
       companyId,
@@ -131,7 +132,9 @@ export default class ArticleList extends PureComponent {
       detail: item,
     }, () => {
       // 指定预览文章的内容
-      this.refs.articleView.innerHTML = content
+      setTimeout(() => {
+        this.articleView.innerHTML = content
+      }, 0);
     })
   }
 
@@ -314,7 +317,7 @@ export default class ArticleList extends PureComponent {
     )
   }
 
-  render() {
+  render () {
     const {
       initLoading,
       moreLoading,
@@ -410,7 +413,7 @@ export default class ArticleList extends PureComponent {
               <span>阅读人数：{detail.totalPerson}</span>
             </div>
           </div>
-          <div ref="articleView"></div>
+          <div ref={ref => { this.articleView = ref }}></div>
         </Drawer>
       </div>
     );

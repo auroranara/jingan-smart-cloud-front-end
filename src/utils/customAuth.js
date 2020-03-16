@@ -10,19 +10,19 @@ import { connect } from 'dva';
 // import styles from './customAutho.less';
 
 // 为了防止从store.user.currentUser.permissionCodes获取的codes是个undefined
-export function hasAuthority(code, codes = []) {
+export function hasAuthority (code, codes = []) {
   // console.log(code, codes);
   return codes.includes(code);
 }
 
-export function getDisabled(code, codes) {
+export function getDisabled (code, codes) {
   return !hasAuthority(code, codes);
 }
 
 export const ERROR_MSG = '您没有进行当前操作的权限';
 
 // 将router.config.js配置转化成路由，源码中的函数，并未改动
-export function formatter(data, parentPath = '', parentAuthority, parentName) {
+export function formatter (data, parentPath = '', parentAuthority, parentName) {
   return data.map(item => {
     let locale = 'menu';
     if (parentName && item.name) {
@@ -146,7 +146,7 @@ export const filterBigPlatform = (array, model) => {
 }
 
 // 将menus数组中不存在的路径过滤掉，使其再菜单中不显示，codes=[]也是为了防止从store.user.currentUser.permissionCodes获取的是undefined
-export function filterMenus(MenuData, codes = [], codeMap, sysType) {
+export function filterMenus (MenuData, codes = [], codeMap, sysType) {
   const menuData = [];
   for (let m of MenuData) {
     const { path, children, systemType, developing } = m;
@@ -167,7 +167,7 @@ export function filterMenus(MenuData, codes = [], codeMap, sysType) {
 }
 
 // 根据formatter之后的路由来生成一个path -> code的映射对象及包含所有路径path的数组
-export function getCodeMap(menuData, codeMap, pathArray) {
+export function getCodeMap (menuData, codeMap, pathArray) {
   for (let m of menuData) {
     const { path, code, locale, children } = m;
 
@@ -191,14 +191,14 @@ export function getCodeMap(menuData, codeMap, pathArray) {
   }
 }
 
-function getMenuName(path) {
+function getMenuName (path) {
   const parts = path.split('/').filter(n => n);
   if (parts.length)
     return parts[0];
 };
 
 // 高阶函数，最后的返回值是个函数，来判断当前路径是否在menus中，即当前用户是否有访问权限，因为Authorized组件的authority属性要求传入的值是个函数
-export function generateAuthFn(codes, codeMap, pathArray, rootPaths=[]) {
+export function generateAuthFn (codes, codeMap, pathArray, rootPaths = []) {
   // console.log('codes', codes);
   // console.log('codeMap', codeMap);
   // console.log('pathArray', pathArray);
@@ -222,7 +222,7 @@ export function generateAuthFn(codes, codeMap, pathArray, rootPaths=[]) {
 }
 
 // 找到路径数组中与当前pathname匹配的路径path，如 company/1 => company/:id，不存在匹配的path，默认返回undefined，这也意味着pathname对应的页面不存在
-export function getPath(pathname, pathArray) {
+export function getPath (pathname, pathArray) {
   for (let path of pathArray) {
     const pathRegexp = pathToRegexp(path);
     const isMatch = pathRegexp.test(pathname);
@@ -231,7 +231,7 @@ export function getPath(pathname, pathArray) {
   }
 }
 
-export function authWrapper(WrappedComponent) {
+export function authWrapper (WrappedComponent) {
   return connect(({ user }) => ({ user }))(function (props) {
     // console.log(props);
     // 将需要的属性分离出来
@@ -302,7 +302,7 @@ export const AuthButton = connect(({ user }) => ({ user }))(function (props) {
 // 图标
 @connect(({ user }) => ({ user }))
 export class AuthIcon extends PureComponent {
-  render() {
+  render () {
     const {
       dispatch, // 单独拎出来过滤掉，不然传入Link会报warning
       to,
@@ -346,6 +346,7 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
     user: { currentUser: { permissionCodes } },
     children,
     authority, // 权限 { boolean } 最高优先级
+    style,
   } = props
   const auth = authority || hasAuthority(code, codes || permissionCodes);
   return auth ? (
@@ -355,14 +356,14 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
       okText={okText}
       cancelText={cancelText}
     >
-      <a>{children}</a>
+      <a style={style}>{children}</a>
     </Popconfirm>
   ) : (
       <span style={{ color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed' }}>{children}</span>
     )
 });
 
-export function getSystemType(pathname, route) {
+export function getSystemType (pathname, route) {
   if (pathname.includes('/company-workbench'))
     return -1;
 

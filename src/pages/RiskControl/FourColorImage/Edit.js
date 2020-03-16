@@ -304,7 +304,7 @@ export default class TableList extends React.Component {
 
   getBuilding = (buildingId, s) => {
     const { modelIds } = this.state;
-    const modeIdList = modelIds ? modelIds.split(',').map(Number) : [];
+    const modeIdList = modelIds ? modelIds.split(',') : [];
     const areaList = buildingId.filter(item => item).map((item, index) => ({
       key: index,
       areaId: item.buildingId,

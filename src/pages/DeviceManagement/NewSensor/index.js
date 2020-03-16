@@ -372,6 +372,12 @@ export default class NewSensorList extends Component {
         ),
       },
       {
+        title: '监测设备',
+        dataIndex: 'monitorEquipmentName',
+        width: 200,
+        align: 'center',
+      },
+      {
         title: '监测对象',
         dataIndex: '',
         align: 'center',

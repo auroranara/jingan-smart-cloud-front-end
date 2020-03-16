@@ -145,6 +145,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
           ...formData,
           companyId: unitType === 4 ? companyId : formData.companyId,
           materialType: formData.materialType.join(','),
+          daySpace: formData.daySpace || '',
+          dayMaintSpace: formData.dayMaintSpace || '',
         };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');

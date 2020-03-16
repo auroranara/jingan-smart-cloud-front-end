@@ -324,7 +324,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
             {/* {!isNaN(paststatus) && [1, 2].includes(+paststatus) && (<div style={{ color: 'red' }}>{expirationStatusList[+paststatus].label}</div>)} */}
             <div>证号：{operapersonNumber}</div>
             <div>初领日期：{this.formateTime(firstDate)}</div>
-            <div>有效日期：{`${this.formateTime(startDate)}~${this.formateTime(endDate)}`}</div>
+            <div>有效日期：{`${this.formateTime(endDate)}`}</div>
             <div>复审日期：{this.formateTime(reviewDate)}</div>
           </div>
         ),

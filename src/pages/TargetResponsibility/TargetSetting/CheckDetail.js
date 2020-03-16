@@ -63,9 +63,10 @@ export default class CheckDetail extends PureComponent {
 
   handleModalAdd = formData => {
     const {
-      fieldsValue: { actualValue, monthTime, yearTime, quarter },
+      fieldsValue: { actualValue, monthTime, quarter },
       goalDutyId,
       targetId,
+      goalYear,
     } = formData;
     const { dispatch } = this.props;
     dispatch({
@@ -74,11 +75,7 @@ export default class CheckDetail extends PureComponent {
         goalDutyId,
         targetId,
         actualValue: actualValue,
-        examtime: quarter
-          ? quarter
-          : monthTime
-            ? moment(monthTime).format('MM')
-            : moment(yearTime).format('YYYY'),
+        examtime: quarter ? quarter : monthTime ? monthTime.toString() : goalYear,
       },
       callback: response => {
         if (response && response.code === 200) {
@@ -91,46 +88,27 @@ export default class CheckDetail extends PureComponent {
     });
   };
 
-  handlePanelChange = v => {
-    this.setState({ time: v, isopen: false });
-  };
+  // handlePanelChange = v => {
+  //   this.setState({ time: v, isopen: false });
+  // };
 
-  handleOpenChange = s => {
-    if (s) {
-      this.setState({ isopen: true });
-    } else {
-      this.setState({ isopen: false });
-    }
-  };
+  // handleOpenChange = s => {
+  //   if (s) {
+  //     this.setState({ isopen: true });
+  //   } else {
+  //     this.setState({ isopen: false });
+  //   }
+  // };
 
-  clearDateValue = () => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({ yearTime: null, monthTime: null, quarter: null });
-  };
+  // clearDateValue = () => {
+  //   const {
+  //     form: { setFieldsValue },
+  //   } = this.props;
+  //   setFieldsValue({ yearTime: null, monthTime: null, quarter: null });
+  // };
 
   handleModalClose = () => {
     this.setState({ modalVisible: false, time: '' });
-  };
-
-  validatorID = (rule, value, callback) => {
-    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
-    const patterDot = new RegExp(
-      "[`~!@#$^&*()=|{}':;',\\[\\]<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]"
-    );
-    if (value) {
-      if (
-        chineseRe.test(value) ||
-        /[a-z]/.test(value) ||
-        /[A-Z]/.test(value) ||
-        patterDot.test(value)
-      ) {
-        callback('注：只能输入数字');
-      } else {
-        callback();
-      }
-    }
   };
 
   render() {
@@ -162,10 +140,9 @@ export default class CheckDetail extends PureComponent {
       ...this.state,
       handleModalClose: this.handleModalClose,
       handleModalAdd: this.handleModalAdd,
-      handlePanelChange: this.handlePanelChange,
-      handleOpenChange: this.handleOpenChange,
-      clearDateValue: this.clearDateValue,
-      validatorID: this.validatorID,
+      // handlePanelChange: this.handlePanelChange,
+      // handleOpenChange: this.handleOpenChange,
+      // clearDateValue: this.clearDateValue,
       list,
     };
 

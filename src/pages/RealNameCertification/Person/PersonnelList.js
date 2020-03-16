@@ -13,16 +13,24 @@ import {
   Table,
   Divider,
   Input,
-  Popconfirm,
 } from 'antd';
-// import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-// import codes from '@/utils/codes';
-// import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+import { AuthButton, AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import router from 'umi/router';
 import { stringify } from 'qs';
 import { SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
 import ImagePreview from '@/jingan-components/ImagePreview';
+
+const {
+  realNameCertification: {
+    personnelManagement: {
+      add: addCode,
+      edit: editCode,
+      delete: deleteCode,
+    },
+  },
+} = codes;
 
 const FormItem = Form.Item;
 
@@ -159,9 +167,9 @@ export default class PersonnelList extends PureComponent {
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
                 </Button>
-                <Button type="primary" onClick={() => { router.push(`/real-name-certification/personnel-management/add?${stringify({ companyId })}`) }}>
+                <AuthButton code={addCode} type="primary" onClick={() => { router.push(`/real-name-certification/personnel-management/add?${stringify({ companyId })}`) }}>
                   新增人员
-                </Button>
+                </AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -248,16 +256,15 @@ export default class PersonnelList extends PureComponent {
         width: 150,
         render: (val, record) => (
           <Fragment>
-            <a onClick={() => this.handleToEdit(record.id)}>编辑</a>
+            <AuthA code={editCode} onClick={() => this.handleToEdit(record.id)}>编辑</AuthA>
             <Divider type="vertical" />
-            <Popconfirm
+            <AuthPopConfirm
+              code={deleteCode}
               title="确认要删除该人员吗?删除人员后，将删除人员信息及人员所有授权信息。"
               onConfirm={() => this.handleDelete(record.id)}
-              okText="确认"
-              cancelText="取消"
             >
-              <a>删除</a>
-            </Popconfirm>
+              删除
+            </AuthPopConfirm>
           </Fragment>
         ),
       },

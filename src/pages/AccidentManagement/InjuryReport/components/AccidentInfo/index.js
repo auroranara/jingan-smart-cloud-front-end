@@ -4,7 +4,7 @@ import CustomForm from '@/jingan-components/CustomForm';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import moment from 'moment';
 import TypeSelect from '../../../components/TypeSelect';
-import { LEVELS, DEFAULT_FORMAT } from '../../List';
+import { LEVELS, DEFAULT_FORMAT } from '../../../QuickReport/List';
 import { connect } from 'dva';
 import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
@@ -128,49 +128,45 @@ export default class AccidentInfo extends Component {
     const fields = [
       {
         id: 'accidentTitle',
-        label: '事故信息标题',
+        label: '事故名称',
         transform: value => value.trim(),
         render: _this => (
-          <Input
-            placeholder="请输入事故信息标题"
-            onPressEnter={_this.handleSearch}
-            maxLength={50}
-          />
+          <Input placeholder="请输入事故名称" onPressEnter={_this.handleSearch} maxLength={50} />
         ),
       },
-      {
-        id: 'accidentType',
-        label: '事故类型代码',
-        render: () => <TypeSelect allowClear />,
-      },
-      {
-        id: 'accidentLevel',
-        label: '事故级别',
-        render: () => (
-          <Select placeholder="请选择事故级别" allowClear>
-            {LEVELS.map(({ key, value }) => (
-              <Option key={key}>{value}</Option>
-            ))}
-          </Select>
-        ),
-      },
-      {
-        id: 'happenTime',
-        label: '事故发生时间',
-        render: () => (
-          <DatePicker
-            className={styles.datePicker}
-            placeholder="请选择事故发生时间"
-            format={DEFAULT_FORMAT}
-            showTime
-            allowClear
-          />
-        ),
-      },
+      // {
+      //   id: 'accidentType',
+      //   label: '事故类型代码',
+      //   render: () => <TypeSelect allowClear />,
+      // },
+      // {
+      //   id: 'accidentLevel',
+      //   label: '事故级别',
+      //   render: () => (
+      //     <Select placeholder="请选择事故级别" allowClear>
+      //       {LEVELS.map(({ key, value }) => (
+      //         <Option key={key}>{value}</Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      // },
+      // {
+      //   id: 'happenTime',
+      //   label: '事故发生时间',
+      //   render: () => (
+      //     <DatePicker
+      //       className={styles.datePicker}
+      //       placeholder="请选择事故发生时间"
+      //       format={DEFAULT_FORMAT}
+      //       showTime
+      //       allowClear
+      //     />
+      //   ),
+      // },
     ];
     const columns = [
       {
-        title: '事故信息标题',
+        title: '事故名称',
         dataIndex: 'accidentTitle',
         align: 'center',
       },
@@ -180,11 +176,11 @@ export default class AccidentInfo extends Component {
         render: time => time && moment(time).format(DEFAULT_FORMAT),
         align: 'center',
       },
-      {
-        title: '事故类型代码',
-        dataIndex: 'accidentTypeDesc',
-        align: 'center',
-      },
+      // {
+      //   title: '事故类型代码',
+      //   dataIndex: 'accidentTypeDesc',
+      //   align: 'center',
+      // },
       {
         title: '事故级别',
         dataIndex: 'accidentLevel',

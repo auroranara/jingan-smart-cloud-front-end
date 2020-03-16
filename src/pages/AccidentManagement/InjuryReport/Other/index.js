@@ -8,9 +8,6 @@ import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 import RadioOrSpan from '@/jingan-components/RadioOrSpan';
-import AreaSelect from '@/jingan-components/AreaSelect';
-import MapCoordinate from '@/jingan-components/MapCoordinate';
-import TypeSelect from '../../components/TypeSelect';
 import AccidentInfo from '../components/AccidentInfo';
 import { getToken } from 'utils/authority';
 import { getFileList } from '@/pages/BaseInfo/utils';
@@ -20,18 +17,7 @@ import router from 'umi/router';
 import debounce from 'lodash-decorators/debounce';
 import bind from 'lodash-decorators/bind';
 import { isNumber } from '@/utils/utils';
-import {
-  EDIT_CODE,
-  ADD_CODE,
-  DETAIL_CODE,
-  LIST_PATH,
-  EDIT_PATH,
-  LEVELS,
-  PROCESS_TYPES,
-  INJURY_TYPES,
-  REPORT_STATUSES,
-  SEX,
-} from '../List';
+import { EDIT_CODE, ADD_CODE, DETAIL_CODE, LIST_PATH, EDIT_PATH, INJURY_TYPES, SEX } from '../List';
 import styles from './index.less';
 
 const { TreeNode } = TreeSelect;
@@ -41,7 +27,6 @@ const GET_DETAIL = 'injuryReport/getDetail';
 const ADD = 'injuryReport/add';
 const EDIT = 'injuryReport/edit';
 const GET_COMPANY = 'injuryReport/getCompany';
-const GET_COMPANY_TYPE_LIST = 'injuryReport/getCompanyTypeList';
 const DEFAULT_FORMAT = 'YYYY-MM-DD';
 
 // 上传文件地址
@@ -84,7 +69,6 @@ const ISALL = [{ key: '0', value: '否' }, { key: '1', value: '是' }];
       dispatch({
         type: ADD,
         payload: {
-          // type: '1',
           ...payload,
         },
         callback,
@@ -104,13 +88,6 @@ const ISALL = [{ key: '0', value: '否' }, { key: '1', value: '是' }];
         callback,
       });
     },
-    getCompanyTypeList(payload, callback) {
-      dispatch({
-        type: GET_COMPANY_TYPE_LIST,
-        payload,
-        callback,
-      });
-    },
     fetchDepartmentDict(payload, callback) {
       dispatch({
         type: 'injuryReport/fetchDepartmentDict',
@@ -126,6 +103,7 @@ export default class InjuryReportOther extends Component {
     selectedAccidentName: '',
     fileList: [],
     departmentName: '',
+    uploading: false,
   };
 
   componentDidMount() {
@@ -150,7 +128,6 @@ export default class InjuryReportOther extends Component {
       (type === 'detail' && hasDetailAuthority)
     ) {
       setDetail();
-      // getCompanyTypeList();
       if (type !== 'add') {
         // 不考虑id不存在的情况，由request来跳转到500
         getDetail &&
@@ -379,7 +356,7 @@ export default class InjuryReportOther extends Component {
       },
       injuryReport: { detail: { companyId, companyName } = {}, departmentDict },
     } = this.props;
-    const { selectedAccidentName, fileList, departmentName } = this.state;
+    const { selectedAccidentName, fileList, departmentName, uploading } = this.state;
     const type = this.getType();
     const isNotCompany = +unitType !== 4;
     const isEdit = type === 'edit';
@@ -672,12 +649,12 @@ export default class InjuryReportOther extends Component {
               ) : (
                 <Fragment>
                   {fileList.map(item => {
-                    const { fileName, webUrl, id } = item;
+                    const { fileName, url, id } = item;
                     const fileNames = fileName.split('.');
                     const name = fileNames.slice(0, fileNames.length - 1).join('.');
                     return (
                       <div key={id}>
-                        <a href={webUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={url} target="_blank" rel="noopener noreferrer">
                           {name}
                         </a>
                       </div>
@@ -747,7 +724,7 @@ export default class InjuryReportOther extends Component {
           <Fragment>
             <Button onClick={this.handleBackButtonClick}>返回</Button>
             {type !== 'detail' ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick}>
+              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
                 提交
               </Button>
             ) : (
@@ -755,6 +732,7 @@ export default class InjuryReportOther extends Component {
                 type="primary"
                 onClick={this.handleEditButtonClick}
                 disabled={!hasEditAuthority}
+                loading={uploading}
               >
                 编辑
               </Button>

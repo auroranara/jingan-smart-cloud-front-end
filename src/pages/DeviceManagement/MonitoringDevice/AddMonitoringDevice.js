@@ -133,7 +133,7 @@ export default class AddMonitoringDevice extends Component {
             this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
         },
       });
-    }
+    } else { setFieldsValue({ isShow: '1' }) }
   }
 
   /**
@@ -307,10 +307,7 @@ export default class AddMonitoringDevice extends Component {
    * 跳转到建筑物管理页面
    */
   jumpToBuildingManagement = () => {
-    const win = window.open(
-      `${window.publicPath}#/base-info/buildings-info/list`,
-      '_blank'
-    );
+    const win = window.open(`${window.publicPath}#/base-info/buildings-info/list`, '_blank');
     win.focus();
   };
 
@@ -388,7 +385,9 @@ export default class AddMonitoringDevice extends Component {
       };
       if (mapLocation && mapLocation.groupId && mapLocation.coord) {
         const { coord, ...resMap } = mapLocation;
-        payload.pointFixInfoList = [{ isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+        payload.pointFixInfoList = [
+          { isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },
+        ];
       }
       // console.log('payload', payload);
       const tag = id ? '编辑' : '新增';
@@ -510,7 +509,7 @@ export default class AddMonitoringDevice extends Component {
                 rules: [{ required: true, message: '请选择设备类型' }],
               })(
                 <Select placeholder="请选择" {...itemStyles} disabled={!!id}>
-                  {monitoringDeviceTypes.map(({ id, name }) => (
+                  {monitoringDeviceTypes.filter(({ id }) => id !== '1').map(({ id, name }) => (
                     <Select.Option key={id} value={id}>
                       {name}
                     </Select.Option>
@@ -671,9 +670,7 @@ export default class AddMonitoringDevice extends Component {
                     新增
                   </Button>
                   <FlatPic {...FlatPicProps} /> */}
-                  {getFieldDecorator('mapLocation')(
-                    <MapMarkerSelect companyId={companyId} />
-                  )}
+                  {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
                 </FormItem>
                 <FormItem label="该点位是否在化工安全生产驾驶舱显示" {...formItemLayout}>
                   {getFieldDecorator('isShow')(

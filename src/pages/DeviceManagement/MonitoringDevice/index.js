@@ -12,15 +12,15 @@ import BindSensorModal from '@/pages/DeviceManagement/Components/BindSensorModal
 
 const FormItem = Form.Item;
 
-const title = '监测设备管理'
+const title = '监测设备管理';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '物联设备管理', name: '物联设备管理' },
   { title, name: title },
-]
+];
 const defaultPageSize = 10;
-const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
-const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
+const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
+const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 const {
   deviceManagement: {
     monitoringDevice: {
@@ -31,7 +31,7 @@ const {
       unbindSensor: unbindSensorCode,
     },
   },
-} = codes
+} = codes;
 
 @Form.create()
 @connect(({ device, loading }) => ({
@@ -39,44 +39,45 @@ const {
   tableLoading: loading.effects['device/fetchMonitoringDevice'],
 }))
 export default class MonitoringDevice extends Component {
-
   state = {
     bindSensorModalVisible: false,
     bindedSensorModalVisible: false,
     selectedSensorKeys: [],
-  }
+  };
 
-  componentDidMount () {
-    this.handleQuery()
-    this.fetchMonitoringDeviceTypes()
+  componentDidMount() {
+    this.handleQuery();
+    this.fetchMonitoringDeviceTypes();
   }
 
   // 获取设备类型--监测设备类型列表
   fetchMonitoringDeviceTypes = () => {
-    const { dispatch } = this.props
-    dispatch({ type: 'device/fetchMonitoringDeviceTypes' })
-  }
+    const { dispatch } = this.props;
+    dispatch({ type: 'device/fetchMonitoringDeviceTypes' });
+  };
 
   /**
-  * 搜索列表
-  */
+   * 搜索列表
+   */
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
-    const values = getFieldsValue()
+    const values = getFieldsValue();
     dispatch({
       type: 'device/fetchMonitoringDevice',
       payload: { pageNum, pageSize, ...values },
-    })
-  }
+    });
+  };
 
   handleReset = () => {
-    const { form: { resetFields } } = this.props
-    resetFields()
-    this.handleQuery()
-  }
+    const {
+      form: { resetFields },
+    } = this.props;
+    resetFields();
+    this.handleQuery();
+  };
 
   // 删除
   handleDelete = id => {
@@ -86,9 +87,11 @@ export default class MonitoringDevice extends Component {
       payload: { id },
       success: () => {
         message.success('删除成功！');
-        this.handleQuery()
+        this.handleQuery();
       },
-      error: res => { message.error(res ? res.msg : '删除失败!') },
+      error: res => {
+        message.error(res ? res.msg : '删除失败!');
+      },
     });
   };
 
@@ -162,14 +165,13 @@ export default class MonitoringDevice extends Component {
       success: () => {
         message.success('绑定传感器成功');
         this.setState({ bindSensorModalVisible: false, detail: {} });
-        this.handleQuery()
+        this.handleQuery();
       },
       error: res => {
         message.error(res ? res.msg : '绑定传感器失败');
       },
     });
-  }
-
+  };
 
   /**
    * 解绑传感器
@@ -185,8 +187,8 @@ export default class MonitoringDevice extends Component {
       },
       success: () => {
         message.success('解绑传感器成功');
-        this.queryBindedSensors()
-        this.handleQuery()
+        this.queryBindedSensors();
+        this.handleQuery();
       },
       error: res => {
         message.error(res ? res.msg : '解绑传感器失败');
@@ -203,7 +205,7 @@ export default class MonitoringDevice extends Component {
       device: {
         monitoringDeviceTypes, // 设备类型
       },
-    } = this.props
+    } = this.props;
 
     return (
       <Card>
@@ -211,17 +213,17 @@ export default class MonitoringDevice extends Component {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('companyName')(
-                  <Input placeholder="单位名称" />
-                )}
+                {getFieldDecorator('companyName')(<Input placeholder="单位名称" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('equipmentType')(
                   <Select placeholder="设备类型">
-                    {monitoringDeviceTypes.map(({ id, name }) => (
-                      <Select.Option key={id} value={id}>{name}</Select.Option>
+                    {monitoringDeviceTypes.filter(({ id }) => id !== '1').map(({ id, name }) => (
+                      <Select.Option key={id} value={id}>
+                        {name}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -229,20 +231,36 @@ export default class MonitoringDevice extends Component {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
-                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <AuthButton type="primary" code={addCode} onClick={() => { router.push('/device-management/monitoring-device/add') }}>新增</AuthButton>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.handleQuery()}
+                >
+                  查询
+                </Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
+                  重置
+                </Button>
+                <AuthButton
+                  type="primary"
+                  code={addCode}
+                  onClick={() => {
+                    router.push('/device-management/monitoring-device/add');
+                  }}
+                >
+                  新增
+                </AuthButton>
               </FormItem>
             </Col>
           </Row>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
 
   /**
-  * 渲染表格
-  */
+   * 渲染表格
+   */
   renderTable = () => {
     const {
       tableLoading,
@@ -252,7 +270,7 @@ export default class MonitoringDevice extends Component {
           pagination: { pageNum, pageSize, total },
         },
       },
-    } = this.props
+    } = this.props;
     const columns = [
       {
         title: '单位名称',
@@ -267,9 +285,18 @@ export default class MonitoringDevice extends Component {
         width: 400,
         render: (val, { name, code, equipmentTypeName }) => (
           <div style={{ textAlign: 'left' }}>
-            <div>名称：{name || '暂无数据'}</div>
-            <div>编号：{code || '暂无数据'}</div>
-            <div>设备类型：{equipmentTypeName || '暂无数据'}</div>
+            <div>
+              名称：
+              {name || '暂无数据'}
+            </div>
+            <div>
+              编号：
+              {code || '暂无数据'}
+            </div>
+            <div>
+              设备类型：
+              {equipmentTypeName || '暂无数据'}
+            </div>
           </div>
         ),
       },
@@ -284,11 +311,14 @@ export default class MonitoringDevice extends Component {
         dataIndex: 'sensorCount',
         align: 'center',
         width: 200,
-        render: (val, row) => (
-          val > 0 ? (<AuthA onClick={() => this.handleViewBindedSensorModal(row)} code={bindSensorCode}>{val}</AuthA>) : (
+        render: (val, row) =>
+          val > 0 ? (
+            <AuthA onClick={() => this.handleViewBindedSensorModal(row)} code={bindSensorCode}>
+              {val}
+            </AuthA>
+          ) : (
             <span>{val}</span>
-          )
-        ),
+          ),
       },
       {
         title: '操作',
@@ -298,9 +328,16 @@ export default class MonitoringDevice extends Component {
         width: 230,
         render: (val, row) => (
           <Fragment>
-            <AuthA onClick={() => this.handleViewBind(row)} code={bindSensorCode}>绑定传感器</AuthA>
+            <AuthA onClick={() => this.handleViewBind(row)} code={bindSensorCode}>
+              绑定传感器
+            </AuthA>
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => router.push(`/device-management/monitoring-device/edit/${row.id}`)}>编辑</AuthA>
+            <AuthA
+              code={editCode}
+              onClick={() => router.push(`/device-management/monitoring-device/edit/${row.id}`)}
+            >
+              编辑
+            </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
@@ -312,7 +349,7 @@ export default class MonitoringDevice extends Component {
           </Fragment>
         ),
       },
-    ]
+    ];
     return (
       <Card style={{ marginTop: '24px' }}>
         {list && list.length > 0 ? (
@@ -337,23 +374,20 @@ export default class MonitoringDevice extends Component {
             }}
           />
         ) : (
-            <div style={{ width: '100%', textAlign: 'center' }}><span>暂无数据</span></div>
-          )}
-
+          <div style={{ width: '100%', textAlign: 'center' }}>
+            <span>暂无数据</span>
+          </div>
+        )}
       </Card>
-    )
-  }
+    );
+  };
 
-  render () {
+  render() {
     const {
       sensorLoading,
       device: { sensor },
-    } = this.props
-    const {
-      bindSensorModalVisible,
-      bindedSensorModalVisible,
-      selectedSensorKeys,
-    } = this.state;
+    } = this.props;
+    const { bindSensorModalVisible, bindedSensorModalVisible, selectedSensorKeys } = this.state;
     const bindSensorProps = {
       tag: 'bind',
       visible: bindSensorModalVisible,
@@ -367,7 +401,9 @@ export default class MonitoringDevice extends Component {
       loading: sensorLoading,
       rowSelection: {
         selectedRowKeys: selectedSensorKeys,
-        onChange: selectedSensorKeys => { this.setState({ selectedSensorKeys }) },
+        onChange: selectedSensorKeys => {
+          this.setState({ selectedSensorKeys });
+        },
       },
       unbindSensorCode,
     };
@@ -385,10 +421,7 @@ export default class MonitoringDevice extends Component {
       unbindSensorCode,
     };
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderFilter()}
         {this.renderTable()}
         {/* 绑定已有传感器弹窗 */}
@@ -396,6 +429,6 @@ export default class MonitoringDevice extends Component {
         {/* 已绑定传感器弹窗 */}
         <BindSensorModal {...bindedSensorProps} />
       </PageHeaderLayout>
-    )
+    );
   }
 }

@@ -202,13 +202,13 @@ export default {
       }
     },
     // 导出
-    *exportData({ payload }, { call }) {
+    *exportData({ payload, fileName = '可燃有毒气体监测明细' }, { call }) {
       const blob = yield call(exportData, payload);
-      fileDownload(blob, `可燃有毒气体监测明细_${moment().format('YYYYMMDD')}.xlsx`);
+      fileDownload(blob, `${fileName}_${moment().format('YYYYMMDD')}.xlsx`);
     },
   },
 
   reducers: {
     save: (state, { payload }) => ({ ...state, ...payload }),
   },
-}
+};

@@ -183,7 +183,7 @@ export default class HighRiskProcessList extends PureComponent {
       success: () => {
         message.success('绑定成功');
         this.setState({ bindModalVisible: false, detail: {} });
-        this.handleSearch();
+        this.handleQuery();
       },
       error: res => {
         message.error(res ? res.msg : '绑定失败');
@@ -207,7 +207,7 @@ export default class HighRiskProcessList extends PureComponent {
       success: () => {
         message.success('解绑成功');
         this.fetchBindedMonitoringDevice();
-        this.handleSearch();
+        this.handleQuery();
       },
       error: res => {
         message.error(res ? res.msg : '解绑失败');

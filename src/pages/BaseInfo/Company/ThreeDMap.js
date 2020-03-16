@@ -13,11 +13,13 @@ const FIELDS = [
   { key: 'appName', label: '地图名称' },
   { key: 'mapId', label: '地图ID' },
   { key: 'key', label: 'key值' },
+  { key: 'theme', label: '主题' },
 ];
 
 const fengMap = fengmap; // eslint-disable-line
 const LABEL_COL = { xs: { span: 24 }, sm: { span: 4 } };
 const WRAPPER_COL = { xs: { span: 24 }, sm: { span: 16 } };
+const INIT_THEME = '2001';
 const INIT_MODE = fengMap.FMViewMode.MODE_3D;
 const INIT_SCALE = 19;
 const INIT_RANGE = [16, 23];
@@ -48,15 +50,16 @@ export default class ThreeDMap extends PureComponent {
       const { form: { setFieldsValue } } = this.props;
       if (list.length){
         const vals = list[0];
-        const { defaultViewMode, defaultMapScaleLevel, mapScaleLevelRangeList } = vals;
+        const { theme, defaultViewMode, defaultMapScaleLevel, mapScaleLevelRangeList } = vals;
         const fieldsValue = {
           ...vals,
+          theme: theme || INIT_THEME,
           defaultViewMode: defaultViewMode || INIT_MODE,
           defaultMapScaleLevel: defaultMapScaleLevel || INIT_SCALE,
           mapScaleLevelRangeList: mapScaleLevelRangeList || INIT_RANGE,
         };
         setFieldsValue(fieldsValue);
-        this.initMap(fieldsValue);
+        // this.initMap(fieldsValue); // 初始化有问题，手动点击
       }
     });
   }
@@ -170,7 +173,8 @@ export default class ThreeDMap extends PureComponent {
     );
   }
 
-  initMap = ({ appName, key, mapId, scale, defaultViewMode, defaultViewCenter }) => {
+  initMap = ({ appName, key, mapId, theme, defaultMapScaleLevel, defaultViewMode, defaultViewCenter }) => {
+    const isFirst = !this.map;
     this.map && this.map.dispose();
     const { form: { setFieldsValue } } = this.props;
 
@@ -182,7 +186,7 @@ export default class ThreeDMap extends PureComponent {
     const center = getDefaultViewCenter(defaultViewCenter);
     const { scaleRange } = this.state;
     this.setState({ mapVisible: true });
-    const [minScale, maxScale] = scaleRange;
+    // const [minScaleLevel, maxScaleLevel] = scaleRange;
     const mapOptions = {
       container: document.getElementById('bird-map'), // 必要，地图容器
       appName,
@@ -190,10 +194,9 @@ export default class ThreeDMap extends PureComponent {
       mapServerURL: './data/' + mapId, // 地图数据位置
       defaultViewCenter: center,
       defaultViewMode,
-      mapScale: scale,
-      minScale,
-      maxScale,
-      defaultThemeName: '2001', // 设置主题
+      defaultMapScaleLevel,
+      mapScaleLevelRange: scaleRange,
+      defaultThemeName: theme, // 设置主题
       modelSelectedEffect: false,
     };
 
@@ -201,9 +204,14 @@ export default class ThreeDMap extends PureComponent {
     const map = this.map = new fengMap.FMMap(mapOptions);
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
-    map.on('mapScaleLevelChanged', e => {
-      setFieldsValue({ defaultMapScaleLevel: e.mapScale });
-    });
+    map.on('loadComplete', e => {
+      console.log('onload', defaultMapScaleLevel);
+      this.map.mapScaleLevel = defaultMapScaleLevel;
+      // isFirst && this.handlePreview();
+    })
+    // map.on('mapScaleLevelChanged', e => { // 有问题，不要用
+    //   setFieldsValue({ defaultMapScaleLevel: e.mapScale });
+    // });
     map.on('mapClickNode', e => {
       const { mapCoord } = e;
       if (!mapCoord)

@@ -98,11 +98,12 @@ const EXPORT_DATA = 'gasMonitor/exportData';
         callback,
       });
     },
-    exportData(payload, callback) {
+    exportData(payload, callback, fileName) {
       dispatch({
         type: EXPORT_DATA,
         payload,
         callback,
+        fileName,
       });
     },
     getEquipmentTypeDetail(payload, callback) {
@@ -339,12 +340,35 @@ export default class GasHistory extends Component {
   };
 
   handleExportButtonClick = () => {
-    const { exportData } = this.props;
-    const { selectedRowKeys } = this.state;
-    // exportData({
-    //   ids: selectedRowKeys.join(','),
-    // });
-    console.log(selectedRowKeys);
+    const {
+      match: {
+        params: { companyId, equipmentTypes },
+      },
+      exportData,
+      equipmentTypeDetail: { name = '' } = {},
+    } = this.props;
+    const {
+      range: [startTime, endTime] = [],
+      status,
+      monitorObjectTypeId,
+      monitorObjectId,
+      monitorPointId,
+    } = this.state;
+    exportData(
+      {
+        companyId,
+        startTime: startTime && startTime.format(DEFAULT_FORMAT),
+        endTime: endTime && endTime.format(DEFAULT_FORMAT),
+        monitorEquipmentTypes: equipmentTypes,
+        beMonitorTargetType: monitorObjectTypeId,
+        beMonitorTargetId: monitorObjectId,
+        monitorEquipmentId: monitorPointId,
+        statusType: -1,
+        ...STATUS_MAPPER[status],
+      },
+      undefined,
+      `${name}监测明细`
+    );
   };
 
   handleSelectedRowKeysChange = selectedRowKeys => {
@@ -1046,9 +1070,15 @@ export default class GasHistory extends Component {
               </Select>
             </Col>
           )}
-          {/* <Col xs={24} sm={12} md={8}>
-            <Button type="primary" onClick={this.handleExportButtonClick} disabled={!selectedRowKeys.length}>导出明细</Button>
-          </Col> */}
+          <Col xs={24} sm={12} md={8}>
+            <Button
+              type="primary"
+              onClick={this.handleExportButtonClick}
+              disabled={/* !selectedRowKeys.length */ !list.length}
+            >
+              导出明细
+            </Button>
+          </Col>
           <Col span={24}>
             {list.length ? (
               <Table

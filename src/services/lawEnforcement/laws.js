@@ -63,9 +63,8 @@ export async function editLaw (body) {
 }
 
 // 新-删除法律法规库
-// 列表
 export async function deleteLaw (params) {
-  return request(`/acloud_new//v2/ci/hgLawsAndRegulations/hgLawsAndRegulations/${params.id}`, {
+  return request(`/acloud_new/v2/ci/hgLawsAndRegulations/hgLawsAndRegulations/${params.id}`, {
     method: 'DELETE',
   });
 }

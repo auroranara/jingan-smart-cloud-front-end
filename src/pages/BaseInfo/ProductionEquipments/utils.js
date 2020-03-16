@@ -129,19 +129,24 @@ export const TABLE_COLUMNS = [
     width: 250,
     render: (val, row) => {
       const { dangerTechnologyList, unitChemiclaNumDetail } = row;
+      const processName = dangerTechnologyList.map(item => item.processName).join(',');
+      const chineName = unitChemiclaNumDetail.map(item => item.chineName).join(',');
+      const unitChemiclaNum = unitChemiclaNumDetail
+        .map(item => item.unitChemiclaNum + 't')
+        .join(',');
       return (
         <div style={{ textAlign: 'left' }}>
           <p>
             化工工艺:
-            {dangerTechnologyList.map(item => item.processName).join(',')}
+            {processName}
           </p>
           <p>
             危化品:
-            {unitChemiclaNumDetail.map(item => item.chineName).join(',')}
+            {chineName}
           </p>
           <p>
             危化品数量:
-            {unitChemiclaNumDetail.map(item => item.unitChemiclaNum + 't').join(',')}
+            {unitChemiclaNum}
           </p>
         </div>
       );
@@ -200,13 +205,4 @@ export const TABLE_COLUMNS = [
   },
 ];
 
-export const AutoList = [
-  { key: '1', value: '反馈控制' },
-  { key: '2', value: '前馈控制' },
-  { key: '3', value: '顺序控制' },
-  { key: '4', value: '比值控制系统' },
-  { key: '5', value: '串级控制系统' },
-  { key: '6', value: '超驰控制系统' },
-  { key: '7', value: '程序控制系统' },
-  { key: '8', value: '批量控制系统' },
-];
+export const AutoList = [{ key: '1', value: 'PLC控制' }, { key: '2', value: 'DCS控制' }];

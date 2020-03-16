@@ -1,7 +1,6 @@
 import {
   getCompany,
   getCompanySafety,
-  getTypeList,
   getList,
   getDetail,
   add,
@@ -26,8 +25,6 @@ export default {
   state: {
     list: {},
     detail: {},
-    typeList: [],
-    companyTypeList: [],
     departmentDict: [],
   },
 
@@ -43,30 +40,6 @@ export default {
           },
         });
         callback && callback(data);
-      }
-    },
-    *getTypeList({ payload, callback }, { call, put, select }) {
-      const { parentId } = payload;
-      const response = yield call(getTypeList, payload);
-      const { code, data } = response || {};
-      if (code === 200 && data && data.list) {
-        const prevTypeList = parentId ? yield select(state => state.accidentReport.typeList) : [];
-        const typeList = prevTypeList.concat(
-          data.list.map(({ id, hasChild, value, label }) => ({
-            id,
-            pId: parentId,
-            value: id,
-            title: `${value} ${label}`,
-            isLeaf: !+hasChild,
-          }))
-        );
-        yield put({
-          type: 'save',
-          payload: {
-            typeList,
-          },
-        });
-        callback && callback(typeList);
       }
     },
     *getDetail({ payload, callback }, { call, put }) {

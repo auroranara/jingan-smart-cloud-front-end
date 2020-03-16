@@ -306,8 +306,8 @@ export default class StorageEdit extends PureComponent {
    * 选择储罐区
    */
   handleSelectArea = () => {
-    const { form: { setFieldsValue } } = this.props
-    const { selectedTempKeys, selectedTemp } = this.state
+    const { form: { setFieldsValue } } = this.props;
+    const { selectedTempKeys, selectedTemp } = this.state;
     if (selectedTempKeys && selectedTempKeys.length) {
       setFieldsValue({ tankArea: selectedTempKeys.join(',') })
       this.setState({
@@ -315,6 +315,13 @@ export default class StorageEdit extends PureComponent {
         selectedArea: selectedTemp,
       })
     } else message.warning('请选择储罐区')
+  }
+
+  // 清空储罐区
+  handleResetArea = () => {
+    const { form: { setFieldsValue } } = this.props;
+    setFieldsValue({ tankArea: undefined });
+    this.setState({ selectedTempKeys: [], selectedTemp: [], selectedArea: [] });
   }
 
   /**
@@ -1470,6 +1477,7 @@ export default class StorageEdit extends PureComponent {
         type: 'radio',
       },
       handleSelect: this.handleSelectArea,
+      handleReset: this.handleResetArea,
     };
     const mediumProps = {
       visible: storageMediumModalVisible,

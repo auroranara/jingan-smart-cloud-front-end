@@ -6,7 +6,7 @@ import { Input, Select, Modal, DatePicker, message } from 'antd';
 import { AuthA } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 
-const { MonthPicker } = DatePicker;
+// const { MonthPicker } = DatePicker;
 
 const { Option } = Select;
 
@@ -258,25 +258,29 @@ const quarterList = [
   },
 ];
 
+const monthList = [...Array(12).keys()].map(index => ({
+  key: index + 1,
+  value: index + 1 + '月',
+}));
+
 export const ExamModal = Form.create()(props => {
   const {
     form: { getFieldDecorator, validateFields, resetFields },
     modalVisible,
-    isopen,
-    time,
+    // isopen,
+    // time,
     handleModalClose,
     handleModalAdd,
-    handlePanelChange,
-    handleOpenChange,
-    clearDateValue,
+    // handlePanelChange,
+    // handleOpenChange,
+    // clearDateValue,
     currentId,
-    validatorID,
     list,
   } = props;
 
   const curList = list.find(item => item.targetId === currentId);
 
-  const { checkFrequency, targetId, goalDutyId } = curList || {};
+  const { checkFrequency, targetId, goalYear, goalDutyId } = curList || {};
   const formItemCol = {
     labelCol: {
       span: 5,
@@ -290,7 +294,7 @@ export const ExamModal = Form.create()(props => {
     validateFields((err, fieldsValue) => {
       if (err) return;
       resetFields();
-      return handleModalAdd({ targetId, goalDutyId, fieldsValue });
+      return handleModalAdd({ targetId, goalDutyId, goalYear, fieldsValue });
     });
   };
 
@@ -308,9 +312,17 @@ export const ExamModal = Form.create()(props => {
         {checkFrequency === '1' && (
           <Form.Item {...formItemCol} label="考核时间段:">
             {getFieldDecorator('monthTime', {
-              initialValue: time ? time : undefined,
+              // initialValue: time ? time : undefined,
               rules: [{ required: true, message: '请选择考核时间段' }],
-            })(<MonthPicker placeholder="请选择" format="M月" />)}
+            })(
+              <Select placeholder="请选择" allowClear>
+                {monthList.map(({ key, value }) => (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                ))}
+              </Select>
+            )}
           </Form.Item>
         )}
         {checkFrequency === '2' && (
@@ -330,6 +342,11 @@ export const ExamModal = Form.create()(props => {
         )}
         {checkFrequency === '3' && (
           <Form.Item {...formItemCol} label="考核时间段:">
+            <Input value={goalYear} disabled placeholder="请选择" />
+          </Form.Item>
+        )}
+        {/* {checkFrequency === '3' && (
+          <Form.Item {...formItemCol} label="考核时间段:">
             {getFieldDecorator('yearTime', {
               initialValue: time ? time : undefined,
               rules: [{ required: true, message: '请选择考核时间段' }],
@@ -344,11 +361,13 @@ export const ExamModal = Form.create()(props => {
                 mode="year"
               />
             )}
-          </Form.Item>
-        )}
+          </Form.Item> */}
         <Form.Item {...formItemCol} label="实际值:">
           {getFieldDecorator('actualValue', {
-            rules: [{ required: true, message: '请选择实际值' }, { validator: validatorID }],
+            rules: [
+              { required: true, message: '请输入实际值' },
+              { pattern: /^[0-9]+\.?[0-9]*$/, message: '请输入数字' },
+            ],
             getValueFromEvent: e => e.target.value.trim(),
           })(<Input placeholder="请输入" />)}
         </Form.Item>

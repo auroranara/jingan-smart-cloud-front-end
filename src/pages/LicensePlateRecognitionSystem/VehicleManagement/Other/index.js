@@ -3,7 +3,7 @@ import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Tooltip } from 'antd';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import AsyncSelect from '@/jingan-components/AsyncSelect';
-import ChannelAuthorization from './components/ChannelAuthorization';
+import ChannelAuthorization from './components/ChannelAuthorization2';
 import moment from 'moment';
 import { isNumber } from '@/utils/utils';
 import { BREADCRUMB_LIST, STATUSES, VEHICLE_TYPES, LICENCE_PLATE_TYPES } from '../List';
@@ -266,7 +266,7 @@ export default class VehicleOther extends Component {
         },
         {
           id: 'cardType',
-          label: '车牌类型',
+          label: '车牌有效期',
           required: true,
           refreshEnable: true,
           component: 'Select',

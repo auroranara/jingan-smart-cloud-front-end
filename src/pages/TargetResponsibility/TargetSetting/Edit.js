@@ -125,6 +125,7 @@ export default class Edit extends PureComponent {
               dutyStatus: dutyMajor.substr(0, 1),
               departmentId: dutyMajorId,
               personId: { key: dutyMajorId, label: personName },
+              selectCompanyId: companyId,
             },
             () => {
               if (+dutyMajor.substr(0, 1) === 2) {

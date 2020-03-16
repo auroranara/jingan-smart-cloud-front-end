@@ -748,7 +748,17 @@ export default {
       const response = yield call(getChannelAuthorizationTree, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const channelAuthorizationTree = data.list;
+        const channelAuthorizationTree = data.list.map(({ parkId, parkName, gateInfoList }) => ({
+          key: parkId,
+          title: parkName,
+          children: gateInfoList
+            ? gateInfoList.map(({ id, gateName, gateId }) => ({
+                key: id,
+                title: gateName,
+                gateId,
+              }))
+            : [],
+        }));
         yield put({
           type: 'save',
           payload: {

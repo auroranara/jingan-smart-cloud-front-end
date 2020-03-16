@@ -81,9 +81,9 @@ export default class PersonnelPosition extends PureComponent {
     } = this.props;
     const { index } = this.state;
 
-    const { mapIp, mapBuildId, mapSecret } = companyBasicInfo || {};
-    // const src = getSrc(SRC_BASES[index], mapIp, mapBuildId, mapSecret);
-    const src = `http://chem2.joysuch.com/js/tunnel.html?to=${SRC_BASES[index]}&buildId=200647&wh=false&appid=yanshi&secret=4011a04a6615406a9bbe84fcf30533de`;
+    const { mapIp, mapBuildId, mapSecret, appId } = companyBasicInfo || {};
+    const src = getSrc(SRC_BASES[index], mapIp, mapBuildId, mapSecret, appId);
+    // const src = `http://chem2.joysuch.com/js/tunnel.html?to=${SRC_BASES[index]}&buildId=200647&wh=false&appid=yanshi&secret=4011a04a6615406a9bbe84fcf30533de`;
     return (
       <BigPlatformLayout
         title="五位一体信息化管理平台"

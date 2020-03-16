@@ -276,6 +276,7 @@ export default class RiskPointEdit extends PureComponent {
       dispatch({
         type: 'riskPointManage/clearDetail',
       });
+      setFieldsValue({ isShow: '1' });
     }
   }
 
