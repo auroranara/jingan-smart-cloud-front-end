@@ -58,13 +58,15 @@ const dspItems = [
   { id: 'status', label: '装备状态' },
   { id: 'storeName', label: '装备库名称' },
   { id: 'registerType', label: '登记类型' },
-  { id: 'daySpace', label: '定期保修间隔（天）' },
+  { id: 'daySpace', label: '定期检查间隔（天）' },
+  { id: 'dayMaintSpace', label: '定期保修间隔（天）' },
   { id: 'remark', label: '备注' },
   { id: 'fileList', label: '图片' },
 ];
 
 const Sources = ['国配', '自购', '社会装备'];
 const Statuss = ['正常', '维检', '报废', '使用中'];
+const RegisterTypes = ['救援队装备', '社会装备', '储备库装备'];
 
 @connect(({ emergencyManagement, loading, user }) => ({
   emergencyManagement,
@@ -122,6 +124,8 @@ export default class EmergencyEquipmentDetail extends Component {
         renderItem = <span>{data ? moment(data).format('YYYY-MM-DD') : NO_DATA}</span>;
       } else if (id === 'status') {
         renderItem = <span>{Statuss[data - 1] || NO_DATA}</span>;
+      } else if (id === 'registerType') {
+        renderItem = <span>{RegisterTypes[data - 1] || NO_DATA}</span>;
       } else if (id === 'equipType') {
         let treeData = emergencyOutfit;
         const string =

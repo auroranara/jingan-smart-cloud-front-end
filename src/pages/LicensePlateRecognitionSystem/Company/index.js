@@ -3,7 +3,7 @@ import { Input, Button, Card, Modal } from 'antd';
 import ListPage from '@/templates/ListPage';
 import Ellipsis from '@/components/Ellipsis';
 import CustomForm from '@/jingan-components/CustomForm';
-import CompanySelect from '@/jingan-components/CompanySelect';
+import AsyncSelect from '@/jingan-components/AsyncSelect';
 import EmptyData from '@/jingan-components/EmptyData';
 import Link from 'umi/link';
 import router from 'umi/router';
@@ -14,6 +14,15 @@ const MAPPER = {
   namespace: 'licensePlateRecognitionSystem',
   list: 'companyList',
   getList: 'getCompanyList',
+};
+const MAPPER2 = {
+  namespace: 'common',
+  list: 'companyList',
+  getList: 'fetchCompanyList',
+};
+const FIELDNAMES = {
+  key: 'id',
+  value: 'name',
 };
 
 export default class Company extends Component {
@@ -37,13 +46,14 @@ export default class Company extends Component {
           单位总数：
           {total || 0}
         </span>
-        {name && (
-          <span>
-            {name}
-            总数：
-            {a || 0}
-          </span>
-        )}
+        {name &&
+          a !== undefined && (
+            <span>
+              {name}
+              总数：
+              {a || 0}
+            </span>
+          )}
       </div>
     );
   };
@@ -198,7 +208,15 @@ export default class Company extends Component {
   };
 
   render() {
-    const { route, location, match, breadcrumbList, mapper = MAPPER } = this.props;
+    const {
+      route,
+      location,
+      match,
+      breadcrumbList,
+      mapper = MAPPER,
+      mapper2 = MAPPER2,
+      fieldNames = FIELDNAMES,
+    } = this.props;
     const { visible } = this.state;
     const fields = [
       {
@@ -214,7 +232,9 @@ export default class Company extends Component {
             },
           ],
         },
-        render: () => <CompanySelect />,
+        render: () => (
+          <AsyncSelect placeholder="请选择单位名称" mapper={mapper2} fieldNames={fieldNames} />
+        ),
       },
     ];
     const props = {

@@ -316,6 +316,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
     setFieldsValue({ finalId: selectedTemp.map((item) => item.id).join(',') })
   }
 
+  trim = e => e.target.value.replace(/\s/, '')
+
   /**
    * 渲染表单
    */
@@ -375,13 +377,21 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="统一编码" {...formItemLayout}>
             {getFieldDecorator('unifiedCode', {
               initialValue: id ? detail.unifiedCode : undefined,
-              rules: [{ required: true, message: '请输入统一编码' }],
+              rules: [
+                { required: true, message: '请输入统一编码' },
+                { max: 12, message: '请输入不超过12个字符' },
+              ],
+              getValueFromEvent: this.trim,
             })(<Input placeholder="请输入统一编码" {...itemStyles} />)}
           </FormItem>
           <FormItem label="生产工艺名称" {...formItemLayout}>
             {getFieldDecorator('processName', {
               initialValue: id ? detail.processName : undefined,
-              rules: [{ required: true, message: '请输入生产工艺名称' }],
+              rules: [
+                { required: true, message: '请输入生产工艺名称' },
+                { max: 50, message: '请输入不超过50个字符' },
+              ],
+              getValueFromEvent: this.trim,
             })(<Input placeholder="请输入生产工艺名称" {...itemStyles} />)}
           </FormItem>
           <FormItem label="是否重点监管危险化工工艺" {...formItemLayout}>
@@ -409,7 +419,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="反应类型" {...formItemLayout}>
             {getFieldDecorator('reactionType', {
               initialValue: id ? detail.reactionType : undefined,
-              rules: [{ required: true, message: '请输入反应类型' }],
+              rules: [
+                { required: true, message: '请输入反应类型' },
+                { max: 12, message: '请输入不超过12个字符' },
+              ],
+              getValueFromEvent: this.trim,
             })(<Input placeholder="请输入反应类型" {...itemStyles} />)}
           </FormItem>
           <FormItem label="中间产品" {...formItemLayout}>
@@ -448,6 +462,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             {getFieldDecorator('keyMonitoringUnit', {
               initialValue: id ? detail.keyMonitoringUnit : undefined,
               rules: [{ required: true, message: '请输入重点监控单元' }],
+              getValueFromEvent: this.trim,
             })(
               <TextArea rows={4} placeholder="请输入重点监控单元" {...itemStyles} />
             )}
@@ -456,6 +471,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             {getFieldDecorator('dangerousCharacter', {
               initialValue: id ? detail.dangerousCharacter : undefined,
               rules: [{ required: true, message: '请输入工艺危险特点' }],
+              getValueFromEvent: this.trim,
             })(
               <TextArea rows={4} placeholder="请输入工艺危险特点"  {...itemStyles} />
             )}
@@ -463,7 +479,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="工艺系统简况" {...formItemLayout}>
             {getFieldDecorator('processBrief', {
               initialValue: id ? detail.processBrief : undefined,
-              rules: [{ required: true, message: '请输入工艺系统简况' }],
+              rules: [
+                { required: true, message: '请输入工艺系统简况' },
+                { max: 50, message: '请输入不超过50个字符' },
+              ],
+              getValueFromEvent: this.trim,
             })(
               <TextArea rows={4} placeholder="请输入工艺系统简况" {...itemStyles} />
             )}
@@ -472,6 +492,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             {getFieldDecorator('maxTemperature', {
               initialValue: id ? detail.maxTemperature : undefined,
               rules: [{ required: true, validator: this.validateNumber }],
+              getValueFromEvent: this.trim,
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}
@@ -480,6 +501,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             {getFieldDecorator('maxPressure', {
               initialValue: id ? detail.maxPressure : undefined,
               rules: [{ required: true, validator: this.validateNumber }],
+              getValueFromEvent: this.trim,
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}
@@ -515,6 +537,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="技术来源" {...formItemLayout}>
             {getFieldDecorator('technicalSource', {
               initialValue: id ? detail.technicalSource : undefined,
+              getValueFromEvent: this.trim,
+              rules: [{ max: 50, message: '请输入不超过50个字符' }],
             })(
               <TextArea rows={4} placeholder="请输入技术来源"  {...itemStyles} />
             )}
@@ -522,6 +546,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="设计单位" {...formItemLayout}>
             {getFieldDecorator('designUnit', {
               initialValue: id ? detail.designUnit : undefined,
+              getValueFromEvent: this.trim,
+              rules: [{ max: 50, message: '请输入不超过50个字符' }],
             })(
               <TextArea rows={4} placeholder="请输入设计单位" {...itemStyles} />
             )}
@@ -541,7 +567,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="资质等级描述" {...formItemLayout}>
             {getFieldDecorator('qualifGradeDescription', {
               initialValue: id ? detail.qualifGradeDescription : undefined,
-              rules: [{ required: true, message: '请输入资质等级描述' }],
+              rules: [
+                { required: true, message: '请输入资质等级描述' },
+                { max: 50, message: '请输入不超过50个字符' },
+              ],
+              getValueFromEvent: this.trim,
             })(
               <TextArea rows={4} placeholder="请输入资质等级描述" {...itemStyles} />
             )}
@@ -549,7 +579,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="安全控制基本要求" {...formItemLayout}>
             {getFieldDecorator('basicControlRequire', {
               initialValue: id ? detail.basicControlRequire : undefined,
-              rules: [{ required: true, message: '请输入安全控制基本要求' }],
+              rules: [
+                { required: true, message: '请输入安全控制基本要求' },
+                { max: 50, message: '请输入不超过50个字符' },
+              ],
+              getValueFromEvent: this.trim,
             })(
               <TextArea
                 rows={4}
@@ -561,6 +595,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="自动控制措施" {...formItemLayout}>
             {getFieldDecorator('autoControl', {
               initialValue: id ? detail.autoControl : undefined,
+              getValueFromEvent: this.trim,
+              rules: [{ max: 50, message: '请输入不超过50个字符' }],
             })(
               <TextArea rows={4} placeholder="请输入自动控制措施"  {...itemStyles} />
             )}
@@ -568,7 +604,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="安全仪表系统" {...formItemLayout}>
             {getFieldDecorator('sis', {
               initialValue: id ? detail.sis : undefined,
-              rules: [{ required: true, message: '请输入安全仪表系统' }],
+              rules: [
+                { required: true, message: '请输入安全仪表系统' },
+                { max: 50, message: '请输入不超过50个字符' },
+              ],
+              getValueFromEvent: this.trim,
             })(
               <TextArea rows={4} placeholder="请输入安全仪表系统"  {...itemStyles} />
             )}
@@ -588,7 +628,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="安全阀/爆破片" {...formItemLayout}>
             {getFieldDecorator('safetyValve', {
               initialValue: id ? detail.safetyValve : undefined,
-              rules: [{ required: true, message: '请输入安全阀/爆破片' }],
+              rules: [
+                { required: true, message: '请输入安全阀/爆破片' },
+                { max: 50, message: '请输入不超过50个字符' },
+              ],
+              getValueFromEvent: this.trim,
             })(
               <TextArea
                 rows={4}
@@ -652,12 +696,13 @@ export default class EmergencySuppliesHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+          <Button style={{ marginRight: '10px' }} onClick={() => { router.push('/major-hazard-info/high-risk-process/list') }}>返回</Button>
           {isDetail ? (
-            <Button type="primary" style={{ marginLeft: '10px' }} onClick={e => router.push(`/major-hazard-info/high-risk-process/edit/${id}`)}>
+            <Button type="primary" onClick={e => router.push(`/major-hazard-info/high-risk-process/edit/${id}`)}>
               编辑
             </Button>
           ) : (
-              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+              <Button type="primary" onClick={this.handleSubmit}>
                 提交
             </Button>
             )}

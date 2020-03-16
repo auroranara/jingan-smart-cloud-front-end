@@ -64,10 +64,12 @@ export default class TypeCardHead extends PureComponent {
         ))}
         {meList.length > 0 && (
           <div className={styles.icons}>
-            <span
-              className={styles.sheet}
-              onClick={() => this.handleWorkOrderIconClick(noFinishWarningProcessId, id)}
-            />
+            {noFinishWarningProcessId && (
+              <span
+                className={styles.sheet}
+                onClick={() => this.handleWorkOrderIconClick(noFinishWarningProcessId, id)}
+              />
+            )}
             {id && (
               <span className={styles.trend} onClick={() => this.handleMonitorTrendIconClick(id)} />
             )}

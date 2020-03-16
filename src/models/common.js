@@ -5,6 +5,7 @@ import {
   getMonitorEquipmentList,
   setMonitorEquipmentBindStatus,
   getPersonList,
+  getDepartmentList,
 } from '@/services/common';
 
 const transformMonitorTypeList = list => {
@@ -40,6 +41,9 @@ export default {
     monitorTypeList: [],
     monitorEquipmentList: {},
     personList: {},
+    departmentList: [],
+    staffList: [],
+    unitList: [],
   },
 
   effects: {
@@ -130,6 +134,57 @@ export default {
           },
         });
         callback && callback(true, personList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取部门列表
+    *getDepartmentList({ payload, callback }, { call, put }) {
+      const response = yield call(getDepartmentList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const departmentList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            departmentList,
+          },
+        });
+        callback && callback(true, departmentList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取企业列表
+    *getUnitList({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const unitList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            unitList,
+          },
+        });
+        callback && callback(true, unitList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取员工列表
+    *getStaffList({ payload, callback }, { call, put }) {
+      const response = yield call(getPersonList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const staffList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            staffList,
+          },
+        });
+        callback && callback(true, staffList);
       } else {
         callback && callback(false, msg);
       }

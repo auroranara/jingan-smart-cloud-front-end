@@ -40,19 +40,18 @@ const hosts = {
   ly: '192.168.10.19:8080',
   show: 'www.jinganyun.net',
   five: 'five.jinganyun.net',
-  tg2: '25.12.19.52:8080',
   demo: 'demo.jinganyun.net',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.tg}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/gsafe': {
-      target: `http://${hosts.tg}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -168,4 +167,5 @@ export default {
   cssnano: {
     mergeRules: false,
   },
+  devtool: 'none',
 };

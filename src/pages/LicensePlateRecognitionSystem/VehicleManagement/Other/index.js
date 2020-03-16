@@ -1,5 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
+import { Icon, Tooltip } from 'antd';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
+import AsyncSelect from '@/jingan-components/AsyncSelect';
+import ChannelAuthorization from './components/ChannelAuthorization2';
 import moment from 'moment';
 import { isNumber } from '@/utils/utils';
 import { BREADCRUMB_LIST, STATUSES, VEHICLE_TYPES, LICENCE_PLATE_TYPES } from '../List';
@@ -24,54 +27,113 @@ const MAPPER = {
   add: 'addVehicle',
   edit: 'editVehicle',
 };
+const DEFAULT_FORMAT = 'YYYY-MM-DD';
+const TYPES = [{ key: '0', value: '本单位' }, { key: '1', value: '运输公司' }];
+const MAPPER2 = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'transportCompanyList',
+  getList: 'getTransportCompanyList',
+};
+const FIELDNAMES = {
+  key: 'id',
+  value: 'transitCompanyName',
+};
 
 export default class VehicleOther extends Component {
   shouldComponentUpdate(nextProps) {
     return nextProps.match.params.unitId !== this.props.match.params.unitId;
   }
 
+  setPageReference = page => {
+    this.page = page && page.getWrappedInstance();
+  };
+
   initialize = ({
-    品牌,
-    型号,
-    当前状态,
-    押运员,
-    押运员联系电话,
-    生产日期,
-    购买日期,
-    车牌号,
-    车牌类型,
-    车辆类型,
-    载重,
-    驾驶员,
-    驾驶员联系电话,
-    车辆照片,
+    carNumber,
+    brand,
+    model,
+    carType,
+    ownerType,
+    ownerCompanyId,
+    ownerCompanyName,
+    load,
+    byDate,
+    produceDate,
+    cardType,
+    startDate,
+    validDate,
+    locationCardId,
+    carPhotoList,
+    driver,
+    driverTel,
+    driverPhotoList,
+    supercargo,
+    supercargoTel,
+    supercargoPhotoList,
+    grantList,
   }) => ({
-    品牌: 品牌 || undefined,
-    型号: 型号 || undefined,
-    当前状态: isNumber(当前状态) ? `${当前状态}` : undefined,
-    押运员: 押运员 || undefined,
-    押运员联系电话: 押运员联系电话 || undefined,
-    生产日期: 生产日期 ? moment(生产日期) : undefined,
-    购买日期: 购买日期 ? moment(购买日期) : undefined,
-    车牌号: 车牌号 || undefined,
-    车牌类型: isNumber(车牌类型) ? `${车牌类型}` : undefined,
-    车辆类型: isNumber(车辆类型) ? `${车辆类型}` : undefined,
-    载重: 载重 ? +载重 : undefined,
-    驾驶员: 驾驶员 || undefined,
-    驾驶员联系电话: 驾驶员联系电话 || undefined,
-    车辆照片: 车辆照片 || [],
+    carNumber: carNumber || undefined,
+    brand: brand || undefined,
+    model: model || undefined,
+    carType: isNumber(carType) ? `${carType}` : undefined,
+    ownerType: isNumber(ownerType) ? `${ownerType}` : undefined,
+    ownerCompany: ownerCompanyId ? { key: ownerCompanyId, label: ownerCompanyName } : undefined,
+    load: load || undefined,
+    byDate: byDate ? moment(byDate) : undefined,
+    produceDate: produceDate ? moment(produceDate) : undefined,
+    cardType: isNumber(cardType) ? `${cardType}` : undefined,
+    startDate: startDate ? moment(startDate) : undefined,
+    validDate: validDate ? moment(validDate) : undefined,
+    locationCardId: locationCardId || undefined,
+    carPhotoList: carPhotoList || [],
+    driver: driver || undefined,
+    driverTel: driverTel || undefined,
+    driverPhotoList: driverPhotoList || [],
+    supercargo: supercargo || undefined,
+    supercargoTel: supercargoTel || undefined,
+    supercargoPhotoList: supercargoPhotoList || [],
+    grantList: grantList
+      ? grantList.map(({ parkId, grantState, gateGrantList }) => ({
+          id: `${parkId}`,
+          type: `${grantState}`,
+          children: gateGrantList
+            ? gateGrantList.map(({ gateId, gateIdNew }) => ({ id: gateIdNew, gateId }))
+            : [],
+        }))
+      : [],
   });
 
-  transform = ({ unitId, 生产日期, 购买日期, ...payload }) => {
+  transform = ({
+    unitId,
+    ownerCompany,
+    byDate,
+    produceDate,
+    startDate,
+    validDate,
+    grantList,
+    ...payload
+  }) => {
     return {
-      unitId, // 这里接接口的时候重点关注一下
-      生产日期: 生产日期 && 生产日期.format('YYYY-MM-DD'),
-      购买日期: 购买日期 && 购买日期.format('YYYY-MM-DD'),
+      companyId: unitId,
+      ownerCompanyId: ownerCompany && ownerCompany.key,
+      byDate: byDate && byDate.format(DEFAULT_FORMAT),
+      produceDate: produceDate && produceDate.format(DEFAULT_FORMAT),
+      startDate: startDate && startDate.format(DEFAULT_FORMAT),
+      validDate: validDate && validDate.format(DEFAULT_FORMAT),
+      grantList:
+        grantList &&
+        grantList.map(({ id, type, children }) => ({
+          parkId: id,
+          grantState: type,
+          gateGrantList: children
+            ? children.map(({ id, gateId }) => ({ gateIdNew: id, gateId }))
+            : [],
+        })),
       ...payload,
     };
   };
 
-  getBreadcrumbList = ({ isUnit, unitId, title }) =>
+  getBreadcrumbList = ({ isUnit, title }) =>
     BREADCRUMB_LIST.concat(
       [
         !isUnit && {
@@ -91,32 +153,41 @@ export default class VehicleOther extends Component {
       ].filter(v => v)
     );
 
-  getFields = () => [
+  getFields = ({ unitId, ownerType, cardType, startDate, isDetail }) => [
     {
       key: '车辆基本信息',
       title: '车辆基本信息',
       fields: [
         {
-          id: '车牌号',
+          id: 'carNumber',
           label: '车牌号',
           required: true,
           component: 'Input',
           span: SPAN,
+          options: {
+            rules: [
+              { required: true, whitespace: true, message: '车牌号不能为空' },
+              {
+                pattern: /^([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[a-zA-Z](([DF]((?![IO])[a-zA-Z0-9](?![IO]))[0-9]{4})|([0-9]{5}[DF]))|[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1})$/,
+                message: '车牌号格式不正确',
+              },
+            ],
+          },
         },
         {
-          id: '品牌',
+          id: 'brand',
           label: '品牌',
           component: 'Input',
           span: SPAN,
         },
         {
-          id: '型号',
+          id: 'model',
           label: '型号',
           component: 'Input',
           span: SPAN,
         },
         {
-          id: '车辆类型',
+          id: 'carType',
           label: '车辆类型',
           required: true,
           component: 'Select',
@@ -126,24 +197,47 @@ export default class VehicleOther extends Component {
           },
         },
         {
-          id: '车牌类型',
-          label: '车牌类型',
+          id: 'ownerType',
+          label: '所属单位',
           required: true,
+          refreshEnable: true,
           component: 'Select',
           span: SPAN,
           props: {
-            list: LICENCE_PLATE_TYPES,
+            list: TYPES,
           },
         },
+        ...(ownerType === TYPES[1].key
+          ? [
+              {
+                id: 'ownerCompany',
+                label: '单位名称',
+                required: true,
+                component: AsyncSelect,
+                span: SPAN,
+                props: {
+                  mapper: MAPPER2,
+                  fieldNames: FIELDNAMES,
+                  placeholder: '请选择单位名称',
+                  params: {
+                    companyId: unitId,
+                  },
+                },
+                options: {
+                  rules: [
+                    {
+                      type: 'object',
+                      required: true,
+                      message: '单位名称不能为空',
+                    },
+                  ],
+                },
+              },
+            ]
+          : []),
         {
-          id: '生产日期',
-          label: '生产日期',
-          component: 'DatePicker',
-          span: SPAN,
-        },
-        {
-          id: '载重',
-          label: '载重',
+          id: 'load',
+          label: '载重（吨）',
           component: 'Input',
           span: SPAN,
           props: {
@@ -152,30 +246,73 @@ export default class VehicleOther extends Component {
           },
         },
         {
-          id: '购买日期',
+          id: 'byDate',
           label: '购买日期',
           component: 'DatePicker',
           span: SPAN,
+          props: {
+            unknown: '',
+          },
         },
         {
-          id: '当前状态',
-          label: '当前状态',
-          required: true,
-          component: 'Switch',
+          id: 'produceDate',
+          label: '生产日期',
+          component: 'DatePicker',
           span: SPAN,
           props: {
-            list: STATUSES,
-          },
-          options: {
-            initialValue: STATUSES[0].key,
+            unknown: '',
           },
         },
         {
-          id: '车辆照片',
+          id: 'cardType',
+          label: '车牌有效期',
+          required: true,
+          refreshEnable: true,
+          component: 'Select',
+          span: SPAN,
+          props: {
+            list: LICENCE_PLATE_TYPES,
+          },
+        },
+        ...(cardType === LICENCE_PLATE_TYPES[1].key
+          ? [
+              {
+                id: 'startDate',
+                label: '生效日期',
+                required: true,
+                refreshEnable: true,
+                component: 'DatePicker',
+                span: SPAN,
+                props: {
+                  disabledDate: current => +current - moment().startOf('day') < 0,
+                  unknown: '',
+                  onChange: this.handleChange,
+                },
+              },
+              {
+                id: 'validDate',
+                label: '截止日期',
+                required: true,
+                component: 'DatePicker',
+                span: SPAN,
+                props: {
+                  disabledDate: current => +current - (startDate || moment()).startOf('day') < 0,
+                  unknown: '',
+                },
+              },
+            ]
+          : []),
+        // {
+        //   id: 'locationCardId',
+        //   label: '定位卡号',
+        //   component: 'Input',
+        //   span: SPAN,
+        // },
+        {
+          id: 'carPhotoList',
           label: '车辆照片',
           component: 'CustomUpload',
           props: {
-            length: 1,
             types: ['JPG', 'PNG'],
           },
         },
@@ -183,17 +320,16 @@ export default class VehicleOther extends Component {
     },
     {
       key: '人员信息',
-      title: '人员信息',
       fields: [
         {
-          id: '驾驶员',
+          id: 'driver',
           label: '驾驶员',
           required: true,
           component: 'Input',
           span: SPAN,
         },
         {
-          id: '驾驶员联系电话',
+          id: 'driverTel',
           label: '联系电话',
           required: true,
           component: 'Input',
@@ -203,13 +339,18 @@ export default class VehicleOther extends Component {
           },
         },
         {
-          id: '押运员',
+          id: 'driverPhotoList',
+          label: '证照附件',
+          component: 'CustomUpload',
+        },
+        {
+          id: 'supercargo',
           label: '押运员',
           component: 'Input',
           span: SPAN,
         },
         {
-          id: '押运员联系电话',
+          id: 'supercargoTel',
           label: '联系电话',
           component: 'Input',
           span: SPAN2,
@@ -217,21 +358,94 @@ export default class VehicleOther extends Component {
             className: styles.phoneInput,
           },
         },
+        {
+          id: 'supercargoPhotoList',
+          label: '证照附件',
+          component: 'CustomUpload',
+        },
+      ],
+    },
+    {
+      key: '车场通道授权',
+      title: isDetail ? (
+        <Fragment>
+          <span style={{ marginRight: 8 }}>车场通道授权</span>
+          <Tooltip
+            placement="bottom"
+            title="选中车场会将车辆信息同步至车场，全部通道表示该车可以在选中车场的全部通道口进出；部分通道表示只能在选择的通道进出，未选通道不得进出。"
+          >
+            <Icon style={{ color: '#f5222d', verticalAlign: 'baseline' }} type="question-circle" />
+          </Tooltip>
+        </Fragment>
+      ) : (
+        undefined
+      ),
+      fields: [
+        {
+          id: 'grantList',
+          label: !isDetail ? (
+            <Fragment>
+              <span style={{ marginRight: 8 }}>车场通道授权</span>
+              <Tooltip
+                placement="bottom"
+                title="选中车场会将车辆信息同步至车场，全部通道表示该车可以在选中车场的全部通道口进出；部分通道表示只能在选择的通道进出，未选通道不得进出。"
+              >
+                <Icon
+                  style={{ color: '#f5222d', verticalAlign: 'baseline' }}
+                  type="question-circle"
+                />
+              </Tooltip>
+            </Fragment>
+          ) : (
+            undefined
+          ),
+          required: true,
+          component: ChannelAuthorization,
+          props: {
+            unitId,
+          },
+          options: {
+            rules: [{ required: true, type: 'array', min: 1, message: '车场通道授权不能为空' }],
+          },
+        },
       ],
     },
   ];
 
+  handleChange = value => {
+    const { getFieldValue, setFieldsValue } = this.page && this.page.form && this.page.form;
+    const validDate = getFieldValue('validDate');
+    if (+validDate - value.startOf(moment) < 0) {
+      setFieldsValue({
+        validDate: undefined,
+      });
+    }
+  };
+
   render() {
-    return (
-      <ThreeInOnePage
-        breadcrumbList={this.getBreadcrumbList}
-        fields={this.getFields}
-        initialize={this.initialize}
-        transform={this.transform}
-        mapper={MAPPER}
-        layout="vertical"
-        {...this.props}
-      />
-    );
+    const {
+      route,
+      location,
+      match,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    const props = {
+      key: id,
+      breadcrumbList: this.getBreadcrumbList,
+      fields: this.getFields,
+      initialize: this.initialize,
+      transform: this.transform,
+      mapper: MAPPER,
+      layout: 'vertical',
+      error: 1,
+      ref: this.setPageReference,
+      route,
+      location,
+      match,
+    };
+
+    return <ThreeInOnePage {...props} />;
   }
 }

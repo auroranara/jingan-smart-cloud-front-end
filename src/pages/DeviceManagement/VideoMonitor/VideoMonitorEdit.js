@@ -155,6 +155,7 @@ export default class VideoMonitorEdit extends PureComponent {
       // 清空详情
       dispatch({ type: 'videoMonitor/clearDetail' });
       this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+      setFieldsValue({ isShow: '1' })
     }
     // 根据id获取四色图和消防平面图
     if (id || query.companyId || isCompany) {

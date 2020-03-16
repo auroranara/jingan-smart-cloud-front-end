@@ -6,7 +6,7 @@
   .controlContainer {
     position: absolute;
     top: 15px;
-    left: calc(~'50% - 200px');
+    left: calc(~'50% - 270px');
     color: #676868;
     // color: #0ff;
     cursor: pointer;
@@ -24,7 +24,7 @@
         opacity: 0.8;
       }
 
-      &+.controlItem {
+      & + .controlItem {
         margin-left: 20px;
       }
 
@@ -81,8 +81,8 @@
           height: 30px;
         }
 
-        .amap-zoom-touch-minus>div,
-        .amap-zoom-touch-plus>div {
+        .amap-zoom-touch-minus > div,
+        .amap-zoom-touch-plus > div {
           color: #a3a3a3;
           line-height: 30px;
         }
@@ -109,7 +109,8 @@
     .amap-info-sharp {
       // display: none;
       height: 13px !important;
-      background: url('http://data.jingan-china.cn/v2/big-platform/safety/govmap-sharp.png') no-repeat center center;
+      background: url('http://data.jingan-china.cn/v2/big-platform/safety/govmap-sharp.png')
+        no-repeat center center;
       background-size: auto 100%;
     }
 
@@ -119,22 +120,28 @@
 
     .fm-control-popmarker {
       color: #fff;
-      padding: 10px 15px !important;
+      padding: 0 !important;
       background-color: rgba(22, 22, 22, 0.9) !important;
-      border: 1px solid #f83329 !important;
+      // border: 1px solid #f83329 !important;
+      border: none !important;
       border-radius: 3px !important;
 
-      &>div {
+      & > div {
         height: 100% !important;
+        overflow: hidden !important;
       }
 
-      &>input {
+      & > input {
         background: none !important;
+        cursor: pointer;
+        z-index: 8;
+        outline: none;
       }
     }
 
     .fm-control-popmarker-top {
       border-color: rgba(22, 22, 22, 0.9) transparent transparent !important;
+      z-index: 6;
     }
   }
 }

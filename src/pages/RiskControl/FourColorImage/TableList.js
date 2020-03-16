@@ -137,13 +137,13 @@ export default class TableList extends React.Component {
       resourceManagement: { searchInfo = {} },
     } = this.props;
     const ids = list.map(item => item.id);
-    const filterList = list.find(item => id===item.id)
+    const filterList = list.find(item => id === item.id);
     const index = ids.indexOf(id);
     dispatch({
       type: 'fourColorImage/fetchDelete',
       payload: { ids: id },
       success: () => {
-        this.childMap.removeArea(index,filterList);
+        this.childMap.removeArea(index, filterList);
         this.fetchList({ companyId: unitType === 4 ? companyId : searchInfo.id });
         message.success('删除成功！');
       },
@@ -198,13 +198,12 @@ export default class TableList extends React.Component {
         data: { list = [] },
       },
     } = this.props;
-    const filterList = list.find(item => id===item.id)
+    const filterList = list.filter(item => id === item.id);
     this.childMap.selectedModelColor(
-      id,
       filterList,
       setTimeout(() => {
-        this.childMap.restModelColor(id,filterList);
-      }, 2000)
+        this.childMap.restModelColor(filterList);
+      }, 1000)
     );
   };
 
@@ -315,7 +314,7 @@ export default class TableList extends React.Component {
             <Col span={12}>
               <Card title="地图" bordered={false}>
                 {/* {this.renderDrawButton()} */}
-                <Map isDrawing={isDrawing} onRef={this.onRef} pointList={list} init/>
+                <Map isDrawing={isDrawing} onRef={this.onRef} pointList={list} init />
               </Card>
             </Col>
             <Col span={12}>

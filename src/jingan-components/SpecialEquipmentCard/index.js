@@ -45,7 +45,8 @@ export default class SpecialEquipmentCard extends BigPlatformCard {
    * 渲染状态
    */
   renderStatus (status) {
-    const { statusLabel, statusColor = '#1E60FF' } = this.props;
+    const { statusLabel, statusColor = '#1E60FF', showStatus = true } = this.props;
+    if (!showStatus) return null;
     if (statusLabel) {
       return <div className={styles.status} style={{ backgroundColor: statusColor }}>{statusLabel}</div>
     }
@@ -60,12 +61,26 @@ export default class SpecialEquipmentCard extends BigPlatformCard {
     return <div className={styles.status} style={{ backgroundColor }}>{label}</div>
   }
 
+  /**
+   * 渲染链接
+   */
+  renderLink = () => {
+    const { url = '', linkLabel = '' } = this.props;
+    return url && linkLabel ? (<div className={styles.link} onClick={() => this.handleOpenPage(url)}>{linkLabel}</div>) : null;
+  }
+
+  handleOpenPage = url => {
+    const win = window.open(`${window.publicPath}#${url}`, '_blank');
+    win.focus();
+  }
+
   render () {
     const {
       className, // 容器类名
       style, // 容器样式
     } = this.props;
     const fieldsValue = this.getFieldsValue();
+    console.log('id', this.props.data.id);
 
     return (
       <Container
@@ -74,6 +89,7 @@ export default class SpecialEquipmentCard extends BigPlatformCard {
       >
         {this.renderStatus(fieldsValue.status)}
         {this.renderFields(fieldsValue)}
+        {this.renderLink()}
       </Container>
     );
   }

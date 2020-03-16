@@ -36,18 +36,32 @@ export default {
     },
     *getTypeList({ payload, callback }, { call, put, select }) {
       const { parentId } = payload;
-      const response = yield call(getTypeList, payload);
-      const { code, data } = response || {};
-      if (code === 200 && data && data.list) {
-        const prevTypeList = parentId ? (yield select((state) => state.accidentReport.typeList)) : [];
-        const typeList = prevTypeList.concat(data.list.map(({ id, hasChild, value, label }) => ({ id, pId: parentId, value: id, title: `${value} ${label}`, isLeaf: !+hasChild })));
-        yield put({
-          type: 'save',
-          payload: {
-            typeList,
-          },
-        });
-        callback && callback(typeList);
+      const prevTypeList = parentId
+        ? yield select(state => state.accidentReport.typeList) || []
+        : [];
+      if (!prevTypeList.find(({ pId }) => pId === parentId)) {
+        const response = yield call(getTypeList, payload);
+        const { code, data } = response || {};
+        if (code === 200 && data && data.list) {
+          const typeList = prevTypeList.concat(
+            data.list.map(({ id, hasChild, value, label }) => ({
+              id,
+              pId: parentId,
+              value: id,
+              title: `${value} ${label}`,
+              isLeaf: !+hasChild,
+            }))
+          );
+          yield put({
+            type: 'save',
+            payload: {
+              typeList,
+            },
+          });
+          callback && callback(typeList);
+        }
+      } else {
+        callback && callback();
       }
     },
     // 获取企业类型列表
@@ -55,7 +69,10 @@ export default {
       const response = yield call(getCompanyTypeList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.regulatoryClassification) {
-        const companyTypeList = data.regulatoryClassification.map(({ value, label }) => ({ key: value, value: label }));
+        const companyTypeList = data.regulatoryClassification.map(({ value, label }) => ({
+          key: value,
+          value: label,
+        }));
         yield put({
           type: 'save',
           payload: {
@@ -84,13 +101,10 @@ export default {
       }
     },
     *getCompany({ payload, callback }, { call, all }) {
-      const responseList = yield all([
-        call(getCompany, payload),
-        call(getCompanySafety, payload),
-      ]);
+      const responseList = yield all([call(getCompany, payload), call(getCompanySafety, payload)]);
       const [
-        { code: code1, data: data1, msg: msg1 }={},
-        { code: code2, data: data2, msg: msg2 }={},
+        { code: code1, data: data1, msg: msg1 } = {},
+        { code: code2, data: data2, msg: msg2 } = {},
       ] = responseList || [];
       callback && callback(true, { ...data1, ...data2 });
     },
@@ -114,4 +128,4 @@ export default {
   reducers: {
     save: (state, { payload }) => ({ ...state, ...payload }),
   },
-}
+};

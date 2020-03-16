@@ -12,6 +12,7 @@ import {
   Divider,
   Popconfirm,
   message,
+  Cascader,
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
@@ -26,7 +27,14 @@ import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/ut
 
 const {
   emergencyManagement: {
-    emergencyEquipment: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
+    emergencyEquipment: {
+      detail: detailCode,
+      edit: editCode,
+      add: addCode,
+      delete: deleteCode,
+      checkList: checkListCode,
+      maintList: maintListCode,
+    },
   },
 } = codes;
 const addUrl = '/emergency-management/emergency-equipment/add';
@@ -88,6 +96,7 @@ export default class EmergencyEquipmentList extends PureComponent {
         pageNum,
         pageSize,
         ...filters,
+        equipType: filters.equipType && filters.equipType.join(','),
       },
     });
   };
@@ -102,6 +111,7 @@ export default class EmergencyEquipmentList extends PureComponent {
       user: {
         currentUser: { permissionCodes, unitType },
       },
+      emergencyManagement: { emergencyOutfit = [] },
     } = this.props;
     const fields = [
       {
@@ -112,9 +122,36 @@ export default class EmergencyEquipmentList extends PureComponent {
         transform,
       },
       {
+        id: 'equipType',
+        render() {
+          return (
+            <Cascader
+              options={emergencyOutfit}
+              fieldNames={{
+                value: 'id',
+                label: 'label',
+                children: 'children',
+                isLeaf: 'isLeaf',
+              }}
+              changeOnSelect
+              placeholder="请选择装备类型"
+              allowClear
+              getPopupContainer={getRootChild}
+            />
+          );
+        },
+      },
+      {
         id: 'equipCode',
         render() {
           return <Input placeholder="请输入装备编码" />;
+        },
+        transform,
+      },
+      {
+        id: 'companyName',
+        render() {
+          return <Input placeholder="请输入单位名称" />;
         },
         transform,
       },
@@ -204,11 +241,60 @@ export default class EmergencyEquipmentList extends PureComponent {
         },
       },
       {
-        id: 'companyName',
+        id: 'checkStatus',
         render() {
-          return <Input placeholder="请输入单位名称" />;
+          const options = [
+            { value: 0, name: '未到期' },
+            { value: 1, name: '即将到期' },
+            { value: 2, name: '已过期' },
+          ];
+          return (
+            <Select
+              allowClear
+              showSearch
+              placeholder="请选择检查状态"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {options.map(item => {
+                const { value, name } = item;
+                return (
+                  <Option value={value} key={value}>
+                    {name}
+                  </Option>
+                );
+              })}
+            </Select>
+          );
         },
-        transform,
+      },
+      {
+        id: 'maintStatus',
+        render() {
+          const options = [
+            { value: 0, name: '未到期' },
+            { value: 1, name: '即将到期' },
+            { value: 2, name: '已过期' },
+          ];
+          return (
+            <Select
+              allowClear
+              showSearch
+              placeholder="请选择维保状态"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {options.map(item => {
+                const { value, name } = item;
+                return (
+                  <Option value={value} key={value}>
+                    {name}
+                  </Option>
+                );
+              })}
+            </Select>
+          );
+        },
       },
     ];
 
@@ -218,7 +304,7 @@ export default class EmergencyEquipmentList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
+          fields={unitType === 4 ? fields.filter(item => item.id !== 'companyName') : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -252,6 +338,14 @@ export default class EmergencyEquipmentList extends PureComponent {
 
   goEdit = id => {
     router.push(`/emergency-management/emergency-equipment/edit/${id}`);
+  };
+
+  goCheck = id => {
+    router.push(`/emergency-management/emergency-equipment/check/${id}/list`);
+  };
+
+  goMaint = id => {
+    router.push(`/emergency-management/emergency-equipment/maint/${id}/list`);
   };
 
   // 表格改变触发，包含分页变动
@@ -336,7 +430,7 @@ export default class EmergencyEquipmentList extends PureComponent {
               </div>
               <div>
                 规格型号：
-                {equipModel}
+                {equipModel || NO_DATA}
               </div>
             </div>
           );
@@ -354,11 +448,11 @@ export default class EmergencyEquipmentList extends PureComponent {
             <div className={styles.multi}>
               <div>
                 来源：
-                {Source[equipSource - 1]}
+                {Source[equipSource - 1] || NO_DATA}
               </div>
               <div>
                 登记类型：
-                {RegisterType[registerType - 1]}
+                {RegisterType[registerType - 1] || NO_DATA}
               </div>
             </div>
           );
@@ -374,27 +468,30 @@ export default class EmergencyEquipmentList extends PureComponent {
           return Status[data - 1];
         },
       },
+      // {
+      //   title: '有效期至',
+      //   dataIndex: 'endDate',
+      //   key: 'endDate',
+      //   align: 'center',
+      //   width: 200,
+      //   render: date => {
+      //     return date ? moment(date).format('YYYY-MM-DD') : '-';
+      //   },
+      // },
       {
         title: '有效期至',
-        dataIndex: 'endDate',
-        key: 'endDate',
-        align: 'center',
-        width: 200,
-        render: date => {
-          return date ? moment(date).format('YYYY-MM-DD') : '-';
-        },
-      },
-      {
-        title: '有效期状态',
         dataIndex: 'paststatus',
         key: 'paststatus',
         align: 'center',
         width: 140,
         render: (status, { endDate }) => {
-          return (
-            <span style={{ color: getColorVal(status) }}>
-              {endDate ? paststatusVal[status] : '-'}
-            </span>
+          return endDate ? (
+            <div>
+              <div style={{ color: getColorVal(status) }}>{paststatusVal[status]}</div>
+              <div>{moment(endDate).format('YYYY-MM-DD')}</div>
+            </div>
+          ) : (
+            '--'
           );
         },
       },
@@ -406,15 +503,71 @@ export default class EmergencyEquipmentList extends PureComponent {
         width: 120,
         render: (data, record) => {
           const { equipCount, equipUnit } = record;
-          return equipCount + (equipUnit || '个');
+          return equipCount + (equipUnit || '');
+        },
+      },
+      // {
+      //   title: '装备单价(元)',
+      //   dataIndex: 'equipPrice',
+      //   key: 'equipPrice',
+      //   align: 'center',
+      //   width: 200,
+      // },
+      {
+        title: '定期检查',
+        dataIndex: 'daySpace',
+        key: 'daySpace',
+        align: 'center',
+        width: 280,
+        render: (data, record) => {
+          const { daySpace, checkDate, checkStatus } = record;
+          return (
+            <div className={styles.multi}>
+              <div style={{ color: getColorVal(checkStatus) }}>{paststatusVal[checkStatus]}</div>
+              <div>
+                检查间隔：
+                {daySpace || daySpace === 0 ? daySpace + '天' : NO_DATA}
+              </div>
+              <div>
+                下次检查日期：
+                {checkDate ? moment(checkDate).format('YYYY-MM-DD') : NO_DATA}
+              </div>
+              <div>
+                <AuthA code={checkListCode} onClick={() => this.goCheck(record.id)}>
+                  检查记录
+                </AuthA>
+              </div>
+            </div>
+          );
         },
       },
       {
-        title: '装备单价(元)',
-        dataIndex: 'equipPrice',
-        key: 'equipPrice',
+        title: '定期维保',
+        dataIndex: 'dayMaintSpace',
+        key: 'dayMaintSpace',
         align: 'center',
-        width: 200,
+        width: 280,
+        render: (data, record) => {
+          const { dayMaintSpace, maintDate, maintStatus } = record;
+          return (
+            <div className={styles.multi}>
+              <div style={{ color: getColorVal(maintStatus) }}>{paststatusVal[maintStatus]}</div>
+              <div>
+                维保间隔：
+                {dayMaintSpace || dayMaintSpace === 0 ? dayMaintSpace + '天' : NO_DATA}
+              </div>
+              <div>
+                下次维保日期：
+                {maintDate ? moment(maintDate).format('YYYY-MM-DD') : NO_DATA}
+              </div>
+              <div>
+                <AuthA code={maintListCode} onClick={() => this.goMaint(record.id)}>
+                  维保记录
+                </AuthA>
+              </div>
+            </div>
+          );
+        },
       },
       {
         title: '操作',

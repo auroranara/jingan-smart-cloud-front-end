@@ -293,6 +293,13 @@ export default {
       delete: 'lawEnforcement.illegal.delete',
     },
   },
+  keyPart: {
+    list: 'safetyRiskControl.keyPart.listView',
+    add: 'safetyRiskControl.keyPart.add',
+    edit: 'safetyRiskControl.keyPart.edit',
+    delete: 'safetyRiskControl.keyPart.delete',
+    detail: 'safetyRiskControl.keyPart.view',
+  },
   training: {
     examinationPaper: {
       list: 'training.examinationPaper.listView',
@@ -468,6 +475,16 @@ export default {
       edit: 'emergencyManagement.emergencyEquipment.edit',
       detail: 'emergencyManagement.emergencyEquipment.detail',
       delete: 'emergencyManagement.emergencyEquipment.delete',
+      checkList: 'emergencyManagement.emergencyEquipment.checkList',
+      checkAdd: 'emergencyManagement.emergencyEquipment.checkAdd',
+      checkEdit: 'emergencyManagement.emergencyEquipment.checkEdit',
+      checkDetail: 'emergencyManagement.emergencyEquipment.checkDetail',
+      checkDelete: 'emergencyManagement.emergencyEquipment.checkDelete',
+      maintList: 'emergencyManagement.emergencyEquipment.maintList',
+      maintAdd: 'emergencyManagement.emergencyEquipment.maintAdd',
+      maintEdit: 'emergencyManagement.emergencyEquipment.maintEdit',
+      maintDetail: 'emergencyManagement.emergencyEquipment.maintDetail',
+      maintDelete: 'emergencyManagement.emergencyEquipment.maintDelete',
     },
     emergencySupplies: {
       listView: 'emergencyManagement.emergencySupplies.listView',
@@ -475,6 +492,16 @@ export default {
       edit: 'emergencyManagement.emergencySupplies.edit',
       detail: 'emergencyManagement.emergencySupplies.detail',
       delete: 'emergencyManagement.emergencySupplies.delete',
+      checkList: 'emergencyManagement.emergencySupplies.checkList',
+      checkAdd: 'emergencyManagement.emergencySupplies.checkAdd',
+      checkEdit: 'emergencyManagement.emergencySupplies.checkEdit',
+      checkDetail: 'emergencyManagement.emergencySupplies.checkDetail',
+      checkDelete: 'emergencyManagement.emergencySupplies.checkDelete',
+      maintList: 'emergencyManagement.emergencySupplies.maintList',
+      maintAdd: 'emergencyManagement.emergencySupplies.maintAdd',
+      maintEdit: 'emergencyManagement.emergencySupplies.maintEdit',
+      maintDetail: 'emergencyManagement.emergencySupplies.maintDetail',
+      maintDelete: 'emergencyManagement.emergencySupplies.maintDelete',
     },
     emergencyDrill: {
       listView: 'emergencyManagement.emergencyDrill.listView',
@@ -778,5 +805,41 @@ export default {
       edit: 'cardsInfo.knowCard.edit',
       delete: 'cardsInfo.knowCard.delete',
     },
+  },
+  // 实名制认证系统
+  realNameCertification: {
+    // 人员管理
+    personnelManagement: {
+      list: 'realNameCertification.personnelManagement.listView',
+      add: 'realNameCertification.personnelManagement.add',
+      edit: 'realNameCertification.personnelManagement.edit',
+      delete: 'realNameCertification.personnelManagement.delete',
+    },
+    // 授权管理
+    authorization: {
+      list: 'realNameCertification.authorization.listView',
+      view: 'realNameCertification.authorization.view',
+      add: 'realNameCertification.authorization.add',
+      edit: 'realNameCertification.authorization.edit',
+      delete: 'realNameCertification.authorization.delete',
+    },
+  },
+  // 操作规程
+  operatingProcedures: {
+    list: 'safetyProductionRegulation.operatingProcedures.listView',
+    view: 'safetyProductionRegulation.operatingProcedures.view',
+    add: 'safetyProductionRegulation.operatingProcedures.add',
+    edit: 'safetyProductionRegulation.operatingProcedures.edit',
+    review: 'safetyProductionRegulation.operatingProcedures.review',
+    publish: 'safetyProductionRegulation.operatingProcedures.publish',
+  },
+  // 检查表维护
+  checkListMaintenance: {
+    list: 'safetyProductionRegulation.checkListMaintenance.listView',
+    view: 'safetyProductionRegulation.checkListMaintenance.view',
+    add: 'safetyProductionRegulation.checkListMaintenance.add',
+    edit: 'safetyProductionRegulation.checkListMaintenance.edit',
+    review: 'safetyProductionRegulation.checkListMaintenance.review',
+    publish: 'safetyProductionRegulation.checkListMaintenance.publish',
   },
 };

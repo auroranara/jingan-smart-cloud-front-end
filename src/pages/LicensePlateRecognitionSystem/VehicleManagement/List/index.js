@@ -1,24 +1,22 @@
 import React, { Component } from 'react';
-import { Input, Card } from 'antd';
-import ListPage from '@/templates/ListPage';
-import Ellipsis from '@/components/Ellipsis';
+import { Input, Modal, message } from 'antd';
+import TablePage from '@/templates/TablePage';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import EmptyData from '@/jingan-components/EmptyData';
 import Company from '../../Company';
 import { connect } from 'dva';
+import router from 'umi/router';
 import styles from './index.less';
-const { Meta } = Card;
 
-export const STATUSES = [{ key: '1', value: '正常' }, { key: '0', value: '停用' }];
+export const STATUSES = [
+  { key: '0', value: '有效' },
+  { key: '-1', value: '未生效' },
+  { key: '1', value: '已过期' },
+];
 export const VEHICLE_TYPES = [{ key: '0', value: '小车' }, { key: '1', value: '大车' }];
 export const LICENCE_PLATE_TYPES = [
-  { key: '0', value: '临时车' },
-  { key: '1', value: '月租车' },
-  { key: '2', value: '充值车' },
-  { key: '3', value: '贵宾车' },
-  { key: '4', value: '免费车' },
-  { key: '8', value: '收费月租车' },
+  { key: '4', value: '长期有效' },
+  { key: '0', value: '固定期限有效' },
 ];
 export const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
@@ -38,23 +36,72 @@ const COMPANY_MAPPER = {
   list: 'vehicleCompanyList',
   getList: 'getVehicleCompanyList',
 };
+const API = 'licensePlateRecognitionSystem/getParkList';
+const COMPANY_MAPPER2 = {
+  namespace: 'licensePlateRecognitionSystem',
+  list: 'companyList',
+  getList: 'getCompanyList',
+};
+const FIELDNAMES = {
+  key: 'id',
+  value: 'name',
+  name: 'companyName',
+};
 
-@connect(({ user }) => ({
-  user,
-}))
-export default class VehicleList extends Component {
+@connect(
+  ({
+    user,
+    licensePlateRecognitionSystem: { parkList },
+    loading: {
+      effects: { [API]: loading },
+    },
+  }) => ({
+    user,
+    parkList,
+    loading,
+  }),
+  dispatch => ({
+    getParkList(payload, callback) {
+      dispatch({
+        type: API,
+        payload: {
+          pageNum: 1,
+          pageSize: 1,
+          ...payload,
+        },
+        callback: (success, data) => {
+          if (!success) {
+            message.error('检查车场是否存在失败，请稍后重试！');
+          }
+          callback && callback(success, data);
+        },
+      });
+    },
+  })
+)
+export default class ParkList extends Component {
   state = {
     images: null,
+    visible: false,
   };
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      nextProps.match.params.unitId !== this.props.match.params.unitId || nextState !== this.state
+      nextProps.match.params.unitId !== this.props.match.params.unitId ||
+      nextProps.loading !== this.props.loading ||
+      nextState !== this.state
     );
   }
 
+  initialize = ({ unitId }) => {
+    const { getParkList } = this.props;
+    getParkList({
+      companyId: unitId,
+    });
+  };
+
   transform = ({ unitId, ...props }) => ({
-    companyId: unitId, // 这个接接口时重点关注一下
+    companyId: unitId,
     ...props,
   });
 
@@ -78,13 +125,13 @@ export default class VehicleList extends Component {
   );
 
   getFields = () => [
-    // {
-    //   id: 'name',
-    //   transform: v => v.trim(),
-    //   render: ({ onSearch }) => (
-    //     <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
-    //   ),
-    // },
+    {
+      id: 'queryCompanyName',
+      transform: v => v.trim(),
+      render: ({ onSearch }) => (
+        <Input placeholder="请输入所属单位" maxLength={50} onPressEnter={onSearch} />
+      ),
+    },
     {
       id: 'carNumber',
       transform: v => v.trim(),
@@ -93,157 +140,124 @@ export default class VehicleList extends Component {
       ),
     },
     {
+      id: 'cardType',
+      render: () => (
+        <SelectOrSpan placeholder="请选择车牌有效期" list={LICENCE_PLATE_TYPES} allowClear />
+      ),
+    },
+    {
       id: 'status',
       render: () => <SelectOrSpan placeholder="请选择状态" list={STATUSES} allowClear />,
     },
   ];
 
-  // getAction = ({ renderAddButton }) => renderAddButton({ name: '新增车辆' });
+  getAction = ({ renderAddButton }) => {
+    const { loading } = this.props;
+    return renderAddButton({ name: '新增车辆', onClick: this.handleAddButtonClick, loading });
+  };
 
-  renderItem = (
-    { id, carNumber, carType, cardType, carUserName, carUserTel, status },
-    { renderDetailButton, renderEditButton, renderDeleteButton }
-  ) => {
-    const vehicleType = (VEHICLE_TYPES.find(({ key }) => key === `${carType}`) || {}).value;
-    const licensePlateType = (LICENCE_PLATE_TYPES.find(({ key }) => key === `${cardType}`) || {})
-      .value;
-    return (
-      <Card
-        title={
-          <Ellipsis className={styles.ellipsis} lines={1} tooltip>
-            {carNumber}
-          </Ellipsis>
-        }
-        className={styles.card}
-        // actions={[renderDetailButton(id), renderEditButton(id), renderDeleteButton(id)]}
-        hoverable
-      >
-        {/* <Meta
-          avatar={
-            <img
-              className={styles.avatar}
-              src={image}
-              alt=""
-              onClick={() => this.setState({ images: [image] })}
-            />
-          }
-          title={
-            <Ellipsis className={styles.ellipsis} lines={1} tooltip>
-              {carNumber}
-            </Ellipsis>
-          }
-          description={
-            <div className={styles.cardContent}>
-              <div className={styles.cardRow}>
-                <div>车辆类型：</div>
-                <div>
-                  {vehicleType ? (
-                    <Ellipsis lines={1} tooltip>
-                      {vehicleType}
-                    </Ellipsis>
-                  ) : (
-                    <EmptyData />
-                  )}
-                </div>
-              </div>
-              <div className={styles.cardRow}>
-                <div>车牌类型：</div>
-                <div>
-                  {licensePlateType ? (
-                    <Ellipsis lines={1} tooltip>
-                      {licensePlateType}
-                    </Ellipsis>
-                  ) : (
-                    <EmptyData />
-                  )}
-                </div>
-              </div>
-              <div className={styles.cardRow}>
-                <div>驾驶员：</div>
-                <div>
-                  {carUserName ? (
-                    <Ellipsis lines={1} tooltip>
-                      {carUserName}
-                    </Ellipsis>
-                  ) : (
-                    <EmptyData />
-                  )}
-                </div>
-              </div>
-              <div className={styles.cardRow}>
-                <div>联系电话：</div>
-                <div>
-                  {carUserTel ? (
-                    <Ellipsis lines={1} tooltip>
-                      {carUserTel}
-                    </Ellipsis>
-                  ) : (
-                    <EmptyData />
-                  )}
-                </div>
-              </div>
-            </div>
-          }
-        /> */}
-        <div className={styles.cardContent}>
-          <div className={styles.cardRow}>
-            <div>车辆类型：</div>
-            <div>
-              {vehicleType ? (
-                <Ellipsis lines={1} tooltip>
-                  {vehicleType}
-                </Ellipsis>
-              ) : (
-                <EmptyData />
-              )}
-            </div>
-          </div>
-          <div className={styles.cardRow}>
-            <div>车牌类型：</div>
-            <div>
-              {licensePlateType ? (
-                <Ellipsis lines={1} tooltip>
-                  {licensePlateType}
-                </Ellipsis>
-              ) : (
-                <EmptyData />
-              )}
-            </div>
-          </div>
-          <div className={styles.cardRow}>
-            <div>驾驶员：</div>
-            <div>
-              {carUserName ? (
-                <Ellipsis lines={1} tooltip>
-                  {carUserName}
-                </Ellipsis>
-              ) : (
-                <EmptyData />
-              )}
-            </div>
-          </div>
-          <div className={styles.cardRow}>
-            <div>联系电话：</div>
-            <div>
-              {carUserTel ? (
-                <Ellipsis lines={1} tooltip>
-                  {carUserTel}
-                </Ellipsis>
-              ) : (
-                <EmptyData />
-              )}
-            </div>
-          </div>
+  getColumns = ({ list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
+    {
+      title: '所属单位',
+      dataIndex: '所属单位',
+      align: 'center',
+      render: (_, { ownerType, ownerCompanyName }) => (+ownerType ? ownerCompanyName : '本单位'),
+    },
+    {
+      title: '车牌号',
+      dataIndex: 'carNumber',
+      align: 'center',
+    },
+    {
+      title: '品牌',
+      dataIndex: 'brand',
+      align: 'center',
+    },
+    {
+      title: '型号',
+      dataIndex: 'model',
+      align: 'center',
+    },
+    {
+      title: '驾驶员',
+      dataIndex: 'driver',
+      align: 'center',
+    },
+    {
+      title: '联系电话',
+      dataIndex: 'driverTel',
+      align: 'center',
+    },
+    // {
+    //   title: '定位卡号',
+    //   dataIndex: 'locationCardCode',
+    //   align: 'center',
+    // },
+    {
+      title: '车牌有效期',
+      dataIndex: 'cardType',
+      align: 'center',
+      render: value => <SelectOrSpan list={LICENCE_PLATE_TYPES} value={`${value}`} type="span" />,
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      align: 'center',
+      render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
+    },
+    {
+      title: '车辆照片',
+      dataIndex: 'carPhotoList',
+      align: 'center',
+      render: value =>
+        value &&
+        value.length > 0 && (
+          <img
+            className={styles.img}
+            src={value[0].webUrl}
+            alt={value[0].fileName}
+            onClick={() => this.setState({ images: value.map(({ webUrl }) => webUrl) })}
+          />
+        ),
+    },
+    {
+      title: '操作',
+      dataIndex: '操作',
+      align: 'center',
+      width: 148,
+      fixed: list && list.length ? 'right' : undefined,
+      render: (_, data) => (
+        <div className={styles.buttonWrapper}>
+          {renderDetailButton(data)}
+          {renderEditButton(data)}
+          {renderDeleteButton(data)}
         </div>
-        <SelectOrSpan
-          className={styles.statusLabel}
-          style={{ backgroundColor: status > 0 ? '#1890ff' : '#d9d9d9' }}
-          type="span"
-          list={STATUSES}
-          value={`${status}`}
-        />
-      </Card>
-    );
+      ),
+    },
+  ];
+
+  handleAddButtonClick = goToAdd => {
+    const { parkList: { pagination: { total } = {} } = {} } = this.props;
+    if (total) {
+      goToAdd();
+    } else {
+      this.setState({
+        visible: true,
+      });
+    }
+  };
+
+  handleCancel = () => {
+    this.setState({
+      visible: false,
+    });
+  };
+
+  handleOk = () => {
+    const {
+      location: { pathname },
+    } = this.props;
+    router.push(pathname.replace('vehicle', 'park').replace('list', 'add'));
   };
 
   render() {
@@ -256,7 +270,7 @@ export default class VehicleList extends Component {
       location,
       match,
     } = this.props;
-    const { images } = this.state;
+    const { images, visible } = this.state;
     const props = {
       route,
       location,
@@ -264,20 +278,32 @@ export default class VehicleList extends Component {
     };
 
     return unitType === 4 || unitId ? (
-      <ListPage
+      <TablePage
         key={unitId}
         breadcrumbList={this.getBreadcrumbList}
         content={this.getContent}
         fields={this.getFields}
         action={this.getAction}
-        renderItem={this.renderItem}
+        columns={this.getColumns}
+        initialize={this.initialize}
         transform={this.transform}
         mapper={MAPPER}
+        showTotal={false}
         withUnitId
         {...props}
       >
-        <ImagePreview images={images} />
-      </ListPage>
+        <ImagePreview images={images} hidden />
+        <Modal
+          title="提示信息"
+          zIndex={1009}
+          visible={visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          okText="新增车场"
+        >
+          请先新建车场后再新增车辆
+        </Modal>
+      </TablePage>
     ) : (
       <Company
         name="车辆"
@@ -286,7 +312,8 @@ export default class VehicleList extends Component {
           name: '单位车辆信息',
         })}
         mapper={COMPANY_MAPPER}
-        addEnable={false}
+        mapper2={COMPANY_MAPPER2}
+        fieldNames={FIELDNAMES}
         {...props}
       />
     );

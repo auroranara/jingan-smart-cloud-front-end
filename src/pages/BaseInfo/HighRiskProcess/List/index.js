@@ -77,13 +77,14 @@ export default class HighRiskProcessList extends PureComponent {
   }
 
   goToAdd = () => {
-    confirm({
-      title: '注意',
-      content: '请对影响到的对应区域重新进行风险评价',
-      okText: '确认',
-      cancelText: '取消',
-      onOk () { router.push(addUrl); },
-    });
+    // confirm({
+    //   title: '注意',
+    //   content: '请对影响到的对应区域重新进行风险评价',
+    //   okText: '确认',
+    //   cancelText: '取消',
+    //   onOk () { router.push(addUrl); },
+    // });
+    router.push(addUrl);
   };
 
 
@@ -109,13 +110,14 @@ export default class HighRiskProcessList extends PureComponent {
 
   // 点击编辑
   handleToEdit = id => {
-    confirm({
-      title: '注意',
-      content: '请对影响到的对应区域重新进行风险评价',
-      okText: '确认',
-      cancelText: '取消',
-      onOk () { router.push(editUrl + id); },
-    });
+    // confirm({
+    //   title: '注意',
+    //   content: '请对影响到的对应区域重新进行风险评价',
+    //   okText: '确认',
+    //   cancelText: '取消',
+    //   onOk () { router.push(editUrl + id); },
+    // });
+    router.push(editUrl + id);
   }
 
   /**
@@ -179,7 +181,7 @@ export default class HighRiskProcessList extends PureComponent {
       success: () => {
         message.success('绑定成功');
         this.setState({ bindModalVisible: false, detail: {} });
-        this.handleSearch();
+        this.handleQuery();
       },
       error: res => {
         message.error(res ? res.msg : '绑定失败');
@@ -203,7 +205,7 @@ export default class HighRiskProcessList extends PureComponent {
       success: () => {
         message.success('解绑成功');
         this.fetchBindedMonitoringDevice();
-        this.handleSearch();
+        this.handleQuery();
       },
       error: res => {
         message.error(res ? res.msg : '解绑失败');
@@ -432,7 +434,7 @@ export default class HighRiskProcessList extends PureComponent {
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
-              title="确定要删除吗，请对影响到的对应区域重新进行风险评价？"
+              title="确定要删除吗？"
               onConfirm={() => this.handleDelete(row.id)}
             >
               删除

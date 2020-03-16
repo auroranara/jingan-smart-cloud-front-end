@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import moment from 'moment';
-import { Select, Radio, Col, Icon, Row, Table, DatePicker, Empty, Tooltip } from 'antd';
+import { Select, Radio, Col, Row, Table, DatePicker, Button, Empty } from 'antd';
 import { BREADCRUMBLIST, DepartPie, ReachList, COLOUMNS } from './utils';
 import styles from './index.less';
 
@@ -159,7 +159,7 @@ export default class TableList extends PureComponent {
           unitNumber = 0,
           passPart = 0,
           vetoPart = 0,
-          unitGoal = '0%',
+          unitGoal,
           rankList = [],
         },
       },
@@ -171,7 +171,10 @@ export default class TableList extends PureComponent {
           <div className={styles.itemTop}>
             <div className={styles.headline}>单位目标达成情况</div>
             <div className={styles.echarts}>
-              <DepartPie data={[passUnit, unitNumber - passUnit]} partPassRate={unitGoal} />
+              <DepartPie
+                data={[passUnit, unitNumber - passUnit]}
+                partPassRate={unitGoal === null ? '0%' : unitGoal}
+              />
             </div>
           </div>
 
@@ -205,21 +208,23 @@ export default class TableList extends PureComponent {
               </Col>
             </div>
             <div className={styles.dataCard}>
-              {rankList.map(({ partName, goalValue }, index) => {
-                return (
-                  <Row key={index} className={styles.row}>
-                    <Col span={7}>
-                      <p className={styles.tableTitle}>{index + 1}</p>
-                    </Col>
-                    <Col span={10}>
-                      <p className={styles.tableTitle}>{partName}</p>
-                    </Col>
-                    <Col span={7}>
-                      <p className={styles.tableTitle}>{goalValue}</p>
-                    </Col>
-                  </Row>
-                );
-              })}
+              {rankList !== null
+                ? rankList.map(({ partName, goalValue }, index) => {
+                    return (
+                      <Row key={index} className={styles.row}>
+                        <Col span={7}>
+                          <p className={styles.tableTitle}>{index + 1}</p>
+                        </Col>
+                        <Col span={10}>
+                          <p className={styles.tableTitle}>{partName}</p>
+                        </Col>
+                        <Col span={7}>
+                          <p className={styles.tableTitle}>{goalValue}</p>
+                        </Col>
+                      </Row>
+                    );
+                  })
+                : []}
             </div>
           </div>
         </div>
@@ -266,18 +271,17 @@ export default class TableList extends PureComponent {
               </Select.Option>
             ))}
           </Select>
-          <div>
-            <Tooltip placement="top" title={'重置'}>
-              <Icon
-                style={{ fontSize: '16px', margin: '8px', cursor: 'pointer' }}
-                type="redo"
-                onClick={this.handleRest}
-              />
-            </Tooltip>
-          </div>
+          <Button
+            style={{ margin: '4px', fontSize: '14px' }}
+            type="primary"
+            size="small"
+            onClick={this.handleRest}
+          >
+            重置
+          </Button>
         </div>
         <div className={styles.table}>
-          {tableList.length > 0 ? (
+          {tableList && tableList.length > 0 ? (
             <Table
               rowKey="index"
               columns={COLOUMNS}
@@ -295,7 +299,7 @@ export default class TableList extends PureComponent {
 
   render() {
     const {
-      targetResponsibility: { partGoalData = {} },
+      targetResponsibility: { partGoalData = {}, unitGoalData = {} },
     } = this.props;
     const { isOpen, yearDateVal, radioType } = this.state;
 
@@ -346,7 +350,7 @@ export default class TableList extends PureComponent {
           ) : (
             +radioType === 1 && <div className={styles.content}>{this.renderPicContent()}</div>
           )}
-          {+radioType === 2 && partGoalData === null ? (
+          {+radioType === 2 && unitGoalData === null ? (
             <div className={styles.emptyArea}>
               当前尚未形成年度目标责任分析报表，本报表可查看上一年度目标分析结果
             </div>

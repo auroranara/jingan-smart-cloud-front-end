@@ -3,6 +3,7 @@ import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/D
 import styles from './DangerSourceInfoDrawer.less';
 import { CardItem } from '../components/Components';
 import { MonitorConfig } from '../utils';
+import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import iconAlarm from '@/assets/icon-alarm.png';
 
 const monitorTypes = ['302', '304', '311', '312', '314'];
@@ -14,6 +15,7 @@ const uniqueByid = array => {
     return prev;
   }, []);
 };
+const NO_DATA = '暂无数据';
 
 export default class DangerSourceInfoDrawer extends PureComponent {
   constructor(props) {
@@ -110,7 +112,33 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                 <div className={styles.title}>存储情况：</div>
                 {monitors.map((dataList, index) => {
                   const monitorType = monitorTypes[index];
-                  const { title, fields, icon } = MonitorConfig[monitorType] || {};
+                  // MonitorConfig['302'].fields.splice(2, 0, ...[
+                  //   {}
+                  // ])
+                  const { title, icon } = MonitorConfig[monitorType] || {};
+                  let { fields } = MonitorConfig[monitorType] || {};
+                  fields = [
+                    // 名称加个label
+                    { label: nameLabels[index], value: fields[0].value },
+                    ...fields.slice(1),
+                  ];
+                  if (monitorType === '302') {
+                    // 储罐加危险性类别、设计储量
+                    fields = [
+                      ...fields.slice(0, 3),
+                      {
+                        label: '危险性类别',
+                        value: 'riskCateg',
+                        render: val => RISK_CATEGORIES[val] || NO_DATA,
+                      },
+                      {
+                        label: '设计储量',
+                        value: 'designReserves',
+                        render: val => (val ? val + 't' : NO_DATA),
+                      },
+                      ...fields.slice(3),
+                    ];
+                  }
 
                   return dataList.map((item, i) => {
                     const { warnStatus } = item;
@@ -123,10 +151,7 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                       <CardItem
                         key={i}
                         data={newItem}
-                        fields={[
-                          { label: nameLabels[index], value: fields[0].value },
-                          ...fields.slice(1),
-                        ]}
+                        fields={fields}
                         extraBtn={
                           <Fragment>
                             {+warnStatus === -1 && (

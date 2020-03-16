@@ -425,20 +425,26 @@ export default class Chemical extends PureComponent {
         // console.log('e.data', data);
         const {
           type,
-          monitorMessageDto: { monitorEquipmentId, statusType },
+          monitorMessageDto: { monitorEquipmentId, statusType } = {},
+          messageContent = '{}',
         } = data;
         // 更新消息
         this.fetchScreenMessage(data);
-        // 报警弹框
-        +type === 100 && this.showNotification(data);
-        // 地图点位弹跳
-        +type === 100 &&
-          monitorEquipmentId &&
-          this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
-        // 更新监测对象各个类型的数量
-        +type === 100 && this.fetchMonitorTargetCount({ companyId });
-        // 更新IoT监测各个类型的数量
-        +type === 100 && this.fetchMonitorEquipCount({ companyId });
+        if (+type === 100) {
+          // 报警弹框
+          this.showNotification(data);
+          // 地图点位弹跳
+          monitorEquipmentId && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
+          // 更新监测对象各个类型的数量
+          this.fetchMonitorTargetCount({ companyId });
+          // 更新IoT监测各个类型的数量
+          this.fetchMonitorEquipCount({ companyId });
+        } else if (+type === 101) {
+          // 变更预警消息
+          this.childMap.handleChangeWarning();
+          // 添加/替换特种设备图标及信息
+          this.childMap.handleAddSpecialEquipment(JSON.parse(messageContent));
+        }
       } catch (error) {
         console.log('error', error);
       }
@@ -528,7 +534,7 @@ export default class Chemical extends PureComponent {
           }}
         >
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
-          <div>{`刚刚 ${monitorEquipmentTypeName}发生${typeName}`}</div>
+          <div>{`刚刚 ${monitorEquipmentTypeName}${typeName}`}</div>
           {[-1].includes(+statusType) &&
             fixType !== 5 && (
               <div
@@ -720,7 +726,7 @@ export default class Chemical extends PureComponent {
       ...options,
     });
 
-    this.childMap.handleUpdateMap('mgvmzd3bwa59qi4j', -1);
+    // this.childMap.handleUpdateMap('mgvmzd3bwa59qi4j', -1);
 
     setTimeout(() => {
       // 解决加入animation覆盖notification自身显示动效时长问题
@@ -753,7 +759,10 @@ export default class Chemical extends PureComponent {
 
   renderNotificationMsg = () => {
     return (
-      <div className={styles.notificationBody} onClick={() => this.setDrawerVisible('tankMonitor')}>
+      <div
+        className={styles.notificationBody}
+        onClick={() => this.handleClickShowMonitorDetail('302', 'wzebvd6dwgfukxh5')}
+      >
         <div>
           <span className={styles.time}>刚刚</span>{' '}
           {/* <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '} */}
