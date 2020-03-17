@@ -136,7 +136,7 @@ export default class KeypartList extends Component {
   }
 
   handleToAdd = () => {
-    router.push('/safety-risk-control/key-part/add')
+    router.push('/facility-management/key-part/add')
   }
 
   handleDelete = (id) => {
@@ -156,11 +156,11 @@ export default class KeypartList extends Component {
   }
 
   handleEdit = id => {
-    router.push(`/safety-risk-control/key-part/edit/${id}`)
+    router.push(`/facility-management/key-part/edit/${id}`)
   }
 
   handleView = id => {
-    router.push(`/safety-risk-control/key-part/detail/${id}`)
+    router.push(`/facility-management/key-part/detail/${id}`)
   }
 
   // 企业发生变化

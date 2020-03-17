@@ -15,7 +15,7 @@ import { treeData, partClassification } from './List.js';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
-const LIST_PATH = '/safety-risk-control/key-part/list';
+const LIST_PATH = '/facility-management/key-part/list';
 
 @connect(({ safetyProductionRegulation, user, account, keyPart }) => ({
   safetyProductionRegulation,
