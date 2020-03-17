@@ -892,7 +892,13 @@ export default class Map extends PureComponent {
     const { companyId, dispatch } = this.props;
     dispatch({
       type: 'chemical/fetchInOutRecord',
-      payload: { companyId, pageNum: 1, pageSize: 50 },
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 50,
+        startTime: moment().format('YYYY-MM-DD 00:00:00'),
+        endTime: moment().format('YYYY-MM-DD 23:59:59'),
+      },
     });
   };
 
@@ -901,7 +907,13 @@ export default class Map extends PureComponent {
     const { companyId, dispatch } = this.props;
     dispatch({
       type: 'licensePlateRecognitionSystem/getAbnormalRecordList',
-      payload: { companyId, pageNum: 1, pageSize: 50 },
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 50,
+        startTime: moment().format('YYYY-MM-DD 00:00:00'),
+        endTime: moment().format('YYYY-MM-DD 23:59:59'),
+      },
     });
   };
 
@@ -930,7 +942,6 @@ export default class Map extends PureComponent {
           companyBasicInfo: { mapIp },
         },
       },
-      companyId,
       licensePlateRecognitionSystem: { abnormalRecordList },
     } = this.props;
 

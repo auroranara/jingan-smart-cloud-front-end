@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { Input, Select, Form, Modal, DatePicker, message } from 'antd';
+import { Input, Select, Form, Modal, DatePicker, message, Tag } from 'antd';
 import { AuthA } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 
@@ -108,7 +108,10 @@ export const TABLE_COLUMNS = [
     render: (val, text) => {
       return (
         <span>
-          {dutyType[val.substr(0, 1)]}:{text.name || '本公司'}
+          {text.name || '本公司'}
+          <Tag color="blue" style={{ marginLeft: 6 }}>
+            {dutyType[val.substr(0, 1)]}
+          </Tag>
         </span>
       );
     },
