@@ -6,6 +6,7 @@ import {
   setMonitorEquipmentBindStatus,
   getPersonList,
   getDepartmentList,
+  getMapList,
 } from '@/services/common';
 
 const transformMonitorTypeList = list => {
@@ -44,6 +45,7 @@ export default {
     departmentList: [],
     staffList: [],
     unitList: [],
+    mapList: [],
   },
 
   effects: {
@@ -185,6 +187,23 @@ export default {
           },
         });
         callback && callback(true, staffList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取地图列表
+    *getMapList({ payload, callback }, { call, put }) {
+      const response = yield call(getMapList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const mapList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            mapList,
+          },
+        });
+        callback && callback(true, mapList);
       } else {
         callback && callback(false, msg);
       }

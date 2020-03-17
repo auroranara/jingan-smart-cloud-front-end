@@ -157,6 +157,12 @@ export default {
   'menu.safetyKnowledgeBase.typicalAccidentCase.add': '新增典型事故案例',
   'menu.safetyKnowledgeBase.typicalAccidentCase.edit': '编辑典型事故案例',
   'menu.safetyKnowledgeBase.typicalAccidentCase.delete': '删除典型事故案例',
+  // 监测预警
+  'menu.monitoringAndEarlyWarning': '监测预警',
+  'menu.monitoringAndEarlyWarning.majorHazardDistribution': '重大危险源分布',
+  'menu.monitoringAndEarlyWarning.majorHazardDistribution.list': '重大危险源分布',
+  'menu.monitoringAndEarlyWarning.majorHazardDistribution.detail': '重大危险源详情',
+  'menu.monitoringAndEarlyWarning.majorHazardDistribution.security': '化学品安防措施',
   // 可燃有毒气体监测预警系统
   'menu.gasIot': '气体监测报警',
   'menu.gasIot.realtimeMonitor': '可燃有毒气体实时监测',
