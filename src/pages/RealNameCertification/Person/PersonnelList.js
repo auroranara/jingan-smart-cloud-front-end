@@ -44,10 +44,20 @@ export default class PersonnelList extends PureComponent {
   state = {
     images: [],
     currentImage: 0,
+    curCompanyName: '',
   };
 
   componentDidMount() {
     this.handleQuery();
+    const {
+      location: {
+        query: { companyName: routerCompanyName },
+      },
+      user: {
+        currentUser: { companyName },
+      },
+    } = this.props;
+    this.setState({ curCompanyName: companyName || routerCompanyName });
   }
 
   // 查询列表，获取人员列表
@@ -99,10 +109,10 @@ export default class PersonnelList extends PureComponent {
         params: { companyId },
       },
     } = this.props;
-    router.push({
-      pathname: `/real-name-certification/personnel-management/edit/${id}`,
-      query: { companyId },
-    });
+    const { curCompanyName } = this.state;
+    router.push(
+      `/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
+    );
   };
 
   // 渲染筛选栏
@@ -112,15 +122,10 @@ export default class PersonnelList extends PureComponent {
       match: {
         params: { companyId },
       },
-      realNameCertification: { dutyDict, personTypeDict },
-      location: {
-        query: { companyName: routerCompanyName },
-      },
-      user: {
-        isCompany,
-        currentUser: { companyName },
-      },
+      realNameCertification: { personTypeDict },
     } = this.props;
+    const { curCompanyName } = this.state;
+
     return (
       <Card>
         <Form>
@@ -148,7 +153,7 @@ export default class PersonnelList extends PureComponent {
                 {getFieldDecorator('telephone')(<Input placeholder="电话" allowClear />)}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
+            {/* <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('duty')(
                   <Select placeholder="职务" allowClear>
@@ -160,7 +165,7 @@ export default class PersonnelList extends PureComponent {
                   </Select>
                 )}
               </FormItem>
-            </Col>
+            </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('icnumber')(<Input placeholder="IC卡号" allowClear />)}
@@ -185,7 +190,7 @@ export default class PersonnelList extends PureComponent {
                     router.push(
                       `/real-name-certification/personnel-management/add?${stringify({
                         companyId,
-                      })}&&companyName=${isCompany ? companyName : routerCompanyName}`
+                      })}&&companyName=${curCompanyName}`
                     );
                   }}
                 >
@@ -208,7 +213,7 @@ export default class PersonnelList extends PureComponent {
           list = [],
           pagination: { pageNum = 1, pageSize = defaultPageSize, total = 0 },
         },
-        dutyDict, // 职务
+        // dutyDict, // 职务
       },
     } = this.props;
     const columns = [
@@ -234,16 +239,16 @@ export default class PersonnelList extends PureComponent {
         align: 'center',
         width: 200,
       },
-      {
-        title: '职务',
-        dataIndex: 'duty',
-        align: 'center',
-        width: 150,
-        render: val => {
-          const target = dutyDict.find(item => +item.key === +val);
-          return target ? target.label : '';
-        },
-      },
+      // {
+      //   title: '职务',
+      //   dataIndex: 'duty',
+      //   align: 'center',
+      //   width: 150,
+      //   render: val => {
+      //     const target = dutyDict.find(item => +item.key === +val);
+      //     return target ? target.label : '';
+      //   },
+      // },
       {
         title: 'IC卡号',
         dataIndex: 'icnumber',
@@ -257,23 +262,24 @@ export default class PersonnelList extends PureComponent {
         width: 250,
         render: val => (
           <div>
-            {val.map((item, i) => (
-              <img
-                onClick={() => {
-                  this.setState({ images: val.map(item => item.webUrl), currentImage: i });
-                }}
-                style={{
-                  width: '50px',
-                  height: '50px',
-                  objectFit: 'contain',
-                  cursor: 'pointer',
-                  margin: '5px',
-                }}
-                key={i}
-                src={item.webUrl}
-                alt="照片"
-              />
-            ))}
+            {val !== null &&
+              val.map((item, i) => (
+                <img
+                  onClick={() => {
+                    this.setState({ images: val.map(item => item.webUrl), currentImage: i });
+                  }}
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    objectFit: 'contain',
+                    cursor: 'pointer',
+                    margin: '5px',
+                  }}
+                  key={i}
+                  src={item.webUrl}
+                  alt="照片"
+                />
+              ))}
           </div>
         ),
       },

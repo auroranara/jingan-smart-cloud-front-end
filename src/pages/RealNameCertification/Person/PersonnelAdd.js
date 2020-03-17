@@ -39,14 +39,13 @@ export default class PersonnelAdd extends PureComponent {
   state = {
     diplomaLoading: false, // 学历证书是否上传中
     photoLoading: false, // 人脸照片是否上传中
-    // photoFiles: [], // 人脸照片
-    // diplomaFiles: [], // 学历证书
     // 详情
     detail: {
       photoDetails: [],
     },
-    sexValue: '1',
+    sexValue: '0',
     perType: '1', // 人员选择类型
+    curCompanyName: '', // 当前单位
   };
 
   componentDidMount() {
@@ -55,15 +54,23 @@ export default class PersonnelAdd extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { companyName: routerCompanyName },
+      },
+      user: {
+        currentUser: { companyName },
+      },
       form: { setFieldsValue },
     } = this.props;
+
+    this.setState({ curCompanyName: companyName || routerCompanyName });
     if (id) {
       // 如果编辑
       dispatch({
         type: 'realNameCertification/fetchDetail',
         payload: { id, pageNum: 1, pageSize: 0 },
         callback: detail => {
-          this.setState({ detail });
+          this.setState({ detail, perType: detail.personType });
           const photoDetails = detail.photoDetails || [];
           setFieldsValue({
             photoDetails: photoDetails.map(item => ({ ...item, uid: item.id, url: item.webUrl })),
@@ -85,7 +92,7 @@ export default class PersonnelAdd extends PureComponent {
         query: { companyId },
       },
     } = this.props;
-    const { diplomaLoading, photoLoading } = this.state;
+    const { diplomaLoading, detail, photoLoading, curCompanyName } = this.state;
     if (diplomaLoading || photoLoading) {
       message.warning('上传暂未结束');
       return;
@@ -94,7 +101,9 @@ export default class PersonnelAdd extends PureComponent {
     const callback = (success, msg) => {
       if (success) {
         message.success(`${tag}人员成功`);
-        router.push(`/real-name-certification/personnel-management/person-list/${companyId}`);
+        router.push(
+          `/real-name-certification/personnel-management/person-list/${companyId}?companyName=${curCompanyName}`
+        );
       } else {
         message.error(msg || `${tag}人员失败`);
       }
@@ -112,7 +121,7 @@ export default class PersonnelAdd extends PureComponent {
         // 如果编辑
         dispatch({
           type: 'realNameCertification/editPerson',
-          payload: { ...payload, id },
+          payload: { ...payload, id, employeeId: detail.employeeId },
           callback,
         });
       } else {
@@ -211,8 +220,18 @@ export default class PersonnelAdd extends PureComponent {
   };
 
   handlePersonType = id => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    const { curCompanyName } = this.state;
     this.setState({ perType: id });
+    setFieldsValue({ personCompany: id !== '1' ? undefined : curCompanyName });
   };
+  // validateSN = (rule, value, callback) => {
+  //   if (value && value.length === 12 && snRe.test(value)) {
+  //     callback();
+  //   } else callback('长度必须是12');
+  // };
 
   render() {
     const {
@@ -221,7 +240,7 @@ export default class PersonnelAdd extends PureComponent {
         params: { id },
       },
       location: {
-        query: { companyId, companyName: routerCompanyName },
+        query: { companyName: routerCompanyName, companyId },
       },
       user: {
         currentUser: { companyName },
@@ -230,7 +249,7 @@ export default class PersonnelAdd extends PureComponent {
       realNameCertification: { personTypeDict },
     } = this.props;
 
-    const { photoLoading, sexValue, detail, perType } = this.state;
+    const { photoLoading, sexValue, detail, perType, curCompanyName } = this.state;
 
     const photoDetails = getFieldValue('photoDetails') || [];
     const title = id ? '编辑人员信息' : '新增人员信息';
@@ -248,7 +267,8 @@ export default class PersonnelAdd extends PureComponent {
       {
         title: '人员管理',
         name: '人员管理',
-        href: `/real-name-certification/personnel-management/person-list/${companyId}`,
+        href: `/real-name-certification/personnel-management/person-list/${companyId}?companyName=${routerCompanyName ||
+          companyName}`,
       },
       {
         title,
@@ -286,8 +306,8 @@ export default class PersonnelAdd extends PureComponent {
                     rules: [{ required: true, message: '请选择性别' }],
                   })(
                     <Radio.Group onChange={this.handleSexTypeChange} buttonStyle="solid">
-                      <Radio.Button value="1">男</Radio.Button>
-                      <Radio.Button value="2">女</Radio.Button>
+                      <Radio.Button value="0">男</Radio.Button>
+                      <Radio.Button value="1">女</Radio.Button>
                     </Radio.Group>
                   )}
                 </FormItem>
@@ -312,7 +332,7 @@ export default class PersonnelAdd extends PureComponent {
                 <Col {...colLayout}>
                   <FormItem label="单位名称">
                     {getFieldDecorator('personCompany', {
-                      initialValue: companyName || routerCompanyName,
+                      initialValue: curCompanyName,
                       rules: [{ required: true, message: '请输入单位名称' }],
                     })(<Input disabled placeholder="请输入" />)}
                   </FormItem>
@@ -354,7 +374,8 @@ export default class PersonnelAdd extends PureComponent {
                 >
                   {getFieldDecorator('entranceNumber', {
                     initialValue: id ? detail.entranceNumber : undefined,
-                  })(<Input placeholder="请输入" />)}
+                    // rules: [{ pattern: /^[0-9a-fA-F]$/, message: '请输入数字' }],
+                  })(<Input placeholder="请输入" maxLength={12} />)}
                 </FormItem>
               </Col>
               <Col span={24}>
