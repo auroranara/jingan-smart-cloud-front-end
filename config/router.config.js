@@ -1427,6 +1427,43 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              "name": "riskFlags", // 国际风险标志库
+              "code": "riskControl.riskFlags",
+              "path": "/risk-control/risk-flags",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/risk-control/risk-flags",
+                  "redirect": "/risk-control/risk-flags/list",
+                },
+                {
+                  "name": "list",
+                  "code": "riskControl.riskFlags.list",
+                  "path": "/risk-control/risk-flags/list",
+                  "component": "./RiskControl/RiskFlags/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "riskControl.riskFlags.view",
+                  "path": "/risk-control/risk-flags/view/:id",
+                  "component": "./RiskControl/RiskFlags/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "riskControl.riskFlags.add",
+                  "path": "/risk-control/risk-flags/add",
+                  "component": "./RiskControl/RiskFlags/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "riskControl.riskFlags.edit",
+                  "path": "/risk-control/risk-flags/edit/:id",
+                  "component": "./RiskControl/RiskFlags/Edit",
+                },
+              ],
+            },
           ],
         },
 
@@ -1469,55 +1506,30 @@ module.exports = env => {
               ],
             },
             // {
-            //   path: '/control-measures-follow-up/hidden-danger-report', // 隐患排查报表
-            //   code: 'controlMeasuresFollowUp.hiddenDangerReport',
-            //   name: 'hiddenDangerReport',
+            //   path: '/control-measures-follow-up/hidden-danger-count-report', // 隐患统计报表
+            //   code: 'controlMeasuresFollowUp.hiddenDangerCountReport',
+            //   name: 'hiddenDangerCountReport',
             //   hideChildrenInMenu: true,
             //   routes: [
             //     {
-            //       path: '/control-measures-follow-up/hidden-danger-report',
-            //       name: 'hiddenDangerReport',
-            //       redirect: '/control-measures-follow-up/hidden-danger-report/list',
+            //       path: '/control-measures-follow-up/hidden-danger-count-report',
+            //       name: 'hiddenDangerCountReport',
+            //       redirect: '/control-measures-follow-up/hidden-danger-count-report/list',
             //     },
             //     {
-            //       path: '/control-measures-follow-up/hidden-danger-report/list',
-            //       code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
+            //       path: '/control-measures-follow-up/hidden-danger-count-report/list',
+            //       code: 'controlMeasuresFollowUp.hiddenDangerCountReport.view',
             //       name: 'list',
-            //       component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportList',
+            //       component: './DataAnalysis/HiddenDangerCountReport/CompanyList',
             //     },
             //     {
-            //       path: '/control-measures-follow-up/hidden-danger-report/detail/:id',
-            //       code: 'controlMeasuresFollowUp.hiddenDangerReport.view',
+            //       path: '/control-measures-follow-up/hidden-danger-count-report/detail',
+            //       code: 'controlMeasuresFollowUp.hiddenDangerCountReport.view',
             //       name: 'detail',
-            //       component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+            //       component: './DataAnalysis/HiddenDangerCountReport/HiddenDangerCountReport',
             //     },
             //   ],
             // },
-            {
-              path: '/control-measures-follow-up/hidden-danger-count-report', // 隐患统计报表
-              code: 'controlMeasuresFollowUp.hiddenDangerCountReport',
-              name: 'hiddenDangerCountReport',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/control-measures-follow-up/hidden-danger-count-report',
-                  name: 'hiddenDangerCountReport',
-                  redirect: '/control-measures-follow-up/hidden-danger-count-report/list',
-                },
-                {
-                  path: '/control-measures-follow-up/hidden-danger-count-report/list',
-                  code: 'controlMeasuresFollowUp.hiddenDangerCountReport.view',
-                  name: 'list',
-                  component: './DataAnalysis/HiddenDangerCountReport/CompanyList',
-                },
-                {
-                  path: '/control-measures-follow-up/hidden-danger-count-report/detail',
-                  code: 'controlMeasuresFollowUp.hiddenDangerCountReport.view',
-                  name: 'detail',
-                  component: './DataAnalysis/HiddenDangerCountReport/HiddenDangerCountReport',
-                },
-              ],
-            },
           ],
         },
 
@@ -3449,6 +3461,31 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/hidden-danger-control/hidden-danger-count-report', // 隐患统计报表
+              code: 'hiddenDangerControl.hiddenDangerCountReport',
+              name: 'hiddenDangerCountReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/hidden-danger-control/hidden-danger-count-report',
+                  name: 'hiddenDangerCountReport',
+                  redirect: '/hidden-danger-control/hidden-danger-count-report/list',
+                },
+                {
+                  path: '/hidden-danger-control/hidden-danger-count-report/list',
+                  code: 'hiddenDangerControl.hiddenDangerCountReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/HiddenDangerCountReport/CompanyList',
+                },
+                {
+                  path: '/hidden-danger-control/hidden-danger-count-report/detail',
+                  code: 'hiddenDangerControl.hiddenDangerCountReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerCountReport/HiddenDangerCountReport',
+                },
+              ],
+            },
           ],
         },
 
@@ -4247,7 +4284,50 @@ module.exports = env => {
           routes: [
             {
               path: '/emergency-management',
-              redirect: '/emergency-management/emergency-plan/list',
+              redirect: '/emergency-management/emergency-team/list',
+            },
+            {
+              path: '/emergency-management/emergency-team', // 应急队伍管理
+              code: 'emergencyManagement.emergencyTeam',
+              name: 'emergencyTeam',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-team',
+                  name: 'emergencyTeam',
+                  redirect: '/emergency-management/emergency-team/list',
+                },
+                {
+                  path: '/emergency-management/emergency-team/list',
+                  code: 'emergencyManagement.emergencyTeam.list',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyTeam/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/add',
+                  code: 'emergencyManagement.emergencyTeam.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/edit/:id',
+                  code: 'emergencyManagement.emergencyTeam.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/detail/:id',
+                  code: 'emergencyManagement.emergencyTeam.view',
+                  name: 'view',
+                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
+                },
+                {
+                  path: '/emergency-management/emergency-team/person-list/:id',
+                  code: 'emergencyManagement.emergencyTeam.teamPersonList',
+                  name: 'personList',
+                  component: './EmergencyManagement/EmergencyTeam/List/PersonList',
+                },
+              ],
             },
             {
               path: '/emergency-management/emergency-plan', // 应急预案
@@ -4567,50 +4647,6 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              path: '/emergency-management/emergency-team', // 应急队伍管理
-              code: 'emergencyManagement.emergencyTeam',
-              name: 'emergencyTeam',
-              // developing: true,
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/emergency-management/emergency-team',
-                  name: 'emergencyTeam',
-                  redirect: '/emergency-management/emergency-team/list',
-                },
-                {
-                  path: '/emergency-management/emergency-team/list',
-                  code: 'emergencyManagement.emergencyTeam.list',
-                  name: 'list',
-                  component: './EmergencyManagement/EmergencyTeam/List/index',
-                },
-                {
-                  path: '/emergency-management/emergency-team/add',
-                  code: 'emergencyManagement.emergencyTeam.add',
-                  name: 'add',
-                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
-                },
-                {
-                  path: '/emergency-management/emergency-team/edit/:id',
-                  code: 'emergencyManagement.emergencyTeam.edit',
-                  name: 'edit',
-                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
-                },
-                {
-                  path: '/emergency-management/emergency-team/detail/:id',
-                  code: 'emergencyManagement.emergencyTeam.view',
-                  name: 'view',
-                  component: './EmergencyManagement/EmergencyTeam/Handle/index',
-                },
-                {
-                  path: '/emergency-management/emergency-team/person-list/:id',
-                  code: 'emergencyManagement.emergencyTeam.teamPersonList',
-                  name: 'personList',
-                  component: './EmergencyManagement/EmergencyTeam/List/PersonList',
-                },
-              ],
-            },
           ],
         },
 
@@ -4733,24 +4769,24 @@ module.exports = env => {
             },
           ],
         },
-        {
-          path: '/change-management', // 变更管理
-          code: 'changeManagement',
-          icon: 'tag',
-          name: 'changeManagement',
-          systemType: 4,
-          developing: true,
-          routes: [
-            {
-              name: 'changeLog', // 变更日志
-              code: 'changeManagement.changeLog',
-              path: '/change-management/change-log',
-              developing: true,
-              hideChildrenInMenu: true,
-              routes: [],
-            },
-          ],
-        },
+        // {
+        //   path: '/change-management', // 变更管理
+        //   code: 'changeManagement',
+        //   icon: 'tag',
+        //   name: 'changeManagement',
+        //   systemType: 4,
+        //   developing: true,
+        //   routes: [
+        //     {
+        //       name: 'changeLog', // 变更日志
+        //       code: 'changeManagement.changeLog',
+        //       path: '/change-management/change-log',
+        //       developing: true,
+        //       hideChildrenInMenu: true,
+        //       routes: [],
+        //     },
+        //   ],
+        // },
         // 车牌识别系统
         {
           path: '/license-plate-recognition-system',
