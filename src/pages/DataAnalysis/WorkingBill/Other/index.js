@@ -299,8 +299,6 @@ export default class WorkingBillOther extends Component {
     } = this.props;
     const isNotDetail = mode !== 'detail';
     const values = getFieldsValue();
-    console.log(values);
-    console.log(detail);
     const uploading =
       (values.certificatesFileList || []).some(({ status }) => status !== 'done') ||
       (values.applyFileList || []).some(({ status }) => status !== 'done') ||
@@ -1785,7 +1783,6 @@ export default class WorkingBillOther extends Component {
       //   ],
       // },
     ];
-    console.log(fields);
 
     return (
       <PageHeaderLayout
