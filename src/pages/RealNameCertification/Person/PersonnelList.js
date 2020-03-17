@@ -23,11 +23,7 @@ import ImagePreview from '@/jingan-components/ImagePreview';
 
 const {
   realNameCertification: {
-    personnelManagement: {
-      add: addCode,
-      edit: editCode,
-      delete: deleteCode,
-    },
+    personnelManagement: { add: addCode, edit: editCode, delete: deleteCode },
   },
 } = codes;
 
@@ -45,13 +41,12 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 }))
 @Form.create()
 export default class PersonnelList extends PureComponent {
-
   state = {
     images: [],
     currentImage: 0,
   };
 
-  componentDidMount () {
+  componentDidMount() {
     this.handleQuery();
   }
 
@@ -60,15 +55,17 @@ export default class PersonnelList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
     const values = getFieldsValue();
     // console.log('query', values);
     dispatch({
       type: 'realNameCertification/fetchPersonList',
       payload: { ...values, pageNum, pageSize, companyId },
-    })
-  }
+    });
+  };
 
   // 重置查询
   handleReset = () => {
@@ -77,7 +74,7 @@ export default class PersonnelList extends PureComponent {
     } = this.props;
     resetFields();
     this.handleQuery();
-  }
+  };
 
   // 删除人员
   handleDelete = id => {
@@ -85,31 +82,44 @@ export default class PersonnelList extends PureComponent {
     dispatch({
       type: 'realNameCertification/deletePerson',
       payload: { id },
-      callback: (success) => {
+      callback: success => {
         if (success) {
           message.success('删除人员成功');
           this.handleQuery();
         } else {
-          message.error('删除人员失败')
+          message.error('删除人员失败');
         }
       },
-    })
-  }
+    });
+  };
 
-  handleToEdit = (id) => {
-    const { match: { params: { companyId } } } = this.props;
+  handleToEdit = id => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     router.push({
       pathname: `/real-name-certification/personnel-management/edit/${id}`,
       query: { companyId },
-    })
-  }
+    });
+  };
 
   // 渲染筛选栏
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
       realNameCertification: { dutyDict, personTypeDict },
+      location: {
+        query: { companyName: routerCompanyName },
+      },
+      user: {
+        isCompany,
+        currentUser: { companyName },
+      },
     } = this.props;
     return (
       <Card>
@@ -120,7 +130,9 @@ export default class PersonnelList extends PureComponent {
                 {getFieldDecorator('personType')(
                   <Select placeholder="人员类型" allowClear>
                     {personTypeDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                      <Select.Option key={key} value={key}>
+                        {label}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -128,16 +140,12 @@ export default class PersonnelList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('name')(
-                  <Input placeholder="姓名" allowClear />
-                )}
+                {getFieldDecorator('name')(<Input placeholder="姓名" allowClear />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('telephone')(
-                  <Input placeholder="电话" allowClear />
-                )}
+                {getFieldDecorator('telephone')(<Input placeholder="电话" allowClear />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
@@ -145,7 +153,9 @@ export default class PersonnelList extends PureComponent {
                 {getFieldDecorator('duty')(
                   <Select placeholder="职务" allowClear>
                     {dutyDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                      <Select.Option key={key} value={key}>
+                        {label}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -153,20 +163,32 @@ export default class PersonnelList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('icnumber')(
-                  <Input placeholder="IC卡号" allowClear />
-                )}
+                {getFieldDecorator('icnumber')(<Input placeholder="IC卡号" allowClear />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.handleQuery()}
+                >
                   查询
                 </Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
                 </Button>
-                <AuthButton code={addCode} type="primary" onClick={() => { router.push(`/real-name-certification/personnel-management/add?${stringify({ companyId })}`) }}>
+                <AuthButton
+                  code={addCode}
+                  type="primary"
+                  onClick={() => {
+                    router.push(
+                      `/real-name-certification/personnel-management/add?${stringify({
+                        companyId,
+                      })}&&companyName=${isCompany ? companyName : routerCompanyName}`
+                    );
+                  }}
+                >
                   新增人员
                 </AuthButton>
               </FormItem>
@@ -174,8 +196,8 @@ export default class PersonnelList extends PureComponent {
           </Row>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
 
   // 渲染列表
   renderList = () => {
@@ -201,7 +223,7 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'sex',
         align: 'center',
         width: 150,
-        render: (val) => {
+        render: val => {
           const target = SEXES.find(item => +item.key === +val);
           return target ? target.label : '';
         },
@@ -217,7 +239,7 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'duty',
         align: 'center',
         width: 150,
-        render: (val) => {
+        render: val => {
           const target = dutyDict.find(item => +item.key === +val);
           return target ? target.label : '';
         },
@@ -233,12 +255,20 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'photoDetails',
         align: 'center',
         width: 250,
-        render: (val) => (
+        render: val => (
           <div>
             {val.map((item, i) => (
               <img
-                onClick={() => { this.setState({ images: val.map(item => item.webUrl), currentImage: i }) }}
-                style={{ width: '50px', height: '50px', objectFit: 'contain', cursor: 'pointer', margin: '5px' }}
+                onClick={() => {
+                  this.setState({ images: val.map(item => item.webUrl), currentImage: i });
+                }}
+                style={{
+                  width: '50px',
+                  height: '50px',
+                  objectFit: 'contain',
+                  cursor: 'pointer',
+                  margin: '5px',
+                }}
                 key={i}
                 src={item.webUrl}
                 alt="照片"
@@ -255,7 +285,9 @@ export default class PersonnelList extends PureComponent {
         width: 150,
         render: (val, record) => (
           <Fragment>
-            <AuthA code={editCode} onClick={() => this.handleToEdit(record.id)}>编辑</AuthA>
+            <AuthA code={editCode} onClick={() => this.handleToEdit(record.id)}>
+              编辑
+            </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
@@ -292,14 +324,18 @@ export default class PersonnelList extends PureComponent {
         />
       </Card>
     ) : (
-        <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
-      )
-  }
+      <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
+    );
+  };
 
-  render () {
+  render() {
     const {
       user: { isCompany },
-      realNameCertification: { person: { pagination: { total = 0 } } },
+      realNameCertification: {
+        person: {
+          pagination: { total = 0 },
+        },
+      },
     } = this.props;
     const { images, currentImage } = this.state;
     //面包屑
@@ -313,11 +349,15 @@ export default class PersonnelList extends PureComponent {
         title: '实名制认证系统',
         name: '实名制认证系统',
       },
-      ...isCompany ? [] : [{
-        title: '人员管理',
-        name: '人员管理',
-        href: '/real-name-certification/personnel-management/company-list',
-      }],
+      ...(isCompany
+        ? []
+        : [
+            {
+              title: '人员管理',
+              name: '人员管理',
+              href: '/real-name-certification/personnel-management/company-list',
+            },
+          ]),
       {
         title,
         name: title,
@@ -333,8 +373,12 @@ export default class PersonnelList extends PureComponent {
               人员总数:
               <span style={{ paddingLeft: 8 }}>{total}</span>
             </span>
-            <Button type="primary" style={{ float: 'right' }}>批量导入照片</Button>
-            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>批量导入</Button>
+            <Button type="primary" style={{ float: 'right' }}>
+              批量导入照片
+            </Button>
+            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
+              批量导入
+            </Button>
           </div>
         }
       >
@@ -343,6 +387,6 @@ export default class PersonnelList extends PureComponent {
         {this.renderList()}
         <ImagePreview images={images} currentImage={currentImage} />
       </PageHeaderLayout>
-    )
+    );
   }
 }

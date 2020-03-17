@@ -26,9 +26,7 @@ import router from 'umi/router';
 
 const {
   realNameCertification: {
-    personnelManagement: {
-      add: addCode,
-    },
+    personnelManagement: { add: addCode },
   },
 } = codes;
 
@@ -72,7 +70,6 @@ const getEmptyData = () => {
 }))
 @Form.create()
 export default class CompanyList extends PureComponent {
-
   constructor(props) {
     super(props);
     this.onUnitChange = debounce(this.onUnitChange, 800);
@@ -82,7 +79,7 @@ export default class CompanyList extends PureComponent {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       user: {
         isCompany,
@@ -107,7 +104,7 @@ export default class CompanyList extends PureComponent {
       type: 'realNameCertification/fetchCompanyList',
       payload: { ...payload, ...values },
     });
-  }
+  };
 
   handleLoadMore = () => {
     const {
@@ -120,7 +117,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
     if (isLast) return;
     this.handleQuery({ pageNum: pageNum + 1, pageSize });
-  }
+  };
 
   handleReset = () => {
     const {
@@ -128,12 +125,12 @@ export default class CompanyList extends PureComponent {
     } = this.props;
     resetFields();
     this.handleQuery();
-  }
+  };
 
   // 单位下拉框输入
   onUnitChange = value => {
     // 根据输入值获取列表
-    this.fetchUnitList({ unitName: value && value.trim() })
+    this.fetchUnitList({ unitName: value && value.trim() });
   };
 
   // 获取筛选用单位列表
@@ -147,7 +144,7 @@ export default class CompanyList extends PureComponent {
         pageSize: 18,
       },
     });
-  }
+  };
 
   // 单位下拉框失焦
   handleUnitIdBlur = value => {
@@ -176,17 +173,17 @@ export default class CompanyList extends PureComponent {
         router.push({
           pathname: '/real-name-certification/personnel-management/add',
           query: { companyId: companyId.key },
-        })
-      } else this.handleUnitIdBlur(companyId)
-    })
-  }
+        });
+      } else this.handleUnitIdBlur(companyId);
+    });
+  };
 
   // 打开新增人员modal
   handleViewAdd = () => {
     this.setState({ modalVisible: true });
     // 获取模糊搜索单位列表
     this.fetchUnitList();
-  }
+  };
 
   // 渲染筛选栏
   renderFilter = () => {
@@ -199,17 +196,21 @@ export default class CompanyList extends PureComponent {
           <Row gutter={16}>
             <Col lg={8} md={12} sm={24} xs={24}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator('companyName')(
-                  <Input placeholder="单位名称" />
-                )}
+                {getFieldDecorator('companyName')(<Input placeholder="单位名称" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24} xs={24}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.handleQuery()}
+                >
                   查询
                 </Button>
-                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
+                  重置
+                </Button>
                 <AuthButton code={addCode} type="primary" onClick={this.handleViewAdd}>
                   新增单位人员
                 </AuthButton>
@@ -218,8 +219,8 @@ export default class CompanyList extends PureComponent {
           </Row>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
 
   // 渲染列表
   renderList = () => {
@@ -286,7 +287,7 @@ export default class CompanyList extends PureComponent {
 
                     <Col span={8} style={{ cursor: 'pointer' }}>
                       <Link
-                        to={`/real-name-certification/personnel-management/person-list/${companyId}`}
+                        to={`/real-name-certification/personnel-management/person-list/${companyId}?companyName=${name}`}
                         target="_blank"
                       >
                         <span className={styles.quantity}>{count}</span>
@@ -299,10 +300,10 @@ export default class CompanyList extends PureComponent {
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
-  render () {
+  render() {
     const {
       loading,
       form: { getFieldDecorator },
@@ -357,7 +358,9 @@ export default class CompanyList extends PureComponent {
         <Modal
           title="添加单位"
           visible={modalVisible}
-          onCancel={() => { this.setState({ modalVisible: false }) }}
+          onCancel={() => {
+            this.setState({ modalVisible: false });
+          }}
           onOk={this.handleSubmit}
         >
           <Form>
@@ -393,6 +396,6 @@ export default class CompanyList extends PureComponent {
           </Form>
         </Modal>
       </PageHeaderLayout>
-    )
+    );
   }
 }
