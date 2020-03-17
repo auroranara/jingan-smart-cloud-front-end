@@ -196,9 +196,13 @@ export default class WorkingBillOther extends Component {
   }
 
   validateSafetyMeasure = (rule, value, callback) => {
-    if (!value || !value.length || value.every(item => Object.values(item).every(v => !v))) {
+    if (
+      !value ||
+      !value.length ||
+      value.every(item => Object.values(item).every(v => (v ? !v.trim() : true)))
+    ) {
       callback('安全措施不能为空');
-    } else if (value.every(({ confirmer }) => !confirmer)) {
+    } else if (value.every(({ confirmer }) => (confirmer ? !confirmer.trim() : true))) {
       callback('安全措施确认人不能为空');
     } else {
       callback();
@@ -220,6 +224,7 @@ export default class WorkingBillOther extends Component {
           workingPersonnel,
           finishDate,
           safetyMeasures,
+          recoveryDate,
           ...fields
         } = values;
         const payload = {
@@ -230,6 +235,7 @@ export default class WorkingBillOther extends Component {
           workingEndDate: workingEndDate && workingEndDate.format(`YYYY/MM/DD HH:mm:00`),
           workingPersonnel: workingPersonnel && workingPersonnel.join(','),
           finishDate: finishDate && finishDate.format(`YYYY/MM/DD HH:mm:00`),
+          recoveryDate: recoveryDate && recoveryDate.format(`YYYY/MM/DD HH:mm:00`),
           safetyMeasures: safetyMeasures && JSON.stringify(safetyMeasures),
         };
         submit(payload);
@@ -266,11 +272,13 @@ export default class WorkingBillOther extends Component {
     const {
       form: { setFieldsValue },
     } = this.props;
-    if (departmentId) {
-      setFieldsValue({
-        applyDepartmentId: departmentId,
-      });
-    }
+    setFieldsValue({
+      applyDepartmentId: departmentId || undefined,
+    });
+  };
+
+  getWorkingPersonnelFromEvent = value => {
+    return value && value.filter(v => v.trim());
   };
 
   render() {
@@ -294,7 +302,8 @@ export default class WorkingBillOther extends Component {
     console.log({ values });
     const uploading =
       (values.certificatesFileList || []).some(({ status }) => status !== 'done') ||
-      (values.applyFileList || []).some(({ status }) => status !== 'done');
+      (values.applyFileList || []).some(({ status }) => status !== 'done') ||
+      (values.locationFileList || []).some(({ status }) => status !== 'done');
     const fields = [
       {
         key: '作业票信息',
@@ -383,7 +392,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.applyCompanyName || (isUnit ? unitName : undefined),
-                    rules: [{ required: true, message: '申请单位不能为空' }],
+                    rules: [{ required: true, message: '申请单位不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -463,7 +472,7 @@ export default class WorkingBillOther extends Component {
             component: <Input mode={mode} />,
             options: {
               initialValue: detail.billCode,
-              rules: [{ required: true, message: '作业证编号不能为空' }],
+              rules: [{ required: true, message: '作业证编号不能为空', whitespace: true }],
             },
           },
           ...([TYPES[6].key].includes(values.billType)
@@ -474,7 +483,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.equipmentPipelineName,
-                    rules: [{ required: true, message: '设备管线名称不能为空' }],
+                    rules: [{ required: true, message: '设备管线名称不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -487,7 +496,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.location,
-                    rules: [{ required: true, message: '断路作业地段不能为空' }],
+                    rules: [{ required: true, message: '断路作业地段不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -496,7 +505,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.address,
-                    rules: [{ required: true, message: '断路作业地点不能为空' }],
+                    rules: [{ required: true, message: '断路作业地点不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -505,7 +514,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingContent,
-                    rules: [{ required: true, message: '断路作业原因不能为空' }],
+                    rules: [{ required: true, message: '断路作业原因不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -514,7 +523,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.agent,
-                    rules: [{ required: true, message: '待办人不能为空' }],
+                    rules: [{ required: true, message: '待办人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -528,7 +537,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.address,
-                    rules: [{ required: true, message: '动土地点不能为空' }],
+                    rules: [{ required: true, message: '动土地点不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -537,7 +546,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.agent,
-                    rules: [{ required: true, message: '待办人不能为空' }],
+                    rules: [{ required: true, message: '待办人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -550,7 +559,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.height,
-                    rules: [{ required: true, message: '作业高度不能为空' }],
+                    rules: [{ required: true, message: '作业高度不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -563,7 +572,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.address,
-                    rules: [{ required: true, message: '作业地点不能为空' }],
+                    rules: [{ required: true, message: '作业地点不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -587,7 +596,13 @@ export default class WorkingBillOther extends Component {
                         component: <Input mode={mode} />,
                         options: {
                           initialValue: detail.workingCompanyName,
-                          rules: [{ required: true, message: '作业单位名称不能为空' }],
+                          rules: [
+                            {
+                              required: true,
+                              message: '作业单位名称不能为空',
+                              whitespace: true,
+                            },
+                          ],
                         },
                       },
                     ]
@@ -598,7 +613,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.address,
-                    rules: [{ required: true, message: '吊装地点不能为空' }],
+                    rules: [{ required: true, message: '吊装地点不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -611,7 +626,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.address,
-                    rules: [{ required: true, message: '用电区域不能为空' }],
+                    rules: [{ required: true, message: '用电区域不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -624,7 +639,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.tool,
-                    rules: [{ required: true, message: '吊装工具不能为空' }],
+                    rules: [{ required: true, message: '吊装工具不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -650,7 +665,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.supervisor,
-                    rules: [{ required: true, message: '监火人不能为空' }],
+                    rules: [{ required: true, message: '监火人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -663,7 +678,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.supervisorPosition,
-                    rules: [{ required: true, message: '监火人岗位不能为空' }],
+                    rules: [{ required: true, message: '监火人岗位不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -676,7 +691,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.manager,
-                    rules: [{ required: true, message: '负责人不能为空' }],
+                    rules: [{ required: true, message: '负责人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -689,7 +704,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.manager,
-                    rules: [{ required: true, message: '检修负责人不能为空' }],
+                    rules: [{ required: true, message: '检修负责人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -728,7 +743,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingContent,
-                    rules: [{ required: true, message: '动火内容不能为空' }],
+                    rules: [{ required: true, message: '动火内容不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -741,7 +756,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingContent,
-                    rules: [{ required: true, message: '吊装内容不能为空' }],
+                    rules: [{ required: true, message: '吊装内容不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -754,7 +769,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingContent,
-                    rules: [{ required: true, message: '临时用电原因不能为空' }],
+                    rules: [{ required: true, message: '临时用电原因不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -767,7 +782,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingWay,
-                    rules: [{ required: true, message: '动火方式不能为空' }],
+                    rules: [{ required: true, message: '动火方式不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -780,7 +795,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingProject,
-                    rules: [{ required: true, message: '施工项目不能为空' }],
+                    rules: [{ required: true, message: '施工项目不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -806,7 +821,13 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingProject,
-                    rules: [{ required: true, message: '受限空间（设备）名称不能为空' }],
+                    rules: [
+                      {
+                        required: true,
+                        message: '受限空间（设备）名称不能为空',
+                        whitespace: true,
+                      },
+                    ],
                   },
                 },
               ]
@@ -819,7 +840,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.agent,
-                    rules: [{ required: true, message: '待办人不能为空' }],
+                    rules: [{ required: true, message: '待办人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -832,7 +853,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.supervisor,
-                    rules: [{ required: true, message: '监护人不能为空' }],
+                    rules: [{ required: true, message: '监护人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -845,7 +866,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.supervisorPosition,
-                    rules: [{ required: true, message: '监护人岗位不能为空' }],
+                    rules: [{ required: true, message: '监护人岗位不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -858,7 +879,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.mainMedium,
-                    rules: [{ required: true, message: '主要介质不能为空' }],
+                    rules: [{ required: true, message: '主要介质不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -867,7 +888,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.temperature,
-                    rules: [{ required: true, message: '温度不能为空' }],
+                    rules: [{ required: true, message: '温度不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -876,7 +897,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.pressure,
-                    rules: [{ required: true, message: '压力不能为空' }],
+                    rules: [{ required: true, message: '压力不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -885,7 +906,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.material,
-                    rules: [{ required: true, message: '盲板材质不能为空' }],
+                    rules: [{ required: true, message: '盲板材质不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -894,7 +915,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.specs,
-                    rules: [{ required: true, message: '盲板规格不能为空' }],
+                    rules: [{ required: true, message: '盲板规格不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -903,7 +924,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.location,
-                    rules: [{ required: true, message: '盲板位置不能为空' }],
+                    rules: [{ required: true, message: '盲板位置不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -912,7 +933,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.blindPlateCode,
-                    rules: [{ required: true, message: '盲板编号不能为空' }],
+                    rules: [{ required: true, message: '盲板编号不能为空', whitespace: true }],
                   },
                 },
                 ...(values.billLevel === BLIND_PLATE_WORK_TYPES[0].key
@@ -923,7 +944,13 @@ export default class WorkingBillOther extends Component {
                         component: <Input mode={mode} />,
                         options: {
                           initialValue: detail.constructionManager,
-                          rules: [{ required: true, message: '装盲板负责人不能为空' }],
+                          rules: [
+                            {
+                              required: true,
+                              message: '装盲板负责人不能为空',
+                              whitespace: true,
+                            },
+                          ],
                         },
                       },
                       {
@@ -947,7 +974,13 @@ export default class WorkingBillOther extends Component {
                         component: <Input mode={mode} />,
                         options: {
                           initialValue: detail.constructionManager,
-                          rules: [{ required: true, message: '拆盲板负责人不能为空' }],
+                          rules: [
+                            {
+                              required: true,
+                              message: '拆盲板负责人不能为空',
+                              whitespace: true,
+                            },
+                          ],
                         },
                       },
                       {
@@ -970,7 +1003,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingProject,
-                    rules: [{ required: true, message: '施工项目不能为空' }],
+                    rules: [{ required: true, message: '施工项目不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1024,7 +1057,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingCompanyName,
-                    rules: [{ required: true, message: '作业单位名称不能为空' }],
+                    rules: [{ required: true, message: '作业单位名称不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1038,7 +1071,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingCompanyName,
-                    rules: [{ required: true, message: '作业单位名称不能为空' }],
+                    rules: [{ required: true, message: '作业单位名称不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1062,7 +1095,13 @@ export default class WorkingBillOther extends Component {
                     ),
                   options: {
                     initialValue: detail.workingDepartment,
-                    rules: [{ required: true, message: '作业部门不能为空' }],
+                    rules: [
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: '作业部门不能为空',
+                      },
+                    ],
                   },
                 },
               ]
@@ -1075,7 +1114,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingProject,
-                    rules: [{ required: true, message: '维修项目名称不能为空' }],
+                    rules: [{ required: true, message: '维修项目名称不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1088,7 +1127,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingManager,
-                    rules: [{ required: true, message: '动火负责人不能为空' }],
+                    rules: [{ required: true, message: '动火负责人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1101,7 +1140,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingManager,
-                    rules: [{ required: true, message: '作业负责人不能为空' }],
+                    rules: [{ required: true, message: '作业负责人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1114,7 +1153,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingManager,
-                    rules: [{ required: true, message: '维修负责人不能为空' }],
+                    rules: [{ required: true, message: '维修负责人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1127,7 +1166,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.address,
-                    rules: [{ required: true, message: '维修地点不能为空' }],
+                    rules: [{ required: true, message: '维修地点不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1140,7 +1179,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingContent,
-                    rules: [{ required: true, message: '维修内容不能为空' }],
+                    rules: [{ required: true, message: '维修内容不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1166,8 +1205,15 @@ export default class WorkingBillOther extends Component {
                       : detail.workingPersonnel
                         ? detail.workingPersonnel.join(',')
                         : undefined,
+                    getValueFromEvent: this.getWorkingPersonnelFromEvent,
                     rules: [{ required: true, message: '动火人不能为空' }],
                   },
+                  grid: {
+                    xl: 12,
+                    sm: 24,
+                    xs: 24,
+                  },
+                  standalone: true,
                 },
               ]
             : []),
@@ -1192,8 +1238,15 @@ export default class WorkingBillOther extends Component {
                       : detail.workingPersonnel
                         ? detail.workingPersonnel.join(',')
                         : undefined,
+                    getValueFromEvent: this.getWorkingPersonnelFromEvent,
                     rules: [{ required: true, message: '作业人不能为空' }],
                   },
+                  grid: {
+                    xl: 12,
+                    sm: 24,
+                    xs: 24,
+                  },
+                  standalone: true,
                 },
               ]
             : []),
@@ -1205,7 +1258,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.compilingPerson,
-                    rules: [{ required: true, message: '编制人不能为空' }],
+                    rules: [{ required: true, message: '编制人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1218,7 +1271,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.location,
-                    rules: [{ required: true, message: '动土范围不能为空' }],
+                    rules: [{ required: true, message: '动土范围不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -1227,7 +1280,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingWay,
-                    rules: [{ required: true, message: '动土方式不能为空' }],
+                    rules: [{ required: true, message: '动土方式不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -1236,7 +1289,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingContent,
-                    rules: [{ required: true, message: '动土内容不能为空' }],
+                    rules: [{ required: true, message: '动土内容不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -1245,7 +1298,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.powerAccessPoint,
-                    rules: [{ required: true, message: '电源接入点不能为空' }],
+                    rules: [{ required: true, message: '电源接入点不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -1254,7 +1307,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.voltage,
-                    rules: [{ required: true, message: '使用电压（V）不能为空' }],
+                    rules: [{ required: true, message: '使用电压（V）不能为空', whitespace: true }],
                   },
                 },
                 {
@@ -1276,7 +1329,9 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.safetyEducator,
-                    rules: [{ required: true, message: '实施安全教育人不能为空' }],
+                    rules: [
+                      { required: true, message: '实施安全教育人不能为空', whitespace: true },
+                    ],
                   },
                 },
               ]
@@ -1289,7 +1344,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.constructionManager,
-                    rules: [{ required: true, message: '施工负责人不能为空' }],
+                    rules: [{ required: true, message: '施工负责人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1302,7 +1357,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.agent,
-                    rules: [{ required: true, message: '待办人不能为空' }],
+                    rules: [{ required: true, message: '待办人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1328,8 +1383,15 @@ export default class WorkingBillOther extends Component {
                       : detail.workingPersonnel
                         ? detail.workingPersonnel.join(',')
                         : undefined,
+                    getValueFromEvent: this.getWorkingPersonnelFromEvent,
                     rules: [{ required: true, message: '作业人不能为空' }],
                   },
+                  grid: {
+                    xl: 12,
+                    sm: 24,
+                    xs: 24,
+                  },
+                  standalone: true,
                 },
               ]
             : []),
@@ -1354,8 +1416,15 @@ export default class WorkingBillOther extends Component {
                       : detail.workingPersonnel
                         ? detail.workingPersonnel.join(',')
                         : undefined,
+                    getValueFromEvent: this.getWorkingPersonnelFromEvent,
                     rules: [{ required: true, message: '吊装人员不能为空' }],
                   },
+                  grid: {
+                    xl: 12,
+                    sm: 24,
+                    xs: 24,
+                  },
+                  standalone: true,
                 },
               ]
             : []),
@@ -1367,7 +1436,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingProject,
-                    rules: [{ required: true, message: '施工项目不能为空' }],
+                    rules: [{ required: true, message: '施工项目不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1380,7 +1449,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.supervisor,
-                    rules: [{ required: true, message: '监护人不能为空' }],
+                    rules: [{ required: true, message: '监护人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1393,7 +1462,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.supervisor,
-                    rules: [{ required: true, message: '安全监护人不能为空' }],
+                    rules: [{ required: true, message: '安全监护人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1406,7 +1475,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.supervisor,
-                    rules: [{ required: true, message: '作业监护人不能为空' }],
+                    rules: [{ required: true, message: '作业监护人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1421,7 +1490,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.supervisorPosition,
-                    rules: [{ required: true, message: '监护人岗位不能为空' }],
+                    rules: [{ required: true, message: '监护人岗位不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1447,7 +1516,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.compilingPerson,
-                    rules: [{ required: true, message: '编制人不能为空' }],
+                    rules: [{ required: true, message: '编制人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1460,7 +1529,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingProject,
-                    rules: [{ required: true, message: '施工项目不能为空' }],
+                    rules: [{ required: true, message: '施工项目不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1473,7 +1542,9 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.safetyEducator,
-                    rules: [{ required: true, message: '实施安全教育人不能为空' }],
+                    rules: [
+                      { required: true, message: '实施安全教育人不能为空', whitespace: true },
+                    ],
                   },
                 },
               ]
@@ -1486,7 +1557,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.manager,
-                    rules: [{ required: true, message: '负责人不能为空' }],
+                    rules: [{ required: true, message: '负责人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1499,7 +1570,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.agent,
-                    rules: [{ required: true, message: '待办人不能为空' }],
+                    rules: [{ required: true, message: '待办人不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1545,7 +1616,9 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.safetyEducator,
-                    rules: [{ required: true, message: '实施安全教育人不能为空' }],
+                    rules: [
+                      { required: true, message: '实施安全教育人不能为空', whitespace: true },
+                    ],
                   },
                 },
               ]
@@ -1584,7 +1657,7 @@ export default class WorkingBillOther extends Component {
                   component: <TextArea mode={mode} />,
                   options: {
                     initialValue: detail.hazardIdentification,
-                    rules: [{ required: true, message: '危害辨识不能为空' }],
+                    rules: [{ required: true, message: '危害辨识不能为空', whitespace: true }],
                   },
                   grid: {
                     xl: 12,
@@ -1601,7 +1674,7 @@ export default class WorkingBillOther extends Component {
             component: <TextArea mode={mode} />,
             options: {
               initialValue: detail.riskFactors,
-              rules: [{ required: true, message: '危险因素不能为空' }],
+              rules: [{ required: true, message: '危险因素不能为空', whitespace: true }],
             },
             grid: {
               xl: 12,
@@ -1658,6 +1731,14 @@ export default class WorkingBillOther extends Component {
                   component: <Upload mode={mode} />,
                   options: {
                     initialValue: detail.locationFileList,
+                    rules: [
+                      {
+                        type: 'array',
+                        min: 1,
+                        required: true,
+                        message: '断路地段示意图附件不能为空',
+                      },
+                    ],
                   },
                   grid: {
                     span: 24,
@@ -1673,6 +1754,9 @@ export default class WorkingBillOther extends Component {
                   component: <Upload mode={mode} />,
                   options: {
                     initialValue: detail.locationFileList,
+                    rules: [
+                      { type: 'array', min: 1, required: true, message: '动土地段示意图附件' },
+                    ],
                   },
                   grid: {
                     span: 24,

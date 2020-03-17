@@ -2892,7 +2892,7 @@ module.exports = env => {
               ],
             },
             {
-              path: '/safety-production-regulation/operating-procedures',// 操作规程
+              path: '/safety-production-regulation/operating-procedures', // 操作规程
               name: 'operatingProcedures',
               code: 'safetyProductionRegulation.operatingProcedures',
               hideChildrenInMenu: true,
@@ -3608,7 +3608,7 @@ module.exports = env => {
                 },
                 {
                   path: '/operation-safety/working-bill/:type?/reapply/:id',
-                  code: 'operationSafety.workingBill.edit',
+                  code: 'operationSafety.workingBill.add',
                   name: 'reapply',
                   component: './DataAnalysis/WorkingBill/Other',
                 },

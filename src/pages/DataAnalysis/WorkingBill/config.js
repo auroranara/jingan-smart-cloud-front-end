@@ -240,7 +240,7 @@ export const IMPLEMENT_STATUSES = [{ key: '0', value: '未实施' }, { key: '1',
 export const APPROVAL_OPINIONS = [{ key: '2', value: '通过' }, { key: '3', value: '不通过' }];
 
 export const HOT_WORK_TYPES = [
-  { key: '1', value: '特殊危险动火' },
+  { key: '1', value: '特级危险动火' },
   { key: '2', value: '一级动火' },
   { key: '3', value: '二级动火' },
 ];

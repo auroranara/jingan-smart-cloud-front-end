@@ -102,7 +102,7 @@ import styles from './index.less';
         dispatch({
           type: LIST_API,
           payload: {
-            type,
+            billType: type,
             pageNum: 1,
             pageSize: getPageSize(),
             ...values,
