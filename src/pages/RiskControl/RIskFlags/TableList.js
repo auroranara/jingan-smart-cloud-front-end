@@ -8,6 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, PAGE_SIZE, ROUTER, SEARCH_FIELDS as FIELDS, getColumns } from './utils';
 import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
+import ImagePreview from '@/jingan-components/ImagePreview';
 
 @connect(({ loading, user, riskFlags }) => ({
   loading: loading.models.riskFlags,
@@ -18,7 +19,8 @@ export default class TableList extends PureComponent {
   state = {
     currentPage: 1,
     formVals: null,
-  }
+    imgs: [],
+  };
 
   componentDidMount() {
     this.fetchTableList(1);
@@ -74,13 +76,17 @@ export default class TableList extends PureComponent {
     });
   };
 
+  handleClick = url => {
+    url && this.setState({ imgs: [url] });
+  };
+
   render() {
     const {
       loading,
       riskFlags: { total, list },
     } = this.props;
 
-    const { currentPage } = this.state;
+    const { currentPage, imgs } = this.state;
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
@@ -114,12 +120,13 @@ export default class TableList extends PureComponent {
           <Table
             rowKey="signId"
             loading={loading}
-            columns={getColumns(this.genHandleDelete)}
+            columns={getColumns(this.genHandleDelete, this.handleClick)}
             dataSource={list}
             onChange={this.onTableChange}
-            pagination={{ pageSize: PAGE_SIZE, total: PAGE_SIZE, current: currentPage }}
+            pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}
           />
         </div>
+        <ImagePreview images={imgs} />
       </PageHeaderLayout>
     );
   }

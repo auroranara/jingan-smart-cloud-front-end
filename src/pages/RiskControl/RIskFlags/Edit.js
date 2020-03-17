@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Card, Form, Icon, Upload } from 'antd';
+import { Button, Card, Form, Icon, Upload, message } from 'antd';
 
 import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -38,9 +38,11 @@ export default class Edit extends PureComponent {
       type: 'riskFlags/fetch',
       payload: id,
       callback: detail => {
-        const { photoList } = detail;
+        const { signName, signUrlList } = detail;
         setFieldsValue(detail);
-        this.setState({ photoList: uploadConvertToOrigin(photoList) });
+        if (signUrlList.length && !signUrlList[0].fileName)
+          signUrlList[0].fileName = signName;
+        this.setState({ photoList: uploadConvertToOrigin(signUrlList) });
       },
     });
   };
@@ -50,15 +52,20 @@ export default class Edit extends PureComponent {
       dispatch,
       form: { validateFields },
       match: { params: { id } },
+      riskFlags: { detail },
     } = this.props;
     const { photoList } = this.state;
 
     e.preventDefault();
     validateFields((errors, values) => {
       if (!errors) {
-        const params = { ...values, photoList: uploadConvertToResult(photoList) };
-        if (id)
+        if (!photoList.length)
+          message.error('请上传标志图片');
+        const params = { ...values, signUrlList: uploadConvertToResult(photoList) };
+        if (id) {
           params.signId = id;
+          params.signUrl = detail.signUrl;
+        }
         dispatch({
           type: `riskFlags/${id ? 'edit' : 'add'}`,
           payload: params,
@@ -73,7 +80,7 @@ export default class Edit extends PureComponent {
     let fList = fileList;
     if (file.status === 'done')
       fList = fList.filter(f => f.response && f.response.code === 200);
-    this.setState({ fileList: getFileList(fList) });
+    this.setState({ photoList: getFileList(fList) });
   };
 
   render() {
@@ -105,8 +112,8 @@ export default class Edit extends PureComponent {
 
     const formItems = [
       { name: 'signName', label: '标志名称' },
-      { name: 'signType', label: '标志类型', options: SIGN_TYPES },
-      { name: 'signUrl', label: '标志图片', type: 'component', component: uploadBtn },
+      { name: 'signType', label: '标志类型', type: 'select', options: SIGN_TYPES },
+      { name: 'signUrlList', label: '标志图片', type: 'compt', component: uploadBtn },
     ];
 
     return (

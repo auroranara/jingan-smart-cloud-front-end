@@ -48,10 +48,13 @@ export function getColumns(genHandleDelete, handleClick) {
     },
     {
       title: '图片',
-      dataIndex: 'signUrl',
-      key: 'signUrl',
-      render(url, { signName }) {
-        return <img src={url} alt={signName} onClick={e => handleClick && handleClick(url)} />;
+      dataIndex: 'signUrlList',
+      key: 'signUrlList',
+      align: 'center',
+      width: 100,
+      render(signUrlList) {
+        const url = signUrlList.length ? signUrlList[0].webUrl : undefined;
+        return <div className={styles1.flag} style={{ backgroundImage: `url(${url})` }} onClick={e => handleClick && handleClick(url)} />;
       },
     },
     {
@@ -64,7 +67,7 @@ export function getColumns(genHandleDelete, handleClick) {
           <Fragment>
             <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
             <Popconfirm
-              title="确定删除当前项目？"
+              title="将从数据库永久删除当前项目，确定删除？"
               onConfirm={genHandleDelete(id)}
               okText="确定"
               cancelText="取消"

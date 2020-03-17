@@ -175,7 +175,7 @@ export default class CompanyList extends PureComponent {
             return (
               <List.Item key={id}>
                 <Link
-                  to={'/control-measures-follow-up/hidden-danger-count-report/detail'}
+                  to={'/hidden-danger-control/hidden-danger-count-report/detail'}
                   onClick={() => this.handleCardClick(item)}
                   target="_blank"
                 >
@@ -224,7 +224,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '管控措施跟进信息管理', name: '管控措施跟进信息管理' },
+      { title: '隐患排查治理', name: '隐患排查治理' },
       { title: '隐患统计报表', name: '隐患统计报表' },
     ];
 
