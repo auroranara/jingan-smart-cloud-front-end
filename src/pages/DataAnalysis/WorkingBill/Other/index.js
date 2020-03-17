@@ -124,6 +124,7 @@ import styles from './index.less';
               detail: {},
             },
           });
+          setTimeout(callback);
         }
       },
       add(payload, callback) {
@@ -215,7 +216,6 @@ export default class WorkingBillOther extends Component {
     } = this.props;
     validateFieldsAndScroll((error, values) => {
       if (!error) {
-        console.log(values);
         const { unitId, mode, [mode]: submit } = this.props;
         const {
           company,
@@ -299,7 +299,8 @@ export default class WorkingBillOther extends Component {
     } = this.props;
     const isNotDetail = mode !== 'detail';
     const values = getFieldsValue();
-    console.log({ values });
+    console.log(values);
+    console.log(detail);
     const uploading =
       (values.certificatesFileList || []).some(({ status }) => status !== 'done') ||
       (values.applyFileList || []).some(({ status }) => status !== 'done') ||
@@ -471,7 +472,7 @@ export default class WorkingBillOther extends Component {
             label: '作业证编号',
             component: <Input mode={mode} />,
             options: {
-              initialValue: detail.billCode,
+              initialValue: mode !== 'reapply' ? detail.billCode : undefined,
               rules: [{ required: true, message: '作业证编号不能为空', whitespace: true }],
             },
           },
@@ -1784,6 +1785,7 @@ export default class WorkingBillOther extends Component {
       //   ],
       // },
     ];
+    console.log(fields);
 
     return (
       <PageHeaderLayout

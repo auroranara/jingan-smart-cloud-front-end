@@ -246,7 +246,7 @@ export const HOT_WORK_TYPES = [
 ];
 
 export const HIGH_WORK_TYPES = [
-  { key: '4', value: '特殊高处作业证' },
+  { key: '4', value: '特级高处作业证' },
   { key: '7', value: '三级高处作业证' },
   { key: '6', value: '二级高处作业证' },
   { key: '5', value: '一级高处作业证' },
