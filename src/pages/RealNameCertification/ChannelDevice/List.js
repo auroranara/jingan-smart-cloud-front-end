@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Button,
   Input,
@@ -14,6 +14,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import codes from '@/utils/codes'
 import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
 export const LIST_PATH = '/real-name-certification/channelDevice/list';
 export const ADD_PATH = '/real-name-certification/channelDevice/add'
@@ -46,7 +47,7 @@ const {
   },
 } = codes;
 
-const TITLE = '操作规程';
+const TITLE = '通道设备';
 const BREADCRUMB_LIST = [
   {
     title: '首页',
@@ -62,6 +63,7 @@ const BREADCRUMB_LIST = [
     name: TITLE,
   },
 ];
+const defaultPageSize = 10;
 
 const colWrapper = {
   md: 8,
@@ -69,15 +71,35 @@ const colWrapper = {
 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 
-@connect(({ user, realNameCertification }) => ({
+@connect(({ user, realNameCertification, resourceManagement, loading }) => ({
   user,
   realNameCertification,
+  resourceManagement,
+  companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
 @Form.create()
 export default class ChannelDeviceList extends Component {
 
+  state = {
+    company: {},
+    visible: false,
+  };
+
   componentDidMount () {
-    this.handleQuery();
+    const {
+      user: { isCompany, currentUser: { companyId, companyName } },
+      realNameCertification: { deviceSearchInfo: searchInfo = {} },
+    } = this.props;
+    if (isCompany) {
+      this.setState({ company: { id: companyId, name: companyName } }, () => {
+        this.handleQuery();
+      })
+    } else if (searchInfo.company && searchInfo.company.id) {
+      // 如果redux中保存了单位
+      this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
+    } else {
+      this.handleViewModal()
+    }
   }
 
   setFormReference = form => {
@@ -89,17 +111,25 @@ export default class ChannelDeviceList extends Component {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
+    const { company } = this.state;
     const values = getFieldsValue();
-    // dispatch({
-    //   type: 'safetyProductionRegulation/fetchOperatingProcedureList',
-    //   payload: {
-    //     pageNum: 1,
-    //     pageSize: 10,
-    //     ...payload,
-    //     ...values,
-    //   },
-    // })
+    dispatch({
+      type: 'realNameCertification/fetchChannelDeviceList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        ...payload,
+        ...values,
+        companyId: company.id,
+      },
+    })
   }
+
+  // 获取单位列表
+  fetchCompanyList = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'resourceManagement/fetchCompanyList', ...action });
+  };
 
   handleReset = () => {
     const { form: { resetFields } } = this.props;
@@ -122,9 +152,30 @@ export default class ChannelDeviceList extends Component {
   // 删除
   handleDelete = () => { }
 
+  // 点击打开选择单位
+  handleViewModal = () => {
+    this.fetchCompanyList({
+      payload: { pageNum: 1, pageSize: defaultPageSize },
+      callback: () => {
+        this.setState({ visible: true });
+      },
+    });
+  }
+
+  // 选择单位
+  handleSelectCompany = company => {
+    const { dispatch } = this.props;
+    this.setState({ company, visible: false }, () => {
+      this.handleQuery();
+    });
+    dispatch({
+      type: 'realNameCertification/saveDeviceSearchInfo',
+      payload: { company },
+    })
+  }
+
   renderForm = () => {
     const {
-      user: { isCompany },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -132,25 +183,16 @@ export default class ChannelDeviceList extends Component {
       <Card bordered={false}>
         <Form>
           <Row gutter={30}>
-            {!isCompany && (
-              <Col {...colWrapper}>
-                <FormItem {...formItemStyle}>
-                  {getFieldDecorator('companyName')(
-                    <Input placeholder="请输入单位名称" />
-                  )}
-                </FormItem>
-              </Col>
-            )}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('name')(
+                {getFieldDecorator('deviceName')(
                   <Input placeholder="请输入设备名称" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('num')(
+                {getFieldDecorator('deviceCode')(
                   <Input placeholder="请输入设备序列号" />
                 )}
               </FormItem>
@@ -178,11 +220,11 @@ export default class ChannelDeviceList extends Component {
     const {
       user: { isCompany },
       realNameCertification: {
-        channel: {
+        channelDevice: {
           list,
           pagination: { pageNum, pageSize, total },
         },
-        identificationDict,
+        onlineStateDict,
       },
     } = this.props;
     const columns = [
@@ -194,38 +236,32 @@ export default class ChannelDeviceList extends Component {
       }],
       {
         title: '设备名称',
-        dataIndex: 'name',
+        dataIndex: 'deviceName',
         align: 'center',
         width: 200,
       },
       {
         title: '设备序列号',
-        dataIndex: 'num',
+        dataIndex: 'deviceCode',
         align: 'center',
         width: 200,
       },
       {
         title: '识别方式',
-        dataIndex: 'num',
+        dataIndex: 'recType',
         align: 'center',
         width: 200,
         render: (_, { recType }) => (+recType === 1 && '本地') || (+recType === 2 && '云端') || '',
       },
       {
-        title: '识别模式',
-        dataIndex: 'recMode',
+        title: '在线状态',
+        dataIndex: 'onlineState',
         align: 'center',
         width: 200,
         render: (val) => {
-          const target = identificationDict.find(item => +item.key === +val);
-          return target ? target.label : '';
+          const target = onlineStateDict.find(item => +item.key === +val);
+          return target ? target.value : '';
         },
-      },
-      {
-        title: '在线状态',
-        dataIndex: 'livingType',
-        align: 'center',
-        width: 200,
       },
       {
         title: '操作',
@@ -234,7 +270,7 @@ export default class ChannelDeviceList extends Component {
         align: 'center',
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
-          <div style={{ textAlign: 'left' }}>
+          <Fragment>
             <AuthA code={viewCode} onClick={() => this.handleView(id)} data-id={id}>
               查看
             </AuthA>
@@ -249,7 +285,7 @@ export default class ChannelDeviceList extends Component {
             >
               删除
             </AuthPopConfirm>
-          </div>
+          </Fragment>
         ),
       },
     ];
@@ -285,16 +321,44 @@ export default class ChannelDeviceList extends Component {
 
   render () {
     const {
+      companyLoading,
       user: { isCompany },
+      resourceManagement: { companyList },
     } = this.props;
+    const { company, visible } = this.state;
     return (
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
-      // content={!isCompany && <span className={styles.count}>{`单位数量：${companyNum}`}</span>}
+        content={!isCompany && (
+          <div>
+            <Input
+              disabled
+              style={{ width: '300px' }}
+              placeholder={'请选择单位'}
+              value={company.name}
+            />
+            <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewModal}>
+              选择单位
+              </Button>
+          </div>
+        )}
       >
-        {this.renderForm()}
-        {this.renderTable()}
+        {company && company.id ? (
+          <div>
+            {this.renderForm()}
+            {this.renderTable()}
+          </div>
+        ) : (<div style={{ textAlign: 'center' }}>请先选择单位</div>)}
+        <CompanyModal
+          title="选择单位"
+          loading={companyLoading}
+          visible={visible}
+          modal={companyList}
+          fetch={this.fetchCompanyList}
+          onSelect={this.handleSelectCompany}
+          onClose={() => { this.setState({ visible: false }) }}
+        />
       </PageHeaderLayout>
     )
   }

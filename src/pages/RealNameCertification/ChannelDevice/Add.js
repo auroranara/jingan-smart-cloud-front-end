@@ -16,8 +16,8 @@ import styles from './Add.less';
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
 
-@connect(({ safetyProductionRegulation, user }) => ({
-  safetyProductionRegulation,
+@connect(({ realNameCertification, user }) => ({
+  realNameCertification,
   user,
 }))
 export default class ChannelDeviceAdd extends Component {
@@ -26,42 +26,40 @@ export default class ChannelDeviceAdd extends Component {
     const {
       dispatch,
       match: { params: { id } },
+      realNameCertification: { deviceSearchInfo: searchInfo = {} },
     } = this.props;
-    const isNotDetail = !location.href.includes('detail');
     if (id) {
-      // dispatch({
-      //   type: 'safetyProductionRegulation/fetchOperatingProcedureDetail',
-      //   payload: { id },
-      //   callback: (success, detail) => {
-      //     if (success) {
-      //       const {
-      //         companyId,
-      //         companyName,
-      //         name,
-      //         phone,
-      //         accessoryContent,
-      //         startDate,
-      //         endDate,
-      //         status,
-      //         historyType,
-      //         editionCode,
-      //         operatingName,
-      //       } = detail;
-      //       this.form && this.form.setFieldsValue({
-      //         company: companyId ? { key: companyId, label: companyName } : undefined,
-      //         operatingName: operatingName || undefined,
-      //         historyType: isNotDetail && +status === 4 ? '1' : historyType || '0',
-      //         editionCode: isNotDetail && +status === 4 ? (+editionCode + 0.01).toFixed(2) : editionCode || '1.00',
-      //         name: name || undefined,
-      //         phone: phone || undefined,
-      //         expireDate: startDate && endDate ? [moment(startDate), moment(endDate)] : [],
-      //         accessoryContent: accessoryContent ? accessoryContent.map((item) => ({ ...item, uid: item.id, url: item.webUrl, status: 'done' })) : [],
-      //       });
-      //     } else {
-      //       message.error('获取详情失败，请稍后重试或联系管理人员！');
-      //     }
-      //   },
-      // })
+      dispatch({
+        type: 'realNameCertification/fetchDeviceDetail',
+        payload: { id },
+        callback: (success, detail) => {
+          if (success) {
+            const {
+              companyId,
+              companyName,
+              deviceName,
+              deviceCode,
+              appId,
+              appKey,
+              appSecret,
+            } = detail;
+            this.form && this.form.setFieldsValue({
+              company: companyId ? { key: companyId, label: companyName } : undefined,
+              deviceName: deviceName || undefined,
+              deviceCode: deviceCode || undefined,
+              appId: appId || undefined,
+              appKey: appKey || undefined,
+              appSecret: appSecret || undefined,
+            });
+          } else {
+            message.error('获取详情失败，请稍后重试或联系管理人员！');
+          }
+        },
+      })
+    } else if (searchInfo.company && searchInfo.company.id) {
+      // 如果列表页面选择了单位
+      const { id, name } = searchInfo.company;
+      this.form && this.form.setFieldsValue({ company: { key: id, label: name } });
     }
   }
 
@@ -99,17 +97,17 @@ export default class ChannelDeviceAdd extends Component {
       }
       if (id) {
         // 如果编辑
-        // dispatch({
-        //   type: 'safetyProductionRegulation/editOperatingProcedure',
-        //   payload: { ...payload, id },
-        //   callback,
-        // })
+        dispatch({
+          type: 'realNameCertification/editChannelDevice',
+          payload: { ...payload, id },
+          callback,
+        })
       } else {
-        // dispatch({
-        //   type: 'safetyProductionRegulation/addOperatingProcedure',
-        //   payload,
-        //   callback,
-        // })
+        dispatch({
+          type: 'realNameCertification/addChannelDevice',
+          payload,
+          callback,
+        })
       }
     })
   }
@@ -122,14 +120,11 @@ export default class ChannelDeviceAdd extends Component {
     const {
       submitting = false,
       user: { isCompany },
-      safetyProductionRegulation: {
-        operatingProceduresDetail: { hgOperatingInstructionApproveList: approvalList = [] } = {},
-      },
     } = this.props;
     const href = location.href;
     const isNotDetail = !href.includes('detail');
     const isEdit = href.includes('edit');
-    const title = (href.includes('add') && '新增操作规程') || (href.includes('edit') && '编辑操作规程') || (href.includes('detail') && '查看操作规程');
+    const title = (href.includes('add') && '新增通道设备') || (href.includes('edit') && '编辑通道设备') || (href.includes('detail') && '查看通道设备');
     const breadcrumbList = [
       {
         title: '首页',
@@ -137,12 +132,12 @@ export default class ChannelDeviceAdd extends Component {
         href: '/',
       },
       {
-        title: '安全生产制度法规',
-        name: '安全生产制度法规',
+        title: '实名制认证系统',
+        name: '实名制认证系统',
       },
       {
-        title: '操作规程',
-        name: '操作规程',
+        title: '通道设备',
+        name: '通道设备',
         href: LIST_PATH,
       },
       {
@@ -171,7 +166,7 @@ export default class ChannelDeviceAdd extends Component {
             },
           }],
           {
-            id: 'name',
+            id: 'deviceName',
             label: '设备名称',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -187,7 +182,7 @@ export default class ChannelDeviceAdd extends Component {
             },
           },
           {
-            id: 'num',
+            id: 'deviceCode',
             label: '设备序列号',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -203,7 +198,7 @@ export default class ChannelDeviceAdd extends Component {
             },
           },
           {
-            id: 'appID',
+            id: 'appId',
             label: 'appID',
             span: SPAN,
             labelCol: LABEL_COL,

@@ -9,7 +9,20 @@ import {
   deleteAllAuthorization,
   deleteAuthorization,
   fetchIdentificationRecord,
+  fetchChannelDeviceList,
+  addChannelDevice,
+  editChannelDevice,
+  deleteChannelDevice,
+  fetchChannelList,
+  addChannel,
+  editChannel,
+  deleteChannel,
 } from '@/services/realNameCertification';
+
+const defaultData = {
+  list: [],
+  pagination: { pageNum: 1, pageSize: 10, total: 0 },
+};
 
 export default {
   namespace: 'realNameCertification',
@@ -35,6 +48,12 @@ export default {
       list: [],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
+    // 通道设备
+    channelDevice: {
+      list: [],
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
+    },
+    deviceSearchInfo: {},
     // 设备数据
     device: {
       list: [
@@ -171,6 +190,11 @@ export default {
       { key: 1, value: '双向' },
       { key: 2, value: '单向' },
     ],
+    // 在线状态字典
+    onlineStateDict: [
+      { key: 1, value: '在线' },
+      { key: 2, value: '不在线' },
+    ],
   },
   effects: {
     // 获取企业列表
@@ -252,6 +276,35 @@ export default {
         })
       }
     },
+    // 获取通道设备列表
+    *fetchChannelDeviceList ({ payload }, { call, put }) {
+      const res = yield call(fetchChannelDeviceList, payload);
+      yield put({
+        type: 'saveChannelDevice',
+        payload: res && res.code === 200 && res.data ? res.data : { list: [], ...defaultData.pagination },
+      })
+    },
+    // 新增通道设备
+    *addChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(addChannelDevice, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 编辑通道设备
+    *editChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(editChannelDevice, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 删除通道设备
+    *deleteChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(deleteChannelDevice, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 获取设备详情
+    *fetchDeviceDetail ({ payload, callback }, { call }) {
+      const res = yield call(fetchChannelDeviceList, { ...payload, pageNum: 1, pageSize: 10 });
+      const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
+      callback && callback(res && res.code === 200, detail);
+    },
   },
   reducers: {
     save (state, action) {
@@ -299,6 +352,22 @@ export default {
           list,
           pagination: { pageNum, pageSize, total },
         },
+      }
+    },
+    saveChannelDevice (state, action) {
+      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+      return {
+        ...state,
+        channelDevice: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    },
+    saveDeviceSearchInfo (state, action) {
+      return {
+        ...state,
+        deviceSearchInfo: action.payload || {},
       }
     },
   },
