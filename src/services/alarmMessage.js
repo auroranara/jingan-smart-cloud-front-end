@@ -10,3 +10,18 @@ export async function getList(params) {
 export async function getMonitorTypeList(params) {
   return request(`/acloud_new/v2/monitor/monitorTypeTree?${stringify(params)}`);
 }
+
+// 获取重大危险源列表
+export async function getMajorHazardList(params) {
+  return request(`/acloud_new/v2/dangerSource/list?${stringify(params)}`);
+}
+
+// 获取监测对象类型列表
+export async function getMonitorObjectTypeList(params) {
+  return request(`/acloud_new/v2/monitor/equipmentType?${stringify(params)}`);
+}
+
+// 获取监测对象列表
+export async function getMonitorObjectList(params) {
+  return request(`/acloud_new/v2/monitor/beMonitorTarget/page?${stringify(params)}`);
+}

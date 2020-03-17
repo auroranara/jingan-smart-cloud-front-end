@@ -14,7 +14,16 @@ import {
   TYPES,
   LIST_GRID,
 } from '../config';
+import iconVideo from '../assets/icon-video.png';
+import iconToxicGas from '../assets/icon-toxic-gas.png';
+import iconCombustibleGas from '../assets/icon-combustible-gas.png';
 import styles from './index.less';
+
+const MAP_BUTTON_OPTIONS = [
+  { label: '视频监控', icon: iconVideo },
+  { label: '可燃气体', icon: iconCombustibleGas },
+  { label: '有毒气体', icon: iconToxicGas },
+];
 
 @connect(
   (
@@ -98,17 +107,21 @@ import styles from './index.less';
 export default class MajorHazardDistribution extends Component {
   state = {
     type: undefined,
+    disabledMapButtonIndexList: undefined,
   };
 
   componentDidMount() {
+    // const { unitId } = this.props;
+    // if (unitId) {
+    //   this.handleTypeChange(TYPES[0].key);
+    // }
     this.handleTypeChange(TYPES[0].key);
   }
 
   componentDidUpdate({ unitId: prevUnitId }) {
     const { unitId } = this.props;
     if (unitId !== prevUnitId && unitId) {
-      const { type } = this.state;
-      this.handleTypeChange(type);
+      this.handleTypeChange(TYPES[0].key);
     }
   }
 
@@ -116,6 +129,7 @@ export default class MajorHazardDistribution extends Component {
     const { getMapList, getList } = this.props;
     this.setState({
       type,
+      disabledMapButtonIndexList: undefined,
     });
     if (type === TYPES[0].key) {
       getMapList();
@@ -123,15 +137,45 @@ export default class MajorHazardDistribution extends Component {
     getList();
   };
 
-  handleItemClick = (e, v) => {
+  handleItemClick = e => {
     console.log(e);
-    console.log(v);
   };
 
   renderMap() {
     const { mapList: [options] = [] } = this.props;
+    const { disabledMapButtonIndexList = [] } = this.state;
+    console.log(disabledMapButtonIndexList);
 
-    return <Map options={options} />;
+    return (
+      <Map options={options}>
+        <div className={styles.mapButtonContainer}>
+          {MAP_BUTTON_OPTIONS.map(({ label, icon }, index) => {
+            const disabled = disabledMapButtonIndexList.includes(index);
+            return (
+              <div
+                className={styles.mapButton}
+                key={label}
+                style={disabled ? { color: 'gray' } : undefined}
+                onClick={() =>
+                  this.setState({
+                    disabledMapButtonIndexList: disabled
+                      ? disabledMapButtonIndexList.filter(i => i !== index)
+                      : disabledMapButtonIndexList.concat(index),
+                  })
+                }
+              >
+                <img
+                  src={icon}
+                  alt=""
+                  style={{ filter: disabled ? 'grayscale(100%)' : undefined }}
+                />
+                {label}
+              </div>
+            );
+          })}
+        </div>
+      </Map>
+    );
   }
 
   renderList() {

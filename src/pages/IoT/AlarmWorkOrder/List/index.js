@@ -4,6 +4,8 @@ import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
 import TablePage from '@/templates/TablePage';
+import MajorHazardSelect from '../../components/MajorHazardSelect';
+import MonitorObjectSelect from '../../components/MonitorObjectSelect';
 import moment from 'moment';
 import classNames from 'classnames';
 import router from 'umi/router';
@@ -16,11 +18,20 @@ export const STATUSES = [
   { key: '1', value: '已处理' },
 ];
 const TRANSFORM = data => {
-  const { range: [startTime, endTime] = [], ...rest } = data || {};
+  const {
+    range: [startTime, endTime] = [],
+    majorHazard: [dangerSource, dangerSourceId] = [],
+    monitorObject: [targetType, targetId] = [],
+    ...rest
+  } = data || {};
   return {
     ...rest,
     queryCreateStartDate: startTime && startTime.startOf('day').format(DEFAULT_FORMAT),
     queryCreateEndDate: endTime && endTime.endOf('day').format(DEFAULT_FORMAT),
+    dangerSource,
+    dangerSourceId: dangerSourceId && dangerSourceId.key,
+    targetType,
+    targetId: targetId && targetId.key,
   };
 };
 
@@ -81,6 +92,16 @@ export default class AlarmWorkOrderList extends Component {
       label: '处理状态',
       render: () => <SelectOrSpan placeholder="请选择处理状态" list={STATUSES} allowClear />,
     },
+    {
+      id: 'majorHazard',
+      label: '重大危险源',
+      render: () => <MajorHazardSelect />,
+    },
+    {
+      id: 'monitorObject',
+      label: '监测对象',
+      render: () => <MonitorObjectSelect />,
+    },
   ];
 
   // getAction = ({
@@ -110,6 +131,16 @@ export default class AlarmWorkOrderList extends Component {
     {
       title: '监测类型',
       dataIndex: 'reportTypeName',
+      align: 'center',
+    },
+    {
+      title: '监测对象类型',
+      dataIndex: 'typeName',
+      align: 'center',
+    },
+    {
+      title: '监测对象',
+      dataIndex: 'targetName',
       align: 'center',
     },
     {

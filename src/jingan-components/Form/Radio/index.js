@@ -70,6 +70,7 @@ export default class FormRadio extends Component {
       list = [],
       emtpy = <EmptyText />,
       ellipsis = true,
+      getList,
       ...restProps
     } = this.props;
     const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };

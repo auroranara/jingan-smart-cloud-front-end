@@ -1,0 +1,40 @@
+.mapButtonContainer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .mapButton {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 24px;
+    color: #1890ff;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 3px;
+    cursor: pointer;
+
+    &:not(:last-child) {
+      margin-right: 24px;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.75);
+    }
+
+    &:active {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    img {
+      flex: 1;
+      margin-right: 8px;
+      width: 24px;
+    }
+  }
+}

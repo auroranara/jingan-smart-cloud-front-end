@@ -104,6 +104,7 @@ export default class FormTreeSelect extends Component {
       treeNodeFilterProp = 'children',
       emtpy = <EmptyText />,
       ellipsis = true,
+      getList,
       ...restProps
     } = this.props;
 
