@@ -1427,43 +1427,43 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              "name": "riskFlags", // 国际风险标志库
-              "code": "riskControl.riskFlags",
-              "path": "/risk-control/risk-flags",
-              "hideChildrenInMenu": true,
-              "routes": [
-                {
-                  "name": "list",
-                  "path": "/risk-control/risk-flags",
-                  "redirect": "/risk-control/risk-flags/list",
-                },
-                {
-                  "name": "list",
-                  "code": "riskControl.riskFlags.list",
-                  "path": "/risk-control/risk-flags/list",
-                  "component": "./RiskControl/RiskFlags/TableList",
-                },
-                {
-                  "name": "view",
-                  "code": "riskControl.riskFlags.view",
-                  "path": "/risk-control/risk-flags/view/:id",
-                  "component": "./RiskControl/RiskFlags/Edit",
-                },
-                {
-                  "name": "add",
-                  "code": "riskControl.riskFlags.add",
-                  "path": "/risk-control/risk-flags/add",
-                  "component": "./RiskControl/RiskFlags/Edit",
-                },
-                {
-                  "name": "edit",
-                  "code": "riskControl.riskFlags.edit",
-                  "path": "/risk-control/risk-flags/edit/:id",
-                  "component": "./RiskControl/RiskFlags/Edit",
-                },
-              ],
-            },
+            // {
+            //   "name": "riskFlags", // 国际风险标志库
+            //   "code": "riskControl.riskFlags",
+            //   "path": "/risk-control/risk-flags",
+            //   "hideChildrenInMenu": true,
+            //   "routes": [
+            //     {
+            //       "name": "list",
+            //       "path": "/risk-control/risk-flags",
+            //       "redirect": "/risk-control/risk-flags/list",
+            //     },
+            //     {
+            //       "name": "list",
+            //       "code": "riskControl.riskFlags.list",
+            //       "path": "/risk-control/risk-flags/list",
+            //       "component": "./RiskControl/RiskFlags/TableList",
+            //     },
+            //     {
+            //       "name": "view",
+            //       "code": "riskControl.riskFlags.view",
+            //       "path": "/risk-control/risk-flags/view/:id",
+            //       "component": "./RiskControl/RiskFlags/Edit",
+            //     },
+            //     {
+            //       "name": "add",
+            //       "code": "riskControl.riskFlags.add",
+            //       "path": "/risk-control/risk-flags/add",
+            //       "component": "./RiskControl/RiskFlags/Edit",
+            //     },
+            //     {
+            //       "name": "edit",
+            //       "code": "riskControl.riskFlags.edit",
+            //       "path": "/risk-control/risk-flags/edit/:id",
+            //       "component": "./RiskControl/RiskFlags/Edit",
+            //     },
+            //   ],
+            // },
           ],
         },
 
