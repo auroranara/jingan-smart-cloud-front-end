@@ -2685,6 +2685,42 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'keyPart', // 关键装置重点部位
+              path: '/facility-management/key-part',
+              code: 'facilityManagement.keyPart',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/facility-management/key-part',
+                  redirect: '/facility-management/key-part/list',
+                },
+                {
+                  path: '/facility-management/key-part/list',
+                  name: 'list',
+                  code: 'facilityManagement.keyPart.listView',
+                  component: './KeyPart/List',
+                },
+                {
+                  path: '/facility-management/key-part/add',
+                  name: 'add',
+                  code: 'facilityManagement.keyPart.add',
+                  component: './KeyPart/Add',
+                },
+                {
+                  path: '/facility-management/key-part/edit/:id',
+                  name: 'edit',
+                  code: 'facilityManagement.keyPart.edit',
+                  component: './KeyPart/Add',
+                },
+                {
+                  path: '/facility-management/key-part/detail/:id',
+                  name: 'detail',
+                  code: 'facilityManagement.keyPart.view',
+                  component: './KeyPart/Add',
+                },
+              ],
+            },
           ],
         },
 
@@ -3357,42 +3393,42 @@ module.exports = env => {
                 },
               ],
             },
-            {
-              name: 'keyPart', // 关键装置重点部位
-              path: '/safety-risk-control/key-part',
-              code: 'safetyRiskControl.keyPart',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/safety-risk-control/key-part',
-                  redirect: '/safety-risk-control/key-part/list',
-                },
-                {
-                  path: '/safety-risk-control/key-part/list',
-                  name: 'list',
-                  code: 'safetyRiskControl.keyPart.listView',
-                  component: './KeyPart/List',
-                },
-                {
-                  path: '/safety-risk-control/key-part/add',
-                  name: 'add',
-                  code: 'safetyRiskControl.keyPart.add',
-                  component: './KeyPart/Add',
-                },
-                {
-                  path: '/safety-risk-control/key-part/edit/:id',
-                  name: 'edit',
-                  code: 'safetyRiskControl.keyPart.edit',
-                  component: './KeyPart/Add',
-                },
-                {
-                  path: '/safety-risk-control/key-part/detail/:id',
-                  name: 'detail',
-                  code: 'safetyRiskControl.keyPart.view',
-                  component: './KeyPart/Add',
-                },
-              ],
-            },
+            // {
+            //   name: 'keyPart', // 关键装置重点部位
+            //   path: '/safety-risk-control/key-part',
+            //   code: 'safetyRiskControl.keyPart',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/safety-risk-control/key-part',
+            //       redirect: '/safety-risk-control/key-part/list',
+            //     },
+            //     {
+            //       path: '/safety-risk-control/key-part/list',
+            //       name: 'list',
+            //       code: 'safetyRiskControl.keyPart.listView',
+            //       component: './KeyPart/List',
+            //     },
+            //     {
+            //       path: '/safety-risk-control/key-part/add',
+            //       name: 'add',
+            //       code: 'safetyRiskControl.keyPart.add',
+            //       component: './KeyPart/Add',
+            //     },
+            //     {
+            //       path: '/safety-risk-control/key-part/edit/:id',
+            //       name: 'edit',
+            //       code: 'safetyRiskControl.keyPart.edit',
+            //       component: './KeyPart/Add',
+            //     },
+            //     {
+            //       path: '/safety-risk-control/key-part/detail/:id',
+            //       name: 'detail',
+            //       code: 'safetyRiskControl.keyPart.view',
+            //       component: './KeyPart/Add',
+            //     },
+            //   ],
+            // },
           ],
         },
 
