@@ -53,6 +53,7 @@ const listUrl = '/facility-management/special-equipment/list';
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const brandPayload = { type: '3', epuipmentType: '306' };
+const INIT_SHOW = '1';
 
 @Form.create()
 @connect(
@@ -562,7 +563,7 @@ export default class SpecialEquipment extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    setFieldsValue({ isShow: undefined, mapLocation: undefined });
+    setFieldsValue({ isShow: INIT_SHOW, mapLocation: undefined });
   };
 
   /**
