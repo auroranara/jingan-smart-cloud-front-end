@@ -31,6 +31,7 @@ import moment from 'moment';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import styles from './Add.less';
 import classNames from 'classnames';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
 const {
   realNameCertification: {
@@ -71,9 +72,12 @@ const breadcrumbList = [
   },
 ];
 
-@connect(({ realNameCertification, loading }) => ({
+@connect(({ realNameCertification, resourceManagement, user, loading }) => ({
   realNameCertification,
+  resourceManagement,
+  user,
   loading: loading.effects['realNameCertification/fetchAuthorizationList'],
+  companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
 @Form.create()
 export default class AuthorizationList extends PureComponent {
@@ -94,7 +98,20 @@ export default class AuthorizationList extends PureComponent {
   };
 
   componentDidMount () {
-    this.handleQuery();
+    const {
+      user: { isCompany, currentUser: { companyId, companyName } },
+      realNameCertification: { authSearchInfo: searchInfo = {} },
+    } = this.props;
+    if (isCompany) {
+      this.setState({ company: { id: companyId, name: companyName } }, () => {
+        this.handleQuery();
+      })
+    } else if (searchInfo.company && searchInfo.company.id) {
+      // 如果redux中保存了单位
+      this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
+    } else {
+      this.handleViewCompanyModal()
+    }
   }
 
   // 查询列表，获取人员列表
@@ -103,6 +120,7 @@ export default class AuthorizationList extends PureComponent {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
+    const { company } = this.state;
     const { time, ...resValues } = getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchAuthorizationList',
@@ -110,11 +128,9 @@ export default class AuthorizationList extends PureComponent {
         ...resValues,
         index: pageNum,
         length: pageSize,
-        // startTime: time ? time[0].unix() * 1000 : undefined,
-        // endTime: time ? time[1].unix() * 1000 : undefined,
         startTime: time ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
         endTime: time ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
-        // isAuthorization: 1,
+        companyId: company.id,
       },
     })
   }
@@ -124,6 +140,22 @@ export default class AuthorizationList extends PureComponent {
     const { form: { resetFields } } = this.props;
     resetFields();
     this.handleQuery();
+  }
+
+  // 获取单位列表
+  fetchCompanyList = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'resourceManagement/fetchCompanyList', ...action });
+  };
+
+  // 点击打开选择单位
+  handleViewCompanyModal = () => {
+    this.fetchCompanyList({
+      payload: { pageNum: 1, pageSize: defaultPageSize },
+      callback: () => {
+        this.setState({ visible: true });
+      },
+    });
   }
 
   handleToSelectDevice = () => {
@@ -251,6 +283,18 @@ export default class AuthorizationList extends PureComponent {
   // 添加准入时间
   handleAddAccess = () => {
     this.setState(({ accessTime }) => ({ accessTime: [...accessTime, []] }))
+  }
+
+  // 选择单位
+  handleSelectCompany = company => {
+    const { dispatch } = this.props;
+    this.setState({ company, visible: false }, () => {
+      this.handleQuery();
+    });
+    dispatch({
+      type: 'realNameCertification/saveAuthSearchInfo',
+      payload: { company },
+    })
   }
 
   // 编辑操作
@@ -537,8 +581,9 @@ export default class AuthorizationList extends PureComponent {
 
   render () {
     const {
+      companyLoading,
       realNameCertification: {
-        device: {
+        channelDevice: {
           list,
           pagination: { pageNum, pageSize, total },
         },
@@ -546,6 +591,7 @@ export default class AuthorizationList extends PureComponent {
         storageLocationDict,
         permissionsDict,
       },
+      resourceManagement: { companyList },
     } = this.props;
     const {
       deviceModalVisible,
@@ -561,6 +607,8 @@ export default class AuthorizationList extends PureComponent {
       accessTime,
       accessType,
       permissions,
+      company,
+      visible,
     } = this.state;
     const columns = [
       {
@@ -589,22 +637,26 @@ export default class AuthorizationList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-      // content={
-      //   <div>
-      //     <span>
-      //       单位总数：
-      //       {0}
-      //     </span>
-      //     <span style={{ paddingLeft: 20 }}>
-      //       人员总数:
-      //       <span style={{ paddingLeft: 8 }}>{0}</span>
-      //     </span>
-      //   </div>
-      // }
+        content={
+          <div>
+            <Input
+              disabled
+              style={{ width: '300px' }}
+              placeholder={'请选择单位'}
+              value={company ? company.name : undefined}
+            />
+            <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewCompanyModal}>
+              选择单位
+              </Button>
+          </div>
+        }
       >
-        <BackTop />
-        {this.renderFilter()}
-        {this.renderList()}
+        {company && company.id ? (
+          <div>
+            {this.renderFilter()}
+            {this.renderList()}
+          </div>
+        ) : (<div style={{ textAlign: 'center' }}>请先选择单位</div>)}
 
         {/* 全部销权选择删除位置痰弹窗 */}
         <Modal
@@ -826,6 +878,15 @@ export default class AuthorizationList extends PureComponent {
 
         {/* 图片查看 */}
         <ImagePreview images={images} currentImage={currentImage} />
+        <CompanyModal
+          title="选择单位"
+          loading={companyLoading}
+          visible={visible}
+          modal={companyList}
+          fetch={this.fetchCompanyList}
+          onSelect={this.handleSelectCompany}
+          onClose={() => { this.setState({ visible: false }) }}
+        />
       </PageHeaderLayout>
     )
   }

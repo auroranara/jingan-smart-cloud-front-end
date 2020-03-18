@@ -8,6 +8,7 @@ import {
   Form,
   Row,
   Col,
+  message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { connect } from 'dva';
@@ -75,6 +76,7 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
   user,
   realNameCertification,
   resourceManagement,
+  tableLoading: loading.effects['realNameCertification/fetchChannelDeviceList'],
   companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
 @Form.create()
@@ -150,7 +152,19 @@ export default class ChannelDeviceList extends Component {
   }
 
   // 删除
-  handleDelete = () => { }
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'realNameCertification/deleteChannelDevice',
+      payload: { id },
+      callback: (success, msg) => {
+        if (success) {
+          message.success('删除成功');
+          this.handleQuery();
+        } else { message.error(msg || '删除失败') }
+      },
+    })
+  }
 
   // 点击打开选择单位
   handleViewModal = () => {
@@ -218,6 +232,7 @@ export default class ChannelDeviceList extends Component {
 
   renderTable = () => {
     const {
+      tableLoading,
       user: { isCompany },
       realNameCertification: {
         channelDevice: {
@@ -260,7 +275,7 @@ export default class ChannelDeviceList extends Component {
         width: 200,
         render: (val) => {
           const target = onlineStateDict.find(item => +item.key === +val);
-          return target ? target.value : '';
+          return target ? (<span style={{ color: target.color || 'inherit' }}>{target.value}</span>) : '';
         },
       },
       {
@@ -271,7 +286,7 @@ export default class ChannelDeviceList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
           <Fragment>
-            <AuthA code={viewCode} onClick={() => this.handleView(id)} data-id={id}>
+            <AuthA code={viewCode} onClick={() => this.handleView(id)}>
               查看
             </AuthA>
             <Divider type="vertical" />
@@ -280,7 +295,7 @@ export default class ChannelDeviceList extends Component {
             <AuthPopConfirm
               code={deleteCode}
               title="确认要删除该数据吗？"
-              onConfirm={() => this.handleDelete()}
+              onConfirm={() => this.handleDelete(id)}
               style={{ color: '#ff4d4f' }}
             >
               删除
@@ -293,7 +308,7 @@ export default class ChannelDeviceList extends Component {
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
-          // loading={loading}
+          loading={tableLoading}
           columns={columns}
           dataSource={list}
           bordered

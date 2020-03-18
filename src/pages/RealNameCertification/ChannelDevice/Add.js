@@ -66,7 +66,7 @@ export default class ChannelDeviceAdd extends Component {
   // 跳转到编辑页面
   handleEditButtonClick = () => {
     const { match: { params: { id } } } = this.props;
-    router.push(`/safety-production-regulation/operating-procedures/edit/${id}`)
+    router.push(`/real-name-certification/channelDevice/edit/${id}`)
   }
 
   // 提交
@@ -122,9 +122,9 @@ export default class ChannelDeviceAdd extends Component {
       user: { isCompany },
     } = this.props;
     const href = location.href;
-    const isNotDetail = !href.includes('detail');
+    const isNotDetail = !href.includes('view');
     const isEdit = href.includes('edit');
-    const title = (href.includes('add') && '新增通道设备') || (href.includes('edit') && '编辑通道设备') || (href.includes('detail') && '查看通道设备');
+    const title = (href.includes('add') && '新增通道设备') || (href.includes('edit') && '编辑通道设备') || (href.includes('view') && '查看通道设备');
     const breadcrumbList = [
       {
         title: '首页',

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Button, Spin, message, Card } from 'antd';
+import { Button, Spin, message, Card, Row, Col, Input } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import router from 'umi/router';
 import { connect } from 'dva';
 import { AuthButton } from '@/utils/customAuth';
@@ -16,53 +17,85 @@ const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
 const LIST_PATH = '/real-name-certification/channel/list';
 
-@connect(({ realNameCertification, user }) => ({
+@connect(({ realNameCertification, user, loading }) => ({
   realNameCertification,
   user,
+  deviceLoading: loading.effects['realNameCertification/fetchChannelDeviceList'],
 }))
 export default class AddOperatingProdures extends Component {
+
+  state = {
+    device: [], // 关联设备
+    deviceModalVisible: false, // 选择关联设备弹窗
+    currentDevice: 0, // device下标
+    selectedDeviceKeys: [], // modal选中设备的id数组
+  };
 
   componentDidMount () {
     const {
       dispatch,
       match: { params: { id } },
+      realNameCertification: { channelSearchInfo: searchInfo = {} },
     } = this.props;
-    const isNotDetail = !location.href.includes('detail');
     if (id) {
-      // dispatch({
-      //   type: 'safetyProductionRegulation/fetchOperatingProcedureDetail',
-      //   payload: { id },
-      //   callback: (success, detail) => {
-      //     if (success) {
-      //       const {
-      //         companyId,
-      //         companyName,
-      //         name,
-      //         phone,
-      //         accessoryContent,
-      //         startDate,
-      //         endDate,
-      //         status,
-      //         historyType,
-      //         editionCode,
-      //         operatingName,
-      //       } = detail;
-      //       this.form && this.form.setFieldsValue({
-      //         company: companyId ? { key: companyId, label: companyName } : undefined,
-      //         operatingName: operatingName || undefined,
-      //         historyType: isNotDetail && +status === 4 ? '1' : historyType || '0',
-      //         editionCode: isNotDetail && +status === 4 ? (+editionCode + 0.01).toFixed(2) : editionCode || '1.00',
-      //         name: name || undefined,
-      //         phone: phone || undefined,
-      //         expireDate: startDate && endDate ? [moment(startDate), moment(endDate)] : [],
-      //         accessoryContent: accessoryContent ? accessoryContent.map((item) => ({ ...item, uid: item.id, url: item.webUrl, status: 'done' })) : [],
-      //       });
-      //     } else {
-      //       message.error('获取详情失败，请稍后重试或联系管理人员！');
-      //     }
-      //   },
-      // })
+      dispatch({
+        type: 'realNameCertification/fetchChannelDetail',
+        payload: { id },
+        callback: (success, detail) => {
+          if (success) {
+            const {
+              companyId,
+              companyName,
+              accessoryDetails,
+              channelName,
+              channelLocation,
+              type,
+              exit,
+              entrance,
+            } = detail;
+            this.form && this.form.setFieldsValue({
+              company: companyId ? { key: companyId, label: companyName } : undefined,
+              accessoryDetails: accessoryDetails ? accessoryDetails.map((item) => ({ ...item, uid: item.id, url: item.webUrl, status: 'done' })) : [],
+              channelName: channelName || undefined,
+              channelLocation,
+              type: type || undefined,
+            });
+            setTimeout(() => {
+              // type 1 双向 2 单向
+              const device = (+type === 1 && [{ direction: '1', key: exit }, { direction: '2', key: entrance }]) || (+type === 2 && [{ direction: exit ? '1' : '2', key: exit || entrance }]) || [];
+              this.form && this.form.setFieldsValue({ device });
+              this.setState({ device });
+            }, 0);
+          } else {
+            message.error('获取详情失败，请稍后重试或联系管理人员！');
+          }
+        },
+      })
+    } else {
+      const device = [{ direction: '1' }, { direction: '2' }];
+      this.form && this.form.setFieldsValue({ type: '1', device });
+      this.setState({ device });
     }
+
+    if (searchInfo.company && searchInfo.company.id) {
+      // 如果列表页面选择了单位
+      const { id, name } = searchInfo.company;
+      this.form && this.form.setFieldsValue({ company: { key: id, label: name } });
+    }
+  }
+
+  // 获取设备列表-未绑定
+  fetchDevice = ({ payload = { pageNum: 1, pageSize: 10 } } = {}) => {
+    const { dispatch, user: { isCompany, currentUser } } = this.props;
+    const company = this.form && this.form.getFieldValue('company');
+    dispatch({
+      type: 'realNameCertification/fetchChannelDeviceList',
+      payload: {
+        ...payload,
+        isBind: 0,
+        companyId: isCompany ? currentUser.companyId : company.key,
+      },
+    });
   }
 
   // 上传前
@@ -84,6 +117,50 @@ export default class AddOperatingProdures extends Component {
     router.push(`/real-name-certification/channel/edit/${id}`)
   }
 
+  // 监听通道类型改变
+  onTypeChange = type => {
+    console.log('type', type);
+    // type 1 双向 2 单向
+    const device = (+type === 1 && [{ direction: '1' }, { direction: '2' }]) || (+type === 2 && [{ direction: undefined }]) || []
+    this.setState({ device });
+    this.form && this.form.setFieldsValue({ device });
+  }
+
+  // 监听通道方向改变
+  onDirectionChange = (direction) => {
+    const { device } = this.state;
+    const newDevice = [{ ...device[0], direction }];
+    this.setState({ device: newDevice });
+    this.form && this.form.setFieldsValue({ device: newDevice });
+  }
+
+  // 打开选择关联设备弹窗
+  hadnleViewDeviceModal = (key, i) => {
+    const { user: { isCompany } } = this.props;
+    const company = this.form && this.form.getFieldValue('company');
+    if (!isCompany && company && company.key || isCompany) {
+      this.fetchDevice();
+      this.setState({
+        currentDevice: i,
+        deviceModalVisible: true,
+        selectedDeviceKeys: key ? [key] : [],
+      })
+    } else message.warning('请先选择单位')
+
+  }
+
+  // 选择关联设备
+  handleSelectDevice = ({ id }) => {
+    const { currentDevice, device } = this.state;
+    if (device.some(item => item.key === id)) {
+      message.warning('该设备已选择！')
+      return;
+    }
+    const newDevice = device.map((item, i) => currentDevice === i ? { ...item, key: id } : item)
+    this.setState({ device: newDevice, deviceModalVisible: false });
+    this.form && this.form.setFieldsValue({ device: newDevice });
+  }
+
   // 提交
   handleSubmitButtonClick = () => {
     const {
@@ -96,12 +173,31 @@ export default class AddOperatingProdures extends Component {
       if (err) return;
       const {
         company,
+        device,
+        type,
         ...resValues
       } = values;
-      // const payload = {
-      //   ...resValues,
-      //   companyId: isCompany ? currentUser.companyId : company.key,
-      // };
+      let payload = {
+        ...resValues,
+        type,
+        companyId: isCompany ? currentUser.companyId : company.key,
+      };
+      console.log('device', device)
+      if (+type === 1) { // 双向
+        device.forEach(item => {
+          // direction 1 出口 2 入口
+          if (+item.direction === 1) { // 出口
+            payload.exit = item.key;
+          } else if (+item.direction === 2) { // 入口
+            payload.entrance = item.key;
+          }
+        })
+      } else if (+type === 2 && +device[0].direction === 1) { // 单向 出口
+        payload.exit = device[0].key;
+      } else if (+type === 2 && +device[0].direction === 2) { // 单向 入口
+        payload.entrance = device[0].key;
+      }
+      console.log('payload', payload);
       const callback = (success, msg) => {
         if (success) {
           message.success('操作成功');
@@ -112,17 +208,17 @@ export default class AddOperatingProdures extends Component {
       }
       if (id) {
         // 如果编辑
-        // dispatch({
-        //   type: 'safetyProductionRegulation/editOperatingProcedure',
-        //   payload: { ...payload, id },
-        //   callback,
-        // })
+        dispatch({
+          type: 'realNameCertification/editChannel',
+          payload: { ...payload, id },
+          callback,
+        })
       } else {
-        // dispatch({
-        //   type: 'safetyProductionRegulation/addOperatingProcedure',
-        //   payload,
-        //   callback,
-        // })
+        dispatch({
+          type: 'realNameCertification/addChannel',
+          payload,
+          callback,
+        })
       }
     })
   }
@@ -131,18 +227,30 @@ export default class AddOperatingProdures extends Component {
     this.form = form;
   }
 
+  validateDevice = (rule, value, callback) => {
+    if (Array.isArray(value) && value.every(item => item.direction && item.key)) {
+      callback()
+    } else callback('关联设备不能为空')
+  }
+
   render () {
     const {
+      deviceLoading,
       submitting = false,
       user: { isCompany },
       realNameCertification: {
+        channelDevice,
         channelTypeDict,
+        directionDict,
       },
     } = this.props;
+    const { deviceModalVisible, selectedDeviceKeys } = this.state;
     const href = location.href;
-    const isNotDetail = !href.includes('detail');
+    const isNotDetail = !href.includes('view');
     const isEdit = href.includes('edit');
-    const title = (href.includes('add') && '新增通道') || (href.includes('edit') && '编辑通道') || (href.includes('detail') && '查看通道');
+    const title = (href.includes('add') && '新增通道') || (href.includes('edit') && '编辑通道') || (href.includes('view') && '查看通道');
+    const type = this.form && this.form.getFieldValue('type');
+    const device = this.form && this.form.getFieldValue('device') || [];
     const breadcrumbList = [
       {
         title: '首页',
@@ -184,7 +292,7 @@ export default class AddOperatingProdures extends Component {
             },
           }],
           {
-            id: 'name',
+            id: 'channelName',
             label: '通道名称',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -200,7 +308,7 @@ export default class AddOperatingProdures extends Component {
             },
           },
           {
-            id: 'location',
+            id: 'channelLocation',
             label: '通道位置',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -226,6 +334,7 @@ export default class AddOperatingProdures extends Component {
                 placeholder="请选择通道类型"
                 type={isNotDetail ? 'Select' : 'span'}
                 list={channelTypeDict}
+                onChange={this.onTypeChange}
               />
             ),
             options: {
@@ -239,7 +348,40 @@ export default class AddOperatingProdures extends Component {
             },
           },
           {
-            id: 'accessoryContent',
+            id: 'device',
+            label: '关联设备',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => (
+              <div>
+                {device.map((item, i) => (
+                  <Row key={i} gutter={16}>
+                    <Col span={isNotDetail ? 5 : 2}>
+                      <SelectOrSpan onChange={this.onDirectionChange} disabled={+type === 1} value={item.direction} list={directionDict} placeholder="请选择方向" type={isNotDetail ? 'Select' : 'span'} />
+                    </Col>
+                    <Col span={10}>
+                      <InputOrSpan disabled value={item.key} placeholder="设备序列号" type={isNotDetail ? 'Input' : 'span'} />
+                    </Col>
+                    {isNotDetail && (
+                      <Col span={5}>
+                        <Button size="small" onClick={() => this.hadnleViewDeviceModal(item.key, i)} type="primary">选择设备</Button>
+                      </Col>
+                    )}
+                  </Row>
+                ))}
+              </div>
+            ),
+            options: {
+              rules: isNotDetail ? [
+                {
+                  required: true,
+                  validator: this.validateDevice,
+                },
+              ] : undefined,
+            },
+          },
+          {
+            id: 'accessoryDetails',
             label: '通道照片',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -273,6 +415,52 @@ export default class AddOperatingProdures extends Component {
               )}
           </div>
         </Spin>
+        <CompanyModal
+          title="选择单位"
+          loading={deviceLoading}
+          visible={deviceModalVisible}
+          modal={channelDevice}
+          fetch={this.fetchDevice}
+          onSelect={this.handleSelectDevice}
+          onClose={() => {
+            this.setState({ deviceModalVisible: false });
+          }}
+          columns={[
+            {
+              title: 'id',
+              dataIndex: 'id',
+              align: 'center',
+              width: 200,
+            },
+            {
+              title: '设备名称',
+              dataIndex: 'deviceName',
+              align: 'center',
+              width: 200,
+            },
+            {
+              title: '设备序列号',
+              dataIndex: 'deviceCode',
+              align: 'center',
+              width: 200,
+            },
+          ]}
+          field={[
+            {
+              id: 'deviceName',
+              render: () => <Input placeholder="请输入设备名称" />,
+            },
+            {
+              id: 'deviceCode',
+              render: () => <Input placeholder="请输入设备序列号" />,
+            },
+          ]}
+          rowSelection={{
+            selectedRowKeys: selectedDeviceKeys,
+            onChange: selectedDeviceKeys => { this.setState({ selectedDeviceKeys }) },
+          }}
+
+        />
       </PageHeaderLayout>
     );
   }

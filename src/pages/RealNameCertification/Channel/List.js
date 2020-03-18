@@ -10,15 +10,16 @@ import {
   Table,
   Input,
   Divider,
+  message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import codes from '@/utils/codes';
 // import { hasAuthority } from '@/utils/customAuth';
 import router from 'umi/router';
-import moment from 'moment';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import codes from '@/utils/codes';
 import { AuthButton, AuthA, AuthPopConfirm } from '@/utils/customAuth';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
 const FormItem = Form.Item;
 
@@ -55,15 +56,64 @@ const breadcrumbList = [
   },
 ];
 
-@connect(({ realNameCertification, user, loading }) => ({
+@connect(({ realNameCertification, user, resourceManagement, loading }) => ({
   realNameCertification,
   user,
-  // loading: loading.effects['realNameCertification/fetchIdentificationRecord'],
+  resourceManagement,
+  companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
+  tableLoading: loading.effects['realNameCertification/fetchChannelList'],
 }))
 @Form.create()
 export default class ChannelList extends PureComponent {
 
-  handleQuery = () => { }
+  state = {
+    company: {}, // 选择的单位
+    visible: false,// 选择单位弹窗可见
+    images: [], // 图片预览列表
+    currentImage: 0,
+  };
+
+  componentDidMount () {
+    const {
+      user: { isCompany, currentUser: { companyId, companyName } },
+      realNameCertification: { channelSearchInfo: searchInfo = {} },
+    } = this.props;
+    if (isCompany) {
+      this.setState({ company: { id: companyId, name: companyName } }, () => {
+        this.handleQuery();
+      })
+    } else if (searchInfo.company && searchInfo.company.id) {
+      // 如果redux中保存了单位
+      this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
+    } else {
+      this.handleViewModal()
+    }
+  }
+
+  handleQuery = (payload = {}) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const { company } = this.state;
+    const values = getFieldsValue();
+    dispatch({
+      type: 'realNameCertification/fetchChannelList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        ...payload,
+        ...values,
+        companyId: company.id,
+      },
+    })
+  }
+
+  // 获取单位列表
+  fetchCompanyList = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'resourceManagement/fetchCompanyList', ...action });
+  };
 
   // 点击新增
   handleToAdd = () => {
@@ -82,14 +132,45 @@ export default class ChannelList extends PureComponent {
 
   // 删除
   handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'realNameCertification/deleteChannel',
+      payload: { id },
+      callback: (success, msg) => {
+        if (success) {
+          message.success('删除成功');
+          this.handleQuery();
+        } else { message.error(msg || '删除失败') }
+      },
+    })
+  }
 
+  // 点击打开选择单位
+  handleViewModal = () => {
+    this.fetchCompanyList({
+      payload: { pageNum: 1, pageSize: defaultPageSize },
+      callback: () => {
+        this.setState({ visible: true });
+      },
+    });
+  }
+
+  // 选择单位
+  handleSelectCompany = company => {
+    const { dispatch } = this.props;
+    this.setState({ company, visible: false }, () => {
+      this.handleQuery();
+    });
+    dispatch({
+      type: 'realNameCertification/saveChannelSearchInfo',
+      payload: { company },
+    })
   }
 
   // 渲染筛选栏
-  renderFilter = () => {
+  renderForm = () => {
     const {
       form: { getFieldDecorator },
-      user: { isCompany },
       realNameCertification: {
         channelTypeDict,
       },
@@ -99,18 +180,9 @@ export default class ChannelList extends PureComponent {
       <Card>
         <Form>
           <Row gutter={16}>
-            {!isCompany && (
-              <Col {...colWrapper}>
-                <FormItem {...formItemStyle}>
-                  {getFieldDecorator('companyName')(
-                    <Input placeholder="单位名称" />
-                  )}
-                </FormItem>
-              </Col>
-            )}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('name')(
+                {getFieldDecorator('channelName')(
                   <Input placeholder="通道名称" />
                 )}
               </FormItem>
@@ -134,9 +206,9 @@ export default class ChannelList extends PureComponent {
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
                 </Button>
-                <Button type="primary" code={addCode} onClick={this.handleToAdd}>
+                <AuthButton type="primary" code={addCode} onClick={this.handleToAdd}>
                   新增
-                </Button>
+                </AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -146,14 +218,15 @@ export default class ChannelList extends PureComponent {
   }
 
   // 渲染表格
-  renderList = () => {
+  renderTable = () => {
     const {
-      loading = false,
+      tableLoading,
       realNameCertification: {
         channel: {
           list,
           pagination: { pageNum = 1, pageSize = 10, total = 0 },
         },
+        channelTypeDict,
       },
       user: { isCompany },
     } = this.props;
@@ -162,59 +235,88 @@ export default class ChannelList extends PureComponent {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
-        width: 150,
+        width: 250,
       }],
       {
         title: '通道名称',
-        dataIndex: 'name',
+        dataIndex: 'channelName',
         align: 'center',
-        width: 150,
+        width: 200,
       },
       {
         title: '位置',
-        dataIndex: 'location',
+        dataIndex: 'channelLocation',
         align: 'center',
-        width: 150,
+        width: 200,
       },
       {
         title: '通道类型',
         dataIndex: 'type',
         align: 'center',
         width: 150,
+        render: (val) => {
+          const target = channelTypeDict.find(item => +item.key === +val);
+          return target ? target.value : undefined;
+        },
       },
       {
         title: '方向',
         dataIndex: 'direction',
         align: 'center',
         width: 150,
+        render: (val, { type, exit, entrance }) => +type === 1 ? (
+          <div>
+            <div>入口</div>
+            <Divider style={{ width: '100%' }} type="horizontal" />
+            <div>出口</div>
+          </div>
+        ) : (exit ? '1' : '2'),
       },
       {
         title: '设备序列号',
-        dataIndex: 'num',
+        dataIndex: 'deviceCode',
         align: 'center',
-        width: 150,
+        width: 250,
+        render: (val, { type, exit, entrance }) => +type === 1 ? (
+          <div>
+            <div>{entrance}</div>
+            <Divider style={{ width: '100%' }} type="horizontal" />
+            <div>{exit}</div>
+          </div>
+        ) : (exit || entrance),
       },
       {
         title: '通道照片',
-        dataIndex: 'pic',
+        dataIndex: 'accessoryDetails',
         align: 'center',
-        width: 150,
+        width: 200,
+        render: (val) => Array.isArray(val) ? val.map(({ webUrl, name }, i) => (
+          <img
+            key={i}
+            style={{ width: '40px', height: '40px', margin: '0 5px', cursor: 'pointer' }}
+            onClick={() => { this.setState({ images: val.map(item => item.webUrl), currentImage: i }) }}
+            src={webUrl}
+            alt="照片"
+          />
+        )) : '',
       },
       {
         title: '操作',
         key: 'id',
         align: 'center',
         width: 200,
+        fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={viewCode} onClick={() => this.handleView(val)}>查看</AuthA>
+            <AuthA code={viewCode} onClick={() => this.handleView(row.id)}>查看</AuthA>
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleEdit(val)}>编辑</AuthA>
+            <AuthA code={editCode} onClick={() => this.handleEdit(row.id)}>编辑</AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               title="确认要删除该数据吗？"
-              onConfirm={() => this.handleDelete(val)}
+              onConfirm={() => this.handleDelete(row.id)}
               code={deleteCode}
+              style={{ color: '#ff4d4f' }}
             >
               删除
             </AuthPopConfirm>
@@ -227,7 +329,7 @@ export default class ChannelList extends PureComponent {
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
-          loading={loading}
+          loading={tableLoading}
           columns={columns}
           dataSource={list}
           bordered
@@ -252,19 +354,50 @@ export default class ChannelList extends PureComponent {
   }
 
   render () {
+    const {
+      companyLoading,
+      resourceManagement: { companyList },
+    } = this.props;
+    const { company, visible, images, currentImage } = this.state;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         content={
-          <span>
-            通道总数:
+          <div>
+            <p>
+              通道总数:
             <span style={{ paddingLeft: 8 }}>{0}</span>
-          </span>
+            </p>
+            <Input
+              disabled
+              style={{ width: '300px' }}
+              placeholder={'请选择单位'}
+              value={company.name}
+            />
+            <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewModal}>
+              选择单位
+              </Button>
+          </div>
         }
       >
-        {this.renderFilter()}
-        {this.renderList()}
+        {company && company.id ? (
+          <div>
+            {this.renderForm()}
+            {this.renderTable()}
+          </div>
+        ) : (<div style={{ textAlign: 'center' }}>请先选择单位</div>)}
+        <CompanyModal
+          title="选择单位"
+          loading={companyLoading}
+          visible={visible}
+          modal={companyList}
+          fetch={this.fetchCompanyList}
+          onSelect={this.handleSelectCompany}
+          onClose={() => { this.setState({ visible: false }) }}
+        />
+        {/* 图片查看 */}
+        <ImagePreview images={images} currentImage={currentImage} />
       </PageHeaderLayout>
     )
   }

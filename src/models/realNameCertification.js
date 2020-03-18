@@ -43,11 +43,13 @@ export default {
       list: [],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
+    authSearchInfo: {},
     // 通道数据
     channel: {
       list: [],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
+    channelSearchInfo: {},
     // 通道设备
     channelDevice: {
       list: [],
@@ -57,48 +59,48 @@ export default {
     // 设备数据
     device: {
       list: [
-        {
-          appId: "76C6F1217A3A47DFA10B006C672FD86D",
-          deviceKey: "84E0F421C21F08FA",
-          tag: "",
-          name: "测试",
-          state: 2,
-          onlineState: 1,
-          versionNo: "6.0079",
-          lastActiveTime: "2020-02-27T07:37:02+0000",
-          createTime: "2020-01-19T06:59:28+0000",
-          type: 2,
-          recType: 1,
-          recMode: "人脸识别/人卡合一",
-        },
-        {
-          appId: "76C6F1217A3A47DFA10B006C672FD86D",
-          deviceKey: "84E0F422C3BB527A",
-          tag: "",
-          name: "入口",
-          state: 2,
-          onlineState: 1,
-          versionNo: "6.0079",
-          lastActiveTime: "2020-02-27T07:37:02+0000",
-          createTime: "2020-01-19T06:59:28+0000",
-          type: 2,
-          recType: 1,
-          recMode: "人脸识别/人卡合一",
-        },
-        {
-          appId: "76C6F1217A3A47DFA10B006C672FD86D",
-          deviceKey: "84E0F422C8B4527A",
-          tag: "",
-          name: "出口",
-          state: 2,
-          onlineState: 1,
-          versionNo: "6.0079",
-          lastActiveTime: "2020-02-27T07:37:02+0000",
-          createTime: "2020-01-19T06:59:28+0000",
-          type: 2,
-          recType: 1,
-          recMode: "人脸识别/人卡合一",
-        },
+        // {
+        //   appId: "76C6F1217A3A47DFA10B006C672FD86D",
+        //   deviceKey: "84E0F421C21F08FA",
+        //   tag: "",
+        //   name: "测试",
+        //   state: 2,
+        //   onlineState: 1,
+        //   versionNo: "6.0079",
+        //   lastActiveTime: "2020-02-27T07:37:02+0000",
+        //   createTime: "2020-01-19T06:59:28+0000",
+        //   type: 2,
+        //   recType: 1,
+        //   recMode: "人脸识别/人卡合一",
+        // },
+        // {
+        //   appId: "76C6F1217A3A47DFA10B006C672FD86D",
+        //   deviceKey: "84E0F422C3BB527A",
+        //   tag: "",
+        //   name: "入口",
+        //   state: 2,
+        //   onlineState: 1,
+        //   versionNo: "6.0079",
+        //   lastActiveTime: "2020-02-27T07:37:02+0000",
+        //   createTime: "2020-01-19T06:59:28+0000",
+        //   type: 2,
+        //   recType: 1,
+        //   recMode: "人脸识别/人卡合一",
+        // },
+        // {
+        //   appId: "76C6F1217A3A47DFA10B006C672FD86D",
+        //   deviceKey: "84E0F422C8B4527A",
+        //   tag: "",
+        //   name: "出口",
+        //   state: 2,
+        //   onlineState: 1,
+        //   versionNo: "6.0079",
+        //   lastActiveTime: "2020-02-27T07:37:02+0000",
+        //   createTime: "2020-01-19T06:59:28+0000",
+        //   type: 2,
+        //   recType: 1,
+        //   recMode: "人脸识别/人卡合一",
+        // },
       ],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
@@ -187,13 +189,18 @@ export default {
     ],
     // 通道类型字典
     channelTypeDict: [
-      { key: 1, value: '双向' },
-      { key: 2, value: '单向' },
+      { key: '1', value: '双向' },
+      { key: '2', value: '单向' },
     ],
     // 在线状态字典
     onlineStateDict: [
-      { key: 1, value: '在线' },
-      { key: 2, value: '不在线' },
+      { key: '1', value: '在线' },
+      { key: '2', value: '不在线', color: 'red' },
+    ],
+    // 方向字典
+    directionDict: [
+      { key: '1', value: '出口' },
+      { key: '2', value: '入口' },
     ],
   },
   effects: {
@@ -305,6 +312,35 @@ export default {
       const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
       callback && callback(res && res.code === 200, detail);
     },
+    // 获取通道列表
+    *fetchChannelList ({ payload }, { call, put }) {
+      const res = yield call(fetchChannelList, payload);
+      yield put({
+        type: 'saveChannel',
+        payload: res && res.code === 200 && res.data ? res.data : { list: [], ...defaultData.pagination },
+      })
+    },
+    // 获取通道详情
+    *fetchChannelDetail ({ payload, callback }, { call }) {
+      const res = yield call(fetchChannelList, { ...payload, pageNum: 1, pageSize: 10 });
+      const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
+      callback && callback(res && res.code === 200, detail);
+    },
+    // 新增通道
+    *addChannel ({ payload, callback }, { call }) {
+      const res = yield call(addChannel, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 编辑通道
+    *editChannel ({ payload, callback }, { call }) {
+      const res = yield call(editChannel, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 删除通道
+    *deleteChannel ({ payload, callback }, { call }) {
+      const res = yield call(deleteChannel, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
   },
   reducers: {
     save (state, action) {
@@ -359,7 +395,7 @@ export default {
       return {
         ...state,
         channelDevice: {
-          list,
+          list: list.map(item => ({ ...item, deviceKey: item.deviceCode })),
           pagination: { pageNum, pageSize, total },
         },
       }
@@ -368,6 +404,28 @@ export default {
       return {
         ...state,
         deviceSearchInfo: action.payload || {},
+      }
+    },
+    saveChannelSearchInfo (state, action) {
+      return {
+        ...state,
+        channelSearchInfo: action.payload || {},
+      }
+    },
+    saveChannel (state, action) {
+      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+      return {
+        ...state,
+        channel: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    },
+    saveAuthSearchInfo (state, action) {
+      return {
+        ...state,
+        authSearchInfo: action.payload || {},
       }
     },
   },
