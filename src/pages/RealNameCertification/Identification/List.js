@@ -7,6 +7,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import router from 'umi/router';
 import moment from 'moment';
 import ImagePreview from '@/jingan-components/ImagePreview';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -34,9 +35,12 @@ const breadcrumbList = [
 ];
 const tabList = [{ key: 1, tab: '比对成功' }, { key: 2, tab: '比对失败' }];
 
-@connect(({ realNameCertification, loading }) => ({
+@connect(({ realNameCertification, user, resourceManagement, loading }) => ({
   realNameCertification,
+  resourceManagement,
+  user,
   loading: loading.effects['realNameCertification/fetchIdentificationRecord'],
+  companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
 @Form.create()
 export default class IdentificationRecord extends PureComponent {
@@ -44,22 +48,25 @@ export default class IdentificationRecord extends PureComponent {
     tabActiveKey: '1', // 当前标签key
     images: [],
     currentImage: 0,
+    company: {}, // 选中的单位
+    visible: false, // 选择单位弹窗可见
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {
-      form: { setFieldsValue },
-      location: { query },
+      user: { isCompany, currentUser: { companyId, companyName } },
+      realNameCertification: { idenSearchInfo: searchInfo = {} },
     } = this.props;
-    console.log('query', query);
-    // setTimeout(() => {
-    //   setFieldsValue({ ...query });
-    // }, 2000);
-    const { startTime, endTime } = query;
-    const time =
-      query.startTime && query.endTime ? [moment(startTime), moment(endTime)] : undefined;
-    setFieldsValue({ ...query, time, startTime: undefined, endTime: undefined });
-    this.handleQuery();
+    if (isCompany) {
+      this.setState({ company: { id: companyId, name: companyName } }, () => {
+        this.handleQuery();
+      })
+    } else if (searchInfo.company && searchInfo.company.id) {
+      // 如果redux中保存了单位
+      this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
+    } else {
+      this.handleViewCompanyModal()
+    }
   }
 
   // 查询列表
@@ -68,7 +75,7 @@ export default class IdentificationRecord extends PureComponent {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
-    const { tabActiveKey } = this.state;
+    const { tabActiveKey, company } = this.state;
     const values = getFieldsValue();
     // console.log('values', values);
     const { time, ...resValues } = values;
@@ -83,6 +90,7 @@ export default class IdentificationRecord extends PureComponent {
         // endTime: time && time.length ? time[1].unix() * 1000 : undefined,
         startTime: time ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
         endTime: time ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        companyId: company.id,
       },
     });
   };
@@ -96,12 +104,40 @@ export default class IdentificationRecord extends PureComponent {
     this.handleQuery();
   };
 
+  // 获取单位列表
+  fetchCompanyList = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'resourceManagement/fetchCompanyList', ...action });
+  };
+
   /* tab列表点击变化 */
   handleTabChange = key => {
     this.setState({ tabActiveKey: key }, () => {
       this.handleQuery();
     });
   };
+
+  // 选择单位
+  handleSelectCompany = company => {
+    const { dispatch } = this.props;
+    this.setState({ company, visible: false }, () => {
+      this.handleQuery();
+    });
+    dispatch({
+      type: 'realNameCertification/saveIdenSearchInfo',
+      payload: { company },
+    })
+  }
+
+  // 点击打开选择单位
+  handleViewCompanyModal = company => {
+    this.fetchCompanyList({
+      payload: { pageNum: 1, pageSize: defaultPageSize },
+      callback: () => {
+        this.setState({ visible: true });
+      },
+    });
+  }
 
   // 渲染筛选栏
   renderFilter = () => {
@@ -355,8 +391,8 @@ export default class IdentificationRecord extends PureComponent {
           return target ? (
             <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
           ) : (
-            ''
-          );
+              ''
+            );
         },
       },
       {
@@ -376,8 +412,8 @@ export default class IdentificationRecord extends PureComponent {
           return target ? (
             <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
           ) : (
-            ''
-          );
+              ''
+            );
         },
       },
       {
@@ -390,8 +426,8 @@ export default class IdentificationRecord extends PureComponent {
           return target ? (
             <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
           ) : (
-            ''
-          );
+              ''
+            );
         },
       },
     ];
@@ -419,12 +455,17 @@ export default class IdentificationRecord extends PureComponent {
         />
       </Card>
     ) : (
-      <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
-    );
+        <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
+      );
   };
 
-  render() {
-    const { tabActiveKey, images, currentImage } = this.state;
+  render () {
+    const {
+      companyLoading,
+      resourceManagement: { companyList },
+      user: { isCompany },
+    } = this.props;
+    const { tabActiveKey, images, currentImage, visible, company } = this.state;
     return (
       <PageHeaderLayout
         title={title}
@@ -432,24 +473,37 @@ export default class IdentificationRecord extends PureComponent {
         tabList={tabList}
         tabActiveKey={tabActiveKey}
         onTabChange={this.handleTabChange}
-        // content={
-        //   <div>
-        //     <span>
-        //       单位总数：
-        //       {0}
-        //     </span>
-        //     <span style={{ paddingLeft: 20 }}>
-        //       人员总数:
-        //       <span style={{ paddingLeft: 8 }}>{0}</span>
-        //     </span>
-        //   </div>
-        // }
+        content={!isCompany && (
+          <div>
+            <Input
+              disabled
+              style={{ width: '300px' }}
+              placeholder={'请选择单位'}
+              value={company.name}
+            />
+            <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewCompanyModal}>
+              选择单位
+              </Button>
+          </div>
+        )}
       >
-        <BackTop />
-        {this.renderFilter()}
-        {this.renderList()}
+        {company && company.id ? (
+          <div>
+            {this.renderFilter()}
+            {this.renderList()}
+          </div>
+        ) : (<div style={{ textAlign: 'center' }}>请先选择单位</div>)}
         {/* 图片查看 */}
         <ImagePreview images={images} currentImage={currentImage} />
+        <CompanyModal
+          title="选择单位"
+          loading={companyLoading}
+          visible={visible}
+          modal={companyList}
+          fetch={this.fetchCompanyList}
+          onSelect={this.handleSelectCompany}
+          onClose={() => { this.setState({ visible: false }) }}
+        />
       </PageHeaderLayout>
     );
   }

@@ -270,7 +270,7 @@ export default class ChannelList extends PureComponent {
             <Divider style={{ width: '100%' }} type="horizontal" />
             <div>出口</div>
           </div>
-        ) : (exit ? '1' : '2'),
+        ) : (exit ? '出口' : '入口'),
       },
       {
         title: '设备序列号',
@@ -357,6 +357,7 @@ export default class ChannelList extends PureComponent {
     const {
       companyLoading,
       resourceManagement: { companyList },
+      user: { isCompany },
     } = this.props;
     const { company, visible, images, currentImage } = this.state;
     return (
@@ -369,15 +370,19 @@ export default class ChannelList extends PureComponent {
               通道总数:
             <span style={{ paddingLeft: 8 }}>{0}</span>
             </p>
-            <Input
-              disabled
-              style={{ width: '300px' }}
-              placeholder={'请选择单位'}
-              value={company.name}
-            />
-            <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewModal}>
-              选择单位
+            {!isCompany && (
+              <div>
+                <Input
+                  disabled
+                  style={{ width: '300px' }}
+                  placeholder={'请选择单位'}
+                  value={company.name}
+                />
+                <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewModal}>
+                  选择单位
               </Button>
+              </div>
+            )}
           </div>
         }
       >

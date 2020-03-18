@@ -109,6 +109,7 @@ export default {
       list: [],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
+    idenSearchInfo: {},
     // 人员类型字典
     personTypeDict: [
       { key: '1', label: '员工' },
@@ -426,6 +427,12 @@ export default {
       return {
         ...state,
         authSearchInfo: action.payload || {},
+      }
+    },
+    saveIdenSearchInfo (state, action) {
+      return {
+        ...state,
+        idenSearchInfo: action.payload || {},
       }
     },
   },

@@ -117,13 +117,15 @@ export default class AddAuthorization extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const { company } = this.state;
-    // const {} = getFieldsValue();
+    const { deviceName, deviceKey } = getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchChannelDeviceList',
       payload: {
-        pageNum: 1,
-        pageSize: 10,
+        pageNum,
+        pageSize,
         companyId: company.id,
+        deviceName,
+        deviceKey,
       },
     })
   }

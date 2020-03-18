@@ -95,6 +95,8 @@ export default class AuthorizationList extends PureComponent {
     accessType: '1',
     accessTime: [], // 准入时间
     permissions: ['facePermission', 'idCardPermission', 'faceAndCardPermission', 'idCardFacePermission'], // 人员权限
+    company: {}, // 选中的单位
+    visible: false, // 选择单位弹窗可见
   };
 
   componentDidMount () {
@@ -121,7 +123,7 @@ export default class AuthorizationList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const { company } = this.state;
-    const { time, ...resValues } = getFieldsValue();
+    const { time, deviceName, deviceKey, ...resValues } = getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchAuthorizationList',
       payload: {
@@ -158,13 +160,35 @@ export default class AuthorizationList extends PureComponent {
     });
   }
 
+  // 确认删除位置后打开选择设备弹窗
   handleToSelectDevice = () => {
     const { deleteLocation } = this.state;
     if (!deleteLocation || deleteLocation.length === 0) {
       message.error('请选择删除位置')
       return;
     }
+    this.fetchDeviceList();
     this.setState({ deviceModalVisible: true, deleteModalVisible: false })
+  }
+
+  // 获取设备列表
+  fetchDeviceList = (pageNum = 1, pageSize = defaultPageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const { company } = this.state;
+    const { deviceName, deviceKey } = getFieldsValue();
+    dispatch({
+      type: 'realNameCertification/fetchChannelDeviceList',
+      payload: {
+        pageNum,
+        pageSize,
+        companyId: company.id,
+        deviceName,
+        deviceKey,
+      },
+    })
   }
 
   // 销权
@@ -592,6 +616,7 @@ export default class AuthorizationList extends PureComponent {
         permissionsDict,
       },
       resourceManagement: { companyList },
+      user: { isCompany },
     } = this.props;
     const {
       deviceModalVisible,
@@ -637,19 +662,19 @@ export default class AuthorizationList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={
+        content={!isCompany && (
           <div>
             <Input
               disabled
               style={{ width: '300px' }}
               placeholder={'请选择单位'}
-              value={company ? company.name : undefined}
+              value={company.name}
             />
             <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewCompanyModal}>
               选择单位
               </Button>
           </div>
-        }
+        )}
       >
         {company && company.id ? (
           <div>
@@ -703,10 +728,10 @@ export default class AuthorizationList extends PureComponent {
               showQuickJumper: true,
               showSizeChanger: true,
               pageSizeOptions: ['5', '10', '15', '20'],
-              // onChange: this.handleQuery,
-              // onShowSizeChange: (num, size) => {
-              //   this.handleQuery(1, size);
-              // },
+              onChange: this.fetchDeviceList,
+              onShowSizeChange: (num, size) => {
+                this.fetchDeviceList(1, size);
+              },
             }}
           />
         </Modal>

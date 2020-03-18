@@ -247,19 +247,19 @@ export default class ChannelDeviceList extends Component {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
-        width: 250,
+        width: 300,
       }],
       {
         title: '设备名称',
         dataIndex: 'deviceName',
         align: 'center',
-        width: 200,
+        width: 300,
       },
       {
         title: '设备序列号',
         dataIndex: 'deviceCode',
         align: 'center',
-        width: 200,
+        width: 300,
       },
       {
         title: '识别方式',
