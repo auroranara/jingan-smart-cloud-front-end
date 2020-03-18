@@ -12,9 +12,13 @@ import {
   Table,
   Divider,
   Input,
+  Modal,
+  Upload,
+  Icon,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
+import { getToken } from '@/utils/authority';
 import { AuthButton, AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import router from 'umi/router';
 import { stringify } from 'qs';
@@ -33,6 +37,7 @@ const title = '人员列表';
 const defaultPageSize = 10;
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
+const uploadAction = '/acloud_new/v2/uploadFile';
 
 @connect(({ realNameCertification, user, loading }) => ({
   realNameCertification,
@@ -45,6 +50,9 @@ export default class PersonnelList extends PureComponent {
     images: [],
     currentImage: 0,
     curCompanyName: '',
+    personVisible: false,
+    personLoading: false,
+    picVisible: false,
   };
 
   componentDidMount() {
@@ -132,6 +140,21 @@ export default class PersonnelList extends PureComponent {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
+                {getFieldDecorator('workNumber')(<Input placeholder="职工号" allowClear />)}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('name')(<Input placeholder="姓名" allowClear />)}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('telephone')(<Input placeholder="电话" allowClear />)}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
                 {getFieldDecorator('personType')(
                   <Select placeholder="人员类型" allowClear>
                     {personTypeDict.map(({ key, label }) => (
@@ -145,30 +168,12 @@ export default class PersonnelList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('name')(<Input placeholder="姓名" allowClear />)}
-              </FormItem>
-            </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('telephone')(<Input placeholder="电话" allowClear />)}
-              </FormItem>
-            </Col>
-            {/* <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('duty')(
-                  <Select placeholder="职务" allowClear>
-                    {dutyDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>
-                        {label}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </Col> */}
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
                 {getFieldDecorator('icnumber')(<Input placeholder="IC卡号" allowClear />)}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('entranceNumber')(<Input placeholder="SN卡号" allowClear />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
@@ -204,6 +209,22 @@ export default class PersonnelList extends PureComponent {
     );
   };
 
+  hanldlePersonModal = () => {
+    this.setState({ personVisible: true });
+  };
+
+  handlePersonClose = () => {
+    this.setState({ personVisible: false });
+  };
+
+  hanldlePicModal = () => {
+    this.setState({ picVisible: true });
+  };
+
+  handlePicClose = () => {
+    this.setState({ picVisible: false });
+  };
+
   // 渲染列表
   renderList = () => {
     const {
@@ -217,6 +238,12 @@ export default class PersonnelList extends PureComponent {
       },
     } = this.props;
     const columns = [
+      {
+        title: '职工号',
+        dataIndex: 'workerNumber',
+        align: 'center',
+        width: 200,
+      },
       {
         title: '姓名',
         dataIndex: 'name',
@@ -239,19 +266,25 @@ export default class PersonnelList extends PureComponent {
         align: 'center',
         width: 200,
       },
-      // {
-      //   title: '职务',
-      //   dataIndex: 'duty',
-      //   align: 'center',
-      //   width: 150,
-      //   render: val => {
-      //     const target = dutyDict.find(item => +item.key === +val);
-      //     return target ? target.label : '';
-      //   },
-      // },
       {
-        title: 'IC卡号',
+        title: (
+          <span>
+            IC卡号&nbsp;
+            <span style={{ color: '#ccc' }}>（门禁）</span>
+          </span>
+        ),
         dataIndex: 'icnumber',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: (
+          <span>
+            SN号&nbsp;
+            <span style={{ color: '#ccc' }}>（定位）</span>
+          </span>
+        ),
+        dataIndex: 'entranceNumber',
         align: 'center',
         width: 200,
       },
@@ -343,7 +376,10 @@ export default class PersonnelList extends PureComponent {
         },
       },
     } = this.props;
-    const { images, currentImage } = this.state;
+    const { images, currentImage, personVisible, personLoading, picVisible } = this.state;
+
+    const uploadExportButton = <Icon type={personLoading ? 'loading' : 'upload'} />;
+
     //面包屑
     const breadcrumbList = [
       {
@@ -379,10 +415,14 @@ export default class PersonnelList extends PureComponent {
               人员总数:
               <span style={{ paddingLeft: 8 }}>{total}</span>
             </span>
-            <Button type="primary" style={{ float: 'right' }}>
+            <Button type="primary" style={{ float: 'right' }} onClick={this.hanldlePicModal}>
               批量导入照片
             </Button>
-            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
+            <Button
+              type="primary"
+              style={{ float: 'right', marginRight: '10px' }}
+              onClick={this.hanldlePicModal}
+            >
               批量导入
             </Button>
           </div>
@@ -392,6 +432,60 @@ export default class PersonnelList extends PureComponent {
         {this.renderFilter()}
         {this.renderList()}
         <ImagePreview images={images} currentImage={currentImage} />
+        <Modal
+          title="批量导入"
+          visible={personVisible}
+          onCancel={this.handlePersonClose}
+          onOk={this.handleExportSubmit}
+          confirmLoading={personLoading}
+        >
+          <div style={{ display: 'flex' }}>
+            <Upload
+              name="files"
+              multiple
+              headers={{ 'JA-Token': getToken() }}
+              accept=".xls,.xlsx" // 接收的文件格式
+              data={{ folder: 'securityManageInfo' }} // 附带的参数
+              action={uploadAction} // 上传地址
+              fileList={[]}
+              onChange={this.handlePersonExChange}
+              style={{ marginRight: 10 }}
+            >
+              <Button disabled={personLoading}>
+                {uploadExportButton}
+                上传文件(.xls/.xlsx)
+              </Button>
+            </Upload>
+
+            <Button>下载模板</Button>
+          </div>
+        </Modal>
+        <Modal
+          title="批量导入照片"
+          visible={picVisible}
+          onCancel={this.handlePicClose}
+          onOk={this.handleExportSubmit}
+          confirmLoading={personLoading}
+        >
+          <div style={{ display: 'flex' }}>
+            <Upload
+              name="files"
+              multiple
+              headers={{ 'JA-Token': getToken() }}
+              accept=".zip" // 接收的文件格式
+              data={{ folder: 'securityManageInfo' }} // 附带的参数
+              action={uploadAction} // 上传地址
+              fileList={[]}
+              onChange={this.handlePersonExChange}
+              style={{ marginRight: 10 }}
+            >
+              <Button disabled={personLoading}>
+                {uploadExportButton}
+                选择文件(.zip)
+              </Button>
+            </Upload>
+          </div>
+        </Modal>
       </PageHeaderLayout>
     );
   }
