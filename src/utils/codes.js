@@ -823,6 +823,22 @@ export default {
       edit: 'realNameCertification.authorization.edit',
       delete: 'realNameCertification.authorization.delete',
     },
+    // 通道管理
+    channel: {
+      list: 'realNameCertification.channel.listView',
+      view: 'realNameCertification.channel.view',
+      add: 'realNameCertification.channel.add',
+      edit: 'realNameCertification.channel.edit',
+      delete: 'realNameCertification.channel.delete',
+    },
+    // 通道设备
+    channelDevice: {
+      list: 'realNameCertification.channelDevice.listView',
+      view: 'realNameCertification.channelDevice.view',
+      add: 'realNameCertification.channelDevice.add',
+      edit: 'realNameCertification.channelDevice.edit',
+      delete: 'realNameCertification.channelDevice.delete',
+    },
   },
   // 操作规程
   operatingProcedures: {
