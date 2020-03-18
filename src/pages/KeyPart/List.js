@@ -41,8 +41,8 @@ const BREADCRUMB_LIST = [
     href: '/',
   },
   {
-    title: '安全风险管控',
-    name: '安全风险管控',
+    title: '设备设施管理',
+    name: '设备设施管理',
   },
   {
     title: TITLE,
