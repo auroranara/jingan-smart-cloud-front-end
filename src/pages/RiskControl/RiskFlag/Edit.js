@@ -52,7 +52,6 @@ export default class Edit extends PureComponent {
       dispatch,
       form: { validateFields },
       match: { params: { id } },
-      riskFlags: { detail },
     } = this.props;
     const { photoList } = this.state;
 
@@ -61,11 +60,11 @@ export default class Edit extends PureComponent {
       if (!errors) {
         if (!photoList.length)
           message.error('请上传标志图片');
-        const params = { ...values, signUrlList: uploadConvertToResult(photoList) };
-        if (id) {
+        const signUrlList = uploadConvertToResult(photoList);
+        const params = { ...values, signUrlList, signUrl: signUrlList[0].dbUrl };
+        if (id)
           params.signId = id;
-          params.signUrl = detail.signUrl;
-        }
+
         dispatch({
           type: `riskFlags/${id ? 'edit' : 'add'}`,
           payload: params,
