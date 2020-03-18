@@ -294,11 +294,11 @@ export default {
     },
   },
   keyPart: {
-    list: 'safetyRiskControl.keyPart.listView',
-    add: 'safetyRiskControl.keyPart.add',
-    edit: 'safetyRiskControl.keyPart.edit',
-    delete: 'safetyRiskControl.keyPart.delete',
-    detail: 'safetyRiskControl.keyPart.view',
+    list: 'facilityManagement.keyPart.listView',
+    add: 'facilityManagement.keyPart.add',
+    edit: 'facilityManagement.keyPart.edit',
+    delete: 'facilityManagement.keyPart.delete',
+    detail: 'facilityManagement.keyPart.view',
   },
   training: {
     examinationPaper: {

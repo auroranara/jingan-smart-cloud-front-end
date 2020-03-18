@@ -10,6 +10,7 @@ import {
   approve,
 } from '@/services/workingBill';
 import moment from 'moment';
+import { isNumber } from '@/utils/utils';
 
 export default {
   namespace: 'workingBill',
@@ -122,7 +123,7 @@ export default {
           workingPersonnel: data.workingPersonnel ? data.workingPersonnel.split(',') : undefined,
           safetyEducator: data.safetyEducator || undefined,
           constructionManager: data.constructionManager || undefined,
-          planType: data.planType ? `${data.planType}` : undefined,
+          planType: isNumber(data.planType) ? `${data.planType}` : undefined,
           workingStatus: data.workingStatus ? `${data.workingStatus}` : undefined,
           finishDate: data.finishDate ? moment(data.finishDate) : undefined,
           riskFactors: data.riskFactors || undefined,

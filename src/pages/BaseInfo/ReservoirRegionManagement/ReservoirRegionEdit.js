@@ -569,8 +569,8 @@ export default class ReservoirRegionEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '重大危险源基本信息',
-        name: '重大危险源基本信息',
+        title: '基本信息',
+        name: '基本信息',
       },
       {
         title: '库区管理',

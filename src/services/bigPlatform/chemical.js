@@ -77,3 +77,18 @@ export async function getWZList(params) {
 export async function getFireDevice(params) {
   return request(`${URL_PREFIX}/ci/zone/getFireDevice?${stringify(params)}`);
 }
+
+// 获取人员在岗在位
+export async function getOnDuty(params) {
+  return request(`${URL_PREFIX}/appMap/getOnDuty?${stringify(params)}`);
+}
+
+// 车辆统计
+export async function countByParkId(params) {
+  return request(`${URL_PREFIX}/carPlateRecognition/countByParkId?${stringify(params)}`);
+}
+
+// 车辆统计
+export async function getInOutRecord(params) {
+  return request(`${URL_PREFIX}/carPlateRecognition/inOutRecord/page?${stringify(params)}`);
+}

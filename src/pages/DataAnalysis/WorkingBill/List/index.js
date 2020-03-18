@@ -55,6 +55,7 @@ import {
   COMPANY_LIST_FIELDNAMES,
   DEPARTMENT_LIST_MAPPER,
   DEPARTMENT_LIST_FIELDNAMES,
+  BLIND_PLATE_WORK_TYPES,
 } from '../config';
 import styles from './index.less';
 
@@ -102,7 +103,7 @@ import styles from './index.less';
         dispatch({
           type: LIST_API,
           payload: {
-            type,
+            billType: type,
             pageNum: 1,
             pageSize: getPageSize(),
             ...values,
@@ -458,6 +459,7 @@ export default class WorkingBillTablePage extends Component {
                   params={{ companyId: isUnit ? unitId : values.company.key }}
                   mapper={DEPARTMENT_LIST_MAPPER}
                   fieldNames={DEPARTMENT_LIST_FIELDNAMES}
+                  allowClear
                 />
               ),
             },
@@ -509,7 +511,7 @@ export default class WorkingBillTablePage extends Component {
             },
           ]
         : []),
-      ...([TYPES[5].key, TYPES[6].key].includes(type)
+      ...([TYPES[5].key].includes(type)
         ? [
             {
               key: 'workingProject',
@@ -522,13 +524,25 @@ export default class WorkingBillTablePage extends Component {
               component: <RangePicker format={MINUTE_FORMAT} allowClear />,
             },
           ]
-        : [
+        : []),
+      ...([TYPES[6].key].includes(type)
+        ? [
+            {
+              key: 'billLevel',
+              label: '盲板作业类型',
+              component: <Select list={BLIND_PLATE_WORK_TYPES} allowClear />,
+            },
+          ]
+        : []),
+      ...(![TYPES[5].key].includes(type)
+        ? [
             {
               key: 'range',
               label: '作业时间',
               component: <RangePicker format={MINUTE_FORMAT} allowClear />,
             },
-          ]),
+          ]
+        : []),
       {
         key: 'workingStatus',
         label: '作业状态',
@@ -663,12 +677,13 @@ export default class WorkingBillTablePage extends Component {
         dataIndex: 'workingStatus',
         title: '作业状态',
         align: 'left',
-        render: key => (
-          <Badge
-            status={WORKING_STATUS_MAPPER[key]}
-            text={this.getValueByKey(WORKING_STATUSES, key)}
-          />
-        ),
+        render: (key, { approveStatus }) =>
+          `${approveStatus}` === APPROVE_STATUSES[1].key && (
+            <Badge
+              status={WORKING_STATUS_MAPPER[key]}
+              text={this.getValueByKey(WORKING_STATUSES, key)}
+            />
+          ),
       },
       {
         dataIndex: 'finishDate',
@@ -690,7 +705,8 @@ export default class WorkingBillTablePage extends Component {
         dataIndex: '是否已实施',
         title: '是否已实施',
         align: 'center',
-        render: (_, { workingStatus }) =>
+        render: (_, { approveStatus, workingStatus }) =>
+          `${approveStatus}` === APPROVE_STATUSES[1].key &&
           this.getValueByKey(
             IMPLEMENT_STATUSES,
             `${+(`${workingStatus}` === WORKING_STATUSES[2].key)}`

@@ -16,6 +16,8 @@ const {
   },
 } = codes;
 
+export const ARCHITECTURAL_STRUCTURE = ['钢混结构', '砖混结构', '钢结构', '框架结构', '框排架结构', '其他结构'].map((v, i) => ({ key: i.toString(), value: v }));
+
 const getEnvirType = {
   1: '住宅区',
   2: '生产单位',
@@ -41,7 +43,7 @@ export const LIST_URL = `${ROUTER}/list`;
 export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '重大危险源基本信息', name: '重大危险源基本信息' },
+  { title: '基本信息', name: '基本信息' },
   { title: '周边环境信息', name: '周边环境信息', href: LIST_URL },
 ];
 
@@ -197,7 +199,7 @@ export function getTableColumns(handleConfirmDelete, unitType) {
 }
 
 export function handleDetails(values, deletedProps = ['companyName']) {
-  const { companyId, companyName, latitude, longitude } = values;
+  const { companyId, companyName, latitude, longitude, buildStructure } = values;
   // const vals = { ...values };
   // deletedProps.forEach(p => delete vals[p]);
   // console.log('values', values);
@@ -206,5 +208,6 @@ export function handleDetails(values, deletedProps = ['companyName']) {
     ...values,
     companyId: { key: companyId, label: companyName },
     coordinate: latitude + ',' + longitude,
+    buildStructure: Number.isNaN(Number.parseInt(buildStructure, 10)) ? undefined : buildStructure,
   };
 }
