@@ -106,7 +106,7 @@ export default class AddAuthorization extends PureComponent {
     const { name, icnumber } = getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchPersonList',
-      payload: { name, icnumber, pageNum, pageSize },
+      payload: { name: name || undefined, icnumber: icnumber || undefined, pageNum, pageSize },
     })
   }
 
@@ -117,15 +117,15 @@ export default class AddAuthorization extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const { company } = this.state;
-    const { deviceName, deviceKey } = getFieldsValue();
+    const { deviceName, deviceCode } = getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchChannelDeviceList',
       payload: {
         pageNum,
         pageSize,
         companyId: company.id,
-        deviceName,
-        deviceKey,
+        deviceName: deviceName || undefined,
+        deviceCode: deviceCode || undefined,
       },
     })
   }
@@ -269,7 +269,7 @@ export default class AddAuthorization extends PureComponent {
       {
         title: '照片',
         dataIndex: 'photoDetails',
-        render: (val) => (
+        render: (val) => Array.isArray(val) ? (
           <div>
             {val.map((item, i) => (
               <img
@@ -281,7 +281,7 @@ export default class AddAuthorization extends PureComponent {
               />
             ))}
           </div>
-        ),
+        ) : null,
       },
     ];
     const deviceColumns = [
@@ -295,15 +295,15 @@ export default class AddAuthorization extends PureComponent {
         dataIndex: 'deviceKey',
         width: 160,
       },
-      {
-        title: '设备类型',
-        dataIndex: 'type',
-        width: 120,
-        render: (val) => {
-          const target = deviceTypeDict.find(item => +item.key === +val);
-          return target ? target.label : ''
-        },
-      },
+      // {
+      //   title: '设备类型',
+      //   dataIndex: 'type',
+      //   width: 120,
+      //   render: (val) => {
+      //     const target = deviceTypeDict.find(item => +item.key === +val);
+      //     return target ? target.label : ''
+      //   },
+      // },
       {
         title: '识别方式',
         dataIndex: 'recType',
@@ -519,7 +519,7 @@ export default class AddAuthorization extends PureComponent {
                         )}
                       </Col>
                       <Col span={8}>
-                        {getFieldDecorator('deviceKey')(
+                        {getFieldDecorator('deviceCode')(
                           <Input placeholder="设备序列号" allowClear />
                         )}
                       </Col>
