@@ -234,7 +234,7 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'photoDetails',
         align: 'center',
         width: 250,
-        render: (val) => (
+        render: (val) => Array.isArray(val) ? (
           <div>
             {val.map((item, i) => (
               <img
@@ -246,7 +246,7 @@ export default class PersonnelList extends PureComponent {
               />
             ))}
           </div>
-        ),
+        ) : '',
       },
       {
         title: '操作',

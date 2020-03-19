@@ -7,7 +7,7 @@ import { Button, Card, message, Tooltip, Input, Divider, Upload } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { handleDetails, BREADCRUMBLIST, LIST_URL, envirType } from '../Other/utils';
+import { handleDetails, BREADCRUMBLIST, LIST_URL, ARCHITECTURAL_STRUCTURE, envirType } from '../Other/utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
@@ -122,7 +122,7 @@ export default class Edit extends PureComponent {
         environmentName,
         environmentBear,
         minSpace,
-        buildStructure,
+        buildStructure: buildStructure || null,
         buildHeight,
         perNumber,
         contact,
@@ -368,7 +368,7 @@ export default class Edit extends PureComponent {
       { name: 'environmentName', label: '周边环境名称' },
       { name: 'environmentBear', label: '周边环境方位' },
       { name: 'minSpace', label: '与本企业最小距离(m)' },
-      { name: 'buildStructure', label: '建筑结构', required: false },
+      { name: 'buildStructure', label: '建筑结构', type: 'select', options: ARCHITECTURAL_STRUCTURE, required: false },
       { name: 'buildHeight', label: '相邻建筑高度(m)', required: false },
       { name: 'perNumber', label: '人员数量' },
       { name: 'contact', label: '联系人' },

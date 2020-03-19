@@ -32,6 +32,7 @@ const hosts = {
   tw: '192.168.10.5', // 田伟
   cfm: '192.168.10.6', // 崔富民
   tg: '192.168.10.96:8080', // 汤归
+  lh: '127.0.0.1:8080',
   jiangxi: '58.215.178.100:12083',
   xuzhou: 'xuzhou.jinganyun.net',
   shanxi: '58.215.178.100:12085',
@@ -46,7 +47,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -76,12 +77,12 @@ export default {
         dynamicImport: true,
         ...(os.platform() === 'darwin'
           ? {
-              dll: {
-                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-                exclude: ['@babel/runtime'],
-              },
-              hardSource: false,
-            }
+            dll: {
+              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+              exclude: ['@babel/runtime'],
+            },
+            hardSource: false,
+          }
           : {}),
       },
     ],

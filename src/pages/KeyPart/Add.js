@@ -15,7 +15,7 @@ import { treeData, partClassification } from './List.js';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
-const LIST_PATH = '/safety-risk-control/key-part/list';
+const LIST_PATH = '/facility-management/key-part/list';
 
 @connect(({ safetyProductionRegulation, user, account, keyPart }) => ({
   safetyProductionRegulation,
@@ -202,8 +202,8 @@ export default class AddOperatingProdures extends Component {
         href: '/',
       },
       {
-        title: '安全风险管控',
-        name: '安全风险管控',
+        title: '设备设施管理',
+        name: '设备设施管理',
       },
       {
         title: '关键装置重点部位',

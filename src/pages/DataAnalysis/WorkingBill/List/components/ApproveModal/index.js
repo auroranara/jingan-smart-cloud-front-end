@@ -65,7 +65,7 @@ export default class ApproveModal extends Component {
         label: '审批人',
         component: <Input className={styles.formItem} placeholder="请输入" maxLength={100} />,
         options: {
-          rules: [{ required: true, message: '审批人不能为空' }],
+          rules: [{ required: true, message: '审批人不能为空', whitespace: true }],
         },
       },
       {

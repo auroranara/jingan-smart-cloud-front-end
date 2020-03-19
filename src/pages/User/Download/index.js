@@ -59,7 +59,7 @@ export default function Download({
           </div>
           <div className={styles.codeWrapper}>
             <div className={styles.code} style={{ backgroundImage: `url(${code})` }} />
-            <div className={styles.codeDescription}>手机扫一扫，快速下载智慧安全APP</div>
+            <div className={styles.codeDescription}>手机扫一扫，快速下载APP</div>
           </div>
           {isFromMobile && (
             <div className={styles.buttonWrapper}>
