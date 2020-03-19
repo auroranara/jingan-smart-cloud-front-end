@@ -67,7 +67,7 @@ export default class AddOperatingProdures extends Component {
               startDate,
               endDate,
               status,
-              historyType,
+              // historyType,
               editionCode,
             } = detail;
             this.form && this.form.setFieldsValue({
@@ -78,7 +78,8 @@ export default class AddOperatingProdures extends Component {
               checkContent: checkContent || undefined,
               checkGist: checkGist || undefined,
               remark: remark || undefined,
-              historyType: isNotDetail && +status === 4 ? '1' : historyType || '0',
+              // historyType: isNotDetail && +status === 4 ? '1' : historyType || '0',
+              historyType: '1',
               editionCode: isNotDetail && +status === 4 ? (+editionCode + 0.01).toFixed(2) : editionCode || '1.00',
               name: name || undefined,
               phone: phone || undefined,

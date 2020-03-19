@@ -645,14 +645,14 @@ export default class AuthorizationList extends PureComponent {
         title: '设备序列号',
         dataIndex: 'deviceKey',
       },
-      {
-        title: '设备类型',
-        dataIndex: 'type',
-        render: (val) => {
-          const target = deviceTypeDict.find(item => +item.key === +val);
-          return target ? target.label : ''
-        },
-      },
+      // {
+      //   title: '设备类型',
+      //   dataIndex: 'type',
+      //   render: (val) => {
+      //     const target = deviceTypeDict.find(item => +item.key === +val);
+      //     return target ? target.label : ''
+      //   },
+      // },
       {
         title: '操作',
         key: '操作',
