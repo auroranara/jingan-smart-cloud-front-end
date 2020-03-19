@@ -194,6 +194,10 @@ export default class ChannelDeviceAdd extends Component {
                   whitespace: true,
                   message: '设备序列号不能为空',
                 },
+                {
+                  pattern: /^[0-9A-Za-z]*$/,
+                  message: '请输入英文和数字',
+                },
               ] : undefined,
               getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
             },
@@ -210,6 +214,10 @@ export default class ChannelDeviceAdd extends Component {
                   required: true,
                   whitespace: true,
                   message: 'appID不能为空',
+                },
+                {
+                  pattern: /^[0-9A-Za-z]*$/,
+                  message: '请输入英文和数字',
                 },
               ] : undefined,
               getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
@@ -228,6 +236,10 @@ export default class ChannelDeviceAdd extends Component {
                   whitespace: true,
                   message: 'appKey不能为空',
                 },
+                {
+                  pattern: /^[0-9A-Za-z]*$/,
+                  message: '请输入英文和数字',
+                },
               ] : undefined,
               getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
             },
@@ -244,6 +256,10 @@ export default class ChannelDeviceAdd extends Component {
                   required: true,
                   whitespace: true,
                   message: 'appSecret不能为空',
+                },
+                {
+                  pattern: /^[0-9A-Za-z]*$/,
+                  message: '请输入英文和数字',
                 },
               ] : undefined,
               getValueFromEvent: e => e.target.value.replace(/\s/g, ''),

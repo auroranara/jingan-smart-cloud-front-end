@@ -152,13 +152,13 @@ export default class AddOperatingProdures extends Component {
   }
 
   // 选择关联设备
-  handleSelectDevice = ({ id }) => {
+  handleSelectDevice = ({ id, deviceCode }) => {
     const { currentDevice, device } = this.state;
     if (device.some(item => item.id === id)) {
       message.warning('该设备已选择！')
       return;
     }
-    const newDevice = device.map((item, i) => currentDevice === i ? { ...item, id, code: item.deviceCode } : item)
+    const newDevice = device.map((item, i) => currentDevice === i ? { ...item, id, code: deviceCode } : item)
     this.setState({ device: newDevice, deviceModalVisible: false });
     this.form && this.form.setFieldsValue({ device: newDevice });
   }
@@ -229,7 +229,7 @@ export default class AddOperatingProdures extends Component {
   }
 
   validateDevice = (rule, value, callback) => {
-    if (Array.isArray(value) && value.every(item => item.direction && item.key)) {
+    if (Array.isArray(value) && value.every(item => item.direction && item.id)) {
       callback()
     } else callback('关联设备不能为空')
   }

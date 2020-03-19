@@ -214,7 +214,7 @@ export default {
   },
   effects: {
     // 获取企业列表
-    *fetchCompanyList({ payload }, { call, put }) {
+    *fetchCompanyList ({ payload }, { call, put }) {
       const res = yield call(fetchCompanyList, payload);
       if (res && res.code === 200 && res.data) {
         yield put({
@@ -224,17 +224,17 @@ export default {
       }
     },
     // 新增人员
-    *addPerson({ payload, callback }, { call }) {
+    *addPerson ({ payload, callback }, { call }) {
       const res = yield call(addPerson, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 编辑人员
-    *editPerson({ payload, callback }, { call }) {
+    *editPerson ({ payload, callback }, { call }) {
       const res = yield call(editPerson, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取人员列表
-    *fetchPersonList({ payload }, { call, put }) {
+    *fetchPersonList ({ payload }, { call, put }) {
       const res = yield call(fetchPersonList, payload);
       if (res && res.code === 200) {
         yield put({
@@ -244,26 +244,26 @@ export default {
       }
     },
     // 删除人员
-    *deletePerson({ payload, callback }, { call }) {
+    *deletePerson ({ payload, callback }, { call }) {
       const res = yield call(deletePerson, payload);
       callback && callback(res && res.code === 200);
     },
     // 获取详情
-    *fetchDetail({ payload, callback }, { call }) {
+    *fetchDetail ({ payload, callback }, { call }) {
       const res = yield call(fetchPersonList, payload);
       if (res && res.code === 200 && res.data) {
         callback && callback(res.data.list[0]);
       } else if (callback) callback({});
     },
     // 批量授权人员
-    *authorizationPerson({ payload, callback }, { call }) {
+    *authorizationPerson ({ payload, callback }, { call }) {
       const res = yield call(authorizationPerson, payload);
       if (res && res.code === 200) {
         callback(res.data);
       }
     },
     // 获取授权列表
-    *fetchAuthorizationList({ payload }, { call, put }) {
+    *fetchAuthorizationList ({ payload }, { call, put }) {
       const res = yield call(fetchAuthorizationList, payload);
       if (res && res.code === 200 && res.data) {
         yield put({
@@ -273,17 +273,17 @@ export default {
       }
     },
     // 全部销权
-    *deleteAllAuthorization({ payload, callback }, { call }) {
+    *deleteAllAuthorization ({ payload, callback }, { call }) {
       const res = yield call(deleteAllAuthorization, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 销权
-    *deleteAuthorization({ payload, callback }, { call }) {
+    *deleteAuthorization ({ payload, callback }, { call }) {
       const res = yield call(deleteAuthorization, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取识别记录列表
-    *fetchIdentificationRecord({ payload }, { call, put }) {
+    *fetchIdentificationRecord ({ payload }, { call, put }) {
       const res = yield call(fetchIdentificationRecord, payload);
       if (res && res.code === 200) {
         yield put({
@@ -292,14 +292,6 @@ export default {
         });
       }
     },
-    // 标签卡列表
-    *fetchTagCardList() {},
-    // 新增
-    *fetchTagCardAdd() {},
-    // 编辑
-    *fetchTagCardEdit() {},
-    // 删除
-    *fetchTagCardDel() {},
     // 获取通道设备列表
     *fetchChannelDeviceList ({ payload }, { call, put }) {
       const res = yield call(fetchChannelDeviceList, payload);
@@ -360,13 +352,13 @@ export default {
     },
   },
   reducers: {
-    save(state, action) {
+    save (state, action) {
       return {
         ...state,
         ...action.payload,
       };
     },
-    saveCompany(state, action) {
+    saveCompany (state, action) {
       const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
       return {
         ...state,
@@ -377,8 +369,8 @@ export default {
         },
       };
     },
-    savePerson(state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    savePerson (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         person: {
@@ -398,7 +390,7 @@ export default {
       };
     },
     saveIdentificationRecord (state, { payload = {} }) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = payload;
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         identification: {
@@ -408,7 +400,7 @@ export default {
       };
     },
     saveChannelDevice (state, { payload = {} }) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = payload;
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         channelDevice: {
@@ -430,7 +422,7 @@ export default {
       }
     },
     saveChannel (state, { payload = {} }) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = payload;
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         channel: {
