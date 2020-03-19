@@ -272,11 +272,11 @@ export default class PersonnelAdd extends PureComponent {
   };
 
   validateSn = (rule, value, callback) => {
-    const snRe = new RegExp(/[0-9a-fA-F]/);
+    const snRe = new RegExp(/[0-9a-fA-F]$/);
     const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
     if (value && value.length === 12 && snRe.test(value) && !chineseRe.test(value)) {
       callback();
-    } else callback('必须为12位16进制数');
+    } else callback('必须为12位数');
   };
 
   handleSexTypeChange = i => {
@@ -488,10 +488,7 @@ export default class PersonnelAdd extends PureComponent {
                   {getFieldDecorator('entranceNumber', {
                     getValueFromEvent: this.handleTrim,
                     initialValue: id ? detail.entranceNumber : undefined,
-                    rules: [
-                      // { pattern: /[0-9a-fA-F]$/, message: '必须为12位16进制数' },
-                      { validator: this.validateSn },
-                    ],
+                    rules: [{ validator: this.validateSn }],
                   })(<Input placeholder="请输入" maxLength={12} />)}
                 </FormItem>
               </Col>
