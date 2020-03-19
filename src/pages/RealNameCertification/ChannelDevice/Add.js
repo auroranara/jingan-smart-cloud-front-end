@@ -195,6 +195,7 @@ export default class ChannelDeviceAdd extends Component {
                   message: '设备序列号不能为空',
                 },
               ] : undefined,
+              getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
             },
           },
           {
@@ -211,6 +212,7 @@ export default class ChannelDeviceAdd extends Component {
                   message: 'appID不能为空',
                 },
               ] : undefined,
+              getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
             },
           },
           {
@@ -227,6 +229,7 @@ export default class ChannelDeviceAdd extends Component {
                   message: 'appKey不能为空',
                 },
               ] : undefined,
+              getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
             },
           },
           {
@@ -243,6 +246,7 @@ export default class ChannelDeviceAdd extends Component {
                   message: 'appSecret不能为空',
                 },
               ] : undefined,
+              getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
             },
           },
         ],

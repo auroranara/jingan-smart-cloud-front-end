@@ -371,8 +371,8 @@ export default {
         },
       }
     },
-    saveAuthorization (state, action) {
-      const { content: list = [], index: pageNum = 1, length: pageSize = 10, total = 0 } = action.payload;
+    saveAuthorization (state, { payload = {} }) {
+      const { content: list = [], index: pageNum = 1, length: pageSize = 10, total = 0 } = payload;
       return {
         ...state,
         authorization: {
@@ -381,8 +381,8 @@ export default {
         },
       }
     },
-    saveIdentificationRecord (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    saveIdentificationRecord (state, { payload = {} }) {
+      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = payload;
       return {
         ...state,
         identification: {
@@ -391,8 +391,8 @@ export default {
         },
       }
     },
-    saveChannelDevice (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    saveChannelDevice (state, { payload = {} }) {
+      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = payload;
       return {
         ...state,
         channelDevice: {
@@ -413,8 +413,8 @@ export default {
         channelSearchInfo: action.payload || {},
       }
     },
-    saveChannel (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    saveChannel (state, { payload = {} }) {
+      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = payload;
       return {
         ...state,
         channel: {

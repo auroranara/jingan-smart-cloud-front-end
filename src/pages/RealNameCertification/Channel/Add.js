@@ -416,7 +416,7 @@ export default class AddOperatingProdures extends Component {
           </div>
         </Spin>
         <CompanyModal
-          title="选择单位"
+          title="选择设备"
           loading={deviceLoading}
           visible={deviceModalVisible}
           modal={channelDevice}
