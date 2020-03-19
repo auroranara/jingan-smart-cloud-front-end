@@ -1,15 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import {
-  Button,
-  Input,
-  Card,
-  Table,
-  Divider,
-  Form,
-  Row,
-  Col,
-  message,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Input, Card, Table, Divider, Row, Col, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -243,12 +235,12 @@ export default class ChannelDeviceList extends Component {
       },
     } = this.props;
     const columns = [
-      ...isCompany ? [] : [{
+      ...(isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      }],
+      }]),
       {
         title: '设备名称',
         dataIndex: 'deviceName',
