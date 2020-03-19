@@ -1727,181 +1727,181 @@ module.exports = env => {
         },
 
         // 生产人员在岗在位系统
-        {
-          path: '/personnel-management', // (在岗在位系统)基本信息
-          code: 'personnelManagement',
-          icon: 'file-text',
-          name: 'personnelManagement',
-          systemType: 3,
-          routes: [
-            {
-              path: '/personnel-management/tag-card', // 人员基本信息
-              code: 'personnelManagement.tagCardManagement',
-              name: 'tagCardManagement',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-management/tag-card',
-                  name: 'tagCardManagement',
-                  redirect: '/personnel-management/tag-card/index',
-                },
-                {
-                  path: '/personnel-management/tag-card/index',
-                  code: 'personnelManagement.tagCardManagement.list',
-                  name: 'tagCardList',
-                  component: './RealNameCertification/TagCardManagement/List',
-                },
-                {
-                  path: '/personnel-management/tag-card/add',
-                  code: 'personnelManagement.tagCardManagement.add',
-                  name: 'tagCardAdd',
-                  component: './RealNameCertification/TagCardManagement/Handle',
-                },
-                {
-                  path: '/personnel-management/tag-card/edit/:id',
-                  code: 'personnelManagement.tagCardManagement.edit',
-                  name: 'tagCardEdit',
-                  component: './RealNameCertification/TagCardManagement/Handle',
-                },
-                {
-                  path: '/personnel-management/tag-card/detail/:id',
-                  code: 'personnelManagement.tagCardManagement.view',
-                  name: 'tagCardDetail',
-                  component: './RealNameCertification/TagCardManagement/Handle',
-                },
-              ],
-            },
-            // {
-            //   path: '/personnel-management/personnel-info', // 人员基本信息
-            //   code: 'personnelManagement.personnelInfo',
-            //   name: 'personnelInfo',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/personnel-management/personnel-info',
-            //       name: 'personnelInfo',
-            //       redirect: '/personnel-management/personnel-info/company-list',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/company-list',
-            //       code: 'personnelManagement.personnelInfo.listView',
-            //       name: 'companyList',
-            //       component: './PersonnelManagement/PersonnelInfo/CompanyList',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/personnel-list/:id',
-            //       code: 'personnelManagement.personnelInfo.view',
-            //       name: 'personnelList',
-            //       component: './PersonnelManagement/PersonnelInfo/PersonnelList',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/personnel-add',
-            //       code: 'personnelManagement.personnelInfo.add',
-            //       name: 'personnelAdd',
-            //       component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/personnel-edit/:id',
-            //       code: 'personnelManagement.personnelInfo.edit',
-            //       name: 'personnelEdit',
-            //       component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/personnel-detail/:id',
-            //       code: 'personnelManagement.personnelInfo.detail',
-            //       name: 'personnelDetail',
-            //       component: './PersonnelManagement/PersonnelInfo/PersonnelDetail',
-            //     },
-            //   ],
-            // },
-            // {
-            //   path: '/personnel-management/vehicle-info', // 车辆基本信息
-            //   code: 'personnelManagement.vehicleInfo',
-            //   name: 'vehicleInfo',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/personnel-management/vehicle-info',
-            //       name: 'vehicleInfo',
-            //       redirect: '/personnel-management/vehicle-info/company-list',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/company-list',
-            //       code: 'personnelManagement.vehicleInfo.listView',
-            //       name: 'companyList',
-            //       component: './PersonnelManagement/VehicleInfo/CompanyList',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/vehicle-list/:id',
-            //       code: 'personnelManagement.vehicleInfo.view',
-            //       name: 'vehicleList',
-            //       component: './PersonnelManagement/VehicleInfo/VehicleList',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/vehicle-add',
-            //       code: 'personnelManagement.vehicleInfo.add',
-            //       name: 'vehicleAdd',
-            //       component: './PersonnelManagement/VehicleInfo/VehicleEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/vehicle-edit/:id',
-            //       code: 'personnelManagement.vehicleInfo.edit',
-            //       name: 'vehicleEdit',
-            //       component: './PersonnelManagement/VehicleInfo/VehicleEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/vehicle-detail/:id',
-            //       code: 'personnelManagement.vehicleInfo.detail',
-            //       name: 'vehicleDetail',
-            //       component: './PersonnelManagement/VehicleInfo/VehicleDetail',
-            //     },
-            //   ],
-            // },
-            // {
-            //   path: '/personnel-management/check-point', // 卡口信息
-            //   code: 'personnelManagement.checkPoint',
-            //   name: 'checkPoint',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/personnel-management/check-point',
-            //       name: 'checkPoint',
-            //       redirect: '/personnel-management/check-point/company-list',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/company-list',
-            //       code: 'personnelManagement.checkPoint.companyListView',
-            //       name: 'companyList',
-            //       component: './PersonnelManagement/CheckPoint/CompanyList',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/list/:companyId/:tabIndex',
-            //       code: 'personnelManagement.checkPoint.listView',
-            //       name: 'list',
-            //       component: './PersonnelManagement/CheckPoint/CheckList',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/add/:companyId/:tabIndex',
-            //       code: 'personnelManagement.checkPoint.add',
-            //       name: 'add',
-            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
-            //       code: 'personnelManagement.checkPoint.view',
-            //       name: 'detail',
-            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
-            //       code: 'personnelManagement.checkPoint.edit',
-            //       name: 'edit',
-            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
-            //     },
-            //   ],
-            // },
-          ],
-        },
+        // {
+        //   path: '/personnel-management', // (在岗在位系统)基本信息
+        //   code: 'personnelManagement',
+        //   icon: 'file-text',
+        //   name: 'personnelManagement',
+        //   systemType: 3,
+        //   routes: [
+        // {
+        //   path: '/personnel-management/tag-card', // 人员基本信息
+        //   code: 'personnelManagement.tagCardManagement',
+        //   name: 'tagCardManagement',
+        //   hideChildrenInMenu: true,
+        //   routes: [
+        //     {
+        //       path: '/personnel-management/tag-card',
+        //       name: 'tagCardManagement',
+        //       redirect: '/personnel-management/tag-card/index',
+        //     },
+        //     {
+        //       path: '/personnel-management/tag-card/index',
+        //       code: 'personnelManagement.tagCardManagement.list',
+        //       name: 'tagCardList',
+        //       component: './RealNameCertification/TagCardManagement/List',
+        //     },
+        //     {
+        //       path: '/personnel-management/tag-card/add',
+        //       code: 'personnelManagement.tagCardManagement.add',
+        //       name: 'tagCardAdd',
+        //       component: './RealNameCertification/TagCardManagement/Handle',
+        //     },
+        //     {
+        //       path: '/personnel-management/tag-card/edit/:id',
+        //       code: 'personnelManagement.tagCardManagement.edit',
+        //       name: 'tagCardEdit',
+        //       component: './RealNameCertification/TagCardManagement/Handle',
+        //     },
+        //     {
+        //       path: '/personnel-management/tag-card/detail/:id',
+        //       code: 'personnelManagement.tagCardManagement.view',
+        //       name: 'tagCardDetail',
+        //       component: './RealNameCertification/TagCardManagement/Handle',
+        //     },
+        //   ],
+        // },
+        // {
+        //   path: '/personnel-management/personnel-info', // 人员基本信息
+        //   code: 'personnelManagement.personnelInfo',
+        //   name: 'personnelInfo',
+        //   hideChildrenInMenu: true,
+        //   routes: [
+        //     {
+        //       path: '/personnel-management/personnel-info',
+        //       name: 'personnelInfo',
+        //       redirect: '/personnel-management/personnel-info/company-list',
+        //     },
+        //     {
+        //       path: '/personnel-management/personnel-info/company-list',
+        //       code: 'personnelManagement.personnelInfo.listView',
+        //       name: 'companyList',
+        //       component: './PersonnelManagement/PersonnelInfo/CompanyList',
+        //     },
+        //     {
+        //       path: '/personnel-management/personnel-info/personnel-list/:id',
+        //       code: 'personnelManagement.personnelInfo.view',
+        //       name: 'personnelList',
+        //       component: './PersonnelManagement/PersonnelInfo/PersonnelList',
+        //     },
+        //     {
+        //       path: '/personnel-management/personnel-info/personnel-add',
+        //       code: 'personnelManagement.personnelInfo.add',
+        //       name: 'personnelAdd',
+        //       component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
+        //     },
+        //     {
+        //       path: '/personnel-management/personnel-info/personnel-edit/:id',
+        //       code: 'personnelManagement.personnelInfo.edit',
+        //       name: 'personnelEdit',
+        //       component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
+        //     },
+        //     {
+        //       path: '/personnel-management/personnel-info/personnel-detail/:id',
+        //       code: 'personnelManagement.personnelInfo.detail',
+        //       name: 'personnelDetail',
+        //       component: './PersonnelManagement/PersonnelInfo/PersonnelDetail',
+        //     },
+        //   ],
+        // },
+        // {
+        //   path: '/personnel-management/vehicle-info', // 车辆基本信息
+        //   code: 'personnelManagement.vehicleInfo',
+        //   name: 'vehicleInfo',
+        //   hideChildrenInMenu: true,
+        //   routes: [
+        //     {
+        //       path: '/personnel-management/vehicle-info',
+        //       name: 'vehicleInfo',
+        //       redirect: '/personnel-management/vehicle-info/company-list',
+        //     },
+        //     {
+        //       path: '/personnel-management/vehicle-info/company-list',
+        //       code: 'personnelManagement.vehicleInfo.listView',
+        //       name: 'companyList',
+        //       component: './PersonnelManagement/VehicleInfo/CompanyList',
+        //     },
+        //     {
+        //       path: '/personnel-management/vehicle-info/vehicle-list/:id',
+        //       code: 'personnelManagement.vehicleInfo.view',
+        //       name: 'vehicleList',
+        //       component: './PersonnelManagement/VehicleInfo/VehicleList',
+        //     },
+        //     {
+        //       path: '/personnel-management/vehicle-info/vehicle-add',
+        //       code: 'personnelManagement.vehicleInfo.add',
+        //       name: 'vehicleAdd',
+        //       component: './PersonnelManagement/VehicleInfo/VehicleEdit',
+        //     },
+        //     {
+        //       path: '/personnel-management/vehicle-info/vehicle-edit/:id',
+        //       code: 'personnelManagement.vehicleInfo.edit',
+        //       name: 'vehicleEdit',
+        //       component: './PersonnelManagement/VehicleInfo/VehicleEdit',
+        //     },
+        //     {
+        //       path: '/personnel-management/vehicle-info/vehicle-detail/:id',
+        //       code: 'personnelManagement.vehicleInfo.detail',
+        //       name: 'vehicleDetail',
+        //       component: './PersonnelManagement/VehicleInfo/VehicleDetail',
+        //     },
+        //   ],
+        // },
+        // {
+        //   path: '/personnel-management/check-point', // 卡口信息
+        //   code: 'personnelManagement.checkPoint',
+        //   name: 'checkPoint',
+        //   hideChildrenInMenu: true,
+        //   routes: [
+        //     {
+        //       path: '/personnel-management/check-point',
+        //       name: 'checkPoint',
+        //       redirect: '/personnel-management/check-point/company-list',
+        //     },
+        //     {
+        //       path: '/personnel-management/check-point/company-list',
+        //       code: 'personnelManagement.checkPoint.companyListView',
+        //       name: 'companyList',
+        //       component: './PersonnelManagement/CheckPoint/CompanyList',
+        //     },
+        //     {
+        //       path: '/personnel-management/check-point/list/:companyId/:tabIndex',
+        //       code: 'personnelManagement.checkPoint.listView',
+        //       name: 'list',
+        //       component: './PersonnelManagement/CheckPoint/CheckList',
+        //     },
+        //     {
+        //       path: '/personnel-management/check-point/add/:companyId/:tabIndex',
+        //       code: 'personnelManagement.checkPoint.add',
+        //       name: 'add',
+        //       component: './PersonnelManagement/CheckPoint/CheckEdit',
+        //     },
+        //     {
+        //       path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
+        //       code: 'personnelManagement.checkPoint.view',
+        //       name: 'detail',
+        //       component: './PersonnelManagement/CheckPoint/CheckEdit',
+        //     },
+        //     {
+        //       path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
+        //       code: 'personnelManagement.checkPoint.edit',
+        //       name: 'edit',
+        //       component: './PersonnelManagement/CheckPoint/CheckEdit',
+        //     },
+        //   ],
+        // },
+        //   ],
+        // },
 
         {
           path: '/personnel-position', // 人员定位
