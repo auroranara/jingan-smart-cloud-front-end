@@ -674,7 +674,7 @@ export default class WorkApprovalList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        width: 80,
         fixed: 'right',
         render: (val, row) => (
           <span>

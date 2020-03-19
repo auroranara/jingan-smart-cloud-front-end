@@ -468,7 +468,8 @@ export default class DangerChemicalList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 250,
+        fixed: 'right',
+        width: 120,
         render: (val, record) => (
           <Fragment>
             {editCode ? (

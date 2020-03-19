@@ -163,7 +163,7 @@ export const TABLE_COLUMNS = [
     },
   },
   {
-    title: '',
+    title: '装置参数',
     dataIndex: 'otherInfo',
     key: 'otherInfo',
     align: 'center',

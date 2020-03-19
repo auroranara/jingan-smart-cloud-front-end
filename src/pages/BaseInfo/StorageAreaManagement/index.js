@@ -368,7 +368,7 @@ export default class StorageAreaManagement extends PureComponent {
       },
       {
         title: '操作',
-        key: '操作',
+        key: 'operation',
         align: 'center',
         fixed: 'right',
         width: 270,

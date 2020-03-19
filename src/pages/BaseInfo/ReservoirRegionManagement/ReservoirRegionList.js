@@ -384,9 +384,9 @@ export default class ReservoirRegionList extends PureComponent {
       },
       {
         title: '操作',
-        key: '操作',
+        key: 'operation',
         align: 'center',
-        width: 240,
+        width: 210,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>

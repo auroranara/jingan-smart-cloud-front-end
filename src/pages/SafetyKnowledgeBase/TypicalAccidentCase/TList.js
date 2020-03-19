@@ -289,7 +289,8 @@ export default class CaseList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        width: 120,
+        fixed: 'right',
         render: (val, row) => (
           <Fragment>
             {editCode ? (

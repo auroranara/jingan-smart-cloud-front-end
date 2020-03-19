@@ -255,7 +255,7 @@ export default class RiskCard extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 180,
+        width: 130,
         render: (text, rows) => (
           <span>
             <a onClick={() => this.goRiskCardEdit(rows.id)}>

@@ -179,7 +179,7 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
       title: '操作',
       dataIndex: 'id',
       key: 'id',
-      width: 180,
+      width: 160,
       align: 'center',
       fixed: 'right',
       render(id) {

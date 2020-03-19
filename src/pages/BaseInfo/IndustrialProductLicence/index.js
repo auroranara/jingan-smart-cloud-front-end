@@ -339,7 +339,8 @@ export default class IndustriallicenceList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        fixed: 'right',
+        width: 120,
         render: (val, row) => (
           <Fragment>
             {editCode ? (

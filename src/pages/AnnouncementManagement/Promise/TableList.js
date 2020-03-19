@@ -205,7 +205,8 @@ export default class TableList extends PureComponent {
         dataIndex: 'operation',
         key: 'operation',
         align: 'center',
-        width: 180,
+        fixed: 'right',
+        width: 160,
         render: (val, text) => {
           return (
             <Fragment>
