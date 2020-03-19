@@ -39,6 +39,13 @@ const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 const uploadAction = '/acloud_new/v2/uploadFile';
 
+const getPersonType = {
+  2: '外协人员',
+  3: '临时人员',
+  4: '操作人员',
+  5: '管理人员',
+  6: '安全巡查人员',
+};
 @connect(({ realNameCertification, user, loading }) => ({
   realNameCertification,
   user,
@@ -265,6 +272,13 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'telephone',
         align: 'center',
         width: 200,
+      },
+      {
+        title: '人员类型',
+        dataIndex: 'personType',
+        align: 'center',
+        width: 200,
+        render: val => getPersonType[val],
       },
       {
         title: (

@@ -31,6 +31,21 @@ const formItemLayout = {
   wrapperCol: { span: 18 },
 };
 
+const formItemLayout1 = {
+  labelCol: { span: 2 },
+  wrapperCol: { span: 18 },
+};
+
+const DEGREES = [
+  { key: '0', label: '初中' },
+  { key: '1', label: '高中' },
+  { key: '2', label: '中专' },
+  { key: '3', label: '大专' },
+  { key: '4', label: '本科' },
+  { key: '5', label: '硕士' },
+  { key: '6', label: '博士' },
+];
+
 @Form.create()
 @connect(({ realNameCertification, user, department, loading }) => ({
   realNameCertification,
@@ -280,10 +295,9 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { curCompanyName } = this.state;
     const isId = id !== '2' && id !== '3';
     this.setState({ perType: id });
-    setFieldsValue({ personCompany: isId ? curCompanyName : undefined });
+    setFieldsValue({ personCompany: undefined });
     if (isId) {
       this.fetchDepartment();
     }
@@ -308,7 +322,7 @@ export default class PersonnelAdd extends PureComponent {
       realNameCertification: { personTypeDict },
     } = this.props;
 
-    const { photoLoading, sexValue, detail, diplomaLoading, perType, curCompanyName } = this.state;
+    const { photoLoading, sexValue, detail, diplomaLoading, perType } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
     const title = id ? '编辑人员信息' : '新增人员信息';
@@ -344,13 +358,6 @@ export default class PersonnelAdd extends PureComponent {
           <Form layout="horizontal">
             <Row gutter={16}>
               <Col {...colLayout}>
-                <FormItem label="职工号" {...formItemLayout}>
-                  {getFieldDecorator('workerNumber', {
-                    initialValue: id ? detail.workerNumber : undefined,
-                  })(<Input placeholder="请输入" maxLength={10} />)}
-                </FormItem>
-              </Col>
-              <Col {...colLayout}>
                 <FormItem label="姓名" {...formItemLayout}>
                   {getFieldDecorator('name', {
                     initialValue: id ? detail.name : undefined,
@@ -359,10 +366,17 @@ export default class PersonnelAdd extends PureComponent {
                 </FormItem>
               </Col>
               <Col {...colLayout}>
+                <FormItem label="职工号" {...formItemLayout}>
+                  {getFieldDecorator('workerNumber', {
+                    initialValue: id ? detail.workerNumber : undefined,
+                  })(<Input placeholder="请输入" maxLength={10} />)}
+                </FormItem>
+              </Col>
+              <Col {...colLayout}>
                 <FormItem label="性别" {...formItemLayout}>
                   {getFieldDecorator('sex', {
                     initialValue: id ? detail.sex : sexValue,
-                    rules: [{ required: true, message: '请选择性别' }],
+                    //rules: [{ required: true, message: '请选择性别' }],
                   })(
                     <Radio.Group onChange={this.handleSexTypeChange} buttonStyle="solid">
                       <Radio.Button value="0">男</Radio.Button>
@@ -400,19 +414,9 @@ export default class PersonnelAdd extends PureComponent {
               </Col>
               {hasCompanyName && (
                 <Col {...colLayout}>
-                  <FormItem label="单位名称" {...formItemLayout}>
-                    {getFieldDecorator('personCompany', {
-                      initialValue: curCompanyName,
-                      rules: [{ required: true, message: '请输入单位名称' }],
-                    })(<Input disabled placeholder="请输入" />)}
-                  </FormItem>
-                </Col>
-              )}
-              {hasCompanyName && (
-                <Col {...colLayout}>
                   <FormItem label="部门" {...formItemLayout}>
-                    {getFieldDecorator('departmentId', {
-                      //initialValue: curCompanyName,
+                    {getFieldDecorator('partId', {
+                      initialValue: id ? detail.partId : undefined,
                     })(
                       <Select placeholder="请选择">
                         {departmentList.map(({ id, name }) => (
@@ -435,38 +439,6 @@ export default class PersonnelAdd extends PureComponent {
                   </FormItem>
                 </Col>
               )}
-              <Col {...colLayout}>
-                <FormItem label="学历证书" {...formItemLayout}>
-                  {getFieldDecorator('educationCertificateDetails')(
-                    <Fragment>
-                      <Upload
-                        name="files"
-                        listType="picture-card"
-                        headers={{ 'JA-Token': getToken() }}
-                        accept=".jpg,.png" // 接收的文件格式
-                        data={{ folder: 'realName' }} // 附带的参数
-                        showUploadList={false}
-                        action={uploadAction} // 上传地址
-                        beforeUpload={this.handleBeforeUploadDiploma}
-                        onChange={this.handleDiplomaUploadChange}
-                      >
-                        {educationCertificateDetails && educationCertificateDetails.length > 0 ? (
-                          <img
-                            src={educationCertificateDetails.map(item => item.webUrl).join('')}
-                            alt="照片"
-                            style={{ width: '86px', height: '86px', objectFit: 'contain' }}
-                          />
-                        ) : (
-                          <div>
-                            <Icon type={diplomaLoading ? 'loading' : 'plus'} />
-                            <div className="ant-upload-text">上传</div>
-                          </div>
-                        )}
-                      </Upload>
-                    </Fragment>
-                  )}
-                </FormItem>
-              </Col>
             </Row>
           </Form>
         </Card>
@@ -524,24 +496,31 @@ export default class PersonnelAdd extends PureComponent {
                     //rules: [{ validator: this.validatePhoto }],
                   })(
                     <Fragment>
-                      <Upload
-                        name="files"
-                        listType="picture-card"
-                        headers={{ 'JA-Token': getToken() }}
-                        accept=".jpg,.png" // 接收的文件格式
-                        data={{ folder: 'realName' }} // 附带的参数
-                        fileList={photoDetails}
-                        action={uploadAction} // 上传地址
-                        beforeUpload={this.handleBeforeUploadPhoto}
-                        onChange={this.handlePhotoUploadChange}
-                      >
-                        {photoDetails.length < 3 ? (
-                          <div>
-                            <Icon type={photoLoading ? 'loading' : 'plus'} />
-                            <div className="ant-upload-text">上传</div>
-                          </div>
-                        ) : null}
-                      </Upload>
+                      <div style={{ display: 'flex' }}>
+                        <Upload
+                          name="files"
+                          listType="picture-card"
+                          headers={{ 'JA-Token': getToken() }}
+                          accept=".jpg,.png" // 接收的文件格式
+                          data={{ folder: 'realName' }} // 附带的参数
+                          fileList={photoDetails}
+                          action={uploadAction} // 上传地址
+                          beforeUpload={this.handleBeforeUploadPhoto}
+                          onChange={this.handlePhotoUploadChange}
+                        >
+                          {photoDetails.length < 3 ? (
+                            <div>
+                              <Icon type={photoLoading ? 'loading' : 'plus'} />
+                              <div className="ant-upload-text">上传</div>
+                            </div>
+                          ) : null}
+                        </Upload>
+                        <div className={styles.labelColor}>
+                          <div style={{ marginBottom: '-15px' }}>照片命名示例:</div>
+                          <div style={{ marginBottom: '-15px' }}>姓名_ID卡号</div>
+                          <div>张三_FF000000011B</div>
+                        </div>
+                      </div>
                     </Fragment>
                   )}
                 </FormItem>
@@ -550,7 +529,63 @@ export default class PersonnelAdd extends PureComponent {
                 <FormItem label="注册照片示例" style={{ marginLeft: '2%' }}>
                   <Fragment>
                     <img src={PIC} width="50%" height="25%" alt="" />
+                    <div className={styles.labelColor}>
+                      照片要求：1.小于400K；2.面部区域像素不低于128x128，人脸大小占整张照片1/3以上；3.确保所有注册人员为同一人员，否则无法成功注册
+                    </div>
                   </Fragment>
+                </FormItem>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+        <Card title="学历信息" style={{ marginTop: 5 }}>
+          <Form layout="horizontal">
+            <Row gutter={16}>
+              <Col {...colLayout}>
+                <FormItem label="学历" {...formItemLayout}>
+                  {getFieldDecorator('education', {
+                    initialValue: id ? detail.education : undefined,
+                  })(
+                    <Select placeholder="请选择" allowClear>
+                      {DEGREES.map(({ key, label }) => (
+                        <Select.Option value={key} key={key}>
+                          {label}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col {...colLayout}>
+                <FormItem label="学历证书" {...formItemLayout}>
+                  {getFieldDecorator('educationCertificateDetails')(
+                    <Fragment>
+                      <Upload
+                        name="files"
+                        listType="picture-card"
+                        headers={{ 'JA-Token': getToken() }}
+                        accept=".jpg,.png" // 接收的文件格式
+                        data={{ folder: 'realName' }} // 附带的参数
+                        showUploadList={false}
+                        action={uploadAction} // 上传地址
+                        beforeUpload={this.handleBeforeUploadDiploma}
+                        onChange={this.handleDiplomaUploadChange}
+                      >
+                        {educationCertificateDetails && educationCertificateDetails.length > 0 ? (
+                          <img
+                            src={educationCertificateDetails.map(item => item.webUrl).join('')}
+                            alt="照片"
+                            style={{ width: '86px', height: '86px', objectFit: 'contain' }}
+                          />
+                        ) : (
+                          <div>
+                            <Icon type={diplomaLoading ? 'loading' : 'plus'} />
+                            <div className="ant-upload-text">上传</div>
+                          </div>
+                        )}
+                      </Upload>
+                    </Fragment>
+                  )}
                 </FormItem>
               </Col>
             </Row>
