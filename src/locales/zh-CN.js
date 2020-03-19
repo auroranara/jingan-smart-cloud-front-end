@@ -226,6 +226,11 @@ export default {
   'menu.cardsInfo.emergencyCard.edit': '应急卡编辑',
   // 生产人员在岗在位系统
   'menu.personnelManagement': '基础信息',
+  'menu.personnelManagement.tagCardManagement': '标签卡管理',
+  'menu.personnelManagement.tagCardManagement.tagCardList': '标签卡列表',
+  'menu.personnelManagement.tagCardManagement.tagCardAdd': '新增标签卡',
+  'menu.personnelManagement.tagCardManagement.tagCardEdit': '编辑标签卡',
+  'menu.personnelManagement.tagCardManagement.tagCardDetail': '查看标签卡',
   'menu.personnelManagement.personnelInfo': '人员信息',
   'menu.personnelManagement.personnelInfo.companyList': '企业列表',
   'menu.personnelManagement.personnelInfo.personnelList': '人员基本信息列表',

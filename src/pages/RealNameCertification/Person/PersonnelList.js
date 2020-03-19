@@ -12,9 +12,13 @@ import {
   Table,
   Divider,
   Input,
+  Modal,
+  Upload,
+  Icon,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
+import { getToken } from '@/utils/authority';
 import { AuthButton, AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import router from 'umi/router';
 import { stringify } from 'qs';
@@ -23,11 +27,7 @@ import ImagePreview from '@/jingan-components/ImagePreview';
 
 const {
   realNameCertification: {
-    personnelManagement: {
-      add: addCode,
-      edit: editCode,
-      delete: deleteCode,
-    },
+    personnelManagement: { add: addCode, edit: editCode, delete: deleteCode },
   },
 } = codes;
 
@@ -37,7 +37,15 @@ const title = '人员列表';
 const defaultPageSize = 10;
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
+const uploadAction = '/acloud_new/v2/uploadFile';
 
+const getPersonType = {
+  2: '外协人员',
+  3: '临时人员',
+  4: '操作人员',
+  5: '管理人员',
+  6: '安全巡查人员',
+};
 @connect(({ realNameCertification, user, loading }) => ({
   realNameCertification,
   user,
@@ -45,14 +53,26 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 }))
 @Form.create()
 export default class PersonnelList extends PureComponent {
-
   state = {
     images: [],
     currentImage: 0,
+    curCompanyName: '',
+    personVisible: false,
+    personLoading: false,
+    picVisible: false,
   };
 
-  componentDidMount () {
+  componentDidMount() {
     this.handleQuery();
+    const {
+      location: {
+        query: { companyName: routerCompanyName },
+      },
+      user: {
+        currentUser: { companyName },
+      },
+    } = this.props;
+    this.setState({ curCompanyName: companyName || routerCompanyName });
   }
 
   // 查询列表，获取人员列表
@@ -60,15 +80,17 @@ export default class PersonnelList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
     const values = getFieldsValue();
     // console.log('query', values);
     dispatch({
       type: 'realNameCertification/fetchPersonList',
       payload: { ...values, pageNum, pageSize, companyId },
-    })
-  }
+    });
+  };
 
   // 重置查询
   handleReset = () => {
@@ -77,7 +99,7 @@ export default class PersonnelList extends PureComponent {
     } = this.props;
     resetFields();
     this.handleQuery();
-  }
+  };
 
   // 删除人员
   handleDelete = id => {
@@ -85,42 +107,67 @@ export default class PersonnelList extends PureComponent {
     dispatch({
       type: 'realNameCertification/deletePerson',
       payload: { id },
-      callback: (success) => {
+      callback: success => {
         if (success) {
           message.success('删除人员成功');
           this.handleQuery();
         } else {
-          message.error('删除人员失败')
+          message.error('删除人员失败');
         }
       },
-    })
-  }
+    });
+  };
 
-  handleToEdit = (id) => {
-    const { match: { params: { companyId } } } = this.props;
-    router.push({
-      pathname: `/real-name-certification/personnel-management/edit/${id}`,
-      query: { companyId },
-    })
-  }
+  handleToEdit = id => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    const { curCompanyName } = this.state;
+    router.push(
+      `/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
+    );
+  };
 
   // 渲染筛选栏
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
-      match: { params: { companyId } },
-      realNameCertification: { dutyDict, personTypeDict },
+      match: {
+        params: { companyId },
+      },
+      realNameCertification: { personTypeDict },
     } = this.props;
+    const { curCompanyName } = this.state;
+
     return (
       <Card>
         <Form>
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
+                {getFieldDecorator('workNumber')(<Input placeholder="职工号" allowClear />)}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('name')(<Input placeholder="姓名" allowClear />)}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('telephone')(<Input placeholder="电话" allowClear />)}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
                 {getFieldDecorator('personType')(
                   <Select placeholder="人员类型" allowClear>
                     {personTypeDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                      <Select.Option key={key} value={key}>
+                        {label}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -128,45 +175,37 @@ export default class PersonnelList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('name')(
-                  <Input placeholder="姓名" allowClear />
-                )}
+                {getFieldDecorator('icnumber')(<Input placeholder="IC卡号" allowClear />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('telephone')(
-                  <Input placeholder="电话" allowClear />
-                )}
+                {getFieldDecorator('entranceNumber')(<Input placeholder="SN卡号" allowClear />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('duty')(
-                  <Select placeholder="职务" allowClear>
-                    {dutyDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('icnumber')(
-                  <Input placeholder="IC卡号" allowClear />
-                )}
-              </FormItem>
-            </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.handleQuery()}
+                >
                   查询
                 </Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
                 </Button>
-                <AuthButton code={addCode} type="primary" onClick={() => { router.push(`/real-name-certification/personnel-management/add?${stringify({ companyId })}`) }}>
+                <AuthButton
+                  code={addCode}
+                  type="primary"
+                  onClick={() => {
+                    router.push(
+                      `/real-name-certification/personnel-management/add?${stringify({
+                        companyId,
+                      })}&&companyName=${curCompanyName}`
+                    );
+                  }}
+                >
                   新增人员
                 </AuthButton>
               </FormItem>
@@ -174,8 +213,24 @@ export default class PersonnelList extends PureComponent {
           </Row>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
+
+  hanldlePersonModal = () => {
+    this.setState({ personVisible: true });
+  };
+
+  handlePersonClose = () => {
+    this.setState({ personVisible: false });
+  };
+
+  hanldlePicModal = () => {
+    this.setState({ picVisible: true });
+  };
+
+  handlePicClose = () => {
+    this.setState({ picVisible: false });
+  };
 
   // 渲染列表
   renderList = () => {
@@ -186,10 +241,16 @@ export default class PersonnelList extends PureComponent {
           list = [],
           pagination: { pageNum = 1, pageSize = defaultPageSize, total = 0 },
         },
-        dutyDict, // 职务
+        // dutyDict, // 职务
       },
     } = this.props;
     const columns = [
+      {
+        title: '职工号',
+        dataIndex: 'workerNumber',
+        align: 'center',
+        width: 200,
+      },
       {
         title: '姓名',
         dataIndex: 'name',
@@ -201,7 +262,7 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'sex',
         align: 'center',
         width: 150,
-        render: (val) => {
+        render: val => {
           const target = SEXES.find(item => +item.key === +val);
           return target ? target.label : '';
         },
@@ -213,18 +274,31 @@ export default class PersonnelList extends PureComponent {
         width: 200,
       },
       {
-        title: '职务',
-        dataIndex: 'duty',
+        title: '人员类型',
+        dataIndex: 'personType',
         align: 'center',
-        width: 150,
-        render: (val) => {
-          const target = dutyDict.find(item => +item.key === +val);
-          return target ? target.label : '';
-        },
+        width: 200,
+        render: val => getPersonType[val],
       },
       {
-        title: 'IC卡号',
+        title: (
+          <span>
+            IC卡号&nbsp;
+            <span style={{ color: '#ccc' }}>（门禁）</span>
+          </span>
+        ),
         dataIndex: 'icnumber',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: (
+          <span>
+            SN号&nbsp;
+            <span style={{ color: '#ccc' }}>（定位）</span>
+          </span>
+        ),
+        dataIndex: 'entranceNumber',
         align: 'center',
         width: 200,
       },
@@ -235,15 +309,24 @@ export default class PersonnelList extends PureComponent {
         width: 250,
         render: (val) => Array.isArray(val) ? (
           <div>
-            {val.map((item, i) => (
-              <img
-                onClick={() => { this.setState({ images: val.map(item => item.webUrl), currentImage: i }) }}
-                style={{ width: '50px', height: '50px', objectFit: 'contain', cursor: 'pointer', margin: '5px' }}
-                key={i}
-                src={item.webUrl}
-                alt="照片"
-              />
-            ))}
+            {val !== null &&
+              val.map((item, i) => (
+                <img
+                  onClick={() => {
+                    this.setState({ images: val.map(item => item.webUrl), currentImage: i });
+                  }}
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    objectFit: 'contain',
+                    cursor: 'pointer',
+                    margin: '5px',
+                  }}
+                  key={i}
+                  src={item.webUrl}
+                  alt="照片"
+                />
+              ))}
           </div>
         ) : '',
       },
@@ -255,7 +338,9 @@ export default class PersonnelList extends PureComponent {
         width: 150,
         render: (val, record) => (
           <Fragment>
-            <AuthA code={editCode} onClick={() => this.handleToEdit(record.id)}>编辑</AuthA>
+            <AuthA code={editCode} onClick={() => this.handleToEdit(record.id)}>
+              编辑
+            </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
@@ -292,16 +377,23 @@ export default class PersonnelList extends PureComponent {
         />
       </Card>
     ) : (
-        <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
-      )
-  }
+      <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
+    );
+  };
 
-  render () {
+  render() {
     const {
       user: { isCompany },
-      realNameCertification: { person: { pagination: { total = 0 } } },
+      realNameCertification: {
+        person: {
+          pagination: { total = 0 },
+        },
+      },
     } = this.props;
-    const { images, currentImage } = this.state;
+    const { images, currentImage, personVisible, personLoading, picVisible } = this.state;
+
+    const uploadExportButton = <Icon type={personLoading ? 'loading' : 'upload'} />;
+
     //面包屑
     const breadcrumbList = [
       {
@@ -313,11 +405,15 @@ export default class PersonnelList extends PureComponent {
         title: '实名制认证系统',
         name: '实名制认证系统',
       },
-      ...isCompany ? [] : [{
-        title: '人员管理',
-        name: '人员管理',
-        href: '/real-name-certification/personnel-management/company-list',
-      }],
+      ...(isCompany
+        ? []
+        : [
+            {
+              title: '人员管理',
+              name: '人员管理',
+              href: '/real-name-certification/personnel-management/company-list',
+            },
+          ]),
       {
         title,
         name: title,
@@ -333,8 +429,16 @@ export default class PersonnelList extends PureComponent {
               人员总数:
               <span style={{ paddingLeft: 8 }}>{total}</span>
             </span>
-            <Button type="primary" style={{ float: 'right' }}>批量导入照片</Button>
-            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>批量导入</Button>
+            <Button type="primary" style={{ float: 'right' }} onClick={this.hanldlePicModal}>
+              批量导入照片
+            </Button>
+            <Button
+              type="primary"
+              style={{ float: 'right', marginRight: '10px' }}
+              onClick={this.hanldlePicModal}
+            >
+              批量导入
+            </Button>
           </div>
         }
       >
@@ -342,7 +446,61 @@ export default class PersonnelList extends PureComponent {
         {this.renderFilter()}
         {this.renderList()}
         <ImagePreview images={images} currentImage={currentImage} />
+        <Modal
+          title="批量导入"
+          visible={personVisible}
+          onCancel={this.handlePersonClose}
+          onOk={this.handleExportSubmit}
+          confirmLoading={personLoading}
+        >
+          <div style={{ display: 'flex' }}>
+            <Upload
+              name="files"
+              multiple
+              headers={{ 'JA-Token': getToken() }}
+              accept=".xls,.xlsx" // 接收的文件格式
+              data={{ folder: 'securityManageInfo' }} // 附带的参数
+              action={uploadAction} // 上传地址
+              fileList={[]}
+              onChange={this.handlePersonExChange}
+              style={{ marginRight: 10 }}
+            >
+              <Button disabled={personLoading}>
+                {uploadExportButton}
+                上传文件(.xls/.xlsx)
+              </Button>
+            </Upload>
+
+            <Button>下载模板</Button>
+          </div>
+        </Modal>
+        <Modal
+          title="批量导入照片"
+          visible={picVisible}
+          onCancel={this.handlePicClose}
+          onOk={this.handleExportSubmit}
+          confirmLoading={personLoading}
+        >
+          <div style={{ display: 'flex' }}>
+            <Upload
+              name="files"
+              multiple
+              headers={{ 'JA-Token': getToken() }}
+              accept=".zip" // 接收的文件格式
+              data={{ folder: 'securityManageInfo' }} // 附带的参数
+              action={uploadAction} // 上传地址
+              fileList={[]}
+              onChange={this.handlePersonExChange}
+              style={{ marginRight: 10 }}
+            >
+              <Button disabled={personLoading}>
+                {uploadExportButton}
+                选择文件(.zip)
+              </Button>
+            </Upload>
+          </div>
+        </Modal>
       </PageHeaderLayout>
-    )
+    );
   }
 }

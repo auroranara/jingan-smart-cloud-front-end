@@ -465,6 +465,13 @@ export default {
       edit: 'personnelManagement.checkPoint.edit',
       delete: 'personnelManagement.checkPoint.delete',
     },
+    tagCardManagement: {
+      list: 'personnelManagement.tagCardManagement.list',
+      add: 'personnelManagement.tagCardManagement.add',
+      view: 'personnelManagement.tagCardManagement.view',
+      edit: 'personnelManagement.tagCardManagement.edit',
+      delete: 'personnelManagement.tagCardManagement.delete',
+    },
   },
 
   // 应急管理
