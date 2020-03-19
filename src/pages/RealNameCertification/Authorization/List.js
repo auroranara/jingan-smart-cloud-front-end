@@ -101,6 +101,7 @@ export default class AuthorizationList extends PureComponent {
 
   componentDidMount () {
     const {
+      dispatch,
       user: { isCompany, currentUser: { companyId, companyName } },
       realNameCertification: { authSearchInfo: searchInfo = {} },
     } = this.props;
@@ -112,7 +113,7 @@ export default class AuthorizationList extends PureComponent {
       // 如果redux中保存了单位
       this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
     } else {
-      this.handleViewCompanyModal()
+      dispatch({ type: 'realNameCertification/saveAuthorization' })
     }
   }
 
@@ -638,7 +639,7 @@ export default class AuthorizationList extends PureComponent {
     const columns = [
       {
         title: '设备名称',
-        dataIndex: 'name',
+        dataIndex: 'deviceName',
       },
       {
         title: '设备序列号',

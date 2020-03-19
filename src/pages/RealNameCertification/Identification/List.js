@@ -54,6 +54,7 @@ export default class IdentificationRecord extends PureComponent {
 
   componentDidMount () {
     const {
+      dispatch,
       user: { isCompany, currentUser: { companyId, companyName } },
       realNameCertification: { idenSearchInfo: searchInfo = {} },
     } = this.props;
@@ -65,7 +66,7 @@ export default class IdentificationRecord extends PureComponent {
       // 如果redux中保存了单位
       this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
     } else {
-      this.handleViewCompanyModal()
+      dispatch({ type: 'realNameCertification/saveIdentificationRecord' })
     }
   }
 

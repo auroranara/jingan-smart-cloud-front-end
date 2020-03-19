@@ -89,6 +89,7 @@ export default class ChannelDeviceList extends Component {
 
   componentDidMount () {
     const {
+      dispatch,
       user: { isCompany, currentUser: { companyId, companyName } },
       realNameCertification: { deviceSearchInfo: searchInfo = {} },
     } = this.props;
@@ -100,7 +101,7 @@ export default class ChannelDeviceList extends Component {
       // 如果redux中保存了单位
       this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
     } else {
-      this.handleViewModal()
+      dispatch({ type: 'realNameCertification/saveChannelDevice' })
     }
   }
 
