@@ -101,13 +101,12 @@ export default class MajorHazardEdit extends PureComponent {
       match: {
         params: { id },
       },
-      user: {
-        currentUser: { companyId },
-      },
       form: { setFieldsValue },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
 
-    this.setState({ curCompanyId: companyId });
     if (id) {
       // 获取列表
       dispatch({
@@ -115,6 +114,7 @@ export default class MajorHazardEdit extends PureComponent {
         payload: {
           pageSize: 18,
           pageNum: 1,
+          id,
         },
         callback: res => {
           const { list } = res;
@@ -123,10 +123,11 @@ export default class MajorHazardEdit extends PureComponent {
           const { tankArea, wareHouseArea, gasHolderManage, productDevice, industryPipeline } =
             dangerSourceList || {};
 
-          this.fetchPersonList({ unitId: companyId });
-          this.fetchMap({ companyId: companyId }, mapInfo => {
-            this.childMap.initMap({ ...mapInfo });
-          });
+          unitType !== 4 &&
+            this.fetchMap({ companyId }, mapInfo => {
+              if (!mapInfo.mapId) return;
+              this.childMap.initMap({ ...mapInfo });
+            });
 
           const tankAreaIds = tankArea.map(item => item.id) || [];
           const wareHouseAreaIds = wareHouseArea.map(item => item.id) || [];
@@ -161,12 +162,23 @@ export default class MajorHazardEdit extends PureComponent {
               z: +item.z,
               groupID: groupId,
             })),
+            pointList: list.map(item => {
+              return { zoneLevel: '4', ...item };
+            }),
             groupId,
             modelIds,
           });
           setFieldsValue({ dangerSourceList: allSelectedKeys });
         },
       });
+    }
+
+    if (unitType === 4) {
+      this.fetchMap({ companyId }, mapInfo => {
+        if (!mapInfo.mapId) return;
+        this.childMap.initMap({ ...mapInfo });
+      });
+      this.setState({ curCompanyId: companyId });
     }
   }
   onRef = ref => {
@@ -352,9 +364,6 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 关闭企业弹框
   handleClose = () => {
-    const { mapInfo } = this.state;
-    console.log('mapInfo', mapInfo);
-
     this.setState({ companyVisible: false });
   };
 
@@ -377,12 +386,11 @@ export default class MajorHazardEdit extends PureComponent {
       gasHolderManageList: [],
       productList: [],
       pipelineList: [],
-      curCompanyId: this.companyId,
+      curCompanyId: id,
     });
     this.fetchMap({ companyId: id }, mapInfo => {
-      this.setState({ mapInfo });
-      // if (!mapInfo.mapId) return;
-      // this.childMap.initMap({ ...mapInfo });
+      if (!mapInfo.mapId) return;
+      this.childMap.initMap({ ...mapInfo });
     });
   };
 
@@ -1001,7 +1009,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="划定重点危险源区域范围">
             {curCompanyId && (
-              <div>
+              <div className={styles.mapStyle}>
                 {this.renderDrawButton()}
                 <Map
                   isDrawing={isDrawing}
@@ -1011,6 +1019,7 @@ export default class MajorHazardEdit extends PureComponent {
                   getBuilding={this.getBuilding}
                   pointList={pointList}
                   modelIds={modelIds}
+                  style={{ height: '45vh', width: '65vh' }}
                 />
               </div>
             )}
