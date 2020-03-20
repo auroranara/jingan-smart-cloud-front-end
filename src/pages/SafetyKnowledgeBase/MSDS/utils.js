@@ -90,12 +90,10 @@ function genFormItem(field, getFieldDecorator) {
   } = field;
 
   let child = null;
-  const isNewForm = !getFieldDecorator;
-  const formOptions = formItemOptions || {};
 
   if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
   else {
-
+    const formOptions = formItemOptions || {};
     const opts = getOptions(options);
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
     const phoneRules = { pattern: phoneReg, message: '格式不正确' };
@@ -153,8 +151,7 @@ function genFormItem(field, getFieldDecorator) {
     rules.unshift({ required, message: `${label}不能为空` });
     formOptions.rules = rules;
 
-    // child = getFieldDecorator(name, formOptions)(component);
-    child = isNewForm ? component : getFieldDecorator(name, formOptions)(component);
+    child = getFieldDecorator(name, formOptions)(component);
   }
 
   let props = {
@@ -164,14 +161,12 @@ function genFormItem(field, getFieldDecorator) {
     ...(formExtraStyle ? FORMITEM_LAYOUT_EXTRA : FORMITEM_LAYOUT),
   };
 
-  if (isNewForm)
-    props = { ...props, ...formOptions, name };
-
   return <FormItem {...props}>{child}</FormItem>;
 }
 
 function renderSection(section, index, getFieldDecorator) {
   const { title, fields } = section;
+
   return (
     <Fragment key={title || index}>
       {title && (
@@ -192,13 +187,9 @@ function getSections(sections) {
   return sections;
 }
 
-export function newRenderSections(sections, handleSubmit, listUrl, fileLoading, loading) {
-  renderSections(sections, null, handleSubmit, listUrl, fileLoading, loading);
-}
-
 export function renderSections(
   sections,
-  getFieldDecorator, // 传null就是用antd4的新Form
+  getFieldDecorator,
   handleSubmit,
   listUrl,
   fileLoading = false,
@@ -206,7 +197,7 @@ export function renderSections(
 ) {
   const secs = getSections(sections);
   const props = {};
-  // const props = { ...FORMITEM_LAYOUT };
+
   const submitBtn = handleSubmit ? (
     <FormItem wrapperCol={{ span: 24, offset: 10 }}>
       <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>
