@@ -17,6 +17,7 @@ const knowCard = 'http://data.jingan-china.cn/v2/chem/chemScreen/know-card.png';
 const commitmentCard = 'http://data.jingan-china.cn/v2/chem/chemScreen/commitment-card.png';
 const emergencyCard = 'http://data.jingan-china.cn/v2/chem/chemScreen/emergency-card.png';
 const riskData = [
+  { label: '未评级', value: 0, color: 'rgb(79, 103, 147)' },
   { label: '红色', value: 0, color: '#FC1F02' },
   { label: '橙色', value: 0, color: '#F17A0A' },
   { label: '黄色', value: 0, color: '#FFE500' },
@@ -398,7 +399,10 @@ export default class KeyPoints extends PureComponent {
                     <div className={styles.content}>
                       {riskData.map((item, index) => {
                         const { label, color } = item;
-                        const count = cbiList.filter(hd => +hd.riskLevel === index + 1).length;
+                        const count = cbiList.filter(hd => {
+                          if (index === 0) return !hd.riskLevel;
+                          else return +hd.riskLevel === index;
+                        }).length;
                         return count ? (
                           <div className={styles.dotItem} key={index}>
                             <span className={styles.dot} style={{ backgroundColor: color }} />
