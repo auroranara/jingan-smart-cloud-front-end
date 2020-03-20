@@ -52,21 +52,34 @@ export default class IdentificationRecord extends PureComponent {
     visible: false, // 选择单位弹窗可见
   };
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
-      user: { isCompany, currentUser: { companyId, companyName } },
+      user: {
+        isCompany,
+        currentUser: { companyId, companyName },
+      },
       realNameCertification: { idenSearchInfo: searchInfo = {} },
+      location: { query },
+      form: { setFieldsValue },
     } = this.props;
+    const { startTime, endTime } = query;
+    const time =
+      query.startTime && query.endTime ? [moment(startTime), moment(endTime)] : undefined;
+
     if (isCompany) {
       this.setState({ company: { id: companyId, name: companyName } }, () => {
+        setFieldsValue({ ...query, time, startTime: undefined, endTime: undefined });
         this.handleQuery();
-      })
+      });
     } else if (searchInfo.company && searchInfo.company.id) {
       // 如果redux中保存了单位
-      this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
+      this.setState({ company: searchInfo.company }, () => {
+        setFieldsValue({ ...query, time, startTime: undefined, endTime: undefined });
+        this.handleQuery();
+      });
     } else {
-      dispatch({ type: 'realNameCertification/saveIdentificationRecord' })
+      dispatch({ type: 'realNameCertification/saveIdentificationRecord' });
     }
   }
 
@@ -78,7 +91,6 @@ export default class IdentificationRecord extends PureComponent {
     } = this.props;
     const { tabActiveKey, company } = this.state;
     const values = getFieldsValue();
-    // console.log('values', values);
     const { time, ...resValues } = values;
     dispatch({
       type: 'realNameCertification/fetchIdentificationRecord',
@@ -127,8 +139,8 @@ export default class IdentificationRecord extends PureComponent {
     dispatch({
       type: 'realNameCertification/saveIdenSearchInfo',
       payload: { company },
-    })
-  }
+    });
+  };
 
   // 点击打开选择单位
   handleViewCompanyModal = company => {
@@ -138,7 +150,7 @@ export default class IdentificationRecord extends PureComponent {
         this.setState({ visible: true });
       },
     });
-  }
+  };
 
   // 渲染筛选栏
   renderFilter = () => {
@@ -392,8 +404,8 @@ export default class IdentificationRecord extends PureComponent {
           return target ? (
             <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
           ) : (
-              ''
-            );
+            ''
+          );
         },
       },
       {
@@ -413,8 +425,8 @@ export default class IdentificationRecord extends PureComponent {
           return target ? (
             <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
           ) : (
-              ''
-            );
+            ''
+          );
         },
       },
       {
@@ -427,8 +439,8 @@ export default class IdentificationRecord extends PureComponent {
           return target ? (
             <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
           ) : (
-              ''
-            );
+            ''
+          );
         },
       },
     ];
@@ -456,11 +468,11 @@ export default class IdentificationRecord extends PureComponent {
         />
       </Card>
     ) : (
-        <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
-      );
+      <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
+    );
   };
 
-  render () {
+  render() {
     const {
       companyLoading,
       resourceManagement: { companyList },
@@ -474,26 +486,34 @@ export default class IdentificationRecord extends PureComponent {
         tabList={tabList}
         tabActiveKey={tabActiveKey}
         onTabChange={this.handleTabChange}
-        content={!isCompany && (
-          <div>
-            <Input
-              disabled
-              style={{ width: '300px' }}
-              placeholder={'请选择单位'}
-              value={company.name}
-            />
-            <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewCompanyModal}>
-              选择单位
+        content={
+          !isCompany && (
+            <div>
+              <Input
+                disabled
+                style={{ width: '300px' }}
+                placeholder={'请选择单位'}
+                value={company.name}
+              />
+              <Button
+                type="primary"
+                style={{ marginLeft: '5px' }}
+                onClick={this.handleViewCompanyModal}
+              >
+                选择单位
               </Button>
-          </div>
-        )}
+            </div>
+          )
+        }
       >
         {company && company.id ? (
           <div>
             {this.renderFilter()}
             {this.renderList()}
           </div>
-        ) : (<div style={{ textAlign: 'center' }}>请先选择单位</div>)}
+        ) : (
+          <div style={{ textAlign: 'center' }}>请先选择单位</div>
+        )}
         {/* 图片查看 */}
         <ImagePreview images={images} currentImage={currentImage} />
         <CompanyModal
@@ -503,7 +523,9 @@ export default class IdentificationRecord extends PureComponent {
           modal={companyList}
           fetch={this.fetchCompanyList}
           onSelect={this.handleSelectCompany}
-          onClose={() => { this.setState({ visible: false }) }}
+          onClose={() => {
+            this.setState({ visible: false });
+          }}
         />
       </PageHeaderLayout>
     );

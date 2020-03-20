@@ -83,7 +83,7 @@ export default class TruckModal extends PureComponent {
     return (
       <Modal
         className={styles.truckModallContainer}
-        width={1000}
+        width={1100}
         title={
           <div className={styles.modalTitle}>
             <span className={styles.line} />
@@ -98,7 +98,7 @@ export default class TruckModal extends PureComponent {
         destroyOnClose
         {...restProps}
       >
-        <div className={styles.body} style={{ height: document.body.clientHeight * 0.65 }}>
+        <div className={styles.body} style={{ height: document.body.clientHeight * 0.4 }}>
           <div className={styles.top}>
             <div className={styles.title}>
               进出场记录
@@ -145,7 +145,7 @@ export default class TruckModal extends PureComponent {
                 )}
               </div>
             </div>
-            <div className={styles.right}>
+            {/* <div className={styles.right}>
               <div className={styles.title}>
                 手工开闸记录
                 <span className={styles.extra}>（近50条数据）</span>
@@ -158,7 +158,7 @@ export default class TruckModal extends PureComponent {
                   pagination={false}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </Modal>

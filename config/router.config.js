@@ -1428,39 +1428,39 @@ module.exports = env => {
               ],
             },
             {
-              "name": "riskFlags", // 国际风险标志库
-              "code": "riskControl.riskFlags",
-              "path": "/risk-control/risk-flags",
-              "hideChildrenInMenu": true,
-              "routes": [
+              name: 'riskFlags', // 国际风险标志库
+              code: 'riskControl.riskFlags',
+              path: '/risk-control/risk-flags',
+              hideChildrenInMenu: true,
+              routes: [
                 {
-                  "name": "list",
-                  "path": "/risk-control/risk-flags",
-                  "redirect": "/risk-control/risk-flags/list",
+                  name: 'list',
+                  path: '/risk-control/risk-flags',
+                  redirect: '/risk-control/risk-flags/list',
                 },
                 {
-                  "name": "list",
-                  "code": "riskControl.riskFlags.list",
-                  "path": "/risk-control/risk-flags/list",
-                  "component": "./RiskControl/RiskFlag/TableList",
+                  name: 'list',
+                  code: 'riskControl.riskFlags.list',
+                  path: '/risk-control/risk-flags/list',
+                  component: './RiskControl/RiskFlag/TableList',
                 },
                 {
-                  "name": "view",
-                  "code": "riskControl.riskFlags.view",
-                  "path": "/risk-control/risk-flags/view/:id",
-                  "component": "./RiskControl/RiskFlag/Edit",
+                  name: 'view',
+                  code: 'riskControl.riskFlags.view',
+                  path: '/risk-control/risk-flags/view/:id',
+                  component: './RiskControl/RiskFlag/Edit',
                 },
                 {
-                  "name": "add",
-                  "code": "riskControl.riskFlags.add",
-                  "path": "/risk-control/risk-flags/add",
-                  "component": "./RiskControl/RiskFlag/Edit",
+                  name: 'add',
+                  code: 'riskControl.riskFlags.add',
+                  path: '/risk-control/risk-flags/add',
+                  component: './RiskControl/RiskFlag/Edit',
                 },
                 {
-                  "name": "edit",
-                  "code": "riskControl.riskFlags.edit",
-                  "path": "/risk-control/risk-flags/edit/:id",
-                  "component": "./RiskControl/RiskFlag/Edit",
+                  name: 'edit',
+                  code: 'riskControl.riskFlags.edit',
+                  path: '/risk-control/risk-flags/edit/:id',
+                  component: './RiskControl/RiskFlag/Edit',
                 },
               ],
             },
@@ -1914,6 +1914,187 @@ module.exports = env => {
         // },
         //   ],
         // },
+        {
+          path: '/personnel-management', // (在岗在位系统)基本信息
+          code: 'personnelManagement',
+          icon: 'file-text',
+          name: 'personnelManagement',
+          systemType: 3,
+          routes: [
+            // {
+            //   path: '/personnel-management/personnel-info', // 人员基本信息
+            //   code: 'personnelManagement.personnelInfo',
+            //   name: 'personnelInfo',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/personnel-management/personnel-info',
+            //       name: 'personnelInfo',
+            //       redirect: '/personnel-management/personnel-info/company-list',
+            //     },
+            //     {
+            //       path: '/personnel-management/personnel-info/company-list',
+            //       code: 'personnelManagement.personnelInfo.listView',
+            //       name: 'companyList',
+            //       component: './PersonnelManagement/PersonnelInfo/CompanyList',
+            //     },
+            //     {
+            //       path: '/personnel-management/personnel-info/personnel-list/:id',
+            //       code: 'personnelManagement.personnelInfo.view',
+            //       name: 'personnelList',
+            //       component: './PersonnelManagement/PersonnelInfo/PersonnelList',
+            //     },
+            //     {
+            //       path: '/personnel-management/personnel-info/personnel-add',
+            //       code: 'personnelManagement.personnelInfo.add',
+            //       name: 'personnelAdd',
+            //       component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
+            //     },
+            //     {
+            //       path: '/personnel-management/personnel-info/personnel-edit/:id',
+            //       code: 'personnelManagement.personnelInfo.edit',
+            //       name: 'personnelEdit',
+            //       component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
+            //     },
+            //     {
+            //       path: '/personnel-management/personnel-info/personnel-detail/:id',
+            //       code: 'personnelManagement.personnelInfo.detail',
+            //       name: 'personnelDetail',
+            //       component: './PersonnelManagement/PersonnelInfo/PersonnelDetail',
+            //     },
+            //   ],
+            // },
+            // {
+            //   path: '/personnel-management/vehicle-info', // 车辆基本信息
+            //   code: 'personnelManagement.vehicleInfo',
+            //   name: 'vehicleInfo',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/personnel-management/vehicle-info',
+            //       name: 'vehicleInfo',
+            //       redirect: '/personnel-management/vehicle-info/company-list',
+            //     },
+            //     {
+            //       path: '/personnel-management/vehicle-info/company-list',
+            //       code: 'personnelManagement.vehicleInfo.listView',
+            //       name: 'companyList',
+            //       component: './PersonnelManagement/VehicleInfo/CompanyList',
+            //     },
+            //     {
+            //       path: '/personnel-management/vehicle-info/vehicle-list/:id',
+            //       code: 'personnelManagement.vehicleInfo.view',
+            //       name: 'vehicleList',
+            //       component: './PersonnelManagement/VehicleInfo/VehicleList',
+            //     },
+            //     {
+            //       path: '/personnel-management/vehicle-info/vehicle-add',
+            //       code: 'personnelManagement.vehicleInfo.add',
+            //       name: 'vehicleAdd',
+            //       component: './PersonnelManagement/VehicleInfo/VehicleEdit',
+            //     },
+            //     {
+            //       path: '/personnel-management/vehicle-info/vehicle-edit/:id',
+            //       code: 'personnelManagement.vehicleInfo.edit',
+            //       name: 'vehicleEdit',
+            //       component: './PersonnelManagement/VehicleInfo/VehicleEdit',
+            //     },
+            //     {
+            //       path: '/personnel-management/vehicle-info/vehicle-detail/:id',
+            //       code: 'personnelManagement.vehicleInfo.detail',
+            //       name: 'vehicleDetail',
+            //       component: './PersonnelManagement/VehicleInfo/VehicleDetail',
+            //     },
+            //   ],
+            // },
+            // {
+            //   path: '/personnel-management/check-point', // 卡口信息
+            //   code: 'personnelManagement.checkPoint',
+            //   name: 'checkPoint',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/personnel-management/check-point',
+            //       name: 'checkPoint',
+            //       redirect: '/personnel-management/check-point/company-list',
+            //     },
+            //     {
+            //       path: '/personnel-management/check-point/company-list',
+            //       code: 'personnelManagement.checkPoint.companyListView',
+            //       name: 'companyList',
+            //       component: './PersonnelManagement/CheckPoint/CompanyList',
+            //     },
+            //     {
+            //       path: '/personnel-management/check-point/list/:companyId/:tabIndex',
+            //       code: 'personnelManagement.checkPoint.listView',
+            //       name: 'list',
+            //       component: './PersonnelManagement/CheckPoint/CheckList',
+            //     },
+            //     {
+            //       path: '/personnel-management/check-point/add/:companyId/:tabIndex',
+            //       code: 'personnelManagement.checkPoint.add',
+            //       name: 'add',
+            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
+            //     },
+            //     {
+            //       path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
+            //       code: 'personnelManagement.checkPoint.view',
+            //       name: 'detail',
+            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
+            //     },
+            //     {
+            //       path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
+            //       code: 'personnelManagement.checkPoint.edit',
+            //       name: 'edit',
+            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
+            //     },
+            //   ],
+            // },
+            {
+              path: '/personnel-management/post-management', // 岗位管理
+              code: 'personnelManagement.postManagement',
+              name: 'postManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/personnel-management/post-management',
+                  name: 'postManagement',
+                  redirect: '/personnel-management/post-management/company-list',
+                },
+                {
+                  path: '/personnel-management/post-management/company-list',
+                  code: 'personnelManagement.postManagement.listView',
+                  name: 'companyList',
+                  component: './PersonnelManagement/PostManagement/CompanyList',
+                },
+                {
+                  path: '/personnel-management/post-management/:unitId/list',
+                  code: 'personnelManagement.postManagement.view',
+                  name: 'postList',
+                  component: './PersonnelManagement/PostManagement/PostList',
+                },
+                {
+                  path: '/personnel-management/post-management/:unitId/add',
+                  code: 'personnelManagement.postManagement.add',
+                  name: 'postAdd',
+                  component: './PersonnelManagement/PostManagement/PostEdit',
+                },
+                {
+                  path: '/personnel-management/post-management/:unitId/edit/:id',
+                  code: 'personnelManagement.postManagement.edit',
+                  name: 'postEdit',
+                  component: './PersonnelManagement/PostManagement/PostEdit',
+                },
+                {
+                  path: '/personnel-management/post-management/:unitId/detail/:id',
+                  code: 'personnelManagement.postManagement.detail',
+                  name: 'postDetail',
+                  component: './PersonnelManagement/PostManagement/PostDetail',
+                },
+              ],
+            },
+          ],
+        },
 
         {
           path: '/personnel-position', // 人员定位
