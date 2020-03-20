@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Empty, Table, message } from 'antd';
+import { Button, Card, Form, Upload, Empty, Icon, Modal, Table, message } from 'antd';
 
+import { getToken } from 'utils/authority';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
@@ -30,6 +31,9 @@ export default class TableList extends PureComponent {
     super(props);
     this.state = {
       formData: {},
+      modalVisible: false,
+      importLoading: false,
+      fileList: [], // 导入的数据列表
     };
     this.pageNum = 1;
     this.pageSize = 10;
@@ -93,6 +97,44 @@ export default class TableList extends PureComponent {
     router.push(`${ROUTER}/person-list/${id}`);
   };
 
+  handleImportShow = () => {
+    this.setState({ modalVisible: true });
+  };
+
+  handleImportClose = () => {
+    this.setState({ modalVisible: false });
+  };
+
+  handleImportChange = info => {
+    const fileList = info.fileList.slice(-1);
+    this.setState({ fileList });
+    if (info.file.status === 'uploading') {
+      this.setState({ importLoading: true });
+    }
+    if (info.file.status === 'removed') {
+      message.success('删除成功');
+      return;
+    }
+    if (info.file.response) {
+      if (info.file.response.code && info.file.response.code === 200) {
+        if (info.file.response.data.faultNum === 0) {
+          message.success('导入成功');
+        } else if (info.file.response.data.faultNum > 0) {
+          message.error('导入失败！' + info.file.response.data.message);
+        }
+        if (info.file.response.data) {
+          this.setState({
+            importLoading: false,
+          });
+        }
+      } else {
+        this.setState({
+          importLoading: false,
+        });
+      }
+    }
+  };
+
   render() {
     const {
       loading,
@@ -107,6 +149,7 @@ export default class TableList extends PureComponent {
       },
     } = this.props;
 
+    const { modalVisible, importLoading, fileList } = this.state;
     const addAuth = hasAuthority(addCode, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
@@ -124,6 +167,13 @@ export default class TableList extends PureComponent {
     const fields = getSearchFields(unitType);
     const columns = getTableColumns(this.handleDelete, unitType, this.handlePesonListClick);
 
+    const formItemLayout = {
+      labelCol: { span: 4 },
+      wrapperCol: { span: 16 },
+    };
+
+    const uploadExportButton = <Icon type={importLoading ? 'loading' : 'upload'} />;
+
     return (
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
@@ -134,7 +184,11 @@ export default class TableList extends PureComponent {
             <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
               批量导出
             </Button>
-            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
+            <Button
+              type="primary"
+              style={{ float: 'right', marginRight: '10px' }}
+              onClick={this.handleImportShow}
+            >
               批量导入
             </Button>
             <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
@@ -178,6 +232,34 @@ export default class TableList extends PureComponent {
             <Empty />
           )}
         </div>
+        <Modal
+          title="导入"
+          visible={modalVisible}
+          closable={false}
+          footer={[
+            <Button disabled={importLoading} onClick={this.handleImportClose}>
+              返回
+            </Button>,
+          ]}
+        >
+          <Form>
+            <Form.Item {...formItemLayout} label="导入数据">
+              <Upload
+                name="file"
+                accept=".xls,.xlsx"
+                headers={{ 'JA-Token': getToken() }}
+                //ction={`/acloud_new/v2/ci/doubleBill/importSafetyControl/${areaId}/${companyId}`} // 上传地址
+                fileList={fileList}
+                onChange={this.handleImportChange}
+              >
+                <Button disabled={importLoading}>
+                  {uploadExportButton}
+                  点击
+                </Button>
+              </Upload>
+            </Form.Item>
+          </Form>
+        </Modal>
       </PageHeaderLayout>
     );
   }
