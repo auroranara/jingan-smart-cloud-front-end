@@ -290,8 +290,9 @@ export default class Map extends PureComponent {
   };
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId, isInit, defaultMapScaleLevel, theme }, fun) => {
+  initMap = ({ appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList }, fun) => {
     if (!appName || !key || !mapId) return;
+    const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
     const mapOptions = {
       //必要，地图容器
       container: document.getElementById('fengMap'),
@@ -326,8 +327,8 @@ export default class Map extends PureComponent {
 
     // 地图加载完成事件
     map.on('loadComplete', () => {
-      // map.tiltAngle = TiltAngle;
-      // map.rotateAngle = RotateAngle;
+      map.tiltAngle = typeof tiltAngle === 'number' ? tiltAngle : TiltAngle;
+      map.rotateAngle = typeof rotateAngle === 'number' ? rotateAngle : RotateAngle;
       // map.mapScaleLevel = MapScaleLevel;
       map.mapScaleLevel = defaultMapScaleLevel || MapScaleLevel;
       // console.log('map.getFMGroup()', map.groupIDs);
