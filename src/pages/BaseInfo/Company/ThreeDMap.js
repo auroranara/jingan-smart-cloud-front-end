@@ -168,7 +168,7 @@ export default class ThreeDMap extends PureComponent {
           {getFieldDecorator('tiltAngle', {
             initialValue: INIT_TILT_ANGLE,
             rules: [{ required: true, message: "请选择倾斜角度" }],
-          })(<Slider min={MIN_ANGLE} max={MAX_ANGLE} marks={{ [MIN_ANGLE]: MIN_ANGLE, [MAX_ANGLE]: MAX_ANGLE }} />)}
+          })(<Slider min={0} max={90} marks={{ 0: 0, 90: 90 }} />)}
         </FormItem>
         <FormItem label="旋转角度" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('rotateAngle', {

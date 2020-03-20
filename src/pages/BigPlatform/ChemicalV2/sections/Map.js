@@ -290,7 +290,7 @@ export default class Map extends PureComponent {
   };
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList }, fun) => {
+  initMap = ({ appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList, defaultViewMode }, fun) => {
     if (!appName || !key || !mapId) return;
     const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
     const mapOptions = {
@@ -298,7 +298,7 @@ export default class Map extends PureComponent {
       container: document.getElementById('fengMap'),
       //地图数据位置
       mapServerURL: './data/' + mapId,
-      // defaultViewMode: fengMap.FMViewMode.MODE_2D,
+      defaultViewMode: defaultViewMode || fengMap.FMViewMode.MODE_2D,
       //设置主题
       defaultThemeName: theme || '2001',
       modelSelectedEffect: false,
