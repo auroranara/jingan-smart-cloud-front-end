@@ -11,6 +11,7 @@ import ToolBar from '@/components/ToolBar';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import TableTransFer from './TabTransfer';
 import { hasAuthority } from '@/utils/customAuth';
+import Map from '../../RiskControl/FourColorImage/Map';
 import codes from '@/utils/codes';
 import styles from './MajorHazardEdit.less';
 
@@ -44,6 +45,7 @@ const {
     user,
     pipeline,
     department,
+    map,
     loading,
   }) => ({
     reservoirRegion,
@@ -54,6 +56,7 @@ const {
     productionEquipments,
     pipeline,
     department,
+    map,
     gasometer,
     loading: loading.models.reservoirRegion,
     // personModalLoading:
@@ -69,7 +72,7 @@ export default class MajorHazardEdit extends PureComponent {
       detailList: {}, // 详情列表
       resourseVisible: false,
       dangerModalVisible: false, // 重大危险源弹框是否可见
-      editCompanyId: '', // 编辑时的companyId
+      curCompanyId: '', // companyId
       dangerType: '1', // 重大危险源弹框选择器默认值
       targetKeys: [], // 穿梭框右侧数据keys
       tankIds: '', // 危险源-储罐区选中Id
@@ -83,6 +86,13 @@ export default class MajorHazardEdit extends PureComponent {
       productList: [], // 生产装置选中列表
       pipelineList: [], // 工业管道选中列表
       personModalVisible: false, // 重大危险源责任人弹框是否可见
+      isDrawing: false, // 地图是否开始画
+      pointList: [], // 地图列表
+      points: [], // 坐标点
+      groupId: '', // 地图当前楼层
+      buildingId: [], // 区域Id列表
+      modelIds: '', // 当前选中区域id列表
+      mapInfo: {},
     };
   }
 
@@ -94,6 +104,9 @@ export default class MajorHazardEdit extends PureComponent {
         params: { id },
       },
       form: { setFieldsValue },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
 
     if (id) {
@@ -103,13 +116,20 @@ export default class MajorHazardEdit extends PureComponent {
         payload: {
           pageSize: 18,
           pageNum: 1,
+          id,
         },
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { companyId, dangerSourceList } = currentList;
+          const { companyId, dangerSourceList, coordinateList, groupId, modelIds } = currentList;
           const { tankArea, wareHouseArea, gasHolderManage, productDevice, industryPipeline } =
             dangerSourceList || {};
+
+          unitType !== 4 &&
+            this.fetchMap({ companyId }, mapInfo => {
+              if (!mapInfo.mapId) return;
+              this.childMap.initMap({ ...mapInfo });
+            });
 
           const tankAreaIds = tankArea.map(item => item.id) || [];
           const wareHouseAreaIds = wareHouseArea.map(item => item.id) || [];
@@ -126,7 +146,7 @@ export default class MajorHazardEdit extends PureComponent {
 
           this.setState({
             detailList: currentList,
-            editCompanyId: companyId,
+            curCompanyId: companyId,
             targetKeys: allSelectedKeys,
             tankIds: tankAreaIds.join(','),
             areaIds: wareHouseAreaIds.join(','),
@@ -138,12 +158,49 @@ export default class MajorHazardEdit extends PureComponent {
             productList: productDevice,
             pipelineIds: industryIds.join(','),
             pipelineList: industryPipeline,
+            points: coordinateList.map(item => ({
+              x: +item.x,
+              y: +item.y,
+              z: +item.z,
+              groupID: groupId,
+            })),
+            pointList: list.map(item => {
+              return { zoneLevel: '4', ...item };
+            }),
+            groupId,
+            modelIds,
           });
           setFieldsValue({ dangerSourceList: allSelectedKeys });
         },
       });
     }
+
+    if (unitType === 4) {
+      this.fetchMap({ companyId }, mapInfo => {
+        if (!mapInfo.mapId) return;
+        this.childMap.initMap({ ...mapInfo });
+      });
+      this.setState({ curCompanyId: companyId });
+    }
   }
+  onRef = ref => {
+    this.childMap = ref;
+  };
+
+  // 获取地图
+  fetchMap = (params, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'map/fetchMapList',
+      payload: { ...params },
+      callback,
+    });
+  };
+
+  // 获取地图上的坐标
+  getPoints = (groupId, points) => {
+    this.setState({ groupId, points });
+  };
 
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
@@ -168,9 +225,6 @@ export default class MajorHazardEdit extends PureComponent {
         params: { id },
       },
       dispatch,
-      user: {
-        currentUser: { companyId },
-      },
     } = this.props;
 
     validateFieldsAndScroll((error, values) => {
@@ -185,7 +239,10 @@ export default class MajorHazardEdit extends PureComponent {
           gasometerIds,
           productIds,
           pipelineIds,
-          editCompanyId,
+          curCompanyId,
+          groupId,
+          points,
+          buildingId,
         } = this.state;
 
         const {
@@ -216,7 +273,7 @@ export default class MajorHazardEdit extends PureComponent {
         } = values;
 
         const payload = {
-          companyId: this.companyId || companyId || editCompanyId,
+          companyId: curCompanyId,
           companyName,
           code,
           name,
@@ -246,6 +303,15 @@ export default class MajorHazardEdit extends PureComponent {
           linkman,
           linkmanTel,
           dutyPerson,
+          coordinate:
+            points.length > 0
+              ? JSON.stringify(points.map(({ x, y, z, groupID }) => ({ x, y, z, groupID })))
+              : undefined,
+          groupId: groupId,
+          modelIds: buildingId
+            .filter(item => item.selected === true)
+            .map(item => item.areaId)
+            .join(','),
         };
 
         const success = () => {
@@ -314,7 +380,6 @@ export default class MajorHazardEdit extends PureComponent {
       dangerSourceList: [],
       dutyPerson: '',
     });
-    this.companyId = id;
     this.handleClose();
     this.setState({
       targetKeys: [],
@@ -323,6 +388,11 @@ export default class MajorHazardEdit extends PureComponent {
       gasHolderManageList: [],
       productList: [],
       pipelineList: [],
+      curCompanyId: id,
+    });
+    this.fetchMap({ companyId: id }, mapInfo => {
+      if (!mapInfo.mapId) return;
+      this.childMap.initMap({ ...mapInfo });
     });
   };
 
@@ -417,21 +487,14 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 显示危险源弹框
   handleDangerModal = () => {
-    const {
-      user: {
-        currentUser: { companyId },
-      },
-    } = this.props;
+    const { curCompanyId } = this.state;
 
-    const { editCompanyId } = this.state;
-
-    const fixedCompanyId = this.companyId || editCompanyId || companyId;
-    if (fixedCompanyId) {
-      this.fetchStorageAreaList({ companyId: fixedCompanyId });
-      this.fetchReservoirAreaList({ companyId: fixedCompanyId });
-      this.fetchGasList({ companyId: fixedCompanyId });
-      this.fetchProductList({ companyId: fixedCompanyId });
-      this.fetchPipelineList({ companyId: fixedCompanyId });
+    if (curCompanyId) {
+      this.fetchStorageAreaList({ companyId: curCompanyId });
+      this.fetchReservoirAreaList({ companyId: curCompanyId });
+      this.fetchGasList({ companyId: curCompanyId });
+      this.fetchProductList({ companyId: curCompanyId });
+      this.fetchPipelineList({ companyId: curCompanyId });
       this.setState({ dangerModalVisible: true });
     } else {
       message.warning('请先选择单位！');
@@ -510,15 +573,9 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 打开责任人弹框
   handlePersonModal = () => {
-    const {
-      dispatch,
-      user: {
-        currentUser: { companyId },
-      },
-    } = this.props;
-    const { editCompanyId } = this.state;
-    const fixedCompanyId = this.companyId || editCompanyId || companyId;
-    if (fixedCompanyId) {
+    const { dispatch } = this.props;
+    const { curCompanyId } = this.state;
+    if (curCompanyId) {
       this.fetchPersonModalList({
         payload: {
           pageSize: 10,
@@ -527,7 +584,7 @@ export default class MajorHazardEdit extends PureComponent {
       });
       dispatch({
         type: 'department/fetchDepartmentList',
-        payload: { companyId: fixedCompanyId },
+        payload: { companyId: curCompanyId },
       });
       this.setState({ personModalVisible: true });
     } else {
@@ -537,26 +594,19 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 获取责任人列表
   fetchPersonModalList = ({ payload }) => {
-    const {
-      user: {
-        currentUser: { companyId },
-      },
-    } = this.props;
-    const { editCompanyId } = this.state;
-    const fixedCompanyId = this.companyId || editCompanyId || companyId;
+    const { curCompanyId } = this.state;
     const { dispatch } = this.props;
     dispatch({
       type: 'account/fetch',
       payload: {
         ...payload,
-        unitId: fixedCompanyId,
+        unitId: curCompanyId,
       },
     });
   };
 
   // 选中责任人数据
   handlePersonModalSelect = item => {
-    console.log('item', item);
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -566,16 +616,73 @@ export default class MajorHazardEdit extends PureComponent {
     });
   };
 
+  // 获取地图所画建筑物id
+  getBuilding = (buildingId, s) => {
+    const { modelIds } = this.state;
+    const modeIdList = modelIds ? modelIds.split(',') : [];
+    const areaList = buildingId.filter(item => item).map((item, index) => ({
+      key: index,
+      areaId: item.buildingId,
+      point: item.points,
+      selected: true,
+    }));
+    if (s === 0) {
+      areaList.forEach(element => {
+        if (!modeIdList.includes(element.areaId)) {
+          element.selected = !element.selected;
+        }
+      });
+      this.setState({ buildingId: areaList });
+    } else {
+      this.setState({ buildingId: areaList });
+    }
+  };
+
+  // 点击建筑物id
+  handleTagClick = (areaId, point, selected) => {
+    const { points, groupId, buildingId } = this.state;
+    this.childMap.handleModelEdit(groupId, points, point, selected);
+    const filterList = buildingId.reduce((res, item) => {
+      if (item.areaId === areaId) {
+        item.selected = !item.selected;
+      }
+      return [...res, item];
+    }, []);
+    this.setState({
+      buildingId: filterList,
+    });
+  };
+
+  // 地图重置
+  handleReset = () => {
+    this.childMap.setRestMap();
+    this.setState({ buildingId: [] });
+  };
+
+  renderDrawButton = () => {
+    const { isDrawing, points } = this.state;
+    return (
+      <Fragment>
+        <Button
+          style={{ marginLeft: 40 }}
+          onClick={() => {
+            if (!!isDrawing && points.length <= 2) return message.error('区域至少三个坐标点！');
+            this.setState({ isDrawing: !isDrawing });
+          }}
+        >
+          {!isDrawing ? '开始画' : '结束画'}
+        </Button>
+        <Button style={{ marginLeft: 10 }} disabled={!!isDrawing} onClick={this.handleReset}>
+          重置
+        </Button>
+      </Fragment>
+    );
+  };
+
   renderInfo() {
     const {
       form: { getFieldDecorator },
-      reservoirRegion: {
-        dangerTypeList,
-        // productTypeList,
-        // dangerChemicalsList,
-        // memoryPlaceList,
-        antiStaticList,
-      },
+      reservoirRegion: { dangerTypeList, antiStaticList },
       user: {
         currentUser: { unitType },
       },
@@ -590,39 +697,35 @@ export default class MajorHazardEdit extends PureComponent {
       gasHolderManageList,
       productList,
       pipelineList,
+      pointList,
+      groupId,
+      isDrawing,
+      buildingId,
+      modelIds,
+      curCompanyId,
     } = this.state;
     const {
       companyName,
       code,
       name,
       desc,
-      // manageType,
-      // memoryPlace,
       antiStatic,
       dangerTechnology,
       location,
       useDate,
       r,
       dangerLevel,
-      // chemiclaNature,
       personNum,
-      // environmentType,
-      // environmentName,
-      // environmentNum,
       minSpace,
       safetyDistance,
-      // linkman,
-      // linkmanTel,
       recordDate,
       dutyPerson,
     } = detailList;
-    // const dangerSourceList = getFieldValue('dangerSourceList') || [];
 
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-
     const itemStyles = { style: { width: '70%', marginRight: '10px' } };
 
     return (
@@ -900,12 +1003,39 @@ export default class MajorHazardEdit extends PureComponent {
               <Input {...itemStyles} placeholder="请填入周边500米内常住人口数量" maxLength={10} />
             )}
           </FormItem>
-
           <FormItem {...formItemLayout} label="周边防护目标最近距离(m)">
             {getFieldDecorator('minSpace', {
               initialValue: minSpace,
               getValueFromEvent: this.handleTrim,
             })(<Input {...itemStyles} placeholder="请填入专家评估算出的距离" maxLength={10} />)}
+          </FormItem>
+          <FormItem {...formItemLayout} label="划定重点危险源区域范围">
+            {curCompanyId && (
+              <div className={styles.mapStyle}>
+                {this.renderDrawButton()}
+                <Map
+                  isDrawing={isDrawing}
+                  groupId={groupId}
+                  onRef={this.onRef}
+                  getPoints={this.getPoints}
+                  getBuilding={this.getBuilding}
+                  pointList={pointList}
+                  modelIds={modelIds}
+                  style={{ height: '45vh', width: '65vh' }}
+                />
+              </div>
+            )}
+          </FormItem>
+          <FormItem label="所选建筑物" {...formItemLayout}>
+            {buildingId.map(({ key, areaId, point, selected }) => (
+              <Tag
+                color={!selected ? '' : '#555252'}
+                key={key}
+                onClick={() => this.handleTagClick(areaId, point, selected)}
+              >
+                {areaId}
+              </Tag>
+            ))}
           </FormItem>
         </Form>
       </Card>

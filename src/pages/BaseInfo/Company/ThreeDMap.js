@@ -22,7 +22,12 @@ const WRAPPER_COL = { xs: { span: 24 }, sm: { span: 16 } };
 const INIT_THEME = '2001';
 const INIT_MODE = fengMap.FMViewMode.MODE_3D;
 const INIT_SCALE = 19;
-const INIT_RANGE = [16, 23];
+// const INIT_RANGE = [16, 23];
+const [MIN, MAX] = [16, 23];
+const INIT_TILT_ANGLE = 50;
+const INIT_ROTATE_ANGLE = 60;
+const MIN_ANGLE = -180;
+const MAX_ANGLE = 180;
 const MODES = [
   { name: '2D', value: fengMap.FMViewMode.MODE_2D },
   { name: '3D', value: fengMap.FMViewMode.MODE_3D },
@@ -41,7 +46,7 @@ function getDefaultViewCenter(center) {
 export default class ThreeDMap extends PureComponent {
   state = {
     mapVisible: false,
-    scaleRange: INIT_RANGE,
+    // scaleRange: INIT_RANGE,
     // scale: INIT_SCALE,
   };
 
@@ -51,12 +56,15 @@ export default class ThreeDMap extends PureComponent {
       if (list.length){
         const vals = list[0];
         const { theme, defaultViewMode, defaultMapScaleLevel, mapScaleLevelRangeList } = vals;
+        const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
         const fieldsValue = {
           ...vals,
           theme: theme || INIT_THEME,
           defaultViewMode: defaultViewMode || INIT_MODE,
           defaultMapScaleLevel: defaultMapScaleLevel || INIT_SCALE,
-          mapScaleLevelRangeList: mapScaleLevelRangeList || INIT_RANGE,
+          tiltAngle: typeof tiltAngle === 'number' ? tiltAngle : INIT_TILT_ANGLE,
+          rotateAngle: typeof rotateAngle === 'number' ? rotateAngle : INIT_ROTATE_ANGLE,
+          // mapScaleLevelRangeList: mapScaleLevelRangeList || INIT_RANGE,
         };
         setFieldsValue(fieldsValue);
         // this.initMap(fieldsValue); // 初始化有问题，手动点击
@@ -76,7 +84,10 @@ export default class ThreeDMap extends PureComponent {
       this.getMapList(list => {
         const isPost = !list.length;
         const detail = list[0] || {};
-        this.editMap(isPost, fieldsValue, detail.id);
+        const { tiltAngle, rotateAngle } = fieldsValue;
+        const vals = { ...fieldsValue };
+        vals.mapScaleLevelRangeList = [tiltAngle, rotateAngle];
+        this.editMap(isPost, vals, detail.id);
       });
     });
   };
@@ -105,9 +116,9 @@ export default class ThreeDMap extends PureComponent {
     });
   };
 
-  handleRangeChange = value => {
-    this.setState({ scaleRange: value });
-  };
+  // handleRangeChange = value => {
+  //   this.setState({ scaleRange: value });
+  // };
 
   renderBaseItems() {
     const {
@@ -134,8 +145,8 @@ export default class ThreeDMap extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { scaleRange } = this.state;
-    const [min, max] = scaleRange;
+    // const { scaleRange } = this.state;
+    // const [min, max] = scaleRange;
 
     return (
       <Fragment>
@@ -155,26 +166,37 @@ export default class ThreeDMap extends PureComponent {
             </Select>
           )}
         </FormItem>
-        <FormItem label="缩放等级范围" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+        <FormItem label="倾斜角度" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('tiltAngle', {
+            initialValue: INIT_TILT_ANGLE,
+            rules: [{ required: true, message: "请选择倾斜角度" }],
+          })(<Slider min={0} max={90} marks={{ 0: 0, 90: 90 }} />)}
+        </FormItem>
+        <FormItem label="旋转角度" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('rotateAngle', {
+            initialValue: INIT_ROTATE_ANGLE,
+            rules: [{ required: true, message: "请选择旋转角度" }],
+          })(<Slider min={MIN_ANGLE} max={MAX_ANGLE} marks={{ [MIN_ANGLE]: MIN_ANGLE, [MAX_ANGLE]: MAX_ANGLE }} />)}
+        </FormItem>
+        {/* <FormItem label="缩放等级范围" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('mapScaleLevelRangeList', {
             initialValue: INIT_RANGE,
           })(
             <Slider range min={16} max={23} onChange={this.handleRangeChange} marks={{ 16: 16, 23: 23 }} />
           )}
-        </FormItem>
+        </FormItem> */}
         <FormItem label="默认缩放等级" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('defaultMapScaleLevel', {
             initialValue: INIT_SCALE,
           })(
-            <Slider min={min} max={max} onChange={this.handleScaleChange} marks={{ [min]: min, [max]: max }} />
+            <Slider min={MIN} max={MAX} marks={{ [MIN]: MIN, [MAX]: MAX }} />
           )}
         </FormItem>
       </Fragment>
     );
   }
 
-  initMap = ({ appName, key, mapId, theme, defaultMapScaleLevel, defaultViewMode, defaultViewCenter }) => {
-    const isFirst = !this.map;
+  initMap = ({ appName, key, mapId, theme, defaultMapScaleLevel, defaultViewMode, defaultViewCenter, tiltAngle, rotateAngle }) => {
     this.map && this.map.dispose();
     const { form: { setFieldsValue } } = this.props;
 
@@ -184,7 +206,7 @@ export default class ThreeDMap extends PureComponent {
     }
 
     const center = getDefaultViewCenter(defaultViewCenter);
-    const { scaleRange } = this.state;
+    // const { scaleRange } = this.state;
     this.setState({ mapVisible: true });
     // const [minScaleLevel, maxScaleLevel] = scaleRange;
     const mapOptions = {
@@ -195,7 +217,7 @@ export default class ThreeDMap extends PureComponent {
       defaultViewCenter: center,
       defaultViewMode,
       defaultMapScaleLevel,
-      mapScaleLevelRange: scaleRange,
+      // mapScaleLevelRange: scaleRange,
       defaultThemeName: theme, // 设置主题
       modelSelectedEffect: false,
     };
@@ -205,8 +227,12 @@ export default class ThreeDMap extends PureComponent {
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
     map.on('loadComplete', e => {
-      console.log('onload', defaultMapScaleLevel);
-      this.map.mapScaleLevel = defaultMapScaleLevel;
+      const map = this.map;
+      // console.log('onload', defaultMapScaleLevel);
+
+      map.tiltAngle = tiltAngle;
+      map.rotateAngle = rotateAngle;
+      map.mapScaleLevel = defaultMapScaleLevel;
       // isFirst && this.handlePreview();
     })
     // map.on('mapScaleLevelChanged', e => { // 有问题，不要用

@@ -50,8 +50,10 @@ export default class AddOperatingProdures extends Component {
               channelName,
               channelLocation,
               type,
-              exit,
-              entrance,
+              exit, // 出口设备id
+              entrance, // 入口设备id
+              exitDeviceCode,
+              entranceDeviceCode,
             } = detail;
             this.form && this.form.setFieldsValue({
               company: companyId ? { key: companyId, label: companyName } : undefined,
@@ -62,7 +64,7 @@ export default class AddOperatingProdures extends Component {
             });
             setTimeout(() => {
               // type 1 双向 2 单向
-              const device = (+type === 1 && [{ direction: '1', key: exit }, { direction: '2', key: entrance }]) || (+type === 2 && [{ direction: exit ? '1' : '2', key: exit || entrance }]) || [];
+              const device = (+type === 1 && [{ direction: '1', code: exitDeviceCode, id: exit }, { direction: '2', code: entranceDeviceCode, id: entrance }]) || (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance }]) || [];
               this.form && this.form.setFieldsValue({ device });
               this.setState({ device });
             }, 0);
@@ -135,7 +137,7 @@ export default class AddOperatingProdures extends Component {
   }
 
   // 打开选择关联设备弹窗
-  hadnleViewDeviceModal = (key, i) => {
+  hadnleViewDeviceModal = (id, i) => {
     const { user: { isCompany } } = this.props;
     const company = this.form && this.form.getFieldValue('company');
     if (!isCompany && company && company.key || isCompany) {
@@ -143,20 +145,20 @@ export default class AddOperatingProdures extends Component {
       this.setState({
         currentDevice: i,
         deviceModalVisible: true,
-        selectedDeviceKeys: key ? [key] : [],
+        selectedDeviceKeys: id ? [id] : [],
       })
     } else message.warning('请先选择单位')
 
   }
 
   // 选择关联设备
-  handleSelectDevice = ({ id }) => {
+  handleSelectDevice = ({ id, deviceCode }) => {
     const { currentDevice, device } = this.state;
-    if (device.some(item => item.key === id)) {
+    if (device.some(item => item.id === id)) {
       message.warning('该设备已选择！')
       return;
     }
-    const newDevice = device.map((item, i) => currentDevice === i ? { ...item, key: id } : item)
+    const newDevice = device.map((item, i) => currentDevice === i ? { ...item, id, code: deviceCode } : item)
     this.setState({ device: newDevice, deviceModalVisible: false });
     this.form && this.form.setFieldsValue({ device: newDevice });
   }
@@ -187,17 +189,16 @@ export default class AddOperatingProdures extends Component {
         device.forEach(item => {
           // direction 1 出口 2 入口
           if (+item.direction === 1) { // 出口
-            payload.exit = item.key;
+            payload.exit = item.id;
           } else if (+item.direction === 2) { // 入口
-            payload.entrance = item.key;
+            payload.entrance = item.id;
           }
         })
       } else if (+type === 2 && +device[0].direction === 1) { // 单向 出口
-        payload.exit = device[0].key;
+        payload.exit = device[0].id;
       } else if (+type === 2 && +device[0].direction === 2) { // 单向 入口
-        payload.entrance = device[0].key;
+        payload.entrance = device[0].id;
       }
-      console.log('payload', payload);
       const callback = (success, msg) => {
         if (success) {
           message.success('操作成功');
@@ -228,7 +229,7 @@ export default class AddOperatingProdures extends Component {
   }
 
   validateDevice = (rule, value, callback) => {
-    if (Array.isArray(value) && value.every(item => item.direction && item.key)) {
+    if (Array.isArray(value) && value.every(item => item.direction && item.id)) {
       callback()
     } else callback('关联设备不能为空')
   }
@@ -360,11 +361,11 @@ export default class AddOperatingProdures extends Component {
                       <SelectOrSpan onChange={this.onDirectionChange} disabled={+type === 1} value={item.direction} list={directionDict} placeholder="请选择方向" type={isNotDetail ? 'Select' : 'span'} />
                     </Col>
                     <Col span={10}>
-                      <InputOrSpan disabled value={item.key} placeholder="设备序列号" type={isNotDetail ? 'Input' : 'span'} />
+                      <InputOrSpan disabled value={item.code} placeholder="设备序列号" type={isNotDetail ? 'Input' : 'span'} />
                     </Col>
                     {isNotDetail && (
                       <Col span={5}>
-                        <Button size="small" onClick={() => this.hadnleViewDeviceModal(item.key, i)} type="primary">选择设备</Button>
+                        <Button size="small" onClick={() => this.hadnleViewDeviceModal(item.id, i)} type="primary">选择设备</Button>
                       </Col>
                     )}
                   </Row>
@@ -416,7 +417,7 @@ export default class AddOperatingProdures extends Component {
           </div>
         </Spin>
         <CompanyModal
-          title="选择单位"
+          title="选择设备"
           loading={deviceLoading}
           visible={deviceModalVisible}
           modal={channelDevice}
@@ -426,12 +427,6 @@ export default class AddOperatingProdures extends Component {
             this.setState({ deviceModalVisible: false });
           }}
           columns={[
-            {
-              title: 'id',
-              dataIndex: 'id',
-              align: 'center',
-              width: 200,
-            },
             {
               title: '设备名称',
               dataIndex: 'deviceName',
@@ -459,7 +454,7 @@ export default class AddOperatingProdures extends Component {
             selectedRowKeys: selectedDeviceKeys,
             onChange: selectedDeviceKeys => { this.setState({ selectedDeviceKeys }) },
           }}
-
+          butonStyles={{ width: '30%' }}
         />
       </PageHeaderLayout>
     );

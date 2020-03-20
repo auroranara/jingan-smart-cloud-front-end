@@ -3,10 +3,9 @@ import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 import classnames from 'classnames';
 import moment from 'moment';
 import { connect } from 'dva';
-import { isPointInPolygon } from '@/utils/map';
+// import { isPointInPolygon } from '@/utils/map';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import TruckModal from '../components/TruckModal';
-// 引入样式文件
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';
@@ -186,6 +185,8 @@ export default class Map extends PureComponent {
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
           // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
+          console.log('polygonMarker', polygonMarker);
+
           this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
           return null;
         });
@@ -288,14 +289,15 @@ export default class Map extends PureComponent {
   };
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId, isInit, defaultMapScaleLevel, theme }, fun) => {
+  initMap = ({ appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList, defaultViewMode }, fun) => {
     if (!appName || !key || !mapId) return;
+    const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
     const mapOptions = {
       //必要，地图容器
       container: document.getElementById('fengMap'),
       //地图数据位置
       mapServerURL: './data/' + mapId,
-      // defaultViewMode: fengMap.FMViewMode.MODE_2D,
+      defaultViewMode: defaultViewMode || fengMap.FMViewMode.MODE_2D,
       //设置主题
       defaultThemeName: theme || '2001',
       modelSelectedEffect: false,
@@ -324,8 +326,8 @@ export default class Map extends PureComponent {
 
     // 地图加载完成事件
     map.on('loadComplete', () => {
-      map.tiltAngle = TiltAngle;
-      map.rotateAngle = RotateAngle;
+      map.tiltAngle = typeof tiltAngle === 'number' ? tiltAngle : TiltAngle;
+      map.rotateAngle = typeof rotateAngle === 'number' ? rotateAngle : RotateAngle;
       // map.mapScaleLevel = MapScaleLevel;
       map.mapScaleLevel = defaultMapScaleLevel || MapScaleLevel;
       // console.log('map.getFMGroup()', map.groupIDs);
@@ -873,7 +875,7 @@ export default class Map extends PureComponent {
   handleShowTruckModal = () => {
     this.fetchCountByParkId();
     this.fetchPresenceRecordList();
-    this.fetchAbnormalRecordList();
+    // this.fetchAbnormalRecordList();
     this.setState({ truckModalVisible: true });
   };
 
@@ -898,6 +900,7 @@ export default class Map extends PureComponent {
         pageSize: 50,
         startTime: moment().format('YYYY-MM-DD 00:00:00'),
         endTime: moment().format('YYYY-MM-DD 23:59:59'),
+        today: 1,
       },
     });
   };
@@ -913,6 +916,7 @@ export default class Map extends PureComponent {
         pageSize: 50,
         startTime: moment().format('YYYY-MM-DD 00:00:00'),
         endTime: moment().format('YYYY-MM-DD 23:59:59'),
+        today: 1,
       },
     });
   };

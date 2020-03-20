@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
+
 import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
 import { getLabel, SEXES, DEGREES } from '@/pages/RoleAuthorization/AccountManagement/utils';
-// 引入样式文件
 import styles from './SafetyOfficerDrawer.less';
 import EduIcon from '../imgs/eduIcon.png';
 import RegisterEnginIcon from '../imgs/registerEnginIcon.png';

@@ -249,6 +249,7 @@ export default class KeypartList extends Component {
 
   renderTable = () => {
     const {
+      user: { isCompany },
       keyPart: {
         list,
         pagination: { pageNum, pageSize, total },
@@ -256,12 +257,12 @@ export default class KeypartList extends Component {
     } = this.props;
 
     const columns = [
-      {
+      ...isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      },
+      }],
       {
         title: '装置/部位名称',
         dataIndex: 'facilityName',

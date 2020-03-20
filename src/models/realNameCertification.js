@@ -112,7 +112,9 @@ export default {
     idenSearchInfo: {},
     // 人员类型字典
     personTypeDict: [
-      { key: '1', label: '员工' },
+      { key: '4', label: '操作人员' },
+      { key: '5', label: '管理人员' },
+      { key: '6', label: '安全巡查人员' },
       { key: '2', label: '外协人员' },
       { key: '3', label: '临时人员' },
     ],
@@ -188,6 +190,12 @@ export default {
       { value: 2, label: '销权中' },
       { value: 3, label: '授权中（可能原因：设备离线）' },
     ],
+
+    // 标签卡列表数据
+    tagCardData: {
+      list: [],
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
+    },
     // 通道类型字典
     channelTypeDict: [
       { key: '1', value: '双向' },
@@ -212,7 +220,7 @@ export default {
         yield put({
           type: 'saveCompany',
           payload: res.data,
-        })
+        });
       }
     },
     // 新增人员
@@ -232,7 +240,7 @@ export default {
         yield put({
           type: 'savePerson',
           payload: res.data,
-        })
+        });
       }
     },
     // 删除人员
@@ -244,8 +252,8 @@ export default {
     *fetchDetail ({ payload, callback }, { call }) {
       const res = yield call(fetchPersonList, payload);
       if (res && res.code === 200 && res.data) {
-        callback && callback(res.data.list[0])
-      } else if (callback) callback({})
+        callback && callback(res.data.list[0]);
+      } else if (callback) callback({});
     },
     // 批量授权人员
     *authorizationPerson ({ payload, callback }, { call }) {
@@ -261,7 +269,7 @@ export default {
         yield put({
           type: 'saveAuthorization',
           payload: res.data.data || { content: [], index: 1, length: 10, total: 0 },
-        })
+        });
       }
     },
     // 全部销权
@@ -281,7 +289,7 @@ export default {
         yield put({
           type: 'saveIdentificationRecord',
           payload: res.data,
-        })
+        });
       }
     },
     // 获取通道设备列表
@@ -348,7 +356,7 @@ export default {
       return {
         ...state,
         ...action.payload,
-      }
+      };
     },
     saveCompany (state, action) {
       const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
@@ -359,40 +367,40 @@ export default {
           pagination: { pageNum, pageSize, total },
           isLast: pageNum * pageSize >= total,
         },
-      }
+      };
     },
-    savePerson (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    savePerson (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         person: {
           list,
           pagination: { pageNum, pageSize, total },
         },
-      }
+      };
     },
-    saveAuthorization (state, action) {
-      const { content: list = [], index: pageNum = 1, length: pageSize = 10, total = 0 } = action.payload;
+    saveAuthorization (state, { payload = {} }) {
+      const { content: list = [], index: pageNum = 1, length: pageSize = 10, total = 0 } = payload;
       return {
         ...state,
         authorization: {
           list,
           pagination: { pageNum, pageSize, total },
         },
-      }
+      };
     },
-    saveIdentificationRecord (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    saveIdentificationRecord (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         identification: {
           list,
           pagination: { pageNum, pageSize, total },
         },
-      }
+      };
     },
-    saveChannelDevice (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    saveChannelDevice (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         channelDevice: {
@@ -413,8 +421,8 @@ export default {
         channelSearchInfo: action.payload || {},
       }
     },
-    saveChannel (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    saveChannel (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         channel: {
@@ -436,4 +444,4 @@ export default {
       }
     },
   },
-}
+};

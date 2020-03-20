@@ -829,7 +829,10 @@ export default class StorageEdit extends PureComponent {
                 <Input value={selectedArea.length ? selectedArea[0].areaName : ''} disabled {...itemStyles} placeholder="请输入" />
               </Fragment>
             )}
-            <Button type="primary" onClick={this.handleToSelectStorageArea}> 选择</Button>
+            <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleToSelectStorageArea}> 选择</Button>
+            <Button type="primary" onClick={this.handleResetArea}>
+              清空
+                </Button>
           </FormItem>
           {/* <FormItem {...formItemLayout} label="储罐编号">
             {getFieldDecorator('tankNumber', {
@@ -1425,7 +1428,7 @@ export default class StorageEdit extends PureComponent {
         ) : (
             <Button type="primary" size="large" onClick={this.handleSubmit}>
               提交
-        </Button>
+            </Button>
           )}
         <Button type="primary" size="large" onClick={this.goBack}>
           返回
@@ -1477,7 +1480,7 @@ export default class StorageEdit extends PureComponent {
         type: 'radio',
       },
       handleSelect: this.handleSelectArea,
-      handleReset: this.handleResetArea,
+      // handleReset: this.handleResetArea,
     };
     const mediumProps = {
       visible: storageMediumModalVisible,

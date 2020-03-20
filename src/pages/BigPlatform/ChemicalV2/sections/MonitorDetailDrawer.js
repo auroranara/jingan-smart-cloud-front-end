@@ -8,11 +8,11 @@ import { MonitorConfig } from '../utils';
 const NO_DATA = '暂无数据';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const STATUS = ['正常', '预警', '告警'];
-const transformCondition = condition => {
-  if (condition === '>=') return '≥';
-  else if (condition === '<=') return '≤';
-  return condition;
-};
+// const transformCondition = condition => {
+//   if (condition === '>=') return '≥';
+//   else if (condition === '<=') return '≤';
+//   return condition;
+// };
 
 export default class MonitorDetailDrawer extends Component {
   setScrollReference = scroll => {

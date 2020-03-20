@@ -3,7 +3,7 @@ import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Divider } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 import { GET_STATUS_NAME } from '@/pages/IoT/AlarmMessage';
-import NewSection from '@/components/NewSection';
+// import NewSection from '@/components/NewSection';
 import moment from 'moment';
 
 import { getMsgIcon, vaguePhone, CYAN_STYLE } from '@/pages/BigPlatform/NewUnitFireControl/utils';
@@ -13,7 +13,7 @@ import {
   alarmIcon,
   dangerIcon,
   inspectIcon,
-  outdateIcon,
+  // outdateIcon,
 } from '@/pages/BigPlatform/GasStation/imgs/links';
 
 const MAX_NAME_LENGTH = 4;

@@ -6,14 +6,14 @@ import { TabTitle } from '../components/Components';
 import { MonitorEquipmentIcons } from '../utils';
 
 import styles from './KeyPoints.less';
-import iconGas from '../imgs/icon-gas.png';
+// import iconGas from '../imgs/icon-gas.png';
 import iconHigh from '../imgs/icon-high.png';
-import iconPoison from '../imgs/icon-poison.png';
-import iconProduce from '../imgs/icon-produce.png';
-import iconStorage from '../imgs/icon-storage.png';
-import iconStorageArea from '../imgs/icon-storageArea.png';
-import iconStoreArea from '../imgs/icon-storeArea.png';
-import iconStorehouse from '../imgs/icon-storehouse.png';
+// import iconPoison from '../imgs/icon-poison.png';
+// import iconProduce from '../imgs/icon-produce.png';
+// import iconStorage from '../imgs/icon-storage.png';
+// import iconStorageArea from '../imgs/icon-storageArea.png';
+// import iconStoreArea from '../imgs/icon-storeArea.png';
+// import iconStorehouse from '../imgs/icon-storehouse.png';
 
 import iconChemical from '../imgs/icon-chemical.png';
 import iconDangerSource from '../imgs/icon-dangerSource.png';

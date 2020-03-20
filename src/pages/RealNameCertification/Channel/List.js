@@ -66,6 +66,7 @@ export default class ChannelList extends PureComponent {
 
   componentDidMount () {
     const {
+      dispatch,
       user: { isCompany, currentUser: { companyId, companyName } },
       realNameCertification: { channelSearchInfo: searchInfo = {} },
     } = this.props;
@@ -77,7 +78,7 @@ export default class ChannelList extends PureComponent {
       // 如果redux中保存了单位
       this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
     } else {
-      this.handleViewModal()
+      dispatch({ type: 'realNameCertification/saveChannel' })
     }
   }
 
@@ -98,6 +99,12 @@ export default class ChannelList extends PureComponent {
         companyId: company.id,
       },
     })
+  }
+
+  handleReset = () => {
+    const { form: { resetFields } } = this.props;
+    resetFields();
+    this.handleQuery();
   }
 
   // 获取单位列表
@@ -268,13 +275,13 @@ export default class ChannelList extends PureComponent {
         dataIndex: 'deviceCode',
         align: 'center',
         width: 250,
-        render: (val, { type, exit, entrance }) => +type === 1 ? (
+        render: (val, { type, exitDeviceCode, entranceDeviceCode }) => +type === 1 ? (
           <div>
-            <div>{entrance}</div>
+            <div>{entranceDeviceCode}</div>
             <Divider style={{ width: '100%' }} type="horizontal" />
-            <div>{exit}</div>
+            <div>{exitDeviceCode}</div>
           </div>
-        ) : (exit || entrance),
+        ) : (exitDeviceCode || entranceDeviceCode),
       },
       {
         title: '通道照片',
@@ -349,6 +356,11 @@ export default class ChannelList extends PureComponent {
       companyLoading,
       resourceManagement: { companyList },
       user: { isCompany },
+      realNameCertification: {
+        channel: {
+          pagination: { total = 0 },
+        },
+      },
     } = this.props;
     const { company, visible, images, currentImage } = this.state;
     return (
@@ -359,7 +371,7 @@ export default class ChannelList extends PureComponent {
           <div>
             <p>
               通道总数:
-            <span style={{ paddingLeft: 8 }}>{0}</span>
+            <span style={{ paddingLeft: 8 }}>{total}</span>
             </p>
             {!isCompany && (
               <div>
