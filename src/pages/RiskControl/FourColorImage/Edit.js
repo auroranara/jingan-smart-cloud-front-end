@@ -323,16 +323,16 @@ export default class TableList extends React.Component {
   };
 
   handleTagClick = (areaId, point, selected) => {
-    const { points, groupId } = this.state;
+    const { points, groupId, buildingId } = this.state;
     this.childMap.handleModelEdit(groupId, points, point, selected);
-    const { buildingId } = this.state;
-    buildingId.forEach(item => {
+    const filterList = buildingId.reduce((res, item) => {
       if (item.areaId === areaId) {
         item.selected = !item.selected;
       }
-    });
+      return [...res, item];
+    }, []);
     this.setState({
-      buildingId: buildingId,
+      buildingId: filterList,
     });
   };
 

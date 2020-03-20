@@ -307,28 +307,31 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'photoDetails',
         align: 'center',
         width: 250,
-        render: val => (
-          <div>
-            {val !== null &&
-              val.map((item, i) => (
-                <img
-                  onClick={() => {
-                    this.setState({ images: val.map(item => item.webUrl), currentImage: i });
-                  }}
-                  style={{
-                    width: '50px',
-                    height: '50px',
-                    objectFit: 'contain',
-                    cursor: 'pointer',
-                    margin: '5px',
-                  }}
-                  key={i}
-                  src={item.webUrl}
-                  alt="照片"
-                />
-              ))}
-          </div>
-        ),
+        render: val =>
+          Array.isArray(val) ? (
+            <div>
+              {val !== null &&
+                val.map((item, i) => (
+                  <img
+                    onClick={() => {
+                      this.setState({ images: val.map(item => item.webUrl), currentImage: i });
+                    }}
+                    style={{
+                      width: '50px',
+                      height: '50px',
+                      objectFit: 'contain',
+                      cursor: 'pointer',
+                      margin: '5px',
+                    }}
+                    key={i}
+                    src={item.webUrl}
+                    alt="照片"
+                  />
+                ))}
+            </div>
+          ) : (
+            ''
+          ),
       },
       {
         title: '操作',
@@ -429,13 +432,17 @@ export default class PersonnelList extends PureComponent {
               人员总数:
               <span style={{ paddingLeft: 8 }}>{total}</span>
             </span>
-            <Button type="primary" style={{ float: 'right' }} onClick={this.hanldlePicModal}>
+            <Button
+              type="primary"
+              style={{ float: 'right' }}
+              // onClick={this.hanldlePicModal}
+            >
               批量导入照片
             </Button>
             <Button
               type="primary"
               style={{ float: 'right', marginRight: '10px' }}
-              onClick={this.hanldlePicModal}
+              // onClick={this.hanldlePicModal}
             >
               批量导入
             </Button>

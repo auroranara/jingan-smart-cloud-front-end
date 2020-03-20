@@ -1,23 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  BackTop,
-  Col,
-  Row,
-  Select,
-  Table,
-  Input,
-  DatePicker,
-} from 'antd';
+import { Form, Card, Button, BackTop, Col, Row, Select, Table, Input, DatePicker } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import codes from '@/utils/codes';
 // import { hasAuthority } from '@/utils/customAuth';
 // import router from 'umi/router';
 import moment from 'moment';
 import ImagePreview from '@/jingan-components/ImagePreview';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -43,26 +33,41 @@ const breadcrumbList = [
     name: title,
   },
 ];
-const tabList = [
-  { key: 1, tab: '比对成功' },
-  { key: 2, tab: '比对失败' },
-];
+const tabList = [{ key: 1, tab: '比对成功' }, { key: 2, tab: '比对失败' }];
 
-@connect(({ realNameCertification, loading }) => ({
+@connect(({ realNameCertification, user, resourceManagement, loading }) => ({
   realNameCertification,
+  resourceManagement,
+  user,
   loading: loading.effects['realNameCertification/fetchIdentificationRecord'],
+  companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
 @Form.create()
 export default class IdentificationRecord extends PureComponent {
-
   state = {
     tabActiveKey: '1', // 当前标签key
     images: [],
     currentImage: 0,
+    company: {}, // 选中的单位
+    visible: false, // 选择单位弹窗可见
   };
 
   componentDidMount () {
-    this.handleQuery();
+    const {
+      dispatch,
+      user: { isCompany, currentUser: { companyId, companyName } },
+      realNameCertification: { idenSearchInfo: searchInfo = {} },
+    } = this.props;
+    if (isCompany) {
+      this.setState({ company: { id: companyId, name: companyName } }, () => {
+        this.handleQuery();
+      })
+    } else if (searchInfo.company && searchInfo.company.id) {
+      // 如果redux中保存了单位
+      this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
+    } else {
+      dispatch({ type: 'realNameCertification/saveIdentificationRecord' })
+    }
   }
 
   // 查询列表
@@ -71,7 +76,7 @@ export default class IdentificationRecord extends PureComponent {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
-    const { tabActiveKey } = this.state;
+    const { tabActiveKey, company } = this.state;
     const values = getFieldsValue();
     // console.log('values', values);
     const { time, ...resValues } = values;
@@ -86,16 +91,25 @@ export default class IdentificationRecord extends PureComponent {
         // endTime: time && time.length ? time[1].unix() * 1000 : undefined,
         startTime: time ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
         endTime: time ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        companyId: company.id,
       },
-    })
-  }
+    });
+  };
 
   // 点击重置
   handleReset = () => {
-    const { form: { resetFields } } = this.props;
+    const {
+      form: { resetFields },
+    } = this.props;
     resetFields();
     this.handleQuery();
-  }
+  };
+
+  // 获取单位列表
+  fetchCompanyList = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'resourceManagement/fetchCompanyList', ...action });
+  };
 
   /* tab列表点击变化 */
   handleTabChange = key => {
@@ -104,18 +118,40 @@ export default class IdentificationRecord extends PureComponent {
     });
   };
 
+  // 选择单位
+  handleSelectCompany = company => {
+    const { dispatch } = this.props;
+    this.setState({ company, visible: false }, () => {
+      this.handleQuery();
+    });
+    dispatch({
+      type: 'realNameCertification/saveIdenSearchInfo',
+      payload: { company },
+    })
+  }
+
+  // 点击打开选择单位
+  handleViewCompanyModal = company => {
+    this.fetchCompanyList({
+      payload: { pageNum: 1, pageSize: defaultPageSize },
+      callback: () => {
+        this.setState({ visible: true });
+      },
+    });
+  }
+
   // 渲染筛选栏
   renderFilter = () => {
     const { tabActiveKey } = this.state;
     const {
       form: { getFieldDecorator },
       realNameCertification: {
-        storageLocationDict,// 存储位置字典
-        deviceTypeDict,// 设备类型字典
+        storageLocationDict, // 存储位置字典
+        deviceTypeDict, // 设备类型字典
         identificationDict, // 识别模式字典
         livingBodyDict, // 活体判断字典
-        validateDict,// 有效期判断字典
-        accessDict,// 准入时间判断字典
+        validateDict, // 有效期判断字典
+        accessDict, // 准入时间判断字典
       },
     } = this.props;
     return (
@@ -124,16 +160,12 @@ export default class IdentificationRecord extends PureComponent {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('personName')(
-                  <Input placeholder="姓名" />
-                )}
+                {getFieldDecorator('personName')(<Input placeholder="姓名" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('personGuid')(
-                  <Input placeholder="GUID" />
-                )}
+                {getFieldDecorator('personGuid')(<Input placeholder="GUID" />)}
               </FormItem>
             </Col>
             {/* <Col {...colWrapper}>
@@ -145,9 +177,7 @@ export default class IdentificationRecord extends PureComponent {
             </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('deviceKey')(
-                  <Input placeholder="序列号" />
-                )}
+                {getFieldDecorator('deviceKey')(<Input placeholder="序列号" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
@@ -155,7 +185,9 @@ export default class IdentificationRecord extends PureComponent {
                 {getFieldDecorator('type')(
                   <Select placeholder="储存位置" allowClear>
                     {storageLocationDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                      <Select.Option key={key} value={key}>
+                        {label}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -166,7 +198,9 @@ export default class IdentificationRecord extends PureComponent {
                 {getFieldDecorator('deviceType')(
                   <Select placeholder="设备类型" allowClear>
                     {deviceTypeDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                      <Select.Option key={key} value={key}>
+                        {label}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -177,7 +211,9 @@ export default class IdentificationRecord extends PureComponent {
                 {getFieldDecorator('recMode')(
                   <Select placeholder="识别模式" allowClear>
                     {identificationDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                      <Select.Option key={key} value={key}>
+                        {label}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -203,7 +239,9 @@ export default class IdentificationRecord extends PureComponent {
                 {getFieldDecorator('aliveType')(
                   <Select placeholder="活体判断" allowClear>
                     {livingBodyDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                      <Select.Option key={key} value={key}>
+                        {label}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -215,7 +253,9 @@ export default class IdentificationRecord extends PureComponent {
                   {getFieldDecorator('permissionTimeType')(
                     <Select placeholder="有效期判断" allowClear>
                       {validateDict.map(({ key, label }) => (
-                        <Select.Option key={key} value={key}>{label}</Select.Option>
+                        <Select.Option key={key} value={key}>
+                          {label}
+                        </Select.Option>
                       ))}
                     </Select>
                   )}
@@ -228,7 +268,9 @@ export default class IdentificationRecord extends PureComponent {
                   {getFieldDecorator('passTimeType')(
                     <Select placeholder="准入时间判断" allowClear>
                       {accessDict.map(({ key, label }) => (
-                        <Select.Option key={key} value={key}>{label}</Select.Option>
+                        <Select.Option key={key} value={key}>
+                          {label}
+                        </Select.Option>
                       ))}
                     </Select>
                   )}
@@ -237,7 +279,11 @@ export default class IdentificationRecord extends PureComponent {
             )}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.handleQuery()}
+                >
                   查询
                 </Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
@@ -248,8 +294,8 @@ export default class IdentificationRecord extends PureComponent {
           </Row>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
 
   // 渲染列表
   renderList = () => {
@@ -279,21 +325,24 @@ export default class IdentificationRecord extends PureComponent {
         dataIndex: 'createTime',
         align: 'center',
         width: 200,
-        render: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '',
+        render: val => (val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''),
       },
       {
         title: '抓拍照片',
         dataIndex: 'photoUrl',
         align: 'center',
         width: 180,
-        render: (val) => val ? (
-          <img
-            onClick={() => { this.setState({ images: [val] }) }}
-            style={{ width: '50px', height: '50px', objectFit: 'contain', cursor: 'pointer' }}
-            src={val}
-            alt="照片"
-          />
-        ) : null,
+        render: val =>
+          val ? (
+            <img
+              onClick={() => {
+                this.setState({ images: [val] });
+              }}
+              style={{ width: '50px', height: '50px', objectFit: 'contain', cursor: 'pointer' }}
+              src={val}
+              alt="照片"
+            />
+          ) : null,
       },
       {
         title: '人员编号(GUID)',
@@ -312,7 +361,7 @@ export default class IdentificationRecord extends PureComponent {
         dataIndex: 'deviceType',
         align: 'center',
         width: 180,
-        render: (val) => {
+        render: val => {
           const target = deviceTypeDict.find(item => +item.key === +val);
           return target ? target.label : '';
         },
@@ -328,7 +377,7 @@ export default class IdentificationRecord extends PureComponent {
         dataIndex: 'recMode',
         align: 'center',
         width: 200,
-        render: (val) => {
+        render: val => {
           const target = identificationDict.find(item => +item.key === +val);
           return target ? target.label : '';
         },
@@ -338,9 +387,13 @@ export default class IdentificationRecord extends PureComponent {
         dataIndex: 'aliveType',
         align: 'center',
         width: 200,
-        render: (val) => {
+        render: val => {
           const target = livingBodyDict.find(item => +item.key === +val);
-          return target ? (<span style={{ color: target.color || 'inherit' }}>{target.label}</span>) : '';
+          return target ? (
+            <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
+          ) : (
+              ''
+            );
         },
       },
       {
@@ -348,16 +401,20 @@ export default class IdentificationRecord extends PureComponent {
         dataIndex: 'type',
         align: 'center',
         width: 150,
-        render: (val) => +val === 1 ? '已授权' : '未授权',
+        render: val => (+val === 1 ? '已授权' : '未授权'),
       },
       {
         title: '有效期',
         dataIndex: 'permissionTimeType',
         align: 'center',
         width: 150,
-        render: (val) => {
+        render: val => {
           const target = validateDict.find(item => +item.key === +val);
-          return target ? (<span style={{ color: target.color || 'inherit' }}>{target.label}</span>) : '';
+          return target ? (
+            <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
+          ) : (
+              ''
+            );
         },
       },
       {
@@ -365,9 +422,13 @@ export default class IdentificationRecord extends PureComponent {
         dataIndex: 'passTimeType',
         align: 'center',
         width: 150,
-        render: (val) => {
+        render: val => {
           const target = accessDict.find(item => +item.key === +val);
-          return target ? (<span style={{ color: target.color || 'inherit' }}>{target.label}</span>) : '';
+          return target ? (
+            <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
+          ) : (
+              ''
+            );
         },
       },
     ];
@@ -396,11 +457,16 @@ export default class IdentificationRecord extends PureComponent {
       </Card>
     ) : (
         <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
-      )
-  }
+      );
+  };
 
   render () {
-    const { tabActiveKey, images, currentImage } = this.state;
+    const {
+      companyLoading,
+      resourceManagement: { companyList },
+      user: { isCompany },
+    } = this.props;
+    const { tabActiveKey, images, currentImage, visible, company } = this.state;
     return (
       <PageHeaderLayout
         title={title}
@@ -408,25 +474,38 @@ export default class IdentificationRecord extends PureComponent {
         tabList={tabList}
         tabActiveKey={tabActiveKey}
         onTabChange={this.handleTabChange}
-      // content={
-      //   <div>
-      //     <span>
-      //       单位总数：
-      //       {0}
-      //     </span>
-      //     <span style={{ paddingLeft: 20 }}>
-      //       人员总数:
-      //       <span style={{ paddingLeft: 8 }}>{0}</span>
-      //     </span>
-      //   </div>
-      // }
+        content={!isCompany && (
+          <div>
+            <Input
+              disabled
+              style={{ width: '300px' }}
+              placeholder={'请选择单位'}
+              value={company.name}
+            />
+            <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewCompanyModal}>
+              选择单位
+              </Button>
+          </div>
+        )}
       >
-        <BackTop />
-        {this.renderFilter()}
-        {this.renderList()}
+        {company && company.id ? (
+          <div>
+            {this.renderFilter()}
+            {this.renderList()}
+          </div>
+        ) : (<div style={{ textAlign: 'center' }}>请先选择单位</div>)}
         {/* 图片查看 */}
         <ImagePreview images={images} currentImage={currentImage} />
+        <CompanyModal
+          title="选择单位"
+          loading={companyLoading}
+          visible={visible}
+          modal={companyList}
+          fetch={this.fetchCompanyList}
+          onSelect={this.handleSelectCompany}
+          onClose={() => { this.setState({ visible: false }) }}
+        />
       </PageHeaderLayout>
-    )
+    );
   }
 }

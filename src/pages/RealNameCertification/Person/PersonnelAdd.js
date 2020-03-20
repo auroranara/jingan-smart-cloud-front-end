@@ -31,11 +31,6 @@ const formItemLayout = {
   wrapperCol: { span: 18 },
 };
 
-const formItemLayout1 = {
-  labelCol: { span: 2 },
-  wrapperCol: { span: 18 },
-};
-
 const DEGREES = [
   { key: '0', label: '初中' },
   { key: '1', label: '高中' },
@@ -236,6 +231,9 @@ export default class PersonnelAdd extends PureComponent {
     }
   };
 
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
+
   // validatePhoto = (rule, value, callback) => {
   //   if (value && value.length) {
   //     callback();
@@ -271,6 +269,14 @@ export default class PersonnelAdd extends PureComponent {
     } else {
       error();
     }
+  };
+
+  validateSn = (rule, value, callback) => {
+    const snRe = new RegExp(/[0-9a-fA-F]$/);
+    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+    if (value && value.length === 12 && snRe.test(value) && !chineseRe.test(value)) {
+      callback();
+    } else callback('必须为12位数');
   };
 
   handleSexTypeChange = i => {
@@ -361,6 +367,7 @@ export default class PersonnelAdd extends PureComponent {
                 <FormItem label="姓名" {...formItemLayout}>
                   {getFieldDecorator('name', {
                     initialValue: id ? detail.name : undefined,
+                    getValueFromEvent: this.handleTrim,
                     rules: [{ required: true, message: '请输入姓名' }],
                   })(<Input placeholder="请输入" />)}
                 </FormItem>
@@ -368,6 +375,7 @@ export default class PersonnelAdd extends PureComponent {
               <Col {...colLayout}>
                 <FormItem label="职工号" {...formItemLayout}>
                   {getFieldDecorator('workerNumber', {
+                    getValueFromEvent: this.handleTrim,
                     initialValue: id ? detail.workerNumber : undefined,
                   })(<Input placeholder="请输入" maxLength={10} />)}
                 </FormItem>
@@ -389,6 +397,7 @@ export default class PersonnelAdd extends PureComponent {
                 <FormItem label="手机号" {...formItemLayout}>
                   {getFieldDecorator('telephone', {
                     initialValue: id ? detail.telephone : undefined,
+                    getValueFromEvent: this.handleTrim,
                     rules: [
                       { whitespace: true },
                       { pattern: phoneReg, message: '联系电话格式不正确' },
@@ -433,6 +442,7 @@ export default class PersonnelAdd extends PureComponent {
                 <Col {...colLayout}>
                   <FormItem label="单位名称" {...formItemLayout}>
                     {getFieldDecorator('personCompany', {
+                      getValueFromEvent: this.handleTrim,
                       initialValue: id ? detail.personCompany : undefined,
                       rules: [{ required: true, message: '请输入单位名称' }],
                     })(<Input placeholder="请输入" />)}
@@ -458,6 +468,7 @@ export default class PersonnelAdd extends PureComponent {
                   {...formItemLayout}
                 >
                   {getFieldDecorator('icnumber', {
+                    getValueFromEvent: this.handleTrim,
                     initialValue: id ? detail.icnumber : undefined,
                   })(<Input placeholder="请输入" />)}
                 </FormItem>
@@ -475,8 +486,9 @@ export default class PersonnelAdd extends PureComponent {
                   {...formItemLayout}
                 >
                   {getFieldDecorator('entranceNumber', {
+                    getValueFromEvent: this.handleTrim,
                     initialValue: id ? detail.entranceNumber : undefined,
-                    rules: [{ pattern: /[0-9a-fA-F]$/, message: '必须为12位16进制数' }],
+                    rules: [{ validator: this.validateSn }],
                   })(<Input placeholder="请输入" maxLength={12} />)}
                 </FormItem>
               </Col>
@@ -496,7 +508,7 @@ export default class PersonnelAdd extends PureComponent {
                     //rules: [{ validator: this.validatePhoto }],
                   })(
                     <Fragment>
-                      <div style={{ display: 'flex' }}>
+                      <div className={styles.uploadStyle}>
                         <Upload
                           name="files"
                           listType="picture-card"
@@ -516,9 +528,9 @@ export default class PersonnelAdd extends PureComponent {
                           ) : null}
                         </Upload>
                         <div className={styles.labelColor}>
-                          <div style={{ marginBottom: '-15px' }}>照片命名示例:</div>
-                          <div style={{ marginBottom: '-15px' }}>姓名_ID卡号</div>
-                          <div>张三_FF000000011B</div>
+                          <div className={styles.labelFirst}>照片命名示例:</div>
+                          <div>姓名_ID卡号</div>
+                          <div className={styles.labelSecond}>张三_FF000000011B</div>
                         </div>
                       </div>
                     </Fragment>

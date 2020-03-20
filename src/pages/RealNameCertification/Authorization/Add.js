@@ -55,8 +55,9 @@ const minuates = Array.from({ length: 60 }, (v, i) => i);
 const seconds = Array.from({ length: 60 }, (v, i) => i);
 
 @Form.create()
-@connect(({ realNameCertification, loading }) => ({
+@connect(({ realNameCertification, user, loading }) => ({
   realNameCertification,
+  user,
   personLoading: loading.effects['realNameCertification/fetchPersonList'],// 人员列表是否加载
 }))
 export default class AddAuthorization extends PureComponent {
@@ -78,6 +79,21 @@ export default class AddAuthorization extends PureComponent {
   }
 
   componentDidMount () {
+    const {
+      user: { isCompany, currentUser: { companyId, companyName } },
+      realNameCertification: { authSearchInfo: searchInfo = {} },
+    } = this.props;
+    if (isCompany) {
+      this.setState({ company: { id: companyId, name: companyName } }, () => {
+        this.fetchDeviceList();
+      })
+    } else if (searchInfo.company && searchInfo.company.id) {
+      // 如果redux中保存了单位
+      this.setState({ company: searchInfo.company }, () => { this.fetchDeviceList() })
+    } else {
+      message.warning('请重新选择单位');
+      router.push(listPath);
+    }
     this.fetchPersonList();
   }
 
@@ -87,10 +103,30 @@ export default class AddAuthorization extends PureComponent {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
-    const values = getFieldsValue();
+    const { name, icnumber } = getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchPersonList',
-      payload: { ...values, pageNum, pageSize },
+      payload: { name: name || undefined, icnumber: icnumber || undefined, pageNum, pageSize },
+    })
+  }
+
+  // 获取设备列表
+  fetchDeviceList = (pageNum = 1, pageSize = defaultPageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const { company } = this.state;
+    const { deviceName, deviceCode } = getFieldsValue();
+    dispatch({
+      type: 'realNameCertification/fetchChannelDeviceList',
+      payload: {
+        pageNum,
+        pageSize,
+        companyId: company.id,
+        deviceName: deviceName || undefined,
+        deviceCode: deviceCode || undefined,
+      },
     })
   }
 
@@ -197,7 +233,7 @@ export default class AddAuthorization extends PureComponent {
           pagination: personPagination,
         },
         // 设备数据
-        device: {
+        channelDevice: {
           list: deviceList = [],
           pagination: devicePagination,
         },
@@ -233,7 +269,7 @@ export default class AddAuthorization extends PureComponent {
       {
         title: '照片',
         dataIndex: 'photoDetails',
-        render: (val) => (
+        render: (val) => Array.isArray(val) ? (
           <div>
             {val.map((item, i) => (
               <img
@@ -245,13 +281,13 @@ export default class AddAuthorization extends PureComponent {
               />
             ))}
           </div>
-        ),
+        ) : null,
       },
     ];
     const deviceColumns = [
       {
         title: '设备名称',
-        dataIndex: 'name',
+        dataIndex: 'deviceName',
         width: 150,
       },
       {
@@ -259,15 +295,15 @@ export default class AddAuthorization extends PureComponent {
         dataIndex: 'deviceKey',
         width: 160,
       },
-      {
-        title: '设备类型',
-        dataIndex: 'type',
-        width: 120,
-        render: (val) => {
-          const target = deviceTypeDict.find(item => +item.key === +val);
-          return target ? target.label : ''
-        },
-      },
+      // {
+      //   title: '设备类型',
+      //   dataIndex: 'type',
+      //   width: 120,
+      //   render: (val) => {
+      //     const target = deviceTypeDict.find(item => +item.key === +val);
+      //     return target ? target.label : ''
+      //   },
+      // },
       {
         title: '识别方式',
         dataIndex: 'recType',
@@ -278,6 +314,8 @@ export default class AddAuthorization extends PureComponent {
         title: '操作',
         key: '操作',
         width: 130,
+        fixed: 'right',
+        align: 'center',
         render: (val, row) => (
           <a onClick={() => this.handleAuthorization(row)}>授权</a>
         ),
@@ -474,6 +512,21 @@ export default class AddAuthorization extends PureComponent {
                     <span>请选择设备</span>
                   </div>
                   <div className={styles.outerLine}>
+                    <Row gutter={16} style={{ margin: '8px' }}>
+                      <Col span={8}>
+                        {getFieldDecorator('deviceName')(
+                          <Input placeholder="设备名称" allowClear />
+                        )}
+                      </Col>
+                      <Col span={8}>
+                        {getFieldDecorator('deviceCode')(
+                          <Input placeholder="设备序列号" allowClear />
+                        )}
+                      </Col>
+                      <Col span={8}>
+                        <Button type="primary" onClick={() => this.fetchDeviceList()}>查询</Button>
+                      </Col>
+                    </Row>
                     <Table
                       rowKey="deviceKey"
                       // size="small"
@@ -488,10 +541,10 @@ export default class AddAuthorization extends PureComponent {
                         showQuickJumper: true,
                         showSizeChanger: true,
                         pageSizeOptions: ['5', '10', '15', '20'],
-                        // onChange: this.fetchPersonList,
-                        // onShowSizeChange: (num, size) => {
-                        //   this.fetchPersonList(1, size);
-                        // },
+                        onChange: this.fetchDeviceList,
+                        onShowSizeChange: (num, size) => {
+                          this.fetchDeviceList(1, size);
+                        },
                       }}
                       scroll={{ x: 300 }}
                     />
