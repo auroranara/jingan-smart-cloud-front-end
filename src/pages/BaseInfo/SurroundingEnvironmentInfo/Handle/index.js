@@ -2,10 +2,17 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Button, Card, Form, message, Tooltip, Icon, Input, Divider, Upload } from 'antd';
+import { phoneReg, emailReg } from '@/utils/validate';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { handleDetails, BREADCRUMBLIST, LIST_URL, ARCHITECTURAL_STRUCTURE, envirType } from '../Other/utils';
+import {
+  handleDetails,
+  BREADCRUMBLIST,
+  LIST_URL,
+  ARCHITECTURAL_STRUCTURE,
+  envirType,
+} from '../Other/utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
@@ -366,7 +373,13 @@ export default class Edit extends PureComponent {
       { name: 'environmentName', label: '周边环境名称' },
       { name: 'environmentBear', label: '周边环境方位' },
       { name: 'minSpace', label: '与本企业最小距离(m)' },
-      { name: 'buildStructure', label: '建筑结构', type: 'select', options: ARCHITECTURAL_STRUCTURE, required: false },
+      {
+        name: 'buildStructure',
+        label: '建筑结构',
+        type: 'select',
+        options: ARCHITECTURAL_STRUCTURE,
+        required: false,
+      },
       { name: 'buildHeight', label: '相邻建筑高度(m)', required: false },
       { name: 'perNumber', label: '人员数量' },
       { name: 'contact', label: '联系人' },
@@ -398,12 +411,12 @@ export default class Edit extends PureComponent {
       {
         name: 'contactPhone',
         label: '联系人移动电话',
-        phoneRule: true,
+        otherRule: { pattern: phoneReg, message: '格式不正确' },
       },
       {
         name: 'contactMail',
         label: '联系人电子邮箱',
-        emailRule: true,
+        otherRule: { pattern: emailReg, message: '格式不正确' },
         required: false,
       },
       {

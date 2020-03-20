@@ -25,12 +25,20 @@ const cardType = [
   { key: '6', value: '其他' },
 ];
 
-const useStatus = [{ key: '1', value: '已使用' }, { key: '2', value: '未使用' }];
+const useStatus = [{ key: '0', value: '已使用' }, { key: '1', value: '未使用' }];
 
-export const getLevel = {
-  1: '公司',
-  2: '工厂-车间',
-  3: '工序-班组',
+const getCardType = {
+  1: '本单位人员',
+  2: '来访人员',
+  3: '外包人员',
+  4: '本单位车辆',
+  5: '来访车辆',
+  6: '其他',
+};
+
+const getStatus = {
+  0: '已使用',
+  1: '未使用',
 };
 
 export { cardType };
@@ -54,19 +62,19 @@ export function getSearchFields(unitType) {
       transform: v => v.trim(),
     },
     {
-      id: 'companyName',
+      id: 'icNumber',
       // label: 'IC卡号',
       render: () => <Input placeholder="请输入IC卡号" allowClear />,
       transform: v => v.trim(),
     },
     {
-      id: 'companyName',
-      // label: 'IC卡号',
+      id: 'snNumber',
+      // label: 'SN卡号',
       render: () => <Input placeholder="请输入SN号" allowClear />,
       transform: v => v.trim(),
     },
     {
-      id: 'treamLevel',
+      id: 'labelType',
       // label: '卡类型',
       render: () => (
         <Select placeholder="请选择卡类型" allowClear>
@@ -79,8 +87,8 @@ export function getSearchFields(unitType) {
       ),
     },
     {
-      id: 'treamLevel',
-      // label: '卡类型',
+      id: 'status',
+      // label: '使用状态',
       render: () => (
         <Select placeholder="请选择使用状态" allowClear>
           {useStatus.map(({ key, value }) => (
@@ -108,53 +116,47 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
     },
     {
       title: 'IC卡号',
-      dataIndex: 'treamName',
-      key: 'treamName',
+      dataIndex: 'icNumber',
+      key: 'icNumber',
       align: 'center',
       width: 200,
     },
     {
       title: 'SN号',
-      dataIndex: 'treamLevel',
-      key: 'treamLevel',
+      dataIndex: 'snNumber',
+      key: 'snNumber',
       align: 'center',
       width: 150,
-      render: val => getLevel[val],
     },
     {
       title: '标签卡类型',
-      dataIndex: 'charger',
-      key: 'charger',
+      dataIndex: 'labelType',
+      key: 'labelType',
       align: 'center',
       width: 220,
+      render: val => getCardType[val],
     },
     {
       title: '使用对象',
-      dataIndex: 'treamDescription',
-      key: 'treamDescription',
+      dataIndex: 'name',
+      key: 'name',
       align: 'center',
-      width: 260,
-      render: val => (
-        <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
-          {val}
-        </Ellipsis>
-      ),
+      width: 200,
     },
     {
       title: '电量',
-      dataIndex: 'personNumber',
-      key: 'personNumber',
+      dataIndex: 'electricity',
+      key: 'electricity',
       align: 'center',
-      // fixed: 'right',
       width: 120,
     },
     {
       title: '使用状态',
       dataIndex: 'status',
-      key: 'personNumber',
+      key: 'status',
       align: 'center',
-      // fixed: 'right',
       width: 120,
+      render: val => getStatus[val],
     },
     {
       title: '操作',
@@ -181,7 +183,7 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
-              title="确定删除当前项目？"
+              title="你确定要删除该卡？"
               onConfirm={e => handleConfirmDelete(id)}
               okText="确定"
               cancelText="取消"

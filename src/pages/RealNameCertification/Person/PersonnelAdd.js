@@ -12,8 +12,11 @@ import {
   Upload,
   Icon,
   Radio,
+  Spin,
+  AutoComplete,
 } from 'antd';
 import { connect } from 'dva';
+import debounce from 'lodash/debounce';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './CompanyList.less';
 import router from 'umi/router';
@@ -22,6 +25,7 @@ import { phoneReg } from '@/utils/validate';
 import PIC from '@/assets/picExample.png';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -51,19 +55,23 @@ const DEGREES = [
     loading.effects['realNameCertification/editPerson'],
 }))
 export default class PersonnelAdd extends PureComponent {
-  state = {
-    diplomaLoading: false, // 学历证书是否上传中
-    photoLoading: false, // 人脸照片是否上传中
-    // 详情
-    detail: {
-      photoDetails: [],
-      educationCertificateDetails: [],
-    },
-    sexValue: '0', // 默认性别为男
-    perType: '4', // 人员选择类型
-    curCompanyName: '', // 当前单位
-  };
-
+  constructor(props) {
+    super(props);
+    this.handleICSearch = debounce(this.handleICSearch, 300);
+    this.handleSNSearch = debounce(this.handleSNSearch, 300);
+    this.state = {
+      diplomaLoading: false, // 学历证书是否上传中
+      photoLoading: false, // 人脸照片是否上传中
+      // 详情
+      detail: {
+        photoDetails: [],
+        educationCertificateDetails: [],
+      },
+      sexValue: '0', // 默认性别为男
+      perType: '4', // 人员选择类型
+      curCompanyName: '', // 当前单位
+    };
+  }
   componentDidMount() {
     const {
       dispatch,
@@ -71,7 +79,7 @@ export default class PersonnelAdd extends PureComponent {
         params: { id },
       },
       location: {
-        query: { companyName: routerCompanyName },
+        query: { companyId, companyName: routerCompanyName },
       },
       user: {
         currentUser: { companyName },
@@ -80,6 +88,14 @@ export default class PersonnelAdd extends PureComponent {
     } = this.props;
     this.fetchDepartment();
     this.setState({ curCompanyName: companyName || routerCompanyName });
+    dispatch({
+      type: 'realNameCertification/fetchTagCardList',
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 18,
+      },
+    });
     if (id) {
       // 如果编辑
       dispatch({
@@ -133,12 +149,13 @@ export default class PersonnelAdd extends PureComponent {
     validateFieldsAndScroll((err, values) => {
       if (err) return;
       if (!companyId) return;
-      const { ...resValues } = values;
+      const { icnumber, entranceNumber, ...resValues } = values;
       const payload = {
         ...resValues,
+        icnumber: icnumber.label,
+        entranceNumber: entranceNumber.label,
         companyId,
       };
-      // console.log('payload', payload);
       if (id) {
         // 如果编辑
         dispatch({
@@ -271,14 +288,6 @@ export default class PersonnelAdd extends PureComponent {
     }
   };
 
-  validateSn = (rule, value, callback) => {
-    const snRe = new RegExp(/[0-9a-fA-F]$/);
-    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
-    if (value && value.length === 12 && snRe.test(value) && !chineseRe.test(value)) {
-      callback();
-    } else callback('必须为12位数');
-  };
-
   handleSexTypeChange = i => {
     this.setState({ sexValue: i });
   };
@@ -309,8 +318,109 @@ export default class PersonnelAdd extends PureComponent {
     }
   };
 
+  handleICSearch = value => {
+    const { dispatch } = this.props;
+    // 根据输入值获取列表
+    dispatch({
+      type: 'realNameCertification/fetchTagCardList',
+      payload: {
+        icNumber: value && value.trim(),
+        pageNum: 1,
+        pageSize: 10,
+        status: 1,
+      },
+    });
+  };
+
+  handleICBlur = value => {
+    const {
+      dispatch,
+      realNameCertification: {
+        tagCardData: { list: labelList = [] },
+      },
+      form: { setFieldsValue },
+    } = this.props;
+    // 根据value判断是否是手动输入
+    if (value && value.key === value.label) {
+      this.handleICSearch.cancel();
+      setFieldsValue({
+        icnumber: undefined,
+      });
+      dispatch({
+        type: 'realNameCertification/fetchTagCardList',
+        payload: {
+          pageNum: 1,
+          pageSize: 10,
+          status: 1,
+        },
+      });
+    } else {
+      const sn = labelList.find(item => item.icNumber === value.label).snNumber;
+      const snId = labelList.find(item => item.icNumber === value.label).id;
+      setFieldsValue({
+        entranceNumber: { key: snId, label: sn },
+      });
+    }
+    if (value.key === '' && value.label === '') {
+      setFieldsValue({
+        entranceNumber: undefined,
+      });
+    }
+  };
+
+  handleSNSearch = value => {
+    const { dispatch } = this.props;
+    // 根据输入值获取列表
+    dispatch({
+      type: 'realNameCertification/fetchTagCardList',
+      payload: {
+        snNumber: value && value.trim(),
+        pageNum: 1,
+        pageSize: 10,
+        status: 1,
+      },
+    });
+  };
+
+  handleSNBlur = value => {
+    const {
+      dispatch,
+      realNameCertification: {
+        tagCardData: { list: labelList = [] },
+      },
+      form: { setFieldsValue },
+    } = this.props;
+    // 根据value判断是否是手动输入
+    if (value && value.key === value.label) {
+      this.handleSNSearch.cancel();
+      setFieldsValue({
+        entranceNumber: undefined,
+      });
+      dispatch({
+        type: 'realNameCertification/fetchTagCardList',
+        payload: {
+          pageNum: 1,
+          pageSize: 10,
+          status: 1,
+        },
+      });
+    } else {
+      const ic = labelList.find(item => item.snNumber === value.label).icNumber;
+      const icId = labelList.find(item => item.snNumber === value.label).id;
+      setFieldsValue({
+        icnumber: { key: icId, label: ic },
+      });
+    }
+    if (value.key === '' && value.label === '') {
+      setFieldsValue({
+        icnumber: undefined,
+      });
+    }
+  };
+
   render() {
     const {
+      loading,
       submitting, // 提交状态
       match: {
         params: { id },
@@ -325,13 +435,22 @@ export default class PersonnelAdd extends PureComponent {
         data: { list: departmentList = [] },
       },
       form: { getFieldDecorator, getFieldValue },
-      realNameCertification: { personTypeDict },
+      realNameCertification: {
+        personTypeDict,
+        tagCardData: { list: labelList = [] },
+      },
     } = this.props;
 
     const { photoLoading, sexValue, detail, diplomaLoading, perType } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
     const title = id ? '编辑人员信息' : '新增人员信息';
+
+    const icNumEdit = labelList.find(item => item.icNumber === detail.icnumber);
+    const icIdEdit = labelList.find(item => item.icNumber === detail.icnumber);
+
+    const snNumEdit = labelList.find(item => item.snNumber === detail.entranceNumber);
+    const snIdEdit = labelList.find(item => item.snNumber === detail.entranceNumber);
 
     const hasCompanyName = perType === '4' || perType === '5' || perType === '6';
     const noCompanyName = perType === '2' || perType === '3';
@@ -468,9 +587,28 @@ export default class PersonnelAdd extends PureComponent {
                   {...formItemLayout}
                 >
                   {getFieldDecorator('icnumber', {
-                    getValueFromEvent: this.handleTrim,
-                    initialValue: id ? detail.icnumber : undefined,
-                  })(<Input placeholder="请输入" />)}
+                    initialValue:
+                      id && icNumEdit && icIdEdit
+                        ? { key: icIdEdit.id, label: icNumEdit.icNumber }
+                        : undefined,
+                  })(
+                    <AutoComplete
+                      mode="combobox"
+                      labelInValue
+                      optionLabelProp="children"
+                      placeholder="请选择IC卡号"
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      onSearch={this.handleICSearch}
+                      onBlur={this.handleICBlur}
+                      filterOption={false}
+                    >
+                      {labelList.map(({ icNumber, id }) => (
+                        <Option value={id} key={id}>
+                          {icNumber}
+                        </Option>
+                      ))}
+                    </AutoComplete>
+                  )}
                 </FormItem>
               </Col>
               <Col {...colLayout}>
@@ -486,10 +624,28 @@ export default class PersonnelAdd extends PureComponent {
                   {...formItemLayout}
                 >
                   {getFieldDecorator('entranceNumber', {
-                    getValueFromEvent: this.handleTrim,
-                    initialValue: id ? detail.entranceNumber : undefined,
-                    rules: [{ validator: this.validateSn }],
-                  })(<Input placeholder="请输入" maxLength={12} />)}
+                    initialValue:
+                      id && snIdEdit && snNumEdit
+                        ? { key: snIdEdit.id, label: snNumEdit.snNumber }
+                        : undefined,
+                  })(
+                    <AutoComplete
+                      mode="combobox"
+                      labelInValue
+                      optionLabelProp="children"
+                      placeholder="请选择SN卡号"
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      onSearch={this.handleSNSearch}
+                      onBlur={this.handleSNBlur}
+                      filterOption={false}
+                    >
+                      {labelList.map(({ snNumber, id }) => (
+                        <Option value={id} key={id}>
+                          {snNumber}
+                        </Option>
+                      ))}
+                    </AutoComplete>
+                  )}
                 </FormItem>
               </Col>
               <Col span={24}>
