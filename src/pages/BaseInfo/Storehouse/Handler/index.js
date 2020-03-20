@@ -134,6 +134,7 @@ export default class StorehouseHandler extends PureComponent {
       materialsModalVisible: false,
       selectedMaterials: [],
       materialsNum: {},
+      tempKeys: [],
     };
   }
 
@@ -382,10 +383,10 @@ export default class StorehouseHandler extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
-    const { selectedCompany } = this.state;
+    const { selectedCompany, selectedRegion } = this.state;
     const fixCompanyId = selectedCompany.id || companyId;
     if (fixCompanyId) {
-      this.setState({ regionModalVisible: true });
+      this.setState({ regionModalVisible: true, tempKeys: selectedRegion ? [selectedRegion.id] : [] });
       this.fetchRegion({
         payload: {
           pageSize: 10,
@@ -438,7 +439,7 @@ export default class StorehouseHandler extends PureComponent {
   // 清空库区名称
   handleResetArea = () => {
     this.props.form.setFieldsValue({ areaId: undefined });
-    this.setState({ selectedRegion: {} });
+    this.setState({ selectedRegion: {}, tempKeys: [] });
   }
 
   /**
@@ -715,7 +716,7 @@ export default class StorehouseHandler extends PureComponent {
       materialsModalVisible,
       selectedMaterials,
       materialsNum,
-      selectedRegion,
+      tempKeys,
     } = this.state;
     const title = id ? '编辑库房' : '新增库房';
     const breadcrumbList = [
@@ -828,9 +829,10 @@ export default class StorehouseHandler extends PureComponent {
           onClose={() => {
             this.setState({ regionModalVisible: false });
           }}
-        // rowSelection={{
-        //   selectedRowKeys: selectedRegion && selectedRegion.id ? [selectedRegion.id] : [],
-        // }}
+          rowSelection={{
+            selectedRowKeys: tempKeys,
+            onChange: (keys) => { this.setState({ tempKeys: keys }) },
+          }}
         />
         {/* 重大危险源 */}
         <CompanyModal
