@@ -20,9 +20,8 @@ const {
   },
 } = codes;
 
-@connect(({ user, realNameCertification, department, loading }) => ({
+@connect(({ user, realNameCertification, loading }) => ({
   user,
-  department,
   realNameCertification,
   loading: loading.models.realNameCertification,
 }))
@@ -41,7 +40,6 @@ export default class Edit extends PureComponent {
     if (id) this.getDetail(id);
     else if (isCompanyUser(+unitType)) {
       setFieldsValue({ companyId: { key: companyId, label: companyName } });
-      this.fetchDepartList({ companyId });
     }
   }
 
@@ -52,63 +50,58 @@ export default class Edit extends PureComponent {
     } = this.props;
     dispatch({
       type: 'realNameCertification/fetchTagCardList',
-      payload: { id },
+      payload: {
+        id,
+        pageNum: 1,
+        pageSize: 10,
+      },
       callback: detail => {
-        const { companyId } = detail;
-        const det = { ...detail };
-        setFieldsValue(handleDetails(det));
-        this.fetchDepartList({ companyId });
+        const {
+          data: { list = [] },
+        } = detail;
+        const view = list.find(item => item);
+        setFieldsValue(handleDetails(view));
       },
     });
   };
 
   handleSubmit = e => {
     const {
-      dispatch,
       form: { validateFields },
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { companyId: unitId },
+      },
+      dispatch,
     } = this.props;
 
     e.preventDefault();
     validateFields((errors, values) => {
       if (errors) return;
-      const {
-        companyId,
-        treamName,
-        treamLevel,
-        treamHead,
-        headPart,
-        headPhone,
-        treamDescription,
-      } = values;
+      const { companyId, icNumber, snNumber, labelType, note } = values;
       const vals = {
-        companyId: companyId.key,
-        treamName,
-        treamLevel,
-        treamHead,
-        headPart,
-        headPhone,
-        treamDescription,
+        companyId: companyId.key || unitId,
+        icNumber,
+        snNumber,
+        labelType,
+        note,
       };
-
-      const success = () => {
-        const msg = id ? '编辑成功' : '新增成功';
-        message.success(msg, 1);
-        router.push(LIST_URL);
-      };
-
-      const error = () => {
-        const msg = id ? '编辑失败' : '新增失败';
-        message.error(msg, 1);
+      const tag = id ? '编辑' : '新增';
+      const callback = (success, msg) => {
+        if (success) {
+          message.success(`${tag}成功`);
+          router.push(LIST_URL);
+        } else {
+          message.error(msg || `${tag}人员失败`);
+        }
       };
 
       dispatch({
         type: `realNameCertification/fetchTagCard${id ? 'Edit' : 'Add'}`,
         payload: id ? { id, ...vals } : vals,
-        success,
-        error,
+        callback,
       });
     });
   };
@@ -119,16 +112,19 @@ export default class Edit extends PureComponent {
     } = this.props;
     return url && url.includes('detail');
   };
+  validateIc = (rule, value, callback) => {
+    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+    if (value && value.length < 50 && !chineseRe.test(value)) {
+      callback();
+    } else callback('格式不正确');
+  };
 
-  onSelectChange = id => {
-    const {
-      user: {
-        currentUser: { companyId: unitId, unitType },
-      },
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({ headPart: undefined });
-    this.fetchDepartList({ companyId: unitType === 4 ? unitId : id.key });
+  validateSn = (rule, value, callback) => {
+    const snRe = new RegExp(/[0-9a-fA-F]$/);
+    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+    if (value && value.length === 12 && snRe.test(value) && !chineseRe.test(value)) {
+      callback();
+    } else callback('必须为12位数');
   };
 
   render() {
@@ -158,10 +154,10 @@ export default class Edit extends PureComponent {
         type: 'companyselect',
         disabled: isComUser,
         wrapperClassName: isComUser ? styles.disappear : undefined,
-        onSelectChange: e => this.onSelectChange(e),
+        // onSelectChange: e => this.onSelectChange(e),
       },
       {
-        name: 'treamLevel',
+        name: 'icNumber',
         label: (
           <span>
             IC卡号&nbsp;
@@ -171,9 +167,10 @@ export default class Edit extends PureComponent {
           </span>
         ),
         placeholder: '请输入IC卡号',
+        otherRule: this.validateIc,
       },
       {
-        name: 'treamLevel',
+        name: 'snNumber',
         placeholder: '请输入SN号',
         label: (
           <span>
@@ -183,14 +180,15 @@ export default class Edit extends PureComponent {
             </Tooltip>
           </span>
         ),
+        otherRule: this.validateSn,
       },
       {
-        name: 'headPart',
+        name: 'labelType',
         label: '标签卡类型',
         type: 'select',
         options: cardType,
       },
-      { name: 'treamDescription', label: '备注', required: false, type: 'text' },
+      { name: 'note', label: '备注', required: false, type: 'text' },
     ];
 
     return (

@@ -148,7 +148,7 @@ export default class PersonnelList extends PureComponent {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('workNumber')(<Input placeholder="职工号" allowClear />)}
+                {getFieldDecorator('workerNumber')(<Input placeholder="职工号" allowClear />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>

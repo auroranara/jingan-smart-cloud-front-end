@@ -17,6 +17,9 @@ const {
   },
 } = codes;
 
+const url =
+  'http://data.jingan-china.cn/v2/chem/file1/%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xls';
+
 @connect(({ user, realNameCertification, loading }) => ({
   user,
   realNameCertification,
@@ -74,12 +77,13 @@ export default class TableList extends PureComponent {
     dispatch({
       type: 'realNameCertification/fetchTagCardDel',
       payload: { id: id },
-      success: () => {
-        this.fetchList();
-        message.success('删除成功！');
-      },
-      error: () => {
-        message.error('删除失败!');
+      callback: (success, msg) => {
+        if (success) {
+          message.success(`删除成功`);
+          this.fetchList();
+        } else {
+          message.error(msg || `删除失败`);
+        }
       },
     });
   };
@@ -134,7 +138,7 @@ export default class TableList extends PureComponent {
               批量导入
             </Button>
             <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
-              模板下载
+              <a href={url}>模板下载</a>
             </Button>
           </div>
         }
