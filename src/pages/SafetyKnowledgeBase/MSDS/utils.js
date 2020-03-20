@@ -90,14 +90,14 @@ function genFormItem(field, getFieldDecorator) {
   } = field;
 
   let child = null;
+  const isNewForm = !getFieldDecorator;
+  const formOptions = formItemOptions || {};
 
-  if (type === 'component') child = compt;
-  // 不经过getFieldDecorator包裹
+  if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
   else {
-    const formOptions = formItemOptions || {};
+
     const opts = getOptions(options);
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
-
     const phoneRules = { pattern: phoneReg, message: '格式不正确' };
     const emailRules = { pattern: emailReg, message: '格式不正确' };
     const extrsRule = (phoneRule && phoneRules) || (emailRule && emailRules);
@@ -152,25 +152,21 @@ function genFormItem(field, getFieldDecorator) {
 
     rules.unshift({ required, message: `${label}不能为空` });
     formOptions.rules = rules;
-    child = getFieldDecorator(name, formOptions)(component);
+
+    // child = getFieldDecorator(name, formOptions)(component);
+    child = isNewForm ? component : getFieldDecorator(name, formOptions)(component);
   }
 
-  const props = {
+  let props = {
     label,
     key: name,
     className: wrapperClassName || undefined,
     ...(formExtraStyle ? FORMITEM_LAYOUT_EXTRA : FORMITEM_LAYOUT),
   };
 
-  // return formExtraStyle ? (
-  //   <FormItem label={label} key={name} {...FORMITEM_LAYOUT_EXTRA}>
-  //     {child}
-  //   </FormItem>
-  // ) : (
-  //   <FormItem label={label} key={name} {...FORMITEM_LAYOUT}>
-  //     {child}
-  //   </FormItem>
-  // );
+  if (isNewForm)
+    props = { ...props, ...formOptions, name };
+
   return <FormItem {...props}>{child}</FormItem>;
 }
 
@@ -196,9 +192,13 @@ function getSections(sections) {
   return sections;
 }
 
+export function newRenderSections(sections, handleSubmit, listUrl, fileLoading, loading) {
+  renderSections(sections, null, handleSubmit, listUrl, fileLoading, loading);
+}
+
 export function renderSections(
   sections,
-  getFieldDecorator,
+  getFieldDecorator, // 传null就是用antd4的新Form
   handleSubmit,
   listUrl,
   fileLoading = false,
