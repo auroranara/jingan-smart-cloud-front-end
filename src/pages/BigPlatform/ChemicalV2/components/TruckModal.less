@@ -18,9 +18,10 @@
   }
 
   .body {
-    height: 400px;
+    // height: 400px;
     position: relative;
     color: #fff;
+    display: flex;
 
     .title {
       font-size: 16px;
@@ -34,24 +35,28 @@
     .top {
       border: 1px solid #0ff;
       padding: 10px 20px;
-      height: 50%;
+      // height: 50%;
+      flex: 1;
     }
 
     .bottom {
-      height: calc(~'50% - 15px');
-      margin-top: 15px;
+      // height: calc(~'50% - 15px');
+      // margin-top: 15px;
+      width: 28%;
+      margin-left: 15px;
 
       .left {
         border: 1px solid #0ff;
         padding: 10px 20px;
         height: 100%;
-        width: 40%;
+        // width: 40%;
+        width: 100%;
         float: left;
 
         .parkWrapper {
           display: flex;
           & + .parkWrapper {
-            margin-top: 15px;
+            margin-top: 25px;
           }
 
           .parkName {
@@ -62,7 +67,7 @@
 
           .countWrapper {
             flex: 1;
-            line-height: 30px;
+            line-height: 45px;
 
             .count {
               display: flex;

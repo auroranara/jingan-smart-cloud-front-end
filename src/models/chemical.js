@@ -445,7 +445,7 @@ export default {
       const response = yield call(countByParkId, payload);
       const { code, data } = response || {};
       if (code === 200 && data) {
-        const truckCount = data.list;
+        const truckCount = data.data;
         yield put({
           type: 'save',
           payload: {
