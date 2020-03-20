@@ -1,6 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, message, Row, Col, Input, TimePicker } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, message, Row, Col, Input, TimePicker } from 'antd';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import moment from 'moment';
