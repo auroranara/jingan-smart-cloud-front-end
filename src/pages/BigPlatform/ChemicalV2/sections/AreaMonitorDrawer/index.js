@@ -11,10 +11,11 @@ import {
 } from '@/pages/BigPlatform/ChemicalV2/components/MonitorCard';
 import Divider from '@/pages/BigPlatform/ChemicalV2/components/Divider';
 import { judgeEnum, envFunAreaEnum } from '@/utils/dict';
-import emptyImg from '@/assets/empty_data.png';
+// import emptyImg from '@/assets/empty_data.png';
 
 const { TabPane } = Tabs;
 
+const emptyImg = 'http://data.jingan-china.cn/v2/chem/assets/empty_data.png';
 // 罐区基本信息图片
 const tankAreaUrl = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
 // 库区基本信息图片

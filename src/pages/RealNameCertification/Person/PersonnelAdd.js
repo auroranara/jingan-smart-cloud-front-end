@@ -19,10 +19,10 @@ import styles from './CompanyList.less';
 import router from 'umi/router';
 import { getToken } from '@/utils/authority';
 import { phoneReg } from '@/utils/validate';
-import PIC from '@/assets/picExample.png';
+// import PIC from '@/assets/picExample.png';
 
 const FormItem = Form.Item;
-
+const PIC = 'http://data.jingan-china.cn/v2/chem/assets/picExample.png';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 const colLayout = { lg: 8, md: 12, sm: 24 };
