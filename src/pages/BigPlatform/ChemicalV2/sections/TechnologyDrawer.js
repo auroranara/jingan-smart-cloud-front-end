@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import moment from 'moment';
+// import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 // import styles from './MonitorDrawer.less';
 import { CardItem } from '../components/Components';

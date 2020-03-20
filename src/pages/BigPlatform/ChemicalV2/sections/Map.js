@@ -3,10 +3,9 @@ import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 import classnames from 'classnames';
 import moment from 'moment';
 import { connect } from 'dva';
-import { isPointInPolygon } from '@/utils/map';
+// import { isPointInPolygon } from '@/utils/map';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import TruckModal from '../components/TruckModal';
-// 引入样式文件
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';

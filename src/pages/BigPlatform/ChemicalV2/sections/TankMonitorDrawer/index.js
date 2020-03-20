@@ -13,11 +13,11 @@ const NO_DATA = '暂无数据';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const img = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
 const STATUS = ['正常', '预警', '告警'];
-const transformCondition = condition => {
-  if (condition === '>=') return '≥';
-  else if (condition === '<=') return '≤';
-  return condition;
-};
+// const transformCondition = condition => {
+//   if (condition === '>=') return '≥';
+//   else if (condition === '<=') return '≤';
+//   return condition;
+// };
 
 // 请把xxx替换成对应model
 @connect(

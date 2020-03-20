@@ -3,7 +3,7 @@ import { Icon } from 'antd';
 import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './MonitorEquipDrawer.less';
-import iconAlarm from '@/assets/icon-alarm.png';
+// import iconAlarm from '@/assets/icon-alarm.png';
 
 const NO_DATA = '暂无数据';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';

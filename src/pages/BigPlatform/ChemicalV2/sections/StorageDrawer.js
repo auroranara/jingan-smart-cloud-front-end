@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import moment from 'moment';
-import { Row, Col } from 'antd';
+// import moment from 'moment';
+// import { Row, Col } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import Wave from '@/jingan-components/Wave';
 import styles from './StorageDrawer.less';

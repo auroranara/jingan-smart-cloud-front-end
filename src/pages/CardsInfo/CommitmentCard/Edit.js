@@ -1,17 +1,17 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 // import moment from 'moment';
-import { Button, Card, Form, Select, message } from 'antd';
+import { Button, Card, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { renderSections} from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST_URL, handleDetails } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
-import Map from '../../RiskControl/FourColorImage/Map';
+// import Map from '../../RiskControl/FourColorImage/Map';
 import { hasAuthority } from '@/utils/customAuth';
-import style from './TableList.less';
+// import style from './TableList.less';
 import codes from '@/utils/codes';
 // const { Option } = Select;
 
@@ -185,7 +185,7 @@ export default class Edit extends PureComponent {
       },
     } = this.props;
 
-    const { mapInfo, mapList } = this.state;
+    // const { mapInfo, mapList } = this.state;
 
     const editAuth = hasAuthority(editCode, permissionCodes);
 
