@@ -1,4 +1,4 @@
-import request from '@/utils/cockpitRequest';
+import request from '@/utils/request';
 import { stringify } from 'qs';
 
 // 获取企业列表
@@ -158,4 +158,9 @@ export async function queryTagCardDel({ id }) {
   return request(`/acloud_new/v2/HGFace/labelCard/${id}`, {
     method: 'DELETE',
   });
+}
+
+// 导出标签卡
+export async function queryTagExport(params) {
+  return request(`/acloud_new/v2/HGFace/exportLabel?${stringify(params)}`);
 }

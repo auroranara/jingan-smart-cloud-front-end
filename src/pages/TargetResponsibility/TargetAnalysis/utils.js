@@ -19,6 +19,13 @@ export const BREADCRUMBLIST = [
   { title: '目标责任分析报表', name: '目标责任分析报表' },
 ];
 
+export const BREADCRUMBLIST_NEW = [
+  // modify
+  { title: '首页', name: '首页', href: '/' },
+  { title: '目标责任管理', name: '目标责任管理' },
+  { title: '目标责任分析报表', name: '目标责任分析报表' },
+];
+
 export const ReachList = [
   { key: '0', value: '全部' },
   { key: '1', value: '已达成' },

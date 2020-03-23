@@ -21,7 +21,11 @@ import {
   queryTagCardAdd,
   queryTagCardEdit,
   queryTagCardDel,
+  queryTagExport,
 } from '@/services/realNameCertification';
+import moment from 'moment';
+
+import fileDownload from 'js-file-download';
 
 const defaultData = {
   list: [],
@@ -389,6 +393,13 @@ export default {
         yield put({ type: 'saveTagCardDel', payload: payload.id });
       }
       if (callback) callback(response && response.code === 200, response.msg);
+    },
+
+    // 导出标签卡
+    *fetchTagExport({ payload }, { call }) {
+      const blob = yield call(queryTagExport, payload);
+      console.log(blob);
+      fileDownload(blob, `标签卡_${moment().format('YYYYMMDD')}.xlsx`);
     },
   },
   reducers: {

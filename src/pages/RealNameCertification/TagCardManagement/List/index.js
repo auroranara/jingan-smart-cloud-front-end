@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Form, Upload, Empty, Icon, Modal, Table, message } from 'antd';
+import { Button, Card, Form, Upload, Empty, Modal, Table, message } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import { getToken } from 'utils/authority';
 import ToolBar from '@/components/ToolBar';
@@ -34,6 +35,7 @@ export default class TableList extends PureComponent {
       modalVisible: false,
       importLoading: false,
       fileList: [], // 导入的数据列表
+      selectedRowKeys: [],
     };
     this.pageNum = 1;
     this.pageSize = 10;
@@ -92,6 +94,9 @@ export default class TableList extends PureComponent {
     });
   };
 
+  onSelectChange = value => {
+    this.setState({ selectedRowKeys: value });
+  };
   // 跳转到人员列表
   handlePesonListClick = id => {
     router.push(`${ROUTER}/person-list/${id}`);
@@ -102,11 +107,12 @@ export default class TableList extends PureComponent {
   };
 
   handleImportClose = () => {
-    this.setState({ modalVisible: false });
+    this.setState({ modalVisible: false, fileList: [] });
   };
 
   handleImportChange = info => {
     const fileList = info.fileList.slice(-1);
+    const res = info.file.response;
     this.setState({ fileList });
     if (info.file.status === 'uploading') {
       this.setState({ importLoading: true });
@@ -115,24 +121,30 @@ export default class TableList extends PureComponent {
       message.success('删除成功');
       return;
     }
-    if (info.file.response) {
-      if (info.file.response.code && info.file.response.code === 200) {
-        if (info.file.response.data.faultNum === 0) {
-          message.success('导入成功');
-        } else if (info.file.response.data.faultNum > 0) {
-          message.error('导入失败！' + info.file.response.data.message);
-        }
-        if (info.file.response.data) {
-          this.setState({
-            importLoading: false,
-          });
-        }
+    if (res) {
+      if (res.code && res.code === 200) {
+        message.success(res.msg);
+        this.handleImportClose();
+        this.fetchList();
+        this.setState({
+          importLoading: false,
+        });
       } else {
+        message.error(res.data.errorMasssge || res.msg);
         this.setState({
           importLoading: false,
         });
       }
     }
+  };
+
+  handleExportShow = () => {
+    const { selectedRowKeys } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'realNameCertification/fetchTagExport',
+      payload: { ids: selectedRowKeys.join(',') },
+    });
   };
 
   render() {
@@ -149,11 +161,17 @@ export default class TableList extends PureComponent {
       },
     } = this.props;
 
-    const { modalVisible, importLoading, fileList } = this.state;
+    const { modalVisible, importLoading, fileList, selectedRowKeys } = this.state;
     const addAuth = hasAuthority(addCode, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
+
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+
     const toolBarAction = (
       <Button
         disabled={!addAuth}
@@ -164,6 +182,7 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
+
     const fields = getSearchFields(unitType);
     const columns = getTableColumns(this.handleDelete, unitType, this.handlePesonListClick);
 
@@ -172,7 +191,7 @@ export default class TableList extends PureComponent {
       wrapperCol: { span: 16 },
     };
 
-    const uploadExportButton = <Icon type={importLoading ? 'loading' : 'upload'} />;
+    const uploadExportButton = <LegacyIcon type={importLoading ? 'loading' : 'upload'} />;
 
     return (
       <PageHeaderLayout
@@ -181,7 +200,11 @@ export default class TableList extends PureComponent {
         content={
           <div>
             <span>标签总数 ：{list.length}</span>
-            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
+            <Button
+              onClick={this.handleExportShow}
+              type="primary"
+              style={{ float: 'right', marginRight: '10px' }}
+            >
               批量导出
             </Button>
             <Button
@@ -215,6 +238,7 @@ export default class TableList extends PureComponent {
               dataSource={list}
               onChange={this.onTableChange}
               scroll={{ x: 'max-content' }}
+              rowSelection={rowSelection}
               pagination={{
                 current: pageNum,
                 pageSize,
@@ -248,7 +272,7 @@ export default class TableList extends PureComponent {
                 name="file"
                 accept=".xls,.xlsx"
                 headers={{ 'JA-Token': getToken() }}
-                //ction={`/acloud_new/v2/ci/doubleBill/importSafetyControl/${areaId}/${companyId}`} // 上传地址
+                action={`/acloud_new/v2/HGFace/importLabel`} // 上传地址
                 fileList={fileList}
                 onChange={this.handleImportChange}
               >
