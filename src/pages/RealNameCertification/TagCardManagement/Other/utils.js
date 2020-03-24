@@ -101,7 +101,7 @@ export function getSearchFields(unitType) {
     },
   ];
 
-  if (isCompanyUser(+unitType)) fields.pop();
+  if (isCompanyUser(+unitType)) fields.shift();
   return fields;
 }
 
