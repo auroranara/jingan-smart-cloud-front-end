@@ -10,6 +10,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './CompanyList.less';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import router from 'umi/router';
 
 const FormItem = Form.Item;
 
@@ -64,8 +65,12 @@ export default class CompanyList extends PureComponent {
     this.formData = defaultFormData;
   }
   // 生命周期函数
-  componentDidMount() {
-    const { dispatch } = this.props;
+  componentDidMount () {
+    const { dispatch, user: { isCompany, currentUser } } = this.props;
+    if (isCompany) {
+      router.replace(`/target-responsibility/target-analysis/index/${currentUser.companyId}`);
+      return;
+    }
     // 获取单位列表
     dispatch({
       type: 'riskPointManage/fetchCompanyList',
@@ -143,7 +148,7 @@ export default class CompanyList extends PureComponent {
   };
 
   // 渲染form表单
-  renderForm() {
+  renderForm () {
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -171,7 +176,7 @@ export default class CompanyList extends PureComponent {
   }
 
   // 渲染列表
-  renderList() {
+  renderList () {
     const {
       riskPointManage: { list },
       user: {
@@ -241,7 +246,7 @@ export default class CompanyList extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       loading,
       riskPointManage: {
