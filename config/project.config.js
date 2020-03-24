@@ -1,9 +1,10 @@
 //import logo from '../src/assets/logo_jingan.svg';
-// import code from '../src/assets/jingan_download_code.png';
+import code from '../src/assets/jingan_download_code.png';
 
 const defaultConfig = {
   logo: 'http://data.jingan-china.cn/v2/logo/logo.png',
-  code: 'http://data.jingan-china.cn/v2/logo/code.png',
+  code,
+  // code: 'http://data.jingan-china.cn/v2/logo/code.png',
   layer: 'http://data.jingan-china.cn/v2/logo/download_layer.png',
   // layer: 'http://data.jingan-china.cn/v2/login/jingan_download_layer.png',
   region: '无锡市',
