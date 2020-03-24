@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Empty, Table, message } from 'antd';
+import { Button, Card, Empty, Icon, Table, Form, Upload, Modal, message } from 'antd';
+import { getToken } from 'utils/authority';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -17,6 +18,9 @@ const {
   },
 } = codes;
 
+const url =
+  'http://data.jingan-china.cn/v2/chem/file1/%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xls';
+
 @connect(({ user, realNameCertification, loading }) => ({
   user,
   realNameCertification,
@@ -27,6 +31,10 @@ export default class TableList extends PureComponent {
     super(props);
     this.state = {
       formData: {},
+      modalVisible: false,
+      importLoading: false,
+      fileList: [], // 导入的数据列表
+      selectedRowKeys: [],
     };
     this.pageNum = 1;
     this.pageSize = 10;
@@ -74,19 +82,72 @@ export default class TableList extends PureComponent {
     dispatch({
       type: 'realNameCertification/fetchTagCardDel',
       payload: { id: id },
-      success: () => {
-        this.fetchList();
-        message.success('删除成功！');
-      },
-      error: () => {
-        message.error('删除失败!');
+      callback: (success, msg) => {
+        if (success) {
+          message.success(`删除成功`);
+          this.fetchList();
+        } else {
+          message.error(msg || `删除失败`);
+        }
       },
     });
+  };
+
+  onSelectChange = value => {
+    this.setState({ selectedRowKeys: value });
   };
 
   // 跳转到人员列表
   handlePesonListClick = id => {
     router.push(`${ROUTER}/person-list/${id}`);
+  };
+
+  handleImportShow = () => {
+    this.setState({ modalVisible: true });
+  };
+
+  handleImportClose = () => {
+    this.setState({ modalVisible: false, fileList: [] });
+  };
+
+  handleImportChange = info => {
+    const fileList = info.fileList.slice(-1);
+    const res = info.file.response;
+    this.setState({ fileList });
+    if (info.file.status === 'uploading') {
+      this.setState({ importLoading: true });
+    }
+    if (info.file.status === 'removed') {
+      message.success('删除成功');
+      return;
+    }
+    if (res) {
+      if (res.code && res.code === 200) {
+        message.success(res.msg);
+        this.handleImportClose();
+        this.fetchList();
+        this.setState({
+          importLoading: false,
+        });
+      } else {
+        message.error(res.data.errorMasssge || res.msg);
+        this.setState({
+          importLoading: false,
+        });
+      }
+    }
+  };
+
+  handleExportShow = () => {
+    const { selectedRowKeys } = this.state;
+    if (selectedRowKeys.length === 0) {
+      return message.warning('请在列表中选择需要导出的标签卡');
+    }
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'realNameCertification/fetchTagExport',
+      payload: { ids: selectedRowKeys.join(',') },
+    });
   };
 
   render() {
@@ -103,10 +164,18 @@ export default class TableList extends PureComponent {
       },
     } = this.props;
 
+    const { modalVisible, importLoading, fileList, selectedRowKeys } = this.state;
+
     const addAuth = hasAuthority(addCode, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
+
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+
     const toolBarAction = (
       <Button
         disabled={!addAuth}
@@ -120,6 +189,12 @@ export default class TableList extends PureComponent {
     const fields = getSearchFields(unitType);
     const columns = getTableColumns(this.handleDelete, unitType, this.handlePesonListClick);
 
+    const formItemLayout = {
+      labelCol: { span: 4 },
+      wrapperCol: { span: 16 },
+    };
+
+    const uploadExportButton = <Icon type={importLoading ? 'loading' : 'upload'} />;
     return (
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
@@ -127,14 +202,22 @@ export default class TableList extends PureComponent {
         content={
           <div>
             <span>标签总数 ：{list.length}</span>
-            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
+            <Button
+              onClick={this.handleExportShow}
+              type="primary"
+              style={{ float: 'right', marginRight: '10px' }}
+            >
               批量导出
             </Button>
-            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
+            <Button
+              type="primary"
+              style={{ float: 'right', marginRight: '10px' }}
+              onClick={this.handleImportShow}
+            >
               批量导入
             </Button>
             <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
-              模板下载
+              <a href={url}>模板下载</a>
             </Button>
           </div>
         }
@@ -157,6 +240,7 @@ export default class TableList extends PureComponent {
               dataSource={list}
               onChange={this.onTableChange}
               scroll={{ x: 'max-content' }}
+              rowSelection={rowSelection}
               pagination={{
                 current: pageNum,
                 pageSize,
@@ -174,6 +258,34 @@ export default class TableList extends PureComponent {
             <Empty />
           )}
         </div>
+        <Modal
+          title="导入"
+          visible={modalVisible}
+          closable={false}
+          footer={[
+            <Button disabled={importLoading} onClick={this.handleImportClose}>
+              返回
+            </Button>,
+          ]}
+        >
+          <Form>
+            <Form.Item {...formItemLayout} label="导入数据">
+              <Upload
+                name="file"
+                accept=".xls,.xlsx"
+                headers={{ 'JA-Token': getToken() }}
+                action={`/acloud_new/v2/HGFace/importLabel`} // 上传地址
+                fileList={fileList}
+                onChange={this.handleImportChange}
+              >
+                <Button disabled={importLoading}>
+                  {uploadExportButton}
+                  点击
+                </Button>
+              </Upload>
+            </Form.Item>
+          </Form>
+        </Modal>
       </PageHeaderLayout>
     );
   }

@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import router from 'umi/router';
 import { Button, Cascader, DatePicker, Form, Input, Radio, Select } from 'antd';
-import { phoneReg, emailReg } from '@/utils/validate';
 
 import CompanySelect from '@/jingan-components/CompanySelect';
 
@@ -83,8 +82,7 @@ function genFormItem(field, getFieldDecorator) {
     formExtraStyle,
     wrapperClassName,
     onChange,
-    phoneRule,
-    emailRule,
+    otherRule,
   } = field;
 
   let child = null;
@@ -95,10 +93,6 @@ function genFormItem(field, getFieldDecorator) {
     const formOptions = formItemOptions || {};
     const opts = getOptions(options);
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
-
-    const phoneRules = { pattern: phoneReg, message: '格式不正确' };
-    const emailRules = { pattern: emailReg, message: '格式不正确' };
-    const extrsRule = (phoneRule && phoneRules) || (emailRule && emailRules);
 
     let component = null;
     const rules = [];
@@ -144,7 +138,7 @@ function genFormItem(field, getFieldDecorator) {
         break;
       default:
         placeholder = placeholder || `请输入${label}`;
-        rules.push(extrsRule || whiteSpaceRule);
+        rules.push(otherRule || whiteSpaceRule);
         component = <Input placeholder={placeholder} disabled={disabled} allowClear />;
     }
 
