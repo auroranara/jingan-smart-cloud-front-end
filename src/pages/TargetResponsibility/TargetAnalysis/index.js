@@ -4,7 +4,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import moment from 'moment';
 import { Select, Radio, Col, Row, Table, DatePicker, Button, Empty } from 'antd';
-import { BREADCRUMBLIST_NEW, BREADCRUMBLIST, DepartPie, ReachList, COLOUMNS } from './utils';
+import { BREADCRUMBLIST, DepartPie, ReachList, COLOUMNS } from './utils';
 import styles from './index.less';
 
 @connect(({ targetResponsibility, department, user, loading }) => ({
@@ -300,16 +300,13 @@ export default class TableList extends PureComponent {
   render() {
     const {
       targetResponsibility: { partGoalData = {}, unitGoalData = {} },
-      user: {
-        currentUser: { unitType },
-      },
     } = this.props;
     const { isOpen, yearDateVal, radioType } = this.state;
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST_NEW[BREADCRUMBLIST_NEW.length - 1].title}
-        breadcrumbList={unitType === 4 ? BREADCRUMBLIST_NEW : BREADCRUMBLIST}
+        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
+        breadcrumbList={BREADCRUMBLIST}
       >
         <div className={styles.container}>
           <div className={styles.selectArea}>

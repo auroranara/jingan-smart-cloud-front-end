@@ -140,6 +140,9 @@ export default class TableList extends PureComponent {
 
   handleExportShow = () => {
     const { selectedRowKeys } = this.state;
+    if (selectedRowKeys.length === 0) {
+      return message.warning('请在列表中选择需要导出的标签卡');
+    }
     const { dispatch } = this.props;
     dispatch({
       type: 'realNameCertification/fetchTagExport',

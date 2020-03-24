@@ -398,8 +398,7 @@ export default {
     // 导出标签卡
     *fetchTagExport({ payload }, { call }) {
       const blob = yield call(queryTagExport, payload);
-      console.log(blob);
-      fileDownload(blob, `标签卡_${moment().format('YYYYMMDD')}.xlsx`);
+      fileDownload(blob, `标签卡_${moment().format('YYYYMMDD')}.xls`);
     },
   },
   reducers: {

@@ -5,11 +5,9 @@ import '@ant-design/compatible/assets/index.css';
 import { List, Card, Button, Input, BackTop, Spin, Col, Row, message } from 'antd';
 import { routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
-import { BREADCRUMBLIST } from './utils';
 
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import router from 'umi/router';
 
 import styles from './CompanyList.less';
 import { hasAuthority } from '@/utils/customAuth';
@@ -23,6 +21,13 @@ const {
     targetAnalysis: { view: viewAuth },
   },
 } = codes;
+
+const BREADCRUMBLIST = [
+  // modify
+  { title: '首页', name: '首页', href: '/' },
+  { title: '目标责任管理', name: '目标责任管理' },
+  { title: '目标责任分析报表', name: '目标责任分析报表' },
+];
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -52,16 +57,7 @@ export default class CompanyList extends PureComponent {
   }
   // 生命周期函数
   componentDidMount() {
-    const {
-      dispatch,
-      user: {
-        currentUser: { unitType, companyId },
-      },
-    } = this.props;
-    if (unitType === 4) {
-      router.replace(`/target-responsibility/target-analysis/index/${companyId}`);
-    }
-
+    const { dispatch } = this.props;
     // 获取单位列表
     dispatch({
       type: 'riskPointManage/fetchCompanyList',
