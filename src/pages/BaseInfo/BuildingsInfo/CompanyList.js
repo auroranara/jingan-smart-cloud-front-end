@@ -5,6 +5,7 @@ import { Link, routerRedux } from 'dva/router';
 import Ellipsis from 'components/Ellipsis';
 import InfiniteScroll from 'react-infinite-scroller';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import router from 'umi/router';
 
 import styles from './BuildingsInfo.less';
 import codesMap from '@/utils/codes';
@@ -60,8 +61,12 @@ export default class CompanyList extends PureComponent {
   }
 
   /* 挂载后 */
-  componentDidMount() {
-    const { dispatch } = this.props;
+  componentDidMount () {
+    const { dispatch, user: { isCompany, currentUser } } = this.props;
+    if (isCompany) {
+      router.replace(`/base-info/buildings-info/detail/${currentUser.companyId}?name=${currentUser.companyName}`);
+      return;
+    }
     //获取单位列表
     dispatch({
       type: 'buildingsInfo/fetchCompanyList',
@@ -150,7 +155,7 @@ export default class CompanyList extends PureComponent {
   };
 
   /* 渲染form表单 */
-  renderForm() {
+  renderForm () {
     const {
       company: { industryCategories },
       form: { getFieldDecorator },
@@ -208,7 +213,7 @@ export default class CompanyList extends PureComponent {
   }
 
   /* 渲染列表 */
-  renderList() {
+  renderList () {
     const {
       buildingsInfo: {
         data: { list },
@@ -262,16 +267,16 @@ export default class CompanyList extends PureComponent {
                         </Link>
                       </Col>
                     ) : (
-                      <Col
-                        span={8}
-                        onClick={() => {
-                          message.warn('您没有权限访问对应页面');
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <span className={styles.quantity}>{buildingNum}</span>
-                      </Col>
-                    )}
+                        <Col
+                          span={8}
+                          onClick={() => {
+                            message.warn('您没有权限访问对应页面');
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <span className={styles.quantity}>{buildingNum}</span>
+                        </Col>
+                      )}
                   </Row>
                 </Card>
               </List.Item>
@@ -282,7 +287,7 @@ export default class CompanyList extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       loading,
       buildingsInfo: {
