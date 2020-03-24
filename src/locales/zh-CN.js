@@ -542,7 +542,7 @@ export default {
   'menu.deviceManagement.monitoringDevice': '监测设备管理',
   'menu.deviceManagement.monitoringDevice.list': '监测设备管理',
   'menu.deviceManagement.monitoringDevice.add': '新增监测设备',
-  'menu.deviceManagement.monitoringDevice.edit': '新增监测设备',
+  'menu.deviceManagement.monitoringDevice.edit': '编辑监测设备',
   'menu.deviceManagement.userTransmissionDevice': '用户传输装置',
   'menu.deviceManagement.userTransmissionDevice.userTransmissionDevice': '用户传输装置',
   'menu.deviceManagement.userTransmissionDevice.add': '添加',

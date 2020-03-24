@@ -27,6 +27,10 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import codesMap from '@/utils/codes';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
+import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment.png';
+import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-special-equipment-gray.png';
+import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment-gray.png';
+import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment-active.png';
 
 const { Group: RadioGroup } = Radio;
 
@@ -109,6 +113,7 @@ export default class SpecialEquipment extends PureComponent {
     if (unitType === 4) {
       this.setState({ selectedCompany: { id: companyId, name: companyName } });
       this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+      this.fetchMarkers(companyId);
     }
     if (!id) return;
     this.fetchList(1, 10, { id }, res => {
@@ -203,6 +208,7 @@ export default class SpecialEquipment extends PureComponent {
             area,
             location,
           });
+          this.fetchMarkers(companyId);
           if (pointFixInfoList && pointFixInfoList.length) {
             let { xnum, ynum, znum, groupId, areaId, isShow } = pointFixInfoList[0];
             const coord = { x: +xnum, y: +ynum, z: +znum };
@@ -224,6 +230,15 @@ export default class SpecialEquipment extends PureComponent {
         ...filters,
       },
       callback,
+    });
+  };
+
+  // 获取其他设备位置
+  fetchMarkers = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'specialEquipment/fetchMarkers',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
     });
   };
 
@@ -315,6 +330,7 @@ export default class SpecialEquipment extends PureComponent {
     } = this.props;
     this.setState({ selectedCompany, companyModalVisible: false });
     setFieldsValue({ companyId: selectedCompany.id });
+    this.fetchMarkers(selectedCompany.id);
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: selectedCompany.id } });
   };
 
@@ -590,7 +606,7 @@ export default class SpecialEquipment extends PureComponent {
         flatGraphic, // 平面图类型选项
       },
       emergencyManagement: { specialEquipment = [] },
-      specialEquipment: { brandList = [], modelList = [] },
+      specialEquipment: { brandList = [], modelList = [], markers },
       user: {
         currentUser: { unitType },
       },
@@ -947,7 +963,19 @@ export default class SpecialEquipment extends PureComponent {
               </Button>
               <FlatPic {...FlatPicProps} /> */}
               {getFieldDecorator('mapLocation')(
-                <MapMarkerSelect companyId={companyId} onChange={this.handleClickReset} />
+                <MapMarkerSelect
+                  companyId={companyId}
+                  onChange={this.handleClickReset}
+                  markerList={markers}
+                  otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
+                  markerOption={{ url: MarkerImg, size: 36 }}
+                  markerId={id}
+                  legend={{
+                    label: '其他设备',
+                    icon: MarkerGrayImg,
+                    activeIcon: MarkerActiveImg,
+                  }}
+                />
               )}
             </FormItem>
           )}

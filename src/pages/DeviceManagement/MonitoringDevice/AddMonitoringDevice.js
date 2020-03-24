@@ -29,6 +29,10 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '@/pages/DeviceManagement/NewSensor/AddSensor.less';
+import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor.png';
+import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-monitor-gray.png';
+import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor-gray.png';
+import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor-active.png';
 
 const FormItem = Form.Item;
 
@@ -42,13 +46,23 @@ const FOLDER = 'monitor';
 
 @Form.create()
 @connect(
-  ({ sensor, device, riskPointManage, buildingsInfo, personnelPosition, user, loading }) => ({
+  ({
+    sensor,
+    device,
+    riskPointManage,
+    buildingsInfo,
+    personnelPosition,
+    user,
+    chemical,
+    loading,
+  }) => ({
     sensor,
     device,
     personnelPosition,
     riskPointManage,
     buildingsInfo,
     user,
+    chemical,
     companyLoading: loading.effects['sensor/fetchModelList'],
   })
 )
@@ -68,7 +82,7 @@ export default class AddMonitoringDevice extends Component {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
       match: {
@@ -107,11 +121,11 @@ export default class AddMonitoringDevice extends Component {
               fileList:
                 fileList && fileList.length
                   ? fileList.map(item => ({
-                    ...item,
-                    uid: item.id,
-                    url: item.webUrl,
-                    name: item.fileName,
-                  }))
+                      ...item,
+                      uid: item.id,
+                      url: item.webUrl,
+                      name: item.fileName,
+                    }))
                   : [],
             },
             () => {
@@ -131,9 +145,12 @@ export default class AddMonitoringDevice extends Component {
             this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
           buildingId &&
             this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+          companyId && this.fetchMarkers(companyId);
         },
       });
-    } else { setFieldsValue({ isShow: '1' }) }
+    } else {
+      setFieldsValue({ isShow: '1' });
+    }
   }
 
   /**
@@ -148,6 +165,15 @@ export default class AddMonitoringDevice extends Component {
   fetchMonitoringDeviceTypes = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'device/fetchMonitoringDeviceTypes' });
+  };
+
+  // 获取其他设备位置
+  fetchMarkers = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'chemical/fetchMonitorEquipment',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+    });
   };
 
   /**
@@ -194,6 +220,7 @@ export default class AddMonitoringDevice extends Component {
     this.setState({ selectedCompany, companyModalVisible: false });
     setFieldsValue({ companyId });
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+    this.fetchMarkers(companyId);
     setTimeout(() => {
       setFieldsValue({ locationType: 0 });
     }, 0);
@@ -440,6 +467,7 @@ export default class AddMonitoringDevice extends Component {
           floors = [], // 楼层列表
         },
       },
+      chemical: { monitorEquipment = [] },
       // riskPointManage: {
       //   imgData: { list: imgList = [] },
       // },
@@ -670,7 +698,20 @@ export default class AddMonitoringDevice extends Component {
                     新增
                   </Button>
                   <FlatPic {...FlatPicProps} /> */}
-                  {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
+                  {getFieldDecorator('mapLocation')(
+                    <MapMarkerSelect
+                      companyId={companyId}
+                      markerList={monitorEquipment}
+                      otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
+                      markerOption={{ url: MarkerImg, size: 36 }}
+                      markerId={id}
+                      legend={{
+                        label: '其他设备',
+                        icon: MarkerGrayImg,
+                        activeIcon: MarkerActiveImg,
+                      }}
+                    />
+                  )}
                 </FormItem>
                 <FormItem label="该点位是否在化工安全生产驾驶舱显示" {...formItemLayout}>
                   {getFieldDecorator('isShow')(
@@ -701,7 +742,7 @@ export default class AddMonitoringDevice extends Component {
     );
   };
 
-  render () {
+  render() {
     const {
       companyLoading,
       sensor: { companyModal },
