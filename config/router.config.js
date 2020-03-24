@@ -2803,7 +2803,33 @@ module.exports = env => {
             },
           ],
         },
-
+        // {
+        //   name:'electronicInspection', // 电子巡检
+        //   path:'/electronic-inspection',
+        //   code:'electronicInspection',
+        //   icon:'fileSearchOutlined',
+        //   systemType: 4,
+        //   routes:[
+        //     {
+        //       name:'productionArea',
+        //       path:'/electronic-inspection/production-area', // 生产区域
+        //       code:'electronicInspection.productionArea',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path:'/electronic-inspection/production-area',
+        //           redirect:'/electronic-inspection/production-area/list',
+        //         },
+        //         {
+        //           name:'list',
+        //           path:'/electronic-inspection/production-area/list',
+        //           code:'electronicInspection.productionArea.listView',
+        //           component:'',
+        //         },
+        //       ],
+        //     },
+        //   ],
+        // },
         {
           path: '/target-responsibility', // 目标责任管理
           code: 'targetResponsibility',
