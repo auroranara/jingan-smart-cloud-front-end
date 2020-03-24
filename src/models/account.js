@@ -245,13 +245,14 @@ export default {
     },
 
     // 查询部门列表
-    *fetchDepartmentList({ payload }, { call, put }) {
+    *fetchDepartmentList({ payload, callback }, { call, put }) {
       const response = yield call(queryDepartmentList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'queryDepartment',
           payload: response.data.list,
         });
+        callback && callback();
       }
     },
     // 获取用户详情（关联企业页面）

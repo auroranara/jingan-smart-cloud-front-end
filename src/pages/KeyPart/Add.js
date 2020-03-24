@@ -68,7 +68,7 @@ export default class AddOperatingProdures extends Component {
               accessoryContent: accessoryContent ? accessoryContent.map(item => ({ ...item, uid: item.id, url: item.webUrl })) : [],
               remark: remark || undefined,
             });
-            this.fetchDepartmentList({ payload: { companyId } });
+            this.fetchDepartmentList({ payload: { companyId }, callback: () => this.form && this.form.setFieldsValue({ department }) });
           } else {
             message.error('获取详情失败，请稍后重试或联系管理人员！');
           }

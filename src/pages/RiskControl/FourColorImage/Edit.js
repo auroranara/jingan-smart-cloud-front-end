@@ -75,7 +75,7 @@ const COLORS = {
 export default class TableList extends React.Component {
   constructor(props) {
     super(props);
-    this.handlePersonSearch = debounce(this.handlePersonSearch, 800);
+    this.handlePersonSearch = debounce(this.handlePersonSearch, 200);
     this.state = {
       isDrawing: false,
       isRest: false,
@@ -196,7 +196,7 @@ export default class TableList extends React.Component {
       form: { setFieldsValue },
     } = this.props;
     const phnoneValue = personList
-      .filter(({ userName }) => userName === e.label)
+      .filter(({ userName }) => e && userName === e.label)
       .map(item => item.phoneNumber)[0];
 
     setFieldsValue({ phoneNumber: phnoneValue });
@@ -466,27 +466,51 @@ export default class TableList extends React.Component {
                     : undefined,
                   rules: [{ required: true, message: '请选择' }],
                 })(
-                  <AutoComplete
-                    mode="combobox"
-                    labelInValue
-                    optionLabelProp="children"
-                    placeholder="请选择"
-                    notFoundContent={perLoading ? <Spin size="small" /> : '暂无数据'}
-                    onSearch={this.handlePersonSearch}
-                    onBlur={this.handlePersonBlur}
-                    onChange={e => this.handlePersonChange(e)}
-                    filterOption={false}
-                    {...itemStyles}
-                  >
-                    {personList.map(({ users, userName }) => (
-                      <Select.Option
-                        key={users.map(item => item.id)[0]}
-                        value={users.map(item => item.id)[0]}
-                      >
-                        {userName}
-                      </Select.Option>
-                    ))}
-                  </AutoComplete>
+                  // <AutoComplete
+                  //   mode="combobox"
+                  //   labelInValue
+                  //   optionLabelProp="children"
+                  //   placeholder="请选择"
+                  //   notFoundContent={perLoading ? <Spin size="small" /> : '暂无数据'}
+                  //   onSearch={this.handlePersonSearch}
+                  //   onBlur={this.handlePersonBlur}
+                  //   onChange={e => this.handlePersonChange(e)}
+                  //   filterOption={false}
+                  //   {...itemStyles}
+                  // >
+                  //   {personList.map(({ users, userName }) => (
+                  //     <Select.Option
+                  //       key={users.map(item => item.id)[0]}
+                  //       value={users.map(item => item.id)[0]}
+                  //     >
+                  //       {userName}
+                  //     </Select.Option>
+                  //   ))}
+                  // </AutoComplete>
+                <Select
+                  // mode="combobox"
+                  allowClear
+                  showSearch
+                  labelInValue
+                  optionLabelProp="children"
+                  placeholder="请选择"
+                  showArrow={false}
+                  notFoundContent={perLoading ? <Spin size="small" /> : '暂无数据'}
+                  onSearch={this.handlePersonSearch}
+                  onBlur={this.handlePersonBlur}
+                  onChange={e => this.handlePersonChange(e)}
+                  filterOption={false}
+                  {...itemStyles}
+                >
+                  {personList.map(({ users, userName }) => (
+                    <Select.Option
+                      key={users.map(item => item.id)[0]}
+                      value={users.map(item => item.id)[0]}
+                    >
+                      {userName}
+                    </Select.Option>
+                  ))}
+                </Select>
                 )}
               </FormItem>
               <FormItem label="联系电话" {...formItemLayout}>

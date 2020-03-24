@@ -857,7 +857,7 @@ export default class SpecialEquipment extends PureComponent {
                   {getFieldDecorator('buildingFloor', {
                     rules: [{ required: true, validator: this.validateBuildingFloor }],
                   })(
-                    <Fragment>
+                    <Row>
                       <Col span={5} style={{ marginRight: '10px' }}>
                         {getFieldDecorator('buildingId')(
                           <Select
@@ -893,7 +893,7 @@ export default class SpecialEquipment extends PureComponent {
                       <Tooltip title="刷新建筑物楼层">
                         <Button
                           onClick={() => this.handleRefreshBuilding(true)}
-                          style={{ marginRight: 10 }}
+                          style={{ marginRight: 10, marginTop: 4 }}
                         >
                           <LegacyIcon type="reload" />
                         </Button>
@@ -902,10 +902,11 @@ export default class SpecialEquipment extends PureComponent {
                         onClick={this.jumpToBuildingManagement}
                         code={codesMap.company.buildingsInfo.add}
                         type="primary"
+                        style={{ marginTop: 4 }}
                       >
                         新增建筑物楼层
                       </AuthButton>
-                    </Fragment>
+                    </Row>
                   )}
                 </FormItem>
                 <FormItem label="详细位置" {...formItemLayout}>

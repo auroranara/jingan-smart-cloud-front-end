@@ -1260,6 +1260,19 @@ export default class RiskPointEdit extends PureComponent {
         md: { span: 20 },
       },
     };
+
+    const formItemLayout1 = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 6 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 18 },
+        md: { span: 18 },
+      },
+    };
+
     return (
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
@@ -1392,7 +1405,7 @@ export default class RiskPointEdit extends PureComponent {
             </div> */}
             {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
           </Form.Item>
-          <Form.Item label={fieldLabels.isShow}>
+          <Form.Item {...formItemLayout1} label={fieldLabels.isShow}>
             {getFieldDecorator('isShow')(
               <RadioGroup>
                 <Radio value="1">显示</Radio>

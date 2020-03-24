@@ -287,7 +287,7 @@ export default class RiskCard extends PureComponent {
         <Table
           bordered={true}
           className={styles.table}
-          rowKey="check_id"
+          rowKey="id"
           dataSource={list}
           columns={defaultColumns}
           scroll={{

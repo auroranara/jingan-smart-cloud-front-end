@@ -13,6 +13,7 @@ import {
   Upload,
   Radio,
   message,
+  Row,
   Col,
   Tooltip,
 } from 'antd';
@@ -1284,7 +1285,7 @@ export default class StorageEdit extends PureComponent {
                 {getFieldDecorator('buildingFloor', {
                   rules: [{ required: true, validator: this.validateBuildingFloor }],
                 })(
-                  <Fragment>
+                  <Row>
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('buildingId')(
                         <Select placeholder="建筑物" style={{ width: '100%' }} onChange={this.handleSelectBuilding} allowClear>
@@ -1304,7 +1305,7 @@ export default class StorageEdit extends PureComponent {
                       )}
                     </Col>
                     <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
-                      <Button onClick={() => this.handleRefreshBuilding(true)}>
+                      <Button onClick={() => this.handleRefreshBuilding(true)} style={{ marginTop: 4 }}>
                         <LegacyIcon type="reload" />
                       </Button>
                     </Tooltip>
@@ -1312,10 +1313,11 @@ export default class StorageEdit extends PureComponent {
                       onClick={this.jumpToBuildingManagement}
                       code={codesMap.company.buildingsInfo.add}
                       type="primary"
+                      style={{ marginTop: 4 }}
                     >
                       新增建筑物楼层
-                </AuthButton>
-                  </Fragment>
+                    </AuthButton>
+                  </Row>
                 )}
               </FormItem>
               <FormItem label="详细位置" {...formItemLayout}>

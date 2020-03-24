@@ -481,13 +481,13 @@ export default class AuthorizationList extends PureComponent {
         title: '姓名',
         dataIndex: 'personName',
         align: 'center',
-        width: 200,
+        // width: 200,
       },
       {
         title: '储存位置',
         dataIndex: 'type',
         align: 'center',
-        width: 150,
+        // width: 150,
         render: (val) => (+val === 1 && '本地') || (+val === 2 && '云端') || '',
       },
       {
@@ -528,13 +528,13 @@ export default class AuthorizationList extends PureComponent {
         title: '设备名称',
         dataIndex: 'deviceName',
         align: 'center',
-        width: 200,
+        // width: 200,
       },
       {
         title: '设备类型',
         dataIndex: 'deviceType',
         align: 'center',
-        width: 150,
+        // width: 150,
         render: (val) => {
           const target = deviceTypeDict.find(item => +item.key === +val);
           return target ? target.label : '';
@@ -544,13 +544,13 @@ export default class AuthorizationList extends PureComponent {
         title: '设备序列号',
         dataIndex: 'deviceKey',
         align: 'center',
-        width: 200,
+        // width: 200,
       },
       {
         title: '操作时间',
         dataIndex: 'createTime',
         align: 'center',
-        width: 200,
+        // width: 200,
         render: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '',
       },
       {
@@ -558,6 +558,7 @@ export default class AuthorizationList extends PureComponent {
         key: '操作',
         align: 'center',
         fixed: 'right',
+        width: 160,
         render: (val, record) => (
           <Fragment>
             <AuthA code={editCode} onClick={() => this.handleClickEdit(record)}>编辑</AuthA>
@@ -584,7 +585,7 @@ export default class AuthorizationList extends PureComponent {
           columns={columns}
           dataSource={list}
           bordered
-          scroll={{ x: 'max-content' }}
+          scroll={{ x: 1800 }}
           pagination={{
             current: pageNum,
             pageSize,

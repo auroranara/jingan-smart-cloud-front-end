@@ -426,9 +426,9 @@ export default class SafetySystemList extends Component {
             x: true,
           }}
           pagination={{
-            current: pageNum,
-            pageSize,
-            total,
+            current: pageNum || 1,
+            pageSize: pageSize || getPageSize(),
+            total: total || 0,
             pageSizeOptions: ['5', '10', '15', '20'],
             showTotal: total => `共 ${total} 条`,
             showQuickJumper: true,
@@ -643,6 +643,8 @@ export default class SafetySystemList extends Component {
       },
     ];
 
+    console.log(this.props.safetySystem);
+
     return (
       <Card className={styles.card} bordered={false}>
         {list && list.length > 0 ? (
@@ -657,9 +659,9 @@ export default class SafetySystemList extends Component {
             }}
             onChange={this.handleTableChange}
             pagination={{
-              current: pageNum,
-              pageSize,
-              total,
+              current: pageNum || 1,
+              pageSize: pageSize || getPageSize(),
+              total: total || 0,
               pageSizeOptions: ['5', '10', '15', '20'],
               showTotal: total => `共 ${total} 条`,
               showQuickJumper: true,

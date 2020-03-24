@@ -745,7 +745,7 @@ export default class AddEquipment extends Component {
                   validateTrigger: 'onBlur',
                   rules: [{ required: true, validator: this.validateBuildingFloor }],
                 })(
-                  <Fragment>
+                  <Row>
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('buildingId')(
                         <Select
@@ -779,7 +779,7 @@ export default class AddEquipment extends Component {
                       )}
                     </Col>
                     <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
-                      <Button onClick={() => this.handleRefreshBuilding(true)}>
+                      <Button onClick={() => this.handleRefreshBuilding(true)} style={{ marginTop: 4 }}>
                         <LegacyIcon type="reload" />
                       </Button>
                     </Tooltip>
@@ -787,10 +787,11 @@ export default class AddEquipment extends Component {
                       onClick={this.jumpToBuildingManagement}
                       code={codesMap.company.buildingsInfo.add}
                       type="primary"
+                      style={{ marginTop: 4 }}
                     >
                       新增建筑物楼层
                     </AuthButton>
-                  </Fragment>
+                  </Row>
                 )}
               </FormItem>
               <FormItem label="详细位置" {...formItemLayout}>

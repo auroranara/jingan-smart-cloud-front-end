@@ -5,14 +5,16 @@ import '@ant-design/compatible/assets/index.css';
 import { Card, Button, Input, Select, Upload, DatePicker, message } from 'antd';
 import router from 'umi/router';
 import moment from 'moment';
-import { getToken } from 'utils/authority';
 
+import { getToken } from 'utils/authority';
+import FormSelect from '@/jingan-components/Form/Select';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import FooterToolbar from '@/components/FooterToolbar';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import SearchSelect from '@/jingan-components/SearchSelect';
+// import SearchSelect from '@/jingan-components/SearchSelect';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import { SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
+import styles from './index.less';
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -28,6 +30,13 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const folder = 'safetyEngInfo';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+// const COMPANY_LIST_MAPPER = {
+//   namespace: 'user',
+//   list: 'unitList',
+//   getList: 'getUnitList',
+// };
+
+const COMPANY_LIST_FIELDNAMES = { key: 'loginId', value: 'userName' };
 
 @Form.create()
 @connect(({ reservoirRegion, videoMonitor, user, loading }) => ({
@@ -47,6 +56,8 @@ export default class RegSafetyEngEdit extends PureComponent {
     editCompanyId: '',
     detailList: {},
   };
+
+  companyId = null;
 
   // 挂载后
   componentDidMount() {
@@ -71,11 +82,12 @@ export default class RegSafetyEngEdit extends PureComponent {
           const { companyId, requirementsFilesList, regFilesList } = currentList;
           const { companyName } = currentList;
           setFieldsValue({ companyId: companyName });
+          this.companyId = companyId;
+          this.getUserList();
 
           this.setState({
             editCompanyId: companyId,
             detailList: currentList,
-            editCompanyId: companyId,
             requireFilesList: requirementsFilesList.map(({ dbUrl, webUrl }, index) => ({
               uid: index,
               status: 'done',
@@ -334,7 +346,7 @@ export default class RegSafetyEngEdit extends PureComponent {
 
   getCompanyId = () => {
     const {
-      form: { getFieldValue },
+      // form: { getFieldValue },
       user: { currentUser: { unitType, companyId } },
     } = this.props;
     let comId = companyId;
@@ -366,6 +378,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       user: { userList },
     } =  this.props;
     const target = userList.find(({ loginId }) => loginId === value.key);
+    console.log(userList, target);
     if (target) {
       const { sex, birth, phoneNumber } = target;
       setFieldsValue({ sex, birth: typeof birth === 'number' ? moment(birth) : undefined, phone: phoneNumber });
@@ -402,21 +415,33 @@ export default class RegSafetyEngEdit extends PureComponent {
       startDate,
       endDate,
     } = detailList;
+    console.log(userList);
 
     // const nameInput = <Input placeholder="请输入姓名" {...itemStyles} />;
+    // const nameInput = (
+    //   <SearchSelect
+    //     allowClear
+    //     labelInValue
+    //     // disabled={!this.getCompanyId()}
+    //     showArrow={false}
+    //     style= {{ width: '70%' }}
+    //     loading={listLoading}
+    //     list={userList}
+    //     fieldNames={{ key: 'loginId', value: 'userName' }}
+    //     getList={this.getUserList}
+    //     setList={this.setUserList}
+    //     placeholder="请选择人员姓名"
+    //     onSelect={this.handleUserSelect}
+    //   />
+    // );
     const nameInput = (
-      <SearchSelect
-        allowClear
-        labelInValue
-        // disabled={!this.getCompanyId()}
-        showArrow={false}
-        style= {{ width: '70%' }}
-        loading={listLoading}
+      <FormSelect
+        async
+        fieldNames={COMPANY_LIST_FIELDNAMES}
         list={userList}
-        fieldNames={{ key: 'loginId', value: 'userName' }}
-        getList={this.getUserList}
-        setList={this.setUserList}
-        placeholder="请选择人员姓名"
+        loading={listLoading}
+        className={styles.formSelect}
+        onSearch={this.getUserList}
         onSelect={this.handleUserSelect}
       />
     );

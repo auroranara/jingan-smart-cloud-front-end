@@ -583,7 +583,7 @@ export default class AddMonitoringDevice extends Component {
                   <Fragment>
                     <FormItem label="所属建筑物楼层" {...formItemLayout}>
                       {getFieldDecorator('buildingFloor')(
-                        <Fragment>
+                        <Row>
                           <Col span={5} className={styles.mr10}>
                             {getFieldDecorator('buildingId', {})(
                               <Select
@@ -620,6 +620,7 @@ export default class AddMonitoringDevice extends Component {
                             <Button
                               onClick={() => this.handleRefreshBuilding(true)}
                               className={styles.mr10}
+                              style={{ marginTop: 4 }}
                             >
                               <LegacyIcon type="reload" />
                             </Button>
@@ -628,10 +629,11 @@ export default class AddMonitoringDevice extends Component {
                             onClick={this.jumpToBuildingManagement}
                             code={codesMap.company.buildingsInfo.add}
                             type="primary"
+                            style={{ marginTop: 4 }}
                           >
                             新增建筑物楼层
                           </AuthButton>
-                        </Fragment>
+                        </Row>
                       )}
                     </FormItem>
                     <FormItem label="详细位置" {...formItemLayout}>

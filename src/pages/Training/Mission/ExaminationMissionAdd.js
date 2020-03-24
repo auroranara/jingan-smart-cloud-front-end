@@ -70,9 +70,11 @@ export default class ExaminationMissionAdd extends PureComponent {
       disableMin: false,
       disTime: false,
       disableOk: true,
-      rangeOpen: false,
+      // rangeOpen: false,
     };
   }
+
+  paperId = null;
 
   componentDidMount() {
     const {
@@ -114,9 +116,11 @@ export default class ExaminationMissionAdd extends PureComponent {
         },
         success: response => {
           const { arrRuleType, paperId, paperName, students } = response;
+          this.paperId = paperId;
           setFieldsValue({
             arrRuleType,
-            paperId: { key: paperId, label: paperName },
+            // paperId: { key: paperId, label: paperName },
+            paperId: paperName,
             students,
           });
           this.setState({
@@ -191,7 +195,8 @@ export default class ExaminationMissionAdd extends PureComponent {
           id,
           startTime: moment(start).format('YYYY/MM/DD HH:mm:00'),
           endTime: moment(end).format('YYYY/MM/DD HH:mm:00'),
-          paperId: paperId.key,
+          // paperId: paperId.key,
+          paperId: this.paperId,
           companyId,
         };
         if (!id) {
@@ -277,8 +282,10 @@ export default class ExaminationMissionAdd extends PureComponent {
     const { name, id } = selectedRows[0];
     // 将选择的试卷填入form表单
     setFieldsValue({
-      paperId: { key: id, label: name },
+      // paperId: { key: id, label: name },
+      paperId: name,
     });
+    this.paperId = id;
     this.setState({ paperModalVisible: false });
   };
 
@@ -543,31 +550,31 @@ export default class ExaminationMissionAdd extends PureComponent {
                   disabledTime={this.disabledDateTime}
                   showTime={{ format: 'HH:mm' }}
                   format="YYYY-MM-DD HH:mm"
-                  open={rangeOpen}
-                  onOpenChange={open => {
-                    this.setState({ rangeOpen: open });
-                  }}
-                  renderExtraFooter={() => {
-                    return (
-                      <Button
-                        type="primary"
-                        style={{
-                          height: '26px',
-                          padding: '1px 10px',
-                          position: 'absolute',
-                          right: '10px',
-                          bottom: '6px',
-                          zIndex: 10,
-                        }}
-                        disabled={disableOk}
-                        onClick={() => {
-                          this.setState({ rangeOpen: false });
-                        }}
-                      >
-                        确定
-                      </Button>
-                    );
-                  }}
+                  // open={rangeOpen}
+                  // onOpenChange={open => {
+                  //   this.setState({ rangeOpen: open });
+                  // }}
+                  // renderExtraFooter={() => {
+                  //   return (
+                  //     <Button
+                  //       type="primary"
+                  //       style={{
+                  //         height: '26px',
+                  //         padding: '1px 10px',
+                  //         position: 'absolute',
+                  //         right: '10px',
+                  //         bottom: '6px',
+                  //         zIndex: 10,
+                  //       }}
+                  //       disabled={disableOk}
+                  //       onClick={() => {
+                  //         this.setState({ rangeOpen: false });
+                  //       }}
+                  //     >
+                  //       确定
+                  //     </Button>
+                  //   );
+                  // }}
                   onCalendarChange={dates => {
                     if (dates.length !== 2) {
                       this.setState({ disableOk: true });
@@ -598,17 +605,26 @@ export default class ExaminationMissionAdd extends PureComponent {
             </Form.Item>
             <Form.Item label="选择试卷" {...formItemLayout}>
               {getFieldDecorator('paperId', {
-                rules: [{ required: true, message: '请选择试卷', type: 'object' }],
+                rules: [{ required: true, message: '请选择试卷' }],
               })(
-                <AutoComplete labelInValue mode="combobox" optionLabelProp="children" disabled>
-                  <Input
-                    suffix={
-                      <Button type="primary" onClick={this.handleViewPaperModal}>
-                        选择
-                      </Button>
-                    }
-                  />
-                </AutoComplete>
+                // <AutoComplete labelInValue mode="combobox" optionLabelProp="children" disabled>
+                //   <Input
+                //     suffix={
+                //       <Button type="primary" onClick={this.handleViewPaperModal}>
+                //         选择
+                //       </Button>
+                //     }
+                //   />
+                // </AutoComplete>
+              <AutoComplete disabled>
+                <Input
+                  suffix={
+                    <Button type="primary" onClick={this.handleViewPaperModal}>
+                      选择
+                    </Button>
+                  }
+                />
+              </AutoComplete>
               )}
             </Form.Item>
             <Form.Item label="考试人员" {...formItemLayout}>
