@@ -1,5 +1,5 @@
 //import logo from '../src/assets/logo_jingan.svg';
-import code from '../src/assets/jingan_download_code.png';
+import code from '@/assets/jingan_download_code.png';
 
 const defaultConfig = {
   logo: 'http://data.jingan-china.cn/v2/logo/logo.png',
