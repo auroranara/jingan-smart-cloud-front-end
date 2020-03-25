@@ -289,7 +289,10 @@ export default class Map extends PureComponent {
   };
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList, defaultViewMode }, fun) => {
+  initMap = (
+    { appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList, defaultViewMode },
+    fun
+  ) => {
     if (!appName || !key || !mapId) return;
     const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
     const mapOptions = {

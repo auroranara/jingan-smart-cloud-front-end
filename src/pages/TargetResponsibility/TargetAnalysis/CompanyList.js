@@ -22,21 +22,11 @@ const {
   },
 } = codes;
 
-//面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '目标责任管理',
-    name: '目标责任管理',
-  },
-  {
-    title: '目标责任分析报表',
-    name: '目标责任分析报表',
-  },
+const BREADCRUMBLIST = [
+  // modify
+  { title: '首页', name: '首页', href: '/' },
+  { title: '目标责任管理', name: '目标责任管理' },
+  { title: '目标责任分析报表', name: '目标责任分析报表' },
 ];
 
 // 默认页面显示数量
@@ -256,8 +246,8 @@ export default class CompanyList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="目标责任分析报表"
-        breadcrumbList={breadcrumbList}
+        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
+        breadcrumbList={BREADCRUMBLIST}
         content={
           <div>
             单位总数：

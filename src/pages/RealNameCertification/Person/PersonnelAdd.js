@@ -1,7 +1,20 @@
 import { PureComponent, Fragment } from 'react';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Row, Col, Button, message, Input, Select, Card, Upload, Tooltip, Radio, Spin, AutoComplete } from 'antd';
+import {
+  Row,
+  Col,
+  Button,
+  message,
+  Input,
+  Select,
+  Card,
+  Upload,
+  Tooltip,
+  Radio,
+  Spin,
+  AutoComplete,
+} from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import router from 'umi/router';
@@ -323,6 +336,8 @@ export default class PersonnelAdd extends PureComponent {
   };
 
   handleICBlur = value => {
+    console.log('value', value);
+
     const {
       dispatch,
       realNameCertification: {
@@ -603,6 +618,7 @@ export default class PersonnelAdd extends PureComponent {
                     showSearch
                     labelInValue
                     showArrow={false}
+                    filterOption={false}
                     placeholder="请选择IC卡号"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleICSearch}
@@ -670,7 +686,7 @@ export default class PersonnelAdd extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col span={24}>
+              <Col span={24} className={styles.lableLayout}>
                 <FormItem
                   style={{ marginLeft: '2%' }}
                   label={
@@ -715,7 +731,7 @@ export default class PersonnelAdd extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col span={24}>
+              <Col span={24} className={styles.lableLayout}>
                 <FormItem label="注册照片示例" style={{ marginLeft: '2%' }}>
                   <Fragment>
                     <img src={PIC} width="50%" height="25%" alt="" />
@@ -768,11 +784,11 @@ export default class PersonnelAdd extends PureComponent {
                             style={{ width: '86px', height: '86px', objectFit: 'contain' }}
                           />
                         ) : (
-                            <div>
-                              <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
-                              <div className="ant-upload-text">上传</div>
-                            </div>
-                          )}
+                          <div>
+                            <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
+                            <div className="ant-upload-text">上传</div>
+                          </div>
+                        )}
                       </Upload>
                     </Fragment>
                   )}
@@ -790,7 +806,7 @@ export default class PersonnelAdd extends PureComponent {
               返回
             </Button>
             <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
-              {submitting && (<LegacyIcon type="loading" />)}
+              {submitting && <LegacyIcon type="loading" />}
               确定
             </Button>
           </div>

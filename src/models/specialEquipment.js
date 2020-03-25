@@ -26,6 +26,7 @@ export default {
       list: [],
       pagination: {},
     },
+    markers: [],
   },
   effects: {
     // 查询特种设备列表
@@ -35,6 +36,19 @@ export default {
         yield put({
           type: 'saveList',
           payload: { ...response.data },
+        });
+        if (callback) {
+          callback(response);
+        }
+      }
+    },
+    // 查询特种设备列表
+    *fetchMarkers({ payload, callback }, { call, put }) {
+      const response = yield call(querySpecialEquipList, payload);
+      if (response.code === 200 && response.data && response.data.list) {
+        yield put({
+          type: 'save',
+          payload: { markers: response.data.list },
         });
         if (callback) {
           callback(response);
