@@ -32,6 +32,8 @@ const defaultConfig = {
     y: 31.560116,
     zoom: 13,
   },
+  ios: 'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/chemicalAppDownload/OfficialAPP/official_version/ChemicalCloud.plist&ran=',
+  android: 'http://five.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
 };
 
 const configs = {
