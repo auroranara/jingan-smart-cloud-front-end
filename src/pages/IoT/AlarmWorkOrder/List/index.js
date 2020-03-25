@@ -238,11 +238,30 @@ export default class AlarmWorkOrderList extends Component {
   };
 
   render() {
+    const {
+      location: { query },
+    } = this.props;
     const props = {
       fields: this.getFields,
       action: this.getAction,
       columns: this.getColumns,
       transform: TRANSFORM,
+      initialValues: query.monitorObjectType
+        ? {
+            monitorObject: [
+              query.monitorObjectType,
+              query.monitorObject && query.monitorObjectName
+                ? { key: query.monitorObject, label: query.monitorObjectName }
+                : undefined,
+            ],
+            majorHazard: [
+              query.isMajorHazard,
+              query.majorHazardId && query.majorHazardName
+                ? { key: query.majorHazardId, label: query.majorHazardName }
+                : undefined,
+            ],
+          }
+        : null,
       otherOperation: [
         {
           code: 'detail',

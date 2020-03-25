@@ -212,10 +212,18 @@ export default class AlarmMessage extends Component {
   ];
 
   render() {
+    const {
+      location: { query },
+    } = this.props;
     const props = {
       fields: this.getFields,
       columns: this.getColumns,
       transform: TRANSFORM,
+      initialValues: query.majorHazard
+        ? {
+            majorHazard: query.majorHazard,
+          }
+        : null,
       ...this.props,
     };
 

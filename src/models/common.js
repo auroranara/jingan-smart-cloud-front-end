@@ -66,6 +66,20 @@ export default {
         }
       }
     },
+    /* 获取列表 */
+    *getCompanyList({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        yield put({
+          type: 'saveCompanyList',
+          payload: data,
+        });
+        callback && callback(true, data);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
     // 获取区域列表
     *getAreaList({ payload, callback }, { call, put }) {
       const response = yield call(getAreaList, payload);
@@ -196,7 +210,11 @@ export default {
       const response = yield call(getMapList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const mapList = data.list;
+        const mapList = data.list.map(item => ({
+          ...item,
+          tiltAngle: item.mapScaleLevelRangeList && item.mapScaleLevelRangeList[0],
+          rotateAngle: item.mapScaleLevelRangeList && item.mapScaleLevelRangeList[1],
+        }));
         yield put({
           type: 'save',
           payload: {
@@ -212,5 +230,21 @@ export default {
 
   reducers: {
     save: (state, { payload }) => ({ ...state, ...payload }),
+    saveCompanyList: (
+      state,
+      {
+        payload: {
+          list,
+          pagination,
+          pagination: { pageNum },
+        },
+      }
+    ) => ({
+      ...state,
+      companyList: {
+        list: pageNum === 1 ? list : state.companyList.list.concat(list),
+        pagination,
+      },
+    }),
   },
 };

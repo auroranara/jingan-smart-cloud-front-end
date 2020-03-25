@@ -1244,18 +1244,20 @@ module.exports = env => {
                   name: 'list',
                   component: './MajorHazardDistribution/List',
                 },
-                // {
-                //   path: '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/detail/:id',
-                //   code: 'monitoringAndEarlyWarning.majorHazardDistribution.detail',
-                //   name: 'detail',
-                //   component: './MajorHazardDistribution/Detail',
-                // },
-                // {
-                //   path: '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/detail/:parentId/security/:id',
-                //   code: 'monitoringAndEarlyWarning.majorHazardDistribution.security',
-                //   name: 'security',
-                //   component: './MajorHazardDistribution/Security',
-                // },
+                {
+                  path:
+                    '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/detail/:id',
+                  code: 'monitoringAndEarlyWarning.majorHazardDistribution.detail',
+                  name: 'detail',
+                  component: './MajorHazardDistribution/Detail',
+                },
+                {
+                  path:
+                    '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/detail/:parentId/security/:id?',
+                  code: 'monitoringAndEarlyWarning.majorHazardDistribution.security',
+                  name: 'security',
+                  component: './MajorHazardDistribution/Security',
+                },
               ],
             },
           ],
