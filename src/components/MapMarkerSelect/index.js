@@ -361,7 +361,7 @@ export default class MapMarkerSelect extends PureComponent {
       readonly,
       legend: { label = '其他标注', icon, activeIcon } = {},
       legend,
-      markerList,
+      markerList = [],
       markerId,
     } = this.props;
     const { show, otherMarkersVisible } = this.state;
