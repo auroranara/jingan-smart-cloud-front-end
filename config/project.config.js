@@ -1,9 +1,10 @@
 //import logo from '../src/assets/logo_jingan.svg';
-// import code from '../src/assets/jingan_download_code.png';
+import code from '@/assets/jingan_download_code.png';
 
 const defaultConfig = {
   logo: 'http://data.jingan-china.cn/v2/logo/logo.png',
-  code: 'http://data.jingan-china.cn/v2/logo/code.png',
+  code,
+  // code: 'http://data.jingan-china.cn/v2/logo/code.png',
   layer: 'http://data.jingan-china.cn/v2/logo/download_layer.png',
   // layer: 'http://data.jingan-china.cn/v2/login/jingan_download_layer.png',
   region: '无锡市',
@@ -31,6 +32,8 @@ const defaultConfig = {
     y: 31.560116,
     zoom: 13,
   },
+  ios: 'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/chemicalAppDownload/OfficialAPP/official_version/ChemicalCloud.plist&ran=',
+  android: 'http://five.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
 };
 
 const configs = {
