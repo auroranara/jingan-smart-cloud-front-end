@@ -365,7 +365,6 @@ export default {
         if (callback) callback(response);
       }
     },
-
     // 新增标签卡
     *fetchTagCardAdd({ payload, callback }, { call, put }) {
       const response = yield call(queryTagCardAdd, payload);

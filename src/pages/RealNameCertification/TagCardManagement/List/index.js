@@ -14,7 +14,7 @@ import codes from '@/utils/codes';
 // 权限
 const {
   personnelManagement: {
-    tagCardManagement: { add: addCode },
+    tagCardManagement: { add: addCode, import: importCode, export: exportCode },
   },
 } = codes;
 
@@ -121,6 +121,9 @@ export default class TableList extends PureComponent {
       message.success('删除成功');
       return;
     }
+    if (info.file.status === undefined) {
+      this.setState({ importLoading: false, fileList: [] });
+    }
     if (res) {
       if (res.code && res.code === 200) {
         message.success(res.msg);
@@ -130,7 +133,7 @@ export default class TableList extends PureComponent {
           importLoading: false,
         });
       } else {
-        message.error(res.data.errorMasssge || res.msg);
+        message.error(res.data.errorMasssge.length === 0 ? res.msg : res.data.errorMasssge);
         this.setState({
           importLoading: false,
         });
@@ -150,6 +153,20 @@ export default class TableList extends PureComponent {
     });
   };
 
+  handleBeforeUpload = file => {
+    const { importLoading } = this.state;
+    const isExcel =
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.type === 'application/vnd.ms-excel';
+    if (importLoading) {
+      message.error('尚未上传结束');
+    }
+    if (!isExcel) {
+      message.error('上传失败，请上传.xls格式或者.xls格式表格');
+    }
+    return isExcel && !importLoading;
+  };
+
   render() {
     const {
       loading,
@@ -167,6 +184,8 @@ export default class TableList extends PureComponent {
     const { modalVisible, importLoading, fileList, selectedRowKeys } = this.state;
 
     const addAuth = hasAuthority(addCode, permissionCodes);
+    const importAuth = hasAuthority(importCode, permissionCodes);
+    const exportAuth = hasAuthority(exportCode, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
@@ -201,11 +220,12 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <span>标签总数 ：{list.length}</span>
+            <span>标签总数 ：{total}</span>
             <Button
               onClick={this.handleExportShow}
               type="primary"
               style={{ float: 'right', marginRight: '10px' }}
+              disabled={!exportAuth}
             >
               批量导出
             </Button>
@@ -213,6 +233,7 @@ export default class TableList extends PureComponent {
               type="primary"
               style={{ float: 'right', marginRight: '10px' }}
               onClick={this.handleImportShow}
+              disabled={!importAuth}
             >
               批量导入
             </Button>
@@ -277,6 +298,7 @@ export default class TableList extends PureComponent {
                 action={`/acloud_new/v2/HGFace/importLabel`} // 上传地址
                 fileList={fileList}
                 onChange={this.handleImportChange}
+                beforeUpload={this.handleBeforeUpload}
               >
                 <Button disabled={importLoading}>
                   {uploadExportButton}

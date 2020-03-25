@@ -471,6 +471,8 @@ export default {
       view: 'personnelManagement.tagCardManagement.view',
       edit: 'personnelManagement.tagCardManagement.edit',
       delete: 'personnelManagement.tagCardManagement.delete',
+      import: 'personnelManagement.tagCardManagement.import',
+      export: 'personnelManagement.tagCardManagement.export',
     },
     postManagement: {
       listView: 'personnelManagement.postManagement.listView',
