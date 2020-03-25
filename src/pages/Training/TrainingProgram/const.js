@@ -63,6 +63,28 @@ export const FORMS = [
     value: '现场观摩演示形式',
   },
 ];
+export const TrainingType = [
+  {
+    key: '1',
+    value: '入司培训',
+  },
+  {
+    key: '2',
+    value: '转岗培训',
+  },
+  {
+    key: '3',
+    value: '复岗培训',
+  },
+  {
+    key: '4',
+    value: '取证培训',
+  },
+  {
+    key: '5',
+    value: '日常培训',
+  },
+];
 export const SPAN = { span: 24 };
 export const LABEL_COL = { span: 4 };
 export const LIST_PATH = '/training/training-program/list';

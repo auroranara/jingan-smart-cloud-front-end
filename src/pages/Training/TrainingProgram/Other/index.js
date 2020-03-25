@@ -24,63 +24,58 @@ import {
   LABEL_COL,
   FORMS,
   LEVELS,
+  TrainingType,
 } from '../const';
 import styles from './index.less';
 
-@connect(({
-  trainingProgram,
-  user,
-  loading,
-}) => ({
-  trainingProgram,
-  user,
-  loading: loading.effects['trainingProgram/fetchDetail'],
-  adding: loading.effects['trainingProgram/add'],
-  editing: loading.effects['trainingProgram/edit'],
-}), (dispatch) => ({
-  getDetail(payload, callback) {
-    dispatch({
-      type: 'trainingProgram/fetchDetail',
-      payload,
-      callback,
-    });
-  },
-  setDetail() {
-    dispatch({
-      type: 'trainingProgram/save',
-      payload: {
-        detail: {},
-      },
-    });
-  },
-  add(payload, callback) {
-    dispatch({
-      type: 'trainingProgram/add',
-      payload,
-      callback,
-    });
-  },
-  edit(payload, callback) {
-    dispatch({
-      type: 'trainingProgram/edit',
-      payload,
-      callback,
-    });
-  },
-}))
+@connect(
+  ({ trainingProgram, user, loading }) => ({
+    trainingProgram,
+    user,
+    loading: loading.effects['trainingProgram/fetchDetail'],
+    adding: loading.effects['trainingProgram/add'],
+    editing: loading.effects['trainingProgram/edit'],
+  }),
+  dispatch => ({
+    getDetail(payload, callback) {
+      dispatch({
+        type: 'trainingProgram/fetchDetail',
+        payload,
+        callback,
+      });
+    },
+    setDetail() {
+      dispatch({
+        type: 'trainingProgram/save',
+        payload: {
+          detail: {},
+        },
+      });
+    },
+    add(payload, callback) {
+      dispatch({
+        type: 'trainingProgram/add',
+        payload,
+        callback,
+      });
+    },
+    edit(payload, callback) {
+      dispatch({
+        type: 'trainingProgram/edit',
+        payload,
+        callback,
+      });
+    },
+  })
+)
 export default class TrainingProgramOther extends Component {
   componentDidMount() {
     const {
       match: {
-        params: {
-          type,
-          id,
-        },
+        params: { type, id },
       },
       user: {
-        currentUser: {
-          permissionCodes,
-        },
+        currentUser: { permissionCodes },
       },
       getDetail,
       setDetail,
@@ -88,9 +83,14 @@ export default class TrainingProgramOther extends Component {
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
-    if ((type === 'add' && hasAddAuthority) || (type === 'edit' && hasEditAuthority) || (type === 'detail' && hasDetailAuthority)) {
+    if (
+      (type === 'add' && hasAddAuthority) ||
+      (type === 'edit' && hasEditAuthority) ||
+      (type === 'detail' && hasDetailAuthority)
+    ) {
       setDetail();
-      if (type !== 'add') { // 不考虑id不存在的情况，由request来跳转到500
+      if (type !== 'add') {
+        // 不考虑id不存在的情况，由request来跳转到500
         getDetail && getDetail({ id });
       }
     } else {
@@ -104,11 +104,15 @@ export default class TrainingProgramOther extends Component {
   }
 
   getTitle = () => {
-    const { match: { params: { type } } } = this.props;
-    return ({ add: '新增培训计划', detail: '培训计划详情', edit: '编辑培训计划' })[type];
-  }
+    const {
+      match: {
+        params: { type },
+      },
+    } = this.props;
+    return { add: '新增培训计划', detail: '培训计划详情', edit: '编辑培训计划' }[type];
+  };
 
-  getBreadcrumbList = (title) => {
+  getBreadcrumbList = title => {
     return [
       {
         title: '首页',
@@ -129,11 +133,11 @@ export default class TrainingProgramOther extends Component {
         name: title,
       },
     ];
-  }
+  };
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   // @bind()
   // @debounce(300)
@@ -144,7 +148,7 @@ export default class TrainingProgramOther extends Component {
   // 返回按钮点击事件
   handleBackButtonClick = () => {
     router.goBack();
-  }
+  };
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -152,21 +156,18 @@ export default class TrainingProgramOther extends Component {
       add,
       edit,
       user: {
-        currentUser: {
-          unitType,
-          unitId,
-        },
+        currentUser: { unitType, unitId },
       },
-      trainingProgram: {
-        detail: {
-          id,
-        }={},
-      },
+      trainingProgram: { detail: { id } = {} },
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { company, range: [trainingStartTime, trainingEndTime], ...rest } = values;
+        const {
+          company,
+          range: [trainingStartTime, trainingEndTime],
+          ...rest
+        } = values;
         const payload = {
           id,
           companyId: +unitType !== 4 ? company.key : unitId,
@@ -174,7 +175,7 @@ export default class TrainingProgramOther extends Component {
           trainingEndTime,
           ...rest,
         };
-        (id ? edit : add)(payload, (isSuccess) => {
+        (id ? edit : add)(payload, isSuccess => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
             router.push(LIST_PATH);
@@ -184,14 +185,18 @@ export default class TrainingProgramOther extends Component {
         });
       }
     });
-  }
+  };
 
   // 编辑按钮点击事件
   handleEditButtonClick = () => {
-    const { match: { params: { id } } } = this.props;
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
     router.push(`${EDIT_PATH}${EDIT_PATH.endsWith('/') ? id : `/${id}`}`);
     window.scrollTo(0, 0);
-  }
+  };
 
   // handleBeforeUpload = (file) => {
   //   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -213,36 +218,29 @@ export default class TrainingProgramOther extends Component {
     } else {
       callback('培训学时必须大于0');
     }
-  }
+  };
 
-  handleCompanyChange = (company) => {
+  handleCompanyChange = company => {
     if (!company || company.key !== company.label) {
       setTimeout(() => {
         this.forceUpdate();
       });
     }
-  }
+  };
 
   handlePlanFileListChange = () => {
     setTimeout(() => {
       this.forceUpdate();
     });
-  }
+  };
 
   renderForm() {
     const {
       match: {
-        params: {
-          type,
-        },
+        params: { type },
       },
       user: {
-        currentUser: {
-          unitType,
-          unitId,
-          unitName,
-          permissionCodes,
-        },
+        currentUser: { unitType, unitId, unitName, permissionCodes },
       },
       trainingProgram: {
         detail: {
@@ -264,53 +262,81 @@ export default class TrainingProgramOther extends Component {
           userIds,
           planStatus,
           resultFileList,
-        }={},
+        } = {},
       },
     } = this.props;
     const isNotCompany = +unitType !== 4;
     const isEdit = type === 'edit';
     const isNotDetail = type !== 'detail';
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
-    const values = this.form && this.form.getFieldsValue() || {};
-    const { realCompanyId, realCompanyName } = isNotCompany ? (values.company && values.company.key !== values.company.label ? { realCompanyId: values.company.key, realCompanyName: values.company.label } : { realCompanyId: companyId, realCompanyName: companyName }) : { realCompanyId: unitId, realCompanyName: unitName };
+    const values = (this.form && this.form.getFieldsValue()) || {};
+    const { realCompanyId, realCompanyName } = isNotCompany
+      ? values.company && values.company.key !== values.company.label
+        ? { realCompanyId: values.company.key, realCompanyName: values.company.label }
+        : { realCompanyId: companyId, realCompanyName: companyName }
+      : { realCompanyId: unitId, realCompanyName: unitName };
     const uploading = (values.planFileList || []).some(({ status }) => status === 'uploading');
 
     const fields = [
       {
         key: 1,
         fields: [
-          ...(isNotCompany ? [{
-            id: 'company',
-            label: '单位名称',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} onChange={this.handleCompanyChange} /> : <span>{companyName}</span>,
-            options: {
-              initialValue: companyId && { key: companyId, label: companyName },
-              rules: isNotDetail ? [
+          ...(isNotCompany
+            ? [
                 {
-                  required: true,
-                  message: '单位名称不能为空',
-                  transform: value => value && value.label,
+                  id: 'company',
+                  label: '单位名称',
+                  span: SPAN,
+                  labelCol: LABEL_COL,
+                  render: () =>
+                    isNotDetail ? (
+                      <CompanySelect
+                        disabled={isEdit}
+                        className={styles.item}
+                        onChange={this.handleCompanyChange}
+                      />
+                    ) : (
+                      <span>{companyName}</span>
+                    ),
+                  options: {
+                    initialValue: companyId && { key: companyId, label: companyName },
+                    rules: isNotDetail
+                      ? [
+                          {
+                            required: true,
+                            message: '单位名称不能为空',
+                            transform: value => value && value.label,
+                          },
+                        ]
+                      : undefined,
+                  },
                 },
-              ] : undefined,
-            },
-          }] : []),
+              ]
+            : []),
           {
             id: 'trainingPlanName',
             label: '培训计划名称',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入培训计划名称" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入培训计划名称"
+                maxLength={50}
+                type={isNotDetail ? 'Input' : 'span'}
+              />
+            ),
             options: {
               initialValue: trainingPlanName,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '培训计划名称不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '培训计划名称不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -318,16 +344,25 @@ export default class TrainingProgramOther extends Component {
             label: '培训类型',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入培训类型" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <SelectOrSpan
+                className={styles.item}
+                placeholder="请选择培训类型"
+                list={TrainingType}
+                type={isNotDetail ? 'select' : 'span'}
+              />
+            ),
             options: {
-              initialValue: trainingType,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '培训类型不能为空',
-                },
-              ] : undefined,
+              initialValue: trainingType && `${trainingType}`,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '培训类型不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -335,15 +370,24 @@ export default class TrainingProgramOther extends Component {
             label: '培训形式',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <SelectOrSpan className={styles.item} placeholder="请选择培训形式" list={FORMS} type={isNotDetail ? 'select' : 'span'} />,
+            render: () => (
+              <SelectOrSpan
+                className={styles.item}
+                placeholder="请选择培训形式"
+                list={FORMS}
+                type={isNotDetail ? 'select' : 'span'}
+              />
+            ),
             options: {
               initialValue: trainingWay && `${trainingWay}`,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '培训形式不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      message: '培训形式不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -351,15 +395,24 @@ export default class TrainingProgramOther extends Component {
             label: '培训分级',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <SelectOrSpan className={styles.item} placeholder="请选择培训分级" list={LEVELS} type={isNotDetail ? 'Select' : 'span'} />,
+            render: () => (
+              <SelectOrSpan
+                className={styles.item}
+                placeholder="请选择培训分级"
+                list={LEVELS}
+                type={isNotDetail ? 'Select' : 'span'}
+              />
+            ),
             options: {
               initialValue: trainingLevel && `${trainingLevel}`,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '培训分级不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      message: '培训分级不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -367,16 +420,25 @@ export default class TrainingProgramOther extends Component {
             label: '经办人',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入经办人姓名" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入经办人姓名"
+                maxLength={50}
+                type={isNotDetail ? 'Input' : 'span'}
+              />
+            ),
             options: {
               initialValue: chargePerson,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '经办人不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '经办人不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -384,16 +446,25 @@ export default class TrainingProgramOther extends Component {
             label: '联系电话',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入联系电话" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入联系电话"
+                maxLength={50}
+                type={isNotDetail ? 'Input' : 'span'}
+              />
+            ),
             options: {
               initialValue: chargePersonPhone,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '联系电话不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '联系电话不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -401,16 +472,25 @@ export default class TrainingProgramOther extends Component {
             label: '主题词',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入主题词" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入主题词"
+                maxLength={50}
+                type={isNotDetail ? 'Input' : 'span'}
+              />
+            ),
             options: {
               initialValue: themeCode,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '主题词不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '主题词不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -418,16 +498,26 @@ export default class TrainingProgramOther extends Component {
             label: '培训学时（h）',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入培训学时" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入培训学时"
+                maxLength={50}
+                type={isNotDetail ? 'Input' : 'span'}
+              />
+            ),
             options: {
               initialValue: trainingDuration,
-              getValueFromEvent: (e) => e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  validator: this.handlePeriodValidate,
-                },
-              ] : undefined,
+              getValueFromEvent: e =>
+                e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      validator: this.handlePeriodValidate,
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -448,15 +538,20 @@ export default class TrainingProgramOther extends Component {
               />
             ),
             options: {
-              initialValue: [trainingStartTime && moment(trainingStartTime), trainingEndTime && moment(trainingEndTime)],
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  type: 'object',
-                  transform: v => v && v[0] && v[1],
-                  message: '培训时间不能为空',
-                },
-              ] : undefined,
+              initialValue: [
+                trainingStartTime && moment(trainingStartTime),
+                trainingEndTime && moment(trainingEndTime),
+              ],
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      type: 'object',
+                      transform: v => v && v[0] && v[1],
+                      message: '培训时间不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -464,16 +559,25 @@ export default class TrainingProgramOther extends Component {
             label: '培训地点',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入培训地点" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入培训地点"
+                maxLength={50}
+                type={isNotDetail ? 'Input' : 'span'}
+              />
+            ),
             options: {
               initialValue: trainingAddress,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '培训地点不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '培训地点不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -481,16 +585,25 @@ export default class TrainingProgramOther extends Component {
             label: '培训内容',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入培训内容" type={isNotDetail ? 'TextArea' : 'span'} autosize={{ minRows: 3 }} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入培训内容"
+                type={isNotDetail ? 'TextArea' : 'span'}
+                autosize={{ minRows: 3 }}
+              />
+            ),
             options: {
               initialValue: trainingContent,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '培训内容不能为空',
-                },
-              ]: undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '培训内容不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -498,16 +611,25 @@ export default class TrainingProgramOther extends Component {
             label: '培训对象',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <TrainingObjectSelect2 className={styles.item} companyId={realCompanyId} companyName={realCompanyName} disabled={!isNotDetail} />,
+            render: () => (
+              <TrainingObjectSelect2
+                className={styles.item}
+                companyId={realCompanyId}
+                companyName={realCompanyName}
+                disabled={!isNotDetail}
+              />
+            ),
             options: {
               initialValue: userIds || [],
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '培训对象不能为空',
-                  type: 'array',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      message: '培训对象不能为空',
+                      type: 'array',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -515,34 +637,54 @@ export default class TrainingProgramOther extends Component {
             label: '计划扫描件',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <CustomUpload folder="trainingProgram" onChange={this.handlePlanFileListChange} type={isNotDetail || 'span'} />,
+            render: () => (
+              <CustomUpload
+                folder="trainingProgram"
+                onChange={this.handlePlanFileListChange}
+                type={isNotDetail || 'span'}
+              />
+            ),
             options: {
               initialValue: planFileList || [],
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  type: 'array',
-                  min: 1,
-                  message: '计划扫描件不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      type: 'array',
+                      min: 1,
+                      message: '计划扫描件不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
-          ...(!isNotDetail && +planStatus === 1 ? [{
-            id: 'resultFileList',
-            label: '执行结果',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => (
-              <div className={styles.fileList}>
-                {resultFileList && resultFileList.map(({ webUrl, fileName }, index) => (
-                  <div key={index}>
-                    <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
-                  </div>
-                ))}
-              </div>
-            ),
-          }] : []),
+          ...(!isNotDetail && +planStatus === 1
+            ? [
+                {
+                  id: 'resultFileList',
+                  label: '执行结果',
+                  span: SPAN,
+                  labelCol: LABEL_COL,
+                  render: () => (
+                    <div className={styles.fileList}>
+                      {resultFileList &&
+                        resultFileList.map(({ webUrl, fileName }, index) => (
+                          <div key={index}>
+                            <a
+                              className={styles.clickable}
+                              href={webUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {fileName}
+                            </a>
+                          </div>
+                        ))}
+                    </div>
+                  ),
+                },
+              ]
+            : []),
         ],
       },
     ];
@@ -559,22 +701,31 @@ export default class TrainingProgramOther extends Component {
           <Fragment>
             <Button onClick={this.handleBackButtonClick}>返回</Button>
             {type !== 'detail' ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>提交</Button>
-            ) : +planStatus === 0 && (
-              <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority} loading={uploading}>编辑</Button>
+              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
+                提交
+              </Button>
+            ) : (
+              +planStatus === 0 && (
+                <Button
+                  type="primary"
+                  onClick={this.handleEditButtonClick}
+                  disabled={!hasEditAuthority}
+                  loading={uploading}
+                >
+                  编辑
+                </Button>
+              )
             )}
           </Fragment>
         }
       />
-    )
+    );
   }
 
   render() {
     const {
       match: {
-        params: {
-          type,
-        },
+        params: { type },
       },
       loading,
       adding,
@@ -584,14 +735,8 @@ export default class TrainingProgramOther extends Component {
     const breadcrumbList = this.getBreadcrumbList(title);
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-        key={type}
-      >
-        <Spin spinning={loading || adding || editing || false}>
-          {this.renderForm()}
-        </Spin>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} key={type}>
+        <Spin spinning={loading || adding || editing || false}>{this.renderForm()}</Spin>
       </PageHeaderLayout>
     );
   }

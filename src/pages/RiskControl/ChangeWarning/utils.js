@@ -1,8 +1,9 @@
-import { Select } from 'antd';
+import React, { Fragment } from 'react';
+import { Select, Divider } from 'antd';
 
 import CompanySelect from '@/jingan-components/CompanySelect';
 import codes from '@/utils/codes';
-import { AuthSpan } from '@/utils/customAuth';
+import { AuthSpan, AuthLink } from '@/utils/customAuth';
 
 const { Option } = Select;
 
@@ -52,19 +53,18 @@ export const BREADCRUMBLIST = [
   { title: '变更预警管理', name: '变更预警管理' },
 ];
 
-export const STATUS = [
-  { key: '0', value: '待评价' },
-  { key: '1', value: '已评价' },
-];
+export const STATUS = [{ key: '0', value: '待评价' }, { key: '1', value: '已评价' }];
 
-export function getSearchFields(isComUser, sections=[], handleCompanyChange) {
+export function getSearchFields(isComUser, sections = [], handleCompanyChange) {
   const span = isComUser ? 12 : 8;
 
   const fields = [
     {
       id: 'companyId',
       label: '单位名称',
-      render: () => <CompanySelect onChange={handleCompanyChange} placeholder="请输入单位名称" allowClear />,
+      render: () => (
+        <CompanySelect onChange={handleCompanyChange} placeholder="请输入单位名称" allowClear />
+      ),
     },
     {
       id: 'zoneId',
@@ -72,7 +72,11 @@ export function getSearchFields(isComUser, sections=[], handleCompanyChange) {
       span,
       render: () => (
         <Select placeholder="请选择风险分区" allowClear>
-          {sections.map(({ id: key, zoneName: value }) => <Option key={key} value={key}>{value}</Option>)}
+          {sections.map(({ id: key, zoneName: value }) => (
+            <Option key={key} value={key}>
+              {value}
+            </Option>
+          ))}
         </Select>
       ),
     },
@@ -82,7 +86,11 @@ export function getSearchFields(isComUser, sections=[], handleCompanyChange) {
       span,
       render: () => (
         <Select placeholder="请选择变更对象" allowClear>
-          {DATA_TYPE_LIST.map(({ key, value }) => <Option key={key} value={key}>{value}</Option>)}
+          {DATA_TYPE_LIST.map(({ key, value }) => (
+            <Option key={key} value={key}>
+              {value}
+            </Option>
+          ))}
         </Select>
       ),
     },
@@ -92,14 +100,17 @@ export function getSearchFields(isComUser, sections=[], handleCompanyChange) {
       span,
       render: () => (
         <Select placeholder="请选择评价状态" allowClear>
-          {STATUS.map(({ key, value }) => <Option key={key} value={key}>{value}</Option>)}
+          {STATUS.map(({ key, value }) => (
+            <Option key={key} value={key}>
+              {value}
+            </Option>
+          ))}
         </Select>
       ),
     },
   ];
 
-  if (isComUser)
-    fields.shift();
+  if (isComUser) fields.shift();
 
   return fields;
 }
@@ -131,7 +142,13 @@ export function getColumns(genConfirmEvaluate) {
       key: 'dataEntity',
       // render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
       render: (txt, { dataId }) => (
-        <a href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}`} target="_blank" rel="noopener noreferrer">{txt}</a>
+        <a
+          href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {txt}
+        </a>
       ),
     },
     {
@@ -141,7 +158,15 @@ export function getColumns(genConfirmEvaluate) {
       width: 200,
       align: 'center',
       render: (txt, { zoneId, companyId }) => (
-        <a href={`${window.publicPath}#/risk-control/four-color-image/edit/${zoneId}?companyId=${companyId}`} target="_blank" rel="noopener noreferrer">{txt}</a>
+        <a
+          href={`${
+            window.publicPath
+          }#/risk-control/four-color-image/edit/${zoneId}?companyId=${companyId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {txt}
+        </a>
       ),
     },
     {
@@ -155,13 +180,30 @@ export function getColumns(genConfirmEvaluate) {
       title: '操作',
       dataIndex: 'id',
       key: 'id',
-      width: 120,
+      width: 180,
       align: 'center',
       fixed: 'right',
-      render(id, { status }) {
-        return status === '0'
-          ? <AuthSpan onClick={genConfirmEvaluate(id)} style={{ color: '#1890ff', cursor: 'pointer' }} code={codes.riskControl.changeWarning.evaluate}>标为已评价</AuthSpan>
-          : null;
+      render(id, { zoneId, status, companyId }) {
+        return status === '0' ? (
+          <Fragment>
+            <AuthSpan
+              onClick={genConfirmEvaluate(id)}
+              style={{ color: '#1890ff', cursor: 'pointer' }}
+              code={codes.riskControl.changeWarning.evaluate}
+            >
+              标为已评价
+            </AuthSpan>
+            <Divider type="vertical" />
+            <AuthLink
+              code={codes.riskControl.changeWarning.evaluate}
+              to={`/risk-control/four-color-image/edit/${zoneId}?companyId=${companyId}`}
+              target="_blank"
+              style={{ marginLeft: 8 }}
+            >
+              去评价
+            </AuthLink>
+          </Fragment>
+        ) : null;
       },
     },
   ];

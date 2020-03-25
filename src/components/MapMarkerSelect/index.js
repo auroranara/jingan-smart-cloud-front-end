@@ -368,16 +368,19 @@ export default class MapMarkerSelect extends PureComponent {
     const itemStyles = classnames(styles.controlItem, {
       [styles.active]: otherMarkersVisible,
     });
-    const list = markerList.filter(item => {
-      if (
-        !item.pointFixInfoList ||
-        item.pointFixInfoList.length === 0 ||
-        !+item.pointFixInfoList[0].isShow ||
-        markerId === item.id
-      )
-        return false;
-      else return true;
-    });
+
+    const list =
+      markerList !== undefined &&
+      markerList.filter(item => {
+        if (
+          !item.pointFixInfoList ||
+          item.pointFixInfoList.length === 0 ||
+          !+item.pointFixInfoList[0].isShow ||
+          markerId === item.id
+        )
+          return false;
+        else return true;
+      });
 
     return show ? (
       <div style={{ display: 'flex' }}>
