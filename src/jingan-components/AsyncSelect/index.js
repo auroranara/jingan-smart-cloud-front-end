@@ -108,6 +108,9 @@ export default class AsyncSelect extends Component {
       fieldNames,
     } = this.props;
     const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
+    console.log(list);
+    console.log(loading);
+    console.log(fieldNames);
 
     return type !== 'span' ? (
       // <AutoComplete
@@ -142,11 +145,12 @@ export default class AsyncSelect extends Component {
       // optionLabelProp="children"
       placeholder={placeholder}
       defaultActiveFirstOption={false}
-      // filterOption={false}
+      filterOption={false}
       onSearch={this.debouncedHandleSearch}
       onBlur={this.handleBlur}
-      notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
+      // notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
       disabled={disabled}
+
     >
       {list.map(({ [k]: key, [v]: value }) => (
         <Option key={key}>{value}</Option>

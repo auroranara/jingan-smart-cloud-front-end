@@ -104,7 +104,7 @@ export default class CompanySelect extends Component {
         value={value}
         placeholder={placeholder}
         defaultActiveFirstOption={false}
-        // filterOption={false}
+        filterOption={false}
         onChange={onChange}
         onSearch={this.debouncedHandleSearch}
         // onBlur={this.handleBlur}
