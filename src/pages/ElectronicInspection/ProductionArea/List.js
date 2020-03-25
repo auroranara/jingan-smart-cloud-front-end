@@ -40,8 +40,8 @@ const BREADCRUMB_LIST = [
   },
 ];
 const colWrapper = {
-  md: 8,
-  sm: 12,
+  md: 12,
+  sm: 24,
 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 
@@ -159,7 +159,7 @@ export default class ProductionAreaList extends Component {
     const treeList = treeData(departments);
     return (
       <Card>
-        <Form ref={this.formRef} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+        <Form ref={this.formRef} labelCol={{ span: 5 }} wrapperCol={{ span: 19 }} labelAlign="left">
           <Row gutter={30}>
             {!isCompany && (
               <Col {...colWrapper}>

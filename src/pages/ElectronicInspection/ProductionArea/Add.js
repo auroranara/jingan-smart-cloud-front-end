@@ -368,7 +368,7 @@ export default class ProductionAreaAdd extends Component {
         breadcrumbList={breadcrumbList}
       >
         <Spin spinning={false}>
-          <Card title="基础信息" bordered={false}>
+          <Card bordered={false}>
             <CustomForm
               fields={fields}
               searchable={false}
