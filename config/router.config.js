@@ -2803,7 +2803,51 @@ module.exports = env => {
             },
           ],
         },
-
+        {
+          name: 'electronicInspection', // 电子巡检
+          path: '/electronic-inspection',
+          code: 'electronicInspection',
+          icon: 'fileSearch',
+          systemType: 4,
+          routes: [
+            {
+              name: 'productionArea',
+              path: '/electronic-inspection/production-area', // 生产区域
+              code: 'electronicInspection.productionArea',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/electronic-inspection/production-area',
+                  redirect: '/electronic-inspection/production-area/list',
+                },
+                {
+                  name: 'list',
+                  path: '/electronic-inspection/production-area/list',
+                  code: 'electronicInspection.productionArea.listView',
+                  component: './ElectronicInspection/ProductionArea/List',
+                },
+                {
+                  name: 'add',
+                  path: '/electronic-inspection/production-area/add',
+                  code: 'electronicInspection.productionArea.add',
+                  component: './ElectronicInspection/ProductionArea/Add',
+                },
+                {
+                  name: 'edit',
+                  path: '/electronic-inspection/production-area/edit/:id',
+                  code: 'electronicInspection.productionArea.edit',
+                  component: './ElectronicInspection/ProductionArea/Add',
+                },
+                {
+                  name: 'view',
+                  path: '/electronic-inspection/production-area/view/:id',
+                  code: 'electronicInspection.productionArea.view',
+                  component: './ElectronicInspection/ProductionArea/Add',
+                },
+              ],
+            },
+          ],
+        },
         {
           path: '/target-responsibility', // 目标责任管理
           code: 'targetResponsibility',

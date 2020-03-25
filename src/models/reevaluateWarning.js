@@ -50,7 +50,7 @@ export default {
       const response = yield call(getReevaluatorList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const list = data.list.map(({ users, userName: value }) => ({ key: users[0].id, value }));
+        const list = data.list.map(({ users, userName: value, ...res }) => ({ ...res, key: users[0].id, value }));
         yield put({
           type: 'save',
           payload: {
