@@ -97,13 +97,13 @@ export default class CompanySelect extends Component {
         allowClear
         showSearch
         labelInValue
+        showArrow={false}
         disabled={disabled}
         className={className}
         style={style}
         value={value}
         placeholder={placeholder}
         defaultActiveFirstOption={false}
-        showArrow={false}
         filterOption={false}
         onChange={onChange}
         onSearch={this.debouncedHandleSearch}

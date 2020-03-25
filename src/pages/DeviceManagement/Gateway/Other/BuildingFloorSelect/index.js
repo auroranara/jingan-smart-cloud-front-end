@@ -180,11 +180,12 @@ export default class BuildingFloorSelect extends Component {
           type="primary"
           href="/#/base-info/buildings-info/list"
           target="_blank"
+          style={{ marginTop: 4 }}
         >
           新增建筑物楼层
         </Button>
         <Tooltip title="刷新建筑物列表">
-          <LegacyIcon className={styles.reloadIcon} type="reload" onClick={this.handleReload} />
+          <LegacyIcon className={styles.reloadIcon} style={{ marginTop: 4 }} type="reload" onClick={this.handleReload} />
         </Tooltip>
       </div>
     );

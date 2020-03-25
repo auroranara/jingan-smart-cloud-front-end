@@ -28,7 +28,7 @@ export default {
     // 高危工艺流程
     highRiskProcess: {
       list: [],
-      pagination: {},
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
   },
 

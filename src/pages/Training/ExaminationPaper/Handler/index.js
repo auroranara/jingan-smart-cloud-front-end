@@ -11,6 +11,7 @@ import codes from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
 
 import styles from './index.less';
+import styles1 from '@/components/ToolBar/index.less';
 
 const { Item: FormItem } = Form;
 const { Group: RadioGroup } = Radio;
@@ -304,7 +305,7 @@ export default class App extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Spin spinning={!!loading || submitting}>
           <Card bordered={false}>
-            <Form>
+            <Form className={styles1.form}>
               <Row>
                 <Col xl={12} md={16} sm={24}>
                   <FormItem label="试卷名称" className={styles.formItem}>

@@ -26,7 +26,7 @@ const addTitle = '新增储罐区';
 const envirTypeList = [
   { key: '1', value: '一类区' },
   { key: '2', value: '二类区' },
-  { key: '3', value: '三类区' },
+  // { key: '3', value: '三类区' },
 ];
 
 const RISKLVL = ['一级', '二级', '三级', '四级'];

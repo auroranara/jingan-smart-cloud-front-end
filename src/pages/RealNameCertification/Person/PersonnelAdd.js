@@ -1,12 +1,27 @@
 import { PureComponent, Fragment } from 'react';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Row, Col, Button, message, Input, Select, Card, Upload, Tooltip, Radio, Spin, AutoComplete } from 'antd';
+import {
+  Row,
+  Col,
+  Button,
+  message,
+  Input,
+  Select,
+  Card,
+  Upload,
+  Tooltip,
+  Radio,
+  Spin,
+  AutoComplete,
+} from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import styles from './CompanyList.less';
 import router from 'umi/router';
+
+import styles from './CompanyList.less';
+import styles1 from '@/components/ToolBar/index.less';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { getToken } from '@/utils/authority';
 import { phoneReg } from '@/utils/validate';
 // import PIC from '@/assets/picExample.png';
@@ -321,6 +336,8 @@ export default class PersonnelAdd extends PureComponent {
   };
 
   handleICBlur = value => {
+    console.log('value', value);
+
     const {
       dispatch,
       realNameCertification: {
@@ -560,7 +577,7 @@ export default class PersonnelAdd extends PureComponent {
           </Form>
         </Card>
         <Card title="卡号信息" style={{ marginTop: 5 }}>
-          <Form layout="horizontal">
+          <Form layout="horizontal" className={styles1.form}>
             <Row gutter={16}>
               <Col {...colLayout}>
                 <FormItem
@@ -580,22 +597,39 @@ export default class PersonnelAdd extends PureComponent {
                         ? { key: icIdEdit.id, label: icNumEdit.icNumber }
                         : undefined,
                   })(
-                    <AutoComplete
-                      mode="combobox"
-                      labelInValue
-                      optionLabelProp="children"
-                      placeholder="请选择IC卡号"
-                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                      onSearch={this.handleICSearch}
-                      onBlur={this.handleICBlur}
-                      filterOption={false}
-                    >
-                      {labelList.map(({ icNumber, id }) => (
-                        <Option value={id} key={id}>
-                          {icNumber}
-                        </Option>
-                      ))}
-                    </AutoComplete>
+                    // <AutoComplete
+                    //   mode="combobox"
+                    //   labelInValue
+                    //   optionLabelProp="children"
+                    //   placeholder="请选择IC卡号"
+                    //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    //   onSearch={this.handleICSearch}
+                    //   onBlur={this.handleICBlur}
+                    //   filterOption={false}
+                    // >
+                    //   {labelList.map(({ icNumber, id }) => (
+                    //     <Option value={id} key={id}>
+                    //       {icNumber}
+                    //     </Option>
+                    //   ))}
+                    // </AutoComplete>
+                  <Select
+                    allowClear
+                    showSearch
+                    labelInValue
+                    showArrow={false}
+                    filterOption={false}
+                    placeholder="请选择IC卡号"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleICSearch}
+                    onBlur={this.handleICBlur}
+                  >
+                    {labelList.map(({ icNumber, id }) => (
+                      <Option value={id} key={id}>
+                        {icNumber}
+                      </Option>
+                    ))}
+                  </Select>
                   )}
                 </FormItem>
               </Col>
@@ -617,26 +651,42 @@ export default class PersonnelAdd extends PureComponent {
                         ? { key: snIdEdit.id, label: snNumEdit.snNumber }
                         : undefined,
                   })(
-                    <AutoComplete
-                      mode="combobox"
-                      labelInValue
-                      optionLabelProp="children"
-                      placeholder="请选择SN卡号"
-                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                      onSearch={this.handleSNSearch}
-                      onBlur={this.handleSNBlur}
-                      filterOption={false}
-                    >
-                      {labelList.map(({ snNumber, id }) => (
-                        <Option value={id} key={id}>
-                          {snNumber}
-                        </Option>
-                      ))}
-                    </AutoComplete>
+                    // <AutoComplete
+                    //   mode="combobox"
+                    //   labelInValue
+                    //   optionLabelProp="children"
+                    //   placeholder="请选择SN卡号"
+                    //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    //   onSearch={this.handleSNSearch}
+                    //   onBlur={this.handleSNBlur}
+                    //   filterOption={false}
+                    // >
+                    //   {labelList.map(({ snNumber, id }) => (
+                    //     <Option value={id} key={id}>
+                    //       {snNumber}
+                    //     </Option>
+                    //   ))}
+                    // </AutoComplete>
+                  <Select
+                    allowClear
+                    showSearch
+                    labelInValue
+                    showArrow={false}
+                    placeholder="请选择SN卡号"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleSNSearch}
+                    onBlur={this.handleSNBlur}
+                  >
+                    {labelList.map(({ snNumber, id }) => (
+                      <Option value={id} key={id}>
+                        {snNumber}
+                      </Option>
+                    ))}
+                  </Select>
                   )}
                 </FormItem>
               </Col>
-              <Col span={24}>
+              <Col span={24} className={styles.lableLayout}>
                 <FormItem
                   style={{ marginLeft: '2%' }}
                   label={
@@ -681,7 +731,7 @@ export default class PersonnelAdd extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col span={24}>
+              <Col span={24} className={styles.lableLayout}>
                 <FormItem label="注册照片示例" style={{ marginLeft: '2%' }}>
                   <Fragment>
                     <img src={PIC} width="50%" height="25%" alt="" />
@@ -734,11 +784,11 @@ export default class PersonnelAdd extends PureComponent {
                             style={{ width: '86px', height: '86px', objectFit: 'contain' }}
                           />
                         ) : (
-                            <div>
-                              <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
-                              <div className="ant-upload-text">上传</div>
-                            </div>
-                          )}
+                          <div>
+                            <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
+                            <div className="ant-upload-text">上传</div>
+                          </div>
+                        )}
                       </Upload>
                     </Fragment>
                   )}
@@ -756,7 +806,7 @@ export default class PersonnelAdd extends PureComponent {
               返回
             </Button>
             <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
-              {submitting && (<LegacyIcon type="loading" />)}
+              {submitting && <LegacyIcon type="loading" />}
               确定
             </Button>
           </div>

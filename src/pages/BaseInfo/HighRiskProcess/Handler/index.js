@@ -685,7 +685,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button style={{ marginRight: '10px' }} onClick={() => { router.push('/major-hazard-info/high-risk-process/list') }}>返回</Button>
           {isDetail ? (
             <Button type="primary" onClick={e => router.push(`/major-hazard-info/high-risk-process/edit/${id}`)}>

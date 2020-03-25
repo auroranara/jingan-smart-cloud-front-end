@@ -577,15 +577,17 @@ export default class accountManagementList extends React.Component {
     const isUnitUser = this.isUnitUser(); // 单位用户且不为运营
     const { unitTypeChecked } = this.state;
 
+    console.log(unitIds);
+
     return (
       <Card>
         <Form className={styles.form}>
-          <Row>
+          <Row gutter={16}>
             <Col {...defaultSpan}>
               <FormItem label="用户">
                 {getFieldDecorator('userName', {
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
+                })(<Input placeholder="用户名/姓名/手机号" />)}
               </FormItem>
             </Col>
 
@@ -597,7 +599,7 @@ export default class accountManagementList extends React.Component {
                       placeholder="请选择单位类型"
                       allowClear
                       onChange={this.handleUnitTypeChange}
-                      style={{ width: 180 }}
+                      // style={{ width: 180 }}
                     >
                       {unitTypes.map(item => (
                         <Option value={item.id} key={item.id}>
@@ -620,26 +622,45 @@ export default class accountManagementList extends React.Component {
                       },
                     ],
                   })(
-                    <AutoComplete
-                      allowClear
-                      labelInValue
-                      mode="combobox"
-                      optionLabelProp="children"
-                      placeholder="请选择所属单位"
-                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                      onChange={this.handleUnitChange}
-                      onSelect={this.handleUnitSelect}
-                      onSearch={this.handleUnitSearch}
-                      onBlur={this.handleUnitIdBlur}
-                      filterOption={false}
-                      style={{ width: 230 }}
-                    >
-                      {unitIds.map(item => (
-                        <Option value={item.id} key={item.id}>
-                          {item.name}
-                        </Option>
-                      ))}
-                    </AutoComplete>
+                    // <AutoComplete
+                    //   allowClear
+                    //   labelInValue
+                    //   mode="combobox"
+                    //   optionLabelProp="children"
+                    //   placeholder="请选择所属单位"
+                    //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    //   onChange={this.handleUnitChange}
+                    //   onSelect={this.handleUnitSelect}
+                    //   onSearch={this.handleUnitSearch}
+                    //   onBlur={this.handleUnitIdBlur}
+                    //   filterOption={false}
+                    //   style={{ width: 230 }}
+                    // >
+                    //   {unitIds.map(item => (
+                    //     <Option value={item.id} key={item.id}>
+                    //       {item.name}
+                    //     </Option>
+                    //   ))}
+                    // </AutoComplete>
+                  <Select
+                    allowClear
+                    showSearch
+                    labelInValue
+                    showArrow={false}
+                    placeholder="请选择所属单位"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onChange={this.handleUnitChange}
+                    onSelect={this.handleUnitSelect}
+                    onSearch={this.handleUnitSearch}
+                    // onBlur={this.handleUnitIdBlur}
+                    // style={{ width: 230 }}
+                  >
+                    {unitIds.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.name}
+                      </Option>
+                    ))}
+                  </Select>
                   )}
                 </FormItem>
               </Col>
@@ -652,7 +673,7 @@ export default class accountManagementList extends React.Component {
                       allowClear
                       placeholder="请选择所属单位"
                       onChange={this.handleGovChange}
-                      style={{ width: 230 }}
+                      // style={{ width: 230 }}
                     >
                       {this.generateTreeNode(unitIds)}
                     </TreeSelect>
@@ -663,7 +684,7 @@ export default class accountManagementList extends React.Component {
             <Col {...defaultSpan}>
               <FormItem label="角色">
                 {getFieldDecorator('roleId')(
-                  <Select placeholder="请选择角色" style={{ width: 180 }} allowClear>
+                  <Select placeholder="请选择角色" allowClear>
                     {roles.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.roleName}
@@ -686,7 +707,7 @@ export default class accountManagementList extends React.Component {
                         maxHeight: '50vh',
                         zIndex: 50,
                       }}
-                      style={{ width: 180 }}
+                      // style={{ width: 180 }}
                     />
                   )}
                 </FormItem>

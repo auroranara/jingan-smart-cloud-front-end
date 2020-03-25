@@ -821,7 +821,7 @@ export default class MaterialsHandler extends PureComponent {
             )}
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
           </Button>

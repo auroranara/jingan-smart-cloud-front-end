@@ -660,7 +660,7 @@ export default class RiskPointEdit extends PureComponent {
           </Row>
         </Form>
 
-        <div style={{ marginTop: 30 }}>
+        <div style={{ textAlign: 'center', marginTop: 30 }}>
           <Button size="large" type="primary" onClick={this.handleClickValidate}>
             提交
           </Button>

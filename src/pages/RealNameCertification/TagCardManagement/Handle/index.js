@@ -196,10 +196,15 @@ export default class Edit extends PureComponent {
         <Card style={{ marginBottom: 15 }}>
           {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
           {isDet ? (
+            <Button style={{ marginLeft: '45%' }} onClick={e => router.push(`${ROUTER}`)}>
+              取消
+            </Button>
+          ) : null}
+          {isDet ? (
             <Button
               type="primary"
               disabled={!editAuth}
-              style={{ marginLeft: '45%' }}
+              style={{ marginLeft: '10px' }}
               onClick={e => router.push(`${ROUTER}/edit/${id}`)}
             >
               编辑

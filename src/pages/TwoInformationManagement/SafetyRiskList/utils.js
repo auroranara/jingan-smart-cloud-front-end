@@ -10,6 +10,8 @@ export const PAGE_SIZE = 1;
 export const ROUTER = '/two-information-management'; // modify
 export const LIST_URL = `${ROUTER}/safety-risk-list/list`;
 
+const WIDTH = 60;
+
 export const LIST = [
   // modify
   {
@@ -105,6 +107,7 @@ const columnsDetail = [
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    width: 80,
   },
   {
     title: '风险点',
@@ -135,24 +138,28 @@ const columnsDetail = [
     dataIndex: 'l',
     key: 'l',
     align: 'center',
+    width: WIDTH,
   },
   {
     title: 'E',
     dataIndex: 'e',
     key: 'e',
     align: 'center',
+    width: WIDTH,
   },
   {
     title: 'C',
     dataIndex: 'c',
     key: 'c',
     align: 'center',
+    width: WIDTH,
   },
   {
     title: 'D',
     dataIndex: 'd',
     key: 'd',
     align: 'center',
+    width: WIDTH,
   },
   {
     title: '风险等级/风险色度',
@@ -219,7 +226,7 @@ export const DetailModal = Form.create()(props => {
           bordered
           rowKey="id"
           dataSource={handleTableData(list, indexBase)}
-          scroll={{ x: 'max-content' }}
+          scroll={{ x: 2000 }}
           columns={columnsDetail}
           pagination={{
             current: pageNum,
