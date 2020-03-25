@@ -313,6 +313,7 @@ export default class TrainingProgramList extends Component {
         title: '培训类型',
         dataIndex: 'trainingType',
         align: 'center',
+        render: value => <SelectOrSpan list={TrainingType} value={`${value}`} type="span" />,
       },
       {
         title: '培训形式',
