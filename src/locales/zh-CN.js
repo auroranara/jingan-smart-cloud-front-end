@@ -684,6 +684,12 @@ export default {
   'menu.realNameCertification.channelDevice.add': '新增通道',
   'menu.realNameCertification.channelDevice.edit': '编辑通道',
   'menu.realNameCertification.channelDevice.view': '查看通道',
+  'menu.electronicInspection': '电子巡检',
+  'menu.electronicInspection.productionArea': '生产区域',
+  'menu.electronicInspection.productionArea.list': '生产区域',
+  'menu.electronicInspection.productionArea.add': '新增生产区域',
+  'menu.electronicInspection.productionArea.edit': '编辑生产区域',
+  'menu.electronicInspection.productionArea.view': '查看生产区域',
   // demo自带
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
