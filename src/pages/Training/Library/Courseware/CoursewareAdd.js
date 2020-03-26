@@ -59,6 +59,7 @@ export default class CoursewareAdd extends PureComponent {
         type: 'resourceManagement/fetchCourseWareDetail',
         payload: {
           id,
+          companyId,
         },
         callback: ({ name, webVideoCover, videoCover, webFileUrl, fileUrl, remarks }) => {
           setFieldsValue({
