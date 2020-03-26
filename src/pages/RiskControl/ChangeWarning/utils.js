@@ -194,14 +194,18 @@ export function getColumns(genConfirmEvaluate) {
               标为已评价
             </AuthSpan>
             <Divider type="vertical" />
-            <AuthLink
-              code={codes.riskControl.changeWarning.evaluate}
-              to={`/risk-control/four-color-image/edit/${zoneId}?companyId=${companyId}`}
-              target="_blank"
-              style={{ marginLeft: 8 }}
-            >
-              去评价
-            </AuthLink>
+            {zoneId ? (
+              <AuthLink
+                code={codes.riskControl.changeWarning.evaluate}
+                to={`/risk-control/four-color-image/edit/${zoneId}?companyId=${companyId}`}
+                target="_blank"
+                style={{ marginLeft: 8 }}
+              >
+                去评价
+              </AuthLink>
+            ) : (
+              <span style={{ color: '#ccc' }}>去评价</span>
+            )}
           </Fragment>
         ) : null;
       },
