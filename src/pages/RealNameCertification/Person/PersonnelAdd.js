@@ -334,7 +334,7 @@ export default class PersonnelAdd extends PureComponent {
       payload: {
         ...params,
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 30,
         personCar: 1,
       },
       callback,
@@ -358,8 +358,7 @@ export default class PersonnelAdd extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     const { curCompanyId, curLabelList } = this.state;
-    // 根据value判断是否是手动输入
-    if (value && value.key === value.label) {
+    if (value === undefined) {
       this.handleICSearch.cancel();
       setFieldsValue({
         icnumber: undefined,
@@ -372,11 +371,6 @@ export default class PersonnelAdd extends PureComponent {
         entranceNumber: { key: snId, label: sn },
       });
     }
-    if (value.key === '' && value.label === '') {
-      setFieldsValue({
-        entranceNumber: undefined,
-      });
-    }
   };
 
   handleSNSearch = value => {
@@ -386,6 +380,8 @@ export default class PersonnelAdd extends PureComponent {
       { snNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
       res => {
         const { list } = res.data;
+        console.log('list', list);
+
         this.setState({ curLabelList: list });
       }
     );
@@ -397,7 +393,7 @@ export default class PersonnelAdd extends PureComponent {
     } = this.props;
     const { curCompanyId, curLabelList } = this.state;
     // 根据value判断是否是手动输入
-    if (value && value.key === value.label) {
+    if (value === undefined) {
       this.handleSNSearch.cancel();
       setFieldsValue({
         entranceNumber: undefined,
@@ -408,11 +404,6 @@ export default class PersonnelAdd extends PureComponent {
       const icId = curLabelList.find(item => item.id === value.key).id;
       setFieldsValue({
         icnumber: { key: icId, label: ic },
-      });
-    }
-    if (value.key === '' && value.label === '') {
-      setFieldsValue({
-        icnumber: undefined,
       });
     }
   };
@@ -449,6 +440,7 @@ export default class PersonnelAdd extends PureComponent {
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
     const title = id ? '编辑人员信息' : '新增人员信息';
+    console.log('curLabelList', curLabelList);
 
     const hasCompanyName = perType === '4' || perType === '5' || perType === '6';
     const noCompanyName = perType === '2' || perType === '3';
@@ -632,6 +624,7 @@ export default class PersonnelAdd extends PureComponent {
                       showSearch
                       labelInValue
                       showArrow={false}
+                      filterOption={false}
                       placeholder="请选择SN卡号"
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleSNSearch}
