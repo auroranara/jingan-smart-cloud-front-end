@@ -1,6 +1,19 @@
 import React, { Component, Fragment, createRef } from 'react';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Input, Card, Table, message, Modal, Divider, Row, Col, Select, TreeSelect, Form } from 'antd';
+import { Form } from '@ant-design/compatible';
+import {
+  Button,
+  Input,
+  Card,
+  Table,
+  message,
+  Modal,
+  Divider,
+  Row,
+  Col,
+  Select,
+  TreeSelect,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { connect } from 'dva';
 import router from 'umi/router';

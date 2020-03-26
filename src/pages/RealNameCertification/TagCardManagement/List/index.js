@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Form, Upload, Empty, Modal, Table, message } from 'antd';
-import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Card, Upload, Empty, Modal, Table, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import { getToken } from 'utils/authority';
 
 import ToolBar from '@/components/ToolBar';
