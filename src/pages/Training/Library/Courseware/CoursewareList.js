@@ -225,7 +225,7 @@ export default class CoursewareList extends PureComponent {
 
   // 预览课件
   handleViewCourseWare = (item) => {
-    const { id, webFileUrl, fileUrl, webVideoCover } = item
+    const { id, webFileUrl, fileUrl, webVideoCover, remarks } = item
     const { dispatch } = this.props
     dispatch({
       type: 'resourceManagement/addReadRecord',
@@ -233,9 +233,10 @@ export default class CoursewareList extends PureComponent {
         trainingId: id,
       },
     })
+
     this.setState({
-      fileSrc: webFileUrl[0],
-      fileType: fileUrl.split('.').pop(),
+      fileSrc: webFileUrl && webFileUrl[0] ? webFileUrl[0] : remarks,
+      fileType: fileUrl ? fileUrl.split('.').pop() : 'mp4',
       drawerVisible: true,
       detail: item,
       coverSrc: webVideoCover && webVideoCover.length > 0 ? webVideoCover[0] : null,

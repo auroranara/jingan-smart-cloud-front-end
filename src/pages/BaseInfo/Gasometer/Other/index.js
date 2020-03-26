@@ -111,7 +111,7 @@ export default class GasometerOther extends Component {
               unifiedCode,
               gasholderName,
               designCapacity,
-              designCapacityUnit,
+              // designCapacityUnit,
               designKpa,
               chineName,
               storageMedium,

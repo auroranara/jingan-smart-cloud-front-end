@@ -53,11 +53,13 @@ export default class LearningLayout extends PureComponent {
         id,
       },
       success: ({ list }) => {
-        const { webFileUrl, webVideoCover, fileUrl } = list[0];
+        const { webFileUrl, webVideoCover, fileUrl, remarks } = list[0];
         this.setState({
-          fileSrc: webFileUrl[0],
+          // fileSrc: webFileUrl[0],
+          fileSrc: webFileUrl && webFileUrl[0] ? webFileUrl[0] : remarks,
           coverSrc: webVideoCover && webVideoCover.length > 0 ? webVideoCover[0] : null,
-          fileType: fileUrl.split('.').pop(),
+          // fileType: fileUrl.split('.').pop(),
+          fileType: fileUrl ? fileUrl.split('.').pop() : 'mp4',
         });
       },
     });
@@ -92,7 +94,7 @@ export default class LearningLayout extends PureComponent {
     return (
       <PageHeaderLayout title="课件学习" breadcrumbList={breadcrumbList}>
         <Row gutter={16} className={style.learningCourseWare}>
-          <Col>
+          <Col span={24}>
             <Card>
               <div className={style.detailTitle}>
                 <span>{name}</span>
