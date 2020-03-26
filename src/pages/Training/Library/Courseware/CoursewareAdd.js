@@ -59,13 +59,9 @@ export default class CoursewareAdd extends PureComponent {
         type: 'resourceManagement/fetchCourseWareDetail',
         payload: {
           id,
+          companyId,
         },
         callback: ({ name, webVideoCover, videoCover, webFileUrl, fileUrl, remarks }) => {
-          setFieldsValue({
-            videoCover: videoCover ? { webUrl: webVideoCover[0], dbUrl: videoCover } : undefined,
-            fileUrl: { webUrl: webFileUrl[0], dbUrl: fileUrl },
-            remarks,
-          });
           this.setState({
             fileList: [
               {
@@ -76,6 +72,12 @@ export default class CoursewareAdd extends PureComponent {
               },
             ],
             videoType: remarks ? NET : LOCAL,
+          }, () => {
+            setFieldsValue({
+              videoCover: videoCover ? { webUrl: webVideoCover[0], dbUrl: videoCover } : undefined,
+              fileUrl: { webUrl: webFileUrl[0], dbUrl: fileUrl },
+              remarks,
+            });
           });
         },
       });
