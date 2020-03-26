@@ -270,12 +270,6 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
             companyId: unitId,
             overFlag: 0,
             dangerSource: 1,
-            startTime: moment()
-              .startOf('day')
-              .format(FORMAT),
-            endTime: moment()
-              .endOf('day')
-              .format(FORMAT),
             statusTypes: '-1,1',
             ...payload,
           },
@@ -527,13 +521,17 @@ export default class MajorHazardDistributionList extends Component {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data).data;
-        const { dangerSourceId, dangerSourceWarnStatus } = data;
+        const { dangerSourceId, dangerSourceWarnStatus, statusType } = data;
         console.log(data);
         // if (['405', '406'].includes(`${data.monitorEquipmentType}`)) {
         //   if (['1', '2'].includes(`${data.warnLevel}`)) {
         //     this.showNotification(data);
         //   }
         // }
+        if ([-1, 1].includes(+statusType)) {
+          const { getAlarmMessageList } = this.props;
+          getAlarmMessageList();
+        }
         if (dangerSourceId) {
           const { save, list } = this.props;
           const obj = list.find(item => item.id === dangerSourceId);
