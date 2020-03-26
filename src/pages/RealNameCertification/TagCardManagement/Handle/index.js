@@ -64,7 +64,10 @@ export default class Edit extends PureComponent {
         } = detail;
         const view = list.find(item => item);
         setFieldsValue(handleDetails(view));
-        this.setState({ personId: view.personId === null ? undefined : view.personId });
+        this.setState({
+          personId: view.personId === null ? undefined : view.personId,
+          carId: view.carId === null ? undefined : view.carId,
+        });
       },
     });
   };
@@ -81,7 +84,7 @@ export default class Edit extends PureComponent {
       dispatch,
     } = this.props;
     e.preventDefault();
-    const { personId } = this.state;
+    const { personId, carId } = this.state;
     validateFields((errors, values) => {
       if (errors) return;
       const { companyId, icNumber, snNumber, labelType, note } = values;
@@ -90,7 +93,8 @@ export default class Edit extends PureComponent {
         icNumber,
         snNumber,
         labelType,
-        personId: id ? personId : undefined,
+        personId: personId ? personId : undefined,
+        carId: carId ? carId : undefined,
         note,
       };
       const tag = id ? '编辑' : '新增';
