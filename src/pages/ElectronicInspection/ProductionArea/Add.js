@@ -62,9 +62,12 @@ export default class ProductionAreaAdd extends Component {
             });
             this.fetchDepartmentList({
               payload: { companyId },
-              callback: () => {
+              callback: (list) => {
                 setTimeout(() => {
-                  this.form && this.form.setFieldsValue({ department: department || undefined })
+                  const temp = list && list.length ? this.expandTree(list) : [];
+                  if (temp.findIndex(item => item.id === department) > -1) {
+                    this.form && this.form.setFieldsValue({ department: department || undefined });
+                  } else message.warning('请重新选择单位')
                 }, 0);
               },
             });
@@ -79,6 +82,21 @@ export default class ProductionAreaAdd extends Component {
     } else {
       this.resetDepartment();
     }
+  }
+
+  expandTree = (list) => {
+    if (!list || list.length === 0) return []
+    let arr = []
+    let temp = []
+    temp = [...list]
+    while (temp.length) {
+      const { children, ...res } = temp.shift()
+      arr.push(res)
+      if (children && children.length) {
+        temp = [...temp, ...children]
+      }
+    }
+    return arr
   }
 
   // 获取部门列表
@@ -179,8 +197,9 @@ export default class ProductionAreaAdd extends Component {
 
   // 选择负责人
   handleSelectPerson = (keys, rows) => {
+    if (keys[0] === this.state.selectedKeys[0]) return;
     // this.form && this.form.setFieldsValue({ principal: keys })
-    this.setState({ principalName: rows.map(item => item.name).join('、'), selectedKeys: keys })
+    this.setState({ principalName: rows.map(item => item.name).join('、'), selectedKeys: keys });
   }
 
   setFormReference = form => {
