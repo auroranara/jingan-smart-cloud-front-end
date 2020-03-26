@@ -55,13 +55,19 @@ export default class ProductionAreaAdd extends Component {
             this.form && this.form.setFieldsValue({
               company: companyId ? { key: companyId, label: companyName } : undefined,
               areaName: areaName || undefined,
-              department: department || undefined,
               areaNumber,
               areaLevel,
               remark,
               principal: principal ? [principal] : [],
             });
-            this.fetchDepartmentList({ payload: { companyId } });
+            this.fetchDepartmentList({
+              payload: { companyId },
+              callback: () => {
+                setTimeout(() => {
+                  this.form && this.form.setFieldsValue({ department: department || undefined })
+                }, 0);
+              },
+            });
             this.setState({ principalName: principalContent ? principalContent.userName : '', detail, selectedKeys: [principal] })
           } else {
             message.error('获取详情失败，请稍后重试或联系管理人员！');
