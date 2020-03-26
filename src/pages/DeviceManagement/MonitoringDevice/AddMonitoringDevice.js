@@ -82,13 +82,12 @@ export default class AddMonitoringDevice extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
+      match: { params: { id } },
       form: { setFieldsValue },
+      user: { isCompany, currentUser = {} },
     } = this.props;
     // 获取监测设备类型
     this.fetchMonitoringDeviceTypes();
@@ -121,11 +120,11 @@ export default class AddMonitoringDevice extends Component {
               fileList:
                 fileList && fileList.length
                   ? fileList.map(item => ({
-                      ...item,
-                      uid: item.id,
-                      url: item.webUrl,
-                      name: item.fileName,
-                    }))
+                    ...item,
+                    uid: item.id,
+                    url: item.webUrl,
+                    name: item.fileName,
+                  }))
                   : [],
             },
             () => {
@@ -148,8 +147,6 @@ export default class AddMonitoringDevice extends Component {
           companyId && this.fetchMarkers(companyId);
         },
       });
-    } else {
-      setFieldsValue({ isShow: '1' });
     }
   }
 
@@ -222,7 +219,7 @@ export default class AddMonitoringDevice extends Component {
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     this.fetchMarkers(companyId);
     setTimeout(() => {
-      setFieldsValue({ locationType: 0 });
+      setFieldsValue({ locationType: 0, isShow: '1' });
     }, 0);
   };
 
@@ -316,9 +313,10 @@ export default class AddMonitoringDevice extends Component {
    */
   handleRefreshBuilding = (weatherFetch = false) => {
     const {
-      form: { setFieldsValue, getFieldValue },
+      form: { setFieldsValue },
     } = this.props;
-    const companyId = getFieldValue('companyId');
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany ? selectedCompany.id : undefined;
     // 清空选择建筑物和楼层
     setFieldsValue({ buildingId: undefined, floorId: undefined });
     // 获取建筑物下拉 清空楼层下拉
@@ -744,7 +742,7 @@ export default class AddMonitoringDevice extends Component {
     );
   };
 
-  render() {
+  render () {
     const {
       companyLoading,
       sensor: { companyModal },

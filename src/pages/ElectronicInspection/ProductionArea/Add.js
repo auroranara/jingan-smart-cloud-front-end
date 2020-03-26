@@ -15,11 +15,11 @@ const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
 const LIST_PATH = '/electronic-inspection/production-area/list';
 
-@connect(({ safetyProductionRegulation, user, account, reevaluateWarning }) => ({
+@connect(({ safetyProductionRegulation, user, account, electronicInspection }) => ({
   safetyProductionRegulation,
   user,
   account,
-  reevaluateWarning,
+  electronicInspection,
 }))
 export default class ProductionAreaAdd extends Component {
 
@@ -98,11 +98,11 @@ export default class ProductionAreaAdd extends Component {
     const { dispatch, user: { isCompany, currentUser } } = this.props;
     const company = this.form && this.form.getFieldValue('company');
     dispatch({
-      type: 'reevaluateWarning/getReevaluatorList',
+      type: 'electronicInspection/fetchPersonList',
       payload: {
         pageNum: 1,
         pageSize: 10,
-        unitId: isCompany ? currentUser.companyId : company ? company.key : undefined,
+        companyId: isCompany ? currentUser.companyId : company ? company.key : undefined,
         ...payload,
       },
     });
@@ -174,7 +174,7 @@ export default class ProductionAreaAdd extends Component {
   // 选择负责人
   handleSelectPerson = (keys, rows) => {
     // this.form && this.form.setFieldsValue({ principal: keys })
-    this.setState({ principalName: rows.map(item => item.value).join('、'), selectedKeys: keys })
+    this.setState({ principalName: rows.map(item => item.name).join('、'), selectedKeys: keys })
   }
 
   setFormReference = form => {
@@ -192,7 +192,7 @@ export default class ProductionAreaAdd extends Component {
       submitting = false,
       user: { isCompany },
       account: { departments },
-      reevaluateWarning: { reviewer },
+      electronicInspection: { person },
     } = this.props;
     const { principalName, detail, selectedKeys } = this.state;
     const href = location.href;
@@ -328,7 +328,7 @@ export default class ProductionAreaAdd extends Component {
         render: () => isNotDetail ? (
           <PersonSelect
             style={{ width: '60%' }}
-            data={reviewer}
+            data={person}
             onOk={this.handleSelectPerson}
             fetch={this.fetchReevaluatorList}
             label={principalName}
@@ -382,7 +382,7 @@ export default class ProductionAreaAdd extends Component {
             {isNotDetail ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
             ) : (
-                <AuthButton code={codes.operatingProcedures.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
+                <AuthButton code={codes.electronicInspection.productionArea.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
               )}
           </div>
         </Spin>
