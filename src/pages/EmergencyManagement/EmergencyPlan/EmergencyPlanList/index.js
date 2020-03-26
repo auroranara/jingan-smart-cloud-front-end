@@ -407,7 +407,6 @@ export default class EmergencyPlanList extends Component {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
-        width: 300,
       },
     ] : []).concat([
       {
@@ -422,21 +421,18 @@ export default class EmergencyPlanList extends Component {
           </div>
         ),
         align: 'center',
-        width: 250,
       },
       {
         title: '有效期至',
         dataIndex: 'endDate',
         render: endDate => endDate ? moment(endDate).format('YYYY-MM-DD') : '-',
         align: 'center',
-        width: 200,
       },
       {
         title: '有效期状态',
         dataIndex: 'paststatus',
         key: 'paststatus',
         align: 'center',
-        width: 120,
         render: (status, { endDate }) => {
           return (
             <span style={{ color: getColorVal(status) }}>
@@ -459,12 +455,10 @@ export default class EmergencyPlanList extends Component {
           );
         },
         align: 'center',
-        width: 200,
       },
       {
         title: '备案',
         dataIndex: 'record',
-        width: 200,
         render: (_, { isRecord, recordCode, recordDate, recordCertificateList }) => isRecord > 0 ? (
           <div className={styles.multi}>
             <div>已备案</div>
@@ -484,7 +478,6 @@ export default class EmergencyPlanList extends Component {
       {
         title: '预案附件',
         dataIndex: 'emergencyFilesList',
-        width: 250,
         render: (emergencyFilesList) => (
           <Fragment>
             {emergencyFilesList && emergencyFilesList.map(({ webUrl, fileName }, index) => (
@@ -499,7 +492,6 @@ export default class EmergencyPlanList extends Component {
       {
         title: '状态',
         dataIndex: 'status',
-        width: 200,
         render: (status) => {
           status = STATUSES.filter(({ key }) => key === status)[0];
           return status && status.value;
@@ -511,6 +503,7 @@ export default class EmergencyPlanList extends Component {
         dataIndex: 'operation',
         fixed: list && list.length > 0 ? 'right' : false,
         align: 'center',
+        width: 195,
         render: (_, { id, status }) => (
           <div style={{ textAlign: 'left' }}>
             <AuthA code={DETAIL_CODE} onClick={this.handleViewClick} data-id={id}>查看</AuthA>
@@ -538,6 +531,7 @@ export default class EmergencyPlanList extends Component {
         title: '历史版本',
         dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
+        width: 88,
         render: (versionCount, item) => +versionCount > 0 ? (
           <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount}</span>
         ) : '—',
@@ -554,7 +548,7 @@ export default class EmergencyPlanList extends Component {
               dataSource={list}
               columns={COLUMNS}
               rowKey="id"
-              scroll={{ x: 'max-content' }}
+              scroll={{ x: true }}
               pagination={{
                 current: pageNum,
                 pageSize,

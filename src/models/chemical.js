@@ -14,6 +14,9 @@ import {
   fireDeviceList,
   getWZList,
   getFireDevice,
+  getOnDuty,
+  countByParkId,
+  getInOutRecord,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
@@ -62,6 +65,9 @@ export default {
     fireDevice: [],
     fireDeviceDetail: {},
     warningNewList: [],
+    onDuty: {},
+    truckCount: [],
+    inOutRecordList: [],
   },
 
   effects: {
@@ -414,6 +420,51 @@ export default {
           type: 'save',
           payload: {
             warningNewList,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 获取人员在岗在位
+    *fetchOnDuty({ payload, callback }, { call, put }) {
+      const response = yield call(getOnDuty, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const onDuty = data;
+        yield put({
+          type: 'save',
+          payload: {
+            onDuty,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 获取人员在岗在位
+    *fetchCountByParkId({ payload, callback }, { call, put }) {
+      const response = yield call(countByParkId, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const truckCount = data.data;
+        yield put({
+          type: 'save',
+          payload: {
+            truckCount,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 获取人员在岗在位
+    *fetchInOutRecord({ payload, callback }, { call, put }) {
+      const response = yield call(getInOutRecord, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const inOutRecordList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            inOutRecordList,
           },
         });
       }

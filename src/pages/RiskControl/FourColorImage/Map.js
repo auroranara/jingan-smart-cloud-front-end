@@ -30,14 +30,10 @@ export default class Map extends React.Component {
   componentDidMount() {
     const { onRef, mapInfo } = this.props;
     onRef && onRef(this);
-    console.log('map', mapInfo);
-
     mapInfo && this.initMap(mapInfo);
   }
 
   getPointList = (pointList, getBuilding) => {
-    console.log('pointList', pointList);
-
     const newList = pointList.length > 0 ? pointList : [];
     newList.map(item => {
       const { zoneLevel, coordinateList, groupId, modelIds } = item;
@@ -118,7 +114,6 @@ export default class Map extends React.Component {
         points.push(coord);
         // 画线
         this.drawLines(groupId, points);
-        // 获取当前所选建筑物ID
       }
     });
 
@@ -226,9 +221,9 @@ export default class Map extends React.Component {
       pointList.length > 0
         ? pointList.map(item => {
             const { zoneLevel } = item;
-            return model.setColor(COLORS[zoneLevel]);
+            return model.setColor(zoneLevel ? COLORS[zoneLevel] : COLORS[4]);
           })
-        : model.setColor(COLORS[levelId]);
+        : model.setColor(levelId ? COLORS[levelId] : COLORS[4]);
       return null;
     }
   };
@@ -322,10 +317,10 @@ export default class Map extends React.Component {
   }
 
   render() {
-    const { isDrawing, levelId, cardStyle } = this.props;
+    const { isDrawing, levelId, style } = this.props;
     if (!isDrawing && points.length > 0) {
       const groupId = points.map(item => item.groupID)[0];
-      const currColor = COLORS[levelId];
+      const currColor = levelId ? COLORS[levelId] : COLORS[4];
       // doDraw
       this.drawPolygon(groupId, points, currColor);
       // 建筑物上色
@@ -333,6 +328,6 @@ export default class Map extends React.Component {
       map.clearLineMark();
       points = [];
     }
-    return <div style={{ height: cardStyle ? '45vh' : '70vh' }} id="fengMap" />;
+    return <div style={style || { height: '70vh' }} id="fengMap" />;
   }
 }

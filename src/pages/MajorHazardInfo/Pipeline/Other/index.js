@@ -26,6 +26,7 @@ export default class PipelineOther extends Component {
     number,
     transport,
     length,
+    designVolume,
     texture,
     setUp,
     pressure,
@@ -43,6 +44,7 @@ export default class PipelineOther extends Component {
     number: number || undefined,
     transport: transport || undefined,
     length: length || undefined,
+    designVolume: designVolume || undefined,
     texture: texture || undefined,
     setUp: setUp ? `${setUp}` : undefined,
     pressure: pressure ? `${pressure}` : undefined,
@@ -100,6 +102,12 @@ export default class PipelineOther extends Component {
     {
       id: 'length',
       label: '总长度（m）',
+      required: true,
+      component: 'Input',
+    },
+    {
+      id: 'designVolume',
+      label: '设计容积（m³）',
       required: true,
       component: 'Input',
     },

@@ -3,9 +3,9 @@ import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 import classnames from 'classnames';
 import moment from 'moment';
 import { connect } from 'dva';
-import { isPointInPolygon } from '@/utils/map';
+// import { isPointInPolygon } from '@/utils/map';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
-// 引入样式文件
+import TruckModal from '../components/TruckModal';
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';
@@ -24,6 +24,8 @@ import specialEquipment from '../imgs/special-equipment.png';
 import specialEquipmentActive from '../imgs/special-equipment-active.png';
 import specialEquipmentGray from '../imgs/special-equipment-gray.png';
 import iconTips from '../imgs/icon-tips.png';
+import iconCar from '../imgs/icon-car.png';
+import iconFace from '../imgs/icon-face.png';
 
 const fengMap = fengmap; // eslint-disable-line
 const TiltAngle = 50;
@@ -68,6 +70,24 @@ function getColorVal(status) {
       return;
   }
 }
+const FourColors = [
+  {
+    color: '#FE0003',
+    label: '重大风险',
+  },
+  {
+    color: '#EC6A34',
+    label: '较大风险',
+  },
+  {
+    color: '#ECF241',
+    label: '一般风险',
+  },
+  {
+    color: '#1423C4',
+    label: '低风险',
+  },
+];
 
 @connect(
   ({
@@ -78,6 +98,7 @@ function getColorVal(status) {
     specialEquipment,
     emergencyManagement,
     changeWarning,
+    licensePlateRecognitionSystem,
   }) => ({
     map,
     chemical,
@@ -86,6 +107,7 @@ function getColorVal(status) {
     specialEquipment,
     emergencyManagement,
     changeWarning,
+    licensePlateRecognitionSystem,
   })
 )
 export default class Map extends PureComponent {
@@ -95,6 +117,7 @@ export default class Map extends PureComponent {
     videoVisible: false,
     videoList: [],
     keyId: undefined,
+    truckModalVisible: false,
   };
 
   ids = [];
@@ -108,10 +131,12 @@ export default class Map extends PureComponent {
   /* eslint-disable*/
   componentDidMount() {
     // this.initMap();
+    const { companyId } = this.props;
     this.fetchMap();
     const { onRef } = this.props;
     onRef && onRef(this);
     this.fetchDict({ type: 'specialEquipment' });
+    this.fetchOnDuty({ companyId });
   }
 
   fetchMap = () => {
@@ -143,6 +168,11 @@ export default class Map extends PureComponent {
     dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
   };
 
+  fetchOnDuty = (payload, callback) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'chemical/fetchOnDuty', payload, callback });
+  };
+
   // 获取区域列表
   fetchMapAreaList = () => {
     const { dispatch, companyId } = this.props;
@@ -155,6 +185,8 @@ export default class Map extends PureComponent {
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
           // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
+          console.log('polygonMarker', polygonMarker);
+
           this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
           return null;
         });
@@ -257,14 +289,15 @@ export default class Map extends PureComponent {
   };
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId, isInit, defaultMapScaleLevel, theme }, fun) => {
+  initMap = ({ appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList, defaultViewMode }, fun) => {
     if (!appName || !key || !mapId) return;
+    const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
     const mapOptions = {
       //必要，地图容器
       container: document.getElementById('fengMap'),
       //地图数据位置
       mapServerURL: './data/' + mapId,
-      // defaultViewMode: fengMap.FMViewMode.MODE_2D,
+      defaultViewMode: defaultViewMode || fengMap.FMViewMode.MODE_2D,
       //设置主题
       defaultThemeName: theme || '2001',
       modelSelectedEffect: false,
@@ -293,8 +326,8 @@ export default class Map extends PureComponent {
 
     // 地图加载完成事件
     map.on('loadComplete', () => {
-      map.tiltAngle = TiltAngle;
-      map.rotateAngle = RotateAngle;
+      map.tiltAngle = typeof tiltAngle === 'number' ? tiltAngle : TiltAngle;
+      map.rotateAngle = typeof rotateAngle === 'number' ? rotateAngle : RotateAngle;
       // map.mapScaleLevel = MapScaleLevel;
       map.mapScaleLevel = defaultMapScaleLevel || MapScaleLevel;
       // console.log('map.getFMGroup()', map.groupIDs);
@@ -839,94 +872,217 @@ export default class Map extends PureComponent {
     this.setState({ videoVisible: true, keyId });
   };
 
+  handleShowTruckModal = () => {
+    this.fetchCountByParkId();
+    this.fetchPresenceRecordList();
+    // this.fetchAbnormalRecordList();
+    this.setState({ truckModalVisible: true });
+  };
+
+  handleCloseTruckModal = () => {
+    this.setState({ truckModalVisible: false });
+  };
+
+  // 车辆统计
+  fetchCountByParkId = () => {
+    const { companyId, dispatch } = this.props;
+    dispatch({ type: 'chemical/fetchCountByParkId', payload: { companyId } });
+  };
+
+  // 出入记录
+  fetchPresenceRecordList = () => {
+    const { companyId, dispatch } = this.props;
+    dispatch({
+      type: 'chemical/fetchInOutRecord',
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 50,
+        startTime: moment().format('YYYY-MM-DD 00:00:00'),
+        endTime: moment().format('YYYY-MM-DD 23:59:59'),
+        today: 1,
+      },
+    });
+  };
+
+  // 异常抬杆记录
+  fetchAbnormalRecordList = () => {
+    const { companyId, dispatch } = this.props;
+    dispatch({
+      type: 'licensePlateRecognitionSystem/getAbnormalRecordList',
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 50,
+        startTime: moment().format('YYYY-MM-DD 00:00:00'),
+        endTime: moment().format('YYYY-MM-DD 23:59:59'),
+        today: 1,
+      },
+    });
+  };
+
+  handleIdentification = () => {
+    window.open(
+      `${
+        window.publicPath
+      }#/real-name-certification/identification-record/list?startTime=${moment().format(
+        'YYYY-MM-DD 00:00:00'
+      )}&endTime=${moment().format('YYYY-MM-DD 23:59:59')}`,
+      `_blank`
+    );
+  };
+
   render() {
-    const { gdMapVisible, visibles, videoVisible, keyId } = this.state;
+    const { gdMapVisible, visibles, videoVisible, keyId, truckModalVisible } = this.state;
     const {
-      chemical: { videoList },
+      chemical: {
+        videoList,
+        onDuty: { presentCar = 0, recSuccess = 0 },
+        truckCount,
+        inOutRecordList,
+      },
       user: {
         currentUser: {
           companyBasicInfo: { mapIp },
         },
       },
+      licensePlateRecognitionSystem: { abnormalRecordList },
     } = this.props;
 
     return (
-      <div className={styles.container} id="fengMap">
-        {gdMapVisible && (
-          <GDMap
-            version={'1.4.10'}
-            amapkey="665bd904a802559d49a33335f1e4aa0d"
-            plugins={[
-              { name: 'Scale', options: { locate: false } },
-              { name: 'ToolBar', options: { locate: false } },
-            ]}
-            status={{
-              keyboardEnable: false,
-            }}
-            useAMapUI
-            mapStyle="amap://styles/b9d9da96da6ba2487d60019876b26fc5"
-            center={[120.3660553694, 31.5441255765]}
-            zoom={18}
-            pitch={60}
-            expandZoomRange
-            zooms={[3, 20]}
-            events={{
-              created: mapInstance => {
-                this.mapInstance = mapInstance;
-                // mapInstance.setCity(region);
-              },
-            }}
-          >
-            {this.renderMarkers()}
-          </GDMap>
-        )}
-        {!gdMapVisible && (
-          <div className={styles.controlContainer}>
-            {controls.map((item, index) => {
-              const { label, icon, activeIcon } = item;
-              const itemStyles = classnames(styles.controlItem, {
-                [styles.active]: visibles[index],
-              });
+      <Fragment>
+        <div className={styles.container} id="fengMap">
+          {gdMapVisible && (
+            <GDMap
+              version={'1.4.10'}
+              amapkey="665bd904a802559d49a33335f1e4aa0d"
+              plugins={[
+                { name: 'Scale', options: { locate: false } },
+                { name: 'ToolBar', options: { locate: false } },
+              ]}
+              status={{
+                keyboardEnable: false,
+              }}
+              useAMapUI
+              mapStyle="amap://styles/b9d9da96da6ba2487d60019876b26fc5"
+              center={[120.3660553694, 31.5441255765]}
+              zoom={18}
+              pitch={60}
+              expandZoomRange
+              zooms={[3, 20]}
+              events={{
+                created: mapInstance => {
+                  this.mapInstance = mapInstance;
+                  // mapInstance.setCity(region);
+                },
+              }}
+            >
+              {this.renderMarkers()}
+            </GDMap>
+          )}
+          {!gdMapVisible && (
+            <div className={styles.controlContainer}>
+              {controls.map((item, index) => {
+                const { label, icon, activeIcon } = item;
+                const itemStyles = classnames(styles.controlItem, {
+                  [styles.active]: visibles[index],
+                });
+                return (
+                  <div
+                    className={itemStyles}
+                    key={index}
+                    onClick={() => this.handleClickControl(index)}
+                  >
+                    <span
+                      className={styles.icon}
+                      style={{
+                        background: `url(${
+                          visibles[index] ? activeIcon : icon
+                        }) center center / auto 100% no-repeat`,
+                      }}
+                    />
+                    {label}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <div className={styles.fourColorsContainer}>
+            {FourColors.map((item, index) => {
+              const { label, color } = item;
               return (
-                <div
-                  className={itemStyles}
-                  key={index}
-                  onClick={() => this.handleClickControl(index)}
-                >
-                  <span
-                    className={styles.icon}
-                    style={{
-                      background: `url(${
-                        visibles[index] ? activeIcon : icon
-                      }) center center / auto 100% no-repeat`,
-                    }}
-                  />
+                <div className={styles.fourColorsWrapper} key={index}>
+                  <span className={styles.rect} style={{ backgroundColor: color }} />
                   {label}
                 </div>
               );
             })}
           </div>
-        )}
-        {mapIp && (
-          <div
-            className={styles.positionBtn}
-            style={{
-              background: `url(${position}) center center / auto 80% no-repeat #fff`,
-            }}
-            onClick={this.handlePosition}
-          />
-        )}
-        {videoVisible && (
-          <NewVideoPlay
-            showList={true}
-            videoList={videoList.map(item => ({ ...item, key_id: item.keyId }))}
-            visible={videoVisible}
-            keyId={keyId} // keyId
-            handleVideoClose={() => this.setState({ videoVisible: false })}
-            isTree={false}
-          />
-        )}
-      </div>
+
+          <div className={styles.extraContainer}>
+            <div
+              className={styles.extraWrapper}
+              style={{
+                background: `url(${iconCar}) 7px 6px / 24px auto no-repeat #033069`,
+                cursor: +presentCar ? 'pointer' : 'default',
+              }}
+              onClick={+presentCar ? this.handleShowTruckModal : undefined}
+            >
+              <div>
+                车辆识别
+                <span className={styles.extra}>（当前）</span>
+              </div>
+              <div>
+                在场车辆
+                <span className={styles.value}>{presentCar}</span>
+              </div>
+            </div>
+
+            <div
+              className={styles.extraWrapper}
+              style={{
+                background: `url(${iconFace}) 7px 6px / 24px auto no-repeat #033069`,
+                cursor: +recSuccess ? 'pointer' : 'default',
+              }}
+              onClick={+recSuccess ? this.handleIdentification : undefined}
+            >
+              <div>
+                人脸识别
+                <span className={styles.extra}>（今日）</span>
+              </div>
+              <div>
+                对比成功
+                <span className={styles.value}>{recSuccess}</span>
+              </div>
+            </div>
+          </div>
+
+          {mapIp && (
+            <div
+              className={styles.positionBtn}
+              style={{
+                background: `url(${position}) center center / auto 80% no-repeat #fff`,
+              }}
+              onClick={this.handlePosition}
+            />
+          )}
+          {videoVisible && (
+            <NewVideoPlay
+              showList={true}
+              videoList={videoList.map(item => ({ ...item, key_id: item.keyId }))}
+              visible={videoVisible}
+              keyId={keyId} // keyId
+              handleVideoClose={() => this.setState({ videoVisible: false })}
+              isTree={false}
+            />
+          )}
+        </div>
+        <TruckModal
+          visible={truckModalVisible}
+          onCancel={this.handleCloseTruckModal}
+          data={{ top: inOutRecordList, left: truckCount, right: abnormalRecordList.list }}
+        />
+      </Fragment>
     );
   }
 }

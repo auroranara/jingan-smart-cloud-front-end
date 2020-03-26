@@ -355,7 +355,7 @@ export default class AlarmWorkOrderDetail extends Component {
                 {
                   <div className={styles.realAlarm}>
                     {+executeType === 2 ? (
-                      <span style={{ color: '#b823dd' }}>未知警情</span>
+                      <span style={{ color: '#b823dd' }}>疑似警情</span>
                     ) : (
                       { 1: '误报警情', 2: '真实警情' }[type]
                     )}

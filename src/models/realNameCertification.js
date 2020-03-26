@@ -9,7 +9,20 @@ import {
   deleteAllAuthorization,
   deleteAuthorization,
   fetchIdentificationRecord,
+  fetchChannelDeviceList,
+  addChannelDevice,
+  editChannelDevice,
+  deleteChannelDevice,
+  fetchChannelList,
+  addChannel,
+  editChannel,
+  deleteChannel,
 } from '@/services/realNameCertification';
+
+const defaultData = {
+  list: [],
+  pagination: { pageNum: 1, pageSize: 10, total: 0 },
+};
 
 export default {
   namespace: 'realNameCertification',
@@ -30,23 +43,64 @@ export default {
       list: [],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
+    authSearchInfo: {},
+    // 通道数据
+    channel: {
+      list: [],
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
+    },
+    channelSearchInfo: {},
+    // 通道设备
+    channelDevice: {
+      list: [],
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
+    },
+    deviceSearchInfo: {},
     // 设备数据
     device: {
       list: [
-        {
-          appId: "76C6F1217A3A47DFA10B006C672FD86D",
-          deviceKey: "84E0F421C21F08FA",
-          tag: "",
-          name: "测试",
-          state: 2,
-          onlineState: 1,
-          versionNo: "6.0079",
-          lastActiveTime: "2020-02-27T07:37:02+0000",
-          createTime: "2020-01-19T06:59:28+0000",
-          type: 2,
-          recType: 1,
-          recMode: "人脸识别/人卡合一",
-        },
+        // {
+        //   appId: "76C6F1217A3A47DFA10B006C672FD86D",
+        //   deviceKey: "84E0F421C21F08FA",
+        //   tag: "",
+        //   name: "测试",
+        //   state: 2,
+        //   onlineState: 1,
+        //   versionNo: "6.0079",
+        //   lastActiveTime: "2020-02-27T07:37:02+0000",
+        //   createTime: "2020-01-19T06:59:28+0000",
+        //   type: 2,
+        //   recType: 1,
+        //   recMode: "人脸识别/人卡合一",
+        // },
+        // {
+        //   appId: "76C6F1217A3A47DFA10B006C672FD86D",
+        //   deviceKey: "84E0F422C3BB527A",
+        //   tag: "",
+        //   name: "入口",
+        //   state: 2,
+        //   onlineState: 1,
+        //   versionNo: "6.0079",
+        //   lastActiveTime: "2020-02-27T07:37:02+0000",
+        //   createTime: "2020-01-19T06:59:28+0000",
+        //   type: 2,
+        //   recType: 1,
+        //   recMode: "人脸识别/人卡合一",
+        // },
+        // {
+        //   appId: "76C6F1217A3A47DFA10B006C672FD86D",
+        //   deviceKey: "84E0F422C8B4527A",
+        //   tag: "",
+        //   name: "出口",
+        //   state: 2,
+        //   onlineState: 1,
+        //   versionNo: "6.0079",
+        //   lastActiveTime: "2020-02-27T07:37:02+0000",
+        //   createTime: "2020-01-19T06:59:28+0000",
+        //   type: 2,
+        //   recType: 1,
+        //   recMode: "人脸识别/人卡合一",
+        // },
       ],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
@@ -55,9 +109,12 @@ export default {
       list: [],
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
+    idenSearchInfo: {},
     // 人员类型字典
     personTypeDict: [
-      { key: '1', label: '员工' },
+      { key: '4', label: '操作人员' },
+      { key: '5', label: '管理人员' },
+      { key: '6', label: '安全巡查人员' },
       { key: '2', label: '外协人员' },
       { key: '3', label: '临时人员' },
     ],
@@ -81,6 +138,7 @@ export default {
       { key: '3', label: 'Uface 3' },
       { key: '6', label: 'Uface C' },
       { key: '10', label: 'Uface 2C' },
+      { key: '52', label: 'DV300平板' },
     ],
     storageLocationsDict: [
       {
@@ -126,11 +184,32 @@ export default {
       { value: 'faceAndCardPermission', label: '人卡合一权限' },
       { value: 'idCardFacePermission', label: '认证对比权限' },
     ],
-    // 照片状态
+    // 照片状态字典
     picStateDict: [
       { value: 1, label: '授权成功' },
       { value: 2, label: '销权中' },
       { value: 3, label: '授权中（可能原因：设备离线）' },
+    ],
+
+    // 标签卡列表数据
+    tagCardData: {
+      list: [],
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
+    },
+    // 通道类型字典
+    channelTypeDict: [
+      { key: '1', value: '双向' },
+      { key: '2', value: '单向' },
+    ],
+    // 在线状态字典
+    onlineStateDict: [
+      { key: '1', value: '在线' },
+      { key: '2', value: '不在线', color: 'red' },
+    ],
+    // 方向字典
+    directionDict: [
+      { key: '1', value: '出口' },
+      { key: '2', value: '入口' },
     ],
   },
   effects: {
@@ -141,7 +220,7 @@ export default {
         yield put({
           type: 'saveCompany',
           payload: res.data,
-        })
+        });
       }
     },
     // 新增人员
@@ -161,7 +240,7 @@ export default {
         yield put({
           type: 'savePerson',
           payload: res.data,
-        })
+        });
       }
     },
     // 删除人员
@@ -173,8 +252,8 @@ export default {
     *fetchDetail ({ payload, callback }, { call }) {
       const res = yield call(fetchPersonList, payload);
       if (res && res.code === 200 && res.data) {
-        callback && callback(res.data.list[0])
-      } else if (callback) callback({})
+        callback && callback(res.data.list[0]);
+      } else if (callback) callback({});
     },
     // 批量授权人员
     *authorizationPerson ({ payload, callback }, { call }) {
@@ -190,7 +269,7 @@ export default {
         yield put({
           type: 'saveAuthorization',
           payload: res.data.data || { content: [], index: 1, length: 10, total: 0 },
-        })
+        });
       }
     },
     // 全部销权
@@ -210,8 +289,66 @@ export default {
         yield put({
           type: 'saveIdentificationRecord',
           payload: res.data,
-        })
+        });
       }
+    },
+    // 获取通道设备列表
+    *fetchChannelDeviceList ({ payload }, { call, put }) {
+      const res = yield call(fetchChannelDeviceList, payload);
+      yield put({
+        type: 'saveChannelDevice',
+        payload: res && res.code === 200 && res.data ? res.data : { list: [], ...defaultData.pagination },
+      })
+    },
+    // 新增通道设备
+    *addChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(addChannelDevice, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 编辑通道设备
+    *editChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(editChannelDevice, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 删除通道设备
+    *deleteChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(deleteChannelDevice, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 获取设备详情
+    *fetchDeviceDetail ({ payload, callback }, { call }) {
+      const res = yield call(fetchChannelDeviceList, { ...payload, pageNum: 1, pageSize: 10 });
+      const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
+      callback && callback(res && res.code === 200, detail);
+    },
+    // 获取通道列表
+    *fetchChannelList ({ payload }, { call, put }) {
+      const res = yield call(fetchChannelList, payload);
+      yield put({
+        type: 'saveChannel',
+        payload: res && res.code === 200 && res.data ? res.data : { list: [], ...defaultData.pagination },
+      })
+    },
+    // 获取通道详情
+    *fetchChannelDetail ({ payload, callback }, { call }) {
+      const res = yield call(fetchChannelList, { ...payload, pageNum: 1, pageSize: 10 });
+      const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
+      callback && callback(res && res.code === 200, detail);
+    },
+    // 新增通道
+    *addChannel ({ payload, callback }, { call }) {
+      const res = yield call(addChannel, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 编辑通道
+    *editChannel ({ payload, callback }, { call }) {
+      const res = yield call(editChannel, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 删除通道
+    *deleteChannel ({ payload, callback }, { call }) {
+      const res = yield call(deleteChannel, payload);
+      callback && callback(res && res.code === 200, res.msg);
     },
   },
   reducers: {
@@ -219,7 +356,7 @@ export default {
       return {
         ...state,
         ...action.payload,
-      }
+      };
     },
     saveCompany (state, action) {
       const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
@@ -230,37 +367,81 @@ export default {
           pagination: { pageNum, pageSize, total },
           isLast: pageNum * pageSize >= total,
         },
-      }
+      };
     },
-    savePerson (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    savePerson (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         person: {
           list,
           pagination: { pageNum, pageSize, total },
         },
-      }
+      };
     },
-    saveAuthorization (state, action) {
-      const { content: list = [], index: pageNum = 1, length: pageSize = 10, total = 0 } = action.payload;
+    saveAuthorization (state, { payload = {} }) {
+      const { content: list = [], index: pageNum = 1, length: pageSize = 10, total = 0 } = payload;
       return {
         ...state,
         authorization: {
           list,
           pagination: { pageNum, pageSize, total },
         },
-      }
+      };
     },
-    saveIdentificationRecord (state, action) {
-      const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
+    saveIdentificationRecord (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
         identification: {
           list,
           pagination: { pageNum, pageSize, total },
         },
+      };
+    },
+    saveChannelDevice (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
+      return {
+        ...state,
+        channelDevice: {
+          list: list.map(item => ({ ...item, deviceKey: item.deviceCode })),
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    },
+    saveDeviceSearchInfo (state, action) {
+      return {
+        ...state,
+        deviceSearchInfo: action.payload || {},
+      }
+    },
+    saveChannelSearchInfo (state, action) {
+      return {
+        ...state,
+        channelSearchInfo: action.payload || {},
+      }
+    },
+    saveChannel (state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
+      return {
+        ...state,
+        channel: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    },
+    saveAuthSearchInfo (state, action) {
+      return {
+        ...state,
+        authSearchInfo: action.payload || {},
+      }
+    },
+    saveIdenSearchInfo (state, action) {
+      return {
+        ...state,
+        idenSearchInfo: action.payload || {},
       }
     },
   },
-}
+};

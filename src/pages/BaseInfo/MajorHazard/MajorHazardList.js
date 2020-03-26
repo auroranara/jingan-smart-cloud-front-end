@@ -21,8 +21,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '重大危险源基本信息',
-    name: '重大危险源基本信息',
+    title: '基本信息',
+    name: '基本信息',
   },
   {
     title,
@@ -33,7 +33,7 @@ const breadcrumbList = [
 // 权限
 const {
   majorHazardInfo: {
-    majorHazard: { add: addAuth, edit: editAuth, view:viewAuth,delete: deleteAuth },
+    majorHazard: { add: addAuth, edit: editAuth, view: viewAuth, delete: deleteAuth },
   },
 } = codes;
 
@@ -290,11 +290,11 @@ export default class MajorHazardList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        width: 120,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-             {viewCode ? (
+            {viewCode ? (
               <Link to={`/major-hazard-info/major-hazard/detail/${row.id}`}>查看</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>

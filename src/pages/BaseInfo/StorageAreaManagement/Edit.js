@@ -944,8 +944,8 @@ export default class Edit extends PureComponent {
         href: '/',
       },
       {
-        title: '重大危险源基本信息',
-        name: '重大危险源基本信息',
+        title: '基本信息',
+        name: '基本信息',
       },
       {
         title: '储罐区管理',

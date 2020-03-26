@@ -236,7 +236,7 @@ export default class TableList extends PureComponent {
         key: 'id',
         fixed: 'right',
         align: 'center',
-        width: 200,
+        width: 120,
         render: (id, row) => {
           return (
             <Fragment>
@@ -275,6 +275,7 @@ export default class TableList extends PureComponent {
           <div className={styles1.container}>
             <Table
               rowKey="id"
+              tableLayout="auto"
               loading={tableLoading}
               columns={columns}
               dataSource={list}

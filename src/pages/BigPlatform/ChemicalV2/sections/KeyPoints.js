@@ -3,16 +3,17 @@ import { Row, Col } from 'antd';
 import { NoData } from '../components/Components';
 import Section from '@/pages/BigPlatform/Safety/Company3/components/Section';
 import { TabTitle } from '../components/Components';
+import { MonitorEquipmentIcons } from '../utils';
 
 import styles from './KeyPoints.less';
-import iconGas from '../imgs/icon-gas.png';
+// import iconGas from '../imgs/icon-gas.png';
 import iconHigh from '../imgs/icon-high.png';
-import iconPoison from '../imgs/icon-poison.png';
-import iconProduce from '../imgs/icon-produce.png';
-import iconStorage from '../imgs/icon-storage.png';
-import iconStorageArea from '../imgs/icon-storageArea.png';
-import iconStoreArea from '../imgs/icon-storeArea.png';
-import iconStorehouse from '../imgs/icon-storehouse.png';
+// import iconPoison from '../imgs/icon-poison.png';
+// import iconProduce from '../imgs/icon-produce.png';
+// import iconStorage from '../imgs/icon-storage.png';
+// import iconStorageArea from '../imgs/icon-storageArea.png';
+// import iconStoreArea from '../imgs/icon-storeArea.png';
+// import iconStorehouse from '../imgs/icon-storehouse.png';
 
 import iconChemical from '../imgs/icon-chemical.png';
 import iconDangerSource from '../imgs/icon-dangerSource.png';
@@ -100,7 +101,7 @@ export default class KeyPoints extends PureComponent {
               <Row>
                 {dataList.map((item, index) => {
                   const { icon, label, value, total, type } = item;
-                  return (
+                  return active === 2 ? (
                     <Col span={12} key={index}>
                       <div
                         className={styles.item}
@@ -109,11 +110,7 @@ export default class KeyPoints extends PureComponent {
                           // cursor: type || type === 0 ? 'pointer' : 'default',
                           cursor: 'pointer',
                         }}
-                        onClick={() => {
-                          active === 0 && this.handleClickMonitor(type);
-                          active === 1 && handleShowMonitorList(item);
-                          active === 2 && this.handleClickKey(index, value);
-                        }}
+                        onClick={() => this.handleClickKey(index, value)}
                       >
                         <div className={styles.countLabel}>
                           <div>{label}</div>
@@ -130,6 +127,40 @@ export default class KeyPoints extends PureComponent {
                           </div>
                         </div>
                       </div>
+                    </Col>
+                  ) : (
+                    <Col span={24} key={index}>
+                      <Row
+                        className={styles.wrapper}
+                        onClick={() => {
+                          active === 0 && this.handleClickMonitor(type);
+                          active === 1 && handleShowMonitorList(item);
+                        }}
+                      >
+                        <Col span={3} offset={1}>
+                          <span
+                            className={styles.icon}
+                            style={{
+                              background: `url(${
+                                active === 0 ? icon : MonitorEquipmentIcons[type]
+                              }) center center / 3em 3em no-repeat`,
+                            }}
+                          />
+                        </Col>
+                        <Col span={9}>{label}</Col>
+                        <Col span={5}>
+                          <span className={styles.alarmWrapper}>
+                            <span className={styles.alarm} />
+                            {value}
+                          </span>
+                        </Col>
+                        <Col span={6}>
+                          <span className={styles.totalWrapper}>
+                            <span className={styles.total} />
+                            {total}
+                          </span>
+                        </Col>
+                      </Row>
                     </Col>
                   );
                 })}

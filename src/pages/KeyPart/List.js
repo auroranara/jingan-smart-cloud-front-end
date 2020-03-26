@@ -31,8 +31,8 @@ const BREADCRUMB_LIST = [
     href: '/',
   },
   {
-    title: '安全风险管控',
-    name: '安全风险管控',
+    title: '设备设施管理',
+    name: '设备设施管理',
   },
   {
     title: TITLE,
@@ -126,7 +126,7 @@ export default class KeypartList extends Component {
   }
 
   handleToAdd = () => {
-    router.push('/safety-risk-control/key-part/add')
+    router.push('/facility-management/key-part/add')
   }
 
   handleDelete = (id) => {
@@ -146,11 +146,11 @@ export default class KeypartList extends Component {
   }
 
   handleEdit = id => {
-    router.push(`/safety-risk-control/key-part/edit/${id}`)
+    router.push(`/facility-management/key-part/edit/${id}`)
   }
 
   handleView = id => {
-    router.push(`/safety-risk-control/key-part/detail/${id}`)
+    router.push(`/facility-management/key-part/detail/${id}`)
   }
 
   // 企业发生变化
@@ -249,6 +249,7 @@ export default class KeypartList extends Component {
 
   renderTable = () => {
     const {
+      user: { isCompany },
       keyPart: {
         list,
         pagination: { pageNum, pageSize, total },
@@ -256,12 +257,12 @@ export default class KeypartList extends Component {
     } = this.props;
 
     const columns = [
-      {
+      ...isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      },
+      }],
       {
         title: '装置/部位名称',
         dataIndex: 'facilityName',

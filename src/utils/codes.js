@@ -294,11 +294,11 @@ export default {
     },
   },
   keyPart: {
-    list: 'safetyRiskControl.keyPart.listView',
-    add: 'safetyRiskControl.keyPart.add',
-    edit: 'safetyRiskControl.keyPart.edit',
-    delete: 'safetyRiskControl.keyPart.delete',
-    detail: 'safetyRiskControl.keyPart.view',
+    list: 'facilityManagement.keyPart.listView',
+    add: 'facilityManagement.keyPart.add',
+    edit: 'facilityManagement.keyPart.edit',
+    delete: 'facilityManagement.keyPart.delete',
+    detail: 'facilityManagement.keyPart.view',
   },
   training: {
     examinationPaper: {
@@ -464,6 +464,22 @@ export default {
       view: 'personnelManagement.checkPoint.view',
       edit: 'personnelManagement.checkPoint.edit',
       delete: 'personnelManagement.checkPoint.delete',
+    },
+    tagCardManagement: {
+      list: 'personnelManagement.tagCardManagement.list',
+      add: 'personnelManagement.tagCardManagement.add',
+      view: 'personnelManagement.tagCardManagement.view',
+      edit: 'personnelManagement.tagCardManagement.edit',
+      delete: 'personnelManagement.tagCardManagement.delete',
+    },
+    postManagement: {
+      listView: 'personnelManagement.postManagement.listView',
+      addCompany: 'personnelManagement.postManagement.addCompany',
+      view: 'personnelManagement.postManagement.view',
+      add: 'personnelManagement.postManagement.add',
+      edit: 'personnelManagement.postManagement.edit',
+      detail: 'personnelManagement.postManagement.detail',
+      delete: 'personnelManagement.postManagement.delete',
     },
   },
 
@@ -822,6 +838,22 @@ export default {
       add: 'realNameCertification.authorization.add',
       edit: 'realNameCertification.authorization.edit',
       delete: 'realNameCertification.authorization.delete',
+    },
+    // 通道管理
+    channel: {
+      list: 'realNameCertification.channel.listView',
+      view: 'realNameCertification.channel.view',
+      add: 'realNameCertification.channel.add',
+      edit: 'realNameCertification.channel.edit',
+      delete: 'realNameCertification.channel.delete',
+    },
+    // 通道设备
+    channelDevice: {
+      list: 'realNameCertification.channelDevice.listView',
+      view: 'realNameCertification.channelDevice.view',
+      add: 'realNameCertification.channelDevice.add',
+      edit: 'realNameCertification.channelDevice.edit',
+      delete: 'realNameCertification.channelDevice.delete',
     },
   },
   // 操作规程

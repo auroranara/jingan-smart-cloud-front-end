@@ -324,6 +324,8 @@ export default class TableList extends PureComponent {
         dataIndex: 'id',
         key: 'id',
         align: 'center',
+        fixed: 'right',
+        width: 150,
         render: id => {
           return (
             <Fragment>
@@ -388,7 +390,7 @@ export default class TableList extends PureComponent {
               columns={unitType === 4 ? COLUMNS.slice(1, COLUMNS.length) : COLUMNS}
               dataSource={list}
               onChange={this.onTableChange}
-              scroll={{ x: 1500 }} // 项目不多时注掉
+              scroll={{ x: 1600 }} // 项目不多时注掉
               pagination={{
                 current: pageNum,
                 pageSize,

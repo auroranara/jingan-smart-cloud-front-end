@@ -740,7 +740,7 @@ module.exports = env => {
         },
 
         {
-          path: '/major-hazard-info', // 重大危险源基本信息
+          path: '/major-hazard-info', // 基本信息
           code: 'majorHazardInfo',
           name: 'majorHazardInfo',
           icon: 'fire',

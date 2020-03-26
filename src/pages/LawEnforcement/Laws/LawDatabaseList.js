@@ -307,7 +307,7 @@ export default class lawDatabaseList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 180,
+        width: 120,
         render: (record, rows) => (
           <span>
             {/* <AuthA

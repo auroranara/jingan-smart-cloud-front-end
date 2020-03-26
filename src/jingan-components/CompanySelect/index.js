@@ -94,6 +94,7 @@ export default class CompanySelect extends Component {
       //   ))}
       // </AutoComplete>
       <Select
+        allowClear
         showSearch
         labelInValue
         disabled={disabled}

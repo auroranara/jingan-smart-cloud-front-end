@@ -38,8 +38,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '重大危险源基本信息',
-    name: '重大危险源基本信息',
+    title: '基本信息',
+    name: '基本信息',
   },
   {
     title,
@@ -368,7 +368,7 @@ export default class StorageAreaManagement extends PureComponent {
       },
       {
         title: '操作',
-        key: '操作',
+        key: 'operation',
         align: 'center',
         fixed: 'right',
         width: 270,

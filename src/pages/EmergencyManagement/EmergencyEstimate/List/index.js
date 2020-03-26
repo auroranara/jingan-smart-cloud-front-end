@@ -300,7 +300,7 @@ export default class EmergencyEstimateList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 160,
+        width: 150,
         render: (data, record) => (
           <span>
             <AuthA code={detailCode} onClick={() => this.goDetail(record.id)}>

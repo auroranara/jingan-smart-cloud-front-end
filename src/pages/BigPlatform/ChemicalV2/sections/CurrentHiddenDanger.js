@@ -1,8 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Col, Spin } from 'antd';
-import moment from 'moment';
+// import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
-import ImageCard from '@/components/ImageCard';
+// import ImageCard from '@/components/ImageCard';
 import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
 import LoadMore from '@/components/LoadMore';
 import ReactEcharts from 'echarts-for-react';

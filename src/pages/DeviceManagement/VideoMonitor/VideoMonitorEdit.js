@@ -146,7 +146,6 @@ export default class VideoMonitorEdit extends PureComponent {
       // 清空详情
       dispatch({ type: 'videoMonitor/clearDetail' });
       this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
-      setFieldsValue({ isShow: '1' })
     }
     // 根据id获取四色图和消防平面图
     if (id || query.companyId || isCompany) {
@@ -158,7 +157,7 @@ export default class VideoMonitorEdit extends PureComponent {
         type: 'company/fetchCompany',
         payload: { id: companyId },
       });
-      companyId && this.setState({ company: { id: companyId, name: query.name } });
+      companyId && this.setState({ company: { id: companyId, name: query.name } }, () => { setFieldsValue({ isShow: '1' }) });
     }
     this.fetchConnectTypeDict();
     this.fetchEquipmentsForAll();
@@ -1146,7 +1145,7 @@ export default class VideoMonitorEdit extends PureComponent {
         ) : (
             <Button type="primary" size="large" onClick={this.goBack}>
               返回
-          </Button>
+            </Button>
           )}
       </FooterToolbar>
     );

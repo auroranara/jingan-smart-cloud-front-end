@@ -34,8 +34,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '重大危险源基本信息',
-    name: '重大危险源基本信息',
+    title: '基本信息',
+    name: '基本信息',
   },
   {
     title,
@@ -480,7 +480,7 @@ export default class StorehouseList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 220,
+        width: 210,
         render: (data, record) => (
           <span>
             <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(record)}>

@@ -70,3 +70,59 @@ export async function deleteAuthorization (params) {
 export async function fetchIdentificationRecord (params) {
   return request(`/acloud_new/v2/ci/HGFace/History/hgRecognitionHistory/page?${stringify(params)}`)
 }
+
+// 获取通道设备列表
+export async function fetchChannelDeviceList (params) {
+  return request(`/acloud_new/v2/ci/hgEquipmentInfo/hgEquipmentInfo/page?${stringify(params)}`)
+}
+
+// 新增通道设备
+export async function addChannelDevice (body) {
+  return request('/acloud_new/v2/ci/hgEquipmentInfo/hgEquipmentInfo', {
+    method: 'POST',
+    body,
+  })
+}
+
+// 编辑通道设备
+export async function editChannelDevice (body) {
+  return request('/acloud_new/v2/ci/hgEquipmentInfo/hgEquipmentInfo', {
+    method: 'PUT',
+    body,
+  })
+}
+
+// 删除通道设备
+export async function deleteChannelDevice (params) {
+  return request(`/acloud_new/v2/ci/hgEquipmentInfo/hgEquipmentInfo/${params.id}`, {
+    method: 'DELETE',
+  })
+}
+
+// 获取通道列表
+export async function fetchChannelList (params) {
+  return request(`/acloud_new/v2/ci/hgChannelInfo/hgChannelInfo/page?${stringify(params)}`)
+}
+
+// 新增通道
+export async function addChannel (body) {
+  return request('/acloud_new/v2/ci/hgChannelInfo/hgChannelInfo', {
+    method: 'POST',
+    body,
+  })
+}
+
+// 编辑通道
+export async function editChannel (body) {
+  return request('/acloud_new/v2/ci/hgChannelInfo/hgChannelInfo', {
+    method: 'PUT',
+    body,
+  })
+}
+
+// 删除通道
+export async function deleteChannel (params) {
+  return request(`/acloud_new/v2/ci/hgChannelInfo/hgChannelInfo/${params.id}`, {
+    method: 'DELETE',
+  })
+}

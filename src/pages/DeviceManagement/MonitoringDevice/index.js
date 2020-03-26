@@ -325,7 +325,7 @@ export default class MonitoringDevice extends Component {
         key: '操作',
         align: 'center',
         fixed: 'right',
-        width: 230,
+        width: 200,
         render: (val, row) => (
           <Fragment>
             <AuthA onClick={() => this.handleViewBind(row)} code={bindSensorCode}>

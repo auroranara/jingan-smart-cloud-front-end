@@ -91,13 +91,11 @@ function genFormItem(field, getFieldDecorator) {
 
   let child = null;
 
-  if (type === 'component') child = compt;
-  // 不经过getFieldDecorator包裹
+  if (type === 'component') child = compt; // 不经过getFieldDecorator包裹
   else {
     const formOptions = formItemOptions || {};
     const opts = getOptions(options);
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
-
     const phoneRules = { pattern: phoneReg, message: '格式不正确' };
     const emailRules = { pattern: emailReg, message: '格式不正确' };
     const extrsRule = (phoneRule && phoneRules) || (emailRule && emailRules);
@@ -152,30 +150,23 @@ function genFormItem(field, getFieldDecorator) {
 
     rules.unshift({ required, message: `${label}不能为空` });
     formOptions.rules = rules;
+
     child = getFieldDecorator(name, formOptions)(component);
   }
 
-  const props = {
+  let props = {
     label,
     key: name,
     className: wrapperClassName || undefined,
     ...(formExtraStyle ? FORMITEM_LAYOUT_EXTRA : FORMITEM_LAYOUT),
   };
 
-  // return formExtraStyle ? (
-  //   <FormItem label={label} key={name} {...FORMITEM_LAYOUT_EXTRA}>
-  //     {child}
-  //   </FormItem>
-  // ) : (
-  //   <FormItem label={label} key={name} {...FORMITEM_LAYOUT}>
-  //     {child}
-  //   </FormItem>
-  // );
   return <FormItem {...props}>{child}</FormItem>;
 }
 
 function renderSection(section, index, getFieldDecorator) {
   const { title, fields } = section;
+
   return (
     <Fragment key={title || index}>
       {title && (
@@ -206,7 +197,7 @@ export function renderSections(
 ) {
   const secs = getSections(sections);
   const props = {};
-  // const props = { ...FORMITEM_LAYOUT };
+
   const submitBtn = handleSubmit ? (
     <FormItem wrapperCol={{ span: 24, offset: 10 }}>
       <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>

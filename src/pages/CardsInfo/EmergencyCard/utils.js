@@ -61,14 +61,14 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       dataIndex: 'companyName',
       key: 'companyName',
       align: 'center',
-      width: 250,
+      // width: 250,
     },
     {
       title: '风险分区',
       dataIndex: 'pointFixInfoList',
       key: 'pointFixInfoList',
       align: 'center',
-      width: 180,
+      // width: 180,
       render: (val, row) => {
         return <span>{val.length > 0 ? val.map(item => item.areaName).join('') : ''}</span>;
       },
@@ -139,7 +139,7 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       title: '操作',
       dataIndex: 'id',
       key: 'id',
-      width: 180,
+      width: 160,
       align: 'center',
       fixed: 'right',
       render(id) {
