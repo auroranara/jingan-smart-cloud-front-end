@@ -27,6 +27,9 @@ const {
 }))
 @Form.create()
 export default class Edit extends PureComponent {
+  state = {
+    personId: '',
+  };
   componentDidMount() {
     const {
       match: {
@@ -78,16 +81,16 @@ export default class Edit extends PureComponent {
       dispatch,
     } = this.props;
     e.preventDefault();
+    const { personId } = this.state;
     validateFields((errors, values) => {
       if (errors) return;
-      const { personId } = this.state;
       const { companyId, icNumber, snNumber, labelType, note } = values;
       const vals = {
         companyId: companyId.key || unitId,
         icNumber,
         snNumber,
         labelType,
-        personId,
+        personId: id ? personId : undefined,
         note,
       };
       const tag = id ? '编辑' : '新增';
