@@ -140,7 +140,7 @@ export default class AlarmWorkOrderList extends Component {
     },
     {
       title: '监测对象类型',
-      dataIndex: 'typeName',
+      dataIndex: 'targetTypeName',
       align: 'center',
     },
     {
