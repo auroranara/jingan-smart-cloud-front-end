@@ -52,7 +52,7 @@ export default class PersonSelectModal extends PureComponent {
       return {
         selectedKeys: keys,
         selected: [...selected, ...rows].filter((item, i, self) => {
-          return keys.includes(item.key) && self.findIndex(val => val.key === item.key) === i;
+          return keys.includes(item.studentId) && self.findIndex(val => val.studentId === item.studentId) === i;
         }),
       }
     });
@@ -77,14 +77,13 @@ export default class PersonSelectModal extends PureComponent {
     const columns = [
       {
         title: '姓名',
-        dataIndex: 'value',
+        dataIndex: 'name',
         align: 'center',
       },
       {
         title: '部门',
-        key: 'department',
+        dataIndex: 'departmentName',
         align: 'center',
-        render: (_, { users }) => Array.isArray(users) && users.length ? users[0].departmentName : '',
       },
       {
         title: '联系电话',
@@ -114,14 +113,14 @@ export default class PersonSelectModal extends PureComponent {
             <Row gutter={16}>
               <Col span={8}>
                 <Form.Item>
-                  {getFieldDecorator('userName')(
+                  {getFieldDecorator('name')(
                     <Input placeholder="人员名称" allowClear />
                   )}
                 </Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item>
-                  {getFieldDecorator('department')(
+                  {getFieldDecorator('departmentId')(
                     <TreeSelect
                       allowClear
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
@@ -142,7 +141,7 @@ export default class PersonSelectModal extends PureComponent {
             </Row>
           </Form>
           <Table
-            rowKey="key"
+            rowKey="studentId"
             dataSource={list}
             columns={columns}
             zIndex={1010}

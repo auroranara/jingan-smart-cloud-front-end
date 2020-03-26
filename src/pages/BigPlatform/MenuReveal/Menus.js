@@ -235,7 +235,9 @@ export default class NewMenuReveal extends Component {
   // 确认单位
   handleConfirmCompany = () => {
     this.formRef.current.validateFields().then(({ company }) => {
-      window.open(`${window.publicPath}#/big-platform/chemical/${company.value}`, '_blank')
+      this.setState({ modalVisible: false }, () => {
+        window.open(`${window.publicPath}#/big-platform/chemical/${company.value}`, '_blank')
+      })
     }).catch(err => { });
   }
 
