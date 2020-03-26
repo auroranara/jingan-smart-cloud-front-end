@@ -1,9 +1,12 @@
 import React from 'react';
-import { Card, Row, Col } from 'antd';
+import { Card, Row, Col, Tooltip } from 'antd';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import Ellipsis from '@/components/Ellipsis';
 import Link from '@/jingan-components/View/Link';
 import { stringify } from 'qs';
+import moment from 'moment';
+import { toFixed } from '@/utils/utils';
+import { FORMAT } from '../../config';
 import styles from './index.less';
 
 const GRID = {
@@ -24,6 +27,7 @@ const Tank = ({
     videoList = [],
     type,
     dangerSourceId,
+    noFinishWarnProcessCount,
   } = {},
   securityUrl,
   hasAlarmWorkOrderAuthority,
@@ -47,35 +51,73 @@ const Tank = ({
       >
         <div className={styles.paramList}>
           {allMonitorParam &&
-            allMonitorParam.map(({ id, sensorId, paramDesc, paramUnit, realValue, status }) => (
-              <div className={styles.paramItem} key={`${id}${sensorId}`}>
-                <div className={styles.paramItemName}>{paramDesc}</div>
-                <div
-                  className={styles.paramItemValue}
-                  style={{ color: status > 0 ? '#f5222d' : undefined }}
-                >
-                  {realValue !== null ? realValue : '--'}
+            allMonitorParam.map(
+              ({
+                id,
+                sensorId,
+                paramDesc,
+                paramUnit,
+                realValue,
+                status,
+                linkStatus,
+                linkStatusUpdateTime,
+                dataUpdateTime,
+                condition,
+                limitValue,
+                warnLevel,
+              }) => (
+                <div className={styles.paramItem} key={`${id}${sensorId}`}>
+                  <div className={styles.paramItemName}>{paramDesc}</div>
+                  <Tooltip
+                    title={
+                      +linkStatus !== -1 ? (
+                        status > 0 ? (
+                          <div>
+                            <div>{`${condition === '>=' ? '超过' : '低于'}${
+                              +status === 1 ? '预' : '告'
+                            }警阈值 ${toFixed(Math.abs(realValue - limitValue))} ${paramUnit ||
+                              ''}`}</div>
+                            <div>{`最近更新时间：${moment(dataUpdateTime).format(FORMAT)}`}</div>
+                          </div>
+                        ) : (
+                          `最近更新时间：${moment(dataUpdateTime).format(FORMAT)}`
+                        )
+                      ) : (
+                        `失联时间：${moment(linkStatusUpdateTime).format(FORMAT)}`
+                      )
+                    }
+                  >
+                    <div
+                      className={styles.paramItemValue}
+                      style={{ color: status > 0 ? '#f5222d' : undefined }}
+                    >
+                      {+linkStatus !== -1 ? realValue : '--'}
+                    </div>
+                  </Tooltip>
+                  <div className={styles.paramItemUnit}>{paramUnit}</div>
                 </div>
-                <div className={styles.paramItemUnit}>{paramUnit}</div>
-              </div>
-            ))}
+              )
+            )}
         </div>
         {isAlarm && (
           <div className={styles.alarmWrapper}>
-            <Link
-              className={styles.alarmHandler}
-              to={`/company-iot/alarm-work-order/list?${stringify({
-                monitorObjectType: type,
-                monitorObject: id,
-                monitorObjectName: name,
-                isMajorHazard: '1',
-                majorHazardId: dangerSourceId,
-                majorHazardName,
-              })}`}
-              disabled={!hasAlarmWorkOrderAuthority}
-            >
-              处理报警
-            </Link>
+            {noFinishWarnProcessCount > 0 && (
+              <Link
+                className={styles.alarmHandler}
+                to={`/company-iot/alarm-work-order/list?${stringify({
+                  monitorObjectType: type,
+                  monitorObject: id,
+                  monitorObjectName: name,
+                  isMajorHazard: '1',
+                  majorHazardId: dangerSourceId,
+                  majorHazardName,
+                  status: '2,0',
+                })}`}
+                disabled={!hasAlarmWorkOrderAuthority}
+              >
+                处理报警
+              </Link>
+            )}
           </div>
         )}
         <div className={styles.fieldContainer}>

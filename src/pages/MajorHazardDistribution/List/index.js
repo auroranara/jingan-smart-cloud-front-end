@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { message, Spin, List, Card, Row, Col, notification } from 'antd';
+import { message, Spin, List, Card, Row, Col, notification, Empty } from 'antd';
 import Map from '@/jingan-components/Form/Map';
 // import Radio from '@/jingan-components/Form/Radio';
 import EmptyText from '@/jingan-components/View/EmptyText';
@@ -677,14 +677,7 @@ export default class MajorHazardDistributionList extends Component {
   };
 
   renderMap() {
-    const {
-      mapList: [options] = [],
-      loadingMapList = false,
-      loadingList = false,
-      loadingCombustibleGasPointList = false,
-      loadingToxicGasPointList = false,
-      loadingVideoPointList = false,
-    } = this.props;
+    const { mapList: [options] = [] } = this.props;
     const {
       disabledMapButtonList = [],
       imageMarkerList,
@@ -702,60 +695,47 @@ export default class MajorHazardDistributionList extends Component {
     };
 
     return (
-      <Spin
-        tip="加载中..."
-        spinning={
-          loadingMap ||
-          loadingMapList ||
-          loadingList ||
-          loadingCombustibleGasPointList ||
-          loadingToxicGasPointList ||
-          loadingVideoPointList
-        }
+      <Map
+        options={options}
+        imageMarkerList={imageMarkerList}
+        polygonMarkerList={polygonMarkerList}
+        modelList={modelList}
+        onLoadStart={this.handleMapLoadStart}
+        onLoadEnd={this.handleMapLoadEnd}
       >
-        <Map
-          options={options}
-          imageMarkerList={imageMarkerList}
-          polygonMarkerList={polygonMarkerList}
-          modelList={modelList}
-          onLoadStart={this.handleMapLoadStart}
-          onLoadEnd={this.handleMapLoadEnd}
-        >
-          <div className={styles.mapButtonContainer}>
-            {MAP_BUTTON_OPTIONS.map(({ label, icon }) => {
-              if (mapper[label].length) {
-                const disabled = disabledMapButtonList.includes(label);
-                return (
-                  <div
-                    className={styles.mapButton}
-                    key={label}
-                    data-label={label}
-                    onClick={this.handleMapButtonClick}
-                  >
-                    <img
-                      src={icon}
-                      alt=""
-                      style={{ filter: disabled ? 'grayscale(100%)' : undefined }}
-                    />
-                    <span style={disabled ? { color: 'gray' } : undefined}>{label}</span>
-                  </div>
-                );
-              }
-              return null;
-            })}
-          </div>
-        </Map>
-      </Spin>
+        <div className={styles.mapButtonContainer}>
+          {MAP_BUTTON_OPTIONS.map(({ label, icon }) => {
+            if (mapper[label].length) {
+              const disabled = disabledMapButtonList.includes(label);
+              return (
+                <div
+                  className={styles.mapButton}
+                  key={label}
+                  data-label={label}
+                  onClick={this.handleMapButtonClick}
+                >
+                  <img
+                    src={icon}
+                    alt=""
+                    style={{ filter: disabled ? 'grayscale(100%)' : undefined }}
+                  />
+                  <span style={disabled ? { color: 'gray' } : undefined}>{label}</span>
+                </div>
+              );
+            }
+            return null;
+          })}
+        </div>
+      </Map>
     );
   }
 
   renderList() {
-    const { list, loadingList = false, updating = false, hasDetailAuthority } = this.props;
+    const { list, hasDetailAuthority } = this.props;
 
-    return (
+    return list && list.length ? (
       <List
         grid={LIST_GRID}
-        loading={loadingList || updating}
         dataSource={list}
         renderItem={item => (
           <List.Item>
@@ -830,12 +810,27 @@ export default class MajorHazardDistributionList extends Component {
           </List.Item>
         )}
       />
+    ) : (
+      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
     );
   }
 
   render() {
-    const { unitId, breadcrumbList, route, location, match, goToList } = this.props;
-    const { type } = this.state;
+    const {
+      unitId,
+      breadcrumbList,
+      route,
+      location,
+      match,
+      goToList,
+      loadingMapList = false,
+      loadingList = false,
+      loadingCombustibleGasPointList = false,
+      loadingToxicGasPointList = false,
+      loadingVideoPointList = false,
+      updating = false,
+    } = this.props;
+    const { type, loadingMap } = this.state;
 
     return unitId ? (
       <PageHeaderLayout
@@ -849,8 +844,21 @@ export default class MajorHazardDistributionList extends Component {
         tabActiveKey={type}
         onTabChange={this.handleTypeChange}
       >
-        {type === TYPES[0].key && this.renderList()}
-        {type === TYPES[1].key && this.renderMap()}
+        <Spin
+          tip="加载中..."
+          spinning={
+            loadingMap ||
+            loadingMapList ||
+            loadingList ||
+            loadingCombustibleGasPointList ||
+            loadingToxicGasPointList ||
+            loadingVideoPointList ||
+            updating
+          }
+        >
+          {type === TYPES[0].key && this.renderList()}
+          {type === TYPES[1].key && this.renderMap()}
+        </Spin>
       </PageHeaderLayout>
     ) : (
       <Company

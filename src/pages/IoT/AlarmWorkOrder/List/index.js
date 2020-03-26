@@ -22,6 +22,7 @@ const TRANSFORM = data => {
     range: [startTime, endTime] = [],
     majorHazard: [dangerSource, dangerSourceId] = [],
     monitorObject: [targetType, targetId] = [],
+    status,
     ...rest
   } = data || {};
   return {
@@ -32,6 +33,7 @@ const TRANSFORM = data => {
     dangerSourceId: dangerSourceId && dangerSourceId.key,
     targetType,
     targetId: targetId && targetId.key,
+    status: status && status.length > 0 ? status.join(',') : undefined,
   };
 };
 
@@ -90,7 +92,9 @@ export default class AlarmWorkOrderList extends Component {
     {
       id: 'status',
       label: '处理状态',
-      render: () => <SelectOrSpan placeholder="请选择处理状态" list={STATUSES} allowClear />,
+      render: () => (
+        <SelectOrSpan mode="multiple" placeholder="请选择处理状态" list={STATUSES} allowClear />
+      ),
     },
     {
       id: 'majorHazard',
@@ -246,22 +250,24 @@ export default class AlarmWorkOrderList extends Component {
       action: this.getAction,
       columns: this.getColumns,
       transform: TRANSFORM,
-      initialValues: query.monitorObjectType
-        ? {
-            monitorObject: [
-              query.monitorObjectType,
-              query.monitorObject && query.monitorObjectName
-                ? { key: query.monitorObject, label: query.monitorObjectName }
-                : undefined,
-            ],
-            majorHazard: [
-              query.isMajorHazard,
-              query.majorHazardId && query.majorHazardName
-                ? { key: query.majorHazardId, label: query.majorHazardName }
-                : undefined,
-            ],
-          }
-        : null,
+      initialValues:
+        query.monitorObjectType || query.isMajorHazard || query.status
+          ? {
+              monitorObject: [
+                query.monitorObjectType || undefined,
+                query.monitorObject && query.monitorObjectName
+                  ? { key: query.monitorObject, label: query.monitorObjectName }
+                  : undefined,
+              ],
+              majorHazard: [
+                query.isMajorHazard || undefined,
+                query.majorHazardId && query.majorHazardName
+                  ? { key: query.majorHazardId, label: query.majorHazardName }
+                  : undefined,
+              ],
+              status: query.status ? query.status.split(',') : undefined,
+            }
+          : null,
       otherOperation: [
         {
           code: 'detail',
