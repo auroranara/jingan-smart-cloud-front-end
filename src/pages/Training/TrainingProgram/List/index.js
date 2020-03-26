@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Input, Select, Spin, Card, Button, Table, Modal, Popconfirm, message, Empty } from 'antd'
+import { Input, Select, Spin, Card, Button, Table, Modal, Popconfirm, message, Empty } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CustomUpload from '@/jingan-components/CustomUpload';
@@ -26,49 +26,49 @@ import {
   LABEL_COL,
   EDIT_PATH,
   ADD_PATH,
+  TrainingType,
   DETAIL_PATH,
 } from '../const';
 import styles from './index.less';
 
 const { Option } = Select;
 
-@connect(({
-  trainingProgram,
-  user,
-  loading,
-}) => ({
-  trainingProgram,
-  user,
-  loaidng: loading.effects['trainingProgram/fetchList'],
-  executing: loading.effects['trainingProgram/execute'],
-}), (dispatch) => ({
-  getList(payload, callback) {
-    dispatch({
-      type: 'trainingProgram/fetchList',
-      payload,
-      callback,
-    });
-  },
-  remove(payload, callback) {
-    dispatch({
-      type: 'trainingProgram/remove',
-      payload,
-      callback,
-    });
-  },
-  execute(payload, callback) {
-    dispatch({
-      type: 'trainingProgram/execute',
-      payload,
-      callback,
-    });
-  },
-}))
+@connect(
+  ({ trainingProgram, user, loading }) => ({
+    trainingProgram,
+    user,
+    loaidng: loading.effects['trainingProgram/fetchList'],
+    executing: loading.effects['trainingProgram/execute'],
+  }),
+  dispatch => ({
+    getList(payload, callback) {
+      dispatch({
+        type: 'trainingProgram/fetchList',
+        payload,
+        callback,
+      });
+    },
+    remove(payload, callback) {
+      dispatch({
+        type: 'trainingProgram/remove',
+        payload,
+        callback,
+      });
+    },
+    execute(payload, callback) {
+      dispatch({
+        type: 'trainingProgram/execute',
+        payload,
+        callback,
+      });
+    },
+  })
+)
 export default class TrainingProgramList extends Component {
   state = {
     visible: false,
     data: undefined,
-  }
+  };
 
   componentDidMount() {
     this.getList();
@@ -76,24 +76,20 @@ export default class TrainingProgramList extends Component {
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   setForm2Reference = form2 => {
     this.form2 = form2;
-  }
+  };
 
-  getList = (payload) => {
+  getList = payload => {
     const {
       trainingProgram: {
-        list: {
-          pagination: {
-            pageSize: prevPageSize=getPageSize(),
-          }={},
-        }={},
+        list: { pagination: { pageSize: prevPageSize = getPageSize() } = {} } = {},
       },
       getList,
     } = this.props;
-    const { current=1, pageSize=getPageSize() } = payload || {};
+    const { current = 1, pageSize = getPageSize() } = payload || {};
     const values = this.form && this.form.getFieldsValue();
     getList({
       pageNum: prevPageSize !== pageSize ? 1 : current,
@@ -102,42 +98,36 @@ export default class TrainingProgramList extends Component {
       ...payload,
     });
     setPageSize(pageSize);
-  }
+  };
 
   reload = () => {
     const {
-      trainingProgram: {
-        list: {
-          pagination: {
-            pageNum=1,
-          }={},
-        }={},
-      },
+      trainingProgram: { list: { pagination: { pageNum = 1 } = {} } = {} },
     } = this.props;
     this.getList({
       current: pageNum,
     });
-  }
+  };
 
   // 新增按钮点击事件
   handleAddClick = () => {
     router.push(ADD_PATH);
-  }
+  };
 
   // 编辑按钮点击事件
-  handleEditClick = (e) => {
+  handleEditClick = e => {
     const { id } = e.currentTarget.dataset;
     router.push(`${EDIT_PATH}/${id}`);
-  }
+  };
 
   // 查看按钮点击事件
-  handleViewClick = (e) => {
+  handleViewClick = e => {
     const { id } = e.currentTarget.dataset;
     router.push(`${DETAIL_PATH}/${id}`);
-  }
+  };
 
   // 删除按钮点击事件
-  handleDeleteClick = (id) => {
+  handleDeleteClick = id => {
     const { remove } = this.props;
     remove({ id }, (isSuccess, msg) => {
       if (isSuccess) {
@@ -147,15 +137,15 @@ export default class TrainingProgramList extends Component {
         message.error(msg || '删除失败，请稍后重试！');
       }
     });
-  }
+  };
 
   // 执行按钮点击事件
-  handleExecuteClick = (data) => {
+  handleExecuteClick = data => {
     this.setState({
       visible: true,
       data,
     });
-  }
+  };
 
   // 模态框取消事件
   handleModalCancel = () => {
@@ -163,70 +153,96 @@ export default class TrainingProgramList extends Component {
       visible: false,
     });
     this.form2 && this.form2.resetFields();
-  }
+  };
 
   // 模态框确定事件
   handleModalConfirm = () => {
     const { execute } = this.props;
-    const { data: { id } } = this.state;
+    const {
+      data: { id },
+    } = this.state;
     const { validateFieldsAndScroll } = this.form2;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        execute({
-          id,
-          ...values,
-        }, (isSuccess) => {
-          if (isSuccess) {
-            message.success(`关联成功！`);
-            this.reload();
-          } else {
-            message.error(`关联失败，请稍后重试！`);
+        execute(
+          {
+            id,
+            ...values,
+          },
+          isSuccess => {
+            if (isSuccess) {
+              message.success(`关联成功！`);
+              this.reload();
+            } else {
+              message.error(`关联失败，请稍后重试！`);
+            }
+            this.setState({
+              visible: false,
+            });
+            this.form2 && this.form2.resetFields();
           }
-          this.setState({
-            visible: false,
-          });
-          this.form2 && this.form2.resetFields();
-        });
+        );
       }
     });
-  }
+  };
 
   renderForm() {
     const {
       user: {
-        currentUser: {
-          unitType,
-          permissionCodes,
-        },
+        currentUser: { unitType, permissionCodes },
       },
     } = this.props;
     const isNotCompany = +unitType !== 4;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const FIELDS = [
-      ...(isNotCompany ? [{
-        id: 'companyName',
-        label: '单位名称',
-        transform: value => value.trim(),
-        render: _this => <Input placeholder="请输入单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
-      }] : []),
+      ...(isNotCompany
+        ? [
+            {
+              id: 'companyName',
+              label: '单位名称',
+              transform: value => value.trim(),
+              render: _this => (
+                <Input
+                  placeholder="请输入单位名称"
+                  onPressEnter={_this.handleSearch}
+                  maxLength={50}
+                />
+              ),
+            },
+          ]
+        : []),
       {
         id: 'trainingPlanName',
         label: '培训计划名称',
         transform: value => value.trim(),
-        render: _this => <Input placeholder="请输入培训计划名称" onPressEnter={_this.handleSearch} maxLength={50} />,
+        render: _this => (
+          <Input
+            placeholder="请输入培训计划名称"
+            onPressEnter={_this.handleSearch}
+            maxLength={50}
+          />
+        ),
       },
       {
         id: 'trainingType',
         label: '培训类型',
-        render: _this => <Input placeholder="请输入培训类型" onPressEnter={_this.handleSearch} maxLength={50} />,
+        render: () => (
+          <Select placeholder="请选择培训类型">
+            {TrainingType.map(({ key, value }) => (
+              <Option key={key}>{value}</Option>
+            ))}
+          </Select>
+        ),
       },
       {
         id: 'trainingLevel',
         label: '培训分级',
         render: () => (
           <Select placeholder="请选择培训分级" allowClear>
-            {LEVELS.map(({ key, value }) => <Option key={key}>{value}</Option>)}
+            {LEVELS.map(({ key, value }) => (
+              <Option key={key}>{value}</Option>
+            ))}
           </Select>
         ),
       },
@@ -235,7 +251,9 @@ export default class TrainingProgramList extends Component {
         label: '计划状态',
         render: () => (
           <Select placeholder="请选择计划状态" allowClear>
-            {STATUSES.map(({ key, value }) => <Option key={key}>{value}</Option>)}
+            {STATUSES.map(({ key, value }) => (
+              <Option key={key}>{value}</Option>
+            ))}
           </Select>
         ),
       },
@@ -247,7 +265,11 @@ export default class TrainingProgramList extends Component {
           fields={FIELDS}
           onSearch={this.getList}
           onReset={this.getList}
-          action={<Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>新增</Button>}
+          action={
+            <Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>
+              新增
+            </Button>
+          }
           ref={this.setFormReference}
         />
       </Card>
@@ -258,19 +280,12 @@ export default class TrainingProgramList extends Component {
     const {
       trainingProgram: {
         list: {
-          list=[],
-          pagination: {
-            pageSize=DEFAULT_PAGE_SIZE,
-            pageNum=DEFAULT_PAGE_NUM,
-            total=0,
-          }={},
-        }={},
+          list = [],
+          pagination: { pageSize = DEFAULT_PAGE_SIZE, pageNum = DEFAULT_PAGE_NUM, total = 0 } = {},
+        } = {},
       },
       user: {
-        currentUser: {
-          permissionCodes,
-          unitType,
-        },
+        currentUser: { permissionCodes, unitType },
       },
       loading,
     } = this.props;
@@ -279,13 +294,16 @@ export default class TrainingProgramList extends Component {
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasDeleteAuthority = permissionCodes.includes(DELETE_CODE);
 
-    const COLUMNS = (isNotCompany ? [
-      {
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
-      },
-    ] : []).concat([
+    const COLUMNS = (isNotCompany
+      ? [
+          {
+            title: '单位名称',
+            dataIndex: 'companyName',
+            align: 'center',
+          },
+        ]
+      : []
+    ).concat([
       {
         title: '培训计划名称',
         dataIndex: 'trainingPlanName',
@@ -295,23 +313,24 @@ export default class TrainingProgramList extends Component {
         title: '培训类型',
         dataIndex: 'trainingType',
         align: 'center',
+        render: value => <SelectOrSpan list={TrainingType} value={`${value}`} type="span" />,
       },
       {
         title: '培训形式',
         dataIndex: 'trainingWay',
-        render: (value) => <SelectOrSpan list={FORMS} value={`${value}`} type="span" />,
+        render: value => <SelectOrSpan list={FORMS} value={`${value}`} type="span" />,
         align: 'center',
       },
       {
         title: '培训分级',
         dataIndex: 'trainingLevel',
-        render: (value) => <SelectOrSpan list={LEVELS} value={`${value}`} type="span" />,
+        render: value => <SelectOrSpan list={LEVELS} value={`${value}`} type="span" />,
         align: 'center',
       },
       {
         title: '计划状态',
         dataIndex: 'planStatus',
-        render: (value) => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
+        render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
         align: 'center',
       },
       {
@@ -322,25 +341,33 @@ export default class TrainingProgramList extends Component {
       {
         title: '开始时间',
         dataIndex: 'trainingStartTime',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+        render: time => time && moment(time).format(DEFAULT_FORMAT),
         align: 'center',
       },
       {
         title: '结束时间',
         dataIndex: 'trainingEndTime',
-        render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+        render: time => time && moment(time).format(DEFAULT_FORMAT),
         align: 'center',
       },
       {
         title: '计划扫描件',
         dataIndex: 'planFileList',
-        render: (fileList) => (
+        render: fileList => (
           <Fragment>
-            {fileList && fileList.map(({ webUrl, fileName }, index) => (
-              <div key={index}>
-                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
-              </div>
-            ))}
+            {fileList &&
+              fileList.map(({ webUrl, fileName }, index) => (
+                <div key={index}>
+                  <a
+                    className={styles.clickable}
+                    href={webUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {fileName}
+                  </a>
+                </div>
+              ))}
           </Fragment>
         ),
         align: 'center',
@@ -350,11 +377,20 @@ export default class TrainingProgramList extends Component {
         dataIndex: 'resultFileList',
         render: (result, { planStatus }) => (
           <Fragment>
-            {+planStatus === 1 && result && result.map(({ webUrl, fileName }, index) => (
-              <div key={index}>
-                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
-              </div>
-            ))}
+            {+planStatus === 1 &&
+              result &&
+              result.map(({ webUrl, fileName }, index) => (
+                <div key={index}>
+                  <a
+                    className={styles.clickable}
+                    href={webUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {fileName}
+                  </a>
+                </div>
+              ))}
           </Fragment>
         ),
         align: 'center',
@@ -367,16 +403,40 @@ export default class TrainingProgramList extends Component {
           const { id, planStatus: status } = data;
           return (
             <Fragment>
-              {+status === 0 && <span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? () => this.handleExecuteClick(data) : undefined}>执行</span>}
-              {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleViewClick : undefined} data-id={id}>查看</span>}
-              {+status === 0 && <span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditClick : undefined} data-id={id}>编辑</span>}
-              {+status === 0 && (hasDeleteAuthority ? (
-                <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteClick(id)}>
-                  <span className={styles.operation}>删除</span>
-                </Popconfirm>
-              ) : (
-                <span className={classNames(styles.operation, styles.disabled)}>删除</span>
-              ))}
+              {+status === 0 && (
+                <span
+                  className={classNames(styles.operation, !hasEditAuthority && styles.disabled)}
+                  onClick={hasEditAuthority ? () => this.handleExecuteClick(data) : undefined}
+                >
+                  执行
+                </span>
+              )}
+              {
+                <span
+                  className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)}
+                  onClick={hasDetailAuthority ? this.handleViewClick : undefined}
+                  data-id={id}
+                >
+                  查看
+                </span>
+              }
+              {+status === 0 && (
+                <span
+                  className={classNames(styles.operation, !hasEditAuthority && styles.disabled)}
+                  onClick={hasEditAuthority ? this.handleEditClick : undefined}
+                  data-id={id}
+                >
+                  编辑
+                </span>
+              )}
+              {+status === 0 &&
+                (hasDeleteAuthority ? (
+                  <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteClick(id)}>
+                    <span className={styles.operation}>删除</span>
+                  </Popconfirm>
+                ) : (
+                  <span className={classNames(styles.operation, styles.disabled)}>删除</span>
+                ))}
             </Fragment>
           );
         },
@@ -413,7 +473,7 @@ export default class TrainingProgramList extends Component {
         </Spin>
       </Card>
     );
-  }
+  };
 
   renderModal() {
     const { visible, data } = this.state;
@@ -465,17 +525,9 @@ export default class TrainingProgramList extends Component {
 
   render() {
     const {
-      trainingProgram: {
-        list: {
-          pagination: {
-            total=0,
-          }={},
-        }={},
-      }={},
+      trainingProgram: { list: { pagination: { total = 0 } = {} } = {} } = {},
       user: {
-        currentUser: {
-          unitType,
-        },
+        currentUser: { unitType },
       },
     } = this.props;
     const isNotCompany = +unitType !== 4;

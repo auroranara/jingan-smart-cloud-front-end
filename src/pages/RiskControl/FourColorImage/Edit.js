@@ -1,6 +1,6 @@
 import { connect } from 'dva';
 import React, { Fragment } from 'react';
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import {
   Button,
@@ -20,7 +20,7 @@ import { phoneReg } from '@/utils/validate';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
 import moment from 'moment';
-// import styles from './TableList.less';
+import styles from './TableList.less';
 import Map from './Map';
 
 const FormItem = Form.Item;
@@ -86,6 +86,7 @@ export default class TableList extends React.Component {
       buildingId: [], // 新增时获取的区域Id
       modelIds: '', // 编辑时获取的区域Id
       levelId: '4', // 所选风险分级
+      expandId: false, // 列表中展开项的id
     };
   }
 
@@ -368,6 +369,39 @@ export default class TableList extends React.Component {
     );
   };
 
+  handleExpand = () => {
+    const { expandId } = this.state;
+    this.setState({ expandId: !expandId });
+  };
+
+  renderBuildingId = () => {
+    const { expandId, buildingId } = this.state;
+
+    // 是否展开
+    const list = expandId ? buildingId : buildingId.slice(0, 3);
+    return (
+      <div style={{ display: 'flex' }}>
+        <div>
+          {list.map(({ key, areaId, point, selected }) => (
+            <Tag
+              color={!selected ? '' : '#555252'}
+              key={key}
+              onClick={() => this.handleTagClick(areaId, point, selected)}
+            >
+              {areaId}
+            </Tag>
+          ))}
+        </div>
+        {buildingId.length >= 3 && (
+          <div className={styles.iconContainer} onClick={() => this.handleExpand()}>
+            <a>{expandId ? '收起' : '展开'}</a>
+            <LegacyIcon className={expandId ? styles.expandIcon : styles.icon} type="down" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   render() {
     const {
       perLoading,
@@ -378,7 +412,7 @@ export default class TableList extends React.Component {
       account: { list: personList = [] },
     } = this.props;
 
-    const { isDrawing, groupId, detailList, pointList, buildingId, modelIds, levelId } = this.state;
+    const { isDrawing, groupId, detailList, pointList, modelIds, levelId } = this.state;
 
     const editTitle = id ? '编辑' : '新增';
     const {
@@ -487,30 +521,30 @@ export default class TableList extends React.Component {
                   //     </Select.Option>
                   //   ))}
                   // </AutoComplete>
-                <Select
-                  // mode="combobox"
-                  allowClear
-                  showSearch
-                  labelInValue
-                  optionLabelProp="children"
-                  placeholder="请选择"
-                  showArrow={false}
-                  notFoundContent={perLoading ? <Spin size="small" /> : '暂无数据'}
-                  onSearch={this.handlePersonSearch}
-                  onBlur={this.handlePersonBlur}
-                  onChange={e => this.handlePersonChange(e)}
-                  filterOption={false}
-                  {...itemStyles}
-                >
-                  {personList.map(({ users, userName }) => (
-                    <Select.Option
-                      key={users.map(item => item.id)[0]}
-                      value={users.map(item => item.id)[0]}
-                    >
-                      {userName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  <Select
+                    // mode="combobox"
+                    allowClear
+                    showSearch
+                    labelInValue
+                    optionLabelProp="children"
+                    placeholder="请选择"
+                    showArrow={false}
+                    notFoundContent={perLoading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handlePersonSearch}
+                    onBlur={this.handlePersonBlur}
+                    onChange={e => this.handlePersonChange(e)}
+                    filterOption={false}
+                    {...itemStyles}
+                  >
+                    {personList.map(({ users, userName }) => (
+                      <Select.Option
+                        key={users.map(item => item.id)[0]}
+                        value={users.map(item => item.id)[0]}
+                      >
+                        {userName}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 )}
               </FormItem>
               <FormItem label="联系电话" {...formItemLayout}>
@@ -546,7 +580,8 @@ export default class TableList extends React.Component {
                 })(<Input placeholder="请输入" {...itemStyles} />)}
               </FormItem> #555252*/}
               <FormItem label="所选建筑物" {...formItemLayout}>
-                {buildingId.map(({ key, areaId, point, selected }) => (
+                {this.renderBuildingId()}
+                {/* {buildingId.map(({ key, areaId, point, selected }) => (
                   <Tag
                     color={!selected ? '' : '#555252'}
                     key={key}
@@ -554,7 +589,7 @@ export default class TableList extends React.Component {
                   >
                     {areaId}
                   </Tag>
-                ))}
+                ))} */}
               </FormItem>
               <FormItem {...formItemLayout}>
                 <div style={{ textAlign: 'center' }}>

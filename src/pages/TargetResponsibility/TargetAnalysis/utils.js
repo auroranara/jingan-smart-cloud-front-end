@@ -3,7 +3,8 @@ import MonthIcon from './image/monthIcon.png';
 import QuarterIcon from './image/quarterIcon.png';
 import YearIcon from './image/yearIcon.png';
 import moment from 'moment';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+// import { Icon } from 'antd';
 import DepartPie from './components/DepartPie';
 import DepartLine from './components/DepartLine';
 import IndexChartsLine from './components/IndexChartsLine';
@@ -50,13 +51,16 @@ export const COLOUMNS = [
     title: '目标值',
     dataIndex: 'goalValue',
     align: 'center',
+    render: (val, text) => {
+      return text.symbolValue === '1' ? '≥' + val : '≤' + val;
+    },
   },
   {
     title: '是否达成',
     dataIndex: 'goalFlag',
     align: 'center',
     render: val => {
-      return +val === 1 ? <Icon type="check" /> : <Icon type="close" />;
+      return +val === 1 ? <LegacyIcon type="check" /> : <LegacyIcon type="close" />;
     },
   },
   {
