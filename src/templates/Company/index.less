@@ -1,0 +1,21 @@
+.cardContent {
+  margin: -0.25em 0;
+
+  .cardRow {
+    display: flex;
+    padding: 0.25em 0;
+
+    & > :first-child {
+      flex: none;
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    & > :last-child {
+      flex: 1;
+      width: 0;
+    }
+  }
+}
+.ellipsis {
+  white-space: normal;
+}

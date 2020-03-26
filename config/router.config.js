@@ -1220,6 +1220,48 @@ module.exports = env => {
             },
           ],
         },
+        // 监测预警
+        {
+          path: '/monitoring-and-early-warning',
+          code: 'monitoringAndEarlyWarning',
+          name: 'monitoringAndEarlyWarning',
+          icon: 'monitor',
+          systemType: 0,
+          routes: [
+            {
+              path: '/monitoring-and-early-warning/major-hazard-distribution', // 重大危险源分布
+              code: 'monitoringAndEarlyWarning.majorHazardDistribution',
+              name: 'majorHazardDistribution',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/monitoring-and-early-warning/major-hazard-distribution',
+                  redirect: '/monitoring-and-early-warning/major-hazard-distribution/list',
+                },
+                {
+                  path: '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/list',
+                  code: 'monitoringAndEarlyWarning.majorHazardDistribution.list',
+                  name: 'list',
+                  component: './MajorHazardDistribution/List',
+                },
+                {
+                  path:
+                    '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/detail/:id',
+                  code: 'monitoringAndEarlyWarning.majorHazardDistribution.detail',
+                  name: 'detail',
+                  component: './MajorHazardDistribution/Detail',
+                },
+                {
+                  path:
+                    '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/detail/:parentId/security/:id?',
+                  code: 'monitoringAndEarlyWarning.majorHazardDistribution.security',
+                  name: 'security',
+                  component: './MajorHazardDistribution/Security',
+                },
+              ],
+            },
+          ],
+        },
 
         // 可燃有毒气体监测预警系统
         {

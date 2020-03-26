@@ -38,3 +38,8 @@ export async function getPersonList(params) {
 export async function getDepartmentList(params) {
   return request(`/acloud_new/v2/sys/sysDepartment?${stringify(params)}`);
 }
+
+// 获取地图列表
+export async function getMapList(params) {
+  return request(`/acloud_new/v2/ThreedMap/threedMap?${stringify(params)}`);
+}

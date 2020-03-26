@@ -104,16 +104,16 @@ export default class FormTreeSelect extends Component {
       treeNodeFilterProp = 'children',
       emtpy = <EmptyText />,
       ellipsis = true,
+      getList,
       ...restProps
     } = this.props;
-    const selectedValue = typeof value === 'number' ? `${value}` : value || undefined;
 
     if (mode !== 'detail') {
       return (
         <TreeSelect
           className={classNames(styles.container, className)}
           placeholder={placeholder}
-          value={selectedValue}
+          value={value}
           notFoundContent={loading ? <Spin size="small" /> : undefined}
           treeNodeFilterProp={treeNodeFilterProp}
           {...restProps}

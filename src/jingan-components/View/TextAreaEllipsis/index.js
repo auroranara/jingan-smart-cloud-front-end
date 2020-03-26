@@ -12,7 +12,10 @@ export default function TextAreaEllipsis({ value, length }) {
         </Scrollbars>
       }
     >
-      <div className={styles.ellipsis} style={{ maxWidth: length ? `${length + 1}em` : undefined }}>
+      <div
+        className={styles.ellipsis}
+        style={{ maxWidth: length ? `${length + 1}em` : `${value.length + 1}em` }}
+      >
         {value}
       </div>
     </Tooltip>
