@@ -39,49 +39,49 @@ const BREADCRUMB_LIST = [
     loading: loading.effects[GET_HISTORY_DETAIL] || loading.effects[GET_HISTORY_LIST] || false,
   }),
   dispatch => ({
-    getHistoryDetail(payload, callback) {
+    getHistoryDetail (payload, callback) {
       dispatch({
         type: GET_HISTORY_DETAIL,
         payload,
         callback,
       });
     },
-    getHistoryList(payload, callback) {
+    getHistoryList (payload, callback) {
       dispatch({
         type: GET_HISTORY_LIST,
         payload,
         callback,
       });
     },
-    getDuration(payload, callback) {
+    getDuration (payload, callback) {
       dispatch({
         type: GET_DURATION,
         payload,
         callback,
       });
     },
-    getCountTrend(payload, callback) {
+    getCountTrend (payload, callback) {
       dispatch({
         type: GET_COUNT_TREND,
         payload,
         callback,
       });
     },
-    getAlarmTrend(payload, callback) {
+    getAlarmTrend (payload, callback) {
       dispatch({
         type: GET_ALARM_TREND,
         payload,
         callback,
       });
     },
-    getRank(payload, callback) {
+    getRank (payload, callback) {
       dispatch({
         type: GET_RANK,
         payload,
         callback,
       });
     },
-    getMonitorObjectTypeList(payload, callback) {
+    getMonitorObjectTypeList (payload, callback) {
       dispatch({
         type: GET_MONITOR_OBJECT_TYPE_LIST,
         payload: {
@@ -91,21 +91,21 @@ const BREADCRUMB_LIST = [
         callback,
       });
     },
-    getMonitorObjectList(payload, callback) {
+    getMonitorObjectList (payload, callback) {
       dispatch({
         type: GET_MONITOR_OBJECT_LIST,
         payload,
         callback,
       });
     },
-    getMonitorPointList(payload, callback) {
+    getMonitorPointList (payload, callback) {
       dispatch({
         type: GET_MONITOR_POINT_LIST,
         payload,
         callback,
       });
     },
-    exportData(payload, callback) {
+    exportData (payload, callback) {
       dispatch({
         type: EXPORT_DATA,
         payload,
@@ -126,7 +126,7 @@ export default class GasHistory extends Component {
     rankTableSort: 1, // 1是报警排序，3是误报排序
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const { getMonitorObjectTypeList } = this.props;
     getMonitorObjectTypeList();
   }
@@ -266,15 +266,15 @@ export default class GasHistory extends Component {
       type,
       ...(type === TYPES[0].key
         ? {
-            status: undefined,
-            monitorObjectTypeId: undefined,
-            monitorObjectId: undefined,
-            monitorPointId: undefined,
-            selectedRowKeys: [],
-          }
+          status: undefined,
+          monitorObjectTypeId: undefined,
+          monitorObjectId: undefined,
+          monitorPointId: undefined,
+          selectedRowKeys: [],
+        }
         : {
-            rankTableSort: 1,
-          }),
+          rankTableSort: 1,
+        }),
     });
     if (type === TYPES[0].key) {
       this.getHistoryDetail();
@@ -433,7 +433,7 @@ export default class GasHistory extends Component {
   /**
    * 筛选栏
    */
-  renderToobar() {
+  renderToobar () {
     const { range, type } = this.state;
 
     return (
@@ -459,7 +459,7 @@ export default class GasHistory extends Component {
   /**
    * 统计栏
    */
-  renderCount() {
+  renderCount () {
     const {
       gasMonitor: {
         historyDetail: {
@@ -471,6 +471,7 @@ export default class GasHistory extends Component {
           waitProcessCount,
           ingProcessCount,
           endProcessCount,
+          suspectedWarningCount, // 疑似次数
         } = {},
       },
     } = this.props;
@@ -499,6 +500,10 @@ export default class GasHistory extends Component {
               <div className={styles.countValue}>{falseWarningCount || 0}</div>
             </div>
             <div className={styles.countItem}>
+              <div className={styles.countLabel}>疑似警情（次）</div>
+              <div className={styles.countValue}>{suspectedWarningCount || 0}</div>
+            </div>
+            <div className={styles.countItem}>
               <div className={styles.countLabel}>工单总数（张）</div>
               <div className={styles.countValue}>{total}</div>
             </div>
@@ -515,7 +520,7 @@ export default class GasHistory extends Component {
   /**
    * 报警工单处理时效
    */
-  renderDurationChart() {
+  renderDurationChart () {
     const {
       gasMonitor: {
         duration: {
@@ -618,90 +623,90 @@ export default class GasHistory extends Component {
   /**
    * 监测设备报警趋势
    */
-  renderTrendChart() {
+  renderTrendChart () {
     const {
       gasMonitor: { alarmTrend = [] },
     } = this.props;
 
     const option = alarmTrend &&
       alarmTrend.length > 0 && {
-        color: ['#f5222d'],
-        tooltip: {
-          trigger: 'axis',
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          formatter: params => {
-            const date = params[0].name;
-            return `${date}<br />${params
-              .map(
-                ({ marker, seriesName, value: [date, value] }) => `${marker}${seriesName}：${value}`
-              )
-              .join('<br />')}`;
-          },
+      color: ['#f5222d'],
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        formatter: params => {
+          const date = params[0].name;
+          return `${date}<br />${params
+            .map(
+              ({ marker, seriesName, value: [date, value] }) => `${marker}${seriesName}：${value}`
+            )
+            .join('<br />')}`;
         },
-        legend: {
-          itemWidth: 8,
-          itemHeight: 8,
-          bottom: 0,
-          left: 'center',
-          icon: 'circle',
-          textStyle: {
+      },
+      legend: {
+        itemWidth: 8,
+        itemHeight: 8,
+        bottom: 0,
+        left: 'center',
+        icon: 'circle',
+        textStyle: {
+          color: 'rgba(0, 0, 0, 0.45)',
+        },
+      },
+      grid: {
+        top: 10,
+        left: 0,
+        right: 20,
+        bottom: 24,
+        containLabel: true,
+      },
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+        axisLine: {
+          lineStyle: {
             color: 'rgba(0, 0, 0, 0.45)',
           },
         },
-        grid: {
-          top: 10,
-          left: 0,
-          right: 20,
-          bottom: 24,
-          containLabel: true,
+        axisLabel: {
+          color: 'rgba(0, 0, 0, 0.65)',
+          formatter: time => moment(time).format('MM-DD'),
         },
-        xAxis: {
-          type: 'time',
-          boundaryGap: false,
-          axisLine: {
-            lineStyle: {
-              color: 'rgba(0, 0, 0, 0.45)',
-            },
-          },
-          axisLabel: {
-            color: 'rgba(0, 0, 0, 0.65)',
-            formatter: time => moment(time).format('MM-DD'),
-          },
-          splitLine: {
-            show: false,
-          },
-          minInterval: 24 * 60 * 60 * 1000,
-          splitNumber: 7,
+        splitLine: {
+          show: false,
         },
-        yAxis: {
-          axisLine: {
-            lineStyle: {
-              color: 'rgba(0, 0, 0, 0.45)',
-            },
+        minInterval: 24 * 60 * 60 * 1000,
+        splitNumber: 7,
+      },
+      yAxis: {
+        axisLine: {
+          lineStyle: {
+            color: 'rgba(0, 0, 0, 0.45)',
           },
-          axisLabel: {
-            color: 'rgba(0, 0, 0, 0.65)',
-          },
-          splitLine: {
-            show: false,
-          },
-          minInterval: 1,
         },
-        series: [
-          {
-            name: '监测设备数量',
-            type: 'line',
-            data: alarmTrend.map(({ happenTime, equipmentCount }) => ({
-              name: happenTime,
-              value: [happenTime, equipmentCount],
-            })),
-            smooth: true,
-            areaStyle: {
-              opacity: 0.5,
-            },
+        axisLabel: {
+          color: 'rgba(0, 0, 0, 0.65)',
+        },
+        splitLine: {
+          show: false,
+        },
+        minInterval: 1,
+      },
+      series: [
+        {
+          name: '监测设备数量',
+          type: 'line',
+          data: alarmTrend.map(({ happenTime, equipmentCount }) => ({
+            name: happenTime,
+            value: [happenTime, equipmentCount],
+          })),
+          smooth: true,
+          areaStyle: {
+            opacity: 0.5,
           },
-        ],
-      };
+        },
+      ],
+    };
 
     return (
       <Card className={styles.card}>
@@ -716,7 +721,7 @@ export default class GasHistory extends Component {
   /**
    * 预警/告警次数趋势
    */
-  renderTrend2Chart() {
+  renderTrend2Chart () {
     const {
       gasMonitor: { countTrend = [] },
     } = this.props;
@@ -823,8 +828,8 @@ export default class GasHistory extends Component {
           {countTrend && countTrend.length ? (
             <ReactEcharts style={{ height: '100%' }} option={option} />
           ) : (
-            <CustomEmpty />
-          )}
+              <CustomEmpty />
+            )}
         </div>
       </Card>
     );
@@ -833,7 +838,7 @@ export default class GasHistory extends Component {
   /**
    * 监测设备报警/误报排名
    */
-  renderRankingTable() {
+  renderRankingTable () {
     const {
       gasMonitor: { rank },
     } = this.props;
@@ -901,8 +906,8 @@ export default class GasHistory extends Component {
               onChange={this.handleRankTableChange}
             />
           ) : (
-            <CustomEmpty />
-          )}
+              <CustomEmpty />
+            )}
         </div>
       </Card>
     );
@@ -911,7 +916,7 @@ export default class GasHistory extends Component {
   /**
    * 列表
    */
-  renderTable() {
+  renderTable () {
     const {
       gasMonitor: {
         historyList: { list = [], pagination: { total, pageNum, pageSize } = {} } = {},
@@ -974,7 +979,7 @@ export default class GasHistory extends Component {
           `${condition === '>=' ? '超过' : '低于'}${+warnLevel === 1 ? '预警' : '告警'}值${toFixed(
             Math.abs(limitValue - monitorValue)
           )}${paramUnit}（${+warnLevel === 1 ? '预警' : '告警'}${
-            condition === '>=' ? '上限' : '下限'
+          condition === '>=' ? '上限' : '下限'
           }为${limitValue}${paramUnit}）`,
       },
       {
@@ -1073,23 +1078,23 @@ export default class GasHistory extends Component {
                   showQuickJumper: true,
                   showSizeChanger: true,
                 }}
-                // rowSelection={{
-                //   selectedRowKeys,
-                //   onChange: this.handleSelectedRowKeysChange,
-                // }}
+              // rowSelection={{
+              //   selectedRowKeys,
+              //   onChange: this.handleSelectedRowKeysChange,
+              // }}
               />
             ) : (
-              <div className={styles.cardContent}>
-                <CustomEmpty />
-              </div>
-            )}
+                <div className={styles.cardContent}>
+                  <CustomEmpty />
+                </div>
+              )}
           </Col>
         </Row>
       </Card>
     );
   }
 
-  render() {
+  render () {
     const { loading } = this.props;
     const { type } = this.state;
 
@@ -1115,8 +1120,8 @@ export default class GasHistory extends Component {
                 </Col>
               </Fragment>
             ) : (
-              <Col span={24}>{this.renderTable()}</Col>
-            )}
+                <Col span={24}>{this.renderTable()}</Col>
+              )}
           </Row>
         </Spin>
       </PageHeaderLayout>
