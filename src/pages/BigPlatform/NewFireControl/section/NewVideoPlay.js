@@ -123,7 +123,8 @@ class VideoPlay extends Component {
   };
 
   handleInit = () => {
-    const { dispatch, videoList, keyId, showList } = this.props;
+    const { dispatch, videoList, keyId, showList, visible } = this.props;
+    if (!visible) return;
     let videoId = '';
     let deviceId = null;
     // 如果现实列表

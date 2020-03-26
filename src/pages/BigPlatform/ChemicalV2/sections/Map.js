@@ -88,6 +88,15 @@ const FourColors = [
     label: '低风险',
   },
 ];
+const filterMarkerList = markerList => {
+  return markerList.filter(({ pointFixInfoList }) => {
+    if (pointFixInfoList && pointFixInfoList.length > 0) {
+      const [{ isShow }] = pointFixInfoList;
+      if (+isShow) return true;
+    }
+    return false;
+  });
+};
 
 @connect(
   ({
@@ -246,19 +255,22 @@ export default class Map extends PureComponent {
 
   renderPoints = (pointsInfo, iconType) => {
     if (!pointsInfo.length) return;
+    const { visibles } = this.state;
     pointsInfo.map(item => {
       const { warnStatus, status } = item;
       const { groupId, xnum, ynum, znum, isShow } = item.pointFixInfoList[0];
       if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
       if (!+isShow) return null;
-      this.addMarkers(+groupId, {
+      const marker = this.addMarkers(+groupId, {
         x: +xnum,
         y: +ynum,
         z: +znum,
         url: warnStatus === -1 ? controls[iconType].alarmIcon : controls[iconType].markerIcon,
         iconType,
         markerProps: item,
+        groupId: +groupId,
       });
+      if (marker) marker.show = visibles[iconType];
       return null;
     });
   };
@@ -405,7 +417,7 @@ export default class Map extends PureComponent {
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
         // 点击图标
         const {
-          opts_: { iconType, markerProps, x, y, z, height },
+          opts_: { iconType, markerProps, x, y, z, height, groupId: markerGroupId },
         } = clickedObj;
         switch (iconType) {
           case 0:
@@ -431,12 +443,12 @@ export default class Map extends PureComponent {
             break;
           case 3:
             // 特种设备
-            this.handleShowSpecialInfo(markerProps, { x, y, z, height, groupID });
+            this.handleShowSpecialInfo(markerProps, { x, y, z, height, groupID: markerGroupId });
             break;
           case -1:
             // 变更预警
             const { zoneId } = markerProps;
-            this.handleShowChangeWarning(zoneId, { x, y, z, height, groupID });
+            this.handleShowChangeWarning(zoneId, { x, y, z, height, groupID: markerGroupId });
             break;
           default:
             console.log('iconType', iconType);
@@ -502,7 +514,11 @@ export default class Map extends PureComponent {
     //添加绑定marker信息窗
     const noData = '--';
     const ctlOpt = {
-      mapCoord,
+      mapCoord: {
+        ...mapCoord,
+        z: 1,
+        height: 0,
+      },
       //设置弹框的宽度
       width: 450,
       //设置弹框的高度px
@@ -802,6 +818,7 @@ export default class Map extends PureComponent {
 
     markerLayer.addMarker(im); //图片标注层添加图片Marker
     this.markerArray.push(im);
+    return im;
   };
 
   addPolygon = (gId, points, color, polygonProps = {}) => {
@@ -860,6 +877,7 @@ export default class Map extends PureComponent {
     map.groupIDs.map(gId => {
       const group = map.getFMGroup(gId);
       //遍历图层
+      if (!group) return;
       group.traverse(fm => {
         if (fm instanceof fengmap.FMImageMarker) {
           const {
@@ -943,7 +961,10 @@ export default class Map extends PureComponent {
         onDuty: { presentCar = 0, recSuccess = 0 },
         truckCount,
         inOutRecordList,
+        riskPoint,
+        monitorEquipment,
       },
+      specialEquipment: { list: specialEquipmentList },
       user: {
         currentUser: {
           companyBasicInfo: { mapIp },
@@ -951,6 +972,13 @@ export default class Map extends PureComponent {
       },
       licensePlateRecognitionSystem: { abnormalRecordList },
     } = this.props;
+    const controlDataList = [
+      filterMarkerList(riskPoint),
+      filterMarkerList(videoList).filter(({ status }) => status && +status === 1),
+      filterMarkerList(monitorEquipment),
+      filterMarkerList(specialEquipmentList),
+    ];
+    const controlDataLength = controlDataList.filter(list => list.length > 0).length;
 
     return (
       <Fragment>
@@ -984,12 +1012,19 @@ export default class Map extends PureComponent {
             </GDMap>
           )}
           {!gdMapVisible && (
-            <div className={styles.controlContainer}>
+            <div
+              className={styles.controlContainer}
+              style={{
+                left: `calc(50% - ${0.5 *
+                  (120 * controlDataLength + 20 * (controlDataLength - 1))}px)`,
+              }}
+            >
               {controls.map((item, index) => {
                 const { label, icon, activeIcon } = item;
                 const itemStyles = classnames(styles.controlItem, {
                   [styles.active]: visibles[index],
                 });
+                if (controlDataList[index].length === 0) return null;
                 return (
                   <div
                     className={itemStyles}
@@ -1069,16 +1104,16 @@ export default class Map extends PureComponent {
               onClick={this.handlePosition}
             />
           )}
-          {videoVisible && (
-            <NewVideoPlay
-              showList={true}
-              videoList={videoList.map(item => ({ ...item, key_id: item.keyId }))}
-              visible={videoVisible}
-              keyId={keyId} // keyId
-              handleVideoClose={() => this.setState({ videoVisible: false })}
-              isTree={false}
-            />
-          )}
+          <NewVideoPlay
+            showList={true}
+            videoList={videoList
+              .map(item => ({ ...item, key_id: item.keyId }))
+              .filter(({ status }) => status && +status === 1)}
+            visible={videoVisible}
+            keyId={keyId} // keyId
+            handleVideoClose={() => this.setState({ videoVisible: false })}
+            isTree={false}
+          />
         </div>
         <TruckModal
           visible={truckModalVisible}

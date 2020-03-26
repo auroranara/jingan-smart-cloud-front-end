@@ -1599,16 +1599,14 @@ export default class Chemical extends PureComponent {
           dict={specialEquipDict}
         />
 
-        {videoVisible && (
-          <NewVideoPlay
-            showList={true}
-            videoList={videoList}
-            visible={videoVisible}
-            keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
-            handleVideoClose={() => this.setState({ videoVisible: false })}
-            isTree={false}
-          />
-        )}
+        <NewVideoPlay
+          showList={true}
+          videoList={videoList}
+          visible={videoVisible}
+          keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
+          handleVideoClose={() => this.setState({ videoVisible: false })}
+          isTree={false}
+        />
 
         <MonitorDrawer
           visible={monitorDrawerVisible}
