@@ -70,8 +70,9 @@ export default class TableList extends PureComponent {
     })
   };
 
-  handleReset = () => {
-    this.toobar.props.form.resetFields()
+  handleReset = (vals, form) => {
+    // this.toobar.props.form.resetFields()
+    form.setFieldsValue({ registrationDate: [] });
     this.handleQuery()
   };
 

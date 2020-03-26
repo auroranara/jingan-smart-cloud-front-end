@@ -103,8 +103,8 @@ export default class IdentificationRecord extends PureComponent {
         type: tabActiveKey,
         // startTime: time && time.length ? time[0].unix() * 1000 : undefined,
         // endTime: time && time.length ? time[1].unix() * 1000 : undefined,
-        startTime: time ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
-        endTime: time ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        startTime: time && time[0] ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        endTime: time && time[1] ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
         companyId: company.id,
       },
     });
@@ -113,9 +113,10 @@ export default class IdentificationRecord extends PureComponent {
   // 点击重置
   handleReset = () => {
     const {
-      form: { resetFields },
+      form: { resetFields, setFieldsValue },
     } = this.props;
     resetFields();
+    setFieldsValue({ time: [] });
     this.handleQuery();
   };
 

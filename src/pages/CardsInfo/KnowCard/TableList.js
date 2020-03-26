@@ -59,7 +59,8 @@ export default class TableList extends PureComponent {
     this.getList();
   };
 
-  handleReset = () => {
+  handleReset = (values, form) => {
+    form.setFieldsValue({ time: null });
     this.values = {};
     this.getList();
   };

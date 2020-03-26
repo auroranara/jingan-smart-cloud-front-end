@@ -102,6 +102,7 @@ export default class AlarmMessage extends Component {
       render: () => <DatePickerOrSpan placeholder={['开始时间', '结束时间']} format={DEFAULT_FORMAT} showTime allowClear type="RangePicker" style={{ width: '100%' }} />,
       options: {
         getValueFromEvent: this.getRangeFromEvent,
+        initialValue: [],
       },
     },
     {

@@ -62,6 +62,7 @@ export default class AlarmWorkOrderList extends Component {
     {
       id: 'range',
       label: '工单创建时间',
+      options: { initialValue: [] },
       // span: {
       //   xl: 16,
       //   sm: 24,

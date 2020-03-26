@@ -48,6 +48,9 @@ export default class OperationRecordList extends Component {
       //   xs: 24,
       // },
       render: () => <DatePickerOrSpan placeholder={['开始时间', '结束时间']} allowClear type="RangePicker" style={{ width: '100%' }} />,
+      options: {
+        initialValue: [],
+      },
     },
   ])
 

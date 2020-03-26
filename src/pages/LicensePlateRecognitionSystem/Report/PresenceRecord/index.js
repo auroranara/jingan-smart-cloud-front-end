@@ -138,6 +138,7 @@ export default class PresenceRecord extends Component {
         />
       ),
       options: {
+        initialValue: [],
         getValueFromEvent: this.getRangeFromEvent,
       },
     },
@@ -155,6 +156,7 @@ export default class PresenceRecord extends Component {
         />
       ),
       options: {
+        initialValue: [],
         getValueFromEvent: this.getRangeFromEvent2,
       },
     },

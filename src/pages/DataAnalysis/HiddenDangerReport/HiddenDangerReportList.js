@@ -382,6 +382,8 @@ export default class App extends PureComponent {
       documentTypeIds,
       query_start_time,
       query_end_time,
+      company_id,
+      company_name,
       ...rest
     } = payload;
     // 重置控件
@@ -394,6 +396,7 @@ export default class App extends PureComponent {
             ]
           : [],
       documentTypeIds: documentTypeIds && documentTypeIds.split(','),
+      companyId: company_id ? { key: company_id, label: company_name } : undefined,
       ...rest,
     });
 
@@ -431,7 +434,7 @@ export default class App extends PureComponent {
     });
 
     // 根据用户类型获取单位
-    payload.company_id &&
+    payload.companyId &&
       dispatch({
         type: 'hiddenDangerReport/fetchUnitListFuzzy',
         payload: {
@@ -474,7 +477,7 @@ export default class App extends PureComponent {
         currentUser: { id },
       },
     } = this.props;
-    const { createTime, documentTypeIds, report_source, company_id, ...rest } = getFieldsValue();
+    const { createTime, documentTypeIds, report_source, companyId, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime || [];
 
     const payload = {
@@ -486,10 +489,10 @@ export default class App extends PureComponent {
       documentTypeIds:
         documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
       report_source: report_source,
-      company_id,
-      company_name:
-        unitIdes.find(item => item.id === company_id) &&
-        unitIdes.find(item => item.id === company_id).name,
+      company_id: companyId ? companyId.key : undefined,
+      company_name: companyId ? companyId.label : undefined,
+        // unitIdes.find(item => item.id === company_id) &&
+        // unitIdes.find(item => item.id === company_id).name,
     };
     // 获取隐患列表
     dispatch({
@@ -515,9 +518,10 @@ export default class App extends PureComponent {
     // 重置控件
     setFieldsValue({
       grid_id: undefined,
-      company_id: undefined,
+      // company_id: undefined,
+      companyId: undefined,
       code: undefined,
-      createTime: undefined,
+      createTime: [],
       report_source: undefined,
       status: undefined,
       business_type: undefined,
@@ -637,12 +641,15 @@ export default class App extends PureComponent {
       query_start_time,
       query_end_time,
       company_id,
+      company_name,
       ...rest
     } = fieldsValue;
+
     // 重置控件
     setFieldsValue({
       grid_id: undefined,
       // company_id: undefined,
+      companyId: company_id ? { key: company_id, label: company_name } : undefined,
       code: undefined,
       report_source: undefined,
       status: undefined,
@@ -807,11 +814,30 @@ export default class App extends PureComponent {
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.company_name}>
-                {getFieldDecorator('company_id')(
-                  <AutoComplete
+                {getFieldDecorator('companyId')(
+                  // <AutoComplete
+                  //   allowClear
+                  //   mode="combobox"
+                  //   optionLabelProp="children"
+                  //   dropdownStyle={{ zIndex: 50 }}
+                  //   placeholder="请选择"
+                  //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                  //   onSearch={this.handleUnitIdChange}
+                  //   onSelect={this.handleUnitSelect}
+                  //   // onBlur={this.handleUnitIdBlur}
+                  //   filterOption={false}
+                  // >
+                  //   {unitIdes.map(({ id, name }) => (
+                  //     <Option value={id} key={id}>
+                  //       {name}
+                  //     </Option>
+                  //   ))}
+                  // </AutoComplete>
+                  <Select
                     allowClear
-                    mode="combobox"
-                    optionLabelProp="children"
+                    showSearch
+                    labelInValue
+                    showArrow={false}
                     dropdownStyle={{ zIndex: 50 }}
                     placeholder="请选择"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
@@ -825,7 +851,7 @@ export default class App extends PureComponent {
                         {name}
                       </Option>
                     ))}
-                  </AutoComplete>
+                  </Select>
                 )}
               </Form.Item>
             </Col>
