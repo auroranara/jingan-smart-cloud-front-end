@@ -362,6 +362,7 @@ export default class PersonnelAdd extends PureComponent {
       this.handleICSearch.cancel();
       setFieldsValue({
         icnumber: undefined,
+        entranceNumber: undefined,
       });
       this.fetchTagCard({ companyId: curCompanyId, status: 1 });
     } else {
@@ -396,6 +397,7 @@ export default class PersonnelAdd extends PureComponent {
     if (value === undefined) {
       this.handleSNSearch.cancel();
       setFieldsValue({
+        icnumber: undefined,
         entranceNumber: undefined,
       });
       this.fetchTagCard({ companyId: curCompanyId, status: 1 });
