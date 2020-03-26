@@ -61,6 +61,7 @@ export default class Edit extends PureComponent {
         } = detail;
         const view = list.find(item => item);
         setFieldsValue(handleDetails(view));
+        this.setState({ personId: view.personId === null ? undefined : view.personId });
       },
     });
   };
@@ -76,16 +77,17 @@ export default class Edit extends PureComponent {
       },
       dispatch,
     } = this.props;
-
     e.preventDefault();
     validateFields((errors, values) => {
       if (errors) return;
+      const { personId } = this.state;
       const { companyId, icNumber, snNumber, labelType, note } = values;
       const vals = {
         companyId: companyId.key || unitId,
         icNumber,
         snNumber,
         labelType,
+        personId,
         note,
       };
       const tag = id ? '编辑' : '新增';
@@ -119,10 +121,25 @@ export default class Edit extends PureComponent {
     } else callback('格式不正确');
   };
 
+  validateIc = (rule, value, callback) => {
+    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+    const spaceRe = new RegExp(/^[^ ]+$/);
+    if (value && value.length < 50 && !chineseRe.test(value) && spaceRe.test(value)) {
+      callback();
+    } else callback('格式不正确');
+  };
+
   validateSn = (rule, value, callback) => {
     const snRe = new RegExp(/[0-9a-fA-F]$/);
     const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
-    if (value && value.length === 12 && snRe.test(value) && !chineseRe.test(value)) {
+    const spaceRe = new RegExp(/^[^ ]+$/);
+    if (
+      value &&
+      value.length === 12 &&
+      snRe.test(value) &&
+      !chineseRe.test(value) &&
+      spaceRe.test(value)
+    ) {
       callback();
     } else callback('必须为12位数');
   };
@@ -168,6 +185,7 @@ export default class Edit extends PureComponent {
         ),
         placeholder: '请输入IC卡号',
         otherRule: this.validateIc,
+        icLabel: 'IC卡号',
       },
       {
         name: 'snNumber',
@@ -181,6 +199,7 @@ export default class Edit extends PureComponent {
           </span>
         ),
         otherRule: this.validateSn,
+        snLabel: 'SN卡号',
       },
       {
         name: 'labelType',

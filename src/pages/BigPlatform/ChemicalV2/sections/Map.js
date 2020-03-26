@@ -331,7 +331,7 @@ export default class Map extends PureComponent {
 
     //2D、3D控件配置
     const toolControl = new fengmap.toolControl(map, {
-      init2D: false, //初始化2D模式
+      init2D: defaultViewMode === fengMap.FMViewMode.MODE_2D, //初始化2D模式
       groupsButtonNeeded: false, //设置为false表示只显示2D,3D切换按钮
       position: fengmap.controlPositon.LEFT_TOP,
       offset: { x: 0, y: 40 },

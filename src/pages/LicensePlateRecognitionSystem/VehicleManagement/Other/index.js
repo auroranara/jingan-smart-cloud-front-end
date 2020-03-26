@@ -39,7 +39,15 @@ const FIELDNAMES = {
   key: 'id',
   value: 'transitCompanyName',
 };
-
+const MAPPER3 = {
+  namespace: 'realNameCertification',
+  list: 'tagCardData',
+  getList: 'fetchTagCardList',
+};
+const FIELDNAMES2 = {
+  key: 'id',
+  value: 'snNumber',
+};
 export default class VehicleOther extends Component {
   shouldComponentUpdate(nextProps) {
     return nextProps.match.params.unitId !== this.props.match.params.unitId;
@@ -72,6 +80,8 @@ export default class VehicleOther extends Component {
     supercargoTel,
     supercargoPhotoList,
     grantList,
+    snNumber,
+    labelId,
   }) => ({
     carNumber: carNumber || undefined,
     brand: brand || undefined,
@@ -79,6 +89,7 @@ export default class VehicleOther extends Component {
     carType: isNumber(carType) ? `${carType}` : undefined,
     ownerType: isNumber(ownerType) ? `${ownerType}` : undefined,
     ownerCompany: ownerCompanyId ? { key: ownerCompanyId, label: ownerCompanyName } : undefined,
+    snNumber: labelId ? { key: labelId, label: snNumber } : undefined,
     load: load || undefined,
     byDate: byDate ? moment(byDate) : undefined,
     produceDate: produceDate ? moment(produceDate) : undefined,
@@ -112,6 +123,7 @@ export default class VehicleOther extends Component {
     startDate,
     validDate,
     grantList,
+    snNumber,
     ...payload
   }) => {
     return {
@@ -121,6 +133,7 @@ export default class VehicleOther extends Component {
       produceDate: produceDate && produceDate.format(DEFAULT_FORMAT),
       startDate: startDate && startDate.format(DEFAULT_FORMAT),
       validDate: validDate && validDate.format(DEFAULT_FORMAT),
+      snNumber: snNumber ? snNumber.label : undefined,
       grantList:
         grantList &&
         grantList.map(({ id, type, children }) => ({
@@ -303,12 +316,22 @@ export default class VehicleOther extends Component {
               },
             ]
           : []),
-        // {
-        //   id: 'locationCardId',
-        //   label: '定位卡号',
-        //   component: 'Input',
-        //   span: SPAN,
-        // },
+        {
+          id: 'snNumber',
+          label: '定位卡号',
+          component: AsyncSelect,
+          props: {
+            mapper: MAPPER3,
+            fieldNames: FIELDNAMES2,
+            placeholder: '请选择定位卡号',
+            params: {
+              companyId: unitId,
+              status: 1,
+              personCar: 0,
+            },
+          },
+          span: SPAN,
+        },
         {
           id: 'carPhotoList',
           label: '车辆照片',
@@ -432,6 +455,7 @@ export default class VehicleOther extends Component {
         params: { id },
       },
     } = this.props;
+    console.log('1221', this.transform);
     const props = {
       key: id,
       breadcrumbList: this.getBreadcrumbList,

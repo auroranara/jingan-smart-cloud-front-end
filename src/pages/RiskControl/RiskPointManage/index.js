@@ -7,7 +7,7 @@ import {
   Input, // Modal,
   message, BackTop, Spin, Col, Row, Select,
 } from 'antd';
-import { Link, routerRedux } from 'dva/router';
+import { Link } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
@@ -16,6 +16,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './index.less';
 import codesMap from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
+import router from 'umi/router';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -67,8 +68,12 @@ export default class RiskPointManage extends PureComponent {
     this.formData = defaultFormData;
   }
   // 生命周期函数
-  componentDidMount() {
-    const { dispatch } = this.props;
+  componentDidMount () {
+    const { dispatch, user: { isCompany, currentUser } } = this.props;
+    if (isCompany) {
+      router.replace(`/risk-control/risk-point-manage/risk-point-List/${currentUser.companyId}?companyId=${currentUser.companyId}&&companyName=${currentUser.companyName}`);
+      return;
+    }
     // 获取单位列表
     dispatch({
       type: 'riskPointManage/fetchCompanyList',
@@ -151,7 +156,7 @@ export default class RiskPointManage extends PureComponent {
   };
 
   // 渲染form表单
-  renderForm() {
+  renderForm () {
     const {
       form: { getFieldDecorator },
       riskPointManage: { statusList },
@@ -205,7 +210,7 @@ export default class RiskPointManage extends PureComponent {
   }
 
   // 渲染列表
-  renderList() {
+  renderList () {
     const {
       riskPointManage: { list },
       user: {
@@ -280,16 +285,16 @@ export default class RiskPointManage extends PureComponent {
                         </Link>
                       </Col>
                     ) : (
-                      <Col
-                        span={8}
-                        onClick={() => {
-                          message.warn('您没有权限访问对应页面');
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <span className={styles.quantity}>{pointCount}</span>
-                      </Col>
-                    )}
+                        <Col
+                          span={8}
+                          onClick={() => {
+                            message.warn('您没有权限访问对应页面');
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <span className={styles.quantity}>{pointCount}</span>
+                        </Col>
+                      )}
 
                     {companyStatus === '2' && <div className={styles.status}>禁用</div>}
                   </Row>
@@ -302,7 +307,7 @@ export default class RiskPointManage extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       loading,
       riskPointManage: {

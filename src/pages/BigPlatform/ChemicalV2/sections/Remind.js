@@ -19,6 +19,11 @@ const list = [
     url: 'base-info/registered-engineer-management/list',
   },
   {
+    name: '安全生产资格证管理',
+    key: 'safecertificateManage',
+    url: 'base-info/safe-certificate-management/list',
+  },
+  {
     name: '工业产品生产许可证',
     key: 'productLicence',
     url: 'unit-license/industrial-product-licence/list',
@@ -28,25 +33,41 @@ const list = [
     key: 'hazardchemicalCertificate',
     url: 'unit-license/danger-chemicals-permit/list',
   },
-  { name: '特种设备', key: 'specialEquip', url: 'facility-management/special-equipment/list' },
-  { name: '安全设施', key: 'safeFacilities', url: 'facility-management/safety-facilities/list' },
-  {
-    name: '安全制度管理',
-    key: 'securityRuleManage',
-    url: 'safety-production-regulation/safety-system/list',
-  },
   {
     name: '特种作业操作证人员',
     key: 'specialworkPerson',
     url: 'operation-safety/special-operation-permit/list',
   },
   {
-    name: '特种设备作业人员',
+    name: '特种设备作业人员证',
     key: 'specialequipPerson',
     url: 'operation-safety/special-equipment-operators/list',
   },
+  {
+    name: '复评预警管理',
+    key: 'reviewWarn',
+    url: 'risk-control/reevaluate-warning/list',
+  },
   { name: '应急预案', key: 'emergencyPlan', url: 'emergency-management/emergency-plan/list' },
+  { name: '特种设备', key: 'specialEquip', url: 'facility-management/special-equipment/list' },
+  { name: '安全设施', key: 'safeFacilities', url: 'facility-management/safety-facilities/list' },
   { name: '应急装备', key: 'emergencyEquip', url: 'emergency-management/emergency-equipment/list' },
+  {
+    name: '安全制度管理',
+    key: 'securityRuleManage',
+    url: 'safety-production-regulation/safety-system/list',
+  },
+  {
+    name: '操作规程',
+    key: 'hgOperatingInstruction',
+    url: 'safety-production-regulation/operating-procedures/list',
+  },
+
+  {
+    name: '检查表维护',
+    key: 'hgCheckList',
+    url: 'safety-production-regulation/check-list-maintenance/list',
+  },
 ];
 const Size = 4;
 
