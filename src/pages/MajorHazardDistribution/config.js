@@ -82,10 +82,10 @@ export const WEBSOCKET_OPTIONS = {
 export const FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 export const SURROUNDING_TYPE_MAPPER = {
-  1: '住宅',
-  2: '生产',
-  3: '机关',
-  4: '公共',
-  5: '交通',
+  1: '住宅区',
+  2: '生产单位',
+  3: '机关团体',
+  4: '公共场所',
+  5: '交通要道',
   6: '其他',
 };

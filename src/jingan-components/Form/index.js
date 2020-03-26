@@ -43,7 +43,6 @@ export default class FormForm extends Component {
       Map,
       AMap,
     };
-    console.log(componentReference);
 
     return <div>123</div>;
   }
