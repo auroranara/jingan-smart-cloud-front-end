@@ -382,7 +382,7 @@ export default class ProductionAreaAdd extends Component {
             {isNotDetail ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
             ) : (
-                <AuthButton code={codes.operatingProcedures.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
+                <AuthButton code={codes.electronicInspection.productionArea.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
               )}
           </div>
         </Spin>
