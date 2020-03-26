@@ -3,6 +3,7 @@ import { Input } from 'antd';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
+import TextAreaEllipsis from '@/jingan-components/View/TextAreaEllipsis';
 import MajorHazardSelect from '../components/MajorHazardSelect';
 import MonitorObjectSelect from '../components/MonitorObjectSelect';
 import Ellipsis from '@/components/Ellipsis';
@@ -187,7 +188,7 @@ export default class AlarmMessage extends Component {
     {
       title: '消息内容',
       dataIndex: 'messageContent',
-      render: value => <div style={{ textAlign: 'left', whiteSpace: 'pre-line' }}>{value}</div>,
+      render: value => <TextAreaEllipsis value={value} length={20} />,
       align: 'center',
     },
     {
@@ -196,17 +197,15 @@ export default class AlarmMessage extends Component {
       render: value =>
         value &&
         value.length > 0 && (
-          <div style={{ textAlign: 'left' }}>
-            站内信：
-            <Ellipsis length={20} tooltip>
-              {value
-                .map(
-                  ({ accept_user_name, status }) =>
-                    `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`
-                )
-                .join('，')}
-            </Ellipsis>
-          </div>
+          <TextAreaEllipsis
+            value={`站内信：${value
+              .map(
+                ({ accept_user_name, status }) =>
+                  `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`
+              )
+              .join('，')}`}
+            length={20}
+          />
         ),
       align: 'center',
     },

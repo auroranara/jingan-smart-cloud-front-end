@@ -83,3 +83,21 @@
     vertical-align: top;
   }
 }
+.carouselWrapper {
+  display: flex;
+
+  & > :first-child {
+    flex: 1;
+    width: 0;
+  }
+
+  & > :nth-child(2) {
+    flex: none;
+  }
+
+  .alarmMessageItem {
+    padding-left: 2em;
+    background: url('../assets/icon-alarm.png') no-repeat left top;
+    background-size: 21px;
+  }
+}

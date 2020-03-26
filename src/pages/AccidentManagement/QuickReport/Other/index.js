@@ -483,6 +483,7 @@ export default class ReportOther extends Component {
                 placeholder="请选择事故发生时间"
                 showTime
                 allowClear={false}
+                unknown=""
               />
             ),
             options: {
@@ -834,6 +835,7 @@ export default class ReportOther extends Component {
                 placeholder="请选择最近更新时间"
                 showTime
                 allowClear={false}
+                unknown=""
               />
             ),
           },
