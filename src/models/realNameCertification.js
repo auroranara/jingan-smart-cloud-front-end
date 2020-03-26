@@ -23,9 +23,8 @@ import {
   queryTagCardDel,
   queryTagExport,
 } from '@/services/realNameCertification';
-import moment from 'moment';
-
 import fileDownload from 'js-file-download';
+import moment from 'moment';
 
 const defaultData = {
   list: [],
@@ -213,6 +212,12 @@ export default {
     tagCarDetail: {
       data: [],
     },
+    // 通道类型字典
+    channelTypeDict: [{ key: '1', value: '双向' }, { key: '2', value: '单向' }],
+    // 在线状态字典
+    onlineStateDict: [{ key: '1', value: '在线' }, { key: '2', value: '不在线', color: 'red' }],
+    // 方向字典
+    directionDict: [{ key: '1', value: '出口' }, { key: '2', value: '入口' }],
   },
   effects: {
     // 获取企业列表
@@ -354,7 +359,6 @@ export default {
       const res = yield call(deleteChannel, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
-
     // 标签卡列表
     *fetchTagCardList({ payload, callback }, { call, put }) {
       const response = yield call(queryTagCardList, { ...payload });
@@ -366,7 +370,6 @@ export default {
         if (callback) callback(response);
       }
     },
-
     // 新增标签卡
     *fetchTagCardAdd({ payload, callback }, { call, put }) {
       const response = yield call(queryTagCardAdd, payload);
@@ -493,7 +496,6 @@ export default {
         idenSearchInfo: action.payload || {},
       };
     },
-
     saveTagCardList(state, { payload }) {
       const { data } = payload;
       return {

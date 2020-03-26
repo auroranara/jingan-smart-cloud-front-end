@@ -325,7 +325,7 @@ export default class Chemical extends PureComponent {
       },
     } = this.props;
     // 公告
-    this.fetchNotice({ pageSize: 0, pageNum: 1, companyId });
+    this.fetchNotice({ pageSize: 1, pageNum: 1, companyId });
     // socket消息
     this.handleSocket();
     // 获取企业信息
@@ -1599,16 +1599,14 @@ export default class Chemical extends PureComponent {
           dict={specialEquipDict}
         />
 
-        {videoVisible && (
-          <NewVideoPlay
-            showList={true}
-            videoList={videoList}
-            visible={videoVisible}
-            keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
-            handleVideoClose={() => this.setState({ videoVisible: false })}
-            isTree={false}
-          />
-        )}
+        <NewVideoPlay
+          showList={true}
+          videoList={videoList}
+          visible={videoVisible}
+          keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
+          handleVideoClose={() => this.setState({ videoVisible: false })}
+          isTree={false}
+        />
 
         <MonitorDrawer
           visible={monitorDrawerVisible}

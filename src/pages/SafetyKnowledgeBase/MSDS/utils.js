@@ -85,6 +85,8 @@ function genFormItem(field, getFieldDecorator) {
     wrapperClassName,
     onChange,
     otherRule,
+    icLabel,
+    snLabel,
   } = field;
 
   let child = null;
@@ -94,7 +96,7 @@ function genFormItem(field, getFieldDecorator) {
     const formOptions = formItemOptions || {};
     const opts = getOptions(options);
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
-
+    const otherLabel = icLabel || snLabel || label;
     let component = null;
     const rules = [];
     switch (type) {
@@ -143,7 +145,7 @@ function genFormItem(field, getFieldDecorator) {
         component = <Input placeholder={placeholder} disabled={disabled} allowClear />;
     }
 
-    rules.unshift({ required, message: `${label}不能为空` });
+    rules.unshift({ required, message: `${otherRule ? otherLabel : label}不能为空` });
     formOptions.rules = rules;
 
     child = getFieldDecorator(name, formOptions)(component);

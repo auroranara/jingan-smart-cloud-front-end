@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 // import Link from 'umi/link';
 import { Input, Divider, Select } from 'antd';
-import Ellipsis from '@/components/Ellipsis';
 
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import codes from '@/utils/codes';

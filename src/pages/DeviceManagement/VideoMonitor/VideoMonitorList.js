@@ -16,6 +16,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './VideoMonitorList.less';
 import codesMap from '@/utils/codes';
 import { hasAuthority, AuthButton } from '@/utils/customAuth';
+import router from 'umi/router';
+
 const FormItem = Form.Item;
 
 //面包屑
@@ -60,8 +62,12 @@ export default class VideoMonitorList extends PureComponent {
     this.formData = defaultFormData;
   }
   // 生命周期函数
-  componentDidMount() {
-    const { dispatch } = this.props;
+  componentDidMount () {
+    const { dispatch, user: { isCompany, currentUser } } = this.props;
+    if (isCompany) {
+      router.replace(`/device-management/video-monitor/video-equipment/${currentUser.companyId}?name=${currentUser.companyName}`);
+      return;
+    }
     // 获取视频单位列表
     dispatch({
       type: 'videoMonitor/fetchCompanyList',
@@ -144,7 +150,7 @@ export default class VideoMonitorList extends PureComponent {
   };
 
   /* 渲染form表单 */
-  renderForm() {
+  renderForm () {
     const {
       form: { getFieldDecorator },
       user: {
@@ -185,7 +191,7 @@ export default class VideoMonitorList extends PureComponent {
   }
 
   /* 渲染列表 */
-  renderList() {
+  renderList () {
     const {
       videoMonitor: { list },
       user: {
@@ -230,16 +236,16 @@ export default class VideoMonitorList extends PureComponent {
                         </Link>
                       </Col>
                     ) : (
-                      <Col
-                        span={8}
-                        onClick={() => {
-                          message.warn('您没有权限访问对应页面');
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <span className={styles.quantity}>{videoCount}</span>
-                      </Col>
-                    )}
+                        <Col
+                          span={8}
+                          onClick={() => {
+                            message.warn('您没有权限访问对应页面');
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <span className={styles.quantity}>{videoCount}</span>
+                        </Col>
+                      )}
                   </Row>
                 </Card>
               </List.Item>
@@ -250,7 +256,7 @@ export default class VideoMonitorList extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       loading,
       videoMonitor: {
