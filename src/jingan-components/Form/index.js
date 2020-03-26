@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form } from 'antd';
+import { Form, Button } from 'antd';
 import Input from './Input';
 import Select from './Select';
 import DatePicker from './DatePicker';
@@ -28,6 +28,10 @@ export default class FormForm extends Component {
 
   formRef = React.createRef();
 
+  handleFinish = values => {
+    console.log(values);
+  };
+
   render() {
     // const {  }  = this.props;
     const componentReference = {
@@ -44,7 +48,18 @@ export default class FormForm extends Component {
       AMap,
     };
 
-    return <div>123</div>;
+    return (
+      <Form ref={this.formRef} onFinish={this.handleFinish}>
+        <Form.Item>
+          <Input />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    );
   }
 }
 

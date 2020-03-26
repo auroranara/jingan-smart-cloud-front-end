@@ -6,7 +6,6 @@ export default class Test extends Component {
     return (
       <div>
         <Form />
-        <Input />
       </div>
     );
   }
