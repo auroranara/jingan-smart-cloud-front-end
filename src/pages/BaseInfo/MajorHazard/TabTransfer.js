@@ -13,6 +13,7 @@ const TableTransfer = ({ leftColumns, rightColumns, dangerType, ...restProps }) 
       //disabled: listDisabled,
     }) => {
       const columns = direction === 'left' ? leftColumns : rightColumns;
+
       const filterData =
         dangerType === '1'
           ? filteredItems.filter(item => item.isDanger !== '1')
@@ -20,7 +21,7 @@ const TableTransfer = ({ leftColumns, rightColumns, dangerType, ...restProps }) 
             ? filteredItems.filter(item => item.majorHazard !== '1')
             : filteredItems.filter(item => item.dangerSource !== '1');
       const dataList = direction === 'left' ? filterData : filteredItems;
-      console.log('dataList', dataList);
+
       const rowSelection = {
         onSelectAll(selected, selectedRows) {
           const treeSelectedKeys = selectedRows.map(({ key }) => key);
