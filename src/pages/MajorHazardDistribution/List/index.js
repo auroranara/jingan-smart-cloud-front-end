@@ -1,13 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { message, Spin, List, Card, Row, Col, notification, Empty } from 'antd';
+import { message, Spin, List, Card, Row, Col, notification, Empty, Carousel, Skeleton } from 'antd';
 import Map from '@/jingan-components/Form/Map';
 // import Radio from '@/jingan-components/Form/Radio';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import TextAreaEllipsis from '@/jingan-components/View/TextAreaEllipsis';
 import Ellipsis from '@/components/Ellipsis';
 import Company from '@/templates/Company';
-import Link from 'umi/link';
+import Link from '@/jingan-components/View/Link';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
@@ -33,6 +33,8 @@ import {
   FORMAT,
   UPDATE_LIST_API,
   SAVE_API,
+  ALARM_MESSAGE_LIST_API,
+  ALARM_MESSAGE_CODE,
 } from '../config';
 import iconVideo from '../assets/icon-video.png';
 import iconToxicGas from '../assets/icon-toxic-gas.png';
@@ -77,7 +79,13 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
         currentUser: { unitType, unitId: unitId1, permissionCodes },
       },
       common: { mapList },
-      [NAMESPACE]: { list, combustibleGasPointList, toxicGasPointList, videoPointList },
+      [NAMESPACE]: {
+        list,
+        combustibleGasPointList,
+        toxicGasPointList,
+        videoPointList,
+        alarmMessageList,
+      },
       loading: {
         effects: {
           [MAP_LIST_API]: loadingMapList,
@@ -86,6 +94,7 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
           [TOXIC_GAS_POINT_LIST_API]: loadingToxicGasPointList,
           [VIDEO_POINT_LIST_API]: loadingVideoPointList,
           [UPDATE_LIST_API]: updating,
+          [ALARM_MESSAGE_LIST_API]: loadingAlarmMessageList,
         },
       },
     },
@@ -123,7 +132,10 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
       loadingToxicGasPointList,
       videoPointList,
       loadingVideoPointList,
+      alarmMessageList,
+      loadingAlarmMessageList,
       hasDetailAuthority: permissionCodes.includes(DETAIL_CODE),
+      hasAlarmMessageAuthority: permissionCodes.includes(ALARM_MESSAGE_CODE),
       goToCompany() {
         router.push(companyUrl);
       },
@@ -251,6 +263,24 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
           payload,
         });
       },
+      getAlarmMessageList(payload, callback) {
+        dispatch({
+          type: ALARM_MESSAGE_LIST_API,
+          payload: {
+            companyId: unitId,
+            overFlag: 0,
+            dangerSource: 1,
+            statusTypes: '-1,1',
+            ...payload,
+          },
+          callback(success, data) {
+            if (!success) {
+              message.error('获取报警消息列表数据失败，请稍后重试！');
+            }
+            callback && callback(success, data);
+          },
+        });
+      },
     };
   }
 )
@@ -292,6 +322,7 @@ export default class MajorHazardDistributionList extends Component {
       getCombustibleGasPointList,
       getToxicGasPointList,
       getVideoPointList,
+      getAlarmMessageList,
     } = this.props;
     this.setState({
       ...DEFAULT_STATE,
@@ -388,9 +419,9 @@ export default class MajorHazardDistributionList extends Component {
               url: iconVideoMarker,
               size: 36,
               height: 1,
-              // callback(marker) {
-              //   marker.alwaysShow();
-              // },
+              callback(marker) {
+                marker.alwaysShow();
+              },
             };
             result.push(options);
           }
@@ -417,9 +448,9 @@ export default class MajorHazardDistributionList extends Component {
               url: iconCombustibleGasMarker,
               size: 36,
               height: 1,
-              // callback(marker) {
-              //   marker.alwaysShow();
-              // },
+              callback(marker) {
+                marker.alwaysShow();
+              },
             };
             result.push(options);
           }
@@ -448,9 +479,9 @@ export default class MajorHazardDistributionList extends Component {
               url: iconToxicGasMarker,
               size: 36,
               height: 1,
-              // callback(marker) {
-              //   marker.alwaysShow();
-              // },
+              callback(marker) {
+                marker.alwaysShow();
+              },
             };
             result.push(options);
           }
@@ -464,6 +495,7 @@ export default class MajorHazardDistributionList extends Component {
         }));
       }
     });
+    getAlarmMessageList();
 
     this.ws && this.ws.close();
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
@@ -489,13 +521,17 @@ export default class MajorHazardDistributionList extends Component {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data).data;
-        const { dangerSourceId, dangerSourceWarnStatus } = data;
+        const { dangerSourceId, dangerSourceWarnStatus, statusType } = data;
         console.log(data);
         // if (['405', '406'].includes(`${data.monitorEquipmentType}`)) {
         //   if (['1', '2'].includes(`${data.warnLevel}`)) {
         //     this.showNotification(data);
         //   }
         // }
+        if ([-1, 1].includes(+statusType)) {
+          const { getAlarmMessageList } = this.props;
+          getAlarmMessageList();
+        }
         if (dangerSourceId) {
           const { save, list } = this.props;
           const obj = list.find(item => item.id === dangerSourceId);
@@ -682,7 +718,6 @@ export default class MajorHazardDistributionList extends Component {
       disabledMapButtonList = [],
       imageMarkerList,
       polygonMarkerList,
-      loadingMap,
       modelList,
       videoPointList = [],
       combustibleGasPointList = [],
@@ -760,7 +795,7 @@ export default class MajorHazardDistributionList extends Component {
                     },
                     {
                       key: '重大危险源等级',
-                      value: LEVELS[item.dangerLevel],
+                      value: LEVELS[item.dangerLevel - 1],
                     },
                     {
                       key: '区域位置',
@@ -823,12 +858,15 @@ export default class MajorHazardDistributionList extends Component {
       location,
       match,
       goToList,
+      alarmMessageList,
       loadingMapList = false,
       loadingList = false,
       loadingCombustibleGasPointList = false,
       loadingToxicGasPointList = false,
       loadingVideoPointList = false,
       updating = false,
+      loadingAlarmMessageList = false,
+      hasAlarmMessageAuthority,
     } = this.props;
     const { type, loadingMap } = this.state;
 
@@ -840,6 +878,45 @@ export default class MajorHazardDistributionList extends Component {
         // action={
         //   <Radio list={TYPES} value={type} onChange={this.handleTypeChange} buttonStyle="solid" />
         // }
+        content={
+          loadingAlarmMessageList ? (
+            <Skeleton active />
+          ) : (
+            alarmMessageList &&
+            alarmMessageList.length > 0 && (
+              <div className={styles.carouselWrapper}>
+                <div>
+                  <Carousel
+                    className={styles.carousel}
+                    autoplay
+                    autoplaySpeed={5000}
+                    dotPosition="right"
+                    dots={false}
+                  >
+                    {alarmMessageList.map(({ id, happenTime, messageContent }) => {
+                      return (
+                        <div className={styles.alarmMessageItem} key={id}>
+                          <TextAreaEllipsis
+                            value={`${moment(happenTime).format(FORMAT)}\n${messageContent}`}
+                          />
+                        </div>
+                      );
+                    })}
+                  </Carousel>
+                </div>
+                <div>
+                  <Link
+                    disabled={!hasAlarmMessageAuthority}
+                    to={ALARM_MESSAGE_PATH}
+                    target="_blank"
+                  >
+                    查看更多
+                  </Link>
+                </div>
+              </div>
+            )
+          )
+        }
         tabList={TYPES}
         tabActiveKey={type}
         onTabChange={this.handleTypeChange}

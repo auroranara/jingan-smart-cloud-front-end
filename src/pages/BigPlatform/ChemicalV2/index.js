@@ -325,7 +325,7 @@ export default class Chemical extends PureComponent {
       },
     } = this.props;
     // 公告
-    this.fetchNotice({ pageSize: 0, pageNum: 1, companyId });
+    this.fetchNotice({ pageSize: 1, pageNum: 1, companyId });
     // socket消息
     this.handleSocket();
     // 获取企业信息

@@ -38,6 +38,8 @@ export const UPDATE_LIST_API = `${NAMESPACE}/updateList`;
 
 export const SAVE_API = `${NAMESPACE}/save`;
 
+export const ALARM_MESSAGE_LIST_API = `${NAMESPACE}/getAlarmMessageList`;
+
 export const DETAIL_CODE = `monitoringAndEarlyWarning.${NAMESPACE}.detail`;
 
 export const SECURITY_CODE = `monitoringAndEarlyWarning.${NAMESPACE}.security`;
@@ -47,6 +49,8 @@ export const TANK_CODE = `majorHazardInfo.storageAreaManagement.edit`;
 export const ALARM_WORK_ORDER_CODE = `companyIot.alarmWorkOrder.detail`;
 
 export const MONITOR_TREND_CODE = `companyIot.alarmWorkOrder.monitorTrend`;
+
+export const ALARM_MESSAGE_CODE = `companyIot.alarmMessage.list`;
 
 export const TYPES = [{ key: '1', tab: '列表' }, { key: '2', tab: '地图' }];
 
@@ -78,10 +82,10 @@ export const WEBSOCKET_OPTIONS = {
 export const FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 export const SURROUNDING_TYPE_MAPPER = {
-  1: '住宅',
-  2: '生产',
-  3: '机关',
-  4: '公共',
-  5: '交通',
+  1: '住宅区',
+  2: '生产单位',
+  3: '机关团体',
+  4: '公共场所',
+  5: '交通要道',
   6: '其他',
 };

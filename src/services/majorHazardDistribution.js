@@ -62,3 +62,8 @@ export async function getSurroundingList(params) {
     `/acloud_new/v2/surroundEnvironment/surroundEnvironment/page?${stringify(params)}`
   );
 }
+
+// 获取报警消息列表
+export async function getAlarmMessageList(params) {
+  return request(`/acloud_new/v2/monitor/sensorStatusHistory/list?${stringify(params)}`);
+}

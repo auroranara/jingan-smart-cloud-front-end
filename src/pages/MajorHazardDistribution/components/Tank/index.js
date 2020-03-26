@@ -114,6 +114,7 @@ const Tank = ({
                   status: '2,0',
                 })}`}
                 disabled={!hasAlarmWorkOrderAuthority}
+                target="_blank"
               >
                 处理报警
               </Link>
@@ -161,12 +162,13 @@ const Tank = ({
             <Link
               to={`/major-hazard-info/storage-management/edit/${id}`}
               disabled={!hasTankAuthority}
+              target="_blank"
             >
               储罐基础信息>>
             </Link>
           </Col>
           <Col className={styles.col} {...GRID}>
-            <Link to={`${securityUrl}/${id}`} disabled={!hasSecurityAuthority}>
+            <Link to={`${securityUrl}/${id}`} disabled={!hasSecurityAuthority} target="_blank">
               查看安防措施>>
             </Link>
           </Col>

@@ -107,7 +107,7 @@ const Gas = ({
         <div className={styles.workOrderJumperWrapper}>
           {noFinishWarningProcessId && (
             <Link
-              to={`/company-iot/alarm-work-order/detail/${id}`}
+              to={`/company-iot/alarm-work-order/detail/${noFinishWarningProcessId}`}
               disabled={!hasAlarmWorkOrderAuthority}
             >
               当前报警工单>>
