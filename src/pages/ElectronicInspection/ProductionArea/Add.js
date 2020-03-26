@@ -67,7 +67,7 @@ export default class ProductionAreaAdd extends Component {
                   const temp = list && list.length ? this.expandTree(list) : [];
                   if (temp.findIndex(item => item.id === department) > -1) {
                     this.form && this.form.setFieldsValue({ department: department || undefined });
-                  } else message.warning('请重新选择单位')
+                  } else message.warning('请重新选择部门')
                 }, 0);
               },
             });
