@@ -1,10 +1,11 @@
 import React, { Component, Fragment, createRef } from 'react';
-import '@ant-design/compatible/assets/index.css';
-import { Form } from '@ant-design/compatible';
+// import '@ant-design/compatible/assets/index.css';
+// import { Form } from '@ant-design/compatible';
 import {
   Button,
   Input,
   Card,
+  Form,
   Table,
   message,
   Modal,
