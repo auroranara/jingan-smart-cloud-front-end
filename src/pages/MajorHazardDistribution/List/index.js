@@ -795,7 +795,7 @@ export default class MajorHazardDistributionList extends Component {
                     },
                     {
                       key: '重大危险源等级',
-                      value: LEVELS[item.dangerLevel],
+                      value: LEVELS[item.dangerLevel - 1],
                     },
                     {
                       key: '区域位置',

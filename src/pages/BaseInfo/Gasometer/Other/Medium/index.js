@@ -215,9 +215,9 @@ export default class Medium extends Component {
           loading={loading}
           onChange={this.handleTableChange}
           pagination={{
-            current: pageNum,
-            pageSize,
-            total,
+            current: pageNum || 1,
+            pageSize: pageSize || getPageSize(),
+            total: total || 0,
             pageSizeOptions: ['5', '10', '15', '20'],
             // showTotal: total => `共 ${total} 条`,
             showQuickJumper: true,

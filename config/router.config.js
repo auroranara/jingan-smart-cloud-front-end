@@ -2249,115 +2249,115 @@ module.exports = env => {
           ],
         },
 
-        {
-          path: '/security-manage', // 安防管理
-          code: 'securityManage',
-          icon: 'security-scan',
-          name: 'securityManage',
-          systemType: 3,
-          routes: [
-            {
-              path: '/security-manage/video-identity', // 视频智能识别管理
-              code: 'securityManage.videoIdentity',
-              name: 'videoIdentity',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/security-manage/video-identity',
-                  name: 'videoIdentity',
-                  redirect: '/security-manage/entrance-and-exit-monitor/company-list',
-                },
-              ],
-            },
-            {
-              path: '/security-manage/entrance-and-exit-monitor', // 出入口监测
-              code: 'securityManage.entranceAndExitMonitor',
-              name: 'entranceAndExitMonitor',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/security-manage/entrance-and-exit-monitor',
-                  name: 'entranceAndExitMonitor',
-                  redirect: '/security-manage/entrance-and-exit-monitor/company-list',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/company-list',
-                  code: 'securityManage.entranceAndExitMonitor.listView',
-                  name: 'companyList',
-                  component: './SecurityManage/EntranceAndExitMonitor/CompanyList',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/face-database/:id',
-                  code: 'securityManage.entranceAndExitMonitor.faceDatabaseView',
-                  name: 'faceDatabase',
-                  component: './SecurityManage/EntranceAndExitMonitor/FaceDatabase',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/face-recognition-camera/:id',
-                  code: 'securityManage.entranceAndExitMonitor.cameraView',
-                  name: 'faceRecognitionCamera',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraList',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/camera-add',
-                  code: 'securityManage.entranceAndExitMonitor.cameraView',
-                  name: 'cameraAdd',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/camera-edit/:id',
-                  code: 'securityManage.entranceAndExitMonitor.cameraView',
-                  name: 'cameraEdit',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/camera-detail/:id',
-                  code: 'securityManage.entranceAndExitMonitor.cameraView',
-                  name: 'cameraDetail',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraDetail',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-list/:id',
-                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
-                  name: 'monitoringPoints',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsList',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-detail/:id',
-                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
-                  name: 'monitoringPointsDetail',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsDetail',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-add',
-                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
-                  name: 'monitoringPointsAdd',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-edit/:id',
-                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
-                  name: 'monitoringPointsEdit',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/alarm-record/:id',
-                  code: 'securityManage.entranceAndExitMonitor.alarmRecordView',
-                  name: 'alarmRecord',
-                  component: './SecurityManage/EntranceAndExitMonitor/AlarmRecord',
-                },
-              ],
-            },
-          ],
-        },
+        // {
+        //   path: '/security-manage', // 安防管理
+        //   code: 'securityManage',
+        //   icon: 'security-scan',
+        //   name: 'securityManage',
+        //   systemType: 3,
+        //   routes: [
+        //     {
+        //       path: '/security-manage/video-identity', // 视频智能识别管理
+        //       code: 'securityManage.videoIdentity',
+        //       name: 'videoIdentity',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/security-manage/video-identity',
+        //           name: 'videoIdentity',
+        //           redirect: '/security-manage/entrance-and-exit-monitor/company-list',
+        //         },
+        //       ],
+        //     },
+        //     {
+        //       path: '/security-manage/entrance-and-exit-monitor', // 出入口监测
+        //       code: 'securityManage.entranceAndExitMonitor',
+        //       name: 'entranceAndExitMonitor',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor',
+        //           name: 'entranceAndExitMonitor',
+        //           redirect: '/security-manage/entrance-and-exit-monitor/company-list',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/company-list',
+        //           code: 'securityManage.entranceAndExitMonitor.listView',
+        //           name: 'companyList',
+        //           component: './SecurityManage/EntranceAndExitMonitor/CompanyList',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/face-database/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.faceDatabaseView',
+        //           name: 'faceDatabase',
+        //           component: './SecurityManage/EntranceAndExitMonitor/FaceDatabase',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/face-recognition-camera/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.cameraView',
+        //           name: 'faceRecognitionCamera',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraList',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/camera-add',
+        //           code: 'securityManage.entranceAndExitMonitor.cameraView',
+        //           name: 'cameraAdd',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/camera-edit/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.cameraView',
+        //           name: 'cameraEdit',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/camera-detail/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.cameraView',
+        //           name: 'cameraDetail',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraDetail',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/monitoring-points-list/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+        //           name: 'monitoringPoints',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsList',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/monitoring-points-detail/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+        //           name: 'monitoringPointsDetail',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsDetail',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/monitoring-points-add',
+        //           code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+        //           name: 'monitoringPointsAdd',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/monitoring-points-edit/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+        //           name: 'monitoringPointsEdit',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/alarm-record/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.alarmRecordView',
+        //           name: 'alarmRecord',
+        //           component: './SecurityManage/EntranceAndExitMonitor/AlarmRecord',
+        //         },
+        //       ],
+        //     },
+        //   ],
+        // },
 
         // 企业生产全流程管理系统
         {
