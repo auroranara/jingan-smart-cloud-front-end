@@ -28,3 +28,8 @@ export async function deleteProductionArea (params) {
     method: 'DELETE',
   })
 }
+
+// 获取负责人列表
+export async function fetchPersonList (params) {
+  return request(`/acloud_new/v2/education/examStudents?${stringify(params)}`)
+}

@@ -679,7 +679,7 @@ export default class Edit extends PureComponent {
             )}
           </FormItem>
           {cofferAreaVisible && (
-            <FormItem {...formItemLayout} label="围堰所围面积">
+            <FormItem {...formItemLayout} label="围堰所围面积（㎡）">
               {getFieldDecorator('cofferArea', {
                 getValueFromEvent: this.handleTrim,
                 rules: [

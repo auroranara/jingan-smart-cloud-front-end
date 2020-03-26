@@ -271,10 +271,10 @@ export default class ProductionAreaList extends Component {
         key: '负责人',
         align: 'left',
         width: 200,
-        render: (val, { principalContent, departmentName }) => (
+        render: (val, { principalContent = {} }) => (
           <div style={{ textAlign: 'left' }}>
             <p>姓名：{principalContent.userName || ''}</p>
-            <p>部门：{departmentName || ''}</p>
+            <p>部门：{principalContent.departmentName || ''}</p>
             <p>联系电话：{principalContent.phoneNumber || ''}</p>
           </div>
         ),
@@ -297,7 +297,7 @@ export default class ProductionAreaList extends Component {
             <Divider type="vertical" />
             <AuthPopConfirm
               title="你确定要删除该数据吗?"
-              authority={deleteCode}
+              code={deleteCode}
               onConfirm={() => this.handleDelete(row.id)}
             >
               删除
