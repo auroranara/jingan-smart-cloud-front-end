@@ -11,6 +11,7 @@ import {
   getTankAreaMonitorList,
   getSecurityList,
   getSurroundingList,
+  getAlarmMessageList,
 } from '@/services/majorHazardDistribution';
 import { isNumber } from '@/utils/utils';
 
@@ -30,6 +31,7 @@ export default {
     tankMonitorList: [],
     securityList: [],
     surroundingList: {},
+    alarmMessageList: [],
   },
 
   effects: {
@@ -285,6 +287,23 @@ export default {
           },
         });
         callback && callback(true, item);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取报警消息列表
+    *getAlarmMessageList({ payload, callback }, { call, put }) {
+      const response = yield call(getAlarmMessageList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const alarmMessageList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            alarmMessageList,
+          },
+        });
+        callback && callback(true, alarmMessageList);
       } else {
         callback && callback(false, msg);
       }

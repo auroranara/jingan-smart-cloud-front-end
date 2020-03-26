@@ -28,7 +28,7 @@ const {
 } = codes;
 const addUrl = '/major-hazard-info/high-risk-process/add';
 const editUrl = '/major-hazard-info/high-risk-process/edit/';
-const detailUrl = '/major-hazard-info/high-risk-process/detail/'
+const detailUrl = '/major-hazard-info/high-risk-process/detail/';
 const { Option } = Select;
 const title = '高危工艺流程';
 const breadcrumbList = [
@@ -65,8 +65,8 @@ export default class HighRiskProcessList extends PureComponent {
     detail: {},
   };
 
-  componentDidMount () {
-    this.handleQuery()
+  componentDidMount() {
+    this.handleQuery();
   }
 
   // 查询数据
@@ -75,8 +75,8 @@ export default class HighRiskProcessList extends PureComponent {
     dispatch({
       type: 'majorHazardInfo/fetchHighRiskProcessList',
       payload: { pageNum: 1, pageSize: DEFAULT_PAGE_SIZE, ...payload },
-    })
-  }
+    });
+  };
 
   goToAdd = () => {
     // confirm({
@@ -89,26 +89,27 @@ export default class HighRiskProcessList extends PureComponent {
     router.push(addUrl);
   };
 
-
   handleReset = () => {
     const { resetFields } = this.props.form;
-    resetFields()
-    this.handleQuery()
+    resetFields();
+    this.handleQuery();
   };
 
   // 删除数据
-  handleDelete = (id) => {
-    const { dispatch } = this.props
+  handleDelete = id => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'majorHazardInfo/deleteHighRiskProcess',
       payload: { id },
       success: () => {
-        message.success('删除成功')
-        this.handleQuery()
+        message.success('删除成功');
+        this.handleQuery();
       },
-      error: (res) => { message.error(res ? res.msg : '删除失败') },
-    })
-  }
+      error: res => {
+        message.error(res ? res.msg : '删除失败');
+      },
+    });
+  };
 
   // 点击编辑
   handleToEdit = id => {
@@ -120,11 +121,11 @@ export default class HighRiskProcessList extends PureComponent {
     //   onOk () { router.push(editUrl + id); },
     // });
     router.push(editUrl + id);
-  }
+  };
 
   /**
- * 获取可绑定监测设备列表
- */
+   * 获取可绑定监测设备列表
+   */
   fetchMonitoringDevice = ({
     payload = { pageNum: 1, pageSize: DEFAULT_PAGE_SIZE },
     ...res
@@ -158,14 +159,14 @@ export default class HighRiskProcessList extends PureComponent {
       payload: {
         ...payload,
         companyId: detail.companyId,
-        targetId: detail.id,
+        selfTargetId: detail.id,
       },
     });
   };
 
   /**
- * 绑定传感器
- */
+   * 绑定传感器
+   */
   handleBind = () => {
     const { dispatch } = this.props;
     const { selectedKeys, detail } = this.state;
@@ -192,8 +193,8 @@ export default class HighRiskProcessList extends PureComponent {
   };
 
   /**
- * 解绑监测设备
- */
+   * 解绑监测设备
+   */
   handleunBind = id => {
     const { dispatch } = this.props;
     const { detail } = this.state;
@@ -216,8 +217,8 @@ export default class HighRiskProcessList extends PureComponent {
   };
 
   /**
- * 点击打开可绑定传感器弹窗
- */
+   * 点击打开可绑定传感器弹窗
+   */
   handleViewBind = detail => {
     this.setState({ detail, selectedKeys: [] }, () => {
       this.fetchMonitoringDevice();
@@ -226,8 +227,8 @@ export default class HighRiskProcessList extends PureComponent {
   };
 
   /**
- * 打开已绑定传感器弹窗
- */
+   * 打开已绑定传感器弹窗
+   */
   handleViewBindedModal = detail => {
     this.setState({ detail }, () => {
       this.fetchBindedMonitoringDevice();
@@ -240,23 +241,27 @@ export default class HighRiskProcessList extends PureComponent {
       user: { isCompany },
     } = this.props;
     const fields = [
-      ...isCompany ? [] : [{
-        id: 'processName',
-        render () {
-          return <Input placeholder="请输入高危工艺名称" />;
-        },
-        transform,
-      }],
+      ...(isCompany
+        ? []
+        : [
+            {
+              id: 'processName',
+              render() {
+                return <Input placeholder="请输入高危工艺名称" />;
+              },
+              transform,
+            },
+          ]),
       {
         id: 'unifiedCode',
-        render () {
+        render() {
           return <Input placeholder="请输入统一编码" />;
         },
         transform,
       },
       {
         id: 'sisLevel',
-        render () {
+        render() {
           const options = [
             { value: '1', name: '1级' },
             { value: '2', name: '2级' },
@@ -285,7 +290,7 @@ export default class HighRiskProcessList extends PureComponent {
       },
       {
         id: 'iskeySupervisionProcess',
-        render () {
+        render() {
           const options = [{ value: '1', name: '是' }, { value: '0', name: '否' }];
           return (
             <Select
@@ -309,7 +314,7 @@ export default class HighRiskProcessList extends PureComponent {
       },
       {
         id: 'companyName',
-        render () {
+        render() {
           return <Input placeholder="请输入单位名称" />;
         },
         transform,
@@ -321,7 +326,7 @@ export default class HighRiskProcessList extends PureComponent {
         <InlineForm
           fields={fields}
           gutter={{ lg: 48, md: 24 }}
-          onSearch={(values) => this.handleQuery(values)}
+          onSearch={values => this.handleQuery(values)}
           onReset={this.handleReset}
           action={
             <AuthButton type="primary" onClick={this.goToAdd} code={addCode}>
@@ -333,7 +338,7 @@ export default class HighRiskProcessList extends PureComponent {
     );
   };
 
-  render () {
+  render() {
     const {
       modalLoading,
       loading = false,
@@ -341,36 +346,48 @@ export default class HighRiskProcessList extends PureComponent {
         // 高危工艺流程
         highRiskProcess: {
           list = [],
-          pagination: {
-            pageNum = 1,
-            pageSize = 10,
-            total = 0,
-          },
+          pagination: { pageNum = 1, pageSize = 10, total = 0 },
           companyNum, // 单位数量
         },
         keySupervisionProcessOptions,
       },
-      user: { currentUser: { permissionCodes }, isCompany },
+      user: {
+        currentUser: { permissionCodes },
+        isCompany,
+      },
       device: { monitoringDevice },
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
 
     const columns = [
-      ...isCompany ? [] : [{
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
-        width: 300,
-      }],
+      ...(isCompany
+        ? []
+        : [
+            {
+              title: '单位名称',
+              dataIndex: 'companyName',
+              align: 'center',
+              width: 300,
+            },
+          ]),
       {
         title: '基本信息',
         key: '基本信息',
         align: 'center',
         render: (val, { processName, unifiedCode, reactionType }) => (
           <div style={{ textAlign: 'left' }}>
-            <div>高危工艺名称：{processName}</div>
-            <div>统一编码：{unifiedCode}</div>
-            <div>反应类型：{reactionType}</div>
+            <div>
+              高危工艺名称：
+              {processName}
+            </div>
+            <div>
+              统一编码：
+              {unifiedCode}
+            </div>
+            <div>
+              反应类型：
+              {reactionType}
+            </div>
           </div>
         ),
         width: 300,
@@ -380,14 +397,16 @@ export default class HighRiskProcessList extends PureComponent {
         dataIndex: 'middleList',
         align: 'center',
         width: 250,
-        render: (val) => val && val.length ? val.map(item => item.chineName).join('、') : '暂无数据',
+        render: val =>
+          val && val.length ? val.map(item => item.chineName).join('、') : '暂无数据',
       },
       {
         title: '最终产品',
         dataIndex: 'finalList',
         align: 'center',
         width: 250,
-        render: (val) => val && val.length ? val.map(item => item.chineName).join('、') : '暂无数据',
+        render: val =>
+          val && val.length ? val.map(item => item.chineName).join('、') : '暂无数据',
       },
       {
         title: '安全仪表系统',
@@ -402,7 +421,9 @@ export default class HighRiskProcessList extends PureComponent {
         width: 250,
         render: (val, { iskeySupervisionProcess, keySupervisionProcess }) => {
           if (+iskeySupervisionProcess === 0) return '否';
-          const target = keySupervisionProcessOptions.find(item => +item.value === +keySupervisionProcess);
+          const target = keySupervisionProcessOptions.find(
+            item => +item.value === +keySupervisionProcess
+          );
           return `是${target ? `，${target.label}` : ''}`;
         },
       },
@@ -432,7 +453,9 @@ export default class HighRiskProcessList extends PureComponent {
               绑定监测设备
             </AuthA>
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleToEdit(row.id)}>编辑</AuthA>
+            <AuthA code={editCode} onClick={() => this.handleToEdit(row.id)}>
+              编辑
+            </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
@@ -459,7 +482,9 @@ export default class HighRiskProcessList extends PureComponent {
       loading: modalLoading,
       rowSelection: {
         selectedRowKeys: selectedKeys,
-        onChange: (selectedKeys) => { this.setState({ selectedKeys }) },
+        onChange: selectedKeys => {
+          this.setState({ selectedKeys });
+        },
       },
       unbindAuthority,
     };
@@ -482,8 +507,12 @@ export default class HighRiskProcessList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位数量：{companyNum || 0}
-            <span style={{ marginLeft: 15 }}>高危工艺流程：{total}</span>
+            单位数量：
+            {companyNum || 0}
+            <span style={{ marginLeft: 15 }}>
+              高危工艺流程：
+              {total}
+            </span>
             {/* <span style={{ marginLeft: 15 }}>已绑监测设备数：0</span> */}
           </div>
         }
@@ -510,16 +539,16 @@ export default class HighRiskProcessList extends PureComponent {
               total={total}
               onChange={(pageNum, pageSize) => this.handleQuery({ pageNum, pageSize })}
               onShowSizeChange={(pageNum, pageSize) => this.handleQuery({ pageNum: 1, pageSize })}
-            // showTotal={total => `共 ${total} 条`}
+              // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-            <Spin spinning={loading}>
-              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-                <span>暂无数据</span>
-              </Card>
-            </Spin>
-          )}
+          <Spin spinning={loading}>
+            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+              <span>暂无数据</span>
+            </Card>
+          </Spin>
+        )}
         {/* 绑定监测设备弹窗 */}
         <MonitoringDeviceModal {...bindModalProps} />
         {/* 已绑定监测设备弹窗 */}

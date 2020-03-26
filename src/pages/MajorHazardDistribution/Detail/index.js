@@ -473,7 +473,11 @@ export default class MajorHazardDistributionDetail extends Component {
                   <Row>
                     <Col span={8}>
                       <div className={styles.padding}>
-                        <Link to={`${securityUrl}/${id}`} disabled={!hasSecurityAuthority}>
+                        <Link
+                          to={`${securityUrl}/${id}`}
+                          disabled={!hasSecurityAuthority}
+                          target="_blank"
+                        >
                           查看安防措施>>
                         </Link>
                       </div>
@@ -483,6 +487,7 @@ export default class MajorHazardDistributionDetail extends Component {
                         <Link
                           to={`/major-hazard-info/storage-area-management/detail/${id}`}
                           disabled={!hasSecurityAuthority}
+                          target="_blank"
                         >
                           更多基础信息>>
                         </Link>
@@ -789,7 +794,7 @@ export default class MajorHazardDistributionDetail extends Component {
         location,
         dutyPerson,
         recordDate,
-        useData,
+        useDate,
         dangerTechnology,
         minSpace,
         safetyDistance,
@@ -822,7 +827,7 @@ export default class MajorHazardDistributionDetail extends Component {
         tab: (
           <Fragment>
             监测报警
-            {alarmCount !== null && <Badge className={styles.badge} count={alarmCount} showZero />}
+            {alarmCount !== null && <Badge className={styles.badge} count={alarmCount} />}
           </Fragment>
         ),
       },
@@ -836,7 +841,7 @@ export default class MajorHazardDistributionDetail extends Component {
         breadcrumbList={breadcrumbList}
         title={breadcrumbList[breadcrumbList.length - 1].title}
         action={
-          <Link to={securityUrl} disabled={!hasSecurityAuthority}>
+          <Link to={securityUrl} disabled={!hasSecurityAuthority} target="_blank">
             查看安防措施
           </Link>
         }
@@ -857,7 +862,7 @@ export default class MajorHazardDistributionDetail extends Component {
                     },
                     {
                       key: '重大危险源等级',
-                      value: LEVELS[dangerLevel],
+                      value: LEVELS[dangerLevel - 1],
                     },
                     {
                       key: '区域位置',
@@ -883,7 +888,7 @@ export default class MajorHazardDistributionDetail extends Component {
                     },
                     {
                       key: '投用日期',
-                      value: useData && moment(useData).format('YYYY.MM.DD'),
+                      value: useDate && moment(useDate).format('YYYY.MM.DD'),
                     },
                     {
                       key: '涉及危险工艺',

@@ -164,7 +164,7 @@ export default class GasometerList extends Component {
       pageNum,
       pageSize,
       companyId: data.companyId,
-      targetId: data.id,
+      selfTargetId: data.id,
     });
     this.form2 &&
       (this.prevValues2 ? this.form2.setFieldsValue(this.prevValues2) : this.form2.resetFields());
@@ -184,7 +184,7 @@ export default class GasometerList extends Component {
     getMonitorDeviceList({
       pageSize,
       companyId: data.companyId,
-      targetId: data.id,
+      selfTargetId: data.id,
     });
     this.form2 && this.form2.resetFields();
     this.prevValues2 = null;
@@ -290,7 +290,7 @@ export default class GasometerList extends Component {
       companyId: data.companyId,
       ...(type
         ? {
-            targetId: data.id,
+            selfTargetId: data.id,
           }
         : {
             bindTargetId: data.id,
@@ -323,7 +323,7 @@ export default class GasometerList extends Component {
       companyId: data.companyId,
       ...(type
         ? {
-            targetId: data.id,
+            selfTargetId: data.id,
           }
         : {
             bindTargetId: data.id,
