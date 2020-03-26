@@ -164,7 +164,7 @@ export default class TableList extends PureComponent {
       message.error('尚未上传结束');
     }
     if (!isExcel) {
-      message.error('上传失败，请上传.xls或者.xls格式');
+      message.error('上传失败，请上传.xls或者.xlsx格式');
     }
     return isExcel && !importLoading;
   };
