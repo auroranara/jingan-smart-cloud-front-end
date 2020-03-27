@@ -66,6 +66,21 @@ export default class Test extends Component {
               props: {
                 format: 'YYYY-MM-DD HH:mm:ss',
                 showTime: true,
+                // picker: 'week',
+                // originalMode: 'month',
+              },
+              enableDefaultRules: true,
+            },
+            {
+              key: 'range',
+              label: '范围',
+              component: 'RangePicker',
+              props: {
+                format: 'YYYY-MM-DD HH:mm:ss',
+                showTime: true,
+                // picker: 'week',
+                // originalMode: 'month',
+                onChange: v => console.log(v),
               },
               enableDefaultRules: true,
             },
