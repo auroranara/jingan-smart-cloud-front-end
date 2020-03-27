@@ -247,6 +247,8 @@ export class GasCard extends MonitorCard {
               <div>{paramDesc}</div>
               <div>{realValue ? `${realValue}${paramUnit || ''}` : EMPTY_FILLING}</div>
             </div>
+            {/* 报警时闪烁红点 */}
+            {+status > 0 && (<div className={styles.warningIcon}></div>)}
           </div>
           <div className={styles.flexCenter}>
             <div className={styles.labelContainer}>

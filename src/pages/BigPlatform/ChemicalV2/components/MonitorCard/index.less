@@ -85,6 +85,19 @@
         line-height: 1em;
         text-align: center;
       }
+
+      .warningIcon {
+        position: absolute;
+        top: 7%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: red;
+        width: 7px;
+        height: 7px;
+        border-radius: 100%;
+        box-shadow: 0 0 4px 2px red;
+        animation: flicker 1.5s infinite alternate;
+      }
     }
 
     .flexCenter {
@@ -167,4 +180,14 @@
 
 .greenText {
   color: #03D666;
+}
+
+@keyframes flicker {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
