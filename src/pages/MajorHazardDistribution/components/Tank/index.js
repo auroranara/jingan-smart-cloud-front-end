@@ -7,6 +7,7 @@ import { stringify } from 'qs';
 import moment from 'moment';
 import { toFixed } from '@/utils/utils';
 import { FORMAT } from '../../config';
+import iconAlarm from '../../assets/icon-alarm.png';
 import styles from './index.less';
 
 const GRID = {
@@ -99,28 +100,27 @@ const Tank = ({
               )
             )}
         </div>
-        {isAlarm && (
-          <div className={styles.alarmWrapper}>
-            {noFinishWarnProcessCount > 0 && (
-              <Link
-                className={styles.alarmHandler}
-                to={`/company-iot/alarm-work-order/list?${stringify({
-                  monitorObjectType: type,
-                  monitorObject: id,
-                  monitorObjectName: name,
-                  isMajorHazard: '1',
-                  majorHazardId: dangerSourceId,
-                  majorHazardName,
-                  status: '2,0',
-                })}`}
-                disabled={!hasAlarmWorkOrderAuthority}
-                target="_blank"
-              >
-                处理报警
-              </Link>
-            )}
-          </div>
-        )}
+        <div className={styles.alarmWrapper}>
+          {isAlarm && <img className={styles.alarmIcon} src={iconAlarm} alt="" />}
+          {noFinishWarnProcessCount > 0 && (
+            <Link
+              className={styles.alarmHandler}
+              to={`/company-iot/alarm-work-order/list?${stringify({
+                monitorObjectType: type,
+                monitorObject: id,
+                monitorObjectName: name,
+                isMajorHazard: '1',
+                majorHazardId: dangerSourceId,
+                majorHazardName,
+                status: '2,0',
+              })}`}
+              disabled={!hasAlarmWorkOrderAuthority}
+              target="_blank"
+            >
+              处理报警
+            </Link>
+          )}
+        </div>
         <div className={styles.fieldContainer}>
           {videoList &&
             videoList.length > 0 && (

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { DatePicker } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import EmptyText from '@/jingan-components/View/EmptyText';
@@ -7,57 +7,53 @@ import styles from './index.less';
 
 const FORMAT = 'YYYY-MM-DD';
 
-export default class FormDatePicker extends Component {
-  shouldComponentUpdate(nextProps) {
-    return nextProps.value !== this.props.value || nextProps.mode !== this.props.mode;
-  }
-
-  render() {
-    const {
-      className,
-      value,
-      mode = 'add',
-      placeholder = '请选择',
-      format = FORMAT,
-      allowClear = false,
-      showTime,
-      emtpy = <EmptyText />,
-      ellipsis = true,
-      ...restProps
-    } = this.props;
-
-    if (mode !== 'detail') {
-      const arr = format.split(' ');
-      return (
-        <DatePicker
-          className={classNames(styles.container, className)}
-          placeholder={placeholder}
-          value={value}
-          format={format}
-          showTime={
-            arr.length === 2
-              ? {
-                  format: arr[1],
-                  ...showTime,
-                }
-              : false
-          }
-          allowClear={allowClear}
-          {...restProps}
-        />
-      );
-    } else {
-      return value ? (
-        ellipsis ? (
-          <Ellipsis lines={1} tooltip {...ellipsis}>
-            {value.format(format)}
-          </Ellipsis>
-        ) : (
-          <span>{value.format(format)}</span>
-        )
+const FormDatePicker = ({
+  className,
+  value,
+  mode,
+  originalMode,
+  placeholder = '请选择',
+  format = FORMAT,
+  allowClear = false,
+  inputReadOnly = true,
+  emtpy = <EmptyText />,
+  ellipsis = true,
+  ...rest
+}) => {
+  if (mode !== 'detail') {
+    return (
+      <DatePicker
+        className={classNames(styles.container, className)}
+        placeholder={placeholder}
+        value={value}
+        format={format}
+        allowClear={allowClear}
+        mode={originalMode}
+        inputReadOnly={inputReadOnly}
+        {...rest}
+      />
+    );
+  } else {
+    return value ? (
+      ellipsis ? (
+        <Ellipsis lines={1} tooltip {...ellipsis}>
+          {value.format(format)}
+        </Ellipsis>
       ) : (
-        emtpy
-      );
-    }
+        <span>{value.format(format)}</span>
+      )
+    ) : (
+      emtpy
+    );
   }
-}
+};
+
+FormDatePicker.getRules = ({ label }) => [
+  {
+    type: 'object',
+    required: true,
+    message: `${label || ''}不能为空`,
+  },
+];
+
+export default FormDatePicker;

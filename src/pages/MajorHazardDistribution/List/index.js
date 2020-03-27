@@ -224,6 +224,7 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
           type: VIDEO_POINT_LIST_API,
           payload: {
             companyId: unitId,
+            status: 1,
             ...payload,
           },
           callback(success, data) {
@@ -409,8 +410,8 @@ export default class MajorHazardDistributionList extends Component {
     getVideoPointList(undefined, (success, data) => {
       if (success) {
         const videoPointList = data.reduce((result, { pointFixInfoList }) => {
-          const { id, xnum, ynum, groupId, imgType } = (pointFixInfoList || [])[0] || {};
-          if (groupId && +imgType === 5) {
+          const { id, xnum, ynum, groupId, imgType, isShow } = (pointFixInfoList || [])[0] || {};
+          if (groupId && +imgType === 5 && +isShow === 1) {
             const options = {
               key: id,
               groupId: +groupId,

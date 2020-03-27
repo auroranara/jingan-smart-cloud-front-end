@@ -63,19 +63,19 @@ export default class CoursewareAdd extends PureComponent {
         },
         callback: ({ name, webVideoCover, videoCover, webFileUrl, fileUrl, remarks }) => {
           this.setState({
-            fileList: [
+            fileList: fileUrl ? [
               {
                 uid: '1',
                 url: webFileUrl[0],
                 name,
                 status: 'done',
               },
-            ],
+            ] : [],
             videoType: remarks ? NET : LOCAL,
           }, () => {
             setFieldsValue({
               videoCover: videoCover ? { webUrl: webVideoCover[0], dbUrl: videoCover } : undefined,
-              fileUrl: { webUrl: webFileUrl[0], dbUrl: fileUrl },
+              fileUrl: fileUrl ? { webUrl: webFileUrl[0], dbUrl: fileUrl } : undefined,
               remarks,
             });
           });

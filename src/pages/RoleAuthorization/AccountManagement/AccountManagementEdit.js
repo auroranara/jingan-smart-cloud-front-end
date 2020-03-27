@@ -15,7 +15,7 @@ import {
   Tree,
   TreeSelect,
   Spin,
-  AutoComplete,
+  // AutoComplete,
   Checkbox,
   Table,
   Tabs,
@@ -1289,16 +1289,35 @@ export default class AccountManagementEdit extends PureComponent {
                         },
                       ],
                     })(
-                      <AutoComplete
+                      // <AutoComplete
+                      //   labelInValue
+                      //   mode="combobox"
+                      //   disabled={isUnitUser}
+                      //   optionLabelProp="children"
+                      //   placeholder="请选择所属单位"
+                      //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      //   onSearch={this.handleUnitIdChange}
+                      //   onSelect={this.handleDataPermissions}
+                      //   onBlur={this.handleUnitIdBlur}
+                      //   filterOption={false}
+                      // >
+                      //   {unitIds.map(item => (
+                      //     <Option value={item.id} key={item.id}>
+                      //       {item.name}
+                      //     </Option>
+                      //   ))}
+                      // </AutoComplete>
+                      <Select
+                        allowClear
                         labelInValue
-                        mode="combobox"
+                        showSearch
+                        showArrow={false}
                         disabled={isUnitUser}
-                        optionLabelProp="children"
                         placeholder="请选择所属单位"
                         notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                         onSearch={this.handleUnitIdChange}
                         onSelect={this.handleDataPermissions}
-                        onBlur={this.handleUnitIdBlur}
+                        // onBlur={this.handleUnitIdBlur}
                         filterOption={false}
                       >
                         {unitIds.map(item => (
@@ -1306,7 +1325,7 @@ export default class AccountManagementEdit extends PureComponent {
                             {item.name}
                           </Option>
                         ))}
-                      </AutoComplete>
+                      </Select>
                     )}
                   </Form.Item>
                 </Col>
@@ -1515,10 +1534,26 @@ export default class AccountManagementEdit extends PureComponent {
                   initialValue:
                     treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
                 })(
-                  <AutoComplete
-                    mode="combobox"
+                  // <AutoComplete
+                  //   mode="combobox"
+                  //   labelInValue
+                  //   optionLabelProp="children"
+                  //   placeholder="请选择单位名称"
+                  //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                  //   filterOption={false}
+                  //   disabled
+                  // >
+                  //   {[].map(item => (
+                  //     <Option value={item.id} key={item.id}>
+                  //       {item.name}
+                  //     </Option>
+                  //   ))}
+                  // </AutoComplete>
+                  <Select
+                    allowClear
                     labelInValue
-                    optionLabelProp="children"
+                    showSearch
+                    showArrow={false}
                     placeholder="请选择单位名称"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     filterOption={false}
@@ -1529,7 +1564,7 @@ export default class AccountManagementEdit extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </AutoComplete>
+                  </Select>
                 )}
                 <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
               </Form.Item>

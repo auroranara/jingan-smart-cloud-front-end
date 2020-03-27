@@ -15,7 +15,7 @@ import {
   TreeSelect,
   Spin,
   Tree,
-  AutoComplete,
+  // AutoComplete,
   Checkbox,
   Table,
   Tabs,
@@ -1109,13 +1109,20 @@ export default class AssociatedUnit extends PureComponent {
                 {getFieldDecorator('accountStatus', {
                   initialValue: accountStatus,
                 })(
-                  <AutoComplete disabled={true} placeholder="请选择账号状态">
+                  // <AutoComplete disabled={true} placeholder="请选择账号状态">
+                  //   {accountStatuses.map(item => (
+                  //     <Option value={item.id} key={item.id}>
+                  //       {item.label}
+                  //     </Option>
+                  //   ))}
+                  // </AutoComplete>
+                  <Select disabled={true} placeholder="请选择账号状态">
                     {accountStatuses.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
                       </Option>
                     ))}
-                  </AutoComplete>
+                  </Select>
                 )}
               </Form.Item>
             </Col>
@@ -1278,16 +1285,35 @@ export default class AssociatedUnit extends PureComponent {
                       },
                     ],
                   })(
-                    <AutoComplete
+                    // <AutoComplete
+                    //   labelInValue
+                    //   mode="combobox"
+                    //   disabled={isUnitUser || isEditAndSelf}
+                    //   optionLabelProp="children"
+                    //   placeholder="请选择所属单位"
+                    //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    //   onSearch={this.handleUnitIdChange}
+                    //   onSelect={this.handleDataPermissions}
+                    //   onBlur={this.handleUnitIdBlur}
+                    //   filterOption={false}
+                    // >
+                    //   {unitIds.map(item => (
+                    //     <Option value={item.id} key={item.id}>
+                    //       {item.name}
+                    //     </Option>
+                    //   ))}
+                    // </AutoComplete>
+                    <Select
+                      allowClear
                       labelInValue
-                      mode="combobox"
+                      showSearch
+                      showArrow={false}
                       disabled={isUnitUser || isEditAndSelf}
-                      optionLabelProp="children"
                       placeholder="请选择所属单位"
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleUnitIdChange}
                       onSelect={this.handleDataPermissions}
-                      onBlur={this.handleUnitIdBlur}
+                      // onBlur={this.handleUnitIdBlur}
                       filterOption={false}
                     >
                       {unitIds.map(item => (
@@ -1295,7 +1321,7 @@ export default class AssociatedUnit extends PureComponent {
                           {item.name}
                         </Option>
                       ))}
-                    </AutoComplete>
+                    </Select>
                   )}
                 </Form.Item>
               </Col>
@@ -1386,13 +1412,20 @@ export default class AssociatedUnit extends PureComponent {
                     {getFieldDecorator('documentTypeId', {
                       initialValue: documentTypeId,
                     })(
-                      <AutoComplete allowClear placeholder="请选择执法证种类">
+                      // <AutoComplete allowClear placeholder="请选择执法证种类">
+                      //   {documentTypeIds.map(item => (
+                      //     <Option value={item.value} key={item.value}>
+                      //       {item.label}
+                      //     </Option>
+                      //   ))}
+                      // </AutoComplete>
+                      <Select allowClear placeholder="请选择执法证种类">
                         {documentTypeIds.map(item => (
                           <Option value={item.value} key={item.value}>
                             {item.label}
                           </Option>
                         ))}
-                      </AutoComplete>
+                      </Select>
                     )}
                   </Form.Item>
                 </Col>
@@ -1512,10 +1545,26 @@ export default class AssociatedUnit extends PureComponent {
                   initialValue:
                     treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
                 })(
-                  <AutoComplete
-                    mode="combobox"
+                  // <AutoComplete
+                  //   mode="combobox"
+                  //   labelInValue
+                  //   optionLabelProp="children"
+                  //   placeholder="请选择单位名称"
+                  //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                  //   filterOption={false}
+                  //   disabled
+                  // >
+                  //   {[].map(item => (
+                  //     <Option value={item.id} key={item.id}>
+                  //       {item.name}
+                  //     </Option>
+                  //   ))}
+                  // </AutoComplete>
+                  <Select
+                    allowClear
                     labelInValue
-                    optionLabelProp="children"
+                    showSearch
+                    showArrow={false}
                     placeholder="请选择单位名称"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     filterOption={false}
@@ -1526,7 +1575,7 @@ export default class AssociatedUnit extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </AutoComplete>
+                  </Select>
                 )}
                 <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
               </Form.Item>
