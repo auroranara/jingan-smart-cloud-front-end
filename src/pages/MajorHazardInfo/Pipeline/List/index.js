@@ -18,6 +18,11 @@ export const MATERIAL_STATUSES = [
   { key: '3', value: '气态' },
   { key: '4', value: '等离子态' },
 ];
+const DEFAULT_SPAN = {
+  md: 12,
+  sm: 24,
+  xs: 24,
+};
 
 export default class PipelineList extends Component {
   state = {
@@ -47,36 +52,35 @@ export default class PipelineList extends Component {
 
   getFields = ({ unitId }) => [
     {
-      id: 'name',
-      label: '管道名称',
+      id: 'nameOrNumberKeywords',
+      label: '管道名称或管道编号',
+      span: DEFAULT_SPAN,
+      transform: value => value.trim(),
       render: ({ handleSearch }) => (
-        <InputOrSpan placeholder="请输入管道名称" maxLength={50} onPressEnter={handleSearch} />
-      ),
-    },
-    {
-      id: 'number',
-      label: '管道编号',
-      render: ({ handleSearch }) => (
-        <InputOrSpan placeholder="请输入管道编号" maxLength={50} onPressEnter={handleSearch} />
+        <InputOrSpan
+          placeholder="请输入管道名称或管道编号"
+          maxLength={100}
+          onPressEnter={handleSearch}
+        />
       ),
     },
     {
       id: 'pressure',
       label: '是否压力管道',
+      span: DEFAULT_SPAN,
       render: () => <SelectOrSpan placeholder="请选择是否压力管道" list={CHOICES} allowClear />,
     },
     {
-      id: 'chineName',
-      label: '存储介质',
+      id: 'chineNameOrCasNoKeywords',
+      label: '存储介质或CAS号',
+      span: DEFAULT_SPAN,
+      transform: value => value.trim(),
       render: ({ handleSearch }) => (
-        <InputOrSpan placeholder="请输入存储介质" maxLength={50} onPressEnter={handleSearch} />
-      ),
-    },
-    {
-      id: 'casNo',
-      label: 'CAS号',
-      render: ({ handleSearch }) => (
-        <InputOrSpan placeholder="请输入CAS号" maxLength={50} onPressEnter={handleSearch} />
+        <InputOrSpan
+          placeholder="请输入存储介质或CAS号"
+          maxLength={100}
+          onPressEnter={handleSearch}
+        />
       ),
     },
     ...(!unitId
@@ -84,6 +88,7 @@ export default class PipelineList extends Component {
           {
             id: 'companyName',
             label: '单位名称',
+            span: DEFAULT_SPAN,
             transform: value => value.trim(),
             render: ({ handleSearch }) => (
               <InputOrSpan
@@ -163,7 +168,7 @@ export default class PipelineList extends Component {
             </span>
           </div>
           <div className={styles.line}>
-            <span>介质类别：</span>
+            <span>危险性类别：</span>
             <span>
               <SelectOrSpan list={RISKY_CATEGORIES} value={`${riskCateg}`} type="span" />
             </span>
@@ -172,11 +177,16 @@ export default class PipelineList extends Component {
       ),
     },
     {
-      title: '压力管道/危化品管道',
-      dataIndex: '压力管道/危化品管道',
+      title: '压力管道',
+      dataIndex: '压力管道',
       align: 'center',
-      render: (_, { pressure, dangerPipeline }) =>
-        `${+pressure ? '是' : '否'}/${+dangerPipeline ? '是' : '否'}`,
+      render: (_, { pressure }) => (+pressure ? '是' : '否'),
+    },
+    {
+      title: '构成重大危险源',
+      dataIndex: '构成重大危险源',
+      align: 'center',
+      render: (_, { dangerPipeline }) => (+dangerPipeline ? '是' : '否'),
     },
     {
       title: '目前状态',
@@ -185,12 +195,17 @@ export default class PipelineList extends Component {
       render: value => <SelectOrSpan type="span" value={value} list={STATUSES} />,
     },
     {
-      title: '已绑监测设备',
-      dataIndex: '已绑监测设备',
+      title: '监测设备',
+      dataIndex: '监测设备',
       align: 'center',
       width: 102,
       fixed: list && list.length > 0 ? 'right' : false,
-      render: (_, data) => renderUnbindButton(data),
+      render: (_, data) => (
+        <div className={styles.buttonContainer}>
+          <div>{renderUnbindButton(data)}</div>
+          <div>{renderBindButton(data)}</div>
+        </div>
+      ),
     },
     {
       title: '操作',
@@ -200,7 +215,6 @@ export default class PipelineList extends Component {
       fixed: list && list.length > 0 ? 'right' : false,
       render: (_, data) => (
         <div className={styles.buttonContainer}>
-          <div>{renderBindButton(data)}</div>
           <div>{renderDetailButton(data)}</div>
           <div>{renderEditButton(data)}</div>
           <div>{renderDeleteButton(data)}</div>

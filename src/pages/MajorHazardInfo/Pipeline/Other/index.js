@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ThreeInOnePage from '@/templates/ThreeInOnePage';
 import MediumModal from '../components/MediumModal';
+import Radio from '@/jingan-components/Form/Radio';
 import moment from 'moment';
 import { CHOICES, STATUSES } from '../List';
 import styles from './index.less';
@@ -121,7 +122,7 @@ export default class PipelineOther extends Component {
       id: 'setUp',
       label: '架设方式',
       required: true,
-      component: 'Select',
+      component: 'Radio',
       props: {
         list: METHODS,
       },
@@ -130,7 +131,7 @@ export default class PipelineOther extends Component {
       id: 'pressure',
       label: '是否压力管道',
       required: true,
-      component: 'Select',
+      component: 'Radio',
       props: {
         list: CHOICES,
       },
@@ -159,7 +160,7 @@ export default class PipelineOther extends Component {
       id: 'status',
       label: '目前状态',
       required: true,
-      component: 'Select',
+      component: 'Radio',
       props: {
         list: STATUSES,
       },
@@ -181,7 +182,7 @@ export default class PipelineOther extends Component {
       id: 'dangerPipeline',
       label: '是否危化品管道',
       required: true,
-      component: 'Select',
+      component: 'Radio',
       props: {
         list: CHOICES,
       },

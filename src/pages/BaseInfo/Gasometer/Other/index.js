@@ -6,6 +6,7 @@ import CompanySelect from '@/jingan-components/CompanySelect';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
+import Radio from '@/jingan-components/Form/Radio';
 import Capacity from './Capacity';
 import Medium from './Medium';
 import MajorHazard from './MajorHazard';
@@ -391,14 +392,7 @@ export default class GasometerOther extends Component {
             label: '气柜类型',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
-              <SelectOrSpan
-                className={styles.item}
-                placeholder="请选择气柜类型"
-                list={TYPES}
-                type={isNotDetail ? 'Select' : 'span'}
-              />
-            ),
+            render: () => <Radio list={TYPES} mode={navigation} />,
             options: {
               rules: isNotDetail
                 ? [
@@ -579,14 +573,7 @@ export default class GasometerOther extends Component {
             label: '有无围堰',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
-              <SelectOrSpan
-                className={styles.item}
-                placeholder="请选择有无围堰"
-                list={WHETHER_LIST}
-                type={isNotDetail ? 'Select' : 'span'}
-              />
-            ),
+            render: () => <Radio list={WHETHER_LIST} mode={navigation} />,
             options: {
               rules: isNotDetail
                 ? [
@@ -628,43 +615,36 @@ export default class GasometerOther extends Component {
                 },
               ]
             : []),
-          {
-            id: 'fireHazardRate',
-            label: '火灾危险性等级',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => (
-              <SelectOrSpan
-                className={styles.item}
-                placeholder="请选择火灾危险性等级"
-                list={LEVELS}
-                type={isNotDetail ? 'Select' : 'span'}
-              />
-            ),
-            options: {
-              rules: isNotDetail
-                ? [
-                    {
-                      required: true,
-                      message: '火灾危险性等级不能为空',
-                    },
-                  ]
-                : undefined,
-            },
-          },
+          // {
+          //   id: 'fireHazardRate',
+          //   label: '火灾危险性等级',
+          //   span: SPAN,
+          //   labelCol: LABEL_COL,
+          //   render: () => (
+          //     <SelectOrSpan
+          //       className={styles.item}
+          //       placeholder="请选择火灾危险性等级"
+          //       list={LEVELS}
+          //       type={isNotDetail ? 'Select' : 'span'}
+          //     />
+          //   ),
+          //   options: {
+          //     rules: isNotDetail
+          //       ? [
+          //           {
+          //             required: true,
+          //             message: '火灾危险性等级不能为空',
+          //           },
+          //         ]
+          //       : undefined,
+          //   },
+          // },
           {
             id: 'torch',
             label: '是否配套火柜',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
-              <SelectOrSpan
-                className={styles.item}
-                placeholder="请选择是否配套火柜"
-                list={MAJOR_HAZARD_STATUSES}
-                type={isNotDetail ? 'Select' : 'span'}
-              />
-            ),
+            render: () => <Radio list={MAJOR_HAZARD_STATUSES} mode={navigation} />,
             options: {
               rules: isNotDetail
                 ? [
@@ -681,14 +661,7 @@ export default class GasometerOther extends Component {
             label: '是否设置保温/保冷',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
-              <SelectOrSpan
-                className={styles.item}
-                placeholder="请选择是否设置保温/保冷"
-                list={MAJOR_HAZARD_STATUSES}
-                type={isNotDetail ? 'Select' : 'span'}
-              />
-            ),
+            render: () => <Radio list={MAJOR_HAZARD_STATUSES} mode={navigation} />,
             options: {
               rules: isNotDetail
                 ? [
@@ -705,14 +678,7 @@ export default class GasometerOther extends Component {
             label: '是否设置自动喷淋',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
-              <SelectOrSpan
-                className={styles.item}
-                placeholder="请选择是否设置自动喷淋"
-                list={MAJOR_HAZARD_STATUSES}
-                type={isNotDetail ? 'Select' : 'span'}
-              />
-            ),
+            render: () => <Radio list={MAJOR_HAZARD_STATUSES} mode={navigation} />,
             options: {
               rules: isNotDetail
                 ? [
@@ -729,14 +695,7 @@ export default class GasometerOther extends Component {
             label: '是否设置消防水炮/泡沫炮',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
-              <SelectOrSpan
-                className={styles.item}
-                placeholder="请选择是否设置消防水炮/泡沫炮"
-                list={MAJOR_HAZARD_STATUSES}
-                type={isNotDetail ? 'Select' : 'span'}
-              />
-            ),
+            render: () => <Radio list={MAJOR_HAZARD_STATUSES} mode={navigation} />,
             options: {
               rules: isNotDetail
                 ? [

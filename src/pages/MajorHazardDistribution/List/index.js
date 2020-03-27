@@ -191,6 +191,7 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
             pageSize: 0,
             companyId: unitId,
             equipmentType: 405,
+            dangerSource: 1,
             ...payload,
           },
           callback(success, data) {
@@ -209,6 +210,7 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
             pageSize: 0,
             companyId: unitId,
             equipmentType: 406,
+            dangerSource: 1,
             ...payload,
           },
           callback(success, data) {
@@ -225,6 +227,7 @@ const URLS = [iconLevel1, iconLevel2, iconLevel3, iconLevel4];
           payload: {
             companyId: unitId,
             status: 1,
+            dangerSource: 1,
             ...payload,
           },
           callback(success, data) {

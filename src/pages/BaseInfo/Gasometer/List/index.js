@@ -58,6 +58,11 @@ const GET_LIST = 'gasometer/getList';
 const REMOVE = 'gasometer/remove';
 const GET_MONITOR_DEVICE_LIST = 'gasometer/getMonitorDeviceList';
 const SET_MONITOR_DEVICE_BIND_STATUS = 'gasometer/setMonitorDeviceBindStatus';
+const DEFAULT_SPAN = {
+  md: 12,
+  sm: 24,
+  xs: 24,
+};
 
 @connect(
   ({ gasometer, user, loading }) => ({
@@ -424,40 +429,37 @@ export default class GasometerList extends Component {
 
     const fields = [
       {
-        id: 'gasholderName',
-        label: '气柜名称',
+        id: 'nameOrNumberKeywords',
+        label: '气柜名称或统一编码',
+        span: DEFAULT_SPAN,
         transform: value => value.trim(),
         render: ({ handleSearch }) => (
-          <Input placeholder="请输入气柜名称" onPressEnter={handleSearch} maxLength={50} />
+          <Input
+            placeholder="请输入气柜名称或统一编码"
+            onPressEnter={handleSearch}
+            maxLength={100}
+          />
         ),
       },
       {
-        id: 'unifiedCode',
-        label: '统一编码',
-        transform: value => value.trim(),
-        render: ({ handleSearch }) => (
-          <Input placeholder="请输入统一编码" onPressEnter={handleSearch} maxLength={50} />
+        id: 'majorHazard',
+        label: '是否构成重大危险源',
+        span: DEFAULT_SPAN,
+        render: () => (
+          <SelectOrSpan
+            placeholder="请选择是否构成重大危险源"
+            list={MAJOR_HAZARD_STATUSES}
+            allowClear
+          />
         ),
       },
       {
-        id: 'gasholderType',
-        label: '气柜类型',
-        render: () => <SelectOrSpan placeholder="请选择气柜类型" list={TYPES} allowClear />,
-      },
-      {
-        id: 'chineName',
-        label: '存储介质',
+        id: 'chineNameOrCasNoKeywords',
+        label: '存储介质或CAS号',
+        span: DEFAULT_SPAN,
         transform: value => value.trim(),
         render: ({ handleSearch }) => (
-          <Input placeholder="请输入存储介质" onPressEnter={handleSearch} maxLength={50} />
-        ),
-      },
-      {
-        id: 'casNo',
-        label: 'CAS号',
-        transform: value => value.trim(),
-        render: ({ handleSearch }) => (
-          <Input placeholder="请输入CAS号" onPressEnter={handleSearch} maxLength={50} />
+          <Input placeholder="请输入存储介质或CAS号" onPressEnter={handleSearch} maxLength={100} />
         ),
       },
       ...(isNotCompany
@@ -465,6 +467,7 @@ export default class GasometerList extends Component {
             {
               id: 'companyName',
               label: '单位名称',
+              span: DEFAULT_SPAN,
               transform: value => value.trim(),
               render: ({ handleSearch }) => (
                 <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
@@ -517,7 +520,7 @@ export default class GasometerList extends Component {
       {
         title: '基本信息',
         dataIndex: 'basicInfo',
-        render: (_, { unifiedCode, gasholderName }) => (
+        render: (_, { unifiedCode, gasholderName, regionalLocation }) => (
           <div className={styles.multi}>
             <div>
               <span className={styles.label}>统一编码：</span>
@@ -526,6 +529,10 @@ export default class GasometerList extends Component {
             <div>
               <span className={styles.label}>气柜名称：</span>
               {gasholderName}
+            </div>
+            <div>
+              <span className={styles.label}>区域位置：</span>
+              {regionalLocation}
             </div>
           </div>
         ),
@@ -537,7 +544,7 @@ export default class GasometerList extends Component {
         render: (_, { chineName, casNo }) => (
           <div className={styles.multi}>
             <div>
-              <span className={styles.label}>存储介质：</span>
+              <span className={styles.label}>名称：</span>
               {chineName}
             </div>
             <div>
@@ -557,22 +564,29 @@ export default class GasometerList extends Component {
         align: 'center',
       },
       {
-        title: '区域位置',
-        dataIndex: 'regionalLocation',
-        align: 'center',
-      },
-      {
-        title: '已绑监测设备',
+        title: '监测设备',
         dataIndex: 'monitorEquipmentCount',
         width: 116,
         fixed: list && list.length > 0 ? 'right' : false,
         render: (value, data) => (
-          <span
-            className={classNames(styles.operation, !+value && styles.disabled)}
-            onClick={value > 0 ? () => this.handleBindCountButtonClick(data) : undefined}
-          >
-            {value || 0}
-          </span>
+          <Fragment>
+            <div>
+              <span
+                className={classNames(styles.operation, !+value && styles.disabled)}
+                onClick={value > 0 ? () => this.handleBindCountButtonClick(data) : undefined}
+              >
+                {value || 0}
+              </span>
+            </div>
+            <div>
+              <span
+                className={classNames(styles.operation, !hasBindAuthority && styles.disabled)}
+                onClick={hasBindAuthority ? () => this.handleBindButtonClick(data) : undefined}
+              >
+                绑定监测设备
+              </span>
+            </div>
+          </Fragment>
         ),
         align: 'center',
       },
@@ -583,14 +597,6 @@ export default class GasometerList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (id, data) => (
           <Fragment>
-            {
-              <span
-                className={classNames(styles.operation, !hasBindAuthority && styles.disabled)}
-                onClick={hasBindAuthority ? () => this.handleBindButtonClick(data) : undefined}
-              >
-                绑定监测设备
-              </span>
-            }
             {
               <span
                 className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)}
