@@ -334,7 +334,7 @@ export default class PersonnelAdd extends PureComponent {
       payload: {
         ...params,
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 30,
         personCar: 1,
       },
       callback,
@@ -344,19 +344,25 @@ export default class PersonnelAdd extends PureComponent {
   handleICSearch = value => {
     const { curCompanyId } = this.state;
     // 根据输入值获取列表
-    this.fetchTagCard({ icNumber: value && value.trim(), companyId: curCompanyId, status: 1 });
+    this.fetchTagCard(
+      { icNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
+      res => {
+        const { list } = res.data;
+        this.setState({ curLabelList: list });
+      }
+    );
   };
 
-  handleICBlur = value => {
+  handleICChange = value => {
     const {
       form: { setFieldsValue },
     } = this.props;
     const { curCompanyId, curLabelList } = this.state;
-    // 根据value判断是否是手动输入
-    if (value && value.key === value.label) {
+    if (value === undefined) {
       this.handleICSearch.cancel();
       setFieldsValue({
         icnumber: undefined,
+        entranceNumber: undefined,
       });
       this.fetchTagCard({ companyId: curCompanyId, status: 1 });
     } else {
@@ -366,28 +372,32 @@ export default class PersonnelAdd extends PureComponent {
         entranceNumber: { key: snId, label: sn },
       });
     }
-    if (value.key === '' && value.label === '') {
-      setFieldsValue({
-        entranceNumber: undefined,
-      });
-    }
   };
 
   handleSNSearch = value => {
     const { curCompanyId } = this.state;
     // 根据输入值获取列表
-    this.fetchTagCard({ snNumber: value && value.trim(), companyId: curCompanyId, status: 1 });
+    this.fetchTagCard(
+      { snNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
+      res => {
+        const { list } = res.data;
+        console.log('list', list);
+
+        this.setState({ curLabelList: list });
+      }
+    );
   };
 
-  handleSNBlur = value => {
+  handleSNChange = value => {
     const {
       form: { setFieldsValue },
     } = this.props;
     const { curCompanyId, curLabelList } = this.state;
     // 根据value判断是否是手动输入
-    if (value && value.key === value.label) {
+    if (value === undefined) {
       this.handleSNSearch.cancel();
       setFieldsValue({
+        icnumber: undefined,
         entranceNumber: undefined,
       });
       this.fetchTagCard({ companyId: curCompanyId, status: 1 });
@@ -396,11 +406,6 @@ export default class PersonnelAdd extends PureComponent {
       const icId = curLabelList.find(item => item.id === value.key).id;
       setFieldsValue({
         icnumber: { key: icId, label: ic },
-      });
-    }
-    if (value.key === '' && value.label === '') {
-      setFieldsValue({
-        icnumber: undefined,
       });
     }
   };
@@ -422,10 +427,7 @@ export default class PersonnelAdd extends PureComponent {
         data: { list: departmentList = [] },
       },
       form: { getFieldDecorator, getFieldValue },
-      realNameCertification: {
-        personTypeDict,
-        tagCardData: { list: labelList = [] },
-      },
+      realNameCertification: { personTypeDict },
     } = this.props;
 
     const {
@@ -440,12 +442,7 @@ export default class PersonnelAdd extends PureComponent {
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
     const title = id ? '编辑人员信息' : '新增人员信息';
-
-    const icNumEdit = labelList.find(item => item.icNumber === detail.icnumber);
-    const icIdEdit = labelList.find(item => item.icNumber === detail.icnumber);
-
-    const snNumEdit = labelList.find(item => item.snNumber === detail.entranceNumber);
-    const snIdEdit = labelList.find(item => item.snNumber === detail.entranceNumber);
+    console.log('curLabelList', curLabelList);
 
     const hasCompanyName = perType === '4' || perType === '5' || perType === '6';
     const noCompanyName = perType === '2' || perType === '3';
@@ -586,23 +583,23 @@ export default class PersonnelAdd extends PureComponent {
                         ? { key: filterTagList.id, label: filterTagList.icNumber }
                         : undefined,
                   })(
-                  <Select
-                    allowClear
-                    showSearch
-                    labelInValue
-                    showArrow={false}
-                    filterOption={false}
-                    placeholder="请选择IC卡号"
-                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    onSearch={this.handleICSearch}
-                    onBlur={this.handleICBlur}
-                  >
+                    <Select
+                      allowClear
+                      showSearch
+                      labelInValue
+                      showArrow={false}
+                      filterOption={false}
+                      placeholder="请选择IC卡号"
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      onSearch={this.handleICSearch}
+                      onChange={this.handleICChange}
+                    >
                       {curLabelList.map(({ icNumber, id }) => (
                         <Option value={id} key={id}>
                           {icNumber}
                         </Option>
                       ))}
-                  </Select>
+                    </Select>
                   )}
                 </FormItem>
               </Col>
@@ -624,22 +621,23 @@ export default class PersonnelAdd extends PureComponent {
                         ? { key: filterTagList.id, label: filterTagList.snNumber }
                         : undefined,
                   })(
-                  <Select
-                    allowClear
-                    showSearch
-                    labelInValue
-                    showArrow={false}
-                    placeholder="请选择SN卡号"
-                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    onSearch={this.handleSNSearch}
-                    onBlur={this.handleSNBlur}
-                  >
+                    <Select
+                      allowClear
+                      showSearch
+                      labelInValue
+                      showArrow={false}
+                      filterOption={false}
+                      placeholder="请选择SN卡号"
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      onSearch={this.handleSNSearch}
+                      onChange={this.handleSNChange}
+                    >
                       {curLabelList.map(({ snNumber, id }) => (
                         <Option value={id} key={id}>
                           {snNumber}
                         </Option>
                       ))}
-                  </Select>
+                    </Select>
                   )}
                 </FormItem>
               </Col>

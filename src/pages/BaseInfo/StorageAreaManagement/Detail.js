@@ -123,7 +123,7 @@ export default class StorehouseDetail extends Component {
       { id: 'newTankId', label: '选择包含的储罐', render: ({ tankNames }) => tankNames && tankNames.length ? tankNames.join('、') : NO_DATA },
       { id: 'minSpace', label: '两罐间最小间距（m）' },
       { id: 'hasCoffer', label: '有无围堰', render: ({ hasCoffer }) => this.generateJudgeLabel(hasCoffer) },
-      { id: 'cofferArea', label: '围堰所围面积' },
+      { id: 'cofferArea', label: '围堰所围面积（㎡）' },
       { id: 'safeSpace', label: '周边安全防护间距（m）' },
       { id: 'hasPassage', label: '有无消防通道', render: ({ hasPassage }) => this.generateJudgeLabel(hasPassage) },
       { id: 'dangerType', label: '装卸危险化学品种类', render: ({ dangerTypeList }) => dangerTypeList && dangerTypeList.length ? dangerTypeList.join('、') : NO_DATA },

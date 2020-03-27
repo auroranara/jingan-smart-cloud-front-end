@@ -3,6 +3,7 @@ import {
   addProductionArea,
   editProductionArea,
   deleteProductionArea,
+  fetchPersonList,
 } from '@/services/electronicInspection';
 
 const defaultData = {
@@ -20,6 +21,8 @@ export default {
       pagination: { pageNum: 1, pageSize: 10, total: 0 },
     },
     productionAreaDetail: {},
+    // 负责人
+    person: defaultData,
   },
 
   effects: {
@@ -56,6 +59,14 @@ export default {
       })
       callback && callback(res && res.code === 200, detail);
     },
+    // 获取负责人列表
+    *fetchPersonList ({ payload }, { call, put }) {
+      const res = yield call(fetchPersonList, payload);
+      yield put({
+        type: 'savePerson',
+        payload: res && res.code === 200 && res.data ? res.data : defaultData,
+      })
+    },
   },
 
   reducers: {
@@ -69,6 +80,12 @@ export default {
       return {
         ...state,
         productionAreaDetail: action.payload,
+      }
+    },
+    savePerson (state, action) {
+      return {
+        ...state,
+        person: action.payload,
       }
     },
   },

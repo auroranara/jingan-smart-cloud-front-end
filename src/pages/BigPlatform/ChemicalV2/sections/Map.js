@@ -136,6 +136,7 @@ export default class Map extends PureComponent {
   markerLayers = [];
   lastTime = 0;
   jumpEquipIds = [];
+  jumpFireIds = [];
 
   /* eslint-disable*/
   componentDidMount() {
@@ -194,8 +195,6 @@ export default class Map extends PureComponent {
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
           // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
-          console.log('polygonMarker', polygonMarker);
-
           this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
           return null;
         });
@@ -254,18 +253,28 @@ export default class Map extends PureComponent {
   };
 
   renderPoints = (pointsInfo, iconType) => {
-    if (!pointsInfo.length) return;
+    // if (!pointsInfo.length) return;
     const { visibles } = this.state;
-    pointsInfo.map(item => {
-      const { warnStatus, status } = item;
+    filterMarkerList(pointsInfo).map(item => {
+      const { warnStatus, status, deviceCode, pointCountMap } = item;
       const { groupId, xnum, ynum, znum, isShow } = item.pointFixInfoList[0];
       if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
-      if (!+isShow) return null;
+      // if (!+isShow) return null;
+      let url = controls[iconType].markerIcon;
+      if (iconType === 2) {
+        if (deviceCode || deviceCode === 0) {
+          // 消防主机
+          const { fire_state } = pointCountMap || {};
+          if (+fire_state > 0) url = controls[iconType].alarmIcon;
+          else controls[iconType].markerIcon;
+        } else if (warnStatus === -1) url = controls[iconType].alarmIcon;
+      }
       const marker = this.addMarkers(+groupId, {
         x: +xnum,
         y: +ynum,
         z: +znum,
-        url: warnStatus === -1 ? controls[iconType].alarmIcon : controls[iconType].markerIcon,
+        // url: warnStatus === -1 ? controls[iconType].alarmIcon : controls[iconType].markerIcon,
+        url,
         iconType,
         markerProps: item,
         groupId: +groupId,
@@ -283,15 +292,15 @@ export default class Map extends PureComponent {
       type,
       payload: { companyId, pageNum: 1, pageSize: 0, ...payload },
       callback: res => {
-        const pointsInfo = res.data.list.filter(
-          item => item.pointFixInfoList && item.pointFixInfoList.length > 0
-        );
+        // const pointsInfo = res.data.list.filter(
+        //   item => item.pointFixInfoList && item.pointFixInfoList.length > 0
+        // );
         // .map(item => {
         //   return item.pointFixInfoList[0];
         // });
-        console.log('pointsInfo', pointsInfo.filter(item => item.pointFixInfoList[0].isShow));
+        console.log('pointsInfo', filterMarkerList(res.data.list));
         if (isUpdate) this.removeMarkersByType(iconType);
-        this.renderPoints(pointsInfo, iconType);
+        this.renderPoints(res.data.list, iconType);
       },
     });
   };
@@ -719,7 +728,7 @@ export default class Map extends PureComponent {
   };
 
   // 监测设备状态图标变化
-  handleMarkerStatusChange = (equipmentId, statusType, warnStatus) => {
+  handleMarkerStatusChange = (equipmentId, statusType, warnStatus, jumpIds) => {
     map.groupIDs.map(gId => {
       const group = map.getFMGroup(gId);
       //遍历图层
@@ -739,7 +748,7 @@ export default class Map extends PureComponent {
                 fm.stopJump();
               }
             }
-            if (this.jumpEquipIds.indexOf(id) >= 0) {
+            if (jumpIds.indexOf(id) >= 0) {
               fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
             }
           }
@@ -751,7 +760,6 @@ export default class Map extends PureComponent {
   // 监测设备状态变化
   handleUpdateMap = (equipmentId, statusType) => {
     if (!map || !this.markerArray.length) return;
-    // this.fetchPonits('chemical/fetchMonitorEquipment', 2, {}, true);
     const { dispatch, companyId } = this.props;
     dispatch({
       type: 'alarmWorkOrder/getDeviceDetail',
@@ -765,18 +773,81 @@ export default class Map extends PureComponent {
           } else if (statusType === 1 && warnStatus !== -1) {
             this.jumpEquipIds = this.jumpEquipIds.filter(ids => ids !== equipmentId);
           }
-          this.renderPoints(
-            [deviceDetail].filter(
-              item => item.pointFixInfoList && item.pointFixInfoList.length > 0
-            ),
-            2
-          );
+          this.renderPoints([deviceDetail], 2);
           setTimeout(() => {
-            this.handleMarkerStatusChange(equipmentId, statusType, warnStatus);
+            this.handleMarkerJump(equipmentId, this.jumpEquipIds, warnStatus !== -1);
           }, 50);
         }
       },
     });
+  };
+
+  handleMarkerJump = (equipmentId, jumpIds, isStop = false) => {
+    map.groupIDs.map(gId => {
+      const group = map.getFMGroup(gId);
+      //遍历图层
+      group.traverse(fm => {
+        if (fm instanceof fengmap.FMImageMarker) {
+          const {
+            opts_: { iconType, markerProps },
+          } = fm;
+          const { id } = markerProps;
+          if (iconType === 2 && id === equipmentId) {
+            if (jumpIds.indexOf(id) >= 0) {
+              fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
+            }
+            // else if (isStop) {
+            //   fm.stopJump();
+            // }
+          }
+        }
+      });
+    });
+  };
+
+  handleFireMarkerJump = jumpIds => {
+    map.groupIDs.map(gId => {
+      const group = map.getFMGroup(gId);
+      //遍历图层
+      group.traverse(fm => {
+        if (fm instanceof fengmap.FMImageMarker) {
+          const {
+            opts_: { iconType, markerProps },
+          } = fm;
+          const { id } = markerProps;
+          if (iconType === 2 && jumpIds.indexOf(id) >= 0) {
+            fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
+          }
+        }
+      });
+    });
+  };
+
+  handleUpdateFire = (equipmentId, statusType, fixType) => {
+    if (equipmentId && +statusType === -1 && +fixType === 5) {
+      // 火警
+      if (this.jumpFireIds.indexOf(equipmentId) < 0) this.jumpFireIds.push(equipmentId);
+    }
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/fetchFireDevice',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: res => {
+        const pointsInfo = filterMarkerList(res.data.list);
+        pointsInfo.map(item => {
+          const { pointCountMap } = item;
+          const { fire_state } = pointCountMap || {};
+          this.removeMarkerById(item.id);
+          this.renderPoints([item], 2);
+          if (!fire_state) this.jumpFireIds = this.jumpFireIds.filter(ids => ids !== item.id);
+        });
+
+        setTimeout(() => {
+          this.handleFireMarkerJump(this.jumpFireIds);
+        }, 50);
+      },
+    });
+    return null;
   };
 
   setModelColor(groupId, polygon, color) {

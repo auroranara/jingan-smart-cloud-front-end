@@ -66,7 +66,7 @@ const {
 export default class Edit extends PureComponent {
   constructor(props) {
     super(props);
-    this.handlePersonSearch = debounce(this.handlePersonSearch, 800);
+    this.handlePersonSearch = debounce(this.handlePersonSearch, 300);
     this.state = {
       uploading: false, // 上传是否加载
       photoUrl: [], // 上传照片
@@ -75,8 +75,8 @@ export default class Edit extends PureComponent {
       detailList: {},
       safetyIndexList: [],
       isopen: false,
-      departmentId: '', // 部门id
-      personId: {}, // 个人id
+      departmentId: undefined, // 部门id
+      personId: undefined, // 个人id
     };
   }
 
@@ -453,7 +453,12 @@ export default class Edit extends PureComponent {
 
   // 单位名称切换，清空责任主体
   onChangeComapny = v => {
-    this.setState({ dutyStatus: '', departmentId: '', personId: {}, selectCompanyId: v.key });
+    this.setState({
+      dutyStatus: '',
+      departmentId: undefined,
+      personId: undefined,
+      selectCompanyId: v.key,
+    });
   };
 
   // 责任主体key切换
@@ -467,7 +472,7 @@ export default class Edit extends PureComponent {
     } = this.props;
     const { companyId } = getFieldsValue();
 
-    this.setState({ dutyStatus: key, departmentId: '', personId: {} });
+    this.setState({ dutyStatus: key, departmentId: undefined, personId: undefined });
     if (+key === 2) {
       dispatch({
         type: 'department/fetchDepartmentList',
@@ -502,13 +507,10 @@ export default class Edit extends PureComponent {
 
   // 个人选择框切换
   handlePersonChange = e => {
-    this.setState({ personId: { key: e.key, label: e.label } });
-  };
-
-  // 个人选择框失去焦点
-  handlePersonBlur = value => {
-    if (value.key && value.key === value.label) {
-      this.setState({ personId: '' });
+    if (e === undefined) {
+      this.setState({ personId: undefined });
+    } else {
+      this.setState({ personId: { key: e.key, label: e.label } });
     }
   };
 
@@ -518,7 +520,7 @@ export default class Edit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({ dutyMajor: e });
-    this.setState({ dutyStatus: e });
+    this.setState({ dutyStatus: e, personId: undefined });
   };
 
   handleIdChange = e => {
@@ -707,19 +709,20 @@ export default class Edit extends PureComponent {
                   </Select>
                 )}
                 {+dutyStatus === 3 && (
-                  <AutoComplete
+                  <Select
                     value={personId}
-                    mode="combobox"
+                    allowClear
                     labelInValue
+                    showSearch
+                    showArrow={false}
+                    filterOption={false}
                     optionLabelProp="children"
                     placeholder="请输入"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handlePersonSearch}
-                    onBlur={this.handlePersonBlur}
-                    filterOption={false}
+                    onChange={e => this.handlePersonChange(e)}
                     {...itemStyles}
                     style={{ width: '50%' }}
-                    onChange={e => this.handlePersonChange(e)}
                   >
                     {personList.map(({ users, userName }) => (
                       <Option
@@ -729,7 +732,7 @@ export default class Edit extends PureComponent {
                         {userName}
                       </Option>
                     ))}
-                  </AutoComplete>
+                  </Select>
                 )}
                 {+dutyStatus === 0 && (
                   <Input placeholder="请选择" {...itemStyles} style={{ width: '50%' }} disabled />

@@ -109,6 +109,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       dispatch({
         type: 'reservoirRegion/clearSafetyEngDetail',
       });
+      this.getUserList();
     }
   }
 
@@ -415,7 +416,7 @@ export default class RegSafetyEngEdit extends PureComponent {
       startDate,
       endDate,
     } = detailList;
-    console.log(userList);
+    // console.log(userList);
 
     // const nameInput = <Input placeholder="请输入姓名" {...itemStyles} />;
     // const nameInput = (
@@ -437,6 +438,8 @@ export default class RegSafetyEngEdit extends PureComponent {
     const nameInput = (
       <FormSelect
         async
+        allowClear
+        showArrow={false}
         fieldNames={COMPANY_LIST_FIELDNAMES}
         list={userList}
         loading={listLoading}

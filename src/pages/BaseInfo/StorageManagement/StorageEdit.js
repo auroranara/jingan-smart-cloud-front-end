@@ -321,7 +321,7 @@ export default class StorageEdit extends PureComponent {
   // 清空储罐区
   handleResetArea = () => {
     const { form: { setFieldsValue } } = this.props;
-    setFieldsValue({ tankArea: undefined });
+    setFieldsValue({ tankArea: '' });
     this.setState({ selectedTempKeys: [], selectedTemp: [], selectedArea: [] });
   }
 

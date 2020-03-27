@@ -321,14 +321,18 @@ export default class MajorHazardEdit extends PureComponent {
             .join(','),
         };
 
-        const success = () => {
+        const success = res => {
           const msg = id ? '编辑成功' : '新增成功';
           message.success(msg, 1, this.goBack());
         };
 
-        const error = () => {
-          const msg = id ? '编辑失败' : '新增失败';
-          message.error(msg, 1);
+        const error = res => {
+          const msg = id ? res || '编辑失败' : res || '新增失败';
+          if (res) {
+            message.warning(msg, 1);
+          } else {
+            message.error(msg, 1);
+          }
           this.setState({
             submitting: false,
           });

@@ -74,7 +74,7 @@ const defaultPagination = {
   }),
   dispatch => ({
     // 获取企业
-    fetchModelList(action) {
+    fetchModelList (action) {
       dispatch({
         type: 'videoMonitor/fetchModelList',
         ...action,
@@ -102,7 +102,7 @@ export default class VideoMonitorEdit extends PureComponent {
   };
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -443,12 +443,12 @@ export default class VideoMonitorEdit extends PureComponent {
     });
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: value.id } });
     this.fetchMarkers(value.id);
-    setFieldsValue({ xnum: undefined, ynum: undefined, buildingFloor: {} });
+    setFieldsValue({ xnum: undefined, ynum: undefined, buildingFloor: {}, isShow: '1' });
     this.handleHideCompanyModal();
   };
 
   // 渲染选择企业模态框
-  renderCompanyModal() {
+  renderCompanyModal () {
     const {
       companyModal: { loading, visible },
     } = this.state;
@@ -667,7 +667,7 @@ export default class VideoMonitorEdit extends PureComponent {
   };
 
   // 渲染视频设备信息
-  renderVideoInfo() {
+  renderVideoInfo () {
     const {
       location: {
         query: { name: nameCompany },
@@ -739,46 +739,46 @@ export default class VideoMonitorEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.companyName}>
             {id
               ? getFieldDecorator('companyId', {
-                  initialValue: companyName,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择单位',
-                    },
-                  ],
-                })(
-                  <Input
-                    {...itemStyles}
-                    disabled
-                    ref={input => {
-                      this.CompanyIdInput = input;
-                    }}
-                    placeholder="请选择单位"
-                  />
-                )
+                initialValue: companyName,
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择单位',
+                  },
+                ],
+              })(
+                <Input
+                  {...itemStyles}
+                  disabled
+                  ref={input => {
+                    this.CompanyIdInput = input;
+                  }}
+                  placeholder="请选择单位"
+                />
+              )
               : getFieldDecorator('companyId', {
-                  initialValue:
-                    unitType === 4 || unitType === 1
-                      ? nameCompany || defaultName
-                      : nameCompany
-                        ? nameCompany
-                        : undefined,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择单位',
-                    },
-                  ],
-                })(
-                  <Input
-                    {...itemStyles}
-                    disabled
-                    ref={input => {
-                      this.CompanyIdInput = input;
-                    }}
-                    placeholder="请选择单位"
-                  />
-                )}
+                initialValue:
+                  unitType === 4 || unitType === 1
+                    ? nameCompany || defaultName
+                    : nameCompany
+                      ? nameCompany
+                      : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择单位',
+                  },
+                ],
+              })(
+                <Input
+                  {...itemStyles}
+                  disabled
+                  ref={input => {
+                    this.CompanyIdInput = input;
+                  }}
+                  placeholder="请选择单位"
+                />
+              )}
             {id || nameCompany || (defaultName && unitType !== 2) ? null : (
               <Button type="primary" onClick={this.handleShowCompanyModal}>
                 {' '}
@@ -1104,7 +1104,7 @@ export default class VideoMonitorEdit extends PureComponent {
   }
 
   /* 渲染错误信息 */
-  renderErrorInfo() {
+  renderErrorInfo () {
     const {
       form: { getFieldsError },
     } = this.props;
@@ -1148,7 +1148,7 @@ export default class VideoMonitorEdit extends PureComponent {
   }
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar() {
+  renderFooterToolbar () {
     const {
       location: {
         query: { companyId: companyIdParams, name: nameParams },
@@ -1182,16 +1182,16 @@ export default class VideoMonitorEdit extends PureComponent {
             返回
           </Button>
         ) : (
-          <Button type="primary" size="large" onClick={this.goBack}>
-            返回
-          </Button>
-        )}
+            <Button type="primary" size="large" onClick={this.goBack}>
+              返回
+            </Button>
+          )}
       </FooterToolbar>
     );
   }
 
   // 渲染页面所有信息
-  render() {
+  render () {
     const {
       gatewayLoading,
       match: {
