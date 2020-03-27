@@ -65,6 +65,8 @@ export default class AsyncSelect extends Component {
       onChange,
       onSelect,
       fieldNames,
+      getList,
+      params,
     } = this.props;
     const { key: k } = { ...FIELDNAMES, ...fieldNames };
     const { key, label } = value || {};
@@ -72,6 +74,7 @@ export default class AsyncSelect extends Component {
     if (key !== label) {
       onSelect && onSelect(list.find(item => item[k] === key));
     }
+    getList({ ...params });
   };
 
   handleSearch = value => {
@@ -133,29 +136,28 @@ export default class AsyncSelect extends Component {
       //     <Option key={key}>{value}</Option>
       //   ))}
       // </AutoComplete>
-    <Select
-      allowClear
-      labelInValue
-      showSearch
-      showArrow={false}
-      value={value}
-      style={style}
-      className={className}
-      onChange={this.handleChange}
-      // optionLabelProp="children"
-      placeholder={placeholder}
-      defaultActiveFirstOption={false}
-      filterOption={false}
-      onSearch={this.debouncedHandleSearch}
-      onBlur={this.handleBlur}
-      // notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
-      disabled={disabled}
-
-    >
-      {list.map(({ [k]: key, [v]: value }) => (
-        <Option key={key}>{value}</Option>
-      ))}
-    </Select>
+      <Select
+        allowClear
+        labelInValue
+        showSearch
+        showArrow={false}
+        value={value}
+        style={style}
+        className={className}
+        onChange={this.handleChange}
+        // optionLabelProp="children"
+        placeholder={placeholder}
+        defaultActiveFirstOption={false}
+        filterOption={false}
+        onSearch={this.debouncedHandleSearch}
+        onBlur={this.handleBlur}
+        // notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
+        disabled={disabled}
+      >
+        {list.map(({ [k]: key, [v]: value }) => (
+          <Option key={key}>{value}</Option>
+        ))}
+      </Select>
     ) : (
       <span>{value && value.label}</span>
     );

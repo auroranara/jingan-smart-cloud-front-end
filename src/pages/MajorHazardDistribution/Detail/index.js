@@ -25,6 +25,7 @@ import Tank from '../components/Tank';
 import Gas from '../components/Gas';
 import { connect } from 'dva';
 import router from 'umi/router';
+import classNames from 'classnames';
 import moment from 'moment';
 import {
   BREADCRUMB_LIST_PREFIX,
@@ -494,7 +495,7 @@ export default class MajorHazardDistributionDetail extends Component {
                       </div>
                     </Col>
                     <Col span={8}>
-                      <div className={styles.padding}>
+                      <div className={classNames(styles.padding, styles.panelAlarm)}>
                         {videoList &&
                           videoList.length > 0 && (
                             <div
@@ -514,47 +515,53 @@ export default class MajorHazardDistributionDetail extends Component {
             key={id}
           >
             <Spin spinning={loadingTankAreaMonitorList || loadingTankMonitorList}>
-              <div className={styles.subTitle}>罐区监测</div>
-              {tankAreaMonitorList && tankAreaMonitorList.length ? (
-                <List
-                  grid={LIST_GRID}
-                  dataSource={tankAreaMonitorList}
-                  renderItem={item => (
-                    <List.Item>
-                      <Gas
-                        data={item}
-                        hasMonitorTrendAuthority={hasMonitorTrendAuthority}
-                        hasAlarmWorkOrderAuthority={hasAlarmWorkOrderAuthority}
-                        onVideoClick={this.handleShowVideo}
-                      />
-                    </List.Item>
-                  )}
-                />
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              )}
-              <div className={styles.subTitle}>储罐监测</div>
-              {tankMonitorList && tankMonitorList.length ? (
-                <List
-                  grid={LIST_GRID}
-                  dataSource={tankMonitorList}
-                  renderItem={item => (
-                    <List.Item>
-                      <Tank
-                        data={item}
-                        securityUrl={securityUrl}
-                        hasSecurityAuthority={hasSecurityAuthority}
-                        hasTankAuthority={hasTankAuthority}
-                        hasAlarmWorkOrderAuthority={hasAlarmWorkOrderAuthority}
-                        onVideoClick={this.handleShowVideo}
-                        majorHazardName={detail && detail.name}
-                      />
-                    </List.Item>
-                  )}
-                />
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              )}
+              {!(tankAreaMonitorList && tankAreaMonitorList.length) &&
+                !(tankMonitorList && tankMonitorList.length) && (
+                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                )}
+              {tankAreaMonitorList &&
+                tankAreaMonitorList.length > 0 && (
+                  <Fragment>
+                    <div className={styles.subTitle}>罐区监测</div>
+                    <List
+                      grid={LIST_GRID}
+                      dataSource={tankAreaMonitorList}
+                      renderItem={item => (
+                        <List.Item>
+                          <Gas
+                            data={item}
+                            hasMonitorTrendAuthority={hasMonitorTrendAuthority}
+                            hasAlarmWorkOrderAuthority={hasAlarmWorkOrderAuthority}
+                            onVideoClick={this.handleShowVideo}
+                          />
+                        </List.Item>
+                      )}
+                    />
+                  </Fragment>
+                )}
+              {tankMonitorList &&
+                tankMonitorList.length > 0 && (
+                  <Fragment>
+                    <div className={styles.subTitle}>储罐监测</div>
+                    <List
+                      grid={LIST_GRID}
+                      dataSource={tankMonitorList}
+                      renderItem={item => (
+                        <List.Item>
+                          <Tank
+                            data={item}
+                            securityUrl={securityUrl}
+                            hasSecurityAuthority={hasSecurityAuthority}
+                            hasTankAuthority={hasTankAuthority}
+                            hasAlarmWorkOrderAuthority={hasAlarmWorkOrderAuthority}
+                            onVideoClick={this.handleShowVideo}
+                            majorHazardName={detail && detail.name}
+                          />
+                        </List.Item>
+                      )}
+                    />
+                  </Fragment>
+                )}
             </Spin>
           </Collapse.Panel>
         ))}
@@ -988,6 +995,7 @@ export default class MajorHazardDistributionDetail extends Component {
           {tabActiveKey === tabList[3].key && this.renderMap()}
         </Spin>
         <NewVideoPlay
+          className={styles.videoModal}
           showList={true}
           videoList={videoList}
           visible={videoVisible}

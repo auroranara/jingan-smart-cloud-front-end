@@ -702,7 +702,7 @@ export default {
     // 导出在场记录
     *exportPresenceRecordList ({ payload }, { call }) {
       const blob = yield call(exportPresenceRecordList, { ...payload, orderIds: payload.ids });
-      fileDownload(blob, `出入场记录_${moment().format('YYYYMMDD')}.xlsx`);
+      fileDownload(blob, `出入场记录_${moment().format('YYYYMMDD')}.xls`);
     },
     // 获取异常抬杆记录列表
     *getAbnormalRecordList ({ payload, callback }, { call, put }) {

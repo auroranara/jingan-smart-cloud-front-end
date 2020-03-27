@@ -55,13 +55,22 @@ export default class ProductionAreaAdd extends Component {
             this.form && this.form.setFieldsValue({
               company: companyId ? { key: companyId, label: companyName } : undefined,
               areaName: areaName || undefined,
-              department: department || undefined,
               areaNumber,
               areaLevel,
               remark,
               principal: principal ? [principal] : [],
             });
-            this.fetchDepartmentList({ payload: { companyId } });
+            this.fetchDepartmentList({
+              payload: { companyId },
+              callback: (list) => {
+                setTimeout(() => {
+                  const temp = list && list.length ? this.expandTree(list) : [];
+                  if (temp.findIndex(item => item.id === department) > -1) {
+                    this.form && this.form.setFieldsValue({ department: department || undefined });
+                  } else message.warning('请重新选择部门')
+                }, 0);
+              },
+            });
             this.setState({ principalName: principalContent ? principalContent.userName : '', detail, selectedKeys: [principal] })
           } else {
             message.error('获取详情失败，请稍后重试或联系管理人员！');
@@ -73,6 +82,21 @@ export default class ProductionAreaAdd extends Component {
     } else {
       this.resetDepartment();
     }
+  }
+
+  expandTree = (list) => {
+    if (!list || list.length === 0) return []
+    let arr = []
+    let temp = []
+    temp = [...list]
+    while (temp.length) {
+      const { children, ...res } = temp.shift()
+      arr.push(res)
+      if (children && children.length) {
+        temp = [...temp, ...children]
+      }
+    }
+    return arr
   }
 
   // 获取部门列表
@@ -173,8 +197,9 @@ export default class ProductionAreaAdd extends Component {
 
   // 选择负责人
   handleSelectPerson = (keys, rows) => {
+    if (keys[0] === this.state.selectedKeys[0]) return;
     // this.form && this.form.setFieldsValue({ principal: keys })
-    this.setState({ principalName: rows.map(item => item.name).join('、'), selectedKeys: keys })
+    this.setState({ principalName: rows.map(item => item.name).join('、'), selectedKeys: keys });
   }
 
   setFormReference = form => {
@@ -382,7 +407,7 @@ export default class ProductionAreaAdd extends Component {
             {isNotDetail ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
             ) : (
-                <AuthButton code={codes.operatingProcedures.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
+                <AuthButton code={codes.electronicInspection.productionArea.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
               )}
           </div>
         </Spin>

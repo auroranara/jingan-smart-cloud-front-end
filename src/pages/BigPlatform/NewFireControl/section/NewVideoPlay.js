@@ -512,14 +512,14 @@ class VideoPlay extends Component {
   };
 
   render() {
-    const { visible, draggable = true, style } = this.props;
+    const { className, visible, draggable = true, style } = this.props;
     if (!visible) return null;
     // return draggable ? (
     //   <Draggable handle="#dragBar" bounds="parent">
     //     {this.renderPan()}
     //   </Draggable>
     // ) : (
-    const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
+    const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in, className);
     return (
       <RenderInPopup
         className={wrapperStyles}

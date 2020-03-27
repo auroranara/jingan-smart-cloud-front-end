@@ -439,7 +439,7 @@ export default class StorehouseHandler extends PureComponent {
 
   // 清空库区名称
   handleResetArea = () => {
-    this.props.form.setFieldsValue({ areaId: undefined });
+    this.props.form.setFieldsValue({ areaId: '' });
     this.setState({ selectedRegion: {}, tempKeys: [] });
   }
 
