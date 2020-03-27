@@ -327,8 +327,8 @@ export default class SpecialEquipmentList extends PureComponent {
     router.push(`/facility-management/special-equipment/detail/${id}`);
   };
 
-  goEdit = id => {
-    router.push(`/facility-management/special-equipment/edit/${id}`);
+  goEdit = (id, unitId) => {
+    router.push(`/facility-management/special-equipment/edit/${id}?unitId=${unitId}`);
   };
 
   handleDelete = id => {
@@ -527,7 +527,7 @@ export default class SpecialEquipmentList extends PureComponent {
         align: 'center',
         fixed: 'right',
         width: 120,
-        render: (val, row) => (
+        render: (val, { id, companyId }) => (
           <Fragment>
             {/* <AuthA code={bindSensorCode} onClick={() => this.goDetail(row.id)}>
               绑定传感器
@@ -537,13 +537,13 @@ export default class SpecialEquipmentList extends PureComponent {
               查看
             </AuthA>
             <Divider type="vertical" /> */}
-            <AuthA code={editCode} onClick={() => this.goEdit(row.id)}>
+            <AuthA code={editCode} onClick={() => this.goEdit(id, companyId)}>
               编辑
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm
               title="确认要删除该特种设备吗？"
-              onConfirm={() => this.handleDelete(row.id)}
+              onConfirm={() => this.handleDelete(id)}
             >
               <AuthA code={deleteCode}>删除</AuthA>
             </Popconfirm>

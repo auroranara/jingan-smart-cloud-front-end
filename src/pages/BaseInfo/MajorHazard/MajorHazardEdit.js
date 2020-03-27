@@ -377,7 +377,9 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 关闭企业弹框
   handleClose = () => {
-    this.setState({ companyVisible: false });
+    this.setState({ companyVisible: false }, () => {
+      this.childMap.handleDispose();
+    });
   };
 
   // 选择企业
@@ -405,6 +407,11 @@ export default class MajorHazardEdit extends PureComponent {
       if (!mapInfo.mapId) return;
       this.childMap.initMap({ ...mapInfo });
     });
+    this.fetchStorageAreaList({ companyId: id });
+    this.fetchReservoirAreaList({ companyId: id });
+    this.fetchGasList({ companyId: id });
+    this.fetchProductList({ companyId: id });
+    this.fetchPipelineList({ companyId: id });
   };
 
   // 渲染企业模态框

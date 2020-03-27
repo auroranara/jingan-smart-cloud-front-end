@@ -283,8 +283,8 @@ export default class TableList extends PureComponent {
         dataIndex: 'dataEntity',
         key: 'dataEntity',
         // render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
-        render: (txt, { dataId }) => (
-          <a href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}`} target="_blank" rel="noopener noreferrer">{txt}</a>
+        render: (txt, { dataId, companyId }) => (
+          <a href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}?unitId=${companyId}`} target="_blank" rel="noopener noreferrer">{txt}</a>
         ),
       },
       {

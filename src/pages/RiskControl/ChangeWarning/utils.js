@@ -141,9 +141,9 @@ export function getColumns(genConfirmEvaluate) {
       dataIndex: 'dataEntity',
       key: 'dataEntity',
       // render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
-      render: (txt, { dataId }) => (
+      render: (txt, { dataId, companyId }) => (
         <a
-          href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}`}
+          href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}?unitId=${companyId}`}
           target="_blank"
           rel="noopener noreferrer"
         >
