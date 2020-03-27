@@ -35,18 +35,18 @@ import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipme
 const { Group: RadioGroup } = Radio;
 
 // 上传文件地址
-const uploadAction = '/acloud_new/v2/uploadFile';
+// const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
-const folder = 'emergency';
-const defaultUploadProps = {
-  name: 'files',
-  data: { folder },
-  multiple: true,
-  action: uploadAction,
-  headers: { 'JA-Token': getToken() },
-};
+// const folder = 'emergency';
+// const defaultUploadProps = {
+//   name: 'files',
+//   data: { folder },
+//   multiple: true,
+//   action: uploadAction,
+//   headers: { 'JA-Token': getToken() },
+// };
 const FormItem = Form.Item;
-const Option = Select.Option;
+// const Option = Select.Option;
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 const formItemLayout = {
@@ -103,11 +103,13 @@ export default class SpecialEquipment extends PureComponent {
   componentDidMount() {
     const {
       form: { setFieldsValue },
+      location: { query: { unitId } },
       match: { params: { id = null } = {} },
       user: {
         currentUser: { companyId, unitType, companyName },
       },
     } = this.props;
+
     this.fetchDict({ type: 'specialEquipment' });
     this.fetchBrand(brandPayload);
     if (unitType === 4) {
@@ -116,7 +118,10 @@ export default class SpecialEquipment extends PureComponent {
       this.fetchMarkers(companyId);
     }
     if (!id) return;
-    this.fetchList(1, 10, { id }, res => {
+    this.fetchList(1, 10, { id, companyId: unitId }, res => {
+      if (!res || !res.data || !res.data.list || !res.data.list.length)
+        return;
+
       const {
         list: [
           {

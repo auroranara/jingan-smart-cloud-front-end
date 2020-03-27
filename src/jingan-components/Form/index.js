@@ -13,6 +13,25 @@ import Map from './Map';
 import AMap from './AMap';
 import styles from './index.less';
 
+const componentReference = {
+  Input,
+  Select,
+  DatePicker,
+  RangePicker,
+  Password,
+  TextArea,
+  TreeSelect,
+  Upload,
+  Radio,
+  Map,
+  AMap,
+};
+
+/**
+ * 1.字段发生变化时，其他字段的显示隐藏
+ * 2.字段发生变化时，其他字段值的变化
+ */
+
 export default class FormForm extends Component {
   static Input = Input;
   static Select = Select;
@@ -32,27 +51,41 @@ export default class FormForm extends Component {
     console.log(values);
   };
 
+  handleValuesChange = (changedValues, allValues) => {
+    console.log(changedValues);
+    console.log(allValues);
+  };
+
   render() {
-    // const {  }  = this.props;
-    const componentReference = {
-      Input,
-      Select,
-      DatePicker,
-      RangePicker,
-      Password,
-      TextArea,
-      TreeSelect,
-      Upload,
-      Radio,
-      Map,
-      AMap,
-    };
+    const { fields, ...rest } = this.props;
+    const list = typeof fields === 'function' ? fields() : fields;
 
     return (
-      <Form ref={this.formRef} onFinish={this.handleFinish}>
-        <Form.Item>
-          <Input />
-        </Form.Item>
+      <Form
+        ref={this.formRef}
+        onFinish={this.handleFinish}
+        onValuesChange={this.handleValuesChange}
+        {...rest}
+      >
+        {Array.isArray(list) &&
+          list.map(({ key, name, label, component, props, enableDefaultRules, rules, ...rest }) => {
+            let ruleList;
+            const Component = componentReference[component] || component;
+            if (enableDefaultRules && typeof Component.getRules === 'function') {
+              ruleList = Component.getRules({ label }).concat(rules || []);
+            }
+            return (
+              <Form.Item
+                key={key || name}
+                name={key || name}
+                label={label}
+                rules={ruleList || rules}
+                {...rest}
+              >
+                <Component {...props} />
+              </Form.Item>
+            );
+          })}
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Submit

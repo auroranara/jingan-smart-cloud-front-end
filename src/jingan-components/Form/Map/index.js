@@ -468,7 +468,7 @@ export default class FormMap extends Component {
       position: fengMap.controlPositon.LEFT_TOP,
       offset: {
         x: 0,
-        y: 52,
+        y: 56,
       },
     });
     const floorControl = new fengMap.buttonGroupsControl(map, options);
