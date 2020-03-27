@@ -441,7 +441,7 @@ export default class MajorHazardDistributionDetail extends Component {
 
     return alarmList && alarmList.length ? (
       <Collapse accordion activeKey={activeKey} onChange={this.handleActiveKeyChange}>
-        {alarmList.map(({ id, name, code, storageMaterialNames, videoList }) => (
+        {alarmList.map(({ id, name, code, storageMaterialNames, videoList, warnStatus }) => (
           <Collapse.Panel
             header={
               <div>
@@ -495,7 +495,12 @@ export default class MajorHazardDistributionDetail extends Component {
                       </div>
                     </Col>
                     <Col span={8}>
-                      <div className={classNames(styles.padding, styles.panelAlarm)}>
+                      <div
+                        className={classNames(
+                          styles.padding,
+                          +warnStatus === -1 && styles.panelAlarm
+                        )}
+                      >
                         {videoList &&
                           videoList.length > 0 && (
                             <div

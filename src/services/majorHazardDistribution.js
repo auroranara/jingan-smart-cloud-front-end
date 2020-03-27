@@ -22,8 +22,8 @@ export async function getToxicGasPointList(params) {
 }
 
 // 获取视频监控点列表
-export async function getVideoPointList({ companyId }) {
-  return request(`/acloud_new/v2/videoDevice/company/${companyId}/videoList`);
+export async function getVideoPointList({ companyId, ...params }) {
+  return request(`/acloud_new/v2/videoDevice/company/${companyId}/videoList?${stringify(params)}`);
 }
 
 // 获取头部统计

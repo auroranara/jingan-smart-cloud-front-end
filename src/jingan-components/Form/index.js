@@ -68,41 +68,24 @@ export default class FormForm extends Component {
         {...rest}
       >
         {Array.isArray(list) &&
-          list.map(
-            ({
-              key,
-              name,
-              label,
-              component,
-              props,
-              enableDefaultRules,
-              render,
-              rules,
-              ...rest
-            }) => {
-              let children, ruleList;
-              if (typeof render === 'function') {
-                children = render();
-              } else {
-                const Component = componentReference[component] || component;
-                children = <Component {...props} />;
-                if (enableDefaultRules && typeof Component.getRules === 'function') {
-                  ruleList = Component.getRules({ label }).concat(rules || []);
-                }
-              }
-              return (
-                <Form.Item
-                  key={key || name}
-                  name={key || name}
-                  label={label}
-                  rules={ruleList || rules}
-                  {...rest}
-                >
-                  {children}
-                </Form.Item>
-              );
+          list.map(({ key, name, label, component, props, enableDefaultRules, rules, ...rest }) => {
+            let ruleList;
+            const Component = componentReference[component] || component;
+            if (enableDefaultRules && typeof Component.getRules === 'function') {
+              ruleList = Component.getRules({ label }).concat(rules || []);
             }
-          )}
+            return (
+              <Form.Item
+                key={key || name}
+                name={key || name}
+                label={label}
+                rules={ruleList || rules}
+                {...rest}
+              >
+                <Component {...props} />
+              </Form.Item>
+            );
+          })}
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Submit

@@ -26,7 +26,6 @@ const FormRadio = ({
   const handleChange = ({ target: { value, data } }) => {
     onChange && onChange(value, data);
   };
-  console.log('value: ', value);
   useEffect(() => {
     getList && getList();
   }, []);
