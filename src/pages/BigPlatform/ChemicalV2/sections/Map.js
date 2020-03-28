@@ -1029,7 +1029,7 @@ export default class Map extends PureComponent {
     const {
       chemical: {
         videoList,
-        onDuty: { presentCar = 0, recSuccess = 0 },
+        onDuty: { recSuccess = 0, inCount = 0, outCount = 0 },
         truckCount,
         inOutRecordList,
         riskPoint,
@@ -1043,6 +1043,7 @@ export default class Map extends PureComponent {
       },
       licensePlateRecognitionSystem: { abnormalRecordList },
     } = this.props;
+    const presentCar = inCount - outCount >= 0 ? inCount - outCount : 0;
     const controlDataList = [
       filterMarkerList(riskPoint),
       filterMarkerList(videoList).filter(({ status }) => status && +status === 1),

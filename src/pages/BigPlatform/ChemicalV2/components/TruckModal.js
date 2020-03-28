@@ -134,7 +134,9 @@ export default class TruckModal extends PureComponent {
                           </div>
                           <div className={styles.count}>
                             <div>在场车辆</div>
-                            <div className={styles.value}>{presentCar}</div>
+                            <div className={styles.value}>
+                              {inCar - outCar > 0 ? inCar - outCar : 0}
+                            </div>
                           </div>
                         </div>
                       </div>
