@@ -4,7 +4,7 @@ const defaultSetting = {
   silderTheme: 'dark',
   themeColor: '#1890FF',
   layout: 'sidemenu',
-  grid: 'Wide',
+  // grid: 'Wide',
   fixedHeader: true,
   autoHideHeader: false,
   fixSiderbar: true,

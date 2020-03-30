@@ -444,7 +444,7 @@ export default class CompanyDetail extends PureComponent {
     const { company: { regulatoryClassificationList } } = this.props;
     if (val !== null && regulatoryClassificationList.length) {
       let showChemFields = false;
-      console.log(val, regulatoryClassificationList.find(({ type_name, type_id }) => type_name === '化工' && type_id === val));
+      // console.log(val, regulatoryClassificationList.find(({ type_name, type_id }) => type_name === '化工' && type_id === val));
       if (regulatoryClassificationList.find(({ type_name, type_id }) => type_name === '化工' && type_id === val))
         showChemFields = true;
       this.setState({ showChemFields });

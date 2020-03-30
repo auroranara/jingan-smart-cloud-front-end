@@ -135,9 +135,9 @@ export const TABLE_COLUMNS = [
       const { dangerTechnologyList, unitChemiclaNumDetail } = row;
       const processName = dangerTechnologyList.map(item => item.processName).join(',');
       const chineName = unitChemiclaNumDetail.map(item => item.chineName).join(',');
-      const unitChemiclaNum = unitChemiclaNumDetail
-        .map(item => item.unitChemiclaNum + 't')
-        .join(',');
+      // const unitChemiclaNum = unitChemiclaNumDetail
+      //   .map(item => item.unitChemiclaNum + 't')
+      //   .join(',');
       return (
         <div style={{ textAlign: 'left' }}>
           <p>
@@ -148,10 +148,10 @@ export const TABLE_COLUMNS = [
             危化品:
             {chineName}
           </p>
-          <p>
+          {/* <p>
             危化品数量:
             {unitChemiclaNum}
-          </p>
+          </p> */}
         </div>
       );
     },
