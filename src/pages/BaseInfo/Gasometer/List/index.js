@@ -430,15 +430,20 @@ export default class GasometerList extends Component {
     const fields = [
       {
         id: 'nameOrNumberKeywords',
-        label: '气柜名称或统一编码',
+        label: '气柜',
         span: DEFAULT_SPAN,
         transform: value => value.trim(),
         render: ({ handleSearch }) => (
-          <Input
-            placeholder="请输入气柜名称或统一编码"
-            onPressEnter={handleSearch}
-            maxLength={100}
-          />
+          <Input placeholder="请输入气柜" onPressEnter={handleSearch} maxLength={100} />
+        ),
+      },
+      {
+        id: 'chineNameOrCasNoKeywords',
+        label: '存储介质',
+        span: DEFAULT_SPAN,
+        transform: value => value.trim(),
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入存储介质" onPressEnter={handleSearch} maxLength={100} />
         ),
       },
       {
@@ -451,15 +456,6 @@ export default class GasometerList extends Component {
             list={MAJOR_HAZARD_STATUSES}
             allowClear
           />
-        ),
-      },
-      {
-        id: 'chineNameOrCasNoKeywords',
-        label: '存储介质或CAS号',
-        span: DEFAULT_SPAN,
-        transform: value => value.trim(),
-        render: ({ handleSearch }) => (
-          <Input placeholder="请输入存储介质或CAS号" onPressEnter={handleSearch} maxLength={100} />
         ),
       },
       ...(isNotCompany

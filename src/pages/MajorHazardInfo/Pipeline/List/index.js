@@ -53,15 +53,20 @@ export default class PipelineList extends Component {
   getFields = ({ unitId }) => [
     {
       id: 'nameOrNumberKeywords',
-      label: '管道名称或管道编号',
+      label: '管道',
       span: DEFAULT_SPAN,
       transform: value => value.trim(),
       render: ({ handleSearch }) => (
-        <InputOrSpan
-          placeholder="请输入管道名称或管道编号"
-          maxLength={100}
-          onPressEnter={handleSearch}
-        />
+        <InputOrSpan placeholder="请输入管道" maxLength={100} onPressEnter={handleSearch} />
+      ),
+    },
+    {
+      id: 'chineNameOrCasNoKeywords',
+      label: '存储介质',
+      span: DEFAULT_SPAN,
+      transform: value => value.trim(),
+      render: ({ handleSearch }) => (
+        <InputOrSpan placeholder="请输入存储介质" maxLength={100} onPressEnter={handleSearch} />
       ),
     },
     {
@@ -69,19 +74,6 @@ export default class PipelineList extends Component {
       label: '是否压力管道',
       span: DEFAULT_SPAN,
       render: () => <SelectOrSpan placeholder="请选择是否压力管道" list={CHOICES} allowClear />,
-    },
-    {
-      id: 'chineNameOrCasNoKeywords',
-      label: '存储介质或CAS号',
-      span: DEFAULT_SPAN,
-      transform: value => value.trim(),
-      render: ({ handleSearch }) => (
-        <InputOrSpan
-          placeholder="请输入存储介质或CAS号"
-          maxLength={100}
-          onPressEnter={handleSearch}
-        />
-      ),
     },
     ...(!unitId
       ? [
