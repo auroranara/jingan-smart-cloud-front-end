@@ -14,6 +14,7 @@ import {
   LIST_URL,
   ARCHITECTURAL_STRUCTURE,
   envirType,
+  ROUTER,
 } from '../Other/utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
@@ -21,6 +22,15 @@ import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
 import MapModal from '@/components/MapModal';
 import style from './index.less';
+import codes from '@/utils/codes';
+import { hasAuthority } from '@/utils/customAuth';
+
+// 权限
+const {
+  baseInfo: {
+    surroundingEnvironmentInfo: { edit: editCode },
+  },
+} = codes;
 
 const FOLDER = 'envirInfo';
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -304,6 +314,13 @@ export default class Edit extends PureComponent {
     this.coordinate.blur();
   };
 
+  isDetail = () => {
+    const {
+      match: { url },
+    } = this.props;
+    return url && url.includes('detail');
+  };
+
   /* 渲染地图 */
   renderMap() {
     const {
@@ -332,16 +349,18 @@ export default class Edit extends PureComponent {
       },
       form: { getFieldDecorator },
       user: {
-        currentUser: { unitType },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
-
+    const isDet = this.isDetail();
     const { photoList, areaCode, fixedPhone, fileLoading } = this.state;
 
-    const title = id ? '编辑' : '新增';
+    const editAuth = hasAuthority(editCode, permissionCodes);
+
+    const title = isDet ? '查看' : id ? '编辑' : '新增';
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
-    const handleSubmit = this.handleSubmit;
+    const handleSubmit = isDet ? null : this.handleSubmit;
     const isComUser = isCompanyUser(+unitType);
 
     const uploadBtn = (
@@ -354,7 +373,9 @@ export default class Edit extends PureComponent {
         onChange={this.handleUploadPhoto}
         headers={{ 'JA-Token': getToken() }}
       >
-        <Button type="primary">点击上传</Button>
+        <Button disabled={isDet} type="primary">
+          点击上传
+        </Button>
       </Upload>
     );
 
@@ -369,7 +390,7 @@ export default class Edit extends PureComponent {
       {
         name: 'environmentType',
         label: '周边环境类型',
-        type: 'select',
+        type: 'radio',
         options: envirType,
       },
       { name: 'environmentName', label: '周边环境名称' },
@@ -378,13 +399,13 @@ export default class Edit extends PureComponent {
       {
         name: 'buildStructure',
         label: '建筑结构',
-        type: 'select',
+        type: 'radio',
         options: ARCHITECTURAL_STRUCTURE,
         required: false,
       },
       { name: 'buildHeight', label: '相邻建筑高度(m)', required: false },
       { name: 'perNumber', label: '人员数量' },
-      { name: 'contact', label: '联系人' },
+      { name: 'contact', label: '联系人', placeholder: '请输入联系人姓名' },
       {
         name: 'contactTel',
         label: '联系人固定电话',
@@ -469,6 +490,21 @@ export default class Edit extends PureComponent {
             fileLoading,
             loading
           )}
+          {isDet ? (
+            <Button style={{ marginLeft: '45%' }} onClick={e => router.push(`${ROUTER}/list`)}>
+              返回
+            </Button>
+          ) : null}
+          {isDet ? (
+            <Button
+              type="primary"
+              disabled={!editAuth}
+              style={{ marginLeft: '1%' }}
+              onClick={e => router.push(`${ROUTER}/edit/${id}`)}
+            >
+              编辑
+            </Button>
+          ) : null}
         </Card>
         {this.renderMap()}
       </PageHeaderLayout>

@@ -679,6 +679,7 @@ export default {
     // 生产装置
     productionEquipments: {
       list: 'majorHazardInfo.productionEquipments.listView',
+      view: 'majorHazardInfo.productionEquipments.view',
       add: 'majorHazardInfo.productionEquipments.add',
       edit: 'majorHazardInfo.productionEquipments.edit',
       delete: 'majorHazardInfo.productionEquipments.delete',

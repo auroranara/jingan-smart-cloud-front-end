@@ -28,6 +28,7 @@ const {
       delete: deleteCode,
       bindSensor: bindCode,
       unbindSensor: unbindCode,
+      view: viewCode,
     },
   },
 } = codes;
@@ -249,19 +250,25 @@ export default class TableList extends PureComponent {
 
     const extraColumns = [
       {
-        title: '已绑定监测设备',
+        title: '监测设备',
         dataIndex: 'monitorEquipmentCount',
         key: 'monitorEquipmentCount',
         align: 'center',
         width: 150,
         render: (val, row) => {
           return (
-            <span
-              onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
-              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
-            >
-              {val}
-            </span>
+            <div>
+              <span
+                onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+                style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+              >
+                {val}
+              </span>
+              <Divider type="vertical" />
+              <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
+                绑定监测设备
+              </AuthA>
+            </div>
           );
         },
       },
@@ -274,9 +281,9 @@ export default class TableList extends PureComponent {
         width: 210,
         render: (val, row) => (
           <Fragment>
-            <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
-              绑定监测设备
-            </AuthA>
+            <AuthLink code={viewCode} to={`${ROUTER}/detail/${row.id}`}>
+              查看
+            </AuthLink>
             <Divider type="vertical" />
             <AuthLink to={`${ROUTER}/edit/${row.id}`} code={editCode}>
               编辑
