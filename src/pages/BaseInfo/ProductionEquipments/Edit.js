@@ -1,15 +1,20 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Card, Button, Input, Radio, Select, message, InputNumber } from 'antd';
+import { Card, Button, Input, Radio, Select, Upload, DatePicker, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import { BREADCRUMBLIST, LIST_URL } from './utils';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { AutoList } from './utils';
+import { getToken } from 'utils/authority';
+import { AutoList, ROUTER } from './utils';
+import moment from 'moment';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+
 const FormItem = Form.Item;
 const { Option } = Select;
 const { TextArea } = Input;
@@ -18,6 +23,18 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
+
+// 权限
+const {
+  baseInfo: {
+    productionEquipments: { edit: editCode },
+  },
+} = codes;
+
+// 上传文件夹
+const folder = 'productionEquipments';
+// 上传文件地址
+const uploadAction = '/acloud_new/v2/uploadFile';
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 
@@ -39,6 +56,8 @@ export default class Edit extends PureComponent {
     materialsNum: {}, // 危化品数量
     dangerTechnologyId: '', // 选中的高危工艺Id
     detailList: {},
+    photoUrl: [], // 上传照片
+    uploading: false, // 上传是否加载
   };
 
   // 挂载后
@@ -67,6 +86,7 @@ export default class Edit extends PureComponent {
             companyName,
             dangerTechnologyList,
             unitChemiclaNumDetail,
+            photoList,
           } = currentList;
           this.setState({
             detailList: currentList,
@@ -81,6 +101,13 @@ export default class Edit extends PureComponent {
               prev[materialId] = unitChemiclaNum;
               return prev;
             }, {}),
+            photoUrl: photoList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              url: webUrl,
+              dbUrl,
+            })),
           });
         },
       });
@@ -93,6 +120,13 @@ export default class Edit extends PureComponent {
 
   goBack = () => {
     router.push(`${LIST_URL}`);
+  };
+
+  isDetail = () => {
+    const {
+      match: { url },
+    } = this.props;
+    return url && url.includes('detail');
   };
 
   // 去除左右两边空白
@@ -193,6 +227,63 @@ export default class Edit extends PureComponent {
     });
   };
 
+  handleUploadChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        photoUrl: fileList,
+        uploading: true,
+      });
+    } else if (file.status === 'done' && file.response.code === 200) {
+      const {
+        data: {
+          list: [result],
+        },
+      } = file.response;
+      if (result) {
+        this.setState({
+          photoUrl: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          uploading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        photoUrl: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        uploading: false,
+      });
+    } else if (file.status === 'error') {
+      this.setState({
+        photoUrl: [],
+        uploading: false,
+      });
+    }
+  };
+
+  // 上传附件之前的回调
+  handleBeforeUpload = file => {
+    const { uploading } = this.state;
+    const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (uploading) {
+      message.error('尚未上传结束');
+    }
+    if (!isImage) {
+      message.error('上传失败，请上传jpg格式或者png格式图片');
+    }
+    return isImage && !uploading;
+  };
+
   handleSubmit = () => {
     const {
       match: {
@@ -204,7 +295,7 @@ export default class Edit extends PureComponent {
         currentUser: { companyId, unitType },
       },
     } = this.props;
-    const { selectedCompany, dangerTechnologyId } = this.state;
+    const { selectedCompany, dangerTechnologyId, photoUrl } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const {
@@ -216,12 +307,14 @@ export default class Edit extends PureComponent {
           environment,
           deviceFunction,
           deviceStatus,
-          deviceProduct,
+          // deviceProduct,
           pressure,
-          deviceEnergyConsumption,
-          deviceTechnology,
+          // deviceEnergyConsumption,
+          // deviceTechnology,
           automaticControl,
           unitChemicla,
+          useDate,
+          note,
         } = values;
         const payload = {
           id,
@@ -235,12 +328,18 @@ export default class Edit extends PureComponent {
           environment,
           deviceFunction,
           deviceStatus,
-          deviceProduct,
+          // deviceProduct,
+          useDate: useDate ? useDate.format('YYYY-MM-DD') : undefined,
           pressure,
-          deviceEnergyConsumption,
-          deviceTechnology,
+          // deviceEnergyConsumption,
+          // deviceTechnology,
           automaticControl,
+          note,
           unitChemicla,
+          photoList:
+            photoUrl.length > 0
+              ? photoUrl.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
+              : undefined,
         };
 
         const success = () => {
@@ -281,7 +380,7 @@ export default class Edit extends PureComponent {
         currentUser: { unitType },
       },
     } = this.props;
-    const { detailList, selectedMaterials, materialsNum } = this.state;
+    const { detailList, selectedMaterials, materialsNum, uploading, photoUrl } = this.state;
 
     const { autoList = AutoList } = {};
 
@@ -297,13 +396,17 @@ export default class Edit extends PureComponent {
       environment,
       deviceFunction,
       deviceStatus,
-      deviceProduct,
+      // deviceProduct,
       pressure,
-      deviceEnergyConsumption,
-      deviceTechnology,
+      // deviceEnergyConsumption,
+      // deviceTechnology,
       automaticControl,
       unitChemicla,
+      useDate,
+      note,
     } = detailList;
+
+    const isDet = this.isDetail();
 
     return (
       <Card>
@@ -372,7 +475,7 @@ export default class Edit extends PureComponent {
               </Radio.Group>
             )}
             <div style={{ color: '#999999' }}>
-              说明：在易燃、易爆、有毒、有害、易腐蚀、高温、高压、真空、深冷、等条件下进行工艺操作的生产装置。
+              关键装置的定义：在易燃、易爆、有毒、有害、易腐蚀、高温、高压、真空、深冷、等条件下进行工艺操作的生产装置。
             </div>
           </FormItem>
 
@@ -396,6 +499,14 @@ export default class Edit extends PureComponent {
               </Radio.Group>
             )}
           </FormItem>
+
+          <FormItem label="投用日期" {...formItemLayout}>
+            {getFieldDecorator('useDate', {
+              initialValue: typeof useDate === 'number' ? moment(+useDate) : undefined,
+              rules: [{ required: true, message: '请选择' }],
+            })(<DatePicker placeholder="请选择投用日期" format="YYYY-MM-DD" {...itemStyles} />)}
+          </FormItem>
+
           <FormItem label="所属危险化工工艺" {...formItemLayout}>
             {getFieldDecorator('dangerTechnologyName', {
               initialValue: dangerTechnologyList
@@ -403,12 +514,14 @@ export default class Edit extends PureComponent {
                 : undefined,
               rules: [{ required: true, message: '请选择' }],
             })(<Input placeholder="请选择" disabled {...itemStyles} />)}
-            <Button type="primary" onClick={this.handleTechnologyModal}>
-              选择
-            </Button>
+            {!isDet && (
+              <Button type="primary" onClick={this.handleTechnologyModal}>
+                选择
+              </Button>
+            )}
           </FormItem>
 
-          <FormItem label="主要危化品及数量" {...formItemLayout}>
+          <FormItem label="涉及主要危化品" {...formItemLayout}>
             {getFieldDecorator('unitChemicla', {
               initialValue: unitChemicla,
               rules: [{ required: true, message: '请选择' }],
@@ -426,14 +539,16 @@ export default class Edit extends PureComponent {
                     .join('，')}
                   disabled
                 />
-                <Button type="primary" onClick={this.handleMaterialsModal}>
-                  选择
-                </Button>
+                {!isDet && (
+                  <Button type="primary" onClick={this.handleMaterialsModal}>
+                    选择
+                  </Button>
+                )}
               </Fragment>
             )}
           </FormItem>
 
-          <FormItem label="装置生产能力" {...formItemLayout}>
+          {/* <FormItem label="装置生产能力" {...formItemLayout}>
             {getFieldDecorator('deviceProduct', {
               initialValue: deviceProduct,
               getValueFromEvent: this.handleTrim,
@@ -455,7 +570,7 @@ export default class Edit extends PureComponent {
               getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
+          </FormItem> */}
 
           <FormItem label="自动化控制方式" {...formItemLayout}>
             {getFieldDecorator('automaticControl', {
@@ -486,6 +601,39 @@ export default class Edit extends PureComponent {
               getValueFromEvent: this.handleTrim,
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
+
+          <FormItem label="备注" {...formItemLayout}>
+            {getFieldDecorator('note', {
+              initialValue: note,
+              getValueFromEvent: this.handleTrim,
+            })(<TextArea placeholder="请输入" {...itemStyles} />)}
+          </FormItem>
+
+          <FormItem label="现场照片" {...formItemLayout}>
+            {getFieldDecorator('photo', {
+              // initialValue: photoUrl,
+            })(
+              <Upload
+                name="files"
+                accept=".jpg,.png" // 接受的文件格式
+                headers={{ 'JA-Token': getToken() }} // 上传的请求头部
+                data={{ folder }} // 附带参数
+                action={uploadAction} // 上传地址
+                fileList={photoUrl}
+                onChange={this.handleUploadChange}
+                beforeUpload={this.handleBeforeUpload}
+              >
+                <Button
+                  type="dashed"
+                  style={{ width: '96px', height: '96px' }}
+                  disabled={uploading}
+                >
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
+                  <div style={{ marginTop: '8px' }}>点击上传</div>
+                </Button>
+              </Upload>
+            )}
+          </FormItem>
         </Form>
       </Card>
     );
@@ -500,11 +648,23 @@ export default class Edit extends PureComponent {
       },
       materials,
       productionEquipments: { highRiskProcess },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
 
-    const { technologyVisible, materialsVisible, materialsNum, selectedMaterials } = this.state;
+    const {
+      technologyVisible,
+      materialsVisible,
+      materialsNum,
+      uploading,
+      selectedMaterials,
+    } = this.state;
+    const isDet = this.isDetail();
 
-    const title = id ? '编辑' : '新增';
+    const editAuth = hasAuthority(editCode, permissionCodes);
+
+    const title = isDet ? '查看' : id ? '编辑' : '新增';
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
 
@@ -605,31 +765,31 @@ export default class Edit extends PureComponent {
         align: 'center',
         render: data => RISK_CATEGORIES[data],
       },
-      {
-        title: '危化品数量(t)',
-        dataIndex: 'unitChemiclaNum',
-        key: 'unitChemiclaNum',
-        align: 'center',
-        render: (data, row) => (
-          <InputNumber
-            placeholder="危化品数量"
-            min={0}
-            ref={node => (this.input = node)}
-            onBlur={e => {
-              this.setState({
-                materialsNum: {
-                  ...materialsNum,
-                  [row.id]: e.target.value,
-                },
-              });
-            }}
-            defaultValue={data}
-            formatter={value => (!value || isNaN(value) ? '' : value)}
-            parser={value => (!value || isNaN(value) ? '' : value)}
-            style={{ width: '100%' }}
-          />
-        ),
-      },
+      // {
+      //   title: '危化品数量(t)',
+      //   dataIndex: 'unitChemiclaNum',
+      //   key: 'unitChemiclaNum',
+      //   align: 'center',
+      //   render: (data, row) => (
+      //     <InputNumber
+      //       placeholder="危化品数量"
+      //       min={0}
+      //       ref={node => (this.input = node)}
+      //       onBlur={e => {
+      //         this.setState({
+      //           materialsNum: {
+      //             ...materialsNum,
+      //             [row.id]: e.target.value,
+      //           },
+      //         });
+      //       }}
+      //       defaultValue={data}
+      //       formatter={value => (!value || isNaN(value) ? '' : value)}
+      //       parser={value => (!value || isNaN(value) ? '' : value)}
+      //       style={{ width: '100%' }}
+      //     />
+      //   ),
+      // },
     ];
 
     return (
@@ -637,14 +797,27 @@ export default class Edit extends PureComponent {
         {this.renderForm()}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span>
-            <Button
-              style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-              type="primary"
-              size="large"
-              onClick={this.handleSubmit}
-            >
-              提交
-            </Button>
+            {isDet ? (
+              <Button
+                type="primary"
+                size="large"
+                disabled={!editAuth}
+                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                onClick={e => router.push(`${ROUTER}/edit/${id}`)}
+              >
+                编辑
+              </Button>
+            ) : (
+              <Button
+                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                type="primary"
+                size="large"
+                onClick={this.handleSubmit}
+                disabled={uploading}
+              >
+                提交
+              </Button>
+            )}
           </span>
 
           <span style={{ marginLeft: 10 }}>
