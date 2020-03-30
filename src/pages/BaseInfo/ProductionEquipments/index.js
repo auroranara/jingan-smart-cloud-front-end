@@ -258,13 +258,14 @@ export default class TableList extends PureComponent {
         render: (val, row) => {
           return (
             <div>
-              <span
-                onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
-                style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
-              >
-                {val}
-              </span>
-              <Divider type="vertical" />
+              <div>
+                <span
+                  onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+                  style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+                >
+                  {val}
+                </span>
+              </div>
               <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
                 绑定监测设备
               </AuthA>

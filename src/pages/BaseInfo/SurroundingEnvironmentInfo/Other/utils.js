@@ -61,9 +61,9 @@ export function getSearchFields(unitType) {
       label: '周边环境类型',
       render: () => (
         <Select placeholder="请选择" allowClear>
-          {envirType.map(({ key, value }) => (
-            <Option key={key} value={key}>
-              {value}
+          {envirType.map(({ value, label }) => (
+            <Option key={value} value={value}>
+              {label}
             </Option>
           ))}
         </Select>
