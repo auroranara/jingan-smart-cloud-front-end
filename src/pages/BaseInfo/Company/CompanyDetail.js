@@ -24,7 +24,7 @@ import FireControlDetail from './FireControlDetail';
 const { Description } = DescriptionList;
 
 // const companyTypes = ['', '重点单位', '一般单位', '九小场所'];
-const IMPORTANT_TYPES = ['否', '是'];
+// const IMPORTANT_TYPES = ['否', '是'];
 
 // 获取title
 const {
