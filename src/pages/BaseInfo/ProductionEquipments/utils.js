@@ -24,43 +24,39 @@ const deviceStatusList = [
   { key: '3', value: '报废' },
 ];
 
+const dangerSourceList = [{ key: '0', value: '否' }, { key: '1', value: '是' }];
+
 export const SEARCH_FIELDS = [
   // modify
   {
     id: 'companyName',
-    label: '单位名称',
-    render: () => <Input placeholder="请输入" allowClear />,
+    // label: '单位名称',
+    render: () => <Input placeholder="单位名称" allowClear />,
     transform: v => v.trim(),
   },
   {
     id: 'code',
-    label: '装置编号',
-    render: () => <Input placeholder="请输入" allowClear />,
+    // label: '装置编号',
+    render: () => <Input placeholder="装置编号/装置名称" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'name',
-    label: '装置名称',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'model',
-    label: '设备型号',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'location',
-    label: '装置位置',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
+    id: 'dangerSource',
+    render: () => (
+      <Select placeholder="是否构成重大危险源" allowClear>
+        {dangerSourceList.map(({ key, value }) => (
+          <Option key={key} value={key}>
+            {value}
+          </Option>
+        ))}
+      </Select>
+    ),
   },
   {
     id: 'deviceStatus',
-    label: '装置状态',
+    // label: '装置状态',
     render: () => (
-      <Select placeholder="请选择" allowClear>
+      <Select placeholder="装置状态" allowClear>
         {deviceStatusList.map(({ key, value }) => (
           <Option key={key} value={key}>
             {value}
@@ -107,18 +103,26 @@ export const TABLE_COLUMNS = [
             设备型号:
             {row.model}
           </p>
+          <p>
+            装置位置:
+            {row.location}
+          </p>
+          <p>
+            关键装置:
+            {+row.keyDevice === 1 ? '是' : '否'}
+          </p>
         </div>
       );
     },
   },
   {
-    title: '是否关键装置',
-    dataIndex: 'keyDevice',
-    key: 'keyDevice',
+    title: '装置状态',
+    dataIndex: 'deviceStatus',
+    key: 'deviceStatus',
     align: 'center',
-    width: 150,
+    width: 100,
     render: val => {
-      return +val === 1 ? '是' : '否';
+      return getDeviceStatus[val];
     },
   },
   {
@@ -153,56 +157,48 @@ export const TABLE_COLUMNS = [
     },
   },
   {
-    title: '装置状态',
-    dataIndex: 'deviceStatus',
-    key: 'deviceStatus',
-    align: 'center',
-    width: 100,
-    render: val => {
-      return getDeviceStatus[val];
-    },
-  },
-  {
-    title: '装置参数',
-    dataIndex: 'otherInfo',
-    key: 'otherInfo',
-    align: 'center',
-    width: 250,
-    render: (val, row) => {
-      return (
-        <div style={{ textAlign: 'left' }}>
-          <p>
-            装置功能:
-            {row.deviceFunction}
-          </p>
-          <p>
-            生产能力:
-            {row.deviceProduct}
-          </p>
-          <p>
-            装置能耗:
-            {row.deviceEnergyConsumption}
-          </p>
-          <p>
-            装置技术条件:
-            {row.deviceTechnology}
-          </p>
-          <p>
-            设计压力:
-            {row.pressure}
-            KPa
-          </p>
-        </div>
-      );
-    },
-  },
-  {
-    title: '装置位置',
-    dataIndex: 'location',
-    key: 'location',
+    title: '是否构成重大危险源',
+    dataIndex: 'dangerSource',
     align: 'center',
     width: 200,
+    render: val => {
+      return +val === 0 ? '否' : '是';
+    },
   },
+  // {
+  //   title: '装置参数',
+  //   dataIndex: 'otherInfo',
+  //   key: 'otherInfo',
+  //   align: 'center',
+  //   width: 250,
+  //   render: (val, row) => {
+  //     return (
+  //       <div style={{ textAlign: 'left' }}>
+  //         <p>
+  //           装置功能:
+  //           {row.deviceFunction}
+  //         </p>
+  //         <p>
+  //           生产能力:
+  //           {row.deviceProduct}
+  //         </p>
+  //         <p>
+  //           装置能耗:
+  //           {row.deviceEnergyConsumption}
+  //         </p>
+  //         <p>
+  //           装置技术条件:
+  //           {row.deviceTechnology}
+  //         </p>
+  //         <p>
+  //           设计压力:
+  //           {row.pressure}
+  //           KPa
+  //         </p>
+  //       </div>
+  //     );
+  //   },
+  // },
 ];
 
 export const AutoList = [{ key: '1', value: 'PLC控制' }, { key: '2', value: 'DCS控制' }];
