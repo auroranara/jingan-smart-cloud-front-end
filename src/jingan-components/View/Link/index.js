@@ -8,7 +8,14 @@ const ViewLink = props => {
     <Link
       {...props}
       className={classNames(styles.link, props.className)}
-      onClick={props.disabled ? e => e.preventDefault() : props.onClick}
+      onClick={e => {
+        e.stopPropagation();
+        if (props.disabled) {
+          e.preventDefault();
+        } else if (props.onClick) {
+          props.onClick(e);
+        }
+      }}
     />
   );
 };

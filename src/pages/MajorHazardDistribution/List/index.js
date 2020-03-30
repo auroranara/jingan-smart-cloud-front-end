@@ -442,8 +442,8 @@ export default class MajorHazardDistributionList extends Component {
     getCombustibleGasPointList(undefined, (success, data) => {
       if (success) {
         const combustibleGasPointList = data.reduce((result, { pointFixInfoList }) => {
-          const { id, xnum, ynum, groupId, imgType } = (pointFixInfoList || [])[0] || {};
-          if (groupId && +imgType === 5) {
+          const { id, xnum, ynum, groupId, imgType, isShow } = (pointFixInfoList || [])[0] || {};
+          if (groupId && +imgType === 5 && +isShow === 1) {
             const options = {
               key: id,
               groupId: +groupId,
@@ -473,8 +473,8 @@ export default class MajorHazardDistributionList extends Component {
     getToxicGasPointList(undefined, (success, data) => {
       if (success) {
         const toxicGasPointList = data.reduce((result, { pointFixInfoList }) => {
-          const { id, xnum, ynum, groupId, imgType } = (pointFixInfoList || [])[0] || {};
-          if (groupId && +imgType === 5) {
+          const { id, xnum, ynum, groupId, imgType, isShow } = (pointFixInfoList || [])[0] || {};
+          if (groupId && +imgType === 5 && +isShow === 1) {
             const options = {
               key: id,
               groupId: +groupId,

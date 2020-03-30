@@ -444,7 +444,7 @@ export default class CompanyDetail extends PureComponent {
     const { company: { regulatoryClassificationList } } = this.props;
     if (val !== null && regulatoryClassificationList.length) {
       let showChemFields = false;
-      console.log(val, regulatoryClassificationList.find(({ type_name, type_id }) => type_name === '化工' && type_id === val));
+      // console.log(val, regulatoryClassificationList.find(({ type_name, type_id }) => type_name === '化工' && type_id === val));
       if (regulatoryClassificationList.find(({ type_name, type_id }) => type_name === '化工' && type_id === val))
         showChemFields = true;
       this.setState({ showChemFields });
@@ -542,14 +542,16 @@ export default class CompanyDetail extends PureComponent {
           gridId,
           importantHost,
           importantSafety,
+          workCompanyType,
           ...restFields
         }
       ) => {
+        // console.log(workCompanyType);
         if (!err) {
           this.setState({
             submitting: true,
           });
-          const { ichnographyList, firePictureList, unitPhotoList } = this.state;
+          // const { ichnographyList, firePictureList, unitPhotoList } = this.state;
           const [longitude, latitude] = coordinate ? coordinate.split(',') : [];
           const payload = {
             ...restFields,
@@ -582,6 +584,7 @@ export default class CompanyDetail extends PureComponent {
             gridId: gridId[gridId.length - 1],
             // companyType: getCompanyType(importantHost, importantSafety),
             companyType: !id ? '2' : undefined,
+            workCompanyType: Array.isArray(workCompanyType) ? workCompanyType.join(',') : workCompanyType,
           };
           // 成功回调
           const success = companyId => {
@@ -1408,7 +1411,7 @@ export default class CompanyDetail extends PureComponent {
         economicTypes,
         scales,
         licenseTypes,
-        companyTypes,
+        // companyTypes,
         detail: {
           data: {
             economicType,
@@ -1417,7 +1420,7 @@ export default class CompanyDetail extends PureComponent {
             createTime,
             groupName,
             businessScope,
-            companyType,
+            // companyType,
             regulatoryClassification,
             ciCompanyType,
             workCompanyType,
@@ -1554,7 +1557,7 @@ export default class CompanyDetail extends PureComponent {
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.workCompanyType}>
                   {getFieldDecorator('workCompanyType', {
-                    initialValue: workCompanyType || undefined,
+                    initialValue: workCompanyType ? workCompanyType.split(',').filter(s => s) : undefined,
                     rules: [{ required: true, message: '请选择生产经营活动类型' }],
                   })(
                     <Select mode="multiple" placeholder="请选择生产经营活动类型" allowClear>
