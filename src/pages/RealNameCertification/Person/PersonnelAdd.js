@@ -676,11 +676,11 @@ export default class PersonnelAdd extends PureComponent {
                             </div>
                           ) : null}
                         </Upload>
-                        <div className={styles.labelColor}>
+                        {/* <div className={styles.labelColor}>
                           <div className={styles.labelFirst}>照片命名示例:</div>
                           <div>姓名_ID卡号</div>
                           <div className={styles.labelSecond}>张三_FF000000011B</div>
-                        </div>
+                        </div> */}
                       </div>
                     </Fragment>
                   )}
