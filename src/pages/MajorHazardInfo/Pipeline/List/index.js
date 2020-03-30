@@ -170,15 +170,15 @@ export default class PipelineList extends Component {
     },
     {
       title: '压力管道',
-      dataIndex: '压力管道',
+      dataIndex: 'pressure',
       align: 'center',
-      render: (_, { pressure }) => (+pressure ? '是' : '否'),
+      render: value => (+value ? '是' : '否'),
     },
     {
       title: '构成重大危险源',
-      dataIndex: '构成重大危险源',
+      dataIndex: 'dangerSource',
       align: 'center',
-      render: (_, { dangerPipeline }) => (+dangerPipeline ? '是' : '否'),
+      render: value => (+value ? '是' : '否'),
     },
     {
       title: '目前状态',
