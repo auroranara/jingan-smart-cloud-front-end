@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { message, Spin, Card, Row, Col, Form, Button } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { message, Spin, Card, Row, Col, Button } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Upload from '@/jingan-components/Form/Upload';
 import Select from '@/jingan-components/Form/Select';

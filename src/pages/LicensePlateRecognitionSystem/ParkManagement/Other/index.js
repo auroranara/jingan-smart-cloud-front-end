@@ -6,7 +6,7 @@ import { isNumber } from '@/utils/utils';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { BREADCRUMB_LIST, STATUSES } from '../List';
-import styles from './index.less';
+// import styles from './index.less';
 
 const MAPPER = {
   namespace: 'licensePlateRecognitionSystem',

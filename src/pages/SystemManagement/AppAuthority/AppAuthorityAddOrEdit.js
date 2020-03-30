@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, TreeSelect, Select, Icon, Input, Form, message, Upload } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, TreeSelect, Select, Input, message, Upload } from 'antd';
 
 import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -284,7 +286,7 @@ export default class AppAuthorityAdd extends Component {
                     onChange={this.handleUploadChange}
                     headers={{ 'JA-Token': getToken() }}
                   >
-                    <Icon type="plus" />
+                    <LegacyIcon type="plus" />
                   </Upload>
                 </FormItem>
               )}

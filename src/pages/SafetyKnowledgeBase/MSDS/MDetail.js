@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Form, Icon, Popover } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Popover } from 'antd';
 
 import styles1 from '@/pages/BaseInfo/Company/Company.less';
 import FooterToolbar from '@/components/FooterToolbar';

@@ -1,6 +1,8 @@
 import { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Modal, Table, Input, TreeSelect, message, Select } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Modal, Table, Input, TreeSelect, message, Select } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';

@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
-import { Button, Row, Col, Icon, Steps, Card } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Row, Col, Steps, Card } from 'antd';
 import Result from '@/components/Result';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
@@ -15,7 +16,7 @@ const desc1 = (
     }}
   >
     <div style={{ margin: '8px 0 4px' }}>
-      曲丽丽<Icon style={{ marginLeft: 8 }} type="dingding-o" />
+      曲丽丽<LegacyIcon style={{ marginLeft: 8 }} type="dingding-o" />
     </div>
     <div>2016-12-12 12:32</div>
   </div>
@@ -24,7 +25,7 @@ const desc1 = (
 const desc2 = (
   <div style={{ fontSize: 12, position: 'relative', left: 42 }}>
     <div style={{ margin: '8px 0 4px' }}>
-      周毛毛<Icon type="dingding-o" style={{ color: '#00A0E9', marginLeft: 8 }} />
+      周毛毛<LegacyIcon type="dingding-o" style={{ color: '#00A0E9', marginLeft: 8 }} />
     </div>
     <div>
       <a href="">催一下</a>

@@ -1,18 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import {
-  Button,
-  Card,
-  Form,
-  Row,
-  Col,
-  Radio,
-  Input,
-  TreeSelect,
-  Upload,
-  Icon,
-  message,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Row, Col, Radio, Input, TreeSelect, Upload, message } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { getToken } from '@/utils/authority';
@@ -22,6 +12,7 @@ const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const TreeNode = TreeSelect.TreeNode;
 const { TextArea } = Input;
+const [LOCAL, NET] = [0, 1];
 
 // 上传文件地址
 const uploadUrl = '/acloud_new/v2/uploadFile';
@@ -46,6 +37,7 @@ export default class CoursewareAdd extends PureComponent {
     coverLoading: false, // 课件封面loading
     fileList: [],
     courseLoading: false, // 课件上传状态
+    videoType: LOCAL,
   };
 
   componentDidMount() {
@@ -67,21 +59,25 @@ export default class CoursewareAdd extends PureComponent {
         type: 'resourceManagement/fetchCourseWareDetail',
         payload: {
           id,
+          companyId,
         },
-        callback: ({ name, webVideoCover, videoCover, webFileUrl, fileUrl }) => {
-          setFieldsValue({
-            videoCover: videoCover ? { webUrl: webVideoCover[0], dbUrl: videoCover } : undefined,
-            fileUrl: { webUrl: webFileUrl[0], dbUrl: fileUrl },
-          });
+        callback: ({ name, webVideoCover, videoCover, webFileUrl, fileUrl, remarks }) => {
           this.setState({
-            fileList: [
+            fileList: fileUrl ? [
               {
                 uid: '1',
                 url: webFileUrl[0],
                 name,
                 status: 'done',
               },
-            ],
+            ] : [],
+            videoType: remarks ? NET : LOCAL,
+          }, () => {
+            setFieldsValue({
+              videoCover: videoCover ? { webUrl: webVideoCover[0], dbUrl: videoCover } : undefined,
+              fileUrl: fileUrl ? { webUrl: webFileUrl[0], dbUrl: fileUrl } : undefined,
+              remarks,
+            });
           });
         },
       });
@@ -97,11 +93,12 @@ export default class CoursewareAdd extends PureComponent {
       form: { resetFields },
     } = this.props;
     // TODO：清空上传课件
-    resetFields(['videoCover', 'fileUrl']);
+    resetFields(['videoCover', 'fileUrl', 'remarks']);
     this.setState({
       fileList: [],
       coverLoading: false,
       courseLoading: false,
+      videoType: LOCAL,
     });
   };
 
@@ -137,10 +134,11 @@ export default class CoursewareAdd extends PureComponent {
     };
     validateFields((errors, values) => {
       if (!errors) {
-        const { videoCover, fileUrl, ...others } = values;
+        const { videoCover, fileUrl, remarks, ...others } = values;
         const payload = {
           videoCover: values.type === '2' && videoCover ? videoCover.dbUrl : null,
-          fileUrl: fileUrl.dbUrl,
+          fileUrl: fileUrl ? fileUrl.dbUrl : null,
+          remarks: remarks || null,
           ...others,
         };
         // 如果新增
@@ -286,6 +284,10 @@ export default class CoursewareAdd extends PureComponent {
     });
   };
 
+  handleVideoTypeChange = e => {
+    this.setState({ videoType: e.target.value });
+  };
+
   render() {
     const {
       form: { getFieldDecorator, getFieldValue },
@@ -297,7 +299,7 @@ export default class CoursewareAdd extends PureComponent {
         courseWare: { detail },
       },
     } = this.props;
-    const { coverLoading, fileList, courseLoading } = this.state;
+    const { coverLoading, fileList, courseLoading, videoType } = this.state;
     const title = id ? '编辑课件' : '新增课件';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -311,7 +313,7 @@ export default class CoursewareAdd extends PureComponent {
     const type = getFieldValue('type') || '2';
     const uploadButton = (
       <div>
-        <Icon type={coverLoading ? 'loading' : 'plus'} />
+        <LegacyIcon type={coverLoading ? 'loading' : 'plus'} />
         <div className="ant-upload-text">上传</div>
       </div>
     );
@@ -374,31 +376,47 @@ export default class CoursewareAdd extends PureComponent {
                 )}
               </FormItem>
             )}
-            <FormItem label="上传课件" {...formItemLayout}>
-              {getFieldDecorator('fileUrl', {
-                rules: [{ required: true, message: '请上传课件', type: 'object' }],
-              })(
-                <Fragment>
-                  <Upload
-                    name="files"
-                    accept={type === '2' ? '.mp4' : '.ppt,.pdf,.doc,.docx'}
-                    headers={{ 'JA-Token': getToken() }}
-                    data={{ folder: 'courseWare' }} // 附带的参数
-                    action={uploadUrl} // 上传地址
-                    onChange={this.handleFileChange}
-                    disabled={courseLoading}
-                    beforeUpload={
-                      type === '2' ? this.handleBeforeVideoLoad : this.handleBeforeWordLoad
-                    }
-                    fileList={fileList}
-                  >
-                    <Button type="primary">
-                      <Icon type={courseLoading ? 'loading' : 'upload'} /> 浏览
-                    </Button>
-                  </Upload>
-                </Fragment>
-              )}
-            </FormItem>
+            {type === '2' && (
+              <FormItem label="视频类型" {...formItemLayout}>
+                <RadioGroup onChange={this.handleVideoTypeChange} value={videoType}>
+                  <Radio value={0}>本地文件</Radio>
+                  <Radio value={1}>云端文件</Radio>
+                </RadioGroup>
+              </FormItem>
+            )}
+            {type === '2' && videoType === NET ? (
+              <FormItem label="视频链接" {...formItemLayout}>
+                {getFieldDecorator('remarks', { rules: [{ required: true, message: '请输入视频链接地址' }] })(
+                  <Input placeholder="请输入视频链接地址" />
+                )}
+              </FormItem>
+            ) : (
+              <FormItem label="上传课件" {...formItemLayout}>
+                {getFieldDecorator('fileUrl', {
+                  rules: [{ required: true, message: '请上传课件', type: 'object' }],
+                })(
+                  <Fragment>
+                    <Upload
+                      name="files"
+                      accept={type === '2' ? '.mp4' : '.ppt,.pdf,.doc,.docx'}
+                      headers={{ 'JA-Token': getToken() }}
+                      data={{ folder: 'courseWare' }} // 附带的参数
+                      action={uploadUrl} // 上传地址
+                      onChange={this.handleFileChange}
+                      disabled={courseLoading}
+                      beforeUpload={
+                        type === '2' ? this.handleBeforeVideoLoad : this.handleBeforeWordLoad
+                      }
+                      fileList={fileList}
+                    >
+                      <Button type="primary">
+                        <LegacyIcon type={courseLoading ? 'loading' : 'upload'} /> 浏览
+                      </Button>
+                    </Upload>
+                  </Fragment>
+                )}
+              </FormItem>
+            )}
             <FormItem label="详细内容" {...formItemLayout}>
               {getFieldDecorator('content', {
                 initialValue: id ? detail.content : undefined,

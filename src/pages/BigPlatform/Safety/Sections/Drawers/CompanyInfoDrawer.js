@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Drawer, Row, Col, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Drawer, Row, Col } from 'antd';
 import styles from '../../Government.less';
 import importantIcon from '../../img/importantCompany.png';
 import CompanyRisk from '../../Components/CompanyRisk';
@@ -227,9 +228,9 @@ class CompanyInfoDrawer extends PureComponent {
                           }}
                         >
                           {riskDetailFull ? (
-                            <Icon type="down" theme="outlined" />
+                            <LegacyIcon type="down" theme="outlined" />
                           ) : (
-                              <Icon type="up" theme="outlined" />
+                              <LegacyIcon type="up" theme="outlined" />
                             )}
                         </div>
                         <div

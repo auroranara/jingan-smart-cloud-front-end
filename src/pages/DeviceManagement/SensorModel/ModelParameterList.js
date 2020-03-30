@@ -1,5 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import { Card, Form, Row, Col, Button, Table, Divider, Popconfirm, Modal, Input, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Col, Button, Table, Divider, Popconfirm, Modal, Input, message } from 'antd';
 import { connect } from 'dva';
 import codes from '@/utils/codes';
 import { hasAuthority, AuthA } from '@/utils/customAuth';

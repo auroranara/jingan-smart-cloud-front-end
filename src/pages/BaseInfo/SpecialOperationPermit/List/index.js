@@ -1,9 +1,10 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
   Button,
-  Form,
   Table,
   Input,
   Select,
@@ -11,8 +12,8 @@ import {
   Row,
   Col,
   Cascader,
-  message,
   // Collapse,
+  message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
@@ -112,7 +113,7 @@ export default class specialOperationPermitList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const { workType, ...resValues } = getFieldsValue();
-    const payload = { ...workType && workType.length ? { workType: workType.join(',') } : {}, ...resValues };
+    const payload = { ...(workType && workType.length ? { workType: workType.join(',') } : {}), ...resValues };
     dispatch({
       type: 'baseInfo/fetchSpecialWorkPerson',
       payload: { ...payload, pageNum, pageSize },
@@ -266,12 +267,12 @@ export default class specialOperationPermitList extends PureComponent {
       user: { isCompany },
     } = this.props
     const columns = [
-      ...isCompany ? [] : [{
+      ...(isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      }],
+      }]),
       {
         title: '基本信息',
         key: '基本信息',
@@ -356,7 +357,7 @@ export default class specialOperationPermitList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 200,
+        width: 120,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>

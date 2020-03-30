@@ -1,5 +1,7 @@
 import { Component, Fragment } from 'react';
-import { Card, Form, Input, Button, Table, Row, Col, Divider, Select, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Button, Table, Row, Col, Divider, Select, message } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -323,7 +325,7 @@ export default class MonitoringDevice extends Component {
         key: '操作',
         align: 'center',
         fixed: 'right',
-        width: 230,
+        width: 200,
         render: (val, row) => (
           <Fragment>
             <AuthA onClick={() => this.handleViewBind(row)} code={bindSensorCode}>

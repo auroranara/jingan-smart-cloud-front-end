@@ -1,5 +1,7 @@
 import { PureComponent } from 'react';
-import { Card, Button, Row, Col, Form, Input, List, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Row, Col, Input, List, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InfiniteScroll from 'react-infinite-scroller';

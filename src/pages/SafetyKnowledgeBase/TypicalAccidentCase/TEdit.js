@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Form, Input, Button, Card, Icon, Popover, Cascader, Upload, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Card, Popover, Cascader, Upload, message } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
@@ -498,7 +500,7 @@ export default class TEdit extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={accidentLoading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>
@@ -530,7 +532,7 @@ export default class TEdit extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={directLoading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>
@@ -554,7 +556,7 @@ export default class TEdit extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={indirectLoading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>
@@ -586,7 +588,7 @@ export default class TEdit extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={adjunctLoading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>
@@ -619,7 +621,7 @@ export default class TEdit extends PureComponent {
       }
       return (
         <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles.errorIcon} />
           <div className={styles.errorMessage}>{errors[key][0]}</div>
           <div className={styles.errorField}>{fieldLabels[key]}</div>
         </li>
@@ -634,7 +636,7 @@ export default class TEdit extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" />
+          <LegacyIcon type="exclamation-circle" />
           {errorCount}
         </Popover>
       </span>

@@ -1,19 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  Col,
-  Row,
-  Select,
-  Divider,
-  Table,
-  Popconfirm,
-  message,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Card, Col, Row, Select, Divider, Table, Popconfirm, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';

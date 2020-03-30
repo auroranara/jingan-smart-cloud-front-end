@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Row, Button, Form, Col, Input, Card, Divider, Table } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Button, Col, Input, Card, Divider, Table } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -244,8 +246,8 @@ export default class PersonFileList extends PureComponent {
     ];
     return (
       <div>
-        <Row gutter={8}>
-          <Form>
+        <Form>
+          <Row gutter={8}>
             <Col span={6}>
               <FormItem>
                 {getFieldDecorator('studentName', {
@@ -254,18 +256,18 @@ export default class PersonFileList extends PureComponent {
                 })(<Input placeholder="请输入姓名" />)}
               </FormItem>
             </Col>
-          </Form>
-          <Col span={4}>
-            <FormItem>
-              <Button type="primary" onClick={this.handleQuery}>
-                查询
-              </Button>
-              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleReset}>
-                重置
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
+            <Col span={4}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleQuery}>
+                  查询
+                </Button>
+                <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleReset}>
+                  重置
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
 
         <Card title="人员汇总" style={{ marginTop: '20px' }}>
           {list && list.length ? (

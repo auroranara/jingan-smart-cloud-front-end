@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 // import moment from 'moment';
-import { Icon, Divider } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Divider } from 'antd';
 import Message from '../components/Message';
 // 引入样式文件
 import styles from './Messages.less';
@@ -25,7 +26,7 @@ export default class Messages extends PureComponent {
     return (
       <div className={styles.container} style={{ ...style }}>
         <div className={styles.shrinkContainer}>
-          <Icon
+          <LegacyIcon
             type="shrink"
             className={styles.shrink}
             onClick={() => handleParentChange({ msgVisible: false })}

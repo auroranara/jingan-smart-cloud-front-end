@@ -1,12 +1,6 @@
-import {
-  Modal,
-  Button,
-  Form,
-  Row,
-  Col,
-  Input,
-  Table,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Button, Row, Col, Input, Table } from 'antd';
 import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 const FormItem = Form.Item;

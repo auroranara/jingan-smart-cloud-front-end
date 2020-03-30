@@ -1,5 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Form, Button, Row, Col, Card } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Row, Col, Card } from 'antd';
 import classNames from 'classnames';
 // 引入样式文件
 import styles from './index.less';

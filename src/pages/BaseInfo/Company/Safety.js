@@ -2,18 +2,19 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   message,
   Button,
   Card,
   Col,
   DatePicker,
-  Form,
-  Icon,
   Input,
   Modal,
   Upload,
   Radio,
+  Row,
   Select,
 } from 'antd';
 // import FooterToolbar from 'components/FooterToolbar';
@@ -40,7 +41,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
 const folder = 'safetyinfo';
 
-const UploadIcon = <Icon type="upload" />;
+const UploadIcon = <LegacyIcon type="upload" />;
 
 const defaultUploadProps = {
   name: 'files',
@@ -666,7 +667,7 @@ export default class Safety extends PureComponent {
               上传图片
             </Button> */}
             <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-              <Icon type="plus" style={{ fontSize: '32px' }} />
+              <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
               <div style={{ marginTop: '8px' }}>点击上传</div>
             </Button>
             <span
@@ -699,7 +700,7 @@ export default class Safety extends PureComponent {
               上传图片
             </Button> */}
             <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-              <Icon type="plus" style={{ fontSize: '32px' }} />
+              <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
               <div style={{ marginTop: '8px' }}>点击上传</div>
             </Button>
             <span
@@ -736,7 +737,7 @@ export default class Safety extends PureComponent {
               上传附件
             </Button> */}
             <Button type="dashed" style={{ width: '96px', height: '96px' }} disabled={uploading}>
-              <Icon type="plus" style={{ fontSize: '32px' }} />
+              <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
               <div style={{ marginTop: '8px' }}>点击上传</div>
             </Button>
           </Upload>
@@ -751,24 +752,16 @@ export default class Safety extends PureComponent {
     return (
       <Card>
         <Form className={styles.form} onSubmit={this.handleSubmit} labelAlign="left">
-          {this.renderFormItems(formItems)}
-          <Col span={24}>
-            <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
-              <Button type="primary" htmlType="submit" loading={loading || submitting || uploading}>
-                提交
-              </Button>
-            </FormItem>
-          </Col>
-          {/* <FooterToolbar>
-              <Button
-                type="primary"
-                size="large"
-                htmlType="submit"
-                loading={loading || submitting}
-              >
-                提交
-              </Button>
-            </FooterToolbar> */}
+          <Row>
+            {this.renderFormItems(formItems)}
+            <Col span={24}>
+              <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
+                <Button type="primary" htmlType="submit" loading={loading || submitting || uploading}>
+                  提交
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Card>
     );

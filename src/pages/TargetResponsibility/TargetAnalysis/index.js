@@ -196,7 +196,7 @@ export default class TableList extends PureComponent {
         <div className={styles.right}>
           <div className={styles.top}>年度目标达成率排名</div>
           <div className={styles.table}>
-            <div className={styles.title}>
+            <Row className={styles.title}>
               <Col span={7}>
                 <p className={styles.tableTitle}>排名</p>
               </Col>
@@ -206,7 +206,7 @@ export default class TableList extends PureComponent {
               <Col span={7}>
                 <p className={styles.tableTitle}>目标达成率</p>
               </Col>
-            </div>
+            </Row>
             <div className={styles.dataCard}>
               {rankList !== null
                 ? rankList.map(({ partName, goalValue }, index) => {

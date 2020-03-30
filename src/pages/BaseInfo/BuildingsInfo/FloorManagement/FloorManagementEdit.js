@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import { routerRedux } from 'dva/router';
 import router from 'umi/router';
-import { Form, Input, Button, Card, Col, Icon, Upload, message, Select } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Card, Col, Upload, message, Select } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
 
@@ -28,7 +30,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 
 // 上传文件夹
 const folder = 'floorinfo';
-const UploadIcon = <Icon type="upload" />;
+const UploadIcon = <LegacyIcon type="upload" />;
 
 @connect(({ buildingsInfo, user, loading }) => ({
   buildingsInfo,

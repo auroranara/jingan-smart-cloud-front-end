@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Row, Button, Form, Col, Input, Divider, Card, Table } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Button, Col, Input, Divider, Card, Table } from 'antd';
 import moment from 'moment';
 
 const FormItem = Form.Item;
@@ -288,8 +290,8 @@ export default class ExamFileList extends PureComponent {
     ];
     return (
       <div>
-        <Row gutter={8}>
-          <Form>
+        <Form>
+          <Row gutter={8}>
             <Col span={6}>
               <FormItem>
                 {getFieldDecorator('examName', {
@@ -298,18 +300,18 @@ export default class ExamFileList extends PureComponent {
                 })(<Input placeholder="请输入考试名称" />)}
               </FormItem>
             </Col>
-          </Form>
-          <Col span={4}>
-            <FormItem>
-              <Button type="primary" onClick={this.handleExamQuery}>
-                查询
-              </Button>
-              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleExamReset}>
-                重置
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
+            <Col span={4}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleExamQuery}>
+                  查询
+                </Button>
+                <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleExamReset}>
+                  重置
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
 
         <Card title="成绩汇总" style={{ marginTop: '20px' }}>
           {list && list.length ? (

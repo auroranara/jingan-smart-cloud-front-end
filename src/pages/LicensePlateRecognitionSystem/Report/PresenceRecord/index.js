@@ -42,7 +42,7 @@ export default class PresenceRecord extends Component {
 
   empty2 = true;
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     return (
       nextProps.match.params.unitId !== this.props.match.params.unitId || nextState !== this.state
     );
@@ -138,6 +138,7 @@ export default class PresenceRecord extends Component {
         />
       ),
       options: {
+        initialValue: [],
         getValueFromEvent: this.getRangeFromEvent,
       },
     },
@@ -155,12 +156,13 @@ export default class PresenceRecord extends Component {
         />
       ),
       options: {
+        initialValue: [],
         getValueFromEvent: this.getRangeFromEvent2,
       },
     },
   ];
 
-  // getAction = ({ renderExportButton }) => renderExportButton({ name: '导出报表' });
+  getAction = ({ renderExportButton }) => renderExportButton({ name: '导出报表' });
 
   getColumns = () => [
     {
@@ -233,8 +235,8 @@ export default class PresenceRecord extends Component {
                 }
               />
             ) : (
-              '——'
-            )}
+                '——'
+              )}
           </div>
           <div>
             {p2 && p2.length ? (
@@ -247,15 +249,15 @@ export default class PresenceRecord extends Component {
                 }
               />
             ) : (
-              '——'
-            )}
+                '——'
+              )}
           </div>
         </div>
       ),
     },
   ];
 
-  render() {
+  render () {
     const {
       user: { currentUser: { unitType } = {} },
       match: {
@@ -289,15 +291,15 @@ export default class PresenceRecord extends Component {
         <ImagePreview images={images} hidden />
       </TablePage>
     ) : (
-      <Company
-        breadcrumbList={BREADCRUMB_LIST.concat({
-          title: '单位出入场记录',
-          name: '单位出入场记录',
-        })}
-        addEnable={false}
-        MAPPER={COMPANY_MAPPER}
-        {...props}
-      />
-    );
+        <Company
+          breadcrumbList={BREADCRUMB_LIST.concat({
+            title: '单位出入场记录',
+            name: '单位出入场记录',
+          })}
+          addEnable={false}
+          MAPPER={COMPANY_MAPPER}
+          {...props}
+        />
+      );
   }
 }

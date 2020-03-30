@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -139,7 +139,7 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
             <div className={styles.cardRowValue}>{value}</div>
           </div>
         ))}
-        <Icon
+        <LegacyIcon
           type="right"
           className={styles.jumpButton}
         />

@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Form, Upload, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Upload, message } from 'antd';
 import moment from 'moment';
 import { getToken } from '@/utils/authority';
 
@@ -234,7 +236,7 @@ export default class Edit extends PureComponent {
       {
         title: '项目信息',
         fields: [
-          ...isUnit ? [] : [{
+          ...(isUnit ? [] : [{
             name: 'company',
             label: '单位名称',
             type: 'component',
@@ -243,7 +245,7 @@ export default class Edit extends PureComponent {
             })(
               <CompanySelect type={!isDet || 'span'} />
             ),
-          }],
+          }]),
           { name: 'projectName', label: '项目名称' },
           { name: 'projectType', label: '项目类型', type: 'radio', options: PROJECT_OPTION },
           { name: 'program', label: '程序', type: 'radio', options: PROGRAM_OPTION },

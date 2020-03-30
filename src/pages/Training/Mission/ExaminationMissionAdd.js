@@ -3,9 +3,10 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Button,
   Row,
   Col,
@@ -16,7 +17,6 @@ import {
   Transfer,
   Modal,
   Table,
-  Icon,
   message,
   Tag,
 } from 'antd';
@@ -70,9 +70,11 @@ export default class ExaminationMissionAdd extends PureComponent {
       disableMin: false,
       disTime: false,
       disableOk: true,
-      rangeOpen: false,
+      // rangeOpen: false,
     };
   }
+
+  paperId = null;
 
   componentDidMount() {
     const {
@@ -114,9 +116,11 @@ export default class ExaminationMissionAdd extends PureComponent {
         },
         success: response => {
           const { arrRuleType, paperId, paperName, students } = response;
+          this.paperId = paperId;
           setFieldsValue({
             arrRuleType,
-            paperId: { key: paperId, label: paperName },
+            // paperId: { key: paperId, label: paperName },
+            paperId: paperName,
             students,
           });
           this.setState({
@@ -191,7 +195,8 @@ export default class ExaminationMissionAdd extends PureComponent {
           id,
           startTime: moment(start).format('YYYY/MM/DD HH:mm:00'),
           endTime: moment(end).format('YYYY/MM/DD HH:mm:00'),
-          paperId: paperId.key,
+          // paperId: paperId.key,
+          paperId: this.paperId,
           companyId,
         };
         if (!id) {
@@ -277,8 +282,10 @@ export default class ExaminationMissionAdd extends PureComponent {
     const { name, id } = selectedRows[0];
     // 将选择的试卷填入form表单
     setFieldsValue({
-      paperId: { key: id, label: name },
+      // paperId: { key: id, label: name },
+      paperId: name,
     });
+    this.paperId = id;
     this.setState({ paperModalVisible: false });
   };
 
@@ -426,230 +433,225 @@ export default class ExaminationMissionAdd extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card className={styles.examinationMissionAdd}>
           <Form>
-            <Row>
-              <Form.Item label="考试名称" {...formItemLayout}>
-                {getFieldDecorator('name', {
-                  initialValue: name,
-                  validateTrigger: 'onBlur',
-                  rules: [
-                    { required: true, message: '请输入考试名称' },
-                    { min: 6, max: 30, message: '请输入不少于6个字符，不超过30个字符' },
-                  ],
-                })(<Input />)}
-              </Form.Item>
-            </Row>
-            <Row>
-              <Form.Item label="考试规则" {...formItemLayout}>
-                {getFieldDecorator('arrRuleType', {
-                  rules: [{ required: true, message: '请选择考试规则', type: 'array' }],
-                })(
-                  <Checkbox.Group>
-                    <Row>
-                      <Col span={24}>
-                        <Checkbox
-                          value={'1'}
-                          disabled={arrRuleType.includes('2') || arrRuleType.includes('3')}
-                        >
-                          统一顺序
-                        </Checkbox>
-                      </Col>
-                      <Col span={24}>
-                        <Checkbox value={'2'} disabled={arrRuleType.includes('1')}>
-                          选项随机
-                        </Checkbox>
-                      </Col>
-                      <Col span={24}>
-                        <Checkbox value={'3'} disabled={arrRuleType.includes('1')}>
-                          顺序随机
-                        </Checkbox>
-                      </Col>
-                    </Row>
-                  </Checkbox.Group>
-                )}
-              </Form.Item>
-            </Row>
-            <Row>
-              <Form.Item label="考试时长" {...formItemLayout}>
-                {getFieldDecorator('examLimit', {
-                  initialValue: examLimit,
-                  rules: [
-                    // { required: true, message: '请输入考试时长' },
-                    // { type: 'number', message: '请输入数字' },
-                    {
-                      required: true,
-                      validator: (rule, value, callback) => {
-                        const {
-                          form: { getFieldValue },
-                        } = this.props;
-                        const examLimit = +value * 60000;
-                        const range = getFieldValue('timeRange');
-                        const diff = moment(range[1]).diff(moment(range[0]));
-                        if (isNaN(value)) {
-                          callback('请输入考试时长!');
-                          return;
-                        }
-                        if (range[0] && diff < examLimit) {
-                          callback('考试时长需小于考试期限时长!');
-                        } else {
-                          callback();
-                        }
-                      },
+            <Form.Item label="考试名称" {...formItemLayout}>
+              {getFieldDecorator('name', {
+                initialValue: name,
+                validateTrigger: 'onBlur',
+                rules: [
+                  { required: true, message: '请输入考试名称' },
+                  { min: 6, max: 30, message: '请输入不少于6个字符，不超过30个字符' },
+                ],
+              })(<Input />)}
+            </Form.Item>
+            <Form.Item label="考试规则" {...formItemLayout}>
+              {getFieldDecorator('arrRuleType', {
+                rules: [{ required: true, message: '请选择考试规则', type: 'array' }],
+              })(
+                <Checkbox.Group>
+                  <Row>
+                    <Col span={24}>
+                      <Checkbox
+                        value={'1'}
+                        disabled={arrRuleType.includes('2') || arrRuleType.includes('3')}
+                      >
+                        统一顺序
+                      </Checkbox>
+                    </Col>
+                    <Col span={24}>
+                      <Checkbox value={'2'} disabled={arrRuleType.includes('1')}>
+                        选项随机
+                      </Checkbox>
+                    </Col>
+                    <Col span={24}>
+                      <Checkbox value={'3'} disabled={arrRuleType.includes('1')}>
+                        顺序随机
+                      </Checkbox>
+                    </Col>
+                  </Row>
+                </Checkbox.Group>
+              )}
+            </Form.Item>
+            <Form.Item label="考试时长" {...formItemLayout}>
+              {getFieldDecorator('examLimit', {
+                initialValue: examLimit,
+                rules: [
+                  // { required: true, message: '请输入考试时长' },
+                  // { type: 'number', message: '请输入数字' },
+                  {
+                    required: true,
+                    validator: (rule, value, callback) => {
+                      const {
+                        form: { getFieldValue },
+                      } = this.props;
+                      const examLimit = +value * 60000;
+                      const range = getFieldValue('timeRange');
+                      const diff = moment(range[1]).diff(moment(range[0]));
+                      if (isNaN(value)) {
+                        callback('请输入考试时长!');
+                        return;
+                      }
+                      if (range[0] && diff < examLimit) {
+                        callback('考试时长需小于考试期限时长!');
+                      } else {
+                        callback();
+                      }
                     },
-                  ],
-                  validateTrigger: 'onBlur',
-                  getValueFromEvent: e => {
-                    const value = e.target.value;
-                    return isNaN(value) ? 0 : Math.round(value);
                   },
-                })(<Input addonAfter="分钟" />)}
-              </Form.Item>
-            </Row>
-            <Row>
-              <Form.Item label="合格率" {...formItemLayout}>
-                {getFieldDecorator('percentOfPass', {
-                  initialValue: percentOfPass,
-                  validateTrigger: 'onBlur',
-                  rules: [
-                    { required: true, message: '请输入合格率' },
-                    { type: 'number', min: 1, max: 100, message: '请输入0-100以内的整数' },
-                  ],
-                  getValueFromEvent: e => {
-                    const value = e.target.value;
-                    return isNaN(value) ? value : Math.round(value);
-                  },
-                })(<Input addonAfter="%" />)}
-              </Form.Item>
-            </Row>
-            <Row>
-              <Form.Item label="考试期限" {...formItemLayout}>
-                {getFieldDecorator('timeRange', {
-                  initialValue: startTime ? [moment(startTime), moment(endTime)] : [],
-                  rules: [
-                    {
-                      required: true,
-                      validator: (rule, value, callback) => {
-                        const {
-                          form: { getFieldValue },
-                        } = this.props;
-                        const examLimit = +getFieldValue('examLimit') * 60000;
-                        const diff = moment(value[1]).diff(moment(value[0]));
-                        if (value.length < 2) {
-                          callback('请选择考试期限!');
-                          return;
-                        }
-                        if (diff < examLimit) {
-                          callback('所选考试期限时长需大于考试时长!');
-                        } else {
-                          callback();
-                        }
-                      },
+                ],
+                validateTrigger: 'onBlur',
+                getValueFromEvent: e => {
+                  const value = e.target.value;
+                  return isNaN(value) ? 0 : Math.round(value);
+                },
+              })(<Input addonAfter="分钟" />)}
+            </Form.Item>
+            <Form.Item label="合格率" {...formItemLayout}>
+              {getFieldDecorator('percentOfPass', {
+                initialValue: percentOfPass,
+                validateTrigger: 'onBlur',
+                rules: [
+                  { required: true, message: '请输入合格率' },
+                  { type: 'number', min: 1, max: 100, message: '请输入0-100以内的整数' },
+                ],
+                getValueFromEvent: e => {
+                  const value = e.target.value;
+                  return isNaN(value) ? value : Math.round(value);
+                },
+              })(<Input addonAfter="%" />)}
+            </Form.Item>
+            <Form.Item label="考试期限" {...formItemLayout}>
+              {getFieldDecorator('timeRange', {
+                initialValue: startTime ? [moment(startTime), moment(endTime)] : [],
+                rules: [
+                  {
+                    required: true,
+                    validator: (rule, value, callback) => {
+                      const {
+                        form: { getFieldValue },
+                      } = this.props;
+                      const examLimit = +getFieldValue('examLimit') * 60000;
+                      const diff = moment(value[1]).diff(moment(value[0]));
+                      if (value.length < 2) {
+                        callback('请选择考试期限!');
+                        return;
+                      }
+                      if (diff < examLimit) {
+                        callback('所选考试期限时长需大于考试时长!');
+                      } else {
+                        callback();
+                      }
                     },
-                  ],
-                })(
-                  <RangePicker
-                    dropdownClassName="rangePicker"
-                    disabledDate={this.disabledDate}
-                    disabledTime={this.disabledDateTime}
-                    showTime={{ format: 'HH:mm' }}
-                    format="YYYY-MM-DD HH:mm"
-                    open={rangeOpen}
-                    onOpenChange={open => {
-                      this.setState({ rangeOpen: open });
-                    }}
-                    renderExtraFooter={() => {
-                      return (
-                        <Button
-                          type="primary"
-                          style={{
-                            height: '26px',
-                            padding: '1px 10px',
-                            position: 'absolute',
-                            right: '10px',
-                            bottom: '6px',
-                            zIndex: 10,
-                          }}
-                          disabled={disableOk}
-                          onClick={() => {
-                            this.setState({ rangeOpen: false });
-                          }}
-                        >
-                          确定
-                        </Button>
-                      );
-                    }}
-                    onCalendarChange={dates => {
-                      if (dates.length !== 2) {
-                        this.setState({ disableOk: true });
-                        return;
-                      }
-                      this.setState({ disableOk: false });
-                      const selectDay = moment(dates[0]).format('YYYY-MM-DD');
-                      const thisDay = moment().format('YYYY-MM-DD');
-                      if (selectDay !== thisDay) {
-                        // 所选日期不是今日时间随意选
-                        this.setState({ disTime: false });
-                        // this.disTime = false;
-                        return;
-                      }
-                      this.setState({ disTime: true });
-                      // this.disTime = true;
-                      const selectHour = moment(dates[0]).format('HH');
-                      const thisHour = moment().format('HH');
-                      if (selectHour !== thisHour) {
-                        this.setState({ disableMin: false });
-                        return;
-                      }
-                      // 所选日期是今日今时分钟disable当前以前的
-                      this.setState({ disableMin: true });
-                    }}
+                  },
+                ],
+              })(
+                <RangePicker
+                  dropdownClassName="rangePicker"
+                  disabledDate={this.disabledDate}
+                  disabledTime={this.disabledDateTime}
+                  showTime={{ format: 'HH:mm' }}
+                  format="YYYY-MM-DD HH:mm"
+                  // open={rangeOpen}
+                  // onOpenChange={open => {
+                  //   this.setState({ rangeOpen: open });
+                  // }}
+                  // renderExtraFooter={() => {
+                  //   return (
+                  //     <Button
+                  //       type="primary"
+                  //       style={{
+                  //         height: '26px',
+                  //         padding: '1px 10px',
+                  //         position: 'absolute',
+                  //         right: '10px',
+                  //         bottom: '6px',
+                  //         zIndex: 10,
+                  //       }}
+                  //       disabled={disableOk}
+                  //       onClick={() => {
+                  //         this.setState({ rangeOpen: false });
+                  //       }}
+                  //     >
+                  //       确定
+                  //     </Button>
+                  //   );
+                  // }}
+                  onCalendarChange={dates => {
+                    if (dates.length !== 2) {
+                      this.setState({ disableOk: true });
+                      return;
+                    }
+                    this.setState({ disableOk: false });
+                    const selectDay = moment(dates[0]).format('YYYY-MM-DD');
+                    const thisDay = moment().format('YYYY-MM-DD');
+                    if (selectDay !== thisDay) {
+                      // 所选日期不是今日时间随意选
+                      this.setState({ disTime: false });
+                      // this.disTime = false;
+                      return;
+                    }
+                    this.setState({ disTime: true });
+                    // this.disTime = true;
+                    const selectHour = moment(dates[0]).format('HH');
+                    const thisHour = moment().format('HH');
+                    if (selectHour !== thisHour) {
+                      this.setState({ disableMin: false });
+                      return;
+                    }
+                    // 所选日期是今日今时分钟disable当前以前的
+                    this.setState({ disableMin: true });
+                  }}
+                />
+              )}
+            </Form.Item>
+            <Form.Item label="选择试卷" {...formItemLayout}>
+              {getFieldDecorator('paperId', {
+                rules: [{ required: true, message: '请选择试卷' }],
+              })(
+                // <AutoComplete labelInValue mode="combobox" optionLabelProp="children" disabled>
+                //   <Input
+                //     suffix={
+                //       <Button type="primary" onClick={this.handleViewPaperModal}>
+                //         选择
+                //       </Button>
+                //     }
+                //   />
+                // </AutoComplete>
+              <AutoComplete disabled>
+                <Input
+                  suffix={
+                    <Button type="primary" onClick={this.handleViewPaperModal}>
+                      选择
+                    </Button>
+                  }
+                />
+              </AutoComplete>
+              )}
+            </Form.Item>
+            <Form.Item label="考试人员" {...formItemLayout}>
+              {getFieldDecorator('students', {
+                rules: [{ required: true, message: '请选择考试人员', type: 'array' }],
+              })(
+                <Fragment>
+                  <LegacyIcon
+                    onClick={this.handleViewStudentsModal}
+                    type="search"
+                    className={styles.iconSelectStudents}
                   />
-                )}
-              </Form.Item>
-            </Row>
-            <Row>
-              <Form.Item label="选择试卷" {...formItemLayout}>
-                {getFieldDecorator('paperId', {
-                  rules: [{ required: true, message: '请选择试卷', type: 'object' }],
-                })(
-                  <AutoComplete labelInValue mode="combobox" optionLabelProp="children" disabled>
-                    <Input
-                      suffix={
-                        <Button type="primary" onClick={this.handleViewPaperModal}>
-                          选择
-                        </Button>
-                      }
-                    />
-                  </AutoComplete>
-                )}
-              </Form.Item>
-            </Row>
-            <Row>
-              <Form.Item label="考试人员" {...formItemLayout}>
-                {getFieldDecorator('students', {
-                  rules: [{ required: true, message: '请选择考试人员', type: 'array' }],
-                })(
-                  <Fragment>
-                    <Icon
-                      onClick={this.handleViewStudentsModal}
-                      type="search"
-                      className={styles.iconSelectStudents}
-                    />
-                    <div className={styles.studentsContainer}>
-                      {students.map(item => (
-                        <Tag
-                          closable
-                          onClose={() => this.handleDeleteStudent(item.studentId)}
-                          color="#108ee9"
-                          key={item.studentId}
-                        >
-                          {item.name}
-                        </Tag>
-                      ))}
-                    </div>
-                  </Fragment>
-                )}
-              </Form.Item>
-            </Row>
+                  <div className={styles.studentsContainer}>
+                    {students.map(item => (
+                      <Tag
+                        closable
+                        onClose={() => this.handleDeleteStudent(item.studentId)}
+                        color="#108ee9"
+                        key={item.studentId}
+                      >
+                        {item.name}
+                      </Tag>
+                    ))}
+                  </div>
+                </Fragment>
+              )}
+            </Form.Item>
             <div style={{ textAlign: 'center' }}>
               <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>
                 取消

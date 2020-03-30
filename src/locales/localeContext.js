@@ -1,6 +1,6 @@
 import React from 'react';
 import { addLocaleData, IntlProvider } from 'umi/locale';
-import { LocaleProvider } from 'antd';
+import { ConfigProvider } from 'antd';
 import enLocale from './en-US';
 import cnLocale from './zh-CN';
 
@@ -41,7 +41,7 @@ export class LocalComponent extends React.PureComponent {
             addLocaleData(appLocale.data);
             return (
               <IntlProvider locale={appLocale.locale} messages={appLocale.messages}>
-                <LocaleProvider locale={appLocale.antd}>{children}</LocaleProvider>
+                <ConfigProvider locale={appLocale.antd}>{children}</ConfigProvider>
               </IntlProvider>
             );
           }}

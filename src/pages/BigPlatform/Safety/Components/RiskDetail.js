@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import debounce from 'lodash/debounce';
 import HiddenDanger from './HiddenDanger';
 // import noHiddenDanger from '../img/noHiddenDanger.png';
@@ -181,8 +181,8 @@ export default class App extends PureComponent {
           </div>
           {pageCount > 1 && (
             <div style={{ flex: 'none', lineHeight: '1' }}>
-              <div style={{ textAlign: 'center' }}><Icon type="caret-up" style={{ color: isFirst?'#022D5B':'#0967D3', cursor: isFirst?'not-allowed':'pointer' }} onClick={() => { !isFirst && this.handlePrevPage();}} /></div>
-              <div style={{ textAlign: 'center' }}><Icon type="caret-down" style={{ color: isLast?'#022D5B':'#0967D3', cursor: isLast?'not-allowed':'pointer' }} onClick={() => { !isLast && this.handleNextPage();}} /></div>
+              <div style={{ textAlign: 'center' }}><LegacyIcon type="caret-up" style={{ color: isFirst?'#022D5B':'#0967D3', cursor: isFirst?'not-allowed':'pointer' }} onClick={() => { !isFirst && this.handlePrevPage();}} /></div>
+              <div style={{ textAlign: 'center' }}><LegacyIcon type="caret-down" style={{ color: isLast?'#022D5B':'#0967D3', cursor: isLast?'not-allowed':'pointer' }} onClick={() => { !isLast && this.handleNextPage();}} /></div>
             </div>
           )}
         </div>

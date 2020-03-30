@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import classNames from 'classnames';
-import { Carousel, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Carousel } from 'antd';
 // 引入样式文件
 import styles from './index.less';
 
@@ -9,9 +10,9 @@ const defaultRenderDot = () => <div />;
 // 指示点容器
 const defaultRenderDots = dots => <ul>{dots}</ul>
 // 左箭头
-const defaultPrevArrow = <Icon type="left" />
+const defaultPrevArrow = <LegacyIcon type="left" />
 // 右箭头
-const defaultNextArrow = <Icon type="right" />
+const defaultNextArrow = <LegacyIcon type="right" />
 
 /**
  * 自定义轮播组件，对antd的Carousel组件的再封装

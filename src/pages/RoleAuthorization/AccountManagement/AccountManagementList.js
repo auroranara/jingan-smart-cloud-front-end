@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   List,
   Card,
   Button,
@@ -11,7 +12,6 @@ import {
   Col,
   Select,
   AutoComplete,
-  Icon,
   Modal,
   Table,
   Divider,
@@ -73,6 +73,13 @@ const unitTypeList = {
   2: '政府机构',
   3: '平台管理',
   4: '社会单位',
+};
+
+const defaultSpan = {
+  xl: 8,
+  md: 12,
+  sm: 24,
+  xs: 24,
 };
 
 /* 获取root下的div */
@@ -570,36 +577,42 @@ export default class accountManagementList extends React.Component {
     const isUnitUser = this.isUnitUser(); // 单位用户且不为运营
     const { unitTypeChecked } = this.state;
 
+    console.log(unitIds);
+
     return (
       <Card>
-        <Form layout="inline">
-          <Col span={18}>
-            <FormItem label="用户">
-              {getFieldDecorator('userName', {
-                getValueFromEvent: this.handleTrim,
-              })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
-            </FormItem>
-            {!isUnitUser && (
-              <FormItem label="单位类型">
-                {getFieldDecorator('unitType', {})(
-                  <Select
-                    placeholder="请选择单位类型"
-                    allowClear
-                    onChange={this.handleUnitTypeChange}
-                    style={{ width: 180 }}
-                  >
-                    {unitTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
+        <Form className={styles.form}>
+          <Row gutter={16}>
+            <Col {...defaultSpan}>
+              <FormItem label="用户">
+                {getFieldDecorator('userName', {
+                  getValueFromEvent: this.handleTrim,
+                })(<Input placeholder="用户名/姓名/手机号" />)}
               </FormItem>
-            )}
+            </Col>
 
-            {!isUnitUser &&
-              unitTypeChecked !== GOV && (
+            {!isUnitUser && (
+              <Col {...defaultSpan}>
+                <FormItem label="单位类型">
+                  {getFieldDecorator('unitType', {})(
+                    <Select
+                      placeholder="请选择单位类型"
+                      allowClear
+                      onChange={this.handleUnitTypeChange}
+                      // style={{ width: 180 }}
+                    >
+                      {unitTypes.map(item => (
+                        <Option value={item.id} key={item.id}>
+                          {item.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+            )}
+            {!isUnitUser && unitTypeChecked !== GOV && (
+              <Col {...defaultSpan}>
                 <FormItem label="所属单位">
                   {getFieldDecorator('unitId', {
                     rules: [
@@ -609,95 +622,114 @@ export default class accountManagementList extends React.Component {
                       },
                     ],
                   })(
-                    <AutoComplete
-                      allowClear
-                      labelInValue
-                      mode="combobox"
-                      optionLabelProp="children"
-                      placeholder="请选择所属单位"
-                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                      onChange={this.handleUnitChange}
-                      onSelect={this.handleUnitSelect}
-                      onSearch={this.handleUnitSearch}
-                      onBlur={this.handleUnitIdBlur}
-                      filterOption={false}
-                      style={{ width: 230 }}
-                    >
-                      {unitIds.map(item => (
-                        <Option value={item.id} key={item.id}>
-                          {item.name}
-                        </Option>
-                      ))}
-                    </AutoComplete>
+                    // <AutoComplete
+                    //   allowClear
+                    //   labelInValue
+                    //   mode="combobox"
+                    //   optionLabelProp="children"
+                    //   placeholder="请选择所属单位"
+                    //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    //   onChange={this.handleUnitChange}
+                    //   onSelect={this.handleUnitSelect}
+                    //   onSearch={this.handleUnitSearch}
+                    //   onBlur={this.handleUnitIdBlur}
+                    //   filterOption={false}
+                    //   style={{ width: 230 }}
+                    // >
+                    //   {unitIds.map(item => (
+                    //     <Option value={item.id} key={item.id}>
+                    //       {item.name}
+                    //     </Option>
+                    //   ))}
+                    // </AutoComplete>
+                  <Select
+                    allowClear
+                    showSearch
+                    labelInValue
+                    showArrow={false}
+                    placeholder="请选择所属单位"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onChange={this.handleUnitChange}
+                    onSelect={this.handleUnitSelect}
+                    onSearch={this.handleUnitSearch}
+                    // onBlur={this.handleUnitIdBlur}
+                    // style={{ width: 230 }}
+                  >
+                    {unitIds.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.name}
+                      </Option>
+                    ))}
+                  </Select>
                   )}
                 </FormItem>
-              )}
-
-            {!isUnitUser &&
-              unitTypeChecked === GOV && (
+              </Col>
+            )}
+            {!isUnitUser && unitTypeChecked === GOV && (
+              <Col {...defaultSpan}>
                 <FormItem label="所属单位">
                   {getFieldDecorator('unitId')(
                     <TreeSelect
                       allowClear
                       placeholder="请选择所属单位"
                       onChange={this.handleGovChange}
-                      style={{ width: 230 }}
+                      // style={{ width: 230 }}
                     >
                       {this.generateTreeNode(unitIds)}
                     </TreeSelect>
                   )}
                 </FormItem>
-              )}
-            <FormItem label="角色">
-              {getFieldDecorator('roleId')(
-                <Select placeholder="请选择角色" style={{ width: 180 }} allowClear>
-                  {roles.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.roleName}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-            {(unitTypeChecked === GOV || unitType === GOV) && (
-              <FormItem label="所属网格">
-                {getFieldDecorator('gridId')(
-                  <TreeSelect
-                    treeData={gridList}
-                    placeholder="请选择"
-                    getPopupContainer={getRootChild}
-                    allowClear
-                    dropdownStyle={{
-                      maxHeight: '50vh',
-                      zIndex: 50,
-                    }}
-                    style={{ width: 180 }}
-                  />
+              </Col>
+            )}
+            <Col {...defaultSpan}>
+              <FormItem label="角色">
+                {getFieldDecorator('roleId')(
+                  <Select placeholder="请选择角色" allowClear>
+                    {roles.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.roleName}
+                      </Option>
+                    ))}
+                  </Select>
                 )}
               </FormItem>
+            </Col>
+            {(unitTypeChecked === GOV || unitType === GOV) && (
+              <Col {...defaultSpan}>
+                <FormItem label="所属网格">
+                  {getFieldDecorator('gridId')(
+                    <TreeSelect
+                      treeData={gridList}
+                      placeholder="请选择"
+                      getPopupContainer={getRootChild}
+                      allowClear
+                      dropdownStyle={{
+                        maxHeight: '50vh',
+                        zIndex: 50,
+                      }}
+                      // style={{ width: 180 }}
+                    />
+                  )}
+                </FormItem>
+              </Col>
             )}
-          </Col>
-
-          {/* 按钮 */}
-          <Col span={6}>
-            <FormItem style={{ float: 'right' }}>
-              <AuthButton
-                code={codesMap.account.add}
-                type="primary"
-                href="#/role-authorization/account-management/add"
-              >
-                新增
-              </AuthButton>
-            </FormItem>
-            <FormItem style={{ float: 'right' }}>
-              <Button onClick={this.handleClickToReset}>重置</Button>
-            </FormItem>
-            <FormItem style={{ float: 'right' }}>
-              <Button type="primary" onClick={this.handleClickToQuery}>
-                查询
-              </Button>
-            </FormItem>
-          </Col>
+            {/* 按钮 */}
+            <Col {...defaultSpan}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleClickToQuery} className={styles.btn}>
+                  查询
+                </Button>
+                <Button onClick={this.handleClickToReset} className={styles.btn}>重置</Button>
+                <AuthButton
+                  code={codesMap.account.add}
+                  type="primary"
+                  href="#/role-authorization/account-management/add"
+                >
+                  新增
+                </AuthButton>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Card>
     );
@@ -765,8 +797,8 @@ export default class accountManagementList extends React.Component {
                       <span>{loginName}</span>
                       {!!isBindWechat && (
                         <span style={{ paddingLeft: 10 }}>
-                          <span>{<Icon type="wechat" />}</span>
-                          <span style={{ paddingLeft: 6 }}>{<Icon type="mobile" />}</span>
+                          <span>{<LegacyIcon type="wechat" />}</span>
+                          <span style={{ paddingLeft: 6 }}>{<LegacyIcon type="mobile" />}</span>
                         </span>
                       )}
                     </div>
@@ -800,7 +832,7 @@ export default class accountManagementList extends React.Component {
                             onClick={() => this.handleToEdit(users[0].id)}
                             style={{ cursor: 'pointer' }}
                           >
-                            <Icon type="edit" />
+                            <LegacyIcon type="edit" />
                           </AuthSpan>
                         </Col>
                         {users[0].id !== userId && (
@@ -823,16 +855,16 @@ export default class accountManagementList extends React.Component {
                                 style={{ cursor: 'pointer' }}
                               >
                                 {!!users[0].accountStatus ? (
-                                  <Icon type="link" />
+                                  <LegacyIcon type="link" />
                                 ) : (
-                                  <Icon style={{ color: 'red' }} type="disconnect" />
+                                  <LegacyIcon style={{ color: 'red' }} type="disconnect" />
                                 )}
                               </AuthSpan>
                             </Popconfirm>
                           </Col>
                         )}
                         <Col span={2}>
-                          <Icon type="login" onClick={this.genHandleScreenModalOpen(users[0])} />
+                          <LegacyIcon type="login" onClick={this.genHandleScreenModalOpen(users[0])} />
                         </Col>
                       </Row>
                     ) : (
@@ -897,7 +929,7 @@ export default class accountManagementList extends React.Component {
                 onClick={() => this.handleToEdit(row.id)}
                 style={{ cursor: 'pointer' }}
               >
-                <Icon type="edit" />
+                <LegacyIcon type="edit" />
               </AuthSpan>
               {row.id !== userId && (
                 <Fragment>
@@ -918,16 +950,16 @@ export default class accountManagementList extends React.Component {
                       style={{ cursor: 'pointer' }}
                     >
                       {!!row.accountStatus ? (
-                        <Icon type="link" />
+                        <LegacyIcon type="link" />
                       ) : (
-                        <Icon style={{ color: 'red' }} type="disconnect" />
+                        <LegacyIcon style={{ color: 'red' }} type="disconnect" />
                       )}
                     </AuthSpan>
                   </Popconfirm>
                 </Fragment>
               )}
               <Divider type="vertical" />
-              <Icon type="login" onClick={this.genHandleScreenModalOpen(row)} />
+              <LegacyIcon type="login" onClick={this.genHandleScreenModalOpen(row)} />
             </Fragment>
           );
         },

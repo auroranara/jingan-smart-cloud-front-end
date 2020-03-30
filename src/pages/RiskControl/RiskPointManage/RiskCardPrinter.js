@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Form, Col, Button } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Col, Button } from 'antd';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';

@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import DrawerContainer from '../components/DrawerContainer';
 import styles from './InformationHistory.less';
-import { Icon, Row, Col, Tooltip } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col, Tooltip } from 'antd';
 // import Ellipsis from '@/components/Ellipsis';
 // import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -148,7 +149,7 @@ export default class InformationHistory extends PureComponent {
               </div>
               <div className={styles.lastLine}>
                 <span>
-                  <Icon type="environment" theme="outlined" />
+                  <LegacyIcon type="environment" theme="outlined" />
                 </span>
                 <Tooltip placement="bottom" title={area + location}>
                   <span className={styles.location}>{area + location}</span>
@@ -210,7 +211,7 @@ export default class InformationHistory extends PureComponent {
           </div>
           <div className={styles.lastLine}>
             <span>
-              <Icon type="environment" theme="outlined" />
+              <LegacyIcon type="environment" theme="outlined" />
             </span>
             <Tooltip placement="bottom" title={device_address}>
               <span className={styles.location}>{device_address}</span>
@@ -259,7 +260,7 @@ export default class InformationHistory extends PureComponent {
           </div>
           <div className={styles.lastLine}>
             <span>
-              <Icon type="environment" theme="outlined" />
+              <LegacyIcon type="environment" theme="outlined" />
             </span>
             <Tooltip placement="bottom" title={install_address}>
               <span className={styles.location}>{install_address}</span>

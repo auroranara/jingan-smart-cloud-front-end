@@ -64,7 +64,7 @@ export default class MonitorEquipmentBindModal extends Component {
         companyId: data.companyId,
         ...(type
           ? {
-              targetId: data.id,
+              selfTargetId: data.id,
             }
           : {
               bindTargetId: data.id,
@@ -99,7 +99,7 @@ export default class MonitorEquipmentBindModal extends Component {
       companyId: data.companyId,
       ...(type
         ? {
-            targetId: data.id,
+            selfTargetId: data.id,
           }
         : {
             bindTargetId: data.id,
@@ -124,7 +124,7 @@ export default class MonitorEquipmentBindModal extends Component {
       companyId: data.companyId,
       ...(type
         ? {
-            targetId: data.id,
+            selfTargetId: data.id,
           }
         : {
             bindTargetId: data.id,
@@ -154,7 +154,7 @@ export default class MonitorEquipmentBindModal extends Component {
       companyId: data.companyId,
       ...(type
         ? {
-            targetId: data.id,
+            selfTargetId: data.id,
           }
         : {
             bindTargetId: data.id,

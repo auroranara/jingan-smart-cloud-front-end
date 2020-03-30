@@ -1,5 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Map as GDMap, InfoWindow, Markers, Marker } from 'react-amap';
 import styles from './BackMap.less';
 import { DeviceBar, InfoStatus, MapLegend, MapTypeBar, OvSelect } from '../components/Components';
@@ -316,7 +316,7 @@ export default class MapSection extends PureComponent {
           </div>
           {deviceType ? bar : <InfoStatus data={infoWindow} />}
         </div>
-        <Icon
+        <LegacyIcon
           type="close"
           onClick={this.handleHideInfoWindow}
           style={{
@@ -373,7 +373,7 @@ export default class MapSection extends PureComponent {
         className={styles.allPoint}
         onClick={this.reset}
       >
-        <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
+        <LegacyIcon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
         重置
       </div>
     );

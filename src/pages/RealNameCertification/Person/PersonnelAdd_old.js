@@ -1,17 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import {
-  Row,
-  Col,
-  Button,
-  message,
-  Input,
-  Select,
-  Card,
-  Form,
-  DatePicker,
-  Upload,
-  Icon,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Col, Button, message, Input, Select, Card, DatePicker, Upload, Icon } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';

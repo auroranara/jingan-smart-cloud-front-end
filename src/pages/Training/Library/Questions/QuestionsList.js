@@ -1,5 +1,20 @@
 import React, { PureComponent } from 'react';
-import { List, Card, Button, Row, Icon, Form, Input, Select, Col, Divider, Popconfirm, Tag, Spin, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+  List,
+  Card,
+  Button,
+  Row,
+  Input,
+  Select,
+  Col,
+  Divider,
+  Popconfirm,
+  Tag,
+  Spin,
+  message,
+} from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import { hasAuthority } from '@/utils/customAuth';
@@ -211,53 +226,55 @@ export default class QuestionsList extends PureComponent {
 
     return (
       <Form>
-        <Col {...colWrapper}>
-          <FormItem label="" {...formWrapper}>
-            {getFieldDecorator('stem')(
-              <Input placeholder="请输入试题题干" />
-            )}
-          </FormItem>
-        </Col>
-        <Col {...colWrapper}>
-          <FormItem {...formWrapper}>
-            {getFieldDecorator('type')(
-              <Select placeholder="试题类型">
-                {questionsTypes.map(({ value, label }) => (
-                  <Option key={value} value={value}>{label}</Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-        </Col>
-        {/*  <Col {...colWrapper}>
-          <FormItem {...formWrapper}>
-            {getFieldDecorator('sort')(
-              <Select placeholder="试题分类">
-                {[{ value: 'normal', label: '普通题' }].map(({ value, label }) => (
-                  <Option key={value} value={value}>{label}</Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-        </Col> */}
-        <Col {...colWrapper}>
-          <FormItem {...formWrapper}>
-            {getFieldDecorator('level')(
-              <Select placeholder="难易程度">
-                {levels.map(({ value, label }) => (
-                  <Option key={value} value={value}>{label}</Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-        </Col>
-        <Col {...colWrapper}>
-          <FormItem>
-            <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
-            <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-            <Button disabled={!hasAuthority(addCode, permissionCodes)} onClick={this.handleAddQuestions} type="primary">新增</Button>
-          </FormItem>
-        </Col>
+        <Row gutter={8}>
+          <Col {...colWrapper}>
+            <FormItem>
+              {getFieldDecorator('stem')(
+                <Input placeholder="请输入试题题干" />
+              )}
+            </FormItem>
+          </Col>
+          <Col {...colWrapper}>
+            <FormItem>
+              {getFieldDecorator('type')(
+                <Select placeholder="试题类型">
+                  {questionsTypes.map(({ value, label }) => (
+                    <Option key={value} value={value}>{label}</Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          {/*  <Col {...colWrapper}>
+            <FormItem {...formWrapper}>
+              {getFieldDecorator('sort')(
+                <Select placeholder="试题分类">
+                  {[{ value: 'normal', label: '普通题' }].map(({ value, label }) => (
+                    <Option key={value} value={value}>{label}</Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Col> */}
+          <Col {...colWrapper}>
+            <FormItem>
+              {getFieldDecorator('level')(
+                <Select placeholder="难易程度">
+                  {levels.map(({ value, label }) => (
+                    <Option key={value} value={value}>{label}</Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col {...colWrapper}>
+            <FormItem>
+              <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
+              <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
+              <Button disabled={!hasAuthority(addCode, permissionCodes)} onClick={this.handleAddQuestions} type="primary">新增</Button>
+            </FormItem>
+          </Col>
+        </Row>
       </Form>
     )
   }
@@ -278,9 +295,7 @@ export default class QuestionsList extends PureComponent {
     const delDisabled = !hasAuthority(deleteCode, permissionCodes)
     return (
       <div className={styles.questionsList}>
-        <Row>
-          {this.renderFilter()}
-        </Row>
+        {this.renderFilter()}
         <List
           loading={initLoading}
           loadMore={!isLast && !initLoading && (
@@ -305,14 +320,15 @@ export default class QuestionsList extends PureComponent {
                       {item.levelName && <Tag color={colors[item.level - 1]}>{item.levelName}</Tag>}
                     </div>
                     <div className={styles.rightIcon}>
-                      <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => this.handleToEdit(item.id) : null} />
+                      <LegacyIcon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => this.handleToEdit(item.id) : null} />
                       <Divider type="vertical" />
                       {delDisabled ? (
-                        <Icon className={styles.disabledIcon} type="close" />
+                        <LegacyIcon className={styles.disabledIcon} type="close" />
                       ) : (
                           <Popconfirm title="确认删除该试题吗？" onConfirm={() => this.handleDeleteQuestion(item.id, delDisabled)}>
-                            <Icon className={styles.icon} type="close" />
-                          </Popconfirm>)}
+                            <LegacyIcon className={styles.icon} type="close" />
+                          </Popconfirm>
+                      )}
                     </div>
                   </div>
                   {this.renderQuestionItem({ label: '试题题干：', content: item.stem })}
@@ -326,11 +342,11 @@ export default class QuestionsList extends PureComponent {
                   {this.renderQuestionItem({ label: '试题解析：', content: item.des, isLast: true })}
                 </Card>
               </ListItem>
-            )
+            );
           }}
         >
         </List>
       </div>
-    )
+    );
   }
 }

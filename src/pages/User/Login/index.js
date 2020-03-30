@@ -1,10 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Alert,
   Input,
   Carousel,
-  Icon,
-  Form,
   Button,
   Checkbox,
   List,
@@ -52,7 +52,7 @@ const Code = ({
           value={value}
           onChange={onChange}
           size={size}
-          prefix={<Icon type="mail" className={styles.icon} />}
+          prefix={<LegacyIcon type="mail" className={styles.icon} />}
           placeholder="验证码"
           onPressEnter={onPressEnter}
           ref={refCodeInput}
@@ -461,7 +461,7 @@ export default class Login extends PureComponent {
               })(
                 <Input
                   size={size}
-                  prefix={<Icon type="user" className={styles.icon} />}
+                  prefix={<LegacyIcon type="user" className={styles.icon} />}
                   placeholder="账号"
                   onPressEnter={this.handleUsernamePressEnter}
                 />
@@ -473,7 +473,7 @@ export default class Login extends PureComponent {
               })(
                 <Input.Password
                   size={size}
-                  prefix={<Icon type="lock" className={styles.icon} />}
+                  prefix={<LegacyIcon type="lock" className={styles.icon} />}
                   type="password"
                   placeholder="密码"
                   onPressEnter={this.handlePasswordPressEnter}
@@ -502,7 +502,7 @@ export default class Login extends PureComponent {
               })(
                 <Input
                   size={size}
-                  prefix={<Icon type="mobile" className={styles.icon} />}
+                  prefix={<LegacyIcon type="mobile" className={styles.icon} />}
                   placeholder="手机号"
                   onPressEnter={this.handlePhonePressEnter}
                 />
@@ -545,7 +545,7 @@ export default class Login extends PureComponent {
         <FormItem className={styles.downloadFormItem}>
           <div className={styles.downloadContainer}>
             <span onClick={this.handleToDownload} className={styles.download}>
-              <Icon type="download" className={styles.downloadIcon} />
+              <LegacyIcon type="download" className={styles.downloadIcon} />
               APP下载
             </span>
           </div>
@@ -604,7 +604,7 @@ export default class Login extends PureComponent {
                   this.handleDeleteCommonAccount(item);
                 }}
               >
-                <Icon type="close" />
+                <LegacyIcon type="close" />
               </span>
             </div>
           ))}

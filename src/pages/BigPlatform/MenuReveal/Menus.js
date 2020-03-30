@@ -1,5 +1,7 @@
-import { Component } from 'react';
-import { Row, Col } from 'antd';
+import { Component, createRef } from 'react';
+// import { Form } from '@ant-design/compatible';
+// import '@ant-design/compatible/assets/index.css';
+import { Form, Row, Col, Modal } from 'antd';
 // import _ from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -12,6 +14,7 @@ import classNames from 'classnames';
 import styles from './NewMenu.less';
 // 每个模块标题左侧图
 import dividerPic from '@/assets/divider.png';
+import Select from '@/jingan-components/Form/Select';
 
 const userLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-user.png';
 const logoutLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-logout.png';
@@ -83,9 +86,10 @@ export default class NewMenuReveal extends Component {
       menuSysAll: [],
       // currentBlockClassification属性控制显示系统还是子菜单，从原来的组件复制过来，分成了两个组件，所以只需要显示一个，这里显示的是子菜单，值为变化的数字
       currentBlockClassification: 0, // 当前模块下标（数组blockClassification下标）
+      modalVisible: false,
     };
   }
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       user: {
@@ -228,6 +232,30 @@ export default class NewMenuReveal extends Component {
     });
   };
 
+  // 确认单位
+  handleConfirmCompany = () => {
+    this.formRef.current.validateFields().then(({ company }) => {
+      this.setState({ modalVisible: false }, () => {
+        window.open(`${window.publicPath}#/big-platform/chemical/${company.value}`, '_blank')
+      })
+    }).catch(err => { });
+  }
+
+  handleViewBigPlatform = () => {
+    const {
+      user: { isCompany, currentUser: { companyId } },
+    } = this.props;
+    if (isCompany) {
+      // 如果是单位用户
+      window.open(`${window.publicPath}#/big-platform/chemical/${companyId}`, '_blank')
+    } else {
+      // 如果不是，弹出选择单位
+      this.setState({ modalVisible: true });
+    }
+  }
+
+  formRef = createRef();
+
   renderBlocks = () => {
     return (
       <div className={styles.blocks}>
@@ -255,44 +283,44 @@ export default class NewMenuReveal extends Component {
       <div className={styles.innerContent}>
         {menuSys.length
           ? menuSys.map(block => (
-              <Row key={block.name}>
-                <div className={styles.blockTitle}>
-                  <Divider /> {block.title}
-                </div>
-                <Row className={styles.blockContent}>
-                  {block.routes && block.routes.length
-                    ? block.routes.map(item => (
-                        <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
-                          <div className={styles.item}>
-                            <div
-                              className={styles.itemInner}
-                              onClick={
-                                item.developing ? null : () => this.handleOpenMenu(item.path)
-                              }
-                            >
-                              <img src={this.generateSysUrl(item)} alt="logo" />
-                              <div>{item.title}</div>
-                              {item.developing ? <span className={styles.dot} /> : null}
-                            </div>
-                          </div>
-                        </Col>
-                      ))
-                    : null}
-                </Row>
+            <div key={block.name}>
+              <div className={styles.blockTitle}>
+                <Divider /> {block.title}
+              </div>
+              <Row className={styles.blockContent}>
+                {block.routes && block.routes.length
+                  ? block.routes.map(item => (
+                    <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
+                      <div className={styles.item}>
+                        <div
+                          className={styles.itemInner}
+                          onClick={
+                            item.developing ? null : () => this.handleOpenMenu(item.path)
+                          }
+                        >
+                          <img src={this.generateSysUrl(item)} alt="logo" />
+                          <div>{item.title}</div>
+                          {item.developing ? <span className={styles.dot} /> : null}
+                        </div>
+                      </div>
+                    </Col>
+                  ))
+                  : null}
               </Row>
-            ))
+            </div>
+          ))
           : null}
       </div>
     );
   };
 
-  render() {
+  render () {
     const {
       user: {
         currentUser: { userName, unitType, companyId, permissionCodes },
       },
     } = this.props;
-    const { currentBlockClassification } = this.state;
+    const { currentBlockClassification, modalVisible } = this.state;
 
     // const showWorkbench = permissionCodes.includes('companyWorkbench');
     const showChemical = permissionCodes && permissionCodes.includes('dashboard.chemical');
@@ -346,18 +374,46 @@ export default class NewMenuReveal extends Component {
             <img src={'http://data.jingan-china.cn/v2/menu/icon-workbench.png'} alt="link" />
             <div>工作台</div>
           </div>
-          {unitType === 4 &&
-            showChemical && (
-              <div
-                className={styles.linkItem}
-                // onClick={() => router.push(`/big-platform/chemical/${companyId}`)}
-                onClick={() => window.open(`${window.publicPath}#/big-platform/chemical/${companyId}`, '_blank')}
-              >
-                <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
-                <div>驾驶舱</div>
-              </div>
-            )}
+          {showChemical && (
+            <div
+              className={styles.linkItem}
+              // onClick={() => router.push(`/big-platform/chemical/${companyId}`)}
+              onClick={this.handleViewBigPlatform}
+            >
+              <img src={'http://data.jingan-china.cn/v2/menu/icon-cockpit.png'} alt="link" />
+              <div>驾驶舱</div>
+            </div>
+          )}
         </div>
+        <Modal
+          title="选择单位"
+          visible={modalVisible}
+          onCancel={() => this.setState({ modalVisible: false })}
+          onOk={this.handleConfirmCompany}
+          destroyOnClose
+          centered
+        >
+          <Form ref={this.formRef}>
+            <Form.Item
+              name="company"
+              label="单位名称"
+              rules={[{ type: 'object', required: true, message: '单位名称不能为空' }]}
+            >
+              <Select
+                async
+                mapper={{
+                  namespace: 'common',
+                  list: 'unitList',
+                  getList: 'getUnitList',
+                }}
+                fieldNames={{
+                  key: 'id',
+                  value: 'name',
+                }}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     );
   }

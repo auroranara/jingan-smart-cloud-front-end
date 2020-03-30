@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Button, Icon, Popover } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Popover } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 
 import styles from './index.less';
@@ -47,7 +48,7 @@ export default class App extends PureComponent {
       }
       return (
         <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles.errorIcon} />
           <div className={styles.errorMessage}>{errors[key][0]}</div>
           <div className={styles.errorField}>{fieldLabels[key]}</div>
         </li>
@@ -62,7 +63,7 @@ export default class App extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" />
+          <LegacyIcon type="exclamation-circle" />
           {errorCount}
         </Popover>
       </span>

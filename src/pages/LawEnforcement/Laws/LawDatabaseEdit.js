@@ -1,18 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  Select,
-  message,
-  DatePicker,
-  Upload,
-  Icon,
-  Radio,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Card, Select, message, DatePicker, Upload, Radio } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
 import moment from 'moment';
@@ -328,7 +319,7 @@ export default class LawDatabaseEdit extends PureComponent {
                   onChange={(info) => this.handleFileUploadChange(info, 'fileList', 'uploading')}
                 >
                   <Button type="primary">
-                    {uploading ? <Icon type="loading" /> : <Icon type="upload" />}
+                    {uploading ? <LegacyIcon type="loading" /> : <LegacyIcon type="upload" />}
                     点击上传
                   </Button>
                 </Upload>

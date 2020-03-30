@@ -2,7 +2,9 @@ import React from 'react';
 // import Link from 'umi/link';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
-import { Input, Form, Modal, Table } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Modal, Table } from 'antd';
 
 export const PAGE_SIZE = 1;
 export const ROUTER = '/two-information-management'; // modify

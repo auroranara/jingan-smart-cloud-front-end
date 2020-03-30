@@ -1,5 +1,7 @@
 import { Component, Fragment } from 'react';
-import { Card, Form, Row, Col, Input, Select, Button, List, Spin, Modal, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Col, Input, Select, Button, List, Spin, Modal, message } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InfiniteScroll from 'react-infinite-scroller';

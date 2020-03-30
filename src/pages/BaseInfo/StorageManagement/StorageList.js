@@ -1,6 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, Divider, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Table, Divider, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import { AuthA, AuthPopConfirm, AuthButton, hasAuthority } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -23,7 +25,7 @@ const {
       unbind: unbindCode,
     },
   },
-} = codes
+} = codes;
 
 // import { DEFAULT_PAGE_SIZE } from 'src/pages/RoleAuthorization/AccountManagement/utils';
 const DEFAULT_PAGE_SIZE = 10;
@@ -91,7 +93,7 @@ const fields = [
     transform: v => v.trim(),
   },
 ];
-const trueOrFalseLabel = ['否', '是']
+const trueOrFalseLabel = ['否', '是'];
 
 @connect(({ loading, device, user, baseInfo }) => ({
   baseInfo,
@@ -112,44 +114,49 @@ export default class StorageList extends PureComponent {
   }
 
   // 挂载后
-  componentDidMount () {
-    this.handleQuery()
+  componentDidMount() {
+    this.handleQuery();
   }
 
   // 查询
   handleQuery = (pageNum = 1, pageSize = DEFAULT_PAGE_SIZE) => {
-    const { dispatch } = this.props
-    const fields = this.form.props.form.getFieldsValue()
+    const { dispatch } = this.props;
+    const fields = this.form.props.form.getFieldsValue();
     dispatch({
       type: 'baseInfo/fetchStorageTankForPage',
       payload: { ...fields, pageNum, pageSize },
-    })
+    });
   };
 
   // 重置
   handleReset = () => {
-    this.form.props.form.resetFields()
-    this.handleQuery()
+    this.form.props.form.resetFields();
+    this.handleQuery();
   };
 
   // 删除储罐
   handleDelete = id => {
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'baseInfo/deleteStorageTank',
       payload: { id },
       success: () => {
-        message.success('删除成功')
-        this.handleQuery()
+        message.success('删除成功');
+        this.handleQuery();
       },
-      error: (res) => { message.error(res ? res.msg : '储罐删除失败') },
-    })
-  }
+      error: res => {
+        message.error(res ? res.msg : '储罐删除失败');
+      },
+    });
+  };
 
   /**
    * 获取可绑定监测设备列表
    */
-  fetchMonitoringDevice = ({ payload = { pageNum: 1, pageSize: DEFAULT_PAGE_SIZE }, ...res } = {}) => {
+  fetchMonitoringDevice = ({
+    payload = { pageNum: 1, pageSize: DEFAULT_PAGE_SIZE },
+    ...res
+  } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
@@ -167,7 +174,10 @@ export default class StorageList extends PureComponent {
   /**
    * 获取已绑定监测设备列表
    */
-  fetchBindedMonitoringDevice = ({ payload = { pageNum: 1, pageSize: DEFAULT_PAGE_SIZE }, ...res } = {}) => {
+  fetchBindedMonitoringDevice = ({
+    payload = { pageNum: 1, pageSize: DEFAULT_PAGE_SIZE },
+    ...res
+  } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
@@ -176,7 +186,7 @@ export default class StorageList extends PureComponent {
       payload: {
         ...payload,
         companyId: detail.companyId,
-        targetId: detail.id,
+        selfTargetId: detail.id,
       },
     });
   };
@@ -198,7 +208,7 @@ export default class StorageList extends PureComponent {
       type: 'device/bindMonitoringDevice',
       payload: {
         targetId: detail.id, // 监测对象id（库房id）
-        bindStatus: 0,// 0 解绑
+        bindStatus: 0, // 0 解绑
         equipmentIdList: [id],
       },
       success: () => {
@@ -269,17 +279,21 @@ export default class StorageList extends PureComponent {
           pagination: { total, pageNum, pageSize },
         },
       },
-      user: { currentUser: { unitType } },
-    } = this.props
+      user: {
+        currentUser: { unitType },
+      },
+    } = this.props;
     const columns = [
-      ...unitType === 4 ? [] : [
-        {
-          title: '单位名称',
-          dataIndex: 'companyName',
-          align: 'center',
-          width: 300,
-        },
-      ],
+      ...(unitType === 4
+        ? []
+        : [
+            {
+              title: '单位名称',
+              dataIndex: 'companyName',
+              align: 'center',
+              width: 300,
+            },
+          ]),
       {
         title: '基本信息',
         key: 'info',
@@ -287,10 +301,22 @@ export default class StorageList extends PureComponent {
         width: 300,
         render: (val, { tankGroupNumber, unifiedCode, tankName, number }) => (
           <div style={{ textAlign: 'left' }}>
-            <div>统一编码：{unifiedCode || '暂无数据'}</div>
-            <div>所属罐组编号：{tankGroupNumber || '暂无数据'}</div>
-            <div>储罐名称：{tankName || '暂无数据'}</div>
-            <div>位号：{number || '暂无数据'}</div>
+            <div>
+              统一编码：
+              {unifiedCode || '暂无数据'}
+            </div>
+            <div>
+              所属罐组编号：
+              {tankGroupNumber || '暂无数据'}
+            </div>
+            <div>
+              储罐名称：
+              {tankName || '暂无数据'}
+            </div>
+            <div>
+              位号：
+              {number || '暂无数据'}
+            </div>
           </div>
         ),
       },
@@ -301,11 +327,26 @@ export default class StorageList extends PureComponent {
         width: 300,
         render: (val, { chineName, casNo, dangerChemcataSn, materialForm, riskCateg }) => (
           <div style={{ textAlign: 'left' }}>
-            <div>存储介质：{chineName || '暂无数据'}</div>
-            <div>CAS号：{casNo || '暂无数据'}</div>
-            <div>危险化学品目录序号：{dangerChemcataSn || '暂无数据'}</div>
-            <div>介质状态：{storageMediumStatusEnum[materialForm] || '暂无数据'}</div>
-            <div>介质类别：{RISK_CATEGORIES[riskCateg] || '暂无数据'}</div>
+            <div>
+              存储介质：
+              {chineName || '暂无数据'}
+            </div>
+            <div>
+              CAS号：
+              {casNo || '暂无数据'}
+            </div>
+            <div>
+              危险化学品目录序号：
+              {dangerChemcataSn || '暂无数据'}
+            </div>
+            <div>
+              介质状态：
+              {storageMediumStatusEnum[materialForm] || '暂无数据'}
+            </div>
+            <div>
+              介质类别：
+              {RISK_CATEGORIES[riskCateg] || '暂无数据'}
+            </div>
           </div>
         ),
       },
@@ -314,14 +355,19 @@ export default class StorageList extends PureComponent {
         dataIndex: 'chemicals',
         align: 'center',
         width: 200,
-        render: (val, { majorHazard, highRiskTank }) => (<span>{trueOrFalseLabel[+majorHazard]}/{trueOrFalseLabel[+highRiskTank]}</span>),
+        render: (val, { majorHazard, highRiskTank }) => (
+          <span>
+            {trueOrFalseLabel[+majorHazard]}/{trueOrFalseLabel[+highRiskTank]}
+          </span>
+        ),
       },
       {
         title: '区域位置',
         dataIndex: 'area',
         align: 'center',
         width: 200,
-        render: (val, { area, location, buildingName, floorName }) => `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}`,
+        render: (val, { area, location, buildingName, floorName }) =>
+          `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}`,
       },
       {
         title: '已绑监测设备',
@@ -339,9 +385,9 @@ export default class StorageList extends PureComponent {
       },
       {
         title: '操作',
-        key: '操作',
+        key: 'operation',
         align: 'center',
-        width: 250,
+        width: 210,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
@@ -349,7 +395,12 @@ export default class StorageList extends PureComponent {
               绑定监测设备
             </AuthA>
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => router.push(`/major-hazard-info/storage-management/edit/${row.id}`)}>编辑</AuthA>
+            <AuthA
+              code={editCode}
+              onClick={() => router.push(`/major-hazard-info/storage-management/edit/${row.id}`)}
+            >
+              编辑
+            </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
@@ -389,11 +440,11 @@ export default class StorageList extends PureComponent {
         />
       </Card>
     ) : (
-        <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
-      );
+      <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+    );
   };
 
-  render () {
+  render() {
     const {
       modalLoading,
       baseInfo: {
@@ -403,11 +454,13 @@ export default class StorageList extends PureComponent {
         },
       },
       device: { monitoringDevice },
-      user: { currentUser: { permissionCodes } },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
     // 解绑权限
-    const unbindAuthority = hasAuthority(unbindCode, permissionCodes)
+    const unbindAuthority = hasAuthority(unbindCode, permissionCodes);
     const bindModalProps = {
       type: 'bind',
       visible: bindModalVisible,
@@ -443,18 +496,28 @@ export default class StorageList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <span>单位数量：{a}</span>
-            <span style={{ paddingLeft: 20 }}>储罐总数：{total}</span>
+            <span>
+              单位数量：
+              {a}
+            </span>
+            <span style={{ paddingLeft: 20 }}>
+              储罐总数：
+              {total}
+            </span>
           </div>
         }
       >
         <Card>
           <ToolBar
             fields={fields}
-            onSearch={(payload, ...res) => { this.handleQuery(...res) }}
+            onSearch={(payload, ...res) => {
+              this.handleQuery(...res);
+            }}
             onReset={this.handleReset}
             action={this.exportButton}
-            wrappedComponentRef={form => { this.form = form }}
+            wrappedComponentRef={form => {
+              this.form = form;
+            }}
           />
         </Card>
 

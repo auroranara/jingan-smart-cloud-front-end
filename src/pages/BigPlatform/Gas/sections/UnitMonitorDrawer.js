@@ -2,7 +2,8 @@ import { PureComponent } from 'react';
 import { connect } from 'dva';
 import DrawerContainer from '../components/DrawerContainer';
 import ReactEcharts from 'echarts-for-react';
-import { Icon, Row, Col } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from 'antd';
 import iconAddress from '../imgs/icon-address.png';
 import { OvSelect } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import Ellipsis from 'components/Ellipsis';
@@ -183,7 +184,7 @@ export default class UnitMonitorDrawer extends PureComponent {
             {address}
           </div>
           <div className={styles.companyLine}>
-            <Icon className={styles.icon} type="user" />
+            <LegacyIcon className={styles.icon} type="user" />
             {principalName}
             <span className={styles.ml10}>{principalPhone}</span>
           </div>

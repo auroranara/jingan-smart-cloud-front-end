@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Form, Card, Table, Upload, Button, Icon, Popover, Spin } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Table, Upload, Button, Popover, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
@@ -171,7 +173,7 @@ export default class ImportPointPosition extends PureComponent {
       if (errorStatus(key, rows.error)) {
         return (
           <Popover content={content(rows.error, key)} title="错误提示" trigger="hover">
-            <Icon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
+            <LegacyIcon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
             <span className={styles.error}>{val}</span>
           </Popover>
         );
@@ -238,7 +240,7 @@ export default class ImportPointPosition extends PureComponent {
         render(val, rows) {
           return (
             <Popover content={firstContent(rows.error)} title="错误提示" trigger="hover">
-              <Icon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
+              <LegacyIcon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
               <span className={styles.error}>{val}</span>
             </Popover>
           );
@@ -352,7 +354,7 @@ export default class ImportPointPosition extends PureComponent {
             <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
               <Upload {...props} fileList={fileList}>
                 <Button type="primary" loading={loading}>
-                  <Icon type="upload" /> 选择文件
+                  <LegacyIcon type="upload" /> 选择文件
                 </Button>
               </Upload>
             </FormItem>

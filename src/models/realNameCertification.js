@@ -197,7 +197,12 @@ export default {
       { value: 2, label: '销权中' },
       { value: 3, label: '授权中（可能原因：设备离线）' },
     ],
-
+    // 通道类型字典
+    channelTypeDict: [{ key: '1', value: '双向' }, { key: '2', value: '单向' }],
+    // 在线状态字典
+    onlineStateDict: [{ key: '1', value: '在线' }, { key: '2', value: '不在线', color: 'red' }],
+    // 方向字典
+    directionDict: [{ key: '1', value: '出口' }, { key: '2', value: '入口' }],
     // 标签卡列表数据
     tagCardData: {
       list: [],

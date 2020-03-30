@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Button, Icon, message } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, message } from 'antd';
 
 import styles from './PersonInfo.less';
 import { getUserName } from '../utils';
@@ -114,7 +115,7 @@ export default class PersonInfo extends PureComponent {
 
     return (
       <div className={styles.container} style={newStyle} {...restProps}>
-        <Icon type="close" className={styles.close} onClick={this.onClose} />
+        <LegacyIcon type="close" className={styles.close} onClick={this.onClose} />
         <div className={styles.info}>
           <div className={styles[`${isVisitor ? 'visitorAvatar' : 'avatar'}${isOff ? 'Off' : ''}`]} />
           <h3 className={styles.name}>

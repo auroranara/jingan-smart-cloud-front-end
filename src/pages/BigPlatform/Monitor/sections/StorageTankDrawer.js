@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 
 import { connect } from 'dva';
-import { Icon, Row, Col } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from 'antd';
 import styles from './StorageTankDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import StorageLableCards from '../components/StorageLableCards';
@@ -60,7 +61,7 @@ export default class StorageTankDrawer extends PureComponent {
 
     const left = (
       <div className={styles.content}>
-        <Icon type="close" style={ICON_STYLE} onClick={e => this.props.onClose()} />
+        <LegacyIcon type="close" style={ICON_STYLE} onClick={e => this.props.onClose()} />
         <Row className={styles.sectionFilter}>
           {filterList.map((item, i) => (
             <Col span={6} className={styles.filter} key={i}>

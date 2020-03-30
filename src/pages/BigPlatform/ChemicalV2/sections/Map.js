@@ -88,6 +88,15 @@ const FourColors = [
     label: '低风险',
   },
 ];
+const filterMarkerList = markerList => {
+  return markerList.filter(({ pointFixInfoList }) => {
+    if (pointFixInfoList && pointFixInfoList.length > 0) {
+      const [{ isShow }] = pointFixInfoList;
+      if (+isShow) return true;
+    }
+    return false;
+  });
+};
 
 @connect(
   ({
@@ -127,6 +136,7 @@ export default class Map extends PureComponent {
   markerLayers = [];
   lastTime = 0;
   jumpEquipIds = [];
+  jumpFireIds = [];
 
   /* eslint-disable*/
   componentDidMount() {
@@ -185,8 +195,6 @@ export default class Map extends PureComponent {
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
           // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
-          console.log('polygonMarker', polygonMarker);
-
           this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
           return null;
         });
@@ -245,20 +253,33 @@ export default class Map extends PureComponent {
   };
 
   renderPoints = (pointsInfo, iconType) => {
-    if (!pointsInfo.length) return;
-    pointsInfo.map(item => {
-      const { warnStatus, status } = item;
+    // if (!pointsInfo.length) return;
+    const { visibles } = this.state;
+    filterMarkerList(pointsInfo).map(item => {
+      const { warnStatus, status, deviceCode, pointCountMap } = item;
       const { groupId, xnum, ynum, znum, isShow } = item.pointFixInfoList[0];
       if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
-      if (!+isShow) return null;
-      this.addMarkers(+groupId, {
+      // if (!+isShow) return null;
+      let url = controls[iconType].markerIcon;
+      if (iconType === 2) {
+        if (deviceCode || deviceCode === 0) {
+          // 消防主机
+          const { fire_state } = pointCountMap || {};
+          if (+fire_state > 0) url = controls[iconType].alarmIcon;
+          else controls[iconType].markerIcon;
+        } else if (warnStatus === -1) url = controls[iconType].alarmIcon;
+      }
+      const marker = this.addMarkers(+groupId, {
         x: +xnum,
         y: +ynum,
         z: +znum,
-        url: warnStatus === -1 ? controls[iconType].alarmIcon : controls[iconType].markerIcon,
+        // url: warnStatus === -1 ? controls[iconType].alarmIcon : controls[iconType].markerIcon,
+        url,
         iconType,
         markerProps: item,
+        groupId: +groupId,
       });
+      if (marker) marker.show = visibles[iconType];
       return null;
     });
   };
@@ -271,15 +292,15 @@ export default class Map extends PureComponent {
       type,
       payload: { companyId, pageNum: 1, pageSize: 0, ...payload },
       callback: res => {
-        const pointsInfo = res.data.list.filter(
-          item => item.pointFixInfoList && item.pointFixInfoList.length > 0
-        );
+        // const pointsInfo = res.data.list.filter(
+        //   item => item.pointFixInfoList && item.pointFixInfoList.length > 0
+        // );
         // .map(item => {
         //   return item.pointFixInfoList[0];
         // });
-        console.log('pointsInfo', pointsInfo.filter(item => item.pointFixInfoList[0].isShow));
+        console.log('pointsInfo', filterMarkerList(res.data.list));
         if (isUpdate) this.removeMarkersByType(iconType);
-        this.renderPoints(pointsInfo, iconType);
+        this.renderPoints(res.data.list, iconType);
       },
     });
   };
@@ -289,7 +310,10 @@ export default class Map extends PureComponent {
   };
 
   // 初始化地图定位
-  initMap = ({ appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList, defaultViewMode }, fun) => {
+  initMap = (
+    { appName, key, mapId, defaultMapScaleLevel, theme, mapScaleLevelRangeList, defaultViewMode },
+    fun
+  ) => {
     if (!appName || !key || !mapId) return;
     const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
     const mapOptions = {
@@ -402,7 +426,7 @@ export default class Map extends PureComponent {
       if (nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
         // 点击图标
         const {
-          opts_: { iconType, markerProps, x, y, z, height },
+          opts_: { iconType, markerProps, x, y, z, height, groupId: markerGroupId },
         } = clickedObj;
         switch (iconType) {
           case 0:
@@ -428,12 +452,12 @@ export default class Map extends PureComponent {
             break;
           case 3:
             // 特种设备
-            this.handleShowSpecialInfo(markerProps, { x, y, z, height, groupID });
+            this.handleShowSpecialInfo(markerProps, { x, y, z, height, groupID: markerGroupId });
             break;
           case -1:
             // 变更预警
             const { zoneId } = markerProps;
-            this.handleShowChangeWarning(zoneId, { x, y, z, height, groupID });
+            this.handleShowChangeWarning(zoneId, { x, y, z, height, groupID: markerGroupId });
             break;
           default:
             console.log('iconType', iconType);
@@ -499,7 +523,11 @@ export default class Map extends PureComponent {
     //添加绑定marker信息窗
     const noData = '--';
     const ctlOpt = {
-      mapCoord,
+      mapCoord: {
+        ...mapCoord,
+        z: 1,
+        height: 0,
+      },
       //设置弹框的宽度
       width: 450,
       //设置弹框的高度px
@@ -700,7 +728,7 @@ export default class Map extends PureComponent {
   };
 
   // 监测设备状态图标变化
-  handleMarkerStatusChange = (equipmentId, statusType, warnStatus) => {
+  handleMarkerStatusChange = (equipmentId, statusType, warnStatus, jumpIds) => {
     map.groupIDs.map(gId => {
       const group = map.getFMGroup(gId);
       //遍历图层
@@ -720,7 +748,7 @@ export default class Map extends PureComponent {
                 fm.stopJump();
               }
             }
-            if (this.jumpEquipIds.indexOf(id) >= 0) {
+            if (jumpIds.indexOf(id) >= 0) {
               fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
             }
           }
@@ -732,7 +760,6 @@ export default class Map extends PureComponent {
   // 监测设备状态变化
   handleUpdateMap = (equipmentId, statusType) => {
     if (!map || !this.markerArray.length) return;
-    // this.fetchPonits('chemical/fetchMonitorEquipment', 2, {}, true);
     const { dispatch, companyId } = this.props;
     dispatch({
       type: 'alarmWorkOrder/getDeviceDetail',
@@ -746,18 +773,81 @@ export default class Map extends PureComponent {
           } else if (statusType === 1 && warnStatus !== -1) {
             this.jumpEquipIds = this.jumpEquipIds.filter(ids => ids !== equipmentId);
           }
-          this.renderPoints(
-            [deviceDetail].filter(
-              item => item.pointFixInfoList && item.pointFixInfoList.length > 0
-            ),
-            2
-          );
+          this.renderPoints([deviceDetail], 2);
           setTimeout(() => {
-            this.handleMarkerStatusChange(equipmentId, statusType, warnStatus);
+            this.handleMarkerJump(equipmentId, this.jumpEquipIds, warnStatus !== -1);
           }, 50);
         }
       },
     });
+  };
+
+  handleMarkerJump = (equipmentId, jumpIds, isStop = false) => {
+    map.groupIDs.map(gId => {
+      const group = map.getFMGroup(gId);
+      //遍历图层
+      group.traverse(fm => {
+        if (fm instanceof fengmap.FMImageMarker) {
+          const {
+            opts_: { iconType, markerProps },
+          } = fm;
+          const { id } = markerProps;
+          if (iconType === 2 && id === equipmentId) {
+            if (jumpIds.indexOf(id) >= 0) {
+              fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
+            }
+            // else if (isStop) {
+            //   fm.stopJump();
+            // }
+          }
+        }
+      });
+    });
+  };
+
+  handleFireMarkerJump = jumpIds => {
+    map.groupIDs.map(gId => {
+      const group = map.getFMGroup(gId);
+      //遍历图层
+      group.traverse(fm => {
+        if (fm instanceof fengmap.FMImageMarker) {
+          const {
+            opts_: { iconType, markerProps },
+          } = fm;
+          const { id } = markerProps;
+          if (iconType === 2 && jumpIds.indexOf(id) >= 0) {
+            fm.jump({ times: 0, duration: 2, height: 2, delay: 0 });
+          }
+        }
+      });
+    });
+  };
+
+  handleUpdateFire = (equipmentId, statusType, fixType) => {
+    if (equipmentId && +statusType === -1 && +fixType === 5) {
+      // 火警
+      if (this.jumpFireIds.indexOf(equipmentId) < 0) this.jumpFireIds.push(equipmentId);
+    }
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/fetchFireDevice',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: res => {
+        const pointsInfo = filterMarkerList(res.data.list);
+        pointsInfo.map(item => {
+          const { pointCountMap } = item;
+          const { fire_state } = pointCountMap || {};
+          this.removeMarkerById(item.id);
+          this.renderPoints([item], 2);
+          if (!fire_state) this.jumpFireIds = this.jumpFireIds.filter(ids => ids !== item.id);
+        });
+
+        setTimeout(() => {
+          this.handleFireMarkerJump(this.jumpFireIds);
+        }, 50);
+      },
+    });
+    return null;
   };
 
   setModelColor(groupId, polygon, color) {
@@ -799,6 +889,7 @@ export default class Map extends PureComponent {
 
     markerLayer.addMarker(im); //图片标注层添加图片Marker
     this.markerArray.push(im);
+    return im;
   };
 
   addPolygon = (gId, points, color, polygonProps = {}) => {
@@ -857,6 +948,7 @@ export default class Map extends PureComponent {
     map.groupIDs.map(gId => {
       const group = map.getFMGroup(gId);
       //遍历图层
+      if (!group) return;
       group.traverse(fm => {
         if (fm instanceof fengmap.FMImageMarker) {
           const {
@@ -937,10 +1029,13 @@ export default class Map extends PureComponent {
     const {
       chemical: {
         videoList,
-        onDuty: { presentCar = 0, recSuccess = 0 },
+        onDuty: { recSuccess = 0, inCount = 0, outCount = 0 },
         truckCount,
         inOutRecordList,
+        riskPoint,
+        monitorEquipment,
       },
+      specialEquipment: { list: specialEquipmentList },
       user: {
         currentUser: {
           companyBasicInfo: { mapIp },
@@ -948,6 +1043,14 @@ export default class Map extends PureComponent {
       },
       licensePlateRecognitionSystem: { abnormalRecordList },
     } = this.props;
+    const presentCar = inCount - outCount >= 0 ? inCount - outCount : 0;
+    const controlDataList = [
+      filterMarkerList(riskPoint),
+      filterMarkerList(videoList).filter(({ status }) => status && +status === 1),
+      filterMarkerList(monitorEquipment),
+      filterMarkerList(specialEquipmentList),
+    ];
+    const controlDataLength = controlDataList.filter(list => list.length > 0).length;
 
     return (
       <Fragment>
@@ -981,12 +1084,19 @@ export default class Map extends PureComponent {
             </GDMap>
           )}
           {!gdMapVisible && (
-            <div className={styles.controlContainer}>
+            <div
+              className={styles.controlContainer}
+              style={{
+                left: `calc(50% - ${0.5 *
+                  (120 * controlDataLength + 20 * (controlDataLength - 1))}px)`,
+              }}
+            >
               {controls.map((item, index) => {
                 const { label, icon, activeIcon } = item;
                 const itemStyles = classnames(styles.controlItem, {
                   [styles.active]: visibles[index],
                 });
+                if (controlDataList[index].length === 0) return null;
                 return (
                   <div
                     className={itemStyles}
@@ -1066,16 +1176,16 @@ export default class Map extends PureComponent {
               onClick={this.handlePosition}
             />
           )}
-          {videoVisible && (
-            <NewVideoPlay
-              showList={true}
-              videoList={videoList.map(item => ({ ...item, key_id: item.keyId }))}
-              visible={videoVisible}
-              keyId={keyId} // keyId
-              handleVideoClose={() => this.setState({ videoVisible: false })}
-              isTree={false}
-            />
-          )}
+          <NewVideoPlay
+            showList={true}
+            videoList={videoList
+              .map(item => ({ ...item, key_id: item.keyId }))
+              .filter(({ status }) => status && +status === 1)}
+            visible={videoVisible}
+            keyId={keyId} // keyId
+            handleVideoClose={() => this.setState({ videoVisible: false })}
+            isTree={false}
+          />
         </div>
         <TruckModal
           visible={truckModalVisible}

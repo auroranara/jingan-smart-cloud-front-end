@@ -272,7 +272,7 @@ export default class StorehouseList extends PureComponent {
       payload: {
         ...payload,
         companyId: detail.companyId,
-        targetId: detail.id,
+        selfTargetId: detail.id,
       },
     });
   };
@@ -480,7 +480,7 @@ export default class StorehouseList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 220,
+        width: 210,
         render: (data, record) => (
           <span>
             <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(record)}>

@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Row, Col, Select, Input, Button, Badge } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Row, Col, Select, Input, Button, Badge } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';

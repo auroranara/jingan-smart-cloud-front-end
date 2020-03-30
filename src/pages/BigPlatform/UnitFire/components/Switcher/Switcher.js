@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import styles from './Switcher.less';
 
 /**
@@ -10,7 +10,7 @@ export function Pagination(props) {
   return (
     <div className={styles.switcher} style={{ cursor: 'auto',  ...style }}>
       <div></div>
-      <Icon
+      <LegacyIcon
         type="caret-up"
         style={{
           fontSize: 12,
@@ -21,7 +21,7 @@ export function Pagination(props) {
           !isFirst && onPrev();
         }}
       />
-      <Icon
+      <LegacyIcon
         type="caret-down"
         style={{
           fontSize: 12,
@@ -34,7 +34,7 @@ export function Pagination(props) {
       />
     </div>
   );
-};
+}
 
 /**
  * 右侧按钮

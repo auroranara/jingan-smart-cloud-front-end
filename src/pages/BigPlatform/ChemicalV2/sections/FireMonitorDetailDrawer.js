@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon, Row, Col } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from 'antd';
 import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './FireMonitorDetailDrawer.less';
@@ -73,7 +74,7 @@ export default class FireMonitorDetailDrawer extends PureComponent {
                 </div>
                 <div>
                   <span className={styles.locIcon} style={{ marginRight: '5px' }}>
-                    <Icon type="environment" />
+                    <LegacyIcon type="environment" />
                   </span>
                   {installLocation || '暂无位置数据'}
                 </div>

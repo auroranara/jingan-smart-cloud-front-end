@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Tooltip, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip } from 'antd';
 
 import Section from '../Section';
 import SignalAnime from '../../Monitor/components/SignalAnime';
@@ -54,7 +55,7 @@ export default class FireMonitoring extends PureComponent {
                   overlayClassName={styles.tooltip}
                   title="一键复位功能只对平台数据进行复位，并不能控制主机复位。"
                 >
-                  <Icon type="reload" style={{ marginRight: 8 }} />
+                  <LegacyIcon type="reload" style={{ marginRight: 8 }} />
                   一键复位
                 </Tooltip>
               </div>

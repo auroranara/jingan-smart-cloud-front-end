@@ -1,19 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  List,
-  Spin,
-  Card,
-  Button,
-  Popconfirm,
-  Input,
-  message,
-  BackTop,
-  // modal,
-  Col,
-  Row,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { List, Spin, Card, Button, Popconfirm, Input, message, BackTop, Col, Row } from 'antd';
 import { Link } from 'dva/router';
 import Ellipsis from '@/components/Ellipsis';
 import InfiniteScroll from 'react-infinite-scroller';

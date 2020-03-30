@@ -2,17 +2,9 @@ import React, { Component, createContext } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import router from 'umi/router';
-import {
-  Button,
-  Card,
-  Table,
-  Tree,
-  Input,
-  Popconfirm,
-  Form,
-  Select,
-  notification,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Table, Tree, Input, Popconfirm, Select, notification } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './AppAuthority.less';

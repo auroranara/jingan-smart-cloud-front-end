@@ -3,7 +3,9 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
-import { Card, Form, message, Upload, Button, Icon, Input, Cascader } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, message, Upload, Button, Input, Cascader } from 'antd';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { getFileList, getImageSize } from '@/pages/BaseInfo/utils';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -496,7 +498,7 @@ export default class Edit extends PureComponent {
         })(
           <Upload {...defaultUploadProps} fileList={fileList} onChange={this.handleFileChange}>
             <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-              <Icon type="plus" style={{ fontSize: '32px' }} />
+              <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
               <div style={{ marginTop: '8px' }}>点击上传</div>
             </Button>
           </Upload>

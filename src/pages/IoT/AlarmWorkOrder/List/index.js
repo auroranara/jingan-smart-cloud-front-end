@@ -4,6 +4,8 @@ import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
 import TablePage from '@/templates/TablePage';
+import MajorHazardSelect from '../../components/MajorHazardSelect';
+import MonitorObjectSelect from '../../components/MonitorObjectSelect';
 import moment from 'moment';
 import classNames from 'classnames';
 import router from 'umi/router';
@@ -16,11 +18,22 @@ export const STATUSES = [
   { key: '1', value: '已处理' },
 ];
 const TRANSFORM = data => {
-  const { range: [startTime, endTime] = [], ...rest } = data || {};
+  const {
+    range: [startTime, endTime] = [],
+    majorHazard: [dangerSource, dangerSourceId] = [],
+    monitorObject: [targetType, targetId] = [],
+    status,
+    ...rest
+  } = data || {};
   return {
     ...rest,
     queryCreateStartDate: startTime && startTime.startOf('day').format(DEFAULT_FORMAT),
     queryCreateEndDate: endTime && endTime.endOf('day').format(DEFAULT_FORMAT),
+    dangerSource,
+    dangerSourceId: dangerSourceId && dangerSourceId.key,
+    targetType,
+    targetId: targetId && targetId.key,
+    status: status && status.length > 0 ? status.join(',') : undefined,
   };
 };
 
@@ -62,6 +75,7 @@ export default class AlarmWorkOrderList extends Component {
     {
       id: 'range',
       label: '工单创建时间',
+      options: { initialValue: [] },
       // span: {
       //   xl: 16,
       //   sm: 24,
@@ -79,7 +93,19 @@ export default class AlarmWorkOrderList extends Component {
     {
       id: 'status',
       label: '处理状态',
-      render: () => <SelectOrSpan placeholder="请选择处理状态" list={STATUSES} allowClear />,
+      render: () => (
+        <SelectOrSpan mode="multiple" placeholder="请选择处理状态" list={STATUSES} allowClear />
+      ),
+    },
+    {
+      id: 'majorHazard',
+      label: '重大危险源',
+      render: () => <MajorHazardSelect />,
+    },
+    {
+      id: 'monitorObject',
+      label: '监测对象',
+      render: () => <MonitorObjectSelect />,
     },
   ];
 
@@ -110,6 +136,16 @@ export default class AlarmWorkOrderList extends Component {
     {
       title: '监测类型',
       dataIndex: 'reportTypeName',
+      align: 'center',
+    },
+    {
+      title: '监测对象类型',
+      dataIndex: 'targetTypeName',
+      align: 'center',
+    },
+    {
+      title: '监测对象',
+      dataIndex: 'targetName',
       align: 'center',
     },
     {
@@ -207,11 +243,32 @@ export default class AlarmWorkOrderList extends Component {
   };
 
   render() {
+    const {
+      location: { query },
+    } = this.props;
     const props = {
       fields: this.getFields,
       action: this.getAction,
       columns: this.getColumns,
       transform: TRANSFORM,
+      initialValues:
+        query.monitorObjectType || query.isMajorHazard || query.status
+          ? {
+              monitorObject: [
+                query.monitorObjectType || undefined,
+                query.monitorObject && query.monitorObjectName
+                  ? { key: query.monitorObject, label: query.monitorObjectName }
+                  : undefined,
+              ],
+              majorHazard: [
+                query.isMajorHazard || undefined,
+                query.majorHazardId && query.majorHazardName
+                  ? { key: query.majorHazardId, label: query.majorHazardName }
+                  : undefined,
+              ],
+              status: query.status ? query.status.split(',') : undefined,
+            }
+          : null,
       otherOperation: [
         {
           code: 'detail',

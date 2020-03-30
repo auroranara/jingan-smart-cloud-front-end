@@ -1,6 +1,21 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Table, Divider, Popconfirm, Button, Modal, Input, message, Select, TreeSelect, Row, Col } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+  Card,
+  Table,
+  Divider,
+  Popconfirm,
+  Button,
+  Modal,
+  Input,
+  message,
+  Select,
+  TreeSelect,
+  Row,
+  Col,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';

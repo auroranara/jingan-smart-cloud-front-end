@@ -96,24 +96,25 @@ export default class FormSelect extends Component {
       filterOption = true,
       emtpy = <EmptyText />,
       ellipsis = true,
+      getList,
       ...restProps
     } = this.props;
     const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
-    const selectedValue = typeof value === 'number' ? `${value}` : value || undefined;
 
     if (mode !== 'detail') {
+      const realShowSearch = async || showSearch;
       return (
         <Select
           className={classNames(styles.container, className)}
           placeholder={placeholder}
-          value={selectedValue}
+          value={value}
           showArrow={showArrow}
-          showSearch={async || showSearch}
+          showSearch={realShowSearch}
           labelInValue={async || labelInValue}
           notFoundContent={loading ? <Spin size="small" /> : undefined}
           optionFilterProp={optionFilterProp}
           filterOption={async ? false : filterOption}
-          onSearch={this.debouncedHandleSearch}
+          onSearch={realShowSearch ? this.debouncedHandleSearch : undefined}
           mode={originalMode}
           {...restProps}
         >

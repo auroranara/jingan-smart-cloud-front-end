@@ -138,7 +138,7 @@ export default class TableList extends PureComponent {
       payload: {
         ...payload,
         companyId: detail.companyId,
-        targetId: detail.id,
+        selfTargetId: detail.id,
       },
     });
   };
@@ -271,7 +271,7 @@ export default class TableList extends PureComponent {
         key: 'id',
         align: 'center',
         fixed: 'right',
-        width: 250,
+        width: 210,
         render: (val, row) => (
           <Fragment>
             <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>

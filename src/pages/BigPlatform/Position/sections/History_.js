@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Button, DatePicker, Icon, Select, TreeSelect, message } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, DatePicker, Select, TreeSelect, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
@@ -437,7 +438,7 @@ export default class History extends PureComponent {
                         return (
                           <div className={styles.tr} key={id} intime={changedStartTime} onClick={onClick}>
                             <div className={styles[`td${hideName ? '1' : ''}`]}>
-                              {canSpread && <Icon type={`${spreaded ? 'minus' : 'plus'}-square`} className={styles.spread} />}
+                              {canSpread && <LegacyIcon type={`${spreaded ? 'minus' : 'plus'}-square`} className={styles.spread} />}
                               {isCard ? cardCode : getUserName(area)}
                             </div>
                             <div className={styles.td}>{moment(changedStartTime).format('MM-DD HH:mm')}</div>

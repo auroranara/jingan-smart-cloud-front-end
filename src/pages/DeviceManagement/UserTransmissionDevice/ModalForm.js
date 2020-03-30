@@ -1,6 +1,8 @@
 import React from 'react';
 import moment from 'moment';
-import { Checkbox, DatePicker, Form, Input, InputNumber, Modal, Switch } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Checkbox, DatePicker, Input, InputNumber, Modal, Switch } from 'antd';
 
 // 封装的modal下带form的组件，需要传入的值查看props中传入的值
 

@@ -1,5 +1,7 @@
 import { Component, Fragment } from 'react';
-import { Card, Button, Row, Col, Form, Input, Select, Modal, Table, Popconfirm, Divider } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Row, Col, Input, Select, Modal, Table, Popconfirm, Divider } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import codes from '@/utils/codes';

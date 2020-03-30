@@ -75,11 +75,11 @@ export default class TableList extends PureComponent {
     this.setState({ formData: { companyId, createDate } });
     this.fetchList(1, this.pageSize, {
       createDate: createDate && createDate.format('YYYY-MM-DD'),
-      companyId: companyId ? companyId : undefined,
+      companyId: companyId ? companyId.key : undefined,
     });
   };
 
-  handleReset = () => {
+  handleReset = (vals, form) => {
     this.setState({ formData: {} });
     this.fetchList(1, this.pageSize);
   };
@@ -155,10 +155,26 @@ export default class TableList extends PureComponent {
         id: 'companyId',
         label: '单位名称',
         render: () => (
-          <AutoComplete
+          // <AutoComplete
+          //   allowClear
+          //   mode="combobox"
+          //   optionLabelProp="children"
+          //   placeholder="请选择单位"
+          //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+          //   onSearch={this.handleUnitIdChange}
+          //   filterOption={false}
+          // >
+          //   {unitIdes.map(({ id, name }) => (
+          //     <Option value={id} key={id}>
+          //       {name}
+          //     </Option>
+          //   ))}
+          // </AutoComplete>
+          <Select
             allowClear
-            mode="combobox"
-            optionLabelProp="children"
+            showSearch
+            labelInValue
+            showArrow={false}
             placeholder="请选择单位"
             notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
             onSearch={this.handleUnitIdChange}
@@ -169,14 +185,15 @@ export default class TableList extends PureComponent {
                 {name}
               </Option>
             ))}
-          </AutoComplete>
+          </Select>
         ),
-        transform: v => v.trim(),
+        // transform: v => v.trim(),
       },
       {
         id: 'createDate',
         label: '提交日期',
         render: () => <DatePicker placeholder="请选择日期" allowClear style={{ width: 260 }} />,
+        options: { initialValue: null },
       },
     ];
 
@@ -205,7 +222,8 @@ export default class TableList extends PureComponent {
         dataIndex: 'operation',
         key: 'operation',
         align: 'center',
-        width: 180,
+        fixed: 'right',
+        width: 160,
         render: (val, text) => {
           return (
             <Fragment>

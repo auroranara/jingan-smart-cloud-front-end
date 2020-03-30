@@ -1,15 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import {
-  Card,
-  Form,
-  Input,
-  Select,
-  Button,
-  Radio,
-  Row,
-  message,
-  InputNumber,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Select, Button, Radio, Row, message, InputNumber } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
@@ -829,7 +821,7 @@ export default class MaterialsHandler extends PureComponent {
             )}
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
           </Button>

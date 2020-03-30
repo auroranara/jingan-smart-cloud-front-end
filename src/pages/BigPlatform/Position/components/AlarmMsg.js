@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import { Button, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button } from 'antd';
 
 import styles from './AlarmMsg.less';
 import { getAlarmDesc } from '../utils';
@@ -26,7 +27,7 @@ export default function AlarmMsg(props) {
 
   return (
     <div className={styles.container} style={newStyle} {...restProps}>
-      <Icon type="close" className={styles.close} onClick={e => handleClose('alarmMsg')} />
+      <LegacyIcon type="close" className={styles.close} onClick={e => handleClose('alarmMsg')} />
       {/* <Button ghost className={styles.btn} onClick={e => handleShowAlarmHandle(id)}>处理</Button> */}
       <h5 className={styles.title}>
         <span className={styles.info} />

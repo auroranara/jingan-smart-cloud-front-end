@@ -1,15 +1,7 @@
 import { Fragment } from 'react';
-import {
-  Form,
-  Modal,
-  Table,
-  Button,
-  Row,
-  Col,
-  Input,
-  Tag,
-  Divider,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Table, Button, Row, Col, Input, Tag, Divider } from 'antd';
 import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
 
 const FormItem = Form.Item;

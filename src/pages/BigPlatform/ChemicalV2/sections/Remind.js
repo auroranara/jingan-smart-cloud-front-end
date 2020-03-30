@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { Row, Col, Carousel } from 'antd';
 import { NoData } from '../components/Components';
 import Section from '@/pages/BigPlatform/Safety/Company3/components/Section';
@@ -99,7 +99,7 @@ export default class Remind extends PureComponent {
     return (
       <Section title="到期提醒" className={styles.container}>
         {data.length > 0 ? (
-          <Carousel autoplay autoplaySpeed={5000} ref={this.setCarouselReference}>
+          <Carousel  autoplaySpeed={5000} ref={this.setCarouselReference}>
             {new Array(page).fill(true).map((_, i) => (
               <Row gutter={10} key={i}>
                 {data.slice(i * Size, (i + 1) * Size).map((item, index) => (

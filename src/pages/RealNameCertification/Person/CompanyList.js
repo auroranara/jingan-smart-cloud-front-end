@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   List,
   Card,
   Button,
@@ -374,23 +375,40 @@ export default class CompanyList extends PureComponent {
                   },
                 ],
               })(
-                <AutoComplete
-                  allowClear
-                  mode="combobox"
-                  labelInValue
-                  optionLabelProp="children"
-                  placeholder="请选择"
-                  notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                  onSearch={this.onUnitChange}
-                  onBlur={this.handleUnitIdBlur}
-                  filterOption={false}
-                >
-                  {unitIdes.map(({ id, name }) => (
-                    <Option value={id} key={id}>
-                      {name}
-                    </Option>
-                  ))}
-                </AutoComplete>
+                // <AutoComplete
+                //   allowClear
+                //   mode="combobox"
+                //   labelInValue
+                //   optionLabelProp="children"
+                //   placeholder="请选择"
+                //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                //   onSearch={this.onUnitChange}
+                //   onBlur={this.handleUnitIdBlur}
+                //   filterOption={false}
+                // >
+                //   {unitIdes.map(({ id, name }) => (
+                //     <Option value={id} key={id}>
+                //       {name}
+                //     </Option>
+                //   ))}
+                // </AutoComplete>
+              <Select
+                allowClear
+                showSearch
+                labelInValue
+                showArrow={false}
+                placeholder="请选择"
+                notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                onSearch={this.onUnitChange}
+                // onBlur={this.handleUnitIdBlur}
+                filterOption={false}
+              >
+                {unitIdes.map(({ id, name }) => (
+                  <Option value={id} key={id}>
+                    {name}
+                  </Option>
+                ))}
+              </Select>
               )}
             </FormItem>
           </Form>

@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, DatePicker, Form, Input, message, Col } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, DatePicker, Input, message, Col } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';

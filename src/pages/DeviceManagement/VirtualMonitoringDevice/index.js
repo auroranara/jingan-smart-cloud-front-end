@@ -1,5 +1,7 @@
 import { Component, Fragment } from 'react';
-import { Card, Form, Input, Button, Table, Row, Col, Divider, Select, message, Popconfirm } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Button, Table, Row, Col, Divider, Select, message, Popconfirm } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -10,15 +12,15 @@ import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/Monitorin
 
 const FormItem = Form.Item;
 
-const title = '虚拟监测对象管理'
+const title = '虚拟监测对象管理';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '物联设备管理', name: '物联设备管理' },
   { title, name: title },
-]
+];
 const defaultPageSize = 10;
-const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
-const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
+const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
+const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 
 @Form.create()
 @connect(({ device, loading }) => ({
@@ -27,7 +29,6 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
   modalLoading: loading.effects['device/fetchMonitoringDevice'],
 }))
 export default class VirtualMonitoringDevice extends Component {
-
   state = {
     bindModalVisible: false,
     bindedModalVisible: false,
@@ -35,41 +36,43 @@ export default class VirtualMonitoringDevice extends Component {
     detail: {},
   };
 
-  componentDidMount () {
-    this.handleQuery()
-    this.fetchMonitoringDeviceTypes()
+  componentDidMount() {
+    this.handleQuery();
+    this.fetchMonitoringDeviceTypes();
   }
 
   // 获取设备类型--监测设备类型列表
   fetchMonitoringDeviceTypes = () => {
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'device/fetchAllDeviceTypes',
       payload: { targetRealStatus: 0, type: 3 },
-    })
-  }
+    });
+  };
 
   /**
-  * 搜索列表
-  */
+   * 搜索列表
+   */
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
-    const values = getFieldsValue()
+    const values = getFieldsValue();
     dispatch({
       type: 'device/fetchVirtualMonitoringDevice',
       payload: { ...values, pageNum, pageSize, targetRealStatus: 0 },
-    })
-  }
+    });
+  };
 
   // 点击重置
   handleReset = () => {
-    const { form: { resetFields } } = this.props
-    resetFields()
-    this.handleQuery()
-  }
+    const {
+      form: { resetFields },
+    } = this.props;
+    resetFields();
+    this.handleQuery();
+  };
 
   // 删除
   handleDelete = id => {
@@ -87,7 +90,6 @@ export default class VirtualMonitoringDevice extends Component {
     });
   };
 
-
   /**
    * 获取已绑定监测设备列表
    */
@@ -103,7 +105,7 @@ export default class VirtualMonitoringDevice extends Component {
       payload: {
         ...payload,
         companyId: detail.companyId,
-        targetId: detail.id,
+        selfTargetId: detail.id,
       },
     });
   };
@@ -138,7 +140,6 @@ export default class VirtualMonitoringDevice extends Component {
       this.setState({ bindedModalVisible: true });
     });
   };
-
 
   /**
    * 点击打开可绑定传感器弹窗
@@ -178,7 +179,6 @@ export default class VirtualMonitoringDevice extends Component {
     });
   };
 
-
   /**
    * 解绑监测设备
    */
@@ -212,7 +212,7 @@ export default class VirtualMonitoringDevice extends Component {
       device: {
         deviceType: { list: deviceTypeOptions },
       },
-    } = this.props
+    } = this.props;
 
     return (
       <Card>
@@ -220,9 +220,7 @@ export default class VirtualMonitoringDevice extends Component {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('companyName')(
-                  <Input placeholder="单位名称" />
-                )}
+                {getFieldDecorator('companyName')(<Input placeholder="单位名称" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
@@ -230,7 +228,9 @@ export default class VirtualMonitoringDevice extends Component {
                 {getFieldDecorator('type')(
                   <Select placeholder="类型">
                     {deviceTypeOptions.map(({ id, name }) => (
-                      <Select.Option key={id} value={id}>{name}</Select.Option>
+                      <Select.Option key={id} value={id}>
+                        {name}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -238,20 +238,35 @@ export default class VirtualMonitoringDevice extends Component {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
-                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" onClick={() => { router.push('/device-management/virtual-monitoring-device/add') }}>新增</Button>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.handleQuery()}
+                >
+                  查询
+                </Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
+                  重置
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    router.push('/device-management/virtual-monitoring-device/add');
+                  }}
+                >
+                  新增
+                </Button>
               </FormItem>
             </Col>
           </Row>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
 
   /**
-  * 渲染表格
-  */
+   * 渲染表格
+   */
   renderTable = () => {
     const {
       tableLoading,
@@ -263,7 +278,7 @@ export default class VirtualMonitoringDevice extends Component {
         // 类型
         deviceType: { list: deviceTypeOptions },
       },
-    } = this.props
+    } = this.props;
     const columns = [
       {
         title: '单位名称',
@@ -277,14 +292,23 @@ export default class VirtualMonitoringDevice extends Component {
         align: 'center',
         width: 400,
         render: (val, { name, code, type }) => {
-          const typeItem = deviceTypeOptions.find(item => item.id === type) || {}
+          const typeItem = deviceTypeOptions.find(item => item.id === type) || {};
           return (
             <div style={{ textAlign: 'left' }}>
-              <div>名称：{name || '暂无数据'}</div>
-              <div>编号：{code || '暂无数据'}</div>
-              <div>类型：{typeItem.name || '暂无数据'}</div>
+              <div>
+                名称：
+                {name || '暂无数据'}
+              </div>
+              <div>
+                编号：
+                {code || '暂无数据'}
+              </div>
+              <div>
+                类型：
+                {typeItem.name || '暂无数据'}
+              </div>
             </div>
-          )
+          );
         },
       },
       {
@@ -318,7 +342,13 @@ export default class VirtualMonitoringDevice extends Component {
           <Fragment>
             <a onClick={() => this.handleViewBind(row)}>绑定监测设备</a>
             <Divider type="vertical" />
-            <a onClick={() => router.push(`/device-management/virtual-monitoring-device/edit/${row.id}`)}>编辑</a>
+            <a
+              onClick={() =>
+                router.push(`/device-management/virtual-monitoring-device/edit/${row.id}`)
+              }
+            >
+              编辑
+            </a>
             <Divider type="vertical" />
             <Popconfirm
               title="确认要删除该监测设备吗？"
@@ -329,7 +359,7 @@ export default class VirtualMonitoringDevice extends Component {
           </Fragment>
         ),
       },
-    ]
+    ];
     return (
       <Card style={{ marginTop: '24px' }}>
         {list && list.length > 0 ? (
@@ -354,14 +384,15 @@ export default class VirtualMonitoringDevice extends Component {
             }}
           />
         ) : (
-            <div style={{ width: '100%', textAlign: 'center' }}><span>暂无数据</span></div>
-          )}
-
+          <div style={{ width: '100%', textAlign: 'center' }}>
+            <span>暂无数据</span>
+          </div>
+        )}
       </Card>
-    )
-  }
+    );
+  };
 
-  render () {
+  render() {
     const {
       modalLoading,
       device: { monitoringDevice },
@@ -380,7 +411,9 @@ export default class VirtualMonitoringDevice extends Component {
       loading: modalLoading,
       rowSelection: {
         selectedRowKeys: selectedKeys,
-        onChange: (selectedKeys) => { this.setState({ selectedKeys }) },
+        onChange: selectedKeys => {
+          this.setState({ selectedKeys });
+        },
       },
       unbindAuthority: true,
     };
@@ -398,10 +431,7 @@ export default class VirtualMonitoringDevice extends Component {
       unbindAuthority: true,
     };
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderFilter()}
         {this.renderTable()}
         {/* 绑定监测设备弹窗 */}
@@ -409,6 +439,6 @@ export default class VirtualMonitoringDevice extends Component {
         {/* 已绑定监测设备弹窗 */}
         <MonitoringDeviceModal {...bindedModalProps} />
       </PageHeaderLayout>
-    )
+    );
   }
 }

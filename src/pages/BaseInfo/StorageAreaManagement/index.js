@@ -1,17 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  Input,
-  Select,
-  Table,
-  Divider,
-  Pagination,
-  Spin,
-  message,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Select, Table, Divider, Pagination, Spin, message } from 'antd';
 import router from 'umi/router';
 import { hasAuthority, AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import ToolBar from '@/components/ToolBar';
@@ -137,7 +128,7 @@ export default class StorageAreaManagement extends PureComponent {
   }
 
   // 挂载后
-  componentDidMount () {
+  componentDidMount() {
     this.handleQuery();
   }
 
@@ -152,7 +143,7 @@ export default class StorageAreaManagement extends PureComponent {
         pageSize,
       },
     });
-  }
+  };
 
   // 重置
   handleReset = () => {
@@ -188,7 +179,10 @@ export default class StorageAreaManagement extends PureComponent {
   /**
    * 获取可绑定监测设备列表
    */
-  fetchMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+  fetchMonitoringDevice = ({
+    payload = { pageNum: 1, pageSize: defaultPageSize },
+    ...res
+  } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
@@ -206,7 +200,10 @@ export default class StorageAreaManagement extends PureComponent {
   /**
    * 获取已绑定监测设备列表
    */
-  fetchBindedMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+  fetchBindedMonitoringDevice = ({
+    payload = { pageNum: 1, pageSize: defaultPageSize },
+    ...res
+  } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
@@ -215,7 +212,8 @@ export default class StorageAreaManagement extends PureComponent {
       payload: {
         ...payload,
         companyId: detail.companyId,
-        targetId: detail.id,
+        // targetId: detail.id,
+        selfTargetId: detail.id,
       },
     });
   };
@@ -285,7 +283,7 @@ export default class StorageAreaManagement extends PureComponent {
       type: 'device/bindMonitoringDevice',
       payload: {
         targetId: detail.id, // 监测对象id（库房id）
-        bindStatus: 0,// 0 解绑
+        bindStatus: 0, // 0 解绑
         equipmentIdList: [id],
       },
       success: () => {
@@ -330,7 +328,10 @@ export default class StorageAreaManagement extends PureComponent {
           const { code, areaName, tankCount } = row;
           return (
             <div className={styles.multi}>
-              <div>统一编码：{code || '暂无数据'} </div>
+              <div>
+                统一编码：
+                {code || '暂无数据'}{' '}
+              </div>
               <div>储罐区名称： {areaName || '暂无数据'}</div>
               <div>储罐个数： {tankCount || 0}</div>
             </div>
@@ -377,7 +378,7 @@ export default class StorageAreaManagement extends PureComponent {
       },
       {
         title: '操作',
-        key: '操作',
+        key: 'operation',
         align: 'center',
         fixed: 'right',
         width: 270,
@@ -445,18 +446,20 @@ export default class StorageAreaManagement extends PureComponent {
         </Card>
       </Spin>
     ) : (
-        <Spin spinning={loading}>
-          <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-            <span>暂无数据</span>
-          </Card>
-        </Spin>
-      );
+      <Spin spinning={loading}>
+        <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+          <span>暂无数据</span>
+        </Card>
+      </Spin>
+    );
   };
 
-  render () {
+  render() {
     const {
       modalLoading,
-      user: { currentUser: { permissionCodes, unitType } },
+      user: {
+        currentUser: { permissionCodes, unitType },
+      },
       storageAreaManagement: {
         a: companyNum,
         pagination: { total },
@@ -465,7 +468,7 @@ export default class StorageAreaManagement extends PureComponent {
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
     // 解绑权限
-    const unbindAuthority = hasAuthority(unbindCode, permissionCodes)
+    const unbindAuthority = hasAuthority(unbindCode, permissionCodes);
     const bindModalProps = {
       type: 'bind',
       visible: bindModalVisible,
@@ -529,7 +532,9 @@ export default class StorageAreaManagement extends PureComponent {
                 新增
               </AuthButton>
             }
-            wrappedComponentRef={ref => { this.toolbar = ref }}
+            wrappedComponentRef={ref => {
+              this.toolbar = ref;
+            }}
           />
         </Card>
 

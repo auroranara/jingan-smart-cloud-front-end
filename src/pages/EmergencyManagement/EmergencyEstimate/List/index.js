@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Card,
   Input,
   Pagination,
@@ -299,7 +300,7 @@ export default class EmergencyEstimateList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 160,
+        width: 150,
         render: (data, record) => (
           <span>
             <AuthA code={detailCode} onClick={() => this.goDetail(record.id)}>

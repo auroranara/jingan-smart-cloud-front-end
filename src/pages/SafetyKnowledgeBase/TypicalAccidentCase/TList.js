@@ -1,6 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Popconfirm, Table, Divider, message, Cascader } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Popconfirm, Table, Divider, message, Cascader } from 'antd';
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Lightbox from 'react-images';
@@ -287,7 +289,8 @@ export default class CaseList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        width: 120,
+        fixed: 'right',
         render: (val, row) => (
           <Fragment>
             {editCode ? (

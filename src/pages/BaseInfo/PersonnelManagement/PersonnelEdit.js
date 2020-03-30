@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Card,
   Button,
   Row,
@@ -10,7 +11,6 @@ import {
   Cascader,
   Select,
   Popover,
-  Icon,
   message,
   Upload,
   Spin,
@@ -658,7 +658,7 @@ export default class CompanyDetail extends PureComponent {
         headers={{ 'JA-Token': getToken() }}
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-          <Icon type="plus" style={{ fontSize: '32px' }} />
+          <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
           <div style={{ marginTop: '8px' }}>点击上传</div>
         </Button>
       </Upload>
@@ -789,10 +789,10 @@ export default class CompanyDetail extends PureComponent {
                     addonAfter={
                       <Fragment>
                         <Tooltip title="复制" >
-                          <Icon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
+                          <LegacyIcon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
                         </Tooltip>
                         <Tooltip title="打开地图" >
-                          <Icon type="environment" onClick={this.handleShowMap} />
+                          <LegacyIcon type="environment" onClick={this.handleShowMap} />
                         </Tooltip>
                       </Fragment>
                     }
@@ -1014,7 +1014,7 @@ export default class CompanyDetail extends PureComponent {
       }
       return (
         <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles.errorIcon} />
           <div className={styles.errorMessage}>{errors[key][0]}</div>
           <div className={styles.errorField}>{fieldLabels[key]}</div>
         </li>
@@ -1029,7 +1029,7 @@ export default class CompanyDetail extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" />
+          <LegacyIcon type="exclamation-circle" />
           {errorCount}
         </Popover>
       </span>

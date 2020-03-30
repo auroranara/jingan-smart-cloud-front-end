@@ -1,23 +1,25 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Button,
   Card,
-  Form,
   Row,
   Col,
   Input,
   Select,
-  Icon,
   Radio,
   Checkbox,
   TreeSelect,
   message,
   Spin,
 } from 'antd';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './QuestionsAdd.less';
+import styles1 from '@/components/ToolBar/index.less';
 
 const RadioGroup = Radio.Group;
 const TextArea = Input.TextArea;
@@ -282,12 +284,12 @@ export default class QuestionsAdd extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Spin spinning={loading}>
           <Card title="试题信息" className={styles.questionsAdd}>
-            <Form>
+            <Form className={styles1.form}>
               <Row>
                 <Col {...colWrapper}>
                   <Form.Item label="试题类型" {...smallerItemLayout}>
                     {getFieldDecorator('type', {
-                      validateTrigger: 'onBlur',
+                      // validateTrigger: 'onBlur',
                       rules: [{ required: true, message: '请选择试题类型' }],
                     })(
                       <Select onChange={this.handleSelectType} placeholder="请选择">
@@ -326,8 +328,6 @@ export default class QuestionsAdd extends PureComponent {
                     )}
                   </Form.Item>
                 </Col>
-              </Row>
-              <Row>
                 <Col {...colWrapper}>
                   <Form.Item label="难易程度" {...smallerItemLayout}>
                     {getFieldDecorator('level', {
@@ -343,21 +343,20 @@ export default class QuestionsAdd extends PureComponent {
                     )}
                   </Form.Item>
                 </Col>
-              </Row>
-              <Row>
+              <Col span={24}>
                 <Form.Item label="试题题干" {...formItemLayout}>
                   {getFieldDecorator('stem', {
                     validateTrigger: 'onBlur',
                     rules: [{ required: true, whitespace: true, message: '请输入题干' }],
                   })(<TextArea rows={2} />)}
                 </Form.Item>
-              </Row>
-              <Row>
+              </Col>
+              <Col span={24}>
                 <Button disabled={type === '3'} onClick={this.handleAddOption}>
                   请添加子选项
                 </Button>
-              </Row>
-              <Row>
+              </Col>
+              <Col span={24}>
                 <Form.Item label="选项内容" {...formItemLayout} required>
                   {getFieldDecorator('options', {
                     validateTrigger: 'onBlur',
@@ -378,7 +377,7 @@ export default class QuestionsAdd extends PureComponent {
                                 { required: true, whitespace: true, message: '请输入子选项内容' },
                               ],
                             })(<Input style={{ width: '60%', marginRight: 8, marginLeft: 8 }} />)}
-                            <Icon
+                            <LegacyIcon
                               className={
                                 type !== '3' ? styles.deleteButton : styles.disabledDeleteButton
                               }
@@ -391,8 +390,8 @@ export default class QuestionsAdd extends PureComponent {
                     </div>
                   )}
                 </Form.Item>
-              </Row>
-              <Row>
+              </Col>
+              <Col span={24}>
                 <Form.Item label="正确答案" {...formItemLayout}>
                   {type === '2'
                     ? getFieldDecorator('arrAnswer', {
@@ -423,12 +422,13 @@ export default class QuestionsAdd extends PureComponent {
                         </RadioGroup>
                       )}
                 </Form.Item>
-              </Row>
-              <Row>
+              </Col>
+              <Col span={24}>
                 <Form.Item label="试题解析" {...formItemLayout}>
                   {getFieldDecorator('des')(<TextArea rows={4} />)}
                 </Form.Item>
-              </Row>
+              </Col>
+            </Row>
               <div style={{ textAlign: 'center' }}>
                 <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>
                   返回

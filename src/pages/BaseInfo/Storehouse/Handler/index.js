@@ -1,7 +1,8 @@
 import { PureComponent, Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Button,
   Radio,
@@ -438,7 +439,7 @@ export default class StorehouseHandler extends PureComponent {
 
   // 清空库区名称
   handleResetArea = () => {
-    this.props.form.setFieldsValue({ areaId: undefined });
+    this.props.form.setFieldsValue({ areaId: '' });
     this.setState({ selectedRegion: {}, tempKeys: [] });
   }
 
@@ -685,7 +686,7 @@ export default class StorehouseHandler extends PureComponent {
             </Fragment>
           )} */}
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
           </Button>

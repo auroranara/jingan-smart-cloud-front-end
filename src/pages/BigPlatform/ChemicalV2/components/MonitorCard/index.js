@@ -162,8 +162,10 @@ export class TankCard extends MonitorCard {
                   label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                   value: realValue,
                   time: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING,
-                  status: +linkStatus === -1 ? 0 : status,
-                  statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
+                  status,
+                  statusLabel: `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
+                  // status: +linkStatus === -1 ? 0 : status,
+                  // statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
                   key: index,
                 })
               ))}
@@ -203,8 +205,10 @@ export class ReservoirAreaCard extends MonitorCard {
                   label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                   value: realValue,
                   time: dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : EMPTY_FILLING,
-                  status: +linkStatus === -1 ? 0 : status,
-                  statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
+                  // status: +linkStatus === -1 ? 0 : status,
+                  // statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
+                  status,
+                  statusLabel: `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
                   key: index,
                 })
               ))}
@@ -243,6 +247,8 @@ export class GasCard extends MonitorCard {
               <div>{paramDesc}</div>
               <div>{realValue ? `${realValue}${paramUnit || ''}` : EMPTY_FILLING}</div>
             </div>
+            {/* 报警时闪烁红点 */}
+            {+status > 0 && (<div className={styles.warningIcon}></div>)}
           </div>
           <div className={styles.flexCenter}>
             <div className={styles.labelContainer}>
@@ -262,8 +268,10 @@ export class GasCard extends MonitorCard {
               {this.renderLabel({
                 label: `${paramDesc}${paramUnit ? `(${paramUnit})` : ''}`,
                 value: realValue,
-                status: +linkStatus === -1 ? 0 : status,
-                statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
+                status,
+                statusLabel: `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
+                // status: +linkStatus === -1 ? 0 : status,
+                // statusLabel: +linkStatus === -1 ? '正常' : `${STATUS[status]}${condition && limitValueStr ? `(${condition}${limitValueStr})` : ''}`,
               })}
             </div>
           </div>

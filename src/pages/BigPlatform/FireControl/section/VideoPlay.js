@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Icon, notification } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { notification } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from '../components/HLSSource.js';
@@ -20,7 +21,7 @@ const LOADING_STYLE = {
 };
 const LOADING_COMPONENT = (
   <div className={styles.loadingContainer}>
-    <Icon type="loading" style={LOADING_STYLE} />
+    <LegacyIcon type="loading" style={LOADING_STYLE} />
   </div>
 );
 
@@ -138,7 +139,7 @@ class VideoPlay extends Component {
                 key={item.id}
               >
                 {activeIndex === index && (
-                  <Icon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />
+                  <LegacyIcon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />
                 )}
                 {activeIndex !== index && <span className={styles.iconNone} />}
                 {item.name}
@@ -215,7 +216,7 @@ class VideoPlay extends Component {
             视频监控
             {/*videoList.length > 0 ? videoList[activeIndex].name : ''*/}
           </span>
-          <Icon type="close" className={styles.iconClose} onClick={this.handleClose} />
+          <LegacyIcon type="close" className={styles.iconClose} onClick={this.handleClose} />
         </div>
         <div className={styles.videoMain}>
           <div className={styles.videoContent} style={{ paddingRight: showList ? 0 : '5px' }}>

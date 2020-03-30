@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Input, Button, Col, Row, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Col, Row, message } from 'antd';
 import router from 'umi/router';
 import styles from './style.less';
 import { aesEncrypt } from '../../../utils/utils';

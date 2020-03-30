@@ -1,7 +1,8 @@
 import { Component, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -10,7 +11,6 @@ import {
   message,
   Radio,
   DatePicker,
-  Icon,
   Tooltip,
   InputNumber,
   Checkbox,
@@ -745,7 +745,7 @@ export default class AddEquipment extends Component {
                   validateTrigger: 'onBlur',
                   rules: [{ required: true, validator: this.validateBuildingFloor }],
                 })(
-                  <Fragment>
+                  <Row>
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('buildingId')(
                         <Select
@@ -779,18 +779,19 @@ export default class AddEquipment extends Component {
                       )}
                     </Col>
                     <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
-                      <Button onClick={() => this.handleRefreshBuilding(true)}>
-                        <Icon type="reload" />
+                      <Button onClick={() => this.handleRefreshBuilding(true)} style={{ marginTop: 4 }}>
+                        <LegacyIcon type="reload" />
                       </Button>
                     </Tooltip>
                     <AuthButton
                       onClick={this.jumpToBuildingManagement}
                       code={codesMap.company.buildingsInfo.add}
                       type="primary"
+                      style={{ marginTop: 4 }}
                     >
                       新增建筑物楼层
                     </AuthButton>
-                  </Fragment>
+                  </Row>
                 )}
               </FormItem>
               <FormItem label="详细位置" {...formItemLayout}>
@@ -843,7 +844,7 @@ export default class AddEquipment extends Component {
             </FormItem>
           )}
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button
             onClick={() => {
               router.goBack();

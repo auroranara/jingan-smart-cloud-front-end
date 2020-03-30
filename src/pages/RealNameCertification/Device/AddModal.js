@@ -1,13 +1,6 @@
-import {
-  Modal,
-  Form,
-  Input,
-  Row,
-  Col,
-  Radio,
-  Icon,
-  Tooltip,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Input, Row, Col, Radio, Tooltip } from 'antd';
 import styles from './AddModal.less';
 
 const FormItem = Form.Item;
@@ -18,7 +11,7 @@ const serialNumberLabel = (
   <span>
     设备序列号
   <Tooltip title="设备序列号（SN）在设备背面与开机后主屏幕右下角区域" placement="right" className={styles.tooltipIcon}>
-      <Icon type="question-circle" />
+      <LegacyIcon type="question-circle" />
     </Tooltip>
   </span>
 );

@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from 'antd';
 import echarts from 'echarts';
 import ReactEcharts from 'echarts-for-react';
 import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
@@ -127,7 +128,7 @@ export default class StorageAreaDrawer extends PureComponent {
         <div className={styles.middle}>
           <div className={styles.point}>监测点：科力安可燃有毒气体88</div>
           <div className={styles.location}>
-            <Icon type="environment" className={styles.icon} />
+            <LegacyIcon type="environment" className={styles.icon} />
             罐区-溶剂罐区
           </div>
           <div className={styles.extra}>工单动态>></div>
@@ -143,7 +144,7 @@ export default class StorageAreaDrawer extends PureComponent {
             />
             <div className={styles.tips}>
               <div className={styles.overVal}>
-                <Icon type="caret-up" className={styles.icon} />
+                <LegacyIcon type="caret-up" className={styles.icon} />
                 26
               </div>
               超过预警阈值

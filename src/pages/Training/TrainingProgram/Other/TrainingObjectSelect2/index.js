@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { Input, Tree, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Input, Tree } from 'antd';
 import { connect } from 'dva';
 import styles from './index.less';
 const { Search } = Input;
@@ -133,12 +134,12 @@ export default class TrainingObjectSelect2 extends Component {
     return list && list.map(item => {
       if (!item.studentId) {
         return item.allUserCount > 0 && (
-          <TreeNode key={item.id} title={`${item.name} (${item.allUserCount})`} icon={<Icon type="flag" />} dataRef={item}>
+          <TreeNode key={item.id} title={`${item.name} (${item.allUserCount})`} icon={<LegacyIcon type="flag" />} dataRef={item}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode key={item.studentId} title={item.name} icon={<Icon type="user" />} dataRef={item} />;
+      return <TreeNode key={item.studentId} title={item.name} icon={<LegacyIcon type="user" />} dataRef={item} />;
     }).filter(v => v);
   }
 
@@ -146,12 +147,12 @@ export default class TrainingObjectSelect2 extends Component {
     return list && list.map(item => {
       if (!item.studentId) {
         return item.allUserCount > 0 && (
-          <TreeNode key={item.id} title={`${item.name} (${item.count}/${item.allUserCount})`} icon={<Icon type="flag" />} dataRef={item}>
+          <TreeNode key={item.id} title={`${item.name} (${item.count}/${item.allUserCount})`} icon={<LegacyIcon type="flag" />} dataRef={item}>
             {this.renderTreeNodes2(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode key={item.studentId} title={item.name} icon={<Icon type="user" />} dataRef={item} />;
+      return <TreeNode key={item.studentId} title={item.name} icon={<LegacyIcon type="user" />} dataRef={item} />;
     }).filter(v => v);
   }
 

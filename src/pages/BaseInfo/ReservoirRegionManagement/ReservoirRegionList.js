@@ -204,7 +204,7 @@ export default class ReservoirRegionList extends PureComponent {
       payload: {
         ...payload,
         companyId: detail.companyId,
-        targetId: detail.id,
+        selfTargetId: detail.id,
       },
     });
   };
@@ -384,9 +384,9 @@ export default class ReservoirRegionList extends PureComponent {
       },
       {
         title: '操作',
-        key: '操作',
+        key: 'operation',
         align: 'center',
-        width: 240,
+        width: 210,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>

@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Link } from 'react-router-dom';
-import { Button, Card, Modal, Tabs, Table, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Card, Modal, Tabs, Table } from 'antd';
 // import Ellipsis from 'components/Ellipsis';
 import DescriptionList from '@/components/DescriptionList';
 
@@ -213,7 +214,7 @@ export default class CompanyDetail extends PureComponent {
       >
         <AuthButton code={codesMap.dataAnalysis.IOTAbnormalData.history}>
           历史记录
-          <Icon type="double-right" />
+          <LegacyIcon type="double-right" />
         </AuthButton>
       </Link>
     );

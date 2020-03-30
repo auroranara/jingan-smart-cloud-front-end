@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Button, Col, Icon, Input, message, Row, Tooltip } from 'antd';
+import { Button, Col, Input, message, Row, Tooltip } from 'antd';
 import {findFirstVideo} from '@/utils/utils';
 
 import styles from './VideoLookUp.less';

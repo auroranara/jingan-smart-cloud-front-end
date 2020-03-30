@@ -195,10 +195,12 @@ export default class TablePage extends Component {
   prevValues = null;
 
   componentDidMount() {
-    const { initialize, getList, transform, withUnitId, unitId } = this.props;
-    const payload = withUnitId ? { unitId } : {};
+    const { initialize, getList, transform, withUnitId, unitId, initialValues } = this.props;
+    this.prevValues = initialValues || null;
+    const payload = withUnitId ? { unitId, ...initialValues } : { ...initialValues };
     getList(transform ? transform(payload) : payload);
     initialize && initialize({ unitId });
+    initialValues && this.form && this.form.setFieldsValue(initialValues);
   }
 
   shouldComponentUpdate(nextProps, nextState) {

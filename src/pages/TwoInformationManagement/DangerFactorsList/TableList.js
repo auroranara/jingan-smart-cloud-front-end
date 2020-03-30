@@ -1,7 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, Upload, Icon, Form, Modal, message, Divider } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Table, Upload, Modal, message, Divider } from 'antd';
 import { getToken } from 'utils/authority';
 
 import ToolBar from '@/components/ToolBar';
@@ -224,7 +226,7 @@ export default class TableList extends PureComponent {
       importLoading,
     } = this.state;
 
-    const uploadExportButton = <Icon type={importLoading ? 'loading' : 'upload'} />;
+    const uploadExportButton = <LegacyIcon type={importLoading ? 'loading' : 'upload'} />;
 
     const formItemLayout = {
       labelCol: { span: 4 },

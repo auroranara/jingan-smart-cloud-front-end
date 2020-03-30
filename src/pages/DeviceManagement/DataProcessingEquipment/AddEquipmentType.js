@@ -1,5 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import { Card, Button, Form, Input, Row, Col, Select, message, Checkbox } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Row, Col, Select, message, Checkbox } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
@@ -178,15 +180,13 @@ export default class AddEquipmentType extends PureComponent {
             })(
               <Checkbox.Group >
                 {deviceTypeList.map(({ id, name }) => (
-                  <Col span={8} key={id}>
-                    <Checkbox disabled={disabledKeys.includes(id)} value={id}>{name}</Checkbox>
-                  </Col>
+                  <Checkbox disabled={disabledKeys.includes(id)} value={id}>{name}</Checkbox>
                 ))}
               </Checkbox.Group>
             )}
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button onClick={() => { router.push(listUrl) }}>取消</Button>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>确定</Button>
         </Row>

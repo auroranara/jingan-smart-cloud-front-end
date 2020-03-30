@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Empty, Icon, Table, Form, Upload, Modal, message } from 'antd';
+import { Button, Card, Upload, Empty, Modal, Table, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import { getToken } from 'utils/authority';
 
 import ToolBar from '@/components/ToolBar';
@@ -19,7 +21,7 @@ const {
 } = codes;
 
 const url =
-  'http://data.jingan-china.cn/v2/chem/file1/%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xls';
+  'http://data.jingan-china.cn/v2/chem/file/%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xls';
 
 @connect(({ user, realNameCertification, loading }) => ({
   user,
@@ -133,7 +135,13 @@ export default class TableList extends PureComponent {
           importLoading: false,
         });
       } else {
-        message.error(res.data.errorMasssge.length === 0 ? res.msg : res.data.errorMasssge);
+        res.data.errorMasssge.length === 0
+          ? message.error(res.msg)
+          : Modal.error({
+              title: '错误信息',
+              content: res.data.errorMasssge,
+              okText: '确定',
+            });
         this.setState({
           importLoading: false,
         });
@@ -162,7 +170,7 @@ export default class TableList extends PureComponent {
       message.error('尚未上传结束');
     }
     if (!isExcel) {
-      message.error('上传失败，请上传.xls格式或者.xls格式表格');
+      message.error('上传失败，请上传.xls或者.xlsx格式');
     }
     return isExcel && !importLoading;
   };
@@ -205,6 +213,7 @@ export default class TableList extends PureComponent {
         新增
       </Button>
     );
+
     const fields = getSearchFields(unitType);
     const columns = getTableColumns(this.handleDelete, unitType, this.handlePesonListClick);
 
@@ -213,7 +222,8 @@ export default class TableList extends PureComponent {
       wrapperCol: { span: 16 },
     };
 
-    const uploadExportButton = <Icon type={importLoading ? 'loading' : 'upload'} />;
+    const uploadExportButton = <LegacyIcon type={importLoading ? 'loading' : 'upload'} />;
+
     return (
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}

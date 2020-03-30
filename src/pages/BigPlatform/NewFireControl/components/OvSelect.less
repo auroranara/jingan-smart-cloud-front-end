@@ -4,7 +4,8 @@
   right: 40px;
 
   :global {
-    .ant-select-selection {
+    // .ant-select-selection {
+    .ant-select-single .ant-select-selector {
       border-color: rgb(14, 74, 139);
       background-color: transparent;
     }
@@ -32,7 +33,8 @@
 
 .one, .two, .three {
   :global {
-    .ant-select-selection {
+    // .ant-select-selection {
+    .ant-select-single .ant-select-selector {
       border-color: rgb(4, 253, 255);
       background-color: transparent;
     }
@@ -49,8 +51,9 @@
 
 .three {
   :global {
-    .ant-select-selection {
-      border: none;
+    // .ant-select-selection {
+    .ant-select-single .ant-select-selector {
+      border-color: none;
       background-color: #1a6ac2;
     }
   }
@@ -65,20 +68,24 @@
     }
 
     // .ant-select-dropdown-menu-item-active {
-    //   background-color: rgb(0, 0, 0);
-    // }
+    .ant-select-item-option-active {
+      background-color: rgb(0, 0, 0);
+    }
 
-    .ant-select-dropdown-menu-item {
+    // .ant-select-dropdown-menu-item {
+    .ant-select-item {
       color: #FFF;
       background-color: #033069;
     }
 
-    .ant-select-dropdown-menu-item:hover {
+    // .ant-select-dropdown-menu-item:hover {
+    .ant-select-item:hover {
       background-color: #063b6f;
     }
 
-    .ant-select-dropdown-menu-item-selected,
-    .ant-select-dropdown-menu-item-selected:hover {
+    // .ant-select-dropdown-menu-item-selected,
+    // .ant-select-dropdown-menu-item-selected:hover {
+    .ant-select-item-option-selected {
       color: rgb(4, 253, 255);
       background-color: #063b6f;
     }

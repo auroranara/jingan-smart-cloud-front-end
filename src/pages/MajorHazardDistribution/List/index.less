@@ -1,0 +1,103 @@
+.layout {
+  :global {
+    .ant-tabs {
+      margin: 0 0 -17px 0;
+    }
+  }
+}
+.mapButtonContainer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .mapButton {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 24px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 3px;
+    cursor: pointer;
+
+    &:not(:last-child) {
+      margin-right: 24px;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.75);
+    }
+
+    &:active {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    img {
+      flex: none;
+      margin-right: 8px;
+      width: 24px;
+    }
+
+    span {
+      flex: none;
+      color: #1890ff;
+    }
+  }
+}
+.fieldContainer {
+  position: relative;
+  margin: -0.5em 0;
+}
+.fieldWrapper {
+  display: flex;
+  padding: 0.5em 0;
+  line-height: 1.5;
+
+  .fieldName {
+    flex: none;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  .fieldValue {
+    flex: 1;
+    width: 0;
+  }
+}
+.fieldAlert {
+  position: absolute;
+  top: -8px;
+  right: -16px;
+  width: 24px;
+}
+.alert {
+  margin-bottom: 24px;
+
+  .alertIcon {
+    display: inline-block;
+    width: 24px;
+    vertical-align: top;
+  }
+}
+.carouselWrapper {
+  display: flex;
+
+  & > :first-child {
+    flex: 1;
+    width: 0;
+  }
+
+  & > :nth-child(2) {
+    flex: none;
+  }
+
+  .alarmMessageItem {
+    padding-left: 2em;
+    background: url('../assets/icon-alarm.png') no-repeat left top;
+    background-size: 21px;
+  }
+}

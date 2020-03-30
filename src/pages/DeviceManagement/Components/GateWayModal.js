@@ -1,6 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Modal, Table, Button, Input, Form, Card, Row, Col } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Table, Button, Input, Card, Row, Col } from 'antd';
 import { AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 

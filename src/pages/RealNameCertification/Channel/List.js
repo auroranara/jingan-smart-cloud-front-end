@@ -1,17 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  Col,
-  Row,
-  Select,
-  Table,
-  Input,
-  Divider,
-  message,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Col, Row, Select, Table, Input, Divider, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import codes from '@/utils/codes';
 // import { hasAuthority } from '@/utils/customAuth';
@@ -238,12 +229,12 @@ export default class ChannelList extends PureComponent {
       user: { isCompany },
     } = this.props;
     const columns = [
-      ...isCompany ? [] : [{
+      ...(isCompany ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 250,
-      }],
+      }]),
       {
         title: '通道名称',
         dataIndex: 'channelName',

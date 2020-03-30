@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   List,
   Card,
   Row,
   Button,
-  Icon,
   Tag,
-  Form,
   Col,
   Input,
   Divider,
@@ -227,8 +227,8 @@ export default class ArticleList extends PureComponent {
 
     return (
       <div>
-        <Row gutter={8}>
-          <Form>
+        <Form>
+          <Row gutter={8}>
             <Col span={6}>
               <FormItem>
                 {getFieldDecorator('name', {
@@ -264,22 +264,22 @@ export default class ArticleList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-          </Form>
-          <Col span={4}>
-            <FormItem>
-              <Button type="primary" onClick={this.handleArticleQuery}>
-                查询
-              </Button>
-              <Button
-                type="primary"
-                style={{ marginLeft: '10px' }}
-                onClick={this.handleArticleReset}
-              >
-                重置
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
+            <Col span={4}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleArticleQuery}>
+                  查询
+                </Button>
+                <Button
+                  type="primary"
+                  style={{ marginLeft: '10px' }}
+                  onClick={this.handleArticleReset}
+                >
+                  重置
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
 
         <List
           grid={{ gutter: 16, column: 1 }}
@@ -323,18 +323,18 @@ export default class ArticleList extends PureComponent {
                   </div>
                   <div className={styles.statistics}>
                     <span>
-                      <Icon className={styles.icon} type="eye" />
+                      <LegacyIcon className={styles.icon} type="eye" />
                       <span>{totalRead}</span>
                     </span>
                     <Divider type="vertical" />
                     <span>
-                      <Icon className={styles.icon} type="user" />
+                      <LegacyIcon className={styles.icon} type="user" />
                       <span>{totalPerson}</span>
                     </span>
                     <Divider type="vertical" />
                     <span>
                       <a style={{ width: '20px' }} onClick={() => this.goToDetail(id)}>
-                        <Icon className={styles.icon} type="read" />
+                        <LegacyIcon className={styles.icon} type="read" />
                         {'开始阅读'}
                       </a>
                     </span>

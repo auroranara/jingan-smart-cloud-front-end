@@ -3,6 +3,9 @@ import { Input } from 'antd';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
+import TextAreaEllipsis from '@/jingan-components/View/TextAreaEllipsis';
+import MajorHazardSelect from '../components/MajorHazardSelect';
+import MonitorObjectSelect from '../components/MonitorObjectSelect';
 import Ellipsis from '@/components/Ellipsis';
 import TablePage from '@/templates/TablePage';
 import moment from 'moment';
@@ -49,37 +52,49 @@ export const GET_STATUS_NAME = ({ statusType, warnLevel, fixType }) => {
     return '故障消除';
   }
 };
-const TRANSFORM = (data) => {
-  const { statusType, range: [startTime, endTime]=[], ...rest } = data || {};
+const TRANSFORM = data => {
+  const {
+    statusType,
+    range: [startTime, endTime] = [],
+    majorHazard: [dangerSource, dangerSourceId] = [],
+    monitorObject: [beMonitorTargetType, beMonitorTargetId] = [],
+    ...rest
+  } = data || {};
   return {
     ...rest,
     ...STATUS_MAPPER[statusType],
     startTime: startTime && startTime.format(DEFAULT_FORMAT),
     endTime: endTime && endTime.format(DEFAULT_FORMAT),
+    dangerSource,
+    dangerSourceId: dangerSourceId && dangerSourceId.key,
+    beMonitorTargetType,
+    beMonitorTargetId: beMonitorTargetId && beMonitorTargetId.key,
   };
 };
 
 export default class AlarmMessage extends Component {
-  empty = true
+  empty = true;
 
-  getRangeFromEvent = (range) => {
+  getRangeFromEvent = range => {
     const empty = !(range && range.length);
     const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
     this.empty = empty;
     return result;
-  }
+  };
 
-  getFields = ({
-    unitId,
-  }) => ([
-    ...(!unitId ? [
-      {
-        id: 'companyName',
-        label: '单位名称',
-        transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
-      },
-    ] : []),
+  getFields = ({ unitId }) => [
+    ...(!unitId
+      ? [
+          {
+            id: 'companyName',
+            label: '单位名称',
+            transform: value => value.trim(),
+            render: ({ handleSearch }) => (
+              <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
+            ),
+          },
+        ]
+      : []),
     {
       id: 'monitorEquipmentTypes',
       label: '监测类型',
@@ -89,7 +104,9 @@ export default class AlarmMessage extends Component {
       id: 'monitorEquipmentAreaLocation',
       label: '报警区域位置',
       transform: value => value.trim(),
-      render: ({ handleSearch }) => <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />,
+      render: ({ handleSearch }) => (
+        <Input placeholder="请输入报警区域位置" onPressEnter={handleSearch} maxLength={50} />
+      ),
     },
     {
       id: 'range',
@@ -99,9 +116,19 @@ export default class AlarmMessage extends Component {
       //   sm: 24,
       //   xs: 24,
       // },
-      render: () => <DatePickerOrSpan placeholder={['开始时间', '结束时间']} format={DEFAULT_FORMAT} showTime allowClear type="RangePicker" style={{ width: '100%' }} />,
+      render: () => (
+        <DatePickerOrSpan
+          placeholder={['开始时间', '结束时间']}
+          format={DEFAULT_FORMAT}
+          showTime
+          allowClear
+          type="RangePicker"
+          style={{ width: '100%' }}
+        />
+      ),
       options: {
         getValueFromEvent: this.getRangeFromEvent,
+        initialValue: [],
       },
     },
     {
@@ -109,21 +136,41 @@ export default class AlarmMessage extends Component {
       label: '消息类型',
       render: () => <SelectOrSpan placeholder="请选择消息类型" list={STATUSES} allowClear />,
     },
-  ])
+    {
+      id: 'majorHazard',
+      label: '重大危险源',
+      render: () => <MajorHazardSelect />,
+    },
+    {
+      id: 'monitorObject',
+      label: '监测对象',
+      render: () => <MonitorObjectSelect />,
+    },
+  ];
 
-  getColumns = ({
-    unitId,
-  }) => ([
-    ...(!unitId ? [
-      {
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
-      },
-    ] : []),
+  getColumns = ({ unitId }) => [
+    ...(!unitId
+      ? [
+          {
+            title: '单位名称',
+            dataIndex: 'companyName',
+            align: 'center',
+          },
+        ]
+      : []),
     {
       title: '监测类型',
       dataIndex: 'monitorEquipmentTypeName',
+      align: 'center',
+    },
+    {
+      title: '监测对象类型',
+      dataIndex: 'beMonitorTargetTypeName',
+      align: 'center',
+    },
+    {
+      title: '监测对象',
+      dataIndex: 'beMonitorTargetName',
       align: 'center',
     },
     {
@@ -135,46 +182,51 @@ export default class AlarmMessage extends Component {
     {
       title: '发生时间',
       dataIndex: 'happenTime',
-      render: (time) => time && moment(time).format(DEFAULT_FORMAT),
+      render: time => time && moment(time).format(DEFAULT_FORMAT),
       align: 'center',
     },
     {
       title: '消息内容',
       dataIndex: 'messageContent',
-      render: (value) => (
-        <div style={{ textAlign: 'left', whiteSpace: 'pre-line' }}>
-          {value}
-        </div>
-      ),
+      render: value => <TextAreaEllipsis value={value} length={20} />,
       align: 'center',
     },
     {
       title: '接收人',
       dataIndex: 'mailAcceptUsers',
-      render: (value) => value && value.length > 0 && (
-        <div style={{ textAlign: 'left' }}>
-          站内信：
-          <Ellipsis length={20} tooltip>
-            {value.map(({ accept_user_name, status }) => `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`).join('，')}
-          </Ellipsis>
-        </div>
-      ),
+      render: value =>
+        value &&
+        value.length > 0 && (
+          <TextAreaEllipsis
+            value={`站内信：${value
+              .map(
+                ({ accept_user_name, status }) =>
+                  `${accept_user_name}（${+status === 1 ? '未读' : '已读'}）`
+              )
+              .join('，')}`}
+            length={20}
+          />
+        ),
       align: 'center',
     },
-  ])
+  ];
 
   render() {
+    const {
+      location: { query },
+    } = this.props;
     const props = {
       fields: this.getFields,
       columns: this.getColumns,
       transform: TRANSFORM,
+      initialValues: query.majorHazard
+        ? {
+            majorHazard: query.majorHazard,
+          }
+        : null,
       ...this.props,
     };
 
-    return (
-      <TablePage
-        {...props}
-      />
-    );
+    return <TablePage {...props} />;
   }
 }

@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Icon } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -229,7 +231,7 @@ export default class VehicleDetail extends PureComponent {
           onClick={this.handleCloseImg}
           style={{ display: showImg ? 'block' : 'none' }}
         >
-          <Icon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
+          <LegacyIcon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
           <img
             className={styles.imgStyle}
             src={picList.map(item => item.webUrl).join('')}

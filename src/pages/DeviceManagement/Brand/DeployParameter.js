@@ -1,8 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Table,
   Divider,
   Popconfirm,

@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Tree, Icon, Spin } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Tree, Spin } from 'antd';
 
 const { TreeNode } = Tree;
 
@@ -32,7 +33,7 @@ function renderTreeNodes(data, searchValue) {
     if (item.children) {
       return (
         <TreeNode
-          icon={<Icon type="folder" />}
+          icon={<LegacyIcon type="folder" />}
           title={title}
           key={item.id}
           dataRef={item}
@@ -44,7 +45,7 @@ function renderTreeNodes(data, searchValue) {
     }
     return (
       <TreeNode
-        icon={<Icon type="folder" />}
+        icon={<LegacyIcon type="folder" />}
         title={title}
         key={item.id}
         dataRef={item}

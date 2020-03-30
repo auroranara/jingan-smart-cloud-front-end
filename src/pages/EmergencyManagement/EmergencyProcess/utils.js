@@ -1,17 +1,7 @@
 import React, { Fragment } from 'react';
 import Link from 'umi/link';
 import moment from 'moment';
-import {
-  DatePicker,
-  Input,
-  message,
-  Popconfirm,
-  Select,
-  Divider,
-  Upload,
-  Button,
-  Icon,
-} from 'antd';
+import { DatePicker, Input, message, Popconfirm, Select, Divider, Upload, Button } from 'antd';
 
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import styles from './styles.less';

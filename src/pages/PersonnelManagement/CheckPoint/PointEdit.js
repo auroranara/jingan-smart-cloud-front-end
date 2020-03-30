@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import router from 'umi/router';
-import { Button, Col, Form, Icon, Input, Row, Upload } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Col, Input, Row, Upload } from 'antd';
 
 import styles from './CompanyList.less';
 import SearchSelect from '@/jingan-components/SearchSelect';
@@ -163,7 +165,7 @@ export default class PointEdit extends PureComponent {
               headers={{ 'JA-Token': getToken() }}
             >
               <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                <Icon type="plus" style={{ fontSize: '32px' }} />
+                <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                 <div style={{ marginTop: '8px' }}>点击上传</div>
               </Button>
             </Upload>
@@ -175,6 +177,6 @@ export default class PointEdit extends PureComponent {
           {btn}
         </Form.Item>
       </Form>
-    )
+    );
   }
 }

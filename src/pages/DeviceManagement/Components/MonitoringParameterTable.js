@@ -1,15 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Form,
-  Table,
-  Button,
-  Modal,
-  Input,
-  Select,
-  Col,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Table, Button, Modal, Input, Select, Row, Col } from 'antd';
 import HistoryModal from '@/pages/DeviceManagement/Components/ParameterHistoryModal';
 
 const FormItem = Form.Item;
@@ -115,43 +108,45 @@ const RenderAlarmStrategyModal = Form.create()(props => {
             padding: '20px 20px 0 20px',
           }}>
             <Form>
-              <Col span={9}>
-                <FormItem>
-                  <Select placeholder="请选择"
-                    style={{ width: '100%' }}
-                    value={row.warnLevel && row.condition ? `${row.condition} ${row.warnLevel}` : undefined}
-                    onChange={(value) => onSelectChange(value, row, i)}
-                    allowClear
-                    getPopupContainer={() => document.querySelector('.ant-modal-content')}
-                  >
-                    {alarmTypes.map(({ label, key, condition, warnLevel }) => (
-                      <Select.Option
-                        value={key}
-                        key={key}
-                        disabled={alarmStrategy.some(item => item.warnLevel === warnLevel && item.condition === condition)}
-                      >
-                        {label}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col span={9} offset={1}>
-                <FormItem>
-                  <Input
-                    style={{ width: '100%' }}
-                    placeholder="请输入"
-                    addonAfter={paramUnit || null}
-                    value={row.limitValue}
-                    onChange={(e) => onInputChange(numberReg.test(e.target.value) ? e.target.value : row.limitValue, row, i)}
-                  />
-                </FormItem>
-              </Col>
-              <Col span={3} offset={1}>
-                <FormItem>
-                  <a onClick={() => handleDel(i)}>删除</a>
-                </FormItem>
-              </Col>
+              <Row>
+                <Col span={9}>
+                  <FormItem>
+                    <Select placeholder="请选择"
+                      style={{ width: '100%' }}
+                      value={row.warnLevel && row.condition ? `${row.condition} ${row.warnLevel}` : undefined}
+                      onChange={(value) => onSelectChange(value, row, i)}
+                      allowClear
+                      getPopupContainer={() => document.querySelector('.ant-modal-content')}
+                    >
+                      {alarmTypes.map(({ label, key, condition, warnLevel }) => (
+                        <Select.Option
+                          value={key}
+                          key={key}
+                          disabled={alarmStrategy.some(item => item.warnLevel === warnLevel && item.condition === condition)}
+                        >
+                          {label}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </FormItem>
+                </Col>
+                <Col span={9} offset={1}>
+                  <FormItem>
+                    <Input
+                      style={{ width: '100%' }}
+                      placeholder="请输入"
+                      addonAfter={paramUnit || null}
+                      value={row.limitValue}
+                      onChange={(e) => onInputChange(numberReg.test(e.target.value) ? e.target.value : row.limitValue, row, i)}
+                    />
+                  </FormItem>
+                </Col>
+                <Col span={3} offset={1}>
+                  <FormItem>
+                    <a onClick={() => handleDel(i)}>删除</a>
+                  </FormItem>
+                </Col>
+              </Row>
             </Form>
           </div>
         ))}

@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import styles from './AlarmHistory.less';
-import { Icon, Row, Col, Spin } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col, Spin } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -60,13 +61,13 @@ export default class AlarmHistory extends PureComponent {
           </div>
           <div className={styles.location}>
             <span>
-              <Icon type="environment" theme="outlined" />
+              <LegacyIcon type="environment" theme="outlined" />
               {item.area}{item.area && item.location && '：'}{item.location}
             </span>
           </div>
         </div>
       </Col>
-    ))
+    ));
   }
   render() {
     const {
@@ -86,7 +87,7 @@ export default class AlarmHistory extends PureComponent {
               <div className={styles.sectionTitleIcon} />
               {title}
               <div className={styles.iconClose}>
-                <Icon onClick={handleClose} className={styles.icon} type="close" theme="outlined" />
+                <LegacyIcon onClick={handleClose} className={styles.icon} type="close" theme="outlined" />
               </div>
             </div>
             <Row className={styles.sectionFilter}>
@@ -127,6 +128,6 @@ export default class AlarmHistory extends PureComponent {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }

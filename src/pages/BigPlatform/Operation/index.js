@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { notification, Icon } from 'antd';
+import { notification } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';

@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Spin } from 'antd';
 import moment from 'moment';
 import router from "umi/router";
 import { Map, Marker } from 'react-amap';

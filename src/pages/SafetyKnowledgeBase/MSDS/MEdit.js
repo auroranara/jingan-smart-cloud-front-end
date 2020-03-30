@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 // import router from 'umi/router';
-import { Button, Card, Form, Icon, Popover } from 'antd';
+import { Button, Card, Popover } from 'antd';
 
 import styles1 from '@/pages/BaseInfo/Company/Company.less';
 import FooterToolbar from '@/components/FooterToolbar';
@@ -239,7 +241,7 @@ export default class MEdit extends PureComponent {
       }
       return (
         <li key={key} className={styles1.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles1.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles1.errorIcon} />
           <div className={styles1.errorMessage}>{errors[key][0]}</div>
           <div className={styles1.errorField}>{this.fieldLabels[key]}</div>
         </li>
@@ -254,7 +256,7 @@ export default class MEdit extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" />
+          <LegacyIcon type="exclamation-circle" />
           {errorCount}
         </Popover>
       </span>

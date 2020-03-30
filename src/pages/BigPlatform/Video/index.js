@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Icon, notification } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { notification } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from './HLSSource.js';
@@ -17,7 +18,7 @@ const LOADING_STYLE = {
 };
 const LOADING_COMPONENT = (
   <div className={styles.loadingContainer}>
-    <Icon type="loading" style={LOADING_STYLE} />
+    <LegacyIcon type="loading" style={LOADING_STYLE} />
   </div>
 );
 

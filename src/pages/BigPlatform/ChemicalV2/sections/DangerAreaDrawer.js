@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Carousel, Icon, Modal, Table, Spin } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Carousel, Modal, Table, Spin } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerAreaDrawer.less';
 
@@ -180,10 +181,10 @@ export default class KeyPoints extends PureComponent {
         footer={
           this.cardModalList.length > 1 && [
             <div className={styles.switchBtn} style={{ float: 'left' }} onClick={this.handlePrev}>
-              <Icon type="left" />
+              <LegacyIcon type="left" />
             </div>,
             <div className={styles.switchBtn} onClick={this.handleNext}>
-              <Icon type="right" />
+              <LegacyIcon type="right" />
             </div>,
           ]
         }
@@ -471,7 +472,7 @@ export default class KeyPoints extends PureComponent {
                             }}
                           >
                             {label}
-                            <Icon type="right" className={styles.rightIcon} />
+                            <LegacyIcon type="right" className={styles.rightIcon} />
                             {/* <span className={styles.tip}>{tip}</span> */}
                           </div>
                         ) : null;
@@ -491,7 +492,7 @@ export default class KeyPoints extends PureComponent {
                     >
                       可燃气体
                       <div className={styles.extra}>
-                        <Icon type="right" className={styles.rightIcon} />
+                        <LegacyIcon type="right" className={styles.rightIcon} />
                       </div>
                     </div>
                   </div>
@@ -508,7 +509,7 @@ export default class KeyPoints extends PureComponent {
                     >
                       有毒气体
                       <div className={styles.extra}>
-                        <Icon type="right" className={styles.rightIcon} />
+                        <LegacyIcon type="right" className={styles.rightIcon} />
                       </div>
                     </div>
                   </div>
@@ -537,7 +538,7 @@ export default class KeyPoints extends PureComponent {
                           >
                             {label}
                             {/* <span className={styles.tagValue}>({cardLists[index].length})</span> */}
-                            {clickable && <Icon type="right" className={styles.rightIcon} />}
+                            {clickable && <LegacyIcon type="right" className={styles.rightIcon} />}
                           </div>
                         );
                       })}
@@ -566,7 +567,7 @@ export default class KeyPoints extends PureComponent {
                           >
                             {label}
                             <span className={styles.tagValue}>({cardLists[index].length})</span>
-                            {clickable && <Icon type="right" className={styles.rightIcon} />}
+                            {clickable && <LegacyIcon type="right" className={styles.rightIcon} />}
                           </div>
                         );
                       })}

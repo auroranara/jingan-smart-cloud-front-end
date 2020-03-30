@@ -876,4 +876,15 @@ export default {
     review: 'safetyProductionRegulation.checkListMaintenance.review',
     publish: 'safetyProductionRegulation.checkListMaintenance.publish',
   },
+  // 电子巡检
+  electronicInspection: {
+    // 生产区域
+    productionArea: {
+      list: 'electronicInspection.productionArea.listView',
+      add: 'electronicInspection.productionArea.add',
+      edit: 'electronicInspection.productionArea.edit',
+      delete: 'electronicInspection.productionArea.delete',
+      view: 'electronicInspection.productionArea.view',
+    },
+  },
 };

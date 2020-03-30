@@ -1,17 +1,7 @@
 import { Component, Fragment } from 'react';
-import {
-  Form,
-  Modal,
-  Table,
-  Button,
-  Row,
-  Col,
-  Input,
-  Divider,
-  Card,
-  Select,
-  message,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Table, Button, Row, Col, Input, Divider, Card, Select, message } from 'antd';
 import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
 import { connect } from 'dva';
 import router from 'umi/router';

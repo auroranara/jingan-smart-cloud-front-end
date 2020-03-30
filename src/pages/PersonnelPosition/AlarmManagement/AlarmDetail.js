@@ -1,6 +1,8 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Checkbox, Form, Spin, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Checkbox, Spin, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ImageDraw from '@/components/ImageDraw';

@@ -1,7 +1,8 @@
 import { Component, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -11,7 +12,6 @@ import {
   Radio,
   DatePicker,
   Upload,
-  Icon,
   Tooltip,
 } from 'antd';
 import { connect } from 'dva';
@@ -29,6 +29,10 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '@/pages/DeviceManagement/NewSensor/AddSensor.less';
+import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor.png';
+import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-monitor-gray.png';
+import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor-gray.png';
+import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor-active.png';
 
 const FormItem = Form.Item;
 
@@ -42,13 +46,23 @@ const FOLDER = 'monitor';
 
 @Form.create()
 @connect(
-  ({ sensor, device, riskPointManage, buildingsInfo, personnelPosition, user, loading }) => ({
+  ({
+    sensor,
+    device,
+    riskPointManage,
+    buildingsInfo,
+    personnelPosition,
+    user,
+    chemical,
+    loading,
+  }) => ({
     sensor,
     device,
     personnelPosition,
     riskPointManage,
     buildingsInfo,
     user,
+    chemical,
     companyLoading: loading.effects['sensor/fetchModelList'],
   })
 )
@@ -71,10 +85,9 @@ export default class AddMonitoringDevice extends Component {
   componentDidMount () {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
+      match: { params: { id } },
       form: { setFieldsValue },
+      user: { isCompany, currentUser = {} },
     } = this.props;
     // 获取监测设备类型
     this.fetchMonitoringDeviceTypes();
@@ -131,9 +144,10 @@ export default class AddMonitoringDevice extends Component {
             this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
           buildingId &&
             this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+          companyId && this.fetchMarkers(companyId);
         },
       });
-    } else { setFieldsValue({ isShow: '1' }) }
+    }
   }
 
   /**
@@ -148,6 +162,15 @@ export default class AddMonitoringDevice extends Component {
   fetchMonitoringDeviceTypes = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'device/fetchMonitoringDeviceTypes' });
+  };
+
+  // 获取其他设备位置
+  fetchMarkers = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'chemical/fetchMonitorEquipment',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+    });
   };
 
   /**
@@ -194,8 +217,9 @@ export default class AddMonitoringDevice extends Component {
     this.setState({ selectedCompany, companyModalVisible: false });
     setFieldsValue({ companyId });
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+    this.fetchMarkers(companyId);
     setTimeout(() => {
-      setFieldsValue({ locationType: 0 });
+      setFieldsValue({ locationType: 0, isShow: '1' });
     }, 0);
   };
 
@@ -289,9 +313,10 @@ export default class AddMonitoringDevice extends Component {
    */
   handleRefreshBuilding = (weatherFetch = false) => {
     const {
-      form: { setFieldsValue, getFieldValue },
+      form: { setFieldsValue },
     } = this.props;
-    const companyId = getFieldValue('companyId');
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany ? selectedCompany.id : undefined;
     // 清空选择建筑物和楼层
     setFieldsValue({ buildingId: undefined, floorId: undefined });
     // 获取建筑物下拉 清空楼层下拉
@@ -440,6 +465,7 @@ export default class AddMonitoringDevice extends Component {
           floors = [], // 楼层列表
         },
       },
+      chemical: { monitorEquipment = [] },
       // riskPointManage: {
       //   imgData: { list: imgList = [] },
       // },
@@ -561,7 +587,7 @@ export default class AddMonitoringDevice extends Component {
                 className={styles.uploadList}
               >
                 <Button>
-                  <Icon type={uploading ? 'loading' : 'upload'} /> 上传
+                  <LegacyIcon type={uploading ? 'loading' : 'upload'} /> 上传
                 </Button>
               </Upload>
             </FormItem>
@@ -583,7 +609,7 @@ export default class AddMonitoringDevice extends Component {
                   <Fragment>
                     <FormItem label="所属建筑物楼层" {...formItemLayout}>
                       {getFieldDecorator('buildingFloor')(
-                        <Fragment>
+                        <Row>
                           <Col span={5} className={styles.mr10}>
                             {getFieldDecorator('buildingId', {})(
                               <Select
@@ -620,18 +646,20 @@ export default class AddMonitoringDevice extends Component {
                             <Button
                               onClick={() => this.handleRefreshBuilding(true)}
                               className={styles.mr10}
+                              style={{ marginTop: 4 }}
                             >
-                              <Icon type="reload" />
+                              <LegacyIcon type="reload" />
                             </Button>
                           </Tooltip>
                           <AuthButton
                             onClick={this.jumpToBuildingManagement}
                             code={codesMap.company.buildingsInfo.add}
                             type="primary"
+                            style={{ marginTop: 4 }}
                           >
                             新增建筑物楼层
                           </AuthButton>
-                        </Fragment>
+                        </Row>
                       )}
                     </FormItem>
                     <FormItem label="详细位置" {...formItemLayout}>
@@ -670,7 +698,20 @@ export default class AddMonitoringDevice extends Component {
                     新增
                   </Button>
                   <FlatPic {...FlatPicProps} /> */}
-                  {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
+                  {getFieldDecorator('mapLocation')(
+                    <MapMarkerSelect
+                      companyId={companyId}
+                      markerList={monitorEquipment}
+                      otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
+                      markerOption={{ url: MarkerImg, size: 36 }}
+                      markerId={id}
+                      legend={{
+                        label: '其他设备',
+                        icon: MarkerGrayImg,
+                        activeIcon: MarkerActiveImg,
+                      }}
+                    />
+                  )}
                 </FormItem>
                 <FormItem label="该点位是否在化工安全生产驾驶舱显示" {...formItemLayout}>
                   {getFieldDecorator('isShow')(
@@ -684,7 +725,7 @@ export default class AddMonitoringDevice extends Component {
             </Card>
           </Fragment>
         )}
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button
             className={styles.mr10}
             onClick={() => {

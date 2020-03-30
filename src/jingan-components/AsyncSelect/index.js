@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AutoComplete, Spin } from 'antd';
+import { AutoComplete, Spin, Select } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 
@@ -65,6 +65,8 @@ export default class AsyncSelect extends Component {
       onChange,
       onSelect,
       fieldNames,
+      getList,
+      params,
     } = this.props;
     const { key: k } = { ...FIELDNAMES, ...fieldNames };
     const { key, label } = value || {};
@@ -72,6 +74,7 @@ export default class AsyncSelect extends Component {
     if (key !== label) {
       onSelect && onSelect(list.find(item => item[k] === key));
     }
+    getList({ ...params });
   };
 
   handleSearch = value => {
@@ -84,16 +87,16 @@ export default class AsyncSelect extends Component {
     });
   };
 
-  handleBlur = value => {
-    if (value) {
-      const { key, label } = value;
-      if (key === label) {
-        const { onChange, getList, params } = this.props;
-        onChange && onChange();
-        getList(params);
-      }
-    }
-  };
+  // handleBlur = value => {
+  //   if (value) {
+  //     const { key, label } = value;
+  //     if (key === label) {
+  //       const { onChange, getList, params } = this.props;
+  //       onChange && onChange();
+  //       getList(params);
+  //     }
+  //   }
+  // };
 
   render() {
     const {
@@ -108,28 +111,53 @@ export default class AsyncSelect extends Component {
       fieldNames,
     } = this.props;
     const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
+    console.log(list);
+    console.log(loading);
+    console.log(fieldNames);
 
     return type !== 'span' ? (
-      <AutoComplete
-        className={className}
-        style={style}
-        mode="combobox"
+      // <AutoComplete
+      //   className={className}
+      //   style={style}
+      //   mode="combobox"
+      //   labelInValue
+      //   value={value}
+      //   onChange={this.handleChange}
+      //   optionLabelProp="children"
+      //   placeholder={placeholder}
+      //   defaultActiveFirstOption={false}
+      //   filterOption={false}
+      //   onSearch={this.debouncedHandleSearch}
+      //   onBlur={this.handleBlur}
+      //   notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
+      //   disabled={disabled}
+      // >
+      //   {list.map(({ [k]: key, [v]: value }) => (
+      //     <Option key={key}>{value}</Option>
+      //   ))}
+      // </AutoComplete>
+      <Select
+        allowClear
         labelInValue
+        showSearch
+        showArrow={false}
         value={value}
+        style={style}
+        className={className}
         onChange={this.handleChange}
-        optionLabelProp="children"
+        // optionLabelProp="children"
         placeholder={placeholder}
         defaultActiveFirstOption={false}
         filterOption={false}
         onSearch={this.debouncedHandleSearch}
         onBlur={this.handleBlur}
-        notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
+        // notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
         disabled={disabled}
       >
         {list.map(({ [k]: key, [v]: value }) => (
           <Option key={key}>{value}</Option>
         ))}
-      </AutoComplete>
+      </Select>
     ) : (
       <span>{value && value.label}</span>
     );

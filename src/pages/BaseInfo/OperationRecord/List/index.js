@@ -3,6 +3,7 @@ import { Input } from 'antd';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
+import TextAreaEllipsis from '@/jingan-components/View/TextAreaEllipsis';
 import TablePage from '@/templates/TablePage';
 import moment from 'moment';
 
@@ -13,8 +14,8 @@ export const TYPES = [
   { key: '3', value: '生产装置' },
   { key: '4', value: '特种设备' },
 ];
-const TRANSFORM = (data) => {
-  const { range: [startDate, endDate]=[], ...rest } = data || {};
+const TRANSFORM = data => {
+  const { range: [startDate, endDate] = [], ...rest } = data || {};
   return {
     ...rest,
     startDate: startDate && startDate.format('YYYY-MM-DD'),
@@ -23,17 +24,19 @@ const TRANSFORM = (data) => {
 };
 
 export default class OperationRecordList extends Component {
-  getFields = ({
-    unitId,
-  }) => ([
-    ...(!unitId ? [
-      {
-        id: 'companyName',
-        label: '单位名称',
-        transform: value => value.trim(),
-        render: ({ handleSearch }) => <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />,
-      },
-    ] : []),
+  getFields = ({ unitId }) => [
+    ...(!unitId
+      ? [
+          {
+            id: 'companyName',
+            label: '单位名称',
+            transform: value => value.trim(),
+            render: ({ handleSearch }) => (
+              <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
+            ),
+          },
+        ]
+      : []),
     {
       id: 'equipType',
       label: '设备设施类型',
@@ -47,32 +50,32 @@ export default class OperationRecordList extends Component {
       //   sm: 24,
       //   xs: 24,
       // },
-      render: () => <DatePickerOrSpan placeholder={['开始时间', '结束时间']} allowClear type="RangePicker" style={{ width: '100%' }} />,
-    },
-  ])
-
-  getAction = ({
-    renderAddButton,
-  }) => (
-    <Fragment>
-      {renderAddButton()}
-    </Fragment>
-  )
-
-  getColumns = ({
-    unitId,
-    list,
-    renderDetailButton,
-    renderEditButton,
-    renderDeleteButton,
-  }) => ([
-    ...(!unitId ? [
-      {
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
+      render: () => (
+        <DatePickerOrSpan
+          placeholder={['开始时间', '结束时间']}
+          allowClear
+          type="RangePicker"
+          style={{ width: '100%' }}
+        />
+      ),
+      options: {
+        initialValue: [],
       },
-    ] : []),
+    },
+  ];
+
+  getAction = ({ renderAddButton }) => <Fragment>{renderAddButton()}</Fragment>;
+
+  getColumns = ({ unitId, list, renderDetailButton, renderEditButton, renderDeleteButton }) => [
+    ...(!unitId
+      ? [
+          {
+            title: '单位名称',
+            dataIndex: 'companyName',
+            align: 'center',
+          },
+        ]
+      : []),
     {
       title: '设备设施类型',
       dataIndex: 'equipType',
@@ -99,7 +102,7 @@ export default class OperationRecordList extends Component {
     {
       title: '运维评价',
       dataIndex: 'operaEvaluation',
-      render: value => <InputOrSpan value={value} type="span" style={{ padding: 0, maxWidth: 256 }} />,
+      render: value => <TextAreaEllipsis value={value} length={20} />,
       align: 'center',
     },
     {
@@ -116,7 +119,7 @@ export default class OperationRecordList extends Component {
       ),
       align: 'center',
     },
-  ])
+  ];
 
   render() {
     const props = {
@@ -127,10 +130,6 @@ export default class OperationRecordList extends Component {
       ...this.props,
     };
 
-    return (
-      <TablePage
-        {...props}
-      />
-    );
+    return <TablePage {...props} />;
   }
 }

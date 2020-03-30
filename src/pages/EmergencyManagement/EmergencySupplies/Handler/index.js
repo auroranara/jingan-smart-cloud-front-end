@@ -1,7 +1,8 @@
 import { PureComponent, Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -11,7 +12,6 @@ import {
   Col,
   message,
   InputNumber,
-  Icon,
   Cascader,
 } from 'antd';
 import { connect } from 'dva';
@@ -346,7 +346,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
           </Button>

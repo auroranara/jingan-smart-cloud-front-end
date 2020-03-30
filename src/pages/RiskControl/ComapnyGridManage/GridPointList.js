@@ -1,19 +1,7 @@
 import React, { PureComponent } from 'react';
-import {
-  Form,
-  List,
-  Card,
-  Button,
-  Input,
-  message,
-  BackTop,
-  Spin,
-  Col,
-  Row,
-  Select,
-  Icon,
-  Modal,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { List, Card, Button, Input, message, BackTop, Spin, Col, Row, Select, Modal } from 'antd';
 // import router from 'umi/router';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -331,7 +319,7 @@ export default class GridPointList extends PureComponent {
                         top: '12px',
                       }}
                     >
-                      <Icon type="close" />
+                      <LegacyIcon type="close" />
                     </AuthButton>
                   }
                 >
@@ -410,7 +398,7 @@ export default class GridPointList extends PureComponent {
           style={{ display: showImg ? 'block' : 'none', position: 'absolute' }}
           onClick={this.handleCloseImg}
         >
-          <Icon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
+          <LegacyIcon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
           <QRCode
             className={styles.qrcode}
             size={200}

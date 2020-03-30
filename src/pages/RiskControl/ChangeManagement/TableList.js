@@ -1,11 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Empty, Form, Input, Modal, Table, Radio, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Empty, Input, Modal, Table, Radio, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
+import styles2 from '@/components/ToolBar/index.less';
 import { PAGE_SIZE } from '../ChangeWarning/utils';
 import { BREADCRUMBLIST, STATUS_MAP, STYLE, getSearchFields } from './utils';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
@@ -148,7 +151,7 @@ export default class TableList extends PureComponent {
         onOk={this.handleApproveOk}
         onCancel={e => this.changeVisible('approval', false)}
       >
-        <Form >
+        <Form className={styles2.form}>
           <FormItem label="状态">
             {getFieldDecorator('status', {
               rules: [{ required: true, message: '请选择审批结果' }],
@@ -280,8 +283,8 @@ export default class TableList extends PureComponent {
         dataIndex: 'dataEntity',
         key: 'dataEntity',
         // render: c => <div style={{ whiteSpace: 'pre-wrap' }}>{c.replace(/\/r\/n/g, '\n')}</div>,
-        render: (txt, { dataId }) => (
-          <a href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}`} target="_blank" rel="noopener noreferrer">{txt}</a>
+        render: (txt, { dataId, companyId }) => (
+          <a href={`${window.publicPath}#/facility-management/special-equipment/edit/${dataId}?unitId=${companyId}`} target="_blank" rel="noopener noreferrer">{txt}</a>
         ),
       },
       {
@@ -317,7 +320,7 @@ export default class TableList extends PureComponent {
         fixed: 'right',
         render: (dataId, { id, status, isEvaluate }) => {
           return status === '1'
-            ? null
+            ? <span style={{ color: 'grey', cursor: 'not-allowed' }}>审批</span>
             : <AuthSpan onClick={isEvaluate === '0' ? this.showEvaluate(id) : this.showApproval(id)} style={STYLE} code={codes.riskControl.changeManagement.approve}>审批</AuthSpan>;
         },
       },

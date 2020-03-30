@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Card,
   Button,
   DatePicker,
@@ -10,12 +11,11 @@ import {
   Input,
   Select,
   message,
-  Icon,
   Popover,
   Tree,
   TreeSelect,
   Spin,
-  AutoComplete,
+  // AutoComplete,
   Checkbox,
   Table,
   Tabs,
@@ -1218,7 +1218,7 @@ export default class AccountManagementEdit extends PureComponent {
                   headers={{ 'JA-Token': getToken() }}
                 >
                   <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                     <div style={{ marginTop: '8px' }}>点击上传</div>
                   </Button>
                 </Upload>
@@ -1236,7 +1236,7 @@ export default class AccountManagementEdit extends PureComponent {
                   headers={{ 'JA-Token': getToken() }}
                 >
                   <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                    <Icon type="plus" style={{ fontSize: '32px' }} />
+                    <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                     <div style={{ marginTop: '8px' }}>点击上传</div>
                   </Button>
                 </Upload>
@@ -1289,16 +1289,35 @@ export default class AccountManagementEdit extends PureComponent {
                         },
                       ],
                     })(
-                      <AutoComplete
+                      // <AutoComplete
+                      //   labelInValue
+                      //   mode="combobox"
+                      //   disabled={isUnitUser}
+                      //   optionLabelProp="children"
+                      //   placeholder="请选择所属单位"
+                      //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      //   onSearch={this.handleUnitIdChange}
+                      //   onSelect={this.handleDataPermissions}
+                      //   onBlur={this.handleUnitIdBlur}
+                      //   filterOption={false}
+                      // >
+                      //   {unitIds.map(item => (
+                      //     <Option value={item.id} key={item.id}>
+                      //       {item.name}
+                      //     </Option>
+                      //   ))}
+                      // </AutoComplete>
+                      <Select
+                        allowClear
                         labelInValue
-                        mode="combobox"
+                        showSearch
+                        showArrow={false}
                         disabled={isUnitUser}
-                        optionLabelProp="children"
                         placeholder="请选择所属单位"
                         notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                         onSearch={this.handleUnitIdChange}
                         onSelect={this.handleDataPermissions}
-                        onBlur={this.handleUnitIdBlur}
+                        // onBlur={this.handleUnitIdBlur}
                         filterOption={false}
                       >
                         {unitIds.map(item => (
@@ -1306,7 +1325,7 @@ export default class AccountManagementEdit extends PureComponent {
                             {item.name}
                           </Option>
                         ))}
-                      </AutoComplete>
+                      </Select>
                     )}
                   </Form.Item>
                 </Col>
@@ -1515,10 +1534,26 @@ export default class AccountManagementEdit extends PureComponent {
                   initialValue:
                     treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
                 })(
-                  <AutoComplete
-                    mode="combobox"
+                  // <AutoComplete
+                  //   mode="combobox"
+                  //   labelInValue
+                  //   optionLabelProp="children"
+                  //   placeholder="请选择单位名称"
+                  //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                  //   filterOption={false}
+                  //   disabled
+                  // >
+                  //   {[].map(item => (
+                  //     <Option value={item.id} key={item.id}>
+                  //       {item.name}
+                  //     </Option>
+                  //   ))}
+                  // </AutoComplete>
+                  <Select
+                    allowClear
                     labelInValue
-                    optionLabelProp="children"
+                    showSearch
+                    showArrow={false}
                     placeholder="请选择单位名称"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     filterOption={false}
@@ -1529,7 +1564,7 @@ export default class AccountManagementEdit extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </AutoComplete>
+                  </Select>
                 )}
                 <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
               </Form.Item>
@@ -1639,7 +1674,7 @@ export default class AccountManagementEdit extends PureComponent {
       }
       return (
         <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles.errorIcon} />
           <div className={styles.errorMessage}>{errors[key][0]}</div>
           <div className={styles.errorField}>{fieldLabels[key]}</div>
         </li>
@@ -1654,7 +1689,7 @@ export default class AccountManagementEdit extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" />
+          <LegacyIcon type="exclamation-circle" />
           {errorCount}
         </Popover>
       </span>

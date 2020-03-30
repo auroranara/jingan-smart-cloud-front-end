@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { message, List, Card, Icon, Carousel, notification } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { message, List, Card, Carousel, notification } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import CustomEmpty from '@/jingan-components/CustomEmpty';
@@ -236,7 +237,7 @@ export default class GasRealTime extends Component {
         <div className={styles.paramValueWrapper}>
           <div className={styles.alarmParamValue}>{realValue}</div>
           <div className={styles.paramTrendWrapper}>
-            <Icon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
+            <LegacyIcon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
             <div className={styles.paramTrendValue}>{toFixed(Math.abs(realValue - limitValue))}</div>
             <div className={styles.paramTrendDescription}>超过预警阈值</div>
           </div>
@@ -247,7 +248,7 @@ export default class GasRealTime extends Component {
         <div className={styles.paramValueWrapper}>
           <div className={styles.alarmParamValue}>{realValue}</div>
           <div className={styles.paramTrendWrapper}>
-            <Icon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
+            <LegacyIcon className={styles.paramTrendIcon} type="caret-up" style={{ color: '#f5222d' }} />
             <div className={styles.paramTrendValue}>{toFixed(Math.abs(realValue - limitValue))}</div>
             <div className={styles.paramTrendDescription}>超过告警阈值</div>
           </div>
@@ -306,7 +307,7 @@ export default class GasRealTime extends Component {
                       </div>
                     </div>
                     <div className={styles.addressWrapper}>
-                      <Icon type="environment" className={styles.addressIcon} title="监测设备地址" />
+                      <LegacyIcon type="environment" className={styles.addressIcon} title="监测设备地址" />
                       <div className={styles.addressValue}>
                         {areaLocation || '暂无数据'}
                         {videoList && videoList.length > 0 && <div className={styles.video} onClick={() => this.showVideo(videoList)} />}

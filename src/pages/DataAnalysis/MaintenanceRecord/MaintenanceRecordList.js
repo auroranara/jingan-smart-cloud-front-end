@@ -1,7 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Form, Card, Button, Input, DatePicker, Table } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, DatePicker, Table } from 'antd';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';

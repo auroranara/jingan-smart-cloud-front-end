@@ -1,16 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import {
-  Card,
-  Table,
-  Form,
-  message,
-  Input,
-  Select,
-  DatePicker,
-  Divider,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Table, message, Input, Select, DatePicker, Divider } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
@@ -77,8 +70,9 @@ export default class TableList extends PureComponent {
     })
   };
 
-  handleReset = () => {
-    this.toobar.props.form.resetFields()
+  handleReset = (vals, form) => {
+    // this.toobar.props.form.resetFields()
+    form.setFieldsValue({ registrationDate: [] });
     this.handleQuery()
   };
 
@@ -126,12 +120,12 @@ export default class TableList extends PureComponent {
       </AuthButton>
     );
     const fields = [ // modify
-      ...isUnit ? [] : [{
+      ...(isUnit ? [] : [{
         id: 'companyName',
         label: '单位名称',
         render: () => <Input placeholder="请输入" allowClear />,
         transform: v => v.trim(),
-      }],
+      }]),
       {
         id: 'projectName',
         label: '项目名称',
@@ -164,13 +158,13 @@ export default class TableList extends PureComponent {
       },
     ];
     const columns = [ // modify
-      ...isUnit ? [] : [{
+      ...(isUnit ? [] : [{
         title: '单位名称',
         dataIndex: 'companyName',
         key: 'companyName',
         align: 'center',
         width: 300,
-      }],
+      }]),
       {
         title: '项目信息',
         dataIndex: 'info',
@@ -243,7 +237,7 @@ export default class TableList extends PureComponent {
         key: 'id',
         fixed: 'right',
         align: 'center',
-        width: 200,
+        width: 120,
         render: (id, row) => {
           return (
             <Fragment>
@@ -282,6 +276,7 @@ export default class TableList extends PureComponent {
           <div className={styles1.container}>
             <Table
               rowKey="id"
+              tableLayout="auto"
               loading={tableLoading}
               columns={columns}
               dataSource={list}

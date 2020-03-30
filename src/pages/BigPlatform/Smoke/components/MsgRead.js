@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import styles from './MsgRead.less';
 import avatar from '@/assets/icon-avatar.png';
@@ -58,7 +58,7 @@ export default class MsgRead extends PureComponent {
           >
             {isMore ? `收起` : `更多`}
             <div style={{ transform: isMore ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
-              <Icon type="double-right" />
+              <LegacyIcon type="double-right" />
             </div>
           </div>
         )}

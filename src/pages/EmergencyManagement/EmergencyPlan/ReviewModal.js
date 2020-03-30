@@ -1,14 +1,7 @@
 import { Component, Fragment } from 'react';
-import {
-  Modal,
-  Input,
-  Form,
-  Upload,
-  Radio,
-  Button,
-  Icon,
-  message,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Input, Upload, Radio, Button, message } from 'antd';
 import { getToken } from '@/utils/authority';
 
 // 上传文件地址
@@ -162,7 +155,7 @@ export default class ReviewModal extends Component {
                   fileList={fileList}
                 >
                   <Button type="primary">
-                    <Icon type={fileUploading ? 'loading' : "upload"} />
+                    <LegacyIcon type={fileUploading ? 'loading' : "upload"} />
                     点击上传
                 </Button>
                 </Upload>
@@ -171,6 +164,6 @@ export default class ReviewModal extends Component {
           </FormItem>
         </Form>
       </Modal>
-    )
+    );
   }
-};
+}

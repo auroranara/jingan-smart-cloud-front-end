@@ -1,8 +1,11 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Form, message, Tooltip, Icon, Input, Divider, Upload } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, message, Tooltip, Input, Divider, Upload } from 'antd';
 import { phoneReg, emailReg } from '@/utils/validate';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import {
@@ -431,14 +434,14 @@ export default class Edit extends PureComponent {
             addonAfter={
               <Fragment>
                 <Tooltip title="复制">
-                  <Icon
+                  <LegacyIcon
                     type="copy"
                     style={{ marginRight: '10px' }}
                     onClick={this.handleCopyCoordinate}
                   />
                 </Tooltip>
                 <Tooltip title="打开地图">
-                  <Icon type="environment" onClick={this.handleShowMap} />
+                  <LegacyIcon type="environment" onClick={this.handleShowMap} />
                 </Tooltip>
               </Fragment>
             }

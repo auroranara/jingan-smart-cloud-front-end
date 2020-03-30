@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Avatar, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Avatar } from 'antd';
 import debounce from 'lodash/debounce';
 import Ellipsis from '../../../../components/Ellipsis';
 
@@ -338,7 +339,7 @@ export default class App extends PureComponent {
             <div
               style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              <Icon
+              <LegacyIcon
                 type="caret-up"
                 style={{
                   fontSize: 18,
@@ -353,7 +354,7 @@ export default class App extends PureComponent {
             <div
               style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              <Icon
+              <LegacyIcon
                 type="caret-down"
                 style={{
                   fontSize: 18,

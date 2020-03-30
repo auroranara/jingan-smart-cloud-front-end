@@ -1,18 +1,19 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
-  Form,
   Input,
   Button,
   Card,
-  Icon,
   Popover,
   DatePicker,
   Select,
   Upload,
   Radio,
   message,
+  Row,
   Col,
   Tooltip,
 } from 'antd';
@@ -320,7 +321,7 @@ export default class StorageEdit extends PureComponent {
   // 清空储罐区
   handleResetArea = () => {
     const { form: { setFieldsValue } } = this.props;
-    setFieldsValue({ tankArea: undefined });
+    setFieldsValue({ tankArea: '' });
     this.setState({ selectedTempKeys: [], selectedTemp: [], selectedArea: [] });
   }
 
@@ -1245,7 +1246,7 @@ export default class StorageEdit extends PureComponent {
                 fileList={uploadPics}
               >
                 <Button>
-                  <Icon type={picUploading ? 'loading' : "upload"} />
+                  <LegacyIcon type={picUploading ? 'loading' : "upload"} />
                   点击上传
                 </Button>
               </Upload>
@@ -1262,7 +1263,7 @@ export default class StorageEdit extends PureComponent {
                 onChange={this.handleUploadFileChange}
               >
                 <Button>
-                  <Icon type={fileUploading ? 'loading' : "upload"} />
+                  <LegacyIcon type={fileUploading ? 'loading' : "upload"} />
                   点击上传
                 </Button>
               </Upload>
@@ -1284,7 +1285,7 @@ export default class StorageEdit extends PureComponent {
                 {getFieldDecorator('buildingFloor', {
                   rules: [{ required: true, validator: this.validateBuildingFloor }],
                 })(
-                  <Fragment>
+                  <Row>
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('buildingId')(
                         <Select placeholder="建筑物" style={{ width: '100%' }} onChange={this.handleSelectBuilding} allowClear>
@@ -1304,18 +1305,19 @@ export default class StorageEdit extends PureComponent {
                       )}
                     </Col>
                     <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
-                      <Button onClick={() => this.handleRefreshBuilding(true)}>
-                        <Icon type="reload" />
+                      <Button onClick={() => this.handleRefreshBuilding(true)} style={{ marginTop: 4 }}>
+                        <LegacyIcon type="reload" />
                       </Button>
                     </Tooltip>
                     <AuthButton
                       onClick={this.jumpToBuildingManagement}
                       code={codesMap.company.buildingsInfo.add}
                       type="primary"
+                      style={{ marginTop: 4 }}
                     >
                       新增建筑物楼层
-                </AuthButton>
-                  </Fragment>
+                    </AuthButton>
+                  </Row>
                 )}
               </FormItem>
               <FormItem label="详细位置" {...formItemLayout}>
@@ -1390,7 +1392,7 @@ export default class StorageEdit extends PureComponent {
       }
       return (
         <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles.errorIcon} />
           <div className={styles.errorMessage}>{errors[key][0]}</div>
           <div className={styles.errorField}>{fieldLabels[key]}</div>
         </li>
@@ -1405,7 +1407,7 @@ export default class StorageEdit extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" style={{ marginRight: '5px' }} />
+          <LegacyIcon type="exclamation-circle" style={{ marginRight: '5px' }} />
           {errorCount}
         </Popover>
       </span>

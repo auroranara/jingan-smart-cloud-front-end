@@ -3,7 +3,9 @@ import { connect } from 'dva';
 // import router from 'umi/router';
 // import Link from 'umi/link';
 import moment from 'moment';
-import { Card, Table, message, Button, Form } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Table, message, Button } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';

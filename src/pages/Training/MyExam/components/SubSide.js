@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import Rectangle from './Rectangle';
 import styles from './SubSide.less';
@@ -25,7 +25,7 @@ export default function SubSide(props) {
   return (
     <div className={styles.container} {...restProps}>
       <h3 onClick={onClick} className={styles.title}>
-        <Icon type={state ? 'minus-square' : 'plus-square'} style={{ marginRight: 10 }} />
+        <LegacyIcon type={state ? 'minus-square' : 'plus-square'} style={{ marginRight: 10 }} />
         {children}（共{quantity}题）
       </h3>
       <div className={styles.rectContainer} style={newStyle}>

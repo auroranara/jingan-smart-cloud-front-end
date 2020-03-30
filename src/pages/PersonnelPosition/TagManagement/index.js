@@ -1,6 +1,8 @@
 import { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Card, Spin, List, message, Form, Row, Col, Input } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Spin, List, message, Row, Col, Input } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from 'components/Ellipsis';

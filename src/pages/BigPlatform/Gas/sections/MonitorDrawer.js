@@ -1,5 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import {
   DrawerContainer,
@@ -30,7 +30,7 @@ const VIDEO_STYLE = {
 
 function DoubleRight(props) {
   return (
-    <Icon
+    <LegacyIcon
       type="double-right"
       style={{ color: '#0FF' }}
     />

@@ -1,7 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Form, Input, Button, Card, Icon, Popover, Select, message, Table } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Card, Popover, Select, message, Table } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
@@ -24,7 +26,7 @@ const addTitle = '新增储罐区';
 const envirTypeList = [
   { key: '1', value: '一类区' },
   { key: '2', value: '二类区' },
-  { key: '3', value: '三类区' },
+  // { key: '3', value: '三类区' },
 ];
 
 const RISKLVL = ['一级', '二级', '三级', '四级'];
@@ -677,7 +679,7 @@ export default class Edit extends PureComponent {
             )}
           </FormItem>
           {cofferAreaVisible && (
-            <FormItem {...formItemLayout} label="围堰所围面积">
+            <FormItem {...formItemLayout} label="围堰所围面积（㎡）">
               {getFieldDecorator('cofferArea', {
                 getValueFromEvent: this.handleTrim,
                 rules: [
@@ -873,7 +875,7 @@ export default class Edit extends PureComponent {
       }
       return (
         <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles.errorIcon} />
           <div className={styles.errorMessage}>{errors[key][0]}</div>
           <div className={styles.errorField}>{fieldLabels[key]}</div>
         </li>
@@ -888,7 +890,7 @@ export default class Edit extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" />
+          <LegacyIcon type="exclamation-circle" />
           {errorCount}
         </Popover>
       </span>

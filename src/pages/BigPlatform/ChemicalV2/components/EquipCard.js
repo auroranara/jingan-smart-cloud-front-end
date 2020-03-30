@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import moment from 'moment';
 // import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './EquipCard.less';
@@ -100,7 +100,7 @@ export default class EquipCard extends PureComponent {
           </div>
           <div>
             <span className={styles.locIcon} style={{ marginRight: '5px' }}>
-              <Icon type="environment" />
+              <LegacyIcon type="environment" />
             </span>
             {areaLocation || '暂无位置数据'}
           </div>

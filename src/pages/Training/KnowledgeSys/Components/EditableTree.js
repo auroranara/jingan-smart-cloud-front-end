@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Spin, Tree, Icon, Button, Form, Input, Popconfirm, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Col, Spin, Tree, Button, Input, Popconfirm, message } from 'antd';
 import styles from './EditableTree.less';
 import { AuthA } from '@/utils/customAuth';
 import buttonCodes from '@/utils/codes';
@@ -97,14 +99,14 @@ class EditableTree extends PureComponent {
               className={styles.nodeBtn}
               onClick={() => this.handleAdd(item)}
             >
-              <Icon type="plus" theme="outlined" />
+              <LegacyIcon type="plus" theme="outlined" />
             </AuthA>
             <AuthA
               code={buttonCodes.training.points.edit}
               className={styles.nodeBtn}
               onClick={() => this.handleEdit(item)}
             >
-              <Icon type="edit" theme="outlined" />
+              <LegacyIcon type="edit" theme="outlined" />
             </AuthA>
             {/* <a className={styles.nodeBtn} onClick={() => this.handleAdd(item)}>
               <Icon type="plus" theme="outlined" />
@@ -122,7 +124,7 @@ class EditableTree extends PureComponent {
               }}
             >
               <AuthA code={buttonCodes.training.points.delete} className={styles.nodeBtn}>
-                <Icon type="delete" theme="outlined" />
+                <LegacyIcon type="delete" theme="outlined" />
               </AuthA>
               {/* <a className={styles.nodeBtn}>
                 <Icon type="delete" theme="outlined" />
@@ -196,10 +198,10 @@ class EditableTree extends PureComponent {
           style={{ width: '450px', display: 'inline-block' }}
         >
           <Row gutter={20}>
-            <Col span={18}>
+            <Col span={16}>
               <FormItem>{getFieldDecorator('name', { initialValue: name })(<Input />)}</FormItem>
             </Col>
-            <Col span={6} style={{ height: '24px' }}>
+            <Col span={8} style={{ height: '24px' }}>
               <Button
                 type="primary"
                 size={'small'}
@@ -255,7 +257,7 @@ class EditableTree extends PureComponent {
       if (item.children && item.children.length > 0) {
         return (
           <TreeNode
-            icon={<Icon type="folder" />}
+            icon={<LegacyIcon type="folder" />}
             title={this.renderNodeTitle(title, item)}
             key={item.id}
             dataRef={item}
@@ -267,7 +269,7 @@ class EditableTree extends PureComponent {
       }
       return (
         <TreeNode
-          icon={<Icon type="folder" />}
+          icon={<LegacyIcon type="folder" />}
           title={this.renderNodeTitle(title, item)}
           key={item.id}
           dataRef={item}

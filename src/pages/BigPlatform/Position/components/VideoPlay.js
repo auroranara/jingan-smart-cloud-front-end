@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Icon, notification, Tree, Input } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { notification, Tree, Input } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from '@/pages/BigPlatform/NewFireControl/components/HLSSource.js';
@@ -25,7 +26,7 @@ const LOADING_STYLE = {
 let dataList = [];
 const LOADING_COMPONENT = (
   <div className={styles.loadingContainer}>
-    <Icon type="loading" style={LOADING_STYLE} />
+    <LegacyIcon type="loading" style={LOADING_STYLE} />
   </div>
 );
 
@@ -200,7 +201,7 @@ class VideoPlay extends Component {
                 key={id}
               >
                 {activeIndex === index && (
-                  <Icon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />
+                  <LegacyIcon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />
                 )}
                 {activeIndex !== index && <span className={styles.iconNone} />}
                 {item.name}
@@ -232,7 +233,7 @@ class VideoPlay extends Component {
           autoExpandParent={autoExpandParent}
           onSelect={this.handleSelectTree}
           onExpand={this.onExpand}
-          switcherIcon={<Icon type="caret-down" style={{ color: 'rgb(39, 135, 255)' }} />}
+          switcherIcon={<LegacyIcon type="caret-down" style={{ color: 'rgb(39, 135, 255)' }} />}
         >
           {this.renderTreeNode(videoList)}
         </Tree>
@@ -273,7 +274,7 @@ class VideoPlay extends Component {
           <span>{tempTitle}</span>
         );
       const icon = selectedKeys.includes(id) ? (
-        <Icon type="caret-right" style={{ color: '#f6b54e' }} />
+        <LegacyIcon type="caret-right" style={{ color: '#f6b54e' }} />
       ) : (
         circle
       );
@@ -477,7 +478,7 @@ class VideoPlay extends Component {
               视频监控
               {/*videoList.length > 0 ? videoList[activeIndex].name : ''*/}
             </span>
-            <Icon type="close" className={styles.iconClose} onClick={this.handleClose} />
+            <LegacyIcon type="close" className={styles.iconClose} onClick={this.handleClose} />
           </div>
         )}
         <div className={styles.videoMain}>

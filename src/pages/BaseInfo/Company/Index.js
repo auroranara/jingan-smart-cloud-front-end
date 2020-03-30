@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import { findDOMNode } from 'react-dom';
 import moment from 'moment';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   List,
   Card,
@@ -11,12 +13,10 @@ import {
   Input,
   Progress,
   Button,
-  Icon,
   Dropdown,
   Menu,
   Avatar,
   Modal,
-  Form,
   DatePicker,
   Select,
 } from 'antd';
@@ -188,7 +188,7 @@ export default class BasicList extends PureComponent {
         }
       >
         <a>
-          更多 <Icon type="down" />
+          更多 <LegacyIcon type="down" />
         </a>
       </Dropdown>
     );
@@ -279,7 +279,7 @@ export default class BasicList extends PureComponent {
             <Button
               type="dashed"
               style={{ width: '100%', marginBottom: 8 }}
-              icon="plus"
+              icon={<LegacyIcon type="plus" />}
               onClick={this.showModal}
               ref={component => {
                 /* eslint-disable */

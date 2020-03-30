@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon, Tooltip } from 'antd'
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip } from 'antd';
 import moment from 'moment';
 import bluePerson from '../imgs/person.png';
 import redPerson from '../imgs/personRed.png';
@@ -503,7 +504,7 @@ export default class Template extends PureComponent {
             {/* 结束时间 */}
             <div className={styles.endTime}>{endTime && moment(endTime).format(timeFormat)}</div>
             {/* 减速按钮 */}
-            <Icon
+            <LegacyIcon
               type="step-backward"
               className={styles.button}
               style={isMinSpeed ? { color: '#999', cursor: 'not-allowed' } : undefined}
@@ -513,7 +514,7 @@ export default class Template extends PureComponent {
             />
             {/* 正在播放时显示暂停按钮，否则显示播放按钮 */}
             {playing ? (
-              <Icon
+              <LegacyIcon
                 type="pause"
                 className={styles.button}
                 onClick={this.handlePause}
@@ -521,7 +522,7 @@ export default class Template extends PureComponent {
                 onMouseLeave={this.hideTooltip}
               />
             ) : (
-              <Icon
+              <LegacyIcon
                 type="caret-right"
                 className={styles.button}
                 onClick={this.handlePlay}
@@ -530,7 +531,7 @@ export default class Template extends PureComponent {
               />
             )}
             {/* 加速按钮 */}
-            <Icon
+            <LegacyIcon
               type="step-forward"
               className={styles.button}
               style={isMaxSpeed ? { color: '#999', cursor: 'not-allowed' } : undefined}

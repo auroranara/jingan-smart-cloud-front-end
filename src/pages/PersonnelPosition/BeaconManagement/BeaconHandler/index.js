@@ -1,13 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Input,
-  Button,
-  Form,
-  Select,
-  Spin,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Button, Select, Spin } from 'antd';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { mapMutations } from '@/utils/utils';

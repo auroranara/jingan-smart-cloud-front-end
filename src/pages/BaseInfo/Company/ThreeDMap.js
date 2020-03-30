@@ -1,5 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Button, Card, Empty, Form, Input, Select, Slider, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Empty, Input, Select, Slider, message } from 'antd';
 import router from 'umi/router';
 
 import styles from './FireControl.less';

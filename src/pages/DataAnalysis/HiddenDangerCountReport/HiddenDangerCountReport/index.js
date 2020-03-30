@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Card, Form, Button, Select, DatePicker, TreeSelect, Radio, Table, Empty, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Select, DatePicker, TreeSelect, Radio, Table, Empty, Spin } from 'antd';
 import Echarts from 'echarts-for-react';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -447,6 +449,7 @@ export default class HiddenDangerCountReport extends PureComponent {
           },
           render: () => (
             <Select
+              allowClear
               placeholder="请选择"
             >
               {countTypeDict.map(({ key, value }) => (
@@ -476,6 +479,7 @@ export default class HiddenDangerCountReport extends PureComponent {
         {
           id: 'createDate',
           label: '创建日期',
+          options: { initialValue: [] },
           render: () => (
             <RangePicker
               key={`1-createDate`}
@@ -513,6 +517,7 @@ export default class HiddenDangerCountReport extends PureComponent {
         {
           id: 'planRectifyDate',
           label: '计划整改日期',
+          options: { initialValue: [] },
           render: () => (
             <RangePicker
               allowClear
@@ -569,6 +574,7 @@ export default class HiddenDangerCountReport extends PureComponent {
         {
           id: 'createDate',
           label: '创建日期',
+          options: { initialValue: [] },
           render: () => {
             let /* mode,  */format;
             if (dateType === '2') {
@@ -623,6 +629,7 @@ export default class HiddenDangerCountReport extends PureComponent {
         {
           id: 'createDate',
           label: '创建日期',
+          options: { initialValue: [] },
           render: () => (
             <RangePicker
               key={`3-createDate`}

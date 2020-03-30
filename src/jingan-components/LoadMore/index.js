@@ -1,5 +1,6 @@
 import React from 'react';
-import { Icon, Tooltip } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip } from 'antd';
 import classNames from 'classnames';
 // 引入样式文件
 import styles from './index.less';
@@ -15,7 +16,7 @@ export default function LoadMore({ className, style, onClick, children, ...restP
           className={styles.button}
           onClick={onClick}
         >
-          {children || <Icon type="double-right" className={styles.buttonIcon} />}
+          {children || <LegacyIcon type="double-right" className={styles.buttonIcon} />}
         </div>
       </Tooltip>
     </div>

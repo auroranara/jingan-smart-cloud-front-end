@@ -2,7 +2,10 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 
-import { Button, Card, Col, Form, Icon, Input, Upload, Select, InputNumber, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+
+import { Button, Card, Col, Input, Upload, Row, Select, InputNumber, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import CompanyModal from '../../../BaseInfo/Company/CompanyModal';
@@ -25,7 +28,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
 const folder = 'buildingsinfo';
 
-const UploadIcon = <Icon type="upload" />;
+const UploadIcon = <LegacyIcon type="upload" />;
 
 const itemLayout = {
   labelCol: {
@@ -503,7 +506,7 @@ export default class BuildingInfoEdit extends PureComponent {
           message: `请选择单位名称`,
         }),
         component: (
-          <div>
+          <Row>
             <Col span={23}>
               {company_Id ? (
                 <div>
@@ -543,7 +546,7 @@ export default class BuildingInfoEdit extends PureComponent {
                 </Button>
               </Col>
             )}
-          </div>
+          </Row>
         ),
       },
       {
@@ -743,34 +746,36 @@ export default class BuildingInfoEdit extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card>
           <Form>
-            {this.renderFormItems(formItems)}
-            {this.renderMoreItems(moreForemItems)}
-            <Col span={24} style={{ marginTop: '40px' }}>
-              <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
-                <Button loading={uploading} type="primary" onClick={this.handleClickValidate}>
-                  确定
-                </Button>
-                {company_Id ? (
-                  <Button
-                    loading={uploading}
-                    href={`#/base-info/buildings-info/detail/${company_Id}?name=${company_name}`}
-                    type="primary"
-                    style={{ marginLeft: '10px' }}
-                  >
-                    返回
+            <Row>
+              {this.renderFormItems(formItems)}
+              {this.renderMoreItems(moreForemItems)}
+              <Col span={24} style={{ marginTop: '40px' }}>
+                <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
+                  <Button loading={uploading} type="primary" onClick={this.handleClickValidate}>
+                    确定
                   </Button>
-                ) : (
-                  <Button
-                    loading={uploading}
-                    href="#/base-info/buildings-info/list"
-                    type="primary"
-                    style={{ marginLeft: '10px' }}
-                  >
-                    返回
-                  </Button>
-                )}
-              </FormItem>
-            </Col>
+                  {company_Id ? (
+                    <Button
+                      loading={uploading}
+                      href={`#/base-info/buildings-info/detail/${company_Id}?name=${company_name}`}
+                      type="primary"
+                      style={{ marginLeft: '10px' }}
+                    >
+                      返回
+                    </Button>
+                  ) : (
+                    <Button
+                      loading={uploading}
+                      href="#/base-info/buildings-info/list"
+                      type="primary"
+                      style={{ marginLeft: '10px' }}
+                    >
+                      返回
+                    </Button>
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
           </Form>
         </Card>
         {this.renderCompanyModal()}

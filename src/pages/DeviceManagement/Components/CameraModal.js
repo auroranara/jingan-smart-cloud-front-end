@@ -1,13 +1,6 @@
-import {
-  Table,
-  Button,
-  Modal,
-  Form,
-  Row,
-  Col,
-  Input,
-  Select,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Table, Button, Modal, Row, Col, Input, Select } from 'antd';
 import { AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 

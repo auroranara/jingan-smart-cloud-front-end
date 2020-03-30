@@ -1,5 +1,19 @@
 import { PureComponent, Fragment } from 'react';
-import { Card, Form, Input, Button, Table, Row, Col, Select, Divider, Modal, message, Popconfirm } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+  Card,
+  Input,
+  Button,
+  Table,
+  Row,
+  Col,
+  Select,
+  Divider,
+  Modal,
+  message,
+  Popconfirm,
+} from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import codes from '@/utils/codes';

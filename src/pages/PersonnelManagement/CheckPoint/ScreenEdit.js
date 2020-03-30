@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import router from 'umi/router';
-import { Button, Col, Form, Input, Row, Select, Switch } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Col, Input, Row, Select, Switch } from 'antd';
 
 import SearchSelect from '@/jingan-components/SearchSelect';
 import { getFieldDecConfig, genOperateCallback, initFormValues, POINT_INDEX, SCREEN_INDEX } from './utils';

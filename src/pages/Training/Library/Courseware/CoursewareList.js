@@ -1,5 +1,23 @@
 import React, { PureComponent } from 'react';
-import { Tag, List, Button, Row, Col, Card, Form, Input, Select, DatePicker, Divider, Popconfirm, Icon, Spin, Drawer, message, Tooltip } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+  Tag,
+  List,
+  Button,
+  Row,
+  Col,
+  Card,
+  Input,
+  Select,
+  DatePicker,
+  Divider,
+  Popconfirm,
+  Spin,
+  Drawer,
+  message,
+  Tooltip,
+} from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -23,7 +41,7 @@ const defaultPageSize = 10;
 
 // 筛选栏grid配置
 const colWrapper = {
-  xl: 12, md: 12, sm: 24, xs: 24,
+  xl: 8, md: 12, sm: 24, xs: 24,
 }
 const statusList = [
   { value: '1', label: '发布' },
@@ -207,7 +225,7 @@ export default class CoursewareList extends PureComponent {
 
   // 预览课件
   handleViewCourseWare = (item) => {
-    const { id, webFileUrl, fileUrl, webVideoCover } = item
+    const { id, webFileUrl, fileUrl, webVideoCover, remarks } = item
     const { dispatch } = this.props
     dispatch({
       type: 'resourceManagement/addReadRecord',
@@ -215,9 +233,10 @@ export default class CoursewareList extends PureComponent {
         trainingId: id,
       },
     })
+
     this.setState({
-      fileSrc: webFileUrl[0],
-      fileType: fileUrl.split('.').pop(),
+      fileSrc: webFileUrl && webFileUrl[0] ? webFileUrl[0] : remarks,
+      fileType: fileUrl ? fileUrl.split('.').pop() : 'mp4',
       drawerVisible: true,
       detail: item,
       coverSrc: webVideoCover && webVideoCover.length > 0 ? webVideoCover[0] : null,
@@ -239,8 +258,8 @@ export default class CoursewareList extends PureComponent {
       user: { currentUser: { permissionCodes } },
     } = this.props
     return (
-      <Row gutter={8}>
-        <Form>
+      <Form>
+        <Row gutter={8}>
           <Col {...colWrapper}>
             <FormItem>
               {getFieldDecorator('name')(
@@ -280,8 +299,8 @@ export default class CoursewareList extends PureComponent {
               <Button disabled={!hasAuthority(addCode, permissionCodes)} onClick={this.handleToAdd} type="primary">新增</Button>
             </FormItem>
           </Col>
-        </Form>
-      </Row>
+        </Row>
+      </Form>
     )
   }
 
@@ -325,15 +344,15 @@ export default class CoursewareList extends PureComponent {
                 <div className={styles.firstLine}>
                   <div className={styles.title}>{item.name}</div>
                   <div className={styles.rightIcons}>
-                    <Icon className={editDisabled(item.status) ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled(item.status) ? () => this.handleToEdit(item.id) : null} />
+                    <LegacyIcon className={editDisabled(item.status) ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled(item.status) ? () => this.handleToEdit(item.id) : null} />
                     <Divider type="vertical" />
-                    <Icon className={styles.icon} type="eye" onClick={() => this.handleViewCourseWare(item)} />
+                    <LegacyIcon className={styles.icon} type="eye" onClick={() => this.handleViewCourseWare(item)} />
                     <Divider type="vertical" />
                     {delDisabled(item.status) ? (
-                      <Icon className={styles.disabledIcon} type="close" />
+                      <LegacyIcon className={styles.disabledIcon} type="close" />
                     ) : (
                         <Popconfirm title="确认删除该课件吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled(item.status)) }}>
-                          <Icon className={styles.icon} type="close" />
+                          <LegacyIcon className={styles.icon} type="close" />
                         </Popconfirm>
                       )}
                   </div>
@@ -355,9 +374,9 @@ export default class CoursewareList extends PureComponent {
                   <span>{item.createTime ? item.createTime.split(':').slice(0, -1).join(':') : '暂无数据'}</span>
                 </div>
                 <div className={styles.statistics}>
-                  <Tooltip title="阅读次数"><span><Icon className={styles.icon} type="eye" />{item.totalRead}</span></Tooltip>
+                  <Tooltip title="阅读次数"><span><LegacyIcon className={styles.icon} type="eye" />{item.totalRead}</span></Tooltip>
                   <Divider type="vertical" />
-                  <Tooltip title="阅读人数"><span><Icon className={styles.icon} type="user" />{item.totalPerson}</span></Tooltip>
+                  <Tooltip title="阅读人数"><span><LegacyIcon className={styles.icon} type="user" />{item.totalPerson}</span></Tooltip>
                 </div>
               </Card>
             </ListItem>
@@ -392,6 +411,6 @@ export default class CoursewareList extends PureComponent {
           </div>
         </Drawer>
       </div>
-    )
+    );
   }
 }

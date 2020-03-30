@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import ReactDOM from 'react-dom';
-import { Row, Col, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from 'antd';
 import Lightbox from 'react-images';
 
 import Slider from '../components/Slider';
@@ -157,7 +158,7 @@ export default class ImgSlider extends PureComponent {
             {magImgs}
           </Slider>
         </div>
-        <Icon
+        <LegacyIcon
           type="left"
           style={{
             left: 10,
@@ -169,7 +170,7 @@ export default class ImgSlider extends PureComponent {
           }}
           onClick={magIndex ? () => this.handleLeft('magIndex') : null}
         />
-        <Icon
+        <LegacyIcon
           type="right"
           style={{
             right: 10,
@@ -180,7 +181,7 @@ export default class ImgSlider extends PureComponent {
           }}
           onClick={isMagEnd ? null : () => this.handleRight('magIndex')}
         />
-        <Icon
+        <LegacyIcon
           type="close"
           onClick={this.handleCloseImg}
           style={{ right: 10, top: 10, cursor: 'pointer', ...ICON_STYLE, fontSize: 18 }}

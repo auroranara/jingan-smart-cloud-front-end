@@ -1,6 +1,8 @@
 import { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Form, Input, Select, Upload, DatePicker, Icon, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Select, Upload, DatePicker, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
@@ -410,7 +412,7 @@ export default class DangerChemicalsHandle extends PureComponent {
                   style={{ width: '96px', height: '96px' }}
                   disabled={uploading}
                 >
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>

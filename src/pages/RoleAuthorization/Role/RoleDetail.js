@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Form, Card, Spin, Table, Tabs, Tree, Button } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Spin, Table, Tabs, Tree, Button } from 'antd';
 
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';

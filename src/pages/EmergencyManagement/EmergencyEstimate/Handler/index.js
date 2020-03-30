@@ -1,17 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import {
-  Card,
-  Form,
-  Input,
-  Button,
-  Radio,
-  Row,
-  message,
-  DatePicker,
-  Upload,
-  Icon,
-  Cascader,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Button, Radio, Row, message, DatePicker, Upload, Cascader } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -426,14 +416,14 @@ export default class EmergencyEstimateHandler extends PureComponent {
                 disabled={uploading}
               >
                 <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
+                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
                 </Button>
               </Upload>
             )}
           </FormItem>
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" onClick={this.handleSubmit}>
             提交
           </Button>

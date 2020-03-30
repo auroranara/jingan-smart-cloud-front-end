@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Card, Dropdown, Menu, Table } from 'antd';
 // import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
 
@@ -230,7 +231,7 @@ export default class DeviceDetailCard extends Component {
                   }
                 >
                   更多
-                  <Icon type="down" />
+                  <LegacyIcon type="down" />
                 </AuthA>
               </Dropdown>
             </Fragment>

@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Form, message, Tooltip, Icon } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, message, Tooltip, Icon } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
@@ -18,14 +20,16 @@ const {
   },
 } = codes;
 
-@connect(({ user, realNameCertification, department, loading }) => ({
+@connect(({ user, realNameCertification, loading }) => ({
   user,
-  department,
   realNameCertification,
   loading: loading.models.realNameCertification,
 }))
 @Form.create()
 export default class Edit extends PureComponent {
+  state = {
+    personId: '',
+  };
   componentDidMount() {
     const {
       match: {
@@ -60,7 +64,10 @@ export default class Edit extends PureComponent {
         } = detail;
         const view = list.find(item => item);
         setFieldsValue(handleDetails(view));
-        this.setState({ personId: view.personId === null ? undefined : view.personId });
+        this.setState({
+          personId: view.personId === null ? undefined : view.personId,
+          carId: view.carId === null ? undefined : view.carId,
+        });
       },
     });
   };
@@ -77,16 +84,17 @@ export default class Edit extends PureComponent {
       dispatch,
     } = this.props;
     e.preventDefault();
+    const { personId, carId } = this.state;
     validateFields((errors, values) => {
       if (errors) return;
-      const { personId } = this.state;
       const { companyId, icNumber, snNumber, labelType, note } = values;
       const vals = {
         companyId: companyId.key || unitId,
         icNumber,
         snNumber,
         labelType,
-        personId,
+        personId: personId ? personId : undefined,
+        carId: carId ? carId : undefined,
         note,
       };
       const tag = id ? '编辑' : '新增';
@@ -112,6 +120,12 @@ export default class Edit extends PureComponent {
       match: { url },
     } = this.props;
     return url && url.includes('detail');
+  };
+  validateIc = (rule, value, callback) => {
+    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
+    if (value && value.length < 50 && !chineseRe.test(value)) {
+      callback();
+    } else callback('格式不正确');
   };
 
   validateIc = (rule, value, callback) => {

@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 // import moment from 'moment';
 
-import { Form, Card, Button } from 'antd';
+import { Card, Button } from 'antd';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Icon, Badge, notification } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col, Badge, notification } from 'antd';
 import { connect } from 'dva';
 // import moment from 'moment';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
@@ -324,7 +325,7 @@ export default class Chemical extends PureComponent {
       },
     } = this.props;
     // 公告
-    this.fetchNotice({ pageSize: 0, pageNum: 1, companyId });
+    this.fetchNotice({ pageSize: 1, pageNum: 1, companyId });
     // socket消息
     this.handleSocket();
     // 获取企业信息
@@ -425,12 +426,16 @@ export default class Chemical extends PureComponent {
         // console.log('e.data', data);
         const {
           type,
-          monitorMessageDto: { monitorEquipmentId, statusType } = {},
+          monitorMessageDto: { monitorEquipmentId, statusType, fireDeviceCode, fixType } = {},
           messageContent = '{}',
         } = data;
         // 更新消息
         this.fetchScreenMessage(data);
         if (+type === 100) {
+          if (fireDeviceCode) {
+            // 消防主机
+            this.childMap.handleUpdateFire(monitorEquipmentId, statusType, fixType);
+          }
           // 报警弹框
           this.showNotification(data);
           // 地图点位弹跳
@@ -444,6 +449,9 @@ export default class Chemical extends PureComponent {
           this.childMap.handleChangeWarning();
           // 添加/替换特种设备图标及信息
           this.childMap.handleAddSpecialEquipment(JSON.parse(messageContent));
+        } else if (+type === 52) {
+          // 主机复位
+          this.childMap.handleUpdateFire();
         }
       } catch (error) {
         console.log('error', error);
@@ -1508,7 +1516,7 @@ export default class Chemical extends PureComponent {
                 ) : (
                   <div className={styles.msgContainer}>
                     {/* <Badge count={3}> */}
-                    <Icon
+                    <LegacyIcon
                       type="message"
                       className={styles.msgIcon}
                       onClick={() => this.setState({ msgVisible: true })}
@@ -1598,16 +1606,14 @@ export default class Chemical extends PureComponent {
           dict={specialEquipDict}
         />
 
-        {videoVisible && (
-          <NewVideoPlay
-            showList={true}
-            videoList={videoList}
-            visible={videoVisible}
-            keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
-            handleVideoClose={() => this.setState({ videoVisible: false })}
-            isTree={false}
-          />
-        )}
+        <NewVideoPlay
+          showList={true}
+          videoList={videoList}
+          visible={videoVisible}
+          keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId
+          handleVideoClose={() => this.setState({ videoVisible: false })}
+          isTree={false}
+        />
 
         <MonitorDrawer
           visible={monitorDrawerVisible}

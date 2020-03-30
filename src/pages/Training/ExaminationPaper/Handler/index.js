@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Form, Spin, Card, Input, Button, Checkbox, Row, Col, Radio, Tree, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Spin, Card, Input, Button, Checkbox, Row, Col, Radio, Tree, message } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -9,6 +11,7 @@ import codes from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
 
 import styles from './index.less';
+import styles1 from '@/components/ToolBar/index.less';
 
 const { Item: FormItem } = Form;
 const { Group: RadioGroup } = Radio;
@@ -302,7 +305,7 @@ export default class App extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Spin spinning={!!loading || submitting}>
           <Card bordered={false}>
-            <Form>
+            <Form className={styles1.form}>
               <Row>
                 <Col xl={12} md={16} sm={24}>
                   <FormItem label="试卷名称" className={styles.formItem}>

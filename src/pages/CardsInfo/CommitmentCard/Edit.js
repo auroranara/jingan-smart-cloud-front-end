@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 // import moment from 'moment';
-import { Button, Card, Form, message } from 'antd';
+import { Button, Card, Select, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections} from '@/pages/SafetyKnowledgeBase/MSDS/utils';

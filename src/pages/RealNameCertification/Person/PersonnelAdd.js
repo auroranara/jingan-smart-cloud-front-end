@@ -1,4 +1,6 @@
 import { PureComponent, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Row,
   Col,
@@ -7,19 +9,19 @@ import {
   Input,
   Select,
   Card,
-  Form,
-  Tooltip,
   Upload,
-  Icon,
+  Tooltip,
   Radio,
   Spin,
-  AutoComplete,
+  // AutoComplete,
 } from 'antd';
 import debounce from 'lodash/debounce';
 import { connect } from 'dva';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import styles from './CompanyList.less';
 import router from 'umi/router';
+
+import styles from './CompanyList.less';
+import styles1 from '@/components/ToolBar/index.less';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { getToken } from '@/utils/authority';
 import { phoneReg } from '@/utils/validate';
 // import PIC from '@/assets/picExample.png';
@@ -332,7 +334,7 @@ export default class PersonnelAdd extends PureComponent {
       payload: {
         ...params,
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 30,
         personCar: 1,
       },
       callback,
@@ -342,19 +344,25 @@ export default class PersonnelAdd extends PureComponent {
   handleICSearch = value => {
     const { curCompanyId } = this.state;
     // 根据输入值获取列表
-    this.fetchTagCard({ icNumber: value && value.trim(), companyId: curCompanyId, status: 1 });
+    this.fetchTagCard(
+      { icNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
+      res => {
+        const { list } = res.data;
+        this.setState({ curLabelList: list });
+      }
+    );
   };
 
-  handleICBlur = value => {
+  handleICChange = value => {
     const {
       form: { setFieldsValue },
     } = this.props;
     const { curCompanyId, curLabelList } = this.state;
-    // 根据value判断是否是手动输入
-    if (value && value.key === value.label) {
+    if (value === undefined) {
       this.handleICSearch.cancel();
       setFieldsValue({
         icnumber: undefined,
+        entranceNumber: undefined,
       });
       this.fetchTagCard({ companyId: curCompanyId, status: 1 });
     } else {
@@ -364,28 +372,32 @@ export default class PersonnelAdd extends PureComponent {
         entranceNumber: { key: snId, label: sn },
       });
     }
-    if (value.key === '' && value.label === '') {
-      setFieldsValue({
-        entranceNumber: undefined,
-      });
-    }
   };
 
   handleSNSearch = value => {
     const { curCompanyId } = this.state;
     // 根据输入值获取列表
-    this.fetchTagCard({ snNumber: value && value.trim(), companyId: curCompanyId, status: 1 });
+    this.fetchTagCard(
+      { snNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
+      res => {
+        const { list } = res.data;
+        console.log('list', list);
+
+        this.setState({ curLabelList: list });
+      }
+    );
   };
 
-  handleSNBlur = value => {
+  handleSNChange = value => {
     const {
       form: { setFieldsValue },
     } = this.props;
     const { curCompanyId, curLabelList } = this.state;
     // 根据value判断是否是手动输入
-    if (value && value.key === value.label) {
+    if (value === undefined) {
       this.handleSNSearch.cancel();
       setFieldsValue({
+        icnumber: undefined,
         entranceNumber: undefined,
       });
       this.fetchTagCard({ companyId: curCompanyId, status: 1 });
@@ -394,11 +406,6 @@ export default class PersonnelAdd extends PureComponent {
       const icId = curLabelList.find(item => item.id === value.key).id;
       setFieldsValue({
         icnumber: { key: icId, label: ic },
-      });
-    }
-    if (value.key === '' && value.label === '') {
-      setFieldsValue({
-        icnumber: undefined,
       });
     }
   };
@@ -435,6 +442,7 @@ export default class PersonnelAdd extends PureComponent {
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
     const title = id ? '编辑人员信息' : '新增人员信息';
+    console.log('curLabelList', curLabelList);
 
     const hasCompanyName = perType === '4' || perType === '5' || perType === '6';
     const noCompanyName = perType === '2' || perType === '3';
@@ -555,7 +563,7 @@ export default class PersonnelAdd extends PureComponent {
           </Form>
         </Card>
         <Card title="卡号信息" style={{ marginTop: 5 }}>
-          <Form layout="horizontal">
+          <Form layout="horizontal" className={styles1.form}>
             <Row gutter={16}>
               <Col {...colLayout}>
                 <FormItem
@@ -563,7 +571,7 @@ export default class PersonnelAdd extends PureComponent {
                     <span>
                       IC卡号&nbsp;
                       <Tooltip title="门禁">
-                        <Icon style={{ color: '#1890ff' }} type="question-circle" />
+                        <LegacyIcon style={{ color: '#1890ff' }} type="question-circle" />
                       </Tooltip>
                     </span>
                   }
@@ -575,21 +583,23 @@ export default class PersonnelAdd extends PureComponent {
                         ? { key: filterTagList.id, label: filterTagList.icNumber }
                         : undefined,
                   })(
-                    <AutoComplete
-                      labelInValue={true}
-                      optionLabelProp="children"
+                    <Select
+                      allowClear
+                      showSearch
+                      labelInValue
+                      showArrow={false}
+                      filterOption={false}
                       placeholder="请选择IC卡号"
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleICSearch}
-                      onBlur={this.handleICBlur}
-                      filterOption={false}
+                      onChange={this.handleICChange}
                     >
                       {curLabelList.map(({ icNumber, id }) => (
                         <Option value={id} key={id}>
                           {icNumber}
                         </Option>
                       ))}
-                    </AutoComplete>
+                    </Select>
                   )}
                 </FormItem>
               </Col>
@@ -599,7 +609,7 @@ export default class PersonnelAdd extends PureComponent {
                     <span>
                       SN卡号&nbsp;
                       <Tooltip title="人员定位使用">
-                        <Icon style={{ color: '#1890ff' }} type="question-circle" />
+                        <LegacyIcon style={{ color: '#1890ff' }} type="question-circle" />
                       </Tooltip>
                     </span>
                   }
@@ -611,22 +621,23 @@ export default class PersonnelAdd extends PureComponent {
                         ? { key: filterTagList.id, label: filterTagList.snNumber }
                         : undefined,
                   })(
-                    <AutoComplete
-                      mode="combobox"
+                    <Select
+                      allowClear
+                      showSearch
                       labelInValue
-                      optionLabelProp="children"
+                      showArrow={false}
+                      filterOption={false}
                       placeholder="请选择SN卡号"
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleSNSearch}
-                      onBlur={this.handleSNBlur}
-                      filterOption={false}
+                      onChange={this.handleSNChange}
                     >
                       {curLabelList.map(({ snNumber, id }) => (
                         <Option value={id} key={id}>
                           {snNumber}
                         </Option>
                       ))}
-                    </AutoComplete>
+                    </Select>
                   )}
                 </FormItem>
               </Col>
@@ -660,7 +671,7 @@ export default class PersonnelAdd extends PureComponent {
                         >
                           {photoDetails.length < 3 ? (
                             <div>
-                              <Icon type={photoLoading ? 'loading' : 'plus'} />
+                              <LegacyIcon type={photoLoading ? 'loading' : 'plus'} />
                               <div className="ant-upload-text">上传</div>
                             </div>
                           ) : null}
@@ -729,7 +740,7 @@ export default class PersonnelAdd extends PureComponent {
                           />
                         ) : (
                           <div>
-                            <Icon type={diplomaLoading ? 'loading' : 'plus'} />
+                            <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
                             <div className="ant-upload-text">上传</div>
                           </div>
                         )}
@@ -750,7 +761,7 @@ export default class PersonnelAdd extends PureComponent {
               返回
             </Button>
             <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
-              {submitting && <Icon type="loading" />}
+              {submitting && <LegacyIcon type="loading" />}
               确定
             </Button>
           </div>

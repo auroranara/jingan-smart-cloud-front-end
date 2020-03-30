@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, Select, Divider, Col, Popconfirm, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Table, Select, Divider, Col, Popconfirm, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';

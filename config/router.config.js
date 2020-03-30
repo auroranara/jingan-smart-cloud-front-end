@@ -61,6 +61,10 @@ module.exports = env => {
         },
       ],
     },
+    {
+      path: '/test',
+      component: './Test',
+    },
     //big platform
     {
       path: '/big-platform',
@@ -1220,6 +1224,48 @@ module.exports = env => {
             },
           ],
         },
+        // 监测预警
+        {
+          path: '/monitoring-and-early-warning',
+          code: 'monitoringAndEarlyWarning',
+          name: 'monitoringAndEarlyWarning',
+          icon: 'monitor',
+          systemType: 0,
+          routes: [
+            {
+              path: '/monitoring-and-early-warning/major-hazard-distribution', // 重大危险源分布
+              code: 'monitoringAndEarlyWarning.majorHazardDistribution',
+              name: 'majorHazardDistribution',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/monitoring-and-early-warning/major-hazard-distribution',
+                  redirect: '/monitoring-and-early-warning/major-hazard-distribution/list',
+                },
+                {
+                  path: '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/list',
+                  code: 'monitoringAndEarlyWarning.majorHazardDistribution.list',
+                  name: 'list',
+                  component: './MajorHazardDistribution/List',
+                },
+                {
+                  path:
+                    '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/detail/:id',
+                  code: 'monitoringAndEarlyWarning.majorHazardDistribution.detail',
+                  name: 'detail',
+                  component: './MajorHazardDistribution/Detail',
+                },
+                {
+                  path:
+                    '/monitoring-and-early-warning/major-hazard-distribution/:unitId?/detail/:parentId/security/:id?',
+                  code: 'monitoringAndEarlyWarning.majorHazardDistribution.security',
+                  name: 'security',
+                  component: './MajorHazardDistribution/Security',
+                },
+              ],
+            },
+          ],
+        },
 
         // 可燃有毒气体监测预警系统
         {
@@ -1739,181 +1785,6 @@ module.exports = env => {
         },
 
         // 生产人员在岗在位系统
-        // {
-        //   path: '/personnel-management', // (在岗在位系统)基本信息
-        //   code: 'personnelManagement',
-        //   icon: 'file-text',
-        //   name: 'personnelManagement',
-        //   systemType: 3,
-        //   routes: [
-        //     {
-        //       path: '/personnel-management/tag-card', // 标签卡管理
-        //       code: 'personnelManagement.tagCardManagement',
-        //       name: 'tagCardManagement',
-        //       hideChildrenInMenu: true,
-        //       routes: [
-        //         {
-        //           path: '/personnel-management/tag-card',
-        //           name: 'tagCardManagement',
-        //           redirect: '/personnel-management/tag-card/index',
-        //         },
-        //         {
-        //           path: '/personnel-management/tag-card/index',
-        //           code: 'personnelManagement.tagCardManagement.list',
-        //           name: 'tagCardList',
-        //           component: './RealNameCertification/TagCardManagement/List',
-        //         },
-        //         {
-        //           path: '/personnel-management/tag-card/add',
-        //           code: 'personnelManagement.tagCardManagement.add',
-        //           name: 'tagCardAdd',
-        //           component: './RealNameCertification/TagCardManagement/Handle',
-        //         },
-        //         {
-        //           path: '/personnel-management/tag-card/edit/:id',
-        //           code: 'personnelManagement.tagCardManagement.edit',
-        //           name: 'tagCardEdit',
-        //           component: './RealNameCertification/TagCardManagement/Handle',
-        //         },
-        //         {
-        //           path: '/personnel-management/tag-card/detail/:id',
-        //           code: 'personnelManagement.tagCardManagement.view',
-        //           name: 'tagCardDetail',
-        //           component: './RealNameCertification/TagCardManagement/Handle',
-        //         },
-        //       ],
-        //     },
-            // {
-            //   path: '/personnel-management/personnel-info', // 人员基本信息
-            //   code: 'personnelManagement.personnelInfo',
-            //   name: 'personnelInfo',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/personnel-management/personnel-info',
-            //       name: 'personnelInfo',
-            //       redirect: '/personnel-management/personnel-info/company-list',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/company-list',
-            //       code: 'personnelManagement.personnelInfo.listView',
-            //       name: 'companyList',
-            //       component: './PersonnelManagement/PersonnelInfo/CompanyList',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/personnel-list/:id',
-            //       code: 'personnelManagement.personnelInfo.view',
-            //       name: 'personnelList',
-            //       component: './PersonnelManagement/PersonnelInfo/PersonnelList',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/personnel-add',
-            //       code: 'personnelManagement.personnelInfo.add',
-            //       name: 'personnelAdd',
-            //       component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/personnel-edit/:id',
-            //       code: 'personnelManagement.personnelInfo.edit',
-            //       name: 'personnelEdit',
-            //       component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/personnel-info/personnel-detail/:id',
-            //       code: 'personnelManagement.personnelInfo.detail',
-            //       name: 'personnelDetail',
-            //       component: './PersonnelManagement/PersonnelInfo/PersonnelDetail',
-            //     },
-            //   ],
-            // },
-            // {
-            //   path: '/personnel-management/vehicle-info', // 车辆基本信息
-            //   code: 'personnelManagement.vehicleInfo',
-            //   name: 'vehicleInfo',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/personnel-management/vehicle-info',
-            //       name: 'vehicleInfo',
-            //       redirect: '/personnel-management/vehicle-info/company-list',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/company-list',
-            //       code: 'personnelManagement.vehicleInfo.listView',
-            //       name: 'companyList',
-            //       component: './PersonnelManagement/VehicleInfo/CompanyList',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/vehicle-list/:id',
-            //       code: 'personnelManagement.vehicleInfo.view',
-            //       name: 'vehicleList',
-            //       component: './PersonnelManagement/VehicleInfo/VehicleList',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/vehicle-add',
-            //       code: 'personnelManagement.vehicleInfo.add',
-            //       name: 'vehicleAdd',
-            //       component: './PersonnelManagement/VehicleInfo/VehicleEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/vehicle-edit/:id',
-            //       code: 'personnelManagement.vehicleInfo.edit',
-            //       name: 'vehicleEdit',
-            //       component: './PersonnelManagement/VehicleInfo/VehicleEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/vehicle-info/vehicle-detail/:id',
-            //       code: 'personnelManagement.vehicleInfo.detail',
-            //       name: 'vehicleDetail',
-            //       component: './PersonnelManagement/VehicleInfo/VehicleDetail',
-            //     },
-            //   ],
-            // },
-            // {
-            //   path: '/personnel-management/check-point', // 卡口信息
-            //   code: 'personnelManagement.checkPoint',
-            //   name: 'checkPoint',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/personnel-management/check-point',
-            //       name: 'checkPoint',
-            //       redirect: '/personnel-management/check-point/company-list',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/company-list',
-            //       code: 'personnelManagement.checkPoint.companyListView',
-            //       name: 'companyList',
-            //       component: './PersonnelManagement/CheckPoint/CompanyList',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/list/:companyId/:tabIndex',
-            //       code: 'personnelManagement.checkPoint.listView',
-            //       name: 'list',
-            //       component: './PersonnelManagement/CheckPoint/CheckList',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/add/:companyId/:tabIndex',
-            //       code: 'personnelManagement.checkPoint.add',
-            //       name: 'add',
-            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
-            //       code: 'personnelManagement.checkPoint.view',
-            //       name: 'detail',
-            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
-            //     },
-            //     {
-            //       path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
-            //       code: 'personnelManagement.checkPoint.edit',
-            //       name: 'edit',
-            //       component: './PersonnelManagement/CheckPoint/CheckEdit',
-            //     },
-            //   ],
-            // },
-        //   ],
-        // },
         {
           path: '/personnel-management', // (在岗在位系统)基本信息
           code: 'personnelManagement',
@@ -1958,6 +1829,49 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/personnel-management/post-management', // 岗位管理
+              code: 'personnelManagement.postManagement',
+              name: 'postManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/personnel-management/post-management',
+                  name: 'postManagement',
+                  redirect: '/personnel-management/post-management/company-list',
+                },
+                {
+                  path: '/personnel-management/post-management/company-list',
+                  code: 'personnelManagement.postManagement.listView',
+                  name: 'companyList',
+                  component: './PersonnelManagement/PostManagement/CompanyList',
+                },
+                {
+                  path: '/personnel-management/post-management/:unitId/list',
+                  code: 'personnelManagement.postManagement.view',
+                  name: 'postList',
+                  component: './PersonnelManagement/PostManagement/PostList',
+                },
+                {
+                  path: '/personnel-management/post-management/:unitId/add',
+                  code: 'personnelManagement.postManagement.add',
+                  name: 'postAdd',
+                  component: './PersonnelManagement/PostManagement/PostEdit',
+                },
+                {
+                  path: '/personnel-management/post-management/:unitId/edit/:id',
+                  code: 'personnelManagement.postManagement.edit',
+                  name: 'postEdit',
+                  component: './PersonnelManagement/PostManagement/PostEdit',
+                },
+                {
+                  path: '/personnel-management/post-management/:unitId/detail/:id',
+                  code: 'personnelManagement.postManagement.detail',
+                  name: 'postDetail',
+                  component: './PersonnelManagement/PostManagement/PostDetail',
+                },
+              ],
+            },
             // {
             //   path: '/personnel-management/personnel-info', // 人员基本信息
             //   code: 'personnelManagement.personnelInfo',
@@ -2087,49 +2001,6 @@ module.exports = env => {
             //     },
             //   ],
             // },
-            {
-              path: '/personnel-management/post-management', // 岗位管理
-              code: 'personnelManagement.postManagement',
-              name: 'postManagement',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-management/post-management',
-                  name: 'postManagement',
-                  redirect: '/personnel-management/post-management/company-list',
-                },
-                {
-                  path: '/personnel-management/post-management/company-list',
-                  code: 'personnelManagement.postManagement.listView',
-                  name: 'companyList',
-                  component: './PersonnelManagement/PostManagement/CompanyList',
-                },
-                {
-                  path: '/personnel-management/post-management/:unitId/list',
-                  code: 'personnelManagement.postManagement.view',
-                  name: 'postList',
-                  component: './PersonnelManagement/PostManagement/PostList',
-                },
-                {
-                  path: '/personnel-management/post-management/:unitId/add',
-                  code: 'personnelManagement.postManagement.add',
-                  name: 'postAdd',
-                  component: './PersonnelManagement/PostManagement/PostEdit',
-                },
-                {
-                  path: '/personnel-management/post-management/:unitId/edit/:id',
-                  code: 'personnelManagement.postManagement.edit',
-                  name: 'postEdit',
-                  component: './PersonnelManagement/PostManagement/PostEdit',
-                },
-                {
-                  path: '/personnel-management/post-management/:unitId/detail/:id',
-                  code: 'personnelManagement.postManagement.detail',
-                  name: 'postDetail',
-                  component: './PersonnelManagement/PostManagement/PostDetail',
-                },
-              ],
-            },
           ],
         },
 
@@ -2378,115 +2249,115 @@ module.exports = env => {
           ],
         },
 
-        {
-          path: '/security-manage', // 安防管理
-          code: 'securityManage',
-          icon: 'security-scan',
-          name: 'securityManage',
-          systemType: 3,
-          routes: [
-            {
-              path: '/security-manage/video-identity', // 视频智能识别管理
-              code: 'securityManage.videoIdentity',
-              name: 'videoIdentity',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/security-manage/video-identity',
-                  name: 'videoIdentity',
-                  redirect: '/security-manage/entrance-and-exit-monitor/company-list',
-                },
-              ],
-            },
-            {
-              path: '/security-manage/entrance-and-exit-monitor', // 出入口监测
-              code: 'securityManage.entranceAndExitMonitor',
-              name: 'entranceAndExitMonitor',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/security-manage/entrance-and-exit-monitor',
-                  name: 'entranceAndExitMonitor',
-                  redirect: '/security-manage/entrance-and-exit-monitor/company-list',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/company-list',
-                  code: 'securityManage.entranceAndExitMonitor.listView',
-                  name: 'companyList',
-                  component: './SecurityManage/EntranceAndExitMonitor/CompanyList',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/face-database/:id',
-                  code: 'securityManage.entranceAndExitMonitor.faceDatabaseView',
-                  name: 'faceDatabase',
-                  component: './SecurityManage/EntranceAndExitMonitor/FaceDatabase',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/face-recognition-camera/:id',
-                  code: 'securityManage.entranceAndExitMonitor.cameraView',
-                  name: 'faceRecognitionCamera',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraList',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/camera-add',
-                  code: 'securityManage.entranceAndExitMonitor.cameraView',
-                  name: 'cameraAdd',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/camera-edit/:id',
-                  code: 'securityManage.entranceAndExitMonitor.cameraView',
-                  name: 'cameraEdit',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/camera-detail/:id',
-                  code: 'securityManage.entranceAndExitMonitor.cameraView',
-                  name: 'cameraDetail',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraDetail',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-list/:id',
-                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
-                  name: 'monitoringPoints',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsList',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-detail/:id',
-                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
-                  name: 'monitoringPointsDetail',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsDetail',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-add',
-                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
-                  name: 'monitoringPointsAdd',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-edit/:id',
-                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
-                  name: 'monitoringPointsEdit',
-                  component:
-                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
-                },
-                {
-                  path: '/security-manage/entrance-and-exit-monitor/alarm-record/:id',
-                  code: 'securityManage.entranceAndExitMonitor.alarmRecordView',
-                  name: 'alarmRecord',
-                  component: './SecurityManage/EntranceAndExitMonitor/AlarmRecord',
-                },
-              ],
-            },
-          ],
-        },
+        // {
+        //   path: '/security-manage', // 安防管理
+        //   code: 'securityManage',
+        //   icon: 'security-scan',
+        //   name: 'securityManage',
+        //   systemType: 3,
+        //   routes: [
+        //     {
+        //       path: '/security-manage/video-identity', // 视频智能识别管理
+        //       code: 'securityManage.videoIdentity',
+        //       name: 'videoIdentity',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/security-manage/video-identity',
+        //           name: 'videoIdentity',
+        //           redirect: '/security-manage/entrance-and-exit-monitor/company-list',
+        //         },
+        //       ],
+        //     },
+        //     {
+        //       path: '/security-manage/entrance-and-exit-monitor', // 出入口监测
+        //       code: 'securityManage.entranceAndExitMonitor',
+        //       name: 'entranceAndExitMonitor',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor',
+        //           name: 'entranceAndExitMonitor',
+        //           redirect: '/security-manage/entrance-and-exit-monitor/company-list',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/company-list',
+        //           code: 'securityManage.entranceAndExitMonitor.listView',
+        //           name: 'companyList',
+        //           component: './SecurityManage/EntranceAndExitMonitor/CompanyList',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/face-database/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.faceDatabaseView',
+        //           name: 'faceDatabase',
+        //           component: './SecurityManage/EntranceAndExitMonitor/FaceDatabase',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/face-recognition-camera/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.cameraView',
+        //           name: 'faceRecognitionCamera',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraList',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/camera-add',
+        //           code: 'securityManage.entranceAndExitMonitor.cameraView',
+        //           name: 'cameraAdd',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/camera-edit/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.cameraView',
+        //           name: 'cameraEdit',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/camera-detail/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.cameraView',
+        //           name: 'cameraDetail',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraDetail',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/monitoring-points-list/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+        //           name: 'monitoringPoints',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsList',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/monitoring-points-detail/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+        //           name: 'monitoringPointsDetail',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsDetail',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/monitoring-points-add',
+        //           code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+        //           name: 'monitoringPointsAdd',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/monitoring-points-edit/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+        //           name: 'monitoringPointsEdit',
+        //           component:
+        //             './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
+        //         },
+        //         {
+        //           path: '/security-manage/entrance-and-exit-monitor/alarm-record/:id',
+        //           code: 'securityManage.entranceAndExitMonitor.alarmRecordView',
+        //           name: 'alarmRecord',
+        //           component: './SecurityManage/EntranceAndExitMonitor/AlarmRecord',
+        //         },
+        //       ],
+        //     },
+        //   ],
+        // },
 
         // 企业生产全流程管理系统
         {
@@ -2978,7 +2849,51 @@ module.exports = env => {
             },
           ],
         },
-
+        {
+          name: 'electronicInspection', // 电子巡检
+          path: '/electronic-inspection',
+          code: 'electronicInspection',
+          icon: 'fileSearch',
+          systemType: 4,
+          routes: [
+            {
+              name: 'productionArea',
+              path: '/electronic-inspection/production-area', // 生产区域
+              code: 'electronicInspection.productionArea',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/electronic-inspection/production-area',
+                  redirect: '/electronic-inspection/production-area/list',
+                },
+                {
+                  name: 'list',
+                  path: '/electronic-inspection/production-area/list',
+                  code: 'electronicInspection.productionArea.listView',
+                  component: './ElectronicInspection/ProductionArea/List',
+                },
+                {
+                  name: 'add',
+                  path: '/electronic-inspection/production-area/add',
+                  code: 'electronicInspection.productionArea.add',
+                  component: './ElectronicInspection/ProductionArea/Add',
+                },
+                {
+                  name: 'edit',
+                  path: '/electronic-inspection/production-area/edit/:id',
+                  code: 'electronicInspection.productionArea.edit',
+                  component: './ElectronicInspection/ProductionArea/Add',
+                },
+                {
+                  name: 'view',
+                  path: '/electronic-inspection/production-area/view/:id',
+                  code: 'electronicInspection.productionArea.view',
+                  component: './ElectronicInspection/ProductionArea/Add',
+                },
+              ],
+            },
+          ],
+        },
         {
           path: '/target-responsibility', // 目标责任管理
           code: 'targetResponsibility',

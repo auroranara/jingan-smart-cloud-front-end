@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Icon, Row, Col } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from 'antd';
 import { Map as GDMap, InfoWindow, Markers, Polygon } from 'react-amap';
 import classNames from 'classnames';
 import debounce from 'lodash/debounce';
@@ -449,7 +450,7 @@ class MapSection extends PureComponent {
                     }
                   }}
                 >
-                  <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
+                  <LegacyIcon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
                   重置
                 </div>
               </GDMap>

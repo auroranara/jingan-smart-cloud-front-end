@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 // import Link from 'umi/link';
-import { Input, Divider, Select, Form, Modal } from 'antd';
+import { Input, Divider, Select, Modal } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
@@ -177,7 +179,7 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
       title: '操作',
       dataIndex: 'id',
       key: 'id',
-      width: 180,
+      width: 160,
       align: 'center',
       fixed: 'right',
       render(id) {

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Col, Drawer, Icon, Row } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Col, Drawer, Row } from 'antd';
 
 import styles from './DrawerContainer.less';
 
@@ -41,7 +42,7 @@ export default class DrawerContainer extends PureComponent {
         {...restProps}
       >
         <div className={styles.container} id={id}>
-          <Icon type="close" style={ICON_STYLE} onClick={e => onClose()} />
+          <LegacyIcon type="close" style={ICON_STYLE} onClick={e => onClose()} />
           <h3 className={styles.title}>
             <span className={styles.rect} />
             {title}

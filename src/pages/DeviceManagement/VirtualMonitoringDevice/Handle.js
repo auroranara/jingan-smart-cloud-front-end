@@ -1,17 +1,7 @@
 import { Component, Fragment } from 'react';
-import {
-  Card,
-  Form,
-  Input,
-  Select,
-  Button,
-  Row,
-  Col,
-  message,
-  Radio,
-  Icon,
-  Tooltip,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, Select, Button, Row, Col, message, Radio, Tooltip } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
@@ -292,7 +282,7 @@ export default class HandleVirtualMonitoringDevice extends Component {
                     {getFieldDecorator('buildingFloor', {
                       rules: [{ required: true, validator: this.validateBuildingFloor }],
                     })(
-                      <Fragment>
+                      <Row>
                         <Col span={5} style={{ marginRight: '10px' }}>
                           {getFieldDecorator('buildingId')(
                             <Select
@@ -327,19 +317,20 @@ export default class HandleVirtualMonitoringDevice extends Component {
                         <Tooltip title="刷新建筑物楼层">
                           <Button
                             onClick={() => this.handleRefreshBuilding(true)}
-                            style={{ marginRight: '10px' }}
+                            style={{ marginRight: 10, marginTop: 4 }}
                           >
-                            <Icon type="reload" />
+                            <LegacyIcon type="reload" />
                           </Button>
                         </Tooltip>
                         <AuthButton
                           onClick={this.jumpToBuildingManagement}
                           code={codesMap.company.buildingsInfo.add}
                           type="primary"
+                          style={{ marginTop: 4 }}
                         >
                           新增建筑物楼层
                           </AuthButton>
-                      </Fragment>
+                      </Row>
                     )}
                   </FormItem>
                 </Fragment>
@@ -361,7 +352,7 @@ export default class HandleVirtualMonitoringDevice extends Component {
             </Fragment>
           )}
         </Card>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button
             style={{ marginRight: '10px' }}
             onClick={() => {
@@ -375,7 +366,7 @@ export default class HandleVirtualMonitoringDevice extends Component {
           </Button>
         </Row>
       </Fragment>
-    )
+    );
   }
 
   render () {

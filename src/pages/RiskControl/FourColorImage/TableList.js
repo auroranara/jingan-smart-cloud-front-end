@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Button, Row, Col, Table, Card, Divider, message, Input } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Row, Col, Table, Card, Divider, message, Input } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { AuthA, AuthPopConfirm } from '@/utils/customAuth';

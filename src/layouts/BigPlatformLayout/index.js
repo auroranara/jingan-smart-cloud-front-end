@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import classNames from 'classnames';
 import moment from 'moment';
 import styles from './index.less';
@@ -72,7 +72,7 @@ export default class BigPlatformLayout extends PureComponent {
           <div className={styles.headerTitle} style={titleStyle}>{autoSpace ? title.split('').join(' ') : title}</div>
           <div className={styles.headerTime}><div className={styles.headerTimeContent} style={timeStyle}>{currentTime}</div></div>
           <div className={styles.headerExtra}>{extra && <div className={styles.headerExtraContent} style={extraStyle}>{extra}</div>}</div>
-          {settable && <Icon style={setStyle} className={styles.setButton} type="setting" onClick={onSet} />}
+          {settable && <LegacyIcon style={setStyle} className={styles.setButton} type="setting" onClick={onSet} />}
           {other}
         </div>
         <div className={styles.content} style={contentStyle}>

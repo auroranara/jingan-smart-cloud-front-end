@@ -1,17 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  Input,
-  Table,
-  Select,
-  Divider,
-  Col,
-  message,
-  Row,
-} from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Table, Select, Divider, Row, Col, message } from 'antd';
 import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codesMap from '@/utils/codes';
@@ -316,7 +307,7 @@ export default class lawDatabaseList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 180,
+        width: 120,
         render: (record, rows) => (
           <span>
             {/* <AuthA

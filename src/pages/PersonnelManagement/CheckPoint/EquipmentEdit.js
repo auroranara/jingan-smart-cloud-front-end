@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import router from 'umi/router';
-import { Button, Col, Form, Input, Row, Switch } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Col, Input, Row, Switch } from 'antd';
 
 import styles from './CompanyList.less';
 import { genOperateCallback, getFieldDecConfig, initFormValues, EQUIPMENT_INDEX } from './utils';

@@ -179,7 +179,7 @@ export default class Map extends React.Component {
     const groupLayer = map.getFMGroup(groupId);
     //创建PolygonMarkerLayer
     const layer = new fengMap.FMPolygonMarkerLayer();
-    groupLayer.addLayer(layer);
+    groupLayer && layer && groupLayer.addLayer(layer);
     const polygonMarker = new fengMap.FMPolygonMarker({
       alpha: 0.5, //设置透明度
       lineWidth: 1, //设置边框线的宽度

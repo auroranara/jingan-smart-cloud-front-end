@@ -2,18 +2,9 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  Switch,
-  Icon,
-  Popover,
-  message,
-  Select,
-  Radio,
-} from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Card, Switch, Popover, message, Select, Radio } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 // 地图定位
@@ -27,6 +18,10 @@ import { hasAuthority } from '@/utils/customAuth';
 // 选择网关设备弹窗
 import GateWayModal from '@/pages/DeviceManagement/Components/GateWayModal';
 import styles from './VideoMonitorEdit.less';
+import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/video.png';
+import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-video-gray.png';
+import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/video-gray.png';
+import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/video-active.png';
 
 const FormItem = Form.Item;
 
@@ -66,13 +61,14 @@ const defaultPagination = {
 };
 
 @connect(
-  ({ videoMonitor, user, company, safety, personnelPosition, device, loading }) => ({
+  ({ videoMonitor, user, company, safety, personnelPosition, device, chemical, loading }) => ({
     videoMonitor,
     user,
     company,
     safety,
     personnelPosition,
     device,
+    chemical,
     loading: loading.models.videoMonitor,
     gatewayLoading: loading.effects['device/fetchGatewayEquipmentForPage'],
   }),
@@ -109,7 +105,9 @@ export default class VideoMonitorEdit extends PureComponent {
   componentDidMount () {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       location: { query },
       form: { setFieldsValue },
       user: { isCompany, currentUser },
@@ -132,19 +130,23 @@ export default class VideoMonitorEdit extends PureComponent {
           pointFixInfoList,
         } = {}) => {
           setFieldsValue({ buildingFloor: { buildingId, floorId }, inheritNvr });
-          this.setState({
-            company: { id: companyId, name: companyName },
-            gatewayEquipment: { id: plugFlowEquipment, code: plugFlowEquipmentCode },
-          }, () => {
-            if (pointFixInfoList && pointFixInfoList.length) {
-              let { xnum, ynum, znum, groupId, areaId, isShow } = pointFixInfoList[0];
-              const coord = { x: +xnum, y: +ynum, z: +znum };
-              groupId = +groupId;
-              setFieldsValue({ isShow: isShow || '1', mapLocation: { groupId, coord, areaId } })
+          this.setState(
+            {
+              company: { id: companyId, name: companyName },
+              gatewayEquipment: { id: plugFlowEquipment, code: plugFlowEquipmentCode },
+            },
+            () => {
+              if (pointFixInfoList && pointFixInfoList.length) {
+                let { xnum, ynum, znum, groupId, areaId, isShow } = pointFixInfoList[0];
+                const coord = { x: +xnum, y: +ynum, z: +znum };
+                groupId = +groupId;
+                setFieldsValue({ isShow: isShow || '1', mapLocation: { groupId, coord, areaId } });
+              }
             }
-          });
+          );
           this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
-          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+          buildingId &&
+            this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
           setTimeout(() => {
             +inheritNvr === 1 && setFieldsValue({ plugFlowEquipment });
             +inheritNvr === 0 && setFieldsValue({ nvr });
@@ -166,7 +168,11 @@ export default class VideoMonitorEdit extends PureComponent {
         type: 'company/fetchCompany',
         payload: { id: companyId },
       });
-      companyId && this.setState({ company: { id: companyId, name: query.name } }, () => { setFieldsValue({ isShow: '1' }) });
+      companyId &&
+        this.setState({ company: { id: companyId, name: query.name } }, () => {
+          setFieldsValue({ isShow: '1' });
+        });
+      companyId && this.fetchMarkers(companyId);
     }
     this.fetchConnectTypeDict();
     this.fetchEquipmentsForAll();
@@ -185,6 +191,15 @@ export default class VideoMonitorEdit extends PureComponent {
     dispatch({
       type: 'device/fetchEquipmentsForAll',
       payload: { companyId: companyId || query.companyId, equipmentType: 110 },
+    });
+  };
+
+  // 获取视频位置
+  fetchMarkers = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'chemical/fetchVideoList',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
     });
   };
 
@@ -312,7 +327,9 @@ export default class VideoMonitorEdit extends PureComponent {
         };
         if (mapLocation && mapLocation.groupId && mapLocation.coord) {
           const { coord, ...resMap } = mapLocation;
-          payload.pointFixInfoList = [{ isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+          payload.pointFixInfoList = [
+            { isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },
+          ];
         }
 
         const editCompanyId = companyIdParams || detailCompanyId;
@@ -425,7 +442,8 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     });
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: value.id } });
-    setFieldsValue({ xnum: undefined, ynum: undefined, buildingFloor: {} });
+    this.fetchMarkers(value.id);
+    setFieldsValue({ xnum: undefined, ynum: undefined, buildingFloor: {}, isShow: '1' });
     this.handleHideCompanyModal();
   };
 
@@ -697,6 +715,7 @@ export default class VideoMonitorEdit extends PureComponent {
         equipment: { list: equipmentList = [] },
         connectTypeDict,
       },
+      chemical: { videoList },
     } = this.props;
     const {
       // coordinate: { visible, fireVisible },
@@ -971,7 +990,18 @@ export default class VideoMonitorEdit extends PureComponent {
           {companyId && (
             <FormItem {...formItemLayout} label={fieldLabels.mapLocation}>
               {getFieldDecorator('mapLocation')(
-                <MapMarkerSelect companyId={companyId} />
+                <MapMarkerSelect
+                  companyId={companyId}
+                  markerList={videoList}
+                  otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
+                  markerOption={{ url: MarkerImg, size: 36 }}
+                  markerId={id}
+                  legend={{
+                    label: '其他视频',
+                    icon: MarkerGrayImg,
+                    activeIcon: MarkerActiveImg,
+                  }}
+                />
               )}
             </FormItem>
           )}
@@ -1095,7 +1125,7 @@ export default class VideoMonitorEdit extends PureComponent {
       }
       return (
         <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
-          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <LegacyIcon type="cross-circle-o" className={styles.errorIcon} />
           <div className={styles.errorMessage}>{errors[key][0]}</div>
           <div className={styles.errorField}>{fieldLabels[key]}</div>
         </li>
@@ -1110,7 +1140,7 @@ export default class VideoMonitorEdit extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" />
+          <LegacyIcon type="exclamation-circle" />
           {errorCount}
         </Popover>
       </span>

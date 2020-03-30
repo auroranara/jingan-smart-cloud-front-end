@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { List, Card, Icon, Dropdown, Menu, Avatar, Tooltip } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { List, Card, Dropdown, Menu, Avatar, Tooltip } from 'antd';
 import numeral from 'numeral';
 import { connect } from 'dva';
 import { formatWan } from '../../../utils/utils';
@@ -57,16 +58,16 @@ export default class Center extends PureComponent {
               bodyStyle={{ paddingBottom: 20 }}
               actions={[
                 <Tooltip title="下载">
-                  <Icon type="download" />
+                  <LegacyIcon type="download" />
                 </Tooltip>,
                 <Tooltip title="编辑">
-                  <Icon type="edit" />
+                  <LegacyIcon type="edit" />
                 </Tooltip>,
                 <Tooltip title="分享">
-                  <Icon type="share-alt" />
+                  <LegacyIcon type="share-alt" />
                 </Tooltip>,
                 <Dropdown overlay={itemMenu}>
-                  <Icon type="ellipsis" />
+                  <LegacyIcon type="ellipsis" />
                 </Dropdown>,
               ]}
             >

@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { FormattedMessage, setLocale, getLocale } from 'umi/locale';
-import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip, message /*Button*/ } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Spin, Tag, Menu, Dropdown, Avatar, Tooltip, message /*Button*/ } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import toUpper from 'lodash/toUpper';
@@ -94,19 +95,19 @@ export default class GlobalHeaderRight extends PureComponent {
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
         <Menu.Item key="changePassword">
-          <Icon type="lock" />
+          <LegacyIcon type="lock" />
           <FormattedMessage
             id="menu.account.changePassword"
             defaultMessage="account changePassword"
           />
         </Menu.Item>
         <Menu.Item key="personalInfo">
-          <Icon type="user" />
+          <LegacyIcon type="user" />
           <FormattedMessage id="menu.account.personalInfo" defaultMessage="account personalInfo" />
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="logout">
-          <Icon type="logout" />
+          <LegacyIcon type="logout" />
           退出登录
         </Menu.Item>
       </Menu>
@@ -140,7 +141,7 @@ export default class GlobalHeaderRight extends PureComponent {
           currentUser.moreUser.length > 1 && (
             <Dropdown overlay={users}>
               <span className={styles.action}>
-                <Icon type="swap" style={{ fontSize: '18px' }} />
+                <LegacyIcon type="swap" style={{ fontSize: '18px' }} />
                 <span style={{ verticalAlign: 'middle' }}>切换单位</span>
               </span>
             </Dropdown>
@@ -155,7 +156,7 @@ export default class GlobalHeaderRight extends PureComponent {
               title="数据维护"
               onClick={this.handleGoGsafe}
             >
-              <Icon type="hdd" />
+              <LegacyIcon type="hdd" />
               <span style={{ marginLeft: 8, marginRight: 8, verticalAlign: 'middle' }}>
                 数据维护
               </span>

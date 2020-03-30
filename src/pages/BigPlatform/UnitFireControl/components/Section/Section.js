@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import styles from './Section.less';
 
 /**
@@ -303,7 +303,7 @@ export default class App extends PureComponent {
               <div className={styles.titleIcon}></div>
               {title}
               {closable && (
-                <Icon
+                <LegacyIcon
                   type="close"
                   style={{
                     position: 'absolute',

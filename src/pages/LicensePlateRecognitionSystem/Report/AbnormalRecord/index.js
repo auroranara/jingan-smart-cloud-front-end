@@ -107,6 +107,7 @@ export default class AbnormalRecord extends Component {
     },
     {
       id: 'range',
+      options: { initialValue: [] },
       render: () => <RangePicker format={DEFAULT_FORMAT} allowClear />,
     },
   ];

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Transfer, Table } from 'antd';
 import difference from 'lodash/difference';
 
-const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
+const TableTransfer = ({ leftColumns, rightColumns, dangerType, ...restProps }) => (
   <Transfer {...restProps} showSelectAll={false}>
     {({
       direction, // 渲染列表的方向
@@ -13,6 +13,15 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
       //disabled: listDisabled,
     }) => {
       const columns = direction === 'left' ? leftColumns : rightColumns;
+
+      const filterData =
+        dangerType === '1'
+          ? filteredItems.filter(item => item.isDanger !== '1')
+          : dangerType === '4'
+            ? filteredItems.filter(item => item.majorHazard !== '1')
+            : filteredItems.filter(item => item.dangerSource !== '1');
+      const dataList = direction === 'left' ? filterData : filteredItems;
+
       const rowSelection = {
         onSelectAll(selected, selectedRows) {
           const treeSelectedKeys = selectedRows.map(({ key }) => key);
@@ -30,7 +39,7 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
         <Table
           rowSelection={rowSelection}
           columns={columns}
-          dataSource={filteredItems}
+          dataSource={dataList}
           size="small"
           pagination={false}
           onRow={({ key }) => ({
@@ -279,6 +288,7 @@ export default class TabTransfer extends PureComponent {
           leftColumns={this.getLeftColumns(dangerType)}
           rightColumns={this.getRightColumns(dangerType)}
           rowKey={record => record.id}
+          dangerType={dangerType}
         />
       </div>
     );

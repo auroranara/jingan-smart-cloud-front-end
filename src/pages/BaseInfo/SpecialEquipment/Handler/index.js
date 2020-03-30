@@ -1,7 +1,8 @@
 import { PureComponent, Fragment } from 'react';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Input,
   Select,
   Button,
@@ -12,7 +13,6 @@ import {
   InputNumber,
   DatePicker,
   Tooltip,
-  Icon,
   Cascader,
 } from 'antd';
 import { connect } from 'dva';
@@ -27,22 +27,26 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import codesMap from '@/utils/codes';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
+import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment.png';
+import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-special-equipment-gray.png';
+import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment-gray.png';
+import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment-active.png';
 
 const { Group: RadioGroup } = Radio;
 
 // 上传文件地址
-const uploadAction = '/acloud_new/v2/uploadFile';
+// const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
-const folder = 'emergency';
-const defaultUploadProps = {
-  name: 'files',
-  data: { folder },
-  multiple: true,
-  action: uploadAction,
-  headers: { 'JA-Token': getToken() },
-};
+// const folder = 'emergency';
+// const defaultUploadProps = {
+//   name: 'files',
+//   data: { folder },
+//   multiple: true,
+//   action: uploadAction,
+//   headers: { 'JA-Token': getToken() },
+// };
 const FormItem = Form.Item;
-const Option = Select.Option;
+// const Option = Select.Option;
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 const formItemLayout = {
@@ -99,19 +103,25 @@ export default class SpecialEquipment extends PureComponent {
   componentDidMount() {
     const {
       form: { setFieldsValue },
+      location: { query: { unitId } },
       match: { params: { id = null } = {} },
       user: {
         currentUser: { companyId, unitType, companyName },
       },
     } = this.props;
+
     this.fetchDict({ type: 'specialEquipment' });
     this.fetchBrand(brandPayload);
     if (unitType === 4) {
       this.setState({ selectedCompany: { id: companyId, name: companyName } });
       this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+      this.fetchMarkers(companyId);
     }
     if (!id) return;
-    this.fetchList(1, 10, { id }, res => {
+    this.fetchList(1, 10, { id, companyId: unitId }, res => {
+      if (!res || !res.data || !res.data.list || !res.data.list.length)
+        return;
+
       const {
         list: [
           {
@@ -203,6 +213,7 @@ export default class SpecialEquipment extends PureComponent {
             area,
             location,
           });
+          this.fetchMarkers(companyId);
           if (pointFixInfoList && pointFixInfoList.length) {
             let { xnum, ynum, znum, groupId, areaId, isShow } = pointFixInfoList[0];
             const coord = { x: +xnum, y: +ynum, z: +znum };
@@ -224,6 +235,15 @@ export default class SpecialEquipment extends PureComponent {
         ...filters,
       },
       callback,
+    });
+  };
+
+  // 获取其他设备位置
+  fetchMarkers = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'specialEquipment/fetchMarkers',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
     });
   };
 
@@ -315,6 +335,7 @@ export default class SpecialEquipment extends PureComponent {
     } = this.props;
     this.setState({ selectedCompany, companyModalVisible: false });
     setFieldsValue({ companyId: selectedCompany.id });
+    this.fetchMarkers(selectedCompany.id);
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: selectedCompany.id } });
   };
 
@@ -590,7 +611,7 @@ export default class SpecialEquipment extends PureComponent {
         flatGraphic, // 平面图类型选项
       },
       emergencyManagement: { specialEquipment = [] },
-      specialEquipment: { brandList = [], modelList = [] },
+      specialEquipment: { brandList = [], modelList = [], markers },
       user: {
         currentUser: { unitType },
       },
@@ -857,7 +878,7 @@ export default class SpecialEquipment extends PureComponent {
                   {getFieldDecorator('buildingFloor', {
                     rules: [{ required: true, validator: this.validateBuildingFloor }],
                   })(
-                    <Fragment>
+                    <Row>
                       <Col span={5} style={{ marginRight: '10px' }}>
                         {getFieldDecorator('buildingId')(
                           <Select
@@ -893,19 +914,20 @@ export default class SpecialEquipment extends PureComponent {
                       <Tooltip title="刷新建筑物楼层">
                         <Button
                           onClick={() => this.handleRefreshBuilding(true)}
-                          style={{ marginRight: 10 }}
+                          style={{ marginRight: 10, marginTop: 4 }}
                         >
-                          <Icon type="reload" />
+                          <LegacyIcon type="reload" />
                         </Button>
                       </Tooltip>
                       <AuthButton
                         onClick={this.jumpToBuildingManagement}
                         code={codesMap.company.buildingsInfo.add}
                         type="primary"
+                        style={{ marginTop: 4 }}
                       >
                         新增建筑物楼层
                       </AuthButton>
-                    </Fragment>
+                    </Row>
                   )}
                 </FormItem>
                 <FormItem label="详细位置" {...formItemLayout}>
@@ -947,7 +969,19 @@ export default class SpecialEquipment extends PureComponent {
               </Button>
               <FlatPic {...FlatPicProps} /> */}
               {getFieldDecorator('mapLocation')(
-                <MapMarkerSelect companyId={companyId} onChange={this.handleClickReset} />
+                <MapMarkerSelect
+                  companyId={companyId}
+                  onChange={this.handleClickReset}
+                  markerList={markers}
+                  otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
+                  markerOption={{ url: MarkerImg, size: 36 }}
+                  markerId={id}
+                  legend={{
+                    label: '其他设备',
+                    icon: MarkerGrayImg,
+                    activeIcon: MarkerActiveImg,
+                  }}
+                />
               )}
             </FormItem>
           )}
@@ -962,7 +996,7 @@ export default class SpecialEquipment extends PureComponent {
             </FormItem>
           )}
         </Form>
-        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           {isDetail ? (
             <Button
               type="primary"

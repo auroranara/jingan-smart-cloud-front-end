@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Map as GDMap, InfoWindow, Markers, Marker } from 'react-amap';
 import styles from './index.less';
 import MapTypeBar from './MapTypeBar';
@@ -370,7 +370,7 @@ export default class MapSection extends PureComponent {
             </div>
           </div>
         </div>
-        <Icon
+        <LegacyIcon
           type="close"
           onClick={() => {
             // const { clearPollingMap } = this.props;
@@ -436,7 +436,7 @@ export default class MapSection extends PureComponent {
               this.setState({ infoWindowShow: false });
             }}
           >
-            <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
+            <LegacyIcon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
             重置
           </div>
         </GDMap>

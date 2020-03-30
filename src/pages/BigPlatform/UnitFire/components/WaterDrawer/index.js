@@ -1,5 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Row, Col, Input, Form } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Col, Input } from 'antd';
 import DrawerContainer from '../DrawerContainer';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import ChartGauge from '../../components/ChartGauge';

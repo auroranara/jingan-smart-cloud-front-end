@@ -1,8 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   Card,
-  Form,
   Table,
   Divider,
   Popconfirm,
@@ -11,7 +12,6 @@ import {
   Input,
   message,
   Upload,
-  Icon,
   Row,
   Col,
 } from 'antd';
@@ -41,7 +41,7 @@ const formItemCol = {
 
 const uploadButton = loading => (
   <div>
-    <Icon type={loading ? 'loading' : 'plus'} />
+    <LegacyIcon type={loading ? 'loading' : 'plus'} />
     <div>上传</div>
   </div>
 );

@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import {
   message,
   Radio,
   Spin,
   Card,
   Table,
-  Form,
   Row,
   Col,
   Button,
@@ -417,15 +418,15 @@ export default class WorkingBillTablePage extends Component {
       deleting = false,
       approving = false,
       hasAddAuthority,
-      onDisplayChange,
+      // onDisplayChange,
       onTypeChange,
       goToAdd,
       form: { getFieldDecorator, getFieldsValue },
     } = this.props;
     const { approveModalVisible, countType } = this.state;
     const values = getFieldsValue();
-    console.log('列表values：', values);
-    console.log(this.props.list);
+    // console.log('列表values：', values);
+    // console.log(this.props.list);
     const breadcrumbList = BREADCRUMB_LIST_PREFIX.concat({
       title: '作业票管理',
       name: '作业票管理',
@@ -635,12 +636,24 @@ export default class WorkingBillTablePage extends Component {
             },
           ]
         : []),
-      ...([TYPES[5].key, TYPES[6].key].includes(type)
+      ...([TYPES[5].key].includes(type)
         ? [
             {
               dataIndex: 'workingProject',
               title: '维修项目名称',
               align: 'center',
+            },
+          ]
+        : []),
+      ...([TYPES[6].key].includes(type)
+        ? [
+            {
+              dataIndex: 'billLevel',
+              title: '盲板作业类型',
+              align: 'center',
+              render: value => (
+                <Select list={BLIND_PLATE_WORK_TYPES} value={`${value}`} mode="detail" />
+              ),
             },
           ]
         : []),

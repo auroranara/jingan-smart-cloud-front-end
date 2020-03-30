@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import _ from 'lodash';
-import { Form, Input, Card, Button, Select, Spin, List, Modal, message, TreeSelect } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Card, Button, Select, Spin, List, Modal, message, TreeSelect } from 'antd';
 import { Link } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';

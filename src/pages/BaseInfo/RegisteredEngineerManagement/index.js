@@ -9,7 +9,7 @@ import {
   Divider,
   Popconfirm,
   message,
-  AutoComplete,
+  // AutoComplete,
   Spin,
 } from 'antd';
 import { Link } from 'dva/router';
@@ -399,7 +399,7 @@ export default class RegSafetyEngList extends PureComponent {
                   </p>
                 ) : (
                   <p>
-                    {label}: <span style={{ color: '#aaa' }}>查看附件</span>
+                    {label}: <span style={{ color: '#aaa' }}>-</span>
                   </p>
                 );
               })}
@@ -411,7 +411,8 @@ export default class RegSafetyEngList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        fixed: 'right',
+        width: 120,
         render: (val, record) => (
           <Fragment>
             {editCode ? (
@@ -534,9 +535,26 @@ export default class RegSafetyEngList extends PureComponent {
         label: '单位名称',
         span: spanStyle,
         render: () => (
-          <AutoComplete
+          // <AutoComplete
+          //   allowClear
+          //   mode="combobox"
+          //   optionLabelProp="children"
+          //   placeholder="请选择单位"
+          //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+          //   onSearch={this.handleUnitIdChange}
+          //   filterOption={false}
+          // >
+          //   {unitIdes.map(({ id, name }) => (
+          //     <Option value={id} key={id}>
+          //       {name}
+          //     </Option>
+          //   ))}
+          // </AutoComplete>
+          <Select
             allowClear
-            mode="combobox"
+            showSearch
+            // mode="combobox"
+            showArrow={false}
             optionLabelProp="children"
             placeholder="请选择单位"
             notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
@@ -548,7 +566,7 @@ export default class RegSafetyEngList extends PureComponent {
                 {name}
               </Option>
             ))}
-          </AutoComplete>
+          </Select>
         ),
         transform: v => v.trim(),
       },

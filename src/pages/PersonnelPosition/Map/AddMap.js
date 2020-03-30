@@ -1,5 +1,7 @@
 import { PureComponent, Fragment } from 'react';
-import { Card, Button, Input, Select, Form, Icon, Modal, message, Col, Radio, Row } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Button, Input, Select, Modal, message, Col, Radio, Row } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -405,7 +407,7 @@ export default class addMap extends PureComponent {
                     </div>
                   ) : (
                       <div className={styles.selectMap} onClick={() => this.handleToSelectUnitMap(mapHierarchy)}>
-                        <Icon type="plus" />
+                        <LegacyIcon type="plus" />
                       </div>
                     )}
                 </Fragment>
@@ -486,7 +488,7 @@ export default class addMap extends PureComponent {
                       </div>
                     ) : (
                         <div className={styles.selectMap} onClick={() => this.handleToSelectFloor()}>
-                          <Icon type="plus" />
+                          <LegacyIcon type="plus" />
                         </div>
                       )}
                   </Fragment>
@@ -540,6 +542,6 @@ export default class addMap extends PureComponent {
           ) : (<div className={styles.emptyContent}><span>暂无数据</span></div>)}
         </Modal>
       </PageHeaderLayout>
-    )
+    );
   }
 }

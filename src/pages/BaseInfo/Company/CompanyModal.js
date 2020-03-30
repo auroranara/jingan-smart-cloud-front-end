@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Form, Modal, Button, Table, Input } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Button, Table, Input } from 'antd';
 
 import InlineForm from './InlineForm';
 
@@ -242,6 +244,7 @@ export default class CompanyModal extends PureComponent {
           onChangeCheckBox={onChangeCheckBox}
           checked={checked}
           butonStyles={butonStyles}
+          buttonSpan={{ xl: 16, md: 12, sm: 24 }}
         />
         <Table
           style={{ marginTop: '16px' }}

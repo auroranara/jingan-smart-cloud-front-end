@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 
 import styles from './MapInfo.less';
 import { getAlarmDesc } from '../utils';
@@ -33,7 +33,7 @@ export default function MapInfo(props) {
           {getAlarmDesc(latest, areaInfo).join(' ')}{+latest.type === 1 ? '，请及时处理' : ''}！
         </div>
       )}
-      {latest && <span className={styles.more} onClick={e => handleShowAlarmDrawer()}>更多<Icon type="double-right" /></span>}
+      {latest && <span className={styles.more} onClick={e => handleShowAlarmDrawer()}>更多<LegacyIcon type="double-right" /></span>}
     </div>
-  )
+  );
 }

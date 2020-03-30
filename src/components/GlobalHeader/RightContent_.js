@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { FormattedMessage, setLocale, getLocale } from 'umi/locale';
-import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip, Button } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Spin, Tag, Menu, Dropdown, Avatar, Tooltip, Button } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import NoticeIcon from '../NoticeIcon';
@@ -60,20 +61,20 @@ export default class GlobalHeaderRight extends PureComponent {
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
         <Menu.Item key="userCenter">
-          <Icon type="user" />
+          <LegacyIcon type="user" />
           <FormattedMessage id="menu.account.center" defaultMessage="account center" />
         </Menu.Item>
         <Menu.Item key="userinfo">
-          <Icon type="setting" />
+          <LegacyIcon type="setting" />
           <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
         </Menu.Item>
         <Menu.Item key="triggerError">
-          <Icon type="close-circle" />
+          <LegacyIcon type="close-circle" />
           <FormattedMessage id="menu.account.trigger" defaultMessage="Trigger Error" />
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="logout">
-          <Icon type="logout" />
+          <LegacyIcon type="logout" />
           退出登录
         </Menu.Item>
       </Menu>
@@ -104,7 +105,7 @@ export default class GlobalHeaderRight extends PureComponent {
             className={styles.action}
             title="使用文档"
           >
-            <Icon type="question-circle-o" />
+            <LegacyIcon type="question-circle-o" />
           </a>
         </Tooltip>
         <NoticeIcon

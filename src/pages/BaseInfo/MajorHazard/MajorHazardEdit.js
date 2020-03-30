@@ -2,7 +2,9 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
-import { Form, Modal, Input, Button, Card, DatePicker, Select, message, Tag } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Modal, Input, Button, Card, DatePicker, Select, message, Tag } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
@@ -91,6 +93,7 @@ export default class MajorHazardEdit extends PureComponent {
       buildingId: [], // 区域Id列表
       modelIds: '', // 当前选中区域id列表
       mapInfo: {},
+      expandId: false, // 列表中展开项的id
     };
   }
 
@@ -141,6 +144,12 @@ export default class MajorHazardEdit extends PureComponent {
             productDeviceIds,
             industryPipeline
           );
+
+          this.fetchStorageAreaList({ companyId: companyId });
+          this.fetchReservoirAreaList({ companyId: companyId });
+          this.fetchGasList({ companyId: companyId });
+          this.fetchProductList({ companyId: companyId });
+          this.fetchPipelineList({ companyId: companyId });
 
           this.setState({
             detailList: currentList,
@@ -312,14 +321,18 @@ export default class MajorHazardEdit extends PureComponent {
             .join(','),
         };
 
-        const success = () => {
+        const success = res => {
           const msg = id ? '编辑成功' : '新增成功';
           message.success(msg, 1, this.goBack());
         };
 
-        const error = () => {
-          const msg = id ? '编辑失败' : '新增失败';
-          message.error(msg, 1);
+        const error = res => {
+          const msg = id ? res || '编辑失败' : res || '新增失败';
+          if (res) {
+            message.warning(msg, 1);
+          } else {
+            message.error(msg, 1);
+          }
           this.setState({
             submitting: false,
           });
@@ -364,7 +377,9 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 关闭企业弹框
   handleClose = () => {
-    this.setState({ companyVisible: false });
+    this.setState({ companyVisible: false }, () => {
+      this.childMap.handleDispose();
+    });
   };
 
   // 选择企业
@@ -392,6 +407,11 @@ export default class MajorHazardEdit extends PureComponent {
       if (!mapInfo.mapId) return;
       this.childMap.initMap({ ...mapInfo });
     });
+    this.fetchStorageAreaList({ companyId: id });
+    this.fetchReservoirAreaList({ companyId: id });
+    this.fetchGasList({ companyId: id });
+    this.fetchProductList({ companyId: id });
+    this.fetchPipelineList({ companyId: id });
   };
 
   // 渲染企业模态框
@@ -414,16 +434,16 @@ export default class MajorHazardEdit extends PureComponent {
   }
 
   // 获取储罐区列表
-  fetchStorageAreaList = ({ ...payload }) => {
+  fetchStorageAreaList = ({ ...payload }, callback) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'storageAreaManagement/fetchTankAreaList',
       payload: {
         pageNum: 1,
         pageSize: 10,
-        isDanger: 0,
         ...payload,
       },
+      callback,
     });
   };
 
@@ -435,7 +455,6 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
-        dangerSource: 0,
         ...payload,
       },
     });
@@ -449,7 +468,6 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
-        dangerSource: 0,
         ...payload,
       },
     });
@@ -463,7 +481,6 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
-        majorHazard: 0,
         ...payload,
       },
     });
@@ -477,7 +494,6 @@ export default class MajorHazardEdit extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: 10,
-        dangerSource: 0,
         ...payload,
       },
     });
@@ -485,14 +501,20 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 显示危险源弹框
   handleDangerModal = () => {
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const { curCompanyId } = this.state;
-
+    if (id) return this.setState({ dangerModalVisible: true });
     if (curCompanyId) {
-      this.fetchStorageAreaList({ companyId: curCompanyId });
-      this.fetchReservoirAreaList({ companyId: curCompanyId });
-      this.fetchGasList({ companyId: curCompanyId });
-      this.fetchProductList({ companyId: curCompanyId });
-      this.fetchPipelineList({ companyId: curCompanyId });
+      // 0 不是重大危险源
+      this.fetchStorageAreaList({ companyId: curCompanyId, isDanger: 0 });
+      this.fetchReservoirAreaList({ companyId: curCompanyId, dangerSource: 0 });
+      this.fetchProductList({ companyId: curCompanyId, dangerSource: 0 });
+      this.fetchGasList({ companyId: curCompanyId, majorHazard: 0 });
+      this.fetchPipelineList({ companyId: curCompanyId, dangerSource: 0 });
       this.setState({ dangerModalVisible: true });
     } else {
       message.warning('请先选择单位！');
@@ -528,27 +550,27 @@ export default class MajorHazardEdit extends PureComponent {
     } = this.props;
     const { targetKeys } = this.state;
 
-    const storageNameArray = storageList.reduce((arr, { id, areaName }) => {
+    const storArray = storageList.reduce((arr, { id, areaName }) => {
       return targetKeys.includes(id) ? [...arr, { id, areaName }] : arr;
     }, []);
-    const reserviorNameArrray = areaList.reduce((arr, { id, name }) => {
+    const resArrray = areaList.reduce((arr, { id, name }) => {
       return targetKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
-    const gasNameArrray = gasList.reduce((arr, { id, gasholderName }) => {
+    const gasArrray = gasList.reduce((arr, { id, gasholderName }) => {
       return targetKeys.includes(id) ? [...arr, { id, gasholderName }] : arr;
     }, []);
-    const productNameArrray = proEquipList.reduce((arr, { id, name }) => {
+    const proArrray = proEquipList.reduce((arr, { id, name }) => {
       return targetKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
-    const pipelineNameArrray = pipelineList.reduce((arr, { id, name }) => {
+    const pipArrray = pipelineList.reduce((arr, { id, name }) => {
       return targetKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
 
-    const storageId = storageNameArray.map(item => item.id).join(',');
-    const reserviorId = reserviorNameArrray.map(item => item.id).join(',');
-    const gasId = gasNameArrray.map(item => item.id).join(',');
-    const productId = productNameArrray.map(item => item.id).join(',');
-    const pipelineId = pipelineNameArrray.map(item => item.id).join(',');
+    const storageId = storArray.map(item => item.id).join(',');
+    const reserviorId = resArrray.map(item => item.id).join(',');
+    const gasId = gasArrray.map(item => item.id).join(',');
+    const productId = proArrray.map(item => item.id).join(',');
+    const pipelineId = pipArrray.map(item => item.id).join(',');
 
     const allSelectedKeys = storageId.concat(reserviorId, gasId, productId, pipelineId);
 
@@ -561,11 +583,11 @@ export default class MajorHazardEdit extends PureComponent {
       gasometerIds: gasId,
       productIds: productId,
       pipelineIds: pipelineId,
-      tankAreaList: storageNameArray,
-      wareHouseAreaList: reserviorNameArrray,
-      gasHolderManageList: gasNameArrray,
-      productList: productNameArrray,
-      pipelineList: pipelineNameArrray,
+      tankAreaList: storArray,
+      wareHouseAreaList: resArrray,
+      gasHolderManageList: gasArrray,
+      productList: proArrray,
+      pipelineList: pipArrray,
     });
   };
 
@@ -677,6 +699,39 @@ export default class MajorHazardEdit extends PureComponent {
     );
   };
 
+  handleExpand = () => {
+    const { expandId } = this.state;
+    this.setState({ expandId: !expandId });
+  };
+
+  renderBuildingId = () => {
+    const { expandId, buildingId } = this.state;
+
+    // 是否展开
+    const list = expandId ? buildingId : buildingId.slice(0, 5);
+    return (
+      <div style={{ display: 'flex' }}>
+        <div style={{ width: '550px' }}>
+          {list.map(({ key, areaId, point, selected }) => (
+            <Tag
+              color={!selected ? '' : '#555252'}
+              key={key}
+              onClick={() => this.handleTagClick(areaId, point, selected)}
+            >
+              {areaId}
+            </Tag>
+          ))}
+        </div>
+        {buildingId.length >= 3 && (
+          <div className={styles.iconContainer} onClick={() => this.handleExpand()}>
+            <a>{expandId ? '收起' : '展开'}</a>
+            <LegacyIcon className={expandId ? styles.expandIcon : styles.icon} type="down" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   renderInfo() {
     const {
       form: { getFieldDecorator },
@@ -698,7 +753,6 @@ export default class MajorHazardEdit extends PureComponent {
       pointList,
       groupId,
       isDrawing,
-      buildingId,
       modelIds,
       curCompanyId,
     } = this.state;
@@ -1025,15 +1079,7 @@ export default class MajorHazardEdit extends PureComponent {
             )}
           </FormItem>
           <FormItem label="所选建筑物" {...formItemLayout}>
-            {buildingId.map(({ key, areaId, point, selected }) => (
-              <Tag
-                color={!selected ? '' : '#555252'}
-                key={key}
-                onClick={() => this.handleTagClick(areaId, point, selected)}
-              >
-                {areaId}
-              </Tag>
-            ))}
+            {this.renderBuildingId()}
           </FormItem>
         </Form>
       </Card>

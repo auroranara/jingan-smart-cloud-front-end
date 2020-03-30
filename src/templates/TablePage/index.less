@@ -1,6 +1,19 @@
 .card:not(:last-child) {
   margin-bottom: 24px;
 }
+
+.card {
+  :global {
+    .ant-legacy-form-item-label {
+      flex-grow: 0;
+    }
+
+    .ant-legacy-form-item .ant-legacy-form-item-control-wrapper {
+      flex: 1 1;
+    }
+  }
+}
+
 .table {
   :global {
     .ant-table {

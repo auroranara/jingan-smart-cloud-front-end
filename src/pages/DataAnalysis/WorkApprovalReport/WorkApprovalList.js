@@ -1,5 +1,7 @@
 import { PureComponent } from 'react';
-import { Card, Form, Input, DatePicker, Select, Table, Badge, TreeSelect, Spin } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Input, DatePicker, Select, Table, Badge, TreeSelect, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm'
@@ -672,7 +674,7 @@ export default class WorkApprovalList extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        width: 80,
         fixed: 'right',
         render: (val, row) => (
           <span>

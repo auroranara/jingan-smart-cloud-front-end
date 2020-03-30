@@ -1,19 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import {
-  Row,
-  Col,
-  Icon,
-  Card,
-  Tabs,
-  Table,
-  Radio,
-  DatePicker,
-  Tooltip,
-  Menu,
-  Dropdown,
-} from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col, Card, Tabs, Table, Radio, DatePicker, Tooltip, Menu, Dropdown } from 'antd';
 import {
   ChartCard,
   MiniArea,
@@ -174,7 +163,7 @@ class Analysis extends Component {
     const iconGroup = (
       <span className={styles.iconGroup}>
         <Dropdown overlay={menu} placement="bottomRight">
-          <Icon type="ellipsis" />
+          <LegacyIcon type="ellipsis" />
         </Dropdown>
       </span>
     );
@@ -302,7 +291,7 @@ class Analysis extends Component {
                     <FormattedMessage id="app.analysis.introduce" defaultMessage="introduce" />
                   }
                 >
-                  <Icon type="info-circle-o" />
+                  <LegacyIcon type="info-circle-o" />
                 </Tooltip>
               }
               loading={loading}
@@ -338,7 +327,7 @@ class Analysis extends Component {
                     <FormattedMessage id="app.analysis.introduce" defaultMessage="introduce" />
                   }
                 >
-                  <Icon type="info-circle-o" />
+                  <LegacyIcon type="info-circle-o" />
                 </Tooltip>
               }
               total={numeral(8846).format('0,0')}
@@ -366,7 +355,7 @@ class Analysis extends Component {
                     <FormattedMessage id="app.analysis.introduce" defaultMessage="Introduce" />
                   }
                 >
-                  <Icon type="info-circle-o" />
+                  <LegacyIcon type="info-circle-o" />
                 </Tooltip>
               }
               total={numeral(6560).format('0,0')}
@@ -402,7 +391,7 @@ class Analysis extends Component {
                     <FormattedMessage id="app.analysis.introduce" defaultMessage="introduce" />
                   }
                 >
-                  <Icon type="info-circle-o" />
+                  <LegacyIcon type="info-circle-o" />
                 </Tooltip>
               }
               total="78%"
@@ -543,7 +532,7 @@ class Analysis extends Component {
                             />
                           }
                         >
-                          <Icon style={{ marginLeft: 8 }} type="info-circle-o" />
+                          <LegacyIcon style={{ marginLeft: 8 }} type="info-circle-o" />
                         </Tooltip>
                       </span>
                     }

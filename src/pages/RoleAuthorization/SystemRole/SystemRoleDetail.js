@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Spin, Table, Tabs, Tree, Button } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Card, Spin, Table, Tabs, Tree, Button } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from '@/components/DescriptionList';
