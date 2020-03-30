@@ -12,11 +12,18 @@ const { Option } = Select;
 // 权限
 const {
   baseInfo: {
-    surroundingEnvironmentInfo: { edit: editCode, delete: deleteCode },
+    surroundingEnvironmentInfo: { edit: editCode, delete: deleteCode, view: viewCode },
   },
 } = codes;
 
-export const ARCHITECTURAL_STRUCTURE = ['钢混结构', '砖混结构', '钢结构', '框架结构', '框排架结构', '其他结构'].map((v, i) => ({ key: i.toString(), value: v }));
+export const ARCHITECTURAL_STRUCTURE = [
+  '钢混结构',
+  '砖混结构',
+  '钢结构',
+  '框架结构',
+  '框排架结构',
+  '其他结构',
+].map((v, i) => ({ value: i.toString(), label: v }));
 
 const getEnvirType = {
   1: '住宅区',
@@ -28,12 +35,12 @@ const getEnvirType = {
 };
 
 const envirType = [
-  { key: '1', value: '住宅区' },
-  { key: '2', value: '生产单位' },
-  { key: '3', value: '机关团体' },
-  { key: '4', value: '公共场所' },
-  { key: '5', value: '交通要道' },
-  { key: '6', value: '其他' },
+  { value: '1', label: '住宅区' },
+  { value: '2', label: '生产单位' },
+  { value: '3', label: '机关团体' },
+  { value: '4', label: '公共场所' },
+  { value: '5', label: '交通要道' },
+  { value: '6', label: '其他' },
 ];
 export { envirType };
 
@@ -115,12 +122,14 @@ export function getTableColumns(handleConfirmDelete, unitType) {
       dataIndex: 'minSpace',
       key: 'minSpace',
       align: 'center',
+      width: 140,
     },
     {
       title: '人员数量',
       dataIndex: 'perNumber',
       key: 'perNumber',
       align: 'center',
+      width: 120,
     },
     {
       title: '联系人',
@@ -167,10 +176,10 @@ export function getTableColumns(handleConfirmDelete, unitType) {
       render(id) {
         return (
           <Fragment>
-            {/* <AuthLink code={viewCode} to={`${ROUTER}/Handle/${id}`} target="_blank">
-                    查看
-                </AuthLink>
-                <Divider type="vertical" /> */}
+            <AuthLink code={viewCode} to={`${ROUTER}/detail/${id}`} target="_blank">
+              查看
+            </AuthLink>
+            <Divider type="vertical" />
             <AuthLink
               code={editCode}
               to={`${ROUTER}/edit/${id}`}

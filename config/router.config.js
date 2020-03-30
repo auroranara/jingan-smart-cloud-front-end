@@ -934,8 +934,8 @@ module.exports = env => {
                 {
                   name: 'view',
                   code: 'majorHazardInfo.productionEquipments.view',
-                  path: '/major-hazard-info/production-equipments/view/:id',
-                  // "component": "./MajorHazardInfo/ProductionEquipments/Edit",
+                  path: '/major-hazard-info/production-equipments/detail/:id',
+                  component: './BaseInfo/ProductionEquipments/Edit',
                 },
                 {
                   name: 'add',
@@ -1004,12 +1004,12 @@ module.exports = env => {
                   path: '/major-hazard-info/surrounding-environment-info/list',
                   component: './BaseInfo/SurroundingEnvironmentInfo/List',
                 },
-                // {
-                //   name: 'detail',
-                //   code: 'majorHazardInfo.surroundingEnvironmentInfo.view',
-                //   path: '/major-hazard-info/surrounding-environment-info/detail/:id',
-                //   component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
-                // },
+                {
+                  name: 'detail',
+                  code: 'majorHazardInfo.surroundingEnvironmentInfo.view',
+                  path: '/major-hazard-info/surrounding-environment-info/detail/:id',
+                  component: './BaseInfo/SurroundingEnvironmentInfo/Handle',
+                },
                 {
                   name: 'add',
                   code: 'majorHazardInfo.surroundingEnvironmentInfo.add',
