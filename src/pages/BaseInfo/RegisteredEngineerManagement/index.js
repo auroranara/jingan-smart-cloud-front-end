@@ -213,16 +213,21 @@ export default class RegSafetyEngList extends PureComponent {
 
   // 查看附件
   handleShowModal = files => {
-    const newFiles = files.map(({ webUrl }) => {
-      return {
-        src: webUrl,
-      };
-    });
-    this.setState({
-      visible: true,
-      imgUrl: newFiles,
-      currentImage: 0,
-    });
+    const url = files && files[0] ? files[0].webUrl : undefined;
+    if (!url)
+      return;
+
+    if ((/.[jpe?g|png]$/i).test(url)){
+      const newFiles = files.map(({ webUrl }) => {
+        return { src: webUrl};
+      });
+      this.setState({
+        visible: true,
+        imgUrl: newFiles,
+        currentImage: 0,
+      });
+    } else
+      window.open(url, '_blank');
   };
 
   // 关闭查看附件弹窗
@@ -390,12 +395,8 @@ export default class RegSafetyEngList extends PureComponent {
                 },
               ].map(({ label, value, id }) => {
                 return value && value.length ? (
-                  <p
-                    onClick={() => {
-                      this.handleShowModal(value);
-                    }}
-                  >
-                    {label}:<a>查看附件</a>
+                  <p>
+                    {label}:<a onClick={() => { this.handleShowModal(value); }}>查看附件</a>
                   </p>
                 ) : (
                   <p>
