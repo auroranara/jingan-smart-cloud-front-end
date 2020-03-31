@@ -33,10 +33,7 @@ const unitLayout = {
   style: { position: 'absolute', left: '78%', top: 0, width: '20%' },
 };
 
-const unitOptions = [
-  { value: '1', label: 't' },
-  { value: '2', label: 'm³' },
-];
+const unitOptions = [{ value: '1', label: 't' }, { value: '2', label: 'm³' }];
 
 const dangerSourceColumns = [
   {
@@ -63,19 +60,19 @@ const dangerSourceColumns = [
 const dangerSourceFields = [
   {
     id: 'code',
-    render () {
+    render() {
       return <Input placeholder="统一编码" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
   {
     id: 'name',
-    render () {
+    render() {
       return <Input placeholder="危险源名称" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
@@ -101,19 +98,19 @@ const msdsColumns = [
 const msdsFields = [
   {
     id: 'chineName',
-    render () {
+    render() {
       return <Input placeholder="中文名称" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
   {
     id: 'casNo',
-    render () {
+    render() {
       return <Input placeholder="CAS号" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
@@ -147,7 +144,7 @@ export default class MaterialsHandler extends PureComponent {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       form: { setFieldsValue },
       match: { params: { id = null } = {} },
@@ -171,8 +168,8 @@ export default class MaterialsHandler extends PureComponent {
               // maxStoreDayUnit, //最大存储量单位
               // actualReserves, //实际存储量
               // actualReservesUnit, //实际存储量单位
-              annualThroughput, //年生产能力
-              annualThroughputUnit, //年生产能力单位
+              annualThroughput, //年产量
+              annualThroughputUnit, //年产量单位
               // reservesLocation, //存储场所
               // highRiskStorefacil, //是否属于高危储存设施
               // majorHazard, //是否构成危险化学品重大危险源
@@ -237,8 +234,8 @@ export default class MaterialsHandler extends PureComponent {
               // 如果是产品
               newFields = {
                 ...newFields,
-                annualThroughput, //年生产能力
-                annualThroughputUnit, //年生产能力单位
+                annualThroughput, //年产量
+                annualThroughputUnit, //年产量单位
               };
             } else {
               newFields = {
@@ -252,7 +249,7 @@ export default class MaterialsHandler extends PureComponent {
         );
         setTimeout(() => {
           //高危化学品种类
-          setFieldsValue({ highRiskChemicals })
+          setFieldsValue({ highRiskChemicals });
         }, 0);
       });
     }
@@ -303,7 +300,7 @@ export default class MaterialsHandler extends PureComponent {
       type: 'materials/fetchInfoByCas',
       ...actions,
     });
-  }
+  };
 
   handleSubmit = () => {
     const {
@@ -375,33 +372,47 @@ export default class MaterialsHandler extends PureComponent {
     setFieldsValue({ msds: selectedMsds.id });
     // 如果存在CAS号 带入危险化学品目录序号
     const casNumber = selectedMsds ? selectedMsds.casNo : undefined;
-    setFieldsValue({ dangerChemcataSn: casNumber });
+    const isDangerChemical = selectedMsds ? selectedMsds.isDangerChemical : '0';
+    setFieldsValue({
+      dangerChemcataSn: casNumber,
+      isDangerChemicals: isDangerChemical,
+    });
     if (casNumber) {
       // 是否重点监管危险化学品
       this.fetchInfoByCas({
         payload: { casNumber, type: '1' },
-        callback: (value) => { setFieldsValue({ superviseChemicals: value }) },
-      })
+        callback: value => {
+          setFieldsValue({ superviseChemicals: value });
+        },
+      });
       // 是否易制爆危险化学品
       this.fetchInfoByCas({
         payload: { casNumber, type: '2' },
-        callback: (value) => { setFieldsValue({ easyMakeExplode: value }) },
-      })
+        callback: value => {
+          setFieldsValue({ easyMakeExplode: value });
+        },
+      });
       // 是否剧毒化学品
       this.fetchInfoByCas({
         payload: { casNumber, type: '3' },
-        callback: (value) => { setFieldsValue({ highlyToxicChem: value }) },
-      })
+        callback: value => {
+          setFieldsValue({ highlyToxicChem: value });
+        },
+      });
       // 是否危险化学品
       this.fetchInfoByCas({
         payload: { casNumber, type: '4' },
-        callback: (value) => { setFieldsValue({ isDangerChemicals: value }) },
-      })
+        callback: value => {
+          setFieldsValue({ isDangerChemicals: value });
+        },
+      });
       // 是否易制毒化学品
       this.fetchInfoByCas({
         payload: { casNumber, type: '5' },
-        callback: (value) => { setFieldsValue({ easyMakePoison: value }) },
-      })
+        callback: value => {
+          setFieldsValue({ easyMakePoison: value });
+        },
+      });
     }
   };
 
@@ -465,9 +476,7 @@ export default class MaterialsHandler extends PureComponent {
       // match: {
       //   params: { id },
       // },
-      materials: {
-        materialTypeOptions,
-      },
+      materials: { materialTypeOptions },
     } = this.props;
     const {
       selectedCompany,
@@ -532,7 +541,19 @@ export default class MaterialsHandler extends PureComponent {
             {getFieldDecorator('casNo')(<span>{selectedMsds.casNo || ''}</span>)}
           </FormItem>
           <FormItem label="危险性类别" {...formItemLayout}>
-            {getFieldDecorator('riskCateg')(<span>{selectedMsds.riskCateg ? RISK_CATEGORIES[selectedMsds.riskCateg] : ''}</span>)}
+            {getFieldDecorator('riskCateg')(
+              <span>{selectedMsds.riskCateg ? RISK_CATEGORIES[selectedMsds.riskCateg] : ''}</span>
+            )}
+          </FormItem>
+          <FormItem label="是否为危化品" {...formItemLayout}>
+            {getFieldDecorator('isDangerChemicals', {
+              rules: [{ required: true, message: '请选择是否为危化品' }],
+            })(
+              <Radio.Group {...itemStyles}>
+                <Radio value="1">是</Radio>
+                <Radio value="0">否</Radio>
+              </Radio.Group>
+            )}
           </FormItem>
           {/* <FormItem label="统一编码" {...formItemLayout}>
             {getFieldDecorator('unifiedCode')(<span>{selectedMsds.casNo}</span>)}
@@ -558,7 +579,7 @@ export default class MaterialsHandler extends PureComponent {
           </FormItem>
           <FormItem label="是否剧毒化学品" {...formItemLayout}>
             {getFieldDecorator('highlyToxicChem', {
-              rules: [{ required: true, message: '是否剧毒化学品' }],
+              rules: [{ required: true, message: '请选择是否剧毒化学品' }],
             })(
               <Radio.Group {...itemStyles}>
                 <Radio value="1">是</Radio>
@@ -637,24 +658,22 @@ export default class MaterialsHandler extends PureComponent {
               initialValue: '1',
               rules: [{ required: true, message: '请选择物料类型' }],
             })(
-              <RadioGroup
-                {...itemStyles}
-                onChange={this.handleTypeChange}
-                buttonStyle="solid"
-              >
+              <RadioGroup {...itemStyles} onChange={this.handleTypeChange} buttonStyle="solid">
                 {materialTypeOptions.map(({ value, label }) => (
-                  <Radio.Button value={value} key={value}>{label}</Radio.Button>
+                  <Radio.Button value={value} key={value}>
+                    {label}
+                  </Radio.Button>
                 ))}
               </RadioGroup>
             )}
           </FormItem>
           {isProduct ? (
             <div className={styles.unitWrapper}>
-              <FormItem label="年生产能力" {...formItemLayout}>
+              <FormItem label="年产量" {...formItemLayout}>
                 {getFieldDecorator('annualThroughput', {
                   // getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入年生产能力' }],
-                })(<InputNumber {...itemStyles} min={0} placeholder="请输入年生产能力" />)}
+                  rules: [{ required: true, message: '请输入年产量' }],
+                })(<InputNumber {...itemStyles} min={0} placeholder="请输入年产量" />)}
               </FormItem>
               <FormItem {...unitLayout}>
                 {getFieldDecorator('annualThroughputUnit', {
@@ -662,55 +681,58 @@ export default class MaterialsHandler extends PureComponent {
                 })(
                   <Select placeholder="单位">
                     {unitOptions.map(({ value, label }) => (
-                      <Option value={value} key={value}>{label}</Option>
+                      <Option value={value} key={value}>
+                        {label}
+                      </Option>
                     ))}
                   </Select>
                 )}
               </FormItem>
             </div>
           ) : (
-              <Fragment>
-                <div className={styles.unitWrapper}>
-                  <FormItem label="年消耗量" {...formItemLayout}>
-                    {getFieldDecorator('annualConsumption', {
-                      // getValueFromEvent: this.handleTrim,
-                      rules: [{ required: true, message: '请输年消耗量' }],
-                    })(<InputNumber {...itemStyles} min={0} placeholder="请输年消耗量" />)}
-                  </FormItem>
-                  <FormItem {...unitLayout}>
-                    {getFieldDecorator('annualConsumptionUnit', {
-                      rules: [{ required: true, message: '请输入单位' }],
-                    })(
-                      <Select placeholder="单位">
-                        {unitOptions.map(({ value, label }) => (
-                          <Option value={value} key={value}>{label}</Option>
-                        ))}
-                      </Select>
-                    )}
-                  </FormItem>
-                </div>
-                {/* <div className={styles.unitWrapper}>
-                      <FormItem label="最大存储量" {...formItemLayout}>
-                        {getFieldDecorator('maxStoreDay', {
-                          // getValueFromEvent: this.handleTrim,
-                          rules: [{ required: true, message: '请输入最大存储量' }],
-                        })(<InputNumber {...itemStyles} min={0} placeholder="请输入最大存储量" />)}
-                      </FormItem>
-                      <FormItem {...unitLayout}>
-                        {getFieldDecorator('maxStoreDayUnit', {
-                          getValueFromEvent: this.handleTrim,
-                          rules: [{ required: true, message: '请输入单位' }],
-                        })(
-                          <Select placeholder="单位">
-                            {unitOptions.map(item => (
-                              <Option value={item} key={item}>{item}</Option>
-                            ))}
-                          </Select>
-                        )}
-                      </FormItem>
-                    </div> */}
-              </Fragment>
-            )}
+            <Fragment>
+              <div className={styles.unitWrapper}>
+                <FormItem label="年消耗量" {...formItemLayout}>
+                  {getFieldDecorator('annualConsumption', {
+                    rules: [{ required: true, message: '请输年消耗量' }],
+                  })(<InputNumber {...itemStyles} min={0} placeholder="请输年消耗量" />)}
+                </FormItem>
+                <FormItem {...unitLayout}>
+                  {getFieldDecorator('annualConsumptionUnit', {
+                    rules: [{ required: true, message: '请输入单位' }],
+                  })(
+                    <Select placeholder="单位">
+                      {unitOptions.map(({ value, label }) => (
+                        <Option value={value} key={value}>
+                          {label}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+              </div>
+            </Fragment>
+          )}
+          <div className={styles.unitWrapper}>
+            <FormItem label="最大存储量" {...formItemLayout}>
+              {getFieldDecorator('maxStoreDay', {
+                rules: [{ required: true, message: '请输入最大存储量' }],
+              })(<InputNumber {...itemStyles} min={0} placeholder="请输入最大存储量" />)}
+            </FormItem>
+            <FormItem {...unitLayout}>
+              {getFieldDecorator('maxStoreDayUnit', {
+                rules: [{ required: true, message: '请输入单位' }],
+              })(
+                <Select placeholder="单位">
+                  {unitOptions.map(({ value, label }) => (
+                    <Option value={value} key={value}>
+                      {label}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </div>
           {/* <div className={styles.unitWrapper}>
             <FormItem label="实际存储量" {...formItemLayout}>
               {getFieldDecorator('actualReserves', {
@@ -830,7 +852,7 @@ export default class MaterialsHandler extends PureComponent {
     );
   };
 
-  render () {
+  render() {
     const {
       companyLoading,
       dangerSourceLoading,

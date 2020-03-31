@@ -48,31 +48,35 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-const storageAreaList = [
+export const storageAreaList = [
   { key: '1', value: '地上' },
   { key: '2', value: '地下' },
-  { key: '3', value: '海上' },
-  { key: '4', value: '海底' },
+  { key: '3', value: '其他' },
 ];
 
-const storagTypeList = [
-  { key: '1', value: '立式' },
-  { key: '2', value: '卧式' },
-  { key: '3', value: '球式' },
+export const storagTypeList = [
+  { key: '1', value: '立式储罐' },
+  { key: '2', value: '卧式储罐' },
+  { key: '3', value: '其他' },
 ];
 
-const constructList = [
-  { key: '1', value: '拱顶式' },
-  { key: '2', value: '浮顶式' },
-  { key: '3', value: '内浮顶' },
-  { key: '4', value: '卧式' },
+export const constructList = [
+  { key: '1', value: '固定顶储罐' },
+  { key: '2', value: '浮顶储罐' },
+  { key: '3', value: '球形储罐' },
+  { key: '4', value: '其他' },
 ];
 
-const materialList = [
+export const materialList = [
   { key: '1', value: '碳钢' },
   { key: '2', value: '不锈钢' },
   { key: '3', value: '聚乙烯' },
   { key: '4', value: '玻璃钢' },
+  { key: '5', value: '有色金属' },
+  { key: '6', value: '聚丙烯' },
+  { key: '7', value: '陶瓷' },
+  { key: '8', value: '橡胶' },
+  { key: '9', value: '其他' },
 ];
 
 const dangerLevelList = [
@@ -82,13 +86,13 @@ const dangerLevelList = [
   { key: '4', value: '丁' },
 ];
 
-const pressureList = [
+export const pressureList = [
   { key: '1', value: '低压' },
   { key: '2', value: '中压' },
   { key: '3', value: '高压' },
   { key: '4', value: '超高压' },
 ];
-const selectTypeList = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
+export const selectTypeList = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
 
 // 表单标签
 const fieldLabels = {};
@@ -873,11 +877,11 @@ export default class StorageEdit extends PureComponent {
               rules: [{ required: true, message: '请输入储罐名称' }],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="位号">
+          <FormItem {...formItemLayout} label="储罐编号">
             {getFieldDecorator('number', {
               initialValue: id ? detail.number : undefined,
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入位号' }],
+              rules: [{ required: true, message: '请输入储罐编号' }],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="所属罐组编号">
@@ -933,14 +937,12 @@ export default class StorageEdit extends PureComponent {
             {getFieldDecorator('tankRadius', {
               initialValue: id ? detail.tankRadius : undefined,
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入储罐半径' }],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="储罐高度（m）">
             {getFieldDecorator('tankHeight', {
               initialValue: id ? detail.tankHeight : undefined,
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入储罐高度' }],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="设计储量">
@@ -979,13 +981,13 @@ export default class StorageEdit extends PureComponent {
               initialValue: id ? detail.pressureVessel : undefined,
               rules: [{ required: true, message: '请选择是否压力容器' }],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           {pressureVessel === '1' && (
@@ -995,13 +997,13 @@ export default class StorageEdit extends PureComponent {
                   // initialValue: id ? detail.pressureRate : undefined,
                   rules: [{ required: true, message: '请选择压力等级' }],
                 })(
-                  <Select {...itemStyles} allowClear placeholder="请选择">
+                  <Radio.Group {...itemStyles}>
                     {pressureList.map(({ key, value }) => (
-                      <Option key={key} value={key}>
+                      <Radio key={key} value={key}>
                         {value}
-                      </Option>
+                      </Radio>
                     ))}
-                  </Select>
+                  </Radio.Group>
                 )}
               </FormItem>
               <FormItem {...formItemLayout} label="设计压力（KPa）">
@@ -1018,13 +1020,13 @@ export default class StorageEdit extends PureComponent {
               initialValue: id ? detail.tankLocationCate : undefined,
               rules: [{ required: true, message: '请选择储罐位置分类' }],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {storageAreaList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="储罐形式">
@@ -1032,13 +1034,13 @@ export default class StorageEdit extends PureComponent {
               initialValue: id ? detail.tankType : undefined,
               rules: [{ required: true, message: '请选择储罐形式' }],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {storagTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="储罐结构">
@@ -1046,13 +1048,13 @@ export default class StorageEdit extends PureComponent {
               initialValue: id ? detail.tankStructure : undefined,
               rules: [{ required: true, message: '请选择储罐结构' }],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {constructList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="储罐材质">
@@ -1060,13 +1062,20 @@ export default class StorageEdit extends PureComponent {
               initialValue: id ? detail.tankMaterial : undefined,
               rules: [{ required: true, message: '请选择储罐材质' }],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {materialList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
+              // <Select {...itemStyles} allowClear placeholder="请选择">
+              //   {materialList.map(({ key, value }) => (
+              //     <Option key={key} value={key}>
+              //       {value}
+              //     </Option>
+              //   ))}
+              // </Select>
             )}
           </FormItem>
 
@@ -1165,13 +1174,13 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           {+highRiskTank === 1 && (
@@ -1186,12 +1195,6 @@ export default class StorageEdit extends PureComponent {
             {getFieldDecorator('safeEquip', {
               initialValue: id ? detail.safeEquip : undefined,
               getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入安全设备',
-                },
-              ],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="有无围堰">
@@ -1203,21 +1206,24 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
-                <Option value="0">无</Option>
-                <Option value="1">有</Option>
-              </Select>
+              <Radio.Group {...itemStyles}>
+                {selectTypeList.map(({ key, value }) => (
+                  <Radio key={key} value={key}>
+                    {value}
+                  </Radio>
+                ))}
+              </Radio.Group>
             )}
           </FormItem>
           {cofferdam === '1' && (
-            <FormItem {...formItemLayout} label="围堰所围面积">
+            <FormItem {...formItemLayout} label="围堰所围面积（㎡）">
               {getFieldDecorator('cofferdamArea', {
                 getValueFromEvent: this.handleTrim,
                 rules: [{ required: true, message: '请输入围堰所围面积' }],
               })(<Input {...itemStyles} placeholder="请输入" />)}
             </FormItem>
           )}
-          <FormItem {...formItemLayout} label="火灾危险性等级">
+          {/* <FormItem {...formItemLayout} label="火灾危险性等级">
             {getFieldDecorator('fireHazardRate', {
               initialValue: id ? detail.fireHazardRate : undefined,
               rules: [
@@ -1235,7 +1241,7 @@ export default class StorageEdit extends PureComponent {
                 ))}
               </Select>
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem {...formItemLayout} label="是否配套火柜">
             {getFieldDecorator('setFire', {
               initialValue: id ? detail.setFire : undefined,
@@ -1246,13 +1252,13 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="是否设置保温/保冷">
@@ -1265,13 +1271,13 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="是否设置自动喷淋">
@@ -1284,13 +1290,13 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="是否设置消防水炮/泡沫炮">
@@ -1303,13 +1309,13 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Radio.Group {...itemStyles}>
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="备注">

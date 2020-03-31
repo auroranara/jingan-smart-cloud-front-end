@@ -16,7 +16,7 @@ const defaultPageSize = 10;
 const envirList = {
   1: '一类区',
   2: '二类区',
-  3: '三类区',
+  // 3: '三类区',
 };
 
 //面包屑
@@ -45,7 +45,9 @@ const {
       delete: deleteCode,
       bindSensor: bindCode,
       unbindSensor: unbindCode,
+      detail: detailCode,
     },
+    storehouse: { listView: reservoirListCode },
   },
 } = codes;
 
@@ -315,7 +317,7 @@ export default class ReservoirRegionList extends PureComponent {
         align: 'center',
         width: 250,
         render: (val, text) => {
-          const { number, name, area } = text;
+          const { number, name, area, position } = text;
           return (
             <div>
               <p>
@@ -330,6 +332,10 @@ export default class ReservoirRegionList extends PureComponent {
                 库区面积（㎡）:
                 {area}
               </p>
+              <p>
+                区域位置:
+                {position}
+              </p>
             </div>
           );
         },
@@ -339,6 +345,17 @@ export default class ReservoirRegionList extends PureComponent {
         dataIndex: 'warehouseNum',
         align: 'center',
         width: 200,
+        render: (val, row) =>
+          +val ? (
+            <AuthLink
+              to={`/major-hazard-info/storehouse/list?areaId=${row.id}`}
+              code={reservoirListCode}
+            >
+              {val}
+            </AuthLink>
+          ) : (
+            0
+          ),
       },
       {
         title: '构成重大危险源',
@@ -350,35 +367,42 @@ export default class ReservoirRegionList extends PureComponent {
           // return <span>---</span>;
         },
       },
+      // {
+      //   title: '所处环境功能区',
+      //   dataIndex: 'environment',
+      //   align: 'center',
+      //   width: 200,
+      //   render: val => {
+      //     return envirList[val];
+      //   },
+      // },
+      // {
+      //   title: '区域位置',
+      //   dataIndex: 'position',
+      //   align: 'center',
+      //   width: 180,
+      // },
       {
-        title: '所处环境功能区',
-        dataIndex: 'environment',
-        align: 'center',
-        width: 200,
-        render: val => {
-          return envirList[val];
-        },
-      },
-      {
-        title: '区域位置',
-        dataIndex: 'position',
-        align: 'center',
-        width: 180,
-      },
-      {
-        title: '已绑定监测设备',
+        title: '监测设备',
         dataIndex: 'monitorEquipmentCount',
         key: 'monitorEquipmentCount',
         align: 'center',
         width: 120,
         render: (val, row) => {
           return (
-            <span
-              onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
-              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
-            >
-              {val}
-            </span>
+            <div>
+              <div
+                onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+                style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+              >
+                {val}
+              </div>
+              <div>
+                <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
+                  绑定监测设备
+                </AuthA>
+              </div>
+            </div>
           );
         },
       },
@@ -390,9 +414,12 @@ export default class ReservoirRegionList extends PureComponent {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
-              绑定监测设备
-            </AuthA>
+            <AuthLink
+              to={`/major-hazard-info/reservoir-region-management/detail/${row.id}`}
+              code={detailCode}
+            >
+              查看
+            </AuthLink>
             <Divider type="vertical" />
             <AuthLink
               to={`/major-hazard-info/reservoir-region-management/edit/${row.id}`}
@@ -469,54 +496,53 @@ export default class ReservoirRegionList extends PureComponent {
 
     const fields = [
       {
-        id: 'name',
-        label: '库区名称',
-
+        id: 'nameOrCodeKeywords',
+        label: '库区',
         span: spanStyle,
-        render: () => <Input placeholder="请输入库区名称" />,
+        render: () => <Input placeholder="请输入库区名称或库区编号" />,
         transform: v => v.trim(),
       },
-      {
-        id: 'number',
-        label: '库区编号',
-        span: spanStyle,
-        render: () => <Input placeholder="请输入库区编号" />,
-        transform: v => v.trim(),
-      },
-      {
-        id: 'position',
-        label: '区域-位置',
-        span: spanStyle,
-        render: () => <Input placeholder="请输入区域位置" />,
-        transform: v => v.trim(),
-      },
-      {
-        id: 'environment',
-        label: '所处环境功能区',
-        render: () => (
-          <Select allowClear placeholder="请选择所处环境功能区">
-            {envirTypeList.map(({ key, value }) => (
-              <Option key={key} value={key}>
-                {value}
-              </Option>
-            ))}
-          </Select>
-        ),
-      },
-      {
-        id: 'dangerSource',
-        label: '构成重大危险源',
-        span: spanStyle,
-        render: () => (
-          <Select allowClear placeholder="请选择构成重大危险源">
-            {['否', '是'].map((item, index) => (
-              <Option key={index} value={index}>
-                {item}
-              </Option>
-            ))}
-          </Select>
-        ),
-      },
+      // {
+      //   id: 'number',
+      //   label: '库区编号',
+      //   span: spanStyle,
+      //   render: () => <Input placeholder="请输入库区编号" />,
+      //   transform: v => v.trim(),
+      // },
+      // {
+      //   id: 'position',
+      //   label: '区域-位置',
+      //   span: spanStyle,
+      //   render: () => <Input placeholder="请输入区域位置" />,
+      //   transform: v => v.trim(),
+      // },
+      // {
+      //   id: 'environment',
+      //   label: '所处环境功能区',
+      //   render: () => (
+      //     <Select allowClear placeholder="请选择所处环境功能区">
+      //       {envirTypeList.map(({ key, value }) => (
+      //         <Option key={key} value={key}>
+      //           {value}
+      //         </Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      // },
+      // {
+      //   id: 'dangerSource',
+      //   label: '构成重大危险源',
+      //   span: spanStyle,
+      //   render: () => (
+      //     <Select allowClear placeholder="请选择构成重大危险源">
+      //       {['否', '是'].map((item, index) => (
+      //         <Option key={index} value={index}>
+      //           {item}
+      //         </Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      // },
       {
         id: 'companyName',
         label: '单位名称：',
