@@ -160,7 +160,7 @@ const Tank = ({
         <Row>
           <Col className={styles.col} {...GRID}>
             <Link
-              to={`/major-hazard-info/storage-management/edit/${id}`}
+              to={`/major-hazard-info/storage-management/detail/${id}`}
               disabled={!hasTankAuthority}
               target="_blank"
             >
