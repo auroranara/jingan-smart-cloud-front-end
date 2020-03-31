@@ -45,32 +45,33 @@ const dspItems = [
   { id: 'code', label: '库房编码' },
   { id: 'number', label: '库房序号' },
   { id: 'name', label: '库房名称' },
-  { id: 'aname', label: '库区名称' },
+  { id: 'aname', label: '所属库区' },
   { id: 'anumber', label: '库区编号' },
   { id: 'position', label: '区域位置' },
   { id: 'area', label: '库房面积（㎡）' },
-  { id: 'firewall', label: '有无防火墙' },
   { id: 'style', label: '库房形式' },
-  { id: 'dangerLevel', label: '火灾危险性等级' },
+  { id: 'produceDate', label: '投产日期' },
+  { id: 'firewall', label: '有无防火墙' },
   { id: 'materialsName', label: '贮存物质名称' },
   { id: 'dangerWarehouse', label: '是否危化品仓库' },
   { id: 'toxicWarehouse', label: '是否剧毒化学品仓库' },
-  { id: 'produceDate', label: '投产日期' },
+  { id: 'dangerLevel', label: '火灾危险性等级' },
   { id: 'spary', label: '是否设置自动喷淋' },
   { id: 'lowTemperature', label: '是否低温仓储仓库' },
-  { id: 'dangerSource', label: '是否构成重大危险源' },
+  // { id: 'dangerSource', label: '是否构成重大危险源' },
 ];
 
-const dangerSourceItems = [
-  { id: 'dangerSourceUnit', label: '所属危险化学品重大危险源单元' },
-  { id: 'unitCode', label: '所属重大危险源单元编号' },
-];
+// const dangerSourceItems = [
+//   { id: 'dangerSourceUnit', label: '所属危险化学品重大危险源单元' },
+//   { id: 'unitCode', label: '所属重大危险源单元编号' },
+// ];
 
 const StorehouseStyles = ['封闭式', '半封闭式', '露天'];
 const DangerLevels = ['甲', '乙', '丙', '丁', '戊'];
 
-@connect(({ storehouse, loading }) => ({
+@connect(({ storehouse, loading, user }) => ({
   storehouse,
+  user,
   loading: loading.models.storehouse,
 }))
 export default class StorehouseDetail extends Component {
@@ -101,9 +102,12 @@ export default class StorehouseDetail extends Component {
     const {
       storehouse: { list = [{}] },
       loading,
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
     const detail = list[0] || {};
-    const items = detail.dangerSource === '1' ? [...dspItems, ...dangerSourceItems] : dspItems;
+    const items = unitType === 4 ? dspItems.filter(item => item.id !== 'companyName') : dspItems;
     const fields = items.map(item => {
       const { id } = item;
       const data = detail[id];
@@ -152,7 +156,11 @@ export default class StorehouseDetail extends Component {
               resetable={false}
               action={
                 <Fragment>
-                  <Button onClick={e => router.push(`/major-hazard-info/storehouse/edit/${detail.id}`)}>编辑</Button>
+                  <Button
+                    onClick={e => router.push(`/major-hazard-info/storehouse/edit/${detail.id}`)}
+                  >
+                    编辑
+                  </Button>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
                 </Fragment>
               }

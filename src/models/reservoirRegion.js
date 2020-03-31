@@ -35,11 +35,7 @@ export default {
     areaDetail: {
       data: [],
     },
-    envirTypeList: [
-      { key: '1', value: '一类区' },
-      { key: '2', value: '二类区' },
-      { key: '3', value: '三类区' },
-    ],
+    envirTypeList: [{ key: '1', value: '一类区' }, { key: '2', value: '二类区' }],
     areaCount: {},
     // 重大危险源数据源
     sourceData: {

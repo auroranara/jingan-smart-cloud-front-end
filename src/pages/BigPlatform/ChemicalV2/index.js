@@ -1608,6 +1608,7 @@ export default class Chemical extends PureComponent {
 
         <NewVideoPlay
           showList={true}
+          style1111={{ position: 'fixed' }}
           videoList={videoList}
           visible={videoVisible}
           keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId

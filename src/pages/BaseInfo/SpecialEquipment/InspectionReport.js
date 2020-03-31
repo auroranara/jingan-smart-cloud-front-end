@@ -275,16 +275,21 @@ export default class InspectionReport extends PureComponent {
   };
 
   handleShowFile = files => {
-    const newFiles = files.map(({ webUrl }) => {
-      return {
-        src: webUrl,
-      };
-    });
-    this.setState({
-      fileVisible: true,
-      imgUrl: newFiles,
-      currentImage: 0,
-    });
+    const url = files && files[0] ? files[0].webUrl : undefined;
+    if (!url)
+      return;
+
+    if ((/.[jpe?g|png]$/i).test(url)){
+      const newFiles = files.map(({ webUrl }) => {
+        return { src: webUrl };
+      });
+      this.setState({
+        fileVisible: true,
+        imgUrl: newFiles,
+        currentImage: 0,
+      });
+    } else
+      window.open(url, '_blank');
   };
 
   handleFileClose = () => {
