@@ -522,7 +522,7 @@ export default class WorkingBillTablePage extends Component {
             {
               key: 'range',
               label: '检修期限',
-              component: <RangePicker format={MINUTE_FORMAT} allowClear />,
+              component: <RangePicker format={MINUTE_FORMAT} showTime allowClear />,
             },
           ]
         : []),
@@ -540,7 +540,7 @@ export default class WorkingBillTablePage extends Component {
             {
               key: 'range',
               label: '作业时间',
-              component: <RangePicker format={MINUTE_FORMAT} allowClear />,
+              component: <RangePicker format={MINUTE_FORMAT} showTime allowClear />,
             },
           ]
         : []),

@@ -38,20 +38,11 @@ export default class AbnormalRecord extends Component {
     images: null,
   };
 
-  empty = true;
-
   shouldComponentUpdate(nextProps, nextState) {
     return (
       nextProps.match.params.unitId !== this.props.match.params.unitId || nextState !== this.state
     );
   }
-
-  getRangeFromEvent = range => {
-    const empty = !(range && range.length);
-    const result = this.empty && !empty ? [range[0].startOf('day'), range[1].endOf('day')] : range;
-    this.empty = empty;
-    return result;
-  };
 
   transform = ({ unitId, range: [openTimeStart, openTimeEnd] = [], ...props }) => ({
     companyId: unitId,
@@ -108,7 +99,7 @@ export default class AbnormalRecord extends Component {
     {
       id: 'range',
       options: { initialValue: [] },
-      render: () => <RangePicker format={DEFAULT_FORMAT} allowClear />,
+      render: () => <RangePicker format={DEFAULT_FORMAT} showTime allowClear />,
     },
   ];
 

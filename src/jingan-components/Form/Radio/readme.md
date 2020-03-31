@@ -17,7 +17,7 @@
 
 ## 示例
 
-> 全部参数
+> 普通
 
   ```js
   import Radio from '@/jingan-components/Form/Radio';

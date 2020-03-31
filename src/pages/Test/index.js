@@ -78,6 +78,7 @@ export default class Test extends Component {
               props: {
                 format: 'YYYY-MM-DD HH:mm:ss',
                 showTime: true,
+                ranges: ['最近一周', '最近一个月', '最近一年'],
                 // picker: 'week',
                 // originalMode: 'month',
                 onChange: v => console.log(v),
