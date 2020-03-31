@@ -13,7 +13,7 @@ import styles from './index.less';
 const {
   baseInfo: {
     storehouse: {
-      // detail: detailCode,
+      detail: detailCode,
       edit: editCode,
       add: addCode,
       delete: deleteCode,
@@ -65,7 +65,10 @@ export default class StorehouseList extends PureComponent {
   };
 
   componentDidMount() {
-    this.fetchList(1);
+    const {
+      location: { query },
+    } = this.props;
+    this.fetchList(1, this.pageSize, query);
     this.fetchCompanyNum();
   }
 
@@ -103,23 +106,9 @@ export default class StorehouseList extends PureComponent {
     } = this.props;
     const fields = [
       {
-        id: 'name',
+        id: 'nameOrCodeKeywords',
         render() {
-          return <Input placeholder="请输入库房名称" />;
-        },
-        transform,
-      },
-      {
-        id: 'code',
-        render() {
-          return <Input placeholder="请输入库房编号" />;
-        },
-        transform,
-      },
-      {
-        id: 'position',
-        render() {
-          return <Input placeholder="请输入区域位置" />;
+          return <Input placeholder="请输入库房名称或库房编号" />;
         },
         transform,
       },
@@ -131,7 +120,7 @@ export default class StorehouseList extends PureComponent {
             <Select
               allowClear
               showSearch
-              placeholder="是否是重大危险源"
+              placeholder="是否构成重大危险源"
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
             >
@@ -148,9 +137,9 @@ export default class StorehouseList extends PureComponent {
         },
       },
       {
-        id: 'aName',
+        id: 'aNameOrCodeKeywords',
         render() {
-          return <Input placeholder="请输入库区名称" />;
+          return <Input placeholder="请输入库区名称或库区编号" />;
         },
         transform,
       },
@@ -169,7 +158,7 @@ export default class StorehouseList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
+          fields={unitType === 4 ? fields.filter(({ id }) => id !== 'companyName') : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -196,6 +185,10 @@ export default class StorehouseList extends PureComponent {
   handleReset = () => {
     this.setState({ formData: {} });
     this.fetchList(1, this.pageSize);
+  };
+
+  goDetail = id => {
+    router.push(`/major-hazard-info/storehouse/detail/${id}`);
   };
 
   goEdit = id => {
@@ -383,7 +376,7 @@ export default class StorehouseList extends PureComponent {
         align: 'center',
         width: 250,
         render: (data, record) => {
-          const { code, number, name, area, dangerSource } = record;
+          const { code, number, name, area, position } = record;
           return (
             <div className={styles.multi}>
               <div>
@@ -403,8 +396,8 @@ export default class StorehouseList extends PureComponent {
                 {area}
               </div>
               <div>
-                重大危险源：
-                {dangerSource === '1' ? '是' : '否'}
+                区域位置：
+                {position}
               </div>
             </div>
           );
@@ -453,25 +446,33 @@ export default class StorehouseList extends PureComponent {
           ),
       },
       {
-        title: '区域位置',
-        dataIndex: 'position',
-        key: 'position',
+        title: '是否构成重大危险源',
+        dataIndex: 'dangerSource',
+        key: 'dangerSource',
         align: 'center',
         width: 120,
+        render: val => (val === '1' ? '是' : '否'),
       },
       {
-        title: '已绑定监测设备',
+        title: '监测设备',
         dataIndex: 'monitorEquipmentCount',
         key: 'monitorEquipmentCount',
         align: 'center',
         width: 150,
         render: (val, row) => (
-          <span
-            onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
-            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
-          >
-            {val}
-          </span>
+          <Fragment>
+            <div
+              onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+            >
+              {val}
+            </div>
+            <div>
+              <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(row)}>
+                绑定监测设备
+              </AuthA>
+            </div>
+          </Fragment>
         ),
       },
       {
@@ -483,8 +484,8 @@ export default class StorehouseList extends PureComponent {
         width: 210,
         render: (data, record) => (
           <span>
-            <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(record)}>
-              绑定监测设备
+            <AuthA code={detailCode} onClick={() => this.goDetail(record.id)}>
+              查看
             </AuthA>
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.goEdit(record.id)}>

@@ -753,6 +753,12 @@ module.exports = env => {
                   component: './BaseInfo/StorageManagement/StorageEdit',
                 },
                 {
+                  name: 'detail',
+                  code: 'majorHazardInfo.storageAreaManagement.detail',
+                  path: '/major-hazard-info/storage-management/detail/:id',
+                  component: './BaseInfo/StorageManagement/Detail',
+                },
+                {
                   name: 'add',
                   code: 'majorHazardInfo.storageAreaManagement.add',
                   path: '/major-hazard-info/storage-management/add',
@@ -788,6 +794,12 @@ module.exports = env => {
                   code: 'majorHazardInfo.reservoirRegionManagement.listView',
                   path: '/major-hazard-info/reservoir-region-management/view/:id',
                   component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
+                },
+                {
+                  name: 'detail',
+                  code: 'majorHazardInfo.reservoirRegionManagement.detail',
+                  path: '/major-hazard-info/reservoir-region-management/detail/:id',
+                  component: './BaseInfo/ReservoirRegionManagement/Detail',
                 },
                 {
                   name: 'add',
