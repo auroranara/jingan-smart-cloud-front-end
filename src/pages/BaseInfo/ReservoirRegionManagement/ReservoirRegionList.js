@@ -603,7 +603,7 @@ export default class ReservoirRegionList extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={unitType === 4 ? fields.slice(0, 4) : fields}
+            fields={unitType === 4 ? fields.filter(({ id }) => id !== 'companyName') : fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={

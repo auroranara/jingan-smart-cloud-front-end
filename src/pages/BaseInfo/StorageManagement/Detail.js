@@ -13,8 +13,15 @@ import {
   pressureList,
 } from './StorageEdit';
 import MapMarkerSelect from '@/components/MapMarkerSelect';
+import codes from '@/utils/codes';
+import { hasAuthority } from '@/utils/customAuth';
 import styles from './Detail.less';
 
+const {
+  baseInfo: {
+    storageManagement: { edit: editCode },
+  },
+} = codes;
 const listUrl = '/major-hazard-info/storage-management/list';
 const HEADER = '储罐管理';
 const TITLE = '详情';
@@ -112,7 +119,7 @@ export default class StorageDetail extends Component {
   render() {
     const {
       user: {
-        currentUser: { unitType },
+        currentUser: { unitType, permissionCodes },
       },
       baseInfo: { storageTankDetail: detail },
       loading,
@@ -312,6 +319,7 @@ export default class StorageDetail extends Component {
             : () => <span>{detail[id] || NO_DATA}</span>,
       };
     });
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <PageHeaderLayout title={TITLE} breadcrumbList={BREADCRUMB}>
@@ -327,9 +335,10 @@ export default class StorageDetail extends Component {
                 <Fragment>
                   <Button
                     onClick={e =>
-                      router.push(`/major-hazard-info/storage-area-management/edit/${detail.id}`)
+                      router.push(`/major-hazard-info/storage-management/edit/${detail.id}`)
                     }
                     type="primary"
+                    disabled={!hasEditAuthority}
                   >
                     编辑
                   </Button>

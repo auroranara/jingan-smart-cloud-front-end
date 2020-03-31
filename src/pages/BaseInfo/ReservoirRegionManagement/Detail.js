@@ -131,7 +131,9 @@ export default class StorehouseDetail extends Component {
                 <Fragment>
                   <Button
                     onClick={e =>
-                      router.push(`/major-hazard-info/storage-area-management/edit/${detail.id}`)
+                      router.push(
+                        `/major-hazard-info/reservoir-region-management/edit/${detail.id}`
+                      )
                     }
                     type="primary"
                   >

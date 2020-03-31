@@ -164,8 +164,8 @@ export default class MaterialsHandler extends PureComponent {
               msds, //msds
               annualConsumption, //年消耗量
               annualConsumptionUnit, //年消耗量单位
-              // maxStoreDay, //最大存储量
-              // maxStoreDayUnit, //最大存储量单位
+              maxStoreDay, //最大存储量
+              maxStoreDayUnit, //最大存储量单位
               // actualReserves, //实际存储量
               // actualReservesUnit, //实际存储量单位
               annualThroughput, //年产量
@@ -224,8 +224,8 @@ export default class MaterialsHandler extends PureComponent {
           },
           () => {
             let newFields = {
-              // maxStoreDay, //最大存储量
-              // maxStoreDayUnit, //最大存储量单位
+              maxStoreDay, //最大存储量
+              maxStoreDayUnit, //最大存储量单位
               // actualReserves, //实际存储量
               // actualReservesUnit, //实际存储量单位
               // keySupervision: +keySupervision,

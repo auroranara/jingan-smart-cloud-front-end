@@ -69,7 +69,7 @@ export default class StorehouseList extends PureComponent {
       location: { query },
     } = this.props;
     this.fetchList(1, this.pageSize, query);
-    this.fetchCompanyNum();
+    this.fetchCompanyNum(query);
   }
 
   pageNum = 1;
