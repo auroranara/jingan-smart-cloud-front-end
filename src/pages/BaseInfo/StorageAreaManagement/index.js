@@ -58,7 +58,7 @@ const fields = [
     transform: v => v.trim(),
   },
   {
-    id: 'chineName',
+    id: 'chineNameOrCasNoKeywords',
     label: '存储介质',
     span: spanStyle,
     render: () => <Input placeholder="请输入化学品名称或CAS号" />,
