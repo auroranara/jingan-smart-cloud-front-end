@@ -217,7 +217,7 @@ export default class RegSafetyEngList extends PureComponent {
     if (!url)
       return;
 
-    if ((/.[jpe?g|png]$/i).test(url)){
+    if ((/\.(jpe?g|png)$/i).test(url)){
       const newFiles = files.map(({ webUrl }) => {
         return { src: webUrl};
       });
