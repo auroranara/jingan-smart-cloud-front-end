@@ -67,7 +67,7 @@ const fields = [
     transform: v => v.trim(),
   },
   {
-    id: 'location',
+    id: 'areaLocation',
     label: '区域-位置：',
     span: spanStyle,
     render: () => <Input placeholder="请输入区域位置" />,
@@ -78,6 +78,7 @@ const fields = [
     label: '储罐区：',
     span: spanStyle,
     render: () => <Input placeholder="请输入储罐区编码或储罐区名称" />,
+    transform: v => v.trim(),
   },
   {
     id: 'companyName',

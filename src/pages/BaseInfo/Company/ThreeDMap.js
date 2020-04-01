@@ -33,7 +33,7 @@ const MODES = [
   { name: '3D', value: fengMap.FMViewMode.MODE_3D },
 ];
 
-function getDefaultViewCenter(center) {
+function getDefaultViewCenter (center) {
   if (!center)
     return;
 
@@ -50,10 +50,10 @@ export default class ThreeDMap extends PureComponent {
     // scale: INIT_SCALE,
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.getMapList(list => {
       const { form: { setFieldsValue } } = this.props;
-      if (list.length){
+      if (list.length) {
         const vals = list[0];
         const { theme, defaultViewMode, defaultMapScaleLevel, mapScaleLevelRangeList } = vals;
         const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
@@ -102,14 +102,14 @@ export default class ThreeDMap extends PureComponent {
   };
 
   editMap = (isPost, fieldsValue, id) => {
-    const { dispatch, companyId } = this.props;
+    const { dispatch, companyId, prePath } = this.props;
     dispatch({
       type: `company/${isPost ? 'add' : 'edit'}Map`,
       payload: { ...fieldsValue, id, companyId },
       callback: (code, msg) => {
         if (code === 200) {
           message.success(msg);
-          router.push('/base-info/company/list');
+          router.push(prePath || '/base-info/company/list');
         } else
           message.error(msg);
       },
@@ -120,7 +120,7 @@ export default class ThreeDMap extends PureComponent {
   //   this.setState({ scaleRange: value });
   // };
 
-  renderBaseItems() {
+  renderBaseItems () {
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -141,7 +141,7 @@ export default class ThreeDMap extends PureComponent {
     ));
   }
 
-  renderMoreItems() {
+  renderMoreItems () {
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -255,7 +255,7 @@ export default class ThreeDMap extends PureComponent {
     this.initMap(getFieldsValue());
   };
 
-  render() {
+  render () {
     const { mapVisible } = this.state;
 
     return (

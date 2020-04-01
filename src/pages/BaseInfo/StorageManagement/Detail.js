@@ -282,7 +282,8 @@ export default class StorageDetail extends Component {
               label: '所属建筑物楼层',
               render: ({ buildingId, floorId }) => (
                 <div>
-                  {(buildings.find(item => item.id === buildingId) || {}).buildingName || ''}-
+                  {(buildings.find(item => item.id === buildingId) || {}).buildingName || ''}
+                  {` - `}
                   {(floors.find(item => item.id === floorId) || {}).floorName || ''}
                 </div>
               ),
