@@ -4,7 +4,14 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import { connect } from 'dva';
 import router from 'umi/router';
+import codes from '@/utils/codes';
+import { hasAuthority } from '@/utils/customAuth';
 
+const {
+  baseInfo: {
+    reservoirRegionManagement: { edit: editCode },
+  },
+} = codes;
 const listUrl = '/major-hazard-info/reservoir-region-management/list';
 const HEADER = '库区管理';
 const TITLE = '详情';
@@ -73,7 +80,7 @@ export default class StorehouseDetail extends Component {
   render() {
     const {
       user: {
-        currentUser: { unitType },
+        currentUser: { unitType, permissionCodes },
       },
       reservoirRegion: { envirTypeList, list = [{}] },
       loading,
@@ -116,6 +123,7 @@ export default class StorehouseDetail extends Component {
             : () => <span>{detail[id] || NO_DATA}</span>,
       };
     });
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <PageHeaderLayout title={TITLE} breadcrumbList={BREADCRUMB}>
@@ -136,6 +144,7 @@ export default class StorehouseDetail extends Component {
                       )
                     }
                     type="primary"
+                    disabled={!hasEditAuthority}
                   >
                     编辑
                   </Button>
