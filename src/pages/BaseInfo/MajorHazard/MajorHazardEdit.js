@@ -35,11 +35,14 @@ const {
   },
 } = codes;
 
-function distinctByReduce(arr) {
-  return arr.reduce((acc, cur) => {
-    acc.includes(cur) || acc.push(cur);
-    return acc;
+function filterList(arr) {
+  const newArr = arr.reduce(function(prev, element) {
+    if (!prev.find(el => el.id === element.id)) {
+      prev.push(element);
+    }
+    return prev;
   }, []);
+  return newArr;
 }
 
 @connect(
@@ -499,7 +502,6 @@ export default class MajorHazardEdit extends PureComponent {
     const pipArrray = pipelineList.concat(pilineList).reduce((arr, { id, name }) => {
       return concatKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
-    console.log('[...new Set(storArray)]', [...new Set(storArray)]);
 
     const storageId = storArray.map(item => item.id).join(',');
     const reserviorId = resArrray.map(item => item.id).join(',');
@@ -518,11 +520,11 @@ export default class MajorHazardEdit extends PureComponent {
       gasometerIds: gasId,
       productIds: productId,
       pipelineIds: pipelineId,
-      tankAreaList: [...new Set(storArray)],
-      wareHouseAreaList: [...new Set(resArrray)],
-      gasHolderManageList: [...new Set(gasArrray)],
-      productList: [...new Set(proArrray)],
-      pipelineList: [...new Set(pipArrray)],
+      tankAreaList: filterList(storArray),
+      wareHouseAreaList: filterList(resArrray),
+      gasHolderManageList: filterList(gasArrray),
+      productList: filterList(proArrray),
+      pipelineList: filterList(pipArrray),
     });
   };
 
@@ -578,8 +580,6 @@ export default class MajorHazardEdit extends PureComponent {
     if (s === 2) {
       const filterAreaId = areaIds.split(',').filter(item => item !== id);
       console.log('filterAreaId', filterAreaId);
-      console.log('areaIds111', areaIds.split(',').filter(item => item !== id));
-
       this.fetchEdit({ areaIds: filterAreaId.join(',') });
       const allSelectedKeys = filterAreaId.concat(tankIds, productIds, gasometerIds, pipelineIds);
       const reserviorNameArrray = wareHouseAreaList.reduce((arr, { id, name }) => {
