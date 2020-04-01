@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import {
   Card,
@@ -15,7 +15,7 @@ import {
   Input,
   Modal,
   Upload,
-  Icon,
+  // Icon,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
@@ -28,7 +28,14 @@ import ImagePreview from '@/jingan-components/ImagePreview';
 
 const {
   realNameCertification: {
-    personnelManagement: { add: addCode, edit: editCode, delete: deleteCode },
+    personnelManagement: {
+      add: addCode,
+      edit: editCode,
+      delete: deleteCode,
+      view: viewCode,
+      import: importCode,
+      importPhoto: importPhotoCode,
+    },
   },
 } = codes;
 
@@ -38,7 +45,6 @@ const title = '人员列表';
 const defaultPageSize = 10;
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
-const uploadAction = '/acloud_new/v2/uploadFile';
 
 const getPersonType = {
   2: '外协人员',
@@ -47,6 +53,8 @@ const getPersonType = {
   5: '管理人员',
   6: '安全巡查人员',
 };
+
+const url = 'http://data.jingan-china.cn/v2/chem/file1/%E4%BA%BA%E5%91%98%E6%A8%A1%E6%9D%BF.xls';
 @connect(({ realNameCertification, user, loading }) => ({
   realNameCertification,
   user,
@@ -60,7 +68,11 @@ export default class PersonnelList extends PureComponent {
     curCompanyName: '',
     personVisible: false,
     personLoading: false,
-    picVisible: false,
+    imgVisible: false,
+    imgLoading: false,
+    imgFileList: [], // 导入的数据列表
+    personFileList: [],
+    selectedRowKeys: [],
   };
 
   componentDidMount() {
@@ -128,6 +140,18 @@ export default class PersonnelList extends PureComponent {
     const { curCompanyName } = this.state;
     router.push(
       `/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
+    );
+  };
+
+  handleToDetail = id => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    const { curCompanyName } = this.state;
+    router.push(
+      `/real-name-certification/personnel-management/detail/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
     );
   };
 
@@ -222,15 +246,116 @@ export default class PersonnelList extends PureComponent {
   };
 
   handlePersonClose = () => {
-    this.setState({ personVisible: false });
+    this.setState({ personVisible: false, personFileList: [] });
   };
 
-  hanldlePicModal = () => {
-    this.setState({ picVisible: true });
+  handlePersonExChange = info => {
+    const fileList = info.fileList.slice(-1);
+    const res = info.file.response;
+    this.setState({ personFileList: fileList });
+    if (info.file.status === 'uploading') {
+      this.setState({ personLoading: true });
+    }
+    if (info.file.status === 'removed') {
+      message.success('删除成功');
+      return;
+    }
+    if (info.file.status === undefined) {
+      this.setState({ personLoading: false, personFileList: [] });
+    }
+    if (res) {
+      if (res.code && res.code === 200) {
+        message.success(res.msg);
+        this.handlePersonClose();
+        this.handleQuery();
+        this.setState({
+          personLoading: false,
+        });
+      } else {
+        message.error(res.msg);
+        this.setState({
+          personLoading: false,
+        });
+      }
+    }
   };
 
-  handlePicClose = () => {
-    this.setState({ picVisible: false });
+  handlePersonBefore = file => {
+    const { personLoading } = this.state;
+    const isExcel =
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.type === 'application/vnd.ms-excel';
+    if (personLoading) {
+      message.error('尚未上传结束');
+    }
+    if (!isExcel) {
+      message.error('上传失败，请上传.xls或者.xlsx格式');
+    }
+    return isExcel && !personLoading;
+  };
+
+  hanldleImgModal = () => {
+    this.setState({ imgVisible: true });
+  };
+
+  handleImgClose = () => {
+    this.setState({ imgVisible: false, imgFileList: [] });
+  };
+
+  handleImgChange = info => {
+    const fileList = info.fileList.slice(-1);
+    const res = info.file.response;
+    this.setState({ imgFileList: fileList });
+    if (info.file.status === 'uploading') {
+      this.setState({ imgLoading: true });
+    }
+    if (info.file.status === 'removed') {
+      message.success('删除成功');
+      return;
+    }
+    if (info.file.status === undefined) {
+      this.setState({ imgLoading: false, imgFileList: [] });
+    }
+    if (res) {
+      if (res.code && res.code === 200) {
+        message.success(res.msg);
+        this.handleImgClose();
+        this.handleQuery();
+        this.setState({
+          imgLoading: false,
+        });
+      } else {
+        message.error(res.msg);
+        this.setState({
+          imgLoading: false,
+        });
+      }
+    }
+  };
+
+  handleImgBefore = file => {
+    const { imgLoading } = this.state;
+    const isZip = file.type === 'application/x-zip-compressed';
+    if (imgLoading) {
+      message.error('尚未上传结束');
+    }
+    if (!isZip) {
+      message.error('上传失败，请上传.zip格式');
+    }
+    return isZip && !imgLoading;
+  };
+
+  // 跳转到批量导入记录页面
+  hanldleImgRecord = () => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    const { curCompanyName } = this.state;
+    router.push(
+      `/real-name-certification/personnel-management/record/${companyId}?companyName=${curCompanyName}`
+    );
   };
 
   // 渲染列表
@@ -245,6 +370,14 @@ export default class PersonnelList extends PureComponent {
         // dutyDict, // 职务
       },
     } = this.props;
+
+    const { selectedRowKeys } = this.state;
+
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+
     const columns = [
       {
         title: '职工号',
@@ -339,9 +472,13 @@ export default class PersonnelList extends PureComponent {
         key: '操作',
         align: 'center',
         fixed: 'right',
-        width: 150,
+        width: 180,
         render: (val, record) => (
           <Fragment>
+            <AuthA code={viewCode} onClick={() => this.handleToDetail(record.id)}>
+              查看
+            </AuthA>
+            <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(record.id)}>
               编辑
             </AuthA>
@@ -366,6 +503,7 @@ export default class PersonnelList extends PureComponent {
           dataSource={list}
           bordered
           scroll={{ x: 'max-content' }}
+          rowSelection={rowSelection}
           pagination={{
             current: pageNum,
             pageSize,
@@ -393,11 +531,25 @@ export default class PersonnelList extends PureComponent {
           pagination: { total = 0 },
         },
       },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
-    const { images, currentImage, personVisible, personLoading, picVisible } = this.state;
 
-    const uploadExportButton = <Icon type={personLoading ? 'loading' : 'upload'} />;
+    const {
+      images,
+      currentImage,
+      personVisible,
+      personLoading,
+      imgLoading,
+      imgFileList,
+      imgVisible,
+      personFileList,
+    } = this.state;
 
+    const uploadExportButton = <LegacyIcon type={personLoading ? 'loading' : 'upload'} />;
+
+    const uploadPicButton = <LegacyIcon type={imgLoading ? 'loading' : 'upload'} />;
     //面包屑
     const breadcrumbList = [
       {
@@ -435,17 +587,27 @@ export default class PersonnelList extends PureComponent {
             </span>
             <Button
               type="primary"
+              disabled={!importPhotoCode}
               style={{ float: 'right' }}
-              // onClick={this.hanldlePicModal}
+              onClick={this.hanldleImgRecord}
+            >
+              批量导入照片记录
+            </Button>
+            <Button
+              type="primary"
+              disabled={!importPhotoCode}
+              style={{ float: 'right', marginRight: '10px' }}
+              onClick={this.hanldleImgModal}
             >
               批量导入照片
             </Button>
             <Button
               type="primary"
+              disabled={!importCode}
               style={{ float: 'right', marginRight: '10px' }}
-              // onClick={this.hanldlePicModal}
+              onClick={this.hanldlePersonModal}
             >
-              批量导入
+              导入
             </Button>
           </div>
         }
@@ -457,56 +619,72 @@ export default class PersonnelList extends PureComponent {
         <Modal
           title="批量导入"
           visible={personVisible}
-          onCancel={this.handlePersonClose}
-          onOk={this.handleExportSubmit}
-          confirmLoading={personLoading}
+          closable={false}
+          footer={[
+            <Button disabled={personLoading} onClick={this.handlePersonClose}>
+              返回
+            </Button>,
+          ]}
         >
-          <div style={{ display: 'flex' }}>
-            <Upload
-              name="files"
-              multiple
-              headers={{ 'JA-Token': getToken() }}
-              accept=".xls,.xlsx" // 接收的文件格式
-              data={{ folder: 'securityManageInfo' }} // 附带的参数
-              action={uploadAction} // 上传地址
-              fileList={[]}
-              onChange={this.handlePersonExChange}
-              style={{ marginRight: 10 }}
-            >
-              <Button disabled={personLoading}>
-                {uploadExportButton}
-                上传文件(.xls/.xlsx)
+          <Form>
+            <Form.Item>
+              <Upload
+                name="file"
+                accept=".xls,.xlsx"
+                headers={{ 'JA-Token': getToken() }}
+                action={`/acloud_new/v2/ci/HGFace/importPerson`} // 上传地址
+                fileList={personFileList}
+                onChange={this.handlePersonExChange}
+                beforeUpload={this.handlePersonBefore}
+              >
+                <Button disabled={personLoading}>
+                  {uploadExportButton}
+                  上传文件(.xls/.xlsx)
+                </Button>
+              </Upload>
+            </Form.Item>
+            <Form.Item>
+              <Button>
+                <a href={url}>下载模板</a>
               </Button>
-            </Upload>
-
-            <Button>下载模板</Button>
-          </div>
+            </Form.Item>
+          </Form>
         </Modal>
         <Modal
           title="批量导入照片"
-          visible={picVisible}
-          onCancel={this.handlePicClose}
-          onOk={this.handleExportSubmit}
-          confirmLoading={personLoading}
+          visible={imgVisible}
+          closable={false}
+          footer={[
+            <Button disabled={imgLoading} onClick={this.handleImgClose}>
+              返回
+            </Button>,
+          ]}
         >
-          <div style={{ display: 'flex' }}>
-            <Upload
-              name="files"
-              multiple
-              headers={{ 'JA-Token': getToken() }}
-              accept=".zip" // 接收的文件格式
-              data={{ folder: 'securityManageInfo' }} // 附带的参数
-              action={uploadAction} // 上传地址
-              fileList={[]}
-              onChange={this.handlePersonExChange}
-              style={{ marginRight: 10 }}
-            >
-              <Button disabled={personLoading}>
-                {uploadExportButton}
-                选择文件(.zip)
-              </Button>
-            </Upload>
-          </div>
+          <Form>
+            <Form.Item>
+              <Upload
+                name="file"
+                accept="application/x-zip-compressed"
+                headers={{ 'JA-Token': getToken() }}
+                action={`/acloud_new/v2/ci/HGFace/importPersonPhoto/${companyId}`} // 上传地址
+                fileList={imgFileList}
+                onChange={this.handleImgChange}
+                beforeUpload={this.handleImgBefore}
+              >
+                <Button disabled={imgLoading}>
+                  {uploadPicButton}
+                  选择文件(.zip)
+                </Button>
+              </Upload>
+            </Form.Item>
+            <Form.Item>
+              <div>注意：</div>
+              <div>1、仅支持上传.zip文件</div>
+              <div>2、压缩包内图片名称命名方式：</div>
+              <div>命名方式（1）：职工号_姓名 </div>
+              <div>命名方式（2）：如果一人多张图片，则：职工号_姓名_1</div>
+            </Form.Item>
+          </Form>
         </Modal>
       </PageHeaderLayout>
     );

@@ -179,9 +179,10 @@ export default class Edit extends PureComponent {
       },
     } = this.props;
     const { photoUrl, safetyIndexList, dutyStatus, departmentId, personId } = this.state;
+    console.log('personId', personId);
 
     const departmentValue = dutyStatus + ',' + departmentId;
-    const personValue = dutyStatus + ',' + personId.key;
+    const personValue = personId ? dutyStatus + ',' + personId.key : '';
 
     const indexValue = safetyIndexList
       .map(item => item.indexValue)

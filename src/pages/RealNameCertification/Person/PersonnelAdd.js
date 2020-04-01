@@ -762,7 +762,7 @@ export default class PersonnelAdd extends PureComponent {
             </Button>
             <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
               {submitting && <LegacyIcon type="loading" />}
-              确定
+              提交
             </Button>
           </div>
         </Card>

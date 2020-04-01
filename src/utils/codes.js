@@ -830,9 +830,13 @@ export default {
     // 人员管理
     personnelManagement: {
       list: 'realNameCertification.personnelManagement.listView',
+      view: 'realNameCertification.personnelManagement.view',
       add: 'realNameCertification.personnelManagement.add',
       edit: 'realNameCertification.personnelManagement.edit',
       delete: 'realNameCertification.personnelManagement.delete',
+      import: 'realNameCertification.personnelManagement.import',
+      importPhoto: 'realNameCertification.personnelManagement.importPhoto',
+      export: 'realNameCertification.personnelManagement.export',
     },
     // 授权管理
     authorization: {

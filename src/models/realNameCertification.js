@@ -22,6 +22,7 @@ import {
   queryTagCardEdit,
   queryTagCardDel,
   queryTagExport,
+  queryRecordList,
 } from '@/services/realNameCertification';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -212,12 +213,11 @@ export default {
     tagCarDetail: {
       data: [],
     },
-    // 通道类型字典
-    channelTypeDict: [{ key: '1', value: '双向' }, { key: '2', value: '单向' }],
-    // 在线状态字典
-    onlineStateDict: [{ key: '1', value: '在线' }, { key: '2', value: '不在线', color: 'red' }],
-    // 方向字典
-    directionDict: [{ key: '1', value: '出口' }, { key: '2', value: '入口' }],
+    // 导入照片记录
+    record: {
+      list: [],
+      pagination: { pageNum: 1, pageSize: 10, total: 0 },
+    },
   },
   effects: {
     // 获取企业列表
@@ -230,6 +230,7 @@ export default {
         });
       }
     },
+
     // 新增人员
     *addPerson({ payload, callback }, { call }) {
       const res = yield call(addPerson, payload);
@@ -254,6 +255,16 @@ export default {
     *deletePerson({ payload, callback }, { call }) {
       const res = yield call(deletePerson, payload);
       callback && callback(res && res.code === 200);
+    },
+    // 批量导入照片记录
+    *fetchRecordList({ payload }, { call, put }) {
+      const res = yield call(queryRecordList, payload);
+      if (res && res.code === 200) {
+        yield put({
+          type: 'saveRecord',
+          payload: res.data,
+        });
+      }
     },
     // 获取详情
     *fetchDetail({ payload, callback }, { call }) {
@@ -437,6 +448,16 @@ export default {
       return {
         ...state,
         authorization: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      };
+    },
+    saveRecord(state, { payload = {} }) {
+      const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
+      return {
+        ...state,
+        record: {
           list,
           pagination: { pageNum, pageSize, total },
         },
