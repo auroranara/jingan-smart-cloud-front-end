@@ -32,11 +32,14 @@ const FormSelect = ({
   getList,
   onSearch,
   onChange,
+  notFoundContent,
+  initializeParams,
+  searchParams,
   ...rest
 }) => {
   const [data, setData] = useState(undefined);
   const async = showSearch && !filterOption;
-  const { key: k, value: v, [k]: id = k, [v]: name = v } = { ...FIELDNAMES, ...fieldNames };
+  const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
   useEffect(() => {
     if (
       !async ||
@@ -58,9 +61,11 @@ const FormSelect = ({
           ) {
             getList &&
               getList(
-                {
-                  [id]: value.join(','),
-                },
+                typeof initializeParams === 'function'
+                  ? initializeParams(value)
+                  : {
+                      [initializeParams || k]: value.join(','),
+                    },
                 (success, list) => {
                   if (success) {
                     setData(
@@ -87,9 +92,11 @@ const FormSelect = ({
         } else if (!data || data.key !== value) {
           getList &&
             getList(
-              {
-                [id]: value,
-              },
+              typeof initializeParams === 'function'
+                ? initializeParams(value)
+                : {
+                    [initializeParams || k]: value.join(','),
+                  },
               (success, list) => {
                 if (success) {
                   const item = list.find(item => item[k] === value);
@@ -121,9 +128,13 @@ const FormSelect = ({
     const handleSearch = searchValue => {
       const value = searchValue && searchValue.trim();
       debouncedGetList &&
-        debouncedGetList({
-          [name]: value,
-        });
+        debouncedGetList(
+          typeof searchParams === 'function'
+            ? searchParams(value)
+            : {
+                [searchParams || v]: value,
+              }
+        );
       onSearch && onSearch(value);
     };
     // 当开启后台筛选且labelInValue为false时，对选中的源数据进行保存，并对value进行处理（需要区分模式是多选还是单选）
@@ -163,7 +174,7 @@ const FormSelect = ({
         showArrow={showArrow}
         showSearch={showSearch}
         labelInValue={async || labelInValue}
-        notFoundContent={loading ? <Spin size="small" /> : undefined}
+        notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
         optionFilterProp={optionFilterProp}
         filterOption={filterOption}
         onSearch={async ? handleSearch : onSearch}
@@ -207,13 +218,17 @@ const FormSelect = ({
   }
 };
 
-FormSelect.getRules = ({ label }) => [
-  {
-    required: true,
-    whitespace: true,
-    message: `${label || ''}不能为空`,
-  },
-];
+FormSelect.getRules = ({ label, labelInValue, originalMode }) => {
+  const multiple = originalMode === 'multiple' || originalMode === 'tags';
+  return [
+    {
+      type: multiple ? 'array' : labelInValue ? 'object' : 'string',
+      min: multiple ? 1 : undefined,
+      required: true,
+      message: `${label || ''}不能为空`,
+    },
+  ];
+};
 
 export default connect(
   (state, { mapper, list, loading }) => {

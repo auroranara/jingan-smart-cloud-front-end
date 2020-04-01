@@ -6,7 +6,13 @@ const list = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
 export default class Test extends Component {
   state = {
     key: 1,
-    initialValues: undefined,
+    initialValues: {
+      username: '123',
+      unitId: '123456789',
+      remember: '1',
+      companyId: ['8vdotq1ct7b6at7a', 'DccBRhlrSiu9gMV7fmvizw'],
+      departmentId: 'yz76Wf2HRm2n8YbqVuNI_g',
+    },
   };
 
   componentDidMount() {
@@ -18,6 +24,7 @@ export default class Test extends Component {
     //       unitId: '123456789',
     //       remember: '1',
     //       companyId: ['8vdotq1ct7b6at7a', 'DccBRhlrSiu9gMV7fmvizw'],
+    //       departmentId: 'yz76Wf2HRm2n8YbqVuNI_g',
     //     },
     //   });
     // }, 2000);
@@ -112,6 +119,35 @@ export default class Test extends Component {
                 allowClear: true,
                 // labelInValue: true,
                 originalMode: 'tags',
+                onChange: v => console.log(v),
+              },
+              enableDefaultRules: true,
+            },
+            {
+              key: 'departmentId',
+              label: '部门名称',
+              component: 'TreeSelect',
+              props: {
+                mapper: {
+                  namespace: 'common',
+                  list: 'departmentList',
+                  getList: 'getDepartmentList',
+                },
+                fieldNames: {
+                  key: 'id',
+                  value: 'name',
+                  isLeaf() {
+                    return false;
+                  },
+                },
+                params: {
+                  companyId: 'DccBRhlrSiu9gMV7fmvizw',
+                },
+                // showSearch: true,
+                // filterTreeNode: false,
+                allowClear: true,
+                // labelInValue: true,
+                // loadData: true,
                 onChange: v => console.log(v),
               },
               enableDefaultRules: true,

@@ -67,7 +67,7 @@ const fields = [
     transform: v => v.trim(),
   },
   {
-    id: 'location',
+    id: 'areaLocation',
     label: '区域-位置：',
     span: spanStyle,
     render: () => <Input placeholder="请输入区域位置" />,
