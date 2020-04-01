@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TreeSelect, Spin } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import EmptyText from '@/jingan-components/View/EmptyText';
@@ -15,125 +15,200 @@ const FIELDNAMES = {
   disableCheckbox: 'disableCheckbox',
   selectable: 'selectable',
   checkable: 'checkable',
+  isLeaf: 'isLeaf',
 };
 
-@connect(
-  (state, { mapper }) => {
-    const { namespace, list, getList } = mapper || {};
+/**
+ * 多选
+ * labelInValue
+ * 异步加载
+ */
+
+const FormTreeSelect = ({
+  className,
+  value,
+  mode = 'add',
+  fieldNames,
+  list = [],
+  loading = false,
+  placeholder = '请选择',
+  treeNodeFilterProp = 'children',
+  filterTreeNode = true,
+  allowClear = false,
+  showArrow = true,
+  emtpy = <EmptyText />,
+  ellipsis = true,
+  getList,
+  notFoundContent,
+  showSearch = false,
+  loadData,
+  initializeParams,
+  searchParams,
+  loadParams,
+  ...rest
+}) => {
+  const [data, setData] = useState(undefined);
+  const {
+    key: k,
+    value: v,
+    children: c,
+    isLeaf,
+    disabled,
+    disableCheckbox,
+    selectable,
+    checkable,
+  } = { ...FIELDNAMES, ...fieldNames };
+  const async = !!loadData;
+  useEffect(() => {
+    getList && getList();
+  }, []);
+  if (mode !== 'detail') {
+    const handleLoadData = node => {
+      return new Promise((resolve, reject) => {
+        getList &&
+          getList(
+            typeof loadParams === 'function'
+              ? loadParams(node.data)
+              : {
+                  [loadParams || k]: node.data[loadParams || k],
+                },
+            success => {
+              if (success) {
+                resolve();
+              } else {
+                reject();
+              }
+            }
+          );
+        typeof loadData === 'function' && loadData(node, resolve, reject);
+      });
+    };
+    const renderTreeNodes = list => {
+      return list && list.length
+        ? list.map(item => (
+            <TreeNode
+              key={item[k]}
+              value={item[k]}
+              title={item[v]}
+              children={renderTreeNodes(item[c])}
+              isLeaf={typeof isLeaf === 'function' ? isLeaf(item) : item[isLeaf]}
+              disabled={typeof disabled === 'function' ? disabled(item) : item[disabled]}
+              disableCheckbox={
+                typeof disableCheckbox === 'function'
+                  ? disableCheckbox(item)
+                  : item[disableCheckbox]
+              }
+              selectable={typeof selectable === 'function' ? selectable(item) : item[selectable]}
+              checkable={typeof checkable === 'function' ? checkable(item) : item[checkable]}
+              data={item}
+            />
+          ))
+        : undefined;
+    };
+    return (
+      <TreeSelect
+        className={classNames(styles.container, className)}
+        placeholder={placeholder}
+        value={loading ? undefined : value}
+        notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
+        treeNodeFilterProp={treeNodeFilterProp}
+        filterTreeNode={filterTreeNode}
+        allowClear={allowClear}
+        showArrow={showArrow}
+        showSearch={showSearch}
+        loadData={async ? handleLoadData : undefined}
+        {...rest}
+      >
+        {renderTreeNodes(list)}
+      </TreeSelect>
+    );
+  } else {
+    const getValueByKey = (list, key) => {
+      const length = (list && list.length) || 0;
+      for (let i = 0; i < length; i++) {
+        if (list[i][k] === key) {
+          return list[i][v];
+        } else {
+          const value = getValueByKey(list[i][c], key);
+          if (value) {
+            return value;
+          }
+        }
+      }
+      return;
+    };
+    const label = getValueByKey(list, value);
+    return label ? (
+      ellipsis ? (
+        <Ellipsis lines={1} tooltip {...ellipsis}>
+          {label}
+        </Ellipsis>
+      ) : (
+        <span>{label}</span>
+      )
+    ) : (
+      emtpy
+    );
+  }
+};
+
+FormTreeSelect.getRules = ({ label, labelInValue }) => [
+  {
+    type: labelInValue ? 'object' : 'string',
+    required: true,
+    message: `${label || ''}不能为空`,
+  },
+];
+
+export default connect(
+  (state, { mapper, list, loading }) => {
+    const { namespace, list: l, getList: gl } = mapper || {};
     return {
-      list: namespace && list ? state[namespace][list] : [],
-      loading: namespace && getList ? state.loading.effects[`${namespace}/${getList}`] : false,
+      list: namespace && l ? state[namespace][l] : list,
+      loading: namespace && gl ? state.loading.effects[`${namespace}/${gl}`] : loading,
     };
   },
-  null,
-  (stateProps, { dispatch }, { mapper, params, ...ownProps }) => {
-    const { namespace, getList } = mapper || {};
+  (dispatch, { mapper, params, getList, callback }) => {
+    const { namespace, getList: gl } = mapper || {};
     return {
-      ...stateProps,
-      ...ownProps,
       getList:
-        namespace && getList
-          ? (payload, callback) => {
+        namespace && gl
+          ? (payload, cb) => {
               dispatch({
-                type: `${namespace}/${getList}`,
+                type: `${namespace}/${gl}`,
                 payload: {
                   ...params,
                   ...payload,
                 },
-                callback,
+                callback(...args) {
+                  cb && cb(...args);
+                  callback && callback(...args);
+                },
               });
             }
-          : undefined,
+          : getList,
     };
-  }
-)
-export default class FormTreeSelect extends Component {
-  componentDidMount() {
-    const { getList } = this.props;
-    getList && getList();
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return (
-      nextProps.value !== this.props.value ||
-      nextProps.list !== this.props.list ||
-      nextProps.loading !== this.props.loading ||
-      nextProps.mode !== this.props.mode
-    );
-  }
-
-  getValueByKey = (list, key) => {
-    const { fieldNames } = this.props;
-    const { key: k, value: v, children: c } = { ...FIELDNAMES, ...fieldNames };
-    for (let i = 0; i < list.length; i++) {
-      if (list[i][k] === key) {
-        return list[i][v];
-      } else if (list[i][c]) {
-        const value = this.getValueByKey(list[i][c], key);
-        if (value) {
-          return value;
-        }
-      }
-    }
-    return;
-  };
-
-  renderTreeNodes = list => {
-    const { fieldNames } = this.props;
-    const { key: k, value: v, children: c } = { ...FIELDNAMES, ...fieldNames };
-    return list.map(item => (
-      <TreeNode
-        key={item[k]}
-        value={item[k]}
-        title={item[v]}
-        children={item[c] && item[c].length ? this.renderTreeNodes(item[c]) : undefined}
-        data={item}
-      />
-    ));
-  };
-
-  render() {
-    const {
-      className,
-      value,
-      mode = 'add',
-      fieldNames,
-      list = [],
-      loading = false,
-      placeholder = '请选择',
-      treeNodeFilterProp = 'children',
-      emtpy = <EmptyText />,
-      ellipsis = true,
-      getList,
-      ...restProps
-    } = this.props;
-
-    if (mode !== 'detail') {
+  },
+  (
+    stateProps,
+    dispatchProps,
+    { mapper, params, list, loading, getList, callback, ...ownProps }
+  ) => ({
+    ...ownProps,
+    ...stateProps,
+    ...dispatchProps,
+  }),
+  {
+    areStatesEqual: () => false,
+    areOwnPropsEqual: () => false,
+    areStatePropsEqual: () => false,
+    areMergedPropsEqual: (props, nextProps) => {
       return (
-        <TreeSelect
-          className={classNames(styles.container, className)}
-          placeholder={placeholder}
-          value={value}
-          notFoundContent={loading ? <Spin size="small" /> : undefined}
-          treeNodeFilterProp={treeNodeFilterProp}
-          {...restProps}
-        >
-          {this.renderTreeNodes(list || [])}
-        </TreeSelect>
+        props.value === nextProps.value &&
+        props.list === nextProps.list &&
+        props.loading === nextProps.loading &&
+        props.mode === nextProps.mode
       );
-    } else {
-      const label = this.getValueByKey(list || [], value);
-      return label ? (
-        ellipsis ? (
-          <Ellipsis lines={1} tooltip {...ellipsis}>
-            {label}
-          </Ellipsis>
-        ) : (
-          <span>{label}</span>
-        )
-      ) : (
-        emtpy
-      );
-    }
+    },
   }
-}
+)(FormTreeSelect);

@@ -41,7 +41,7 @@ const FormIndex = ({ fields, ...rest }) => {
           let ruleList;
           const Component = componentReference[component] || component;
           if (enableDefaultRules && typeof Component.getRules === 'function') {
-            ruleList = Component.getRules({ label }).concat(rules || []);
+            ruleList = Component.getRules({ label, ...props }).concat(rules || []);
           }
           return (
             <Form.Item

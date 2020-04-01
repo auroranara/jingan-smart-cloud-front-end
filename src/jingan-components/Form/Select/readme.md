@@ -78,7 +78,7 @@
   />
   ```
 
-> 自动请求接口并开启后台筛选（后台支持根据key值筛选）
+> 自动请求接口并开启后台筛选（后台支持根据key值筛选，慎用）
 
   ```js
   import Select from '@/jingan-components/Form/Select';
