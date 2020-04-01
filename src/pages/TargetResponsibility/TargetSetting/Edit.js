@@ -181,7 +181,7 @@ export default class Edit extends PureComponent {
     const { photoUrl, safetyIndexList, dutyStatus, departmentId, personId } = this.state;
 
     const departmentValue = dutyStatus + ',' + departmentId;
-    const personValue = dutyStatus + ',' + personId.key;
+    const personValue = personId ? dutyStatus + ',' + personId.key : '';
 
     const indexValue = safetyIndexList
       .map(item => item.indexValue)
@@ -190,7 +190,7 @@ export default class Edit extends PureComponent {
     if (indexValue.indexOf(undefined) >= 0 || indexValue.indexOf('') >= 0)
       return message.warning('请先填写安全生产目标数值，不能为空！');
 
-    if (+dutyStatus === 3 && !personId.key) {
+    if (+dutyStatus === 3 && !personValue) {
       return message.warning(`个人选项不能为空！`);
     }
 
