@@ -4,7 +4,7 @@ import { Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // 3D地图设置
 import ThreeDMap from '@/pages/BaseInfo/Company/ThreeDMap';
-// 车厂设置
+// 车场设置
 import ParkSetting from './ParkSetting';
 // 实名制设置
 import RealName from './RealName';
@@ -51,7 +51,7 @@ const tabList = [
   },
   {
     key: '3',
-    tab: '车厂设置',
+    tab: '车场设置',
   },
 ];
 

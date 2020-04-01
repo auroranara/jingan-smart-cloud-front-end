@@ -65,7 +65,7 @@ export default class HighRiskProcessList extends PureComponent {
     detail: {},
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.handleQuery();
   }
 
@@ -244,24 +244,24 @@ export default class HighRiskProcessList extends PureComponent {
       ...(isCompany
         ? []
         : [
-            {
-              id: 'processName',
-              render() {
-                return <Input placeholder="请输入高危工艺名称" />;
-              },
-              transform,
+          {
+            id: 'processName',
+            render () {
+              return <Input placeholder="请输入高危工艺名称" />;
             },
-          ]),
+            transform,
+          },
+        ]),
       {
         id: 'unifiedCode',
-        render() {
+        render () {
           return <Input placeholder="请输入统一编码" />;
         },
         transform,
       },
       {
         id: 'sisLevel',
-        render() {
+        render () {
           const options = [
             { value: '1', name: '1级' },
             { value: '2', name: '2级' },
@@ -290,7 +290,7 @@ export default class HighRiskProcessList extends PureComponent {
       },
       {
         id: 'iskeySupervisionProcess',
-        render() {
+        render () {
           const options = [{ value: '1', name: '是' }, { value: '0', name: '否' }];
           return (
             <Select
@@ -314,7 +314,7 @@ export default class HighRiskProcessList extends PureComponent {
       },
       {
         id: 'companyName',
-        render() {
+        render () {
           return <Input placeholder="请输入单位名称" />;
         },
         transform,
@@ -338,7 +338,7 @@ export default class HighRiskProcessList extends PureComponent {
     );
   };
 
-  render() {
+  render () {
     const {
       modalLoading,
       loading = false,
@@ -363,13 +363,13 @@ export default class HighRiskProcessList extends PureComponent {
       ...(isCompany
         ? []
         : [
-            {
-              title: '单位名称',
-              dataIndex: 'companyName',
-              align: 'center',
-              width: 300,
-            },
-          ]),
+          {
+            title: '单位名称',
+            dataIndex: 'companyName',
+            align: 'center',
+            width: 300,
+          },
+        ]),
       {
         title: '基本信息',
         key: '基本信息',
@@ -421,9 +421,9 @@ export default class HighRiskProcessList extends PureComponent {
         width: 250,
         render: (val, { iskeySupervisionProcess, keySupervisionProcess }) => {
           if (+iskeySupervisionProcess === 0) return '否';
-          const target = keySupervisionProcessOptions.find(
+          const target = keySupervisionProcess ? keySupervisionProcessOptions.find(
             item => +item.value === +keySupervisionProcess
-          );
+          ) : null;
           return `是${target ? `，${target.label}` : ''}`;
         },
       },
@@ -539,16 +539,16 @@ export default class HighRiskProcessList extends PureComponent {
               total={total}
               onChange={(pageNum, pageSize) => this.handleQuery({ pageNum, pageSize })}
               onShowSizeChange={(pageNum, pageSize) => this.handleQuery({ pageNum: 1, pageSize })}
-              // showTotal={total => `共 ${total} 条`}
+            // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-          <Spin spinning={loading}>
-            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-              <span>暂无数据</span>
-            </Card>
-          </Spin>
-        )}
+            <Spin spinning={loading}>
+              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+                <span>暂无数据</span>
+              </Card>
+            </Spin>
+          )}
         {/* 绑定监测设备弹窗 */}
         <MonitoringDeviceModal {...bindModalProps} />
         {/* 已绑定监测设备弹窗 */}

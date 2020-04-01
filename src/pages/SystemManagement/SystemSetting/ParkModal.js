@@ -128,7 +128,7 @@ export default class Park extends Component {
 
   render () {
     const {
-      title = '车厂设置',
+      title = '车场设置',
       visible,
       onCancel,
       user: { currentUser: { unitType } },
@@ -148,7 +148,7 @@ export default class Park extends Component {
         label: '车场名称',
         span: SPAN,
         labelCol: LABEL_COL,
-        options: { rules: [{ required: true, message: '车厂名称不能为空' }] },
+        options: { rules: [{ required: true, message: '车场名称不能为空' }] },
         render: () => <Input placeholder="请输入车场名称" />,
       },
       {
