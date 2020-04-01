@@ -478,10 +478,6 @@ export default class StorehouseHandler extends PureComponent {
       materialsNum,
       regionId,
     } = this.state;
-    console.log(
-      'regionList.find(({ id }) => id === regionId)',
-      regionList.find(({ id }) => id === regionId)
-    );
 
     return (
       <Card>
@@ -525,7 +521,7 @@ export default class StorehouseHandler extends PureComponent {
           </FormItem>
           <FormItem label="所属库区" {...formItemLayout}>
             {getFieldDecorator('areaId', {})(
-              <Select {...itemStyles} onChange={this.handleSelectRegion}>
+              <Select {...itemStyles} onChange={this.handleSelectRegion} allowClear>
                 {regionList.map(({ id, name }) => (
                   <Option key={id} value={id}>
                     {name}

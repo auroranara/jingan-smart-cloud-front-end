@@ -117,7 +117,7 @@ export default class TransmissionAdd extends PureComponent {
   }
 
   handleFocus = e => {
-    console.log(11111);
+    // console.log(11111);
     e.target.blur();
     const { dispatch } = this.props;
     this.setState({ visible: true });

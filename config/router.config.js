@@ -791,12 +791,6 @@ module.exports = env => {
                 },
                 {
                   name: 'view',
-                  code: 'majorHazardInfo.reservoirRegionManagement.listView',
-                  path: '/major-hazard-info/reservoir-region-management/view/:id',
-                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
-                },
-                {
-                  name: 'detail',
                   code: 'majorHazardInfo.reservoirRegionManagement.detail',
                   path: '/major-hazard-info/reservoir-region-management/detail/:id',
                   component: './BaseInfo/ReservoirRegionManagement/Detail',

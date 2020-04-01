@@ -367,14 +367,14 @@ export default class StorageList extends PureComponent {
       {
         title: '构成重大危险源',
         dataIndex: 'majorHazard',
-        align: 'majorHazard',
+        align: 'center',
         width: 160,
         render: val => trueOrFalseLabel[+val],
       },
       {
         title: '高危储罐',
         dataIndex: 'highRiskTank',
-        align: 'highRiskTank',
+        align: 'center',
         width: 160,
         render: val => trueOrFalseLabel[+val],
       },
@@ -474,7 +474,7 @@ export default class StorageList extends PureComponent {
       },
       device: { monitoringDevice },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
@@ -528,7 +528,7 @@ export default class StorageList extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={fields}
+            fields={unitType === 4 ? fields.filter(({ id }) => id !== 'companyName') : fields}
             onSearch={(payload, ...res) => {
               this.handleQuery(...res);
             }}

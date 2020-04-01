@@ -149,7 +149,7 @@ export default class TankMonitorDrawer extends Component {
           </div>
           <div className={styles.line}>
             <div className={styles.label}>
-              <span className={styles.number}>位号</span>：
+              <span className={styles.number}>储罐编号</span>：
             </div>
             <div className={styles.value}>{number}</div>
           </div>

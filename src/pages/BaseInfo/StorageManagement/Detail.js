@@ -11,9 +11,17 @@ import {
   constructList,
   materialList,
   pressureList,
-  selectTypeList,
 } from './StorageEdit';
+import MapMarkerSelect from '@/components/MapMarkerSelect';
+import codes from '@/utils/codes';
+import { hasAuthority } from '@/utils/customAuth';
+import styles from './Detail.less';
 
+const {
+  baseInfo: {
+    storageManagement: { edit: editCode },
+  },
+} = codes;
 const listUrl = '/major-hazard-info/storage-management/list';
 const HEADER = '储罐管理';
 const TITLE = '详情';
@@ -44,17 +52,16 @@ const BUTTON_WRAPPER_SPAN = {
 const SPAN = { sm: 24, xs: 24 };
 const LABELCOL = { span: 6 };
 const WRAPPERCOL = { span: 13 };
-const NO_DATA = '暂无数据';
+const NO_DATA = '---';
 
-@connect(({ baseInfo, loading, user }) => ({
+@connect(({ baseInfo, loading, user, personnelPosition }) => ({
   baseInfo,
   user,
+  personnelPosition,
   loading: loading.models.baseInfo,
 }))
-export default class StorehouseDetail extends Component {
-  state = {
-    storageList: [],
-  };
+export default class StorageDetail extends Component {
+  state = {};
 
   componentDidMount() {
     this.getDetail();
@@ -72,35 +79,34 @@ export default class StorehouseDetail extends Component {
         pageSize: 10,
         id,
       },
+      callback: detail => {
+        const { companyId, buildingId } = detail;
+        if (!companyId) return;
+        this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+        this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+      },
     });
-    // 获取存储物质及常规存储量
-    // this.fetchChemicalList({
-    //   payload: { pageNum: 1, pageSize: 0 },
-    //   callback: ({ list }) => {
-    //     this.setState({ storageList: list });
-    //   },
-    // });
   };
 
-  // 获取装卸危险化学品种类列表
-  fetchChemicalList = actions => {
-    const {
-      dispatch,
-      match: {
-        params: { id },
-      },
-      storageAreaManagement: { list = [{}] },
-    } = this.props;
-    const detail = list[0] || {};
-    const newTankId = Array.isArray(detail.tankIds) ? detail.tankIds.join(',') : undefined;
+  /**
+   * 获取所属建筑列表
+   */
+  fetchBuildings = actions => {
+    const { dispatch } = this.props;
     dispatch({
-      type: 'storehouse/fetchChemicalList',
+      type: 'personnelPosition/fetchBuildings',
       ...actions,
-      payload: {
-        ...actions.payload,
-        newTankId,
-        id,
-      },
+    });
+  };
+
+  /**
+   * 获取楼层
+   */
+  fetchFloors = actions => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'personnelPosition/fetchFloors',
+      ...actions,
     });
   };
 
@@ -113,14 +119,20 @@ export default class StorehouseDetail extends Component {
   render() {
     const {
       user: {
-        currentUser: { unitType },
+        currentUser: { unitType, permissionCodes },
       },
       baseInfo: { storageTankDetail: detail },
       loading,
+      personnelPosition: {
+        map: {
+          buildings = [], // 建筑物列表
+          floors = [], // 楼层列表
+        },
+      },
     } = this.props;
-    const { storageList } = this.state;
+    const { pressureVessel, highRiskTank, cofferdam, locationType } = detail;
     const dspItems = [
-      { id: 'companyName', label: '单位名称' },
+      ...(unitType === 4 ? [] : [{ id: 'companyName', label: '单位名称' }]),
       { id: 'unifiedCode', label: '统一编码' },
       { id: 'tankName', label: '储罐名称' },
       { id: 'number', label: '储罐编号' },
@@ -140,31 +152,36 @@ export default class StorehouseDetail extends Component {
         label: '是否压力容器',
         render: ({ pressureVessel }) => (+pressureVessel === 1 ? '是' : '否'),
       },
-      {
-        id: 'pressureRate',
-        label: '压力等级',
-        render: ({ pressureRate }) => pressureList[pressureRate - 1] || NO_DATA,
-      },
-      { id: 'designPressure', label: '设计压力（KPa）' },
+      ...(pressureVessel === '1'
+        ? [
+            {
+              id: 'pressureRate',
+              label: '压力等级',
+              render: ({ pressureRate }) => (pressureList[pressureRate - 1] || {}).value || NO_DATA,
+            },
+            { id: 'designPressure', label: '设计压力（KPa）' },
+          ]
+        : []),
       {
         id: 'tankLocationCate',
         label: '储罐位置分类',
-        render: ({ tankLocationCate }) => storageAreaList[tankLocationCate - 1] || NO_DATA,
+        render: ({ tankLocationCate }) =>
+          (storageAreaList[tankLocationCate - 1] || {}).value || NO_DATA,
       },
       {
         id: 'tankType',
         label: '储罐形式',
-        render: ({ tankType }) => storagTypeList[tankType - 1] || NO_DATA,
+        render: ({ tankType }) => (storagTypeList[tankType - 1] || {}).value || NO_DATA,
       },
       {
         id: 'tankStructure',
         label: '储罐结构',
-        render: ({ tankStructure }) => constructList[tankStructure - 1] || NO_DATA,
+        render: ({ tankStructure }) => (constructList[tankStructure - 1] || {}).value || NO_DATA,
       },
       {
         id: 'tankMaterial',
         label: '储罐材质',
-        render: ({ tankMaterial }) => materialList[tankMaterial - 1] || NO_DATA,
+        render: ({ tankMaterial }) => (materialList[tankMaterial - 1] || {}).value || NO_DATA,
       },
       { id: 'feedDischargMode', label: '进出料方式' },
       {
@@ -179,14 +196,14 @@ export default class StorehouseDetail extends Component {
         label: '是否高危储罐',
         render: ({ highRiskTank }) => (+highRiskTank === 1 ? '是' : '否'),
       },
-      { id: 'highRiskTankSystem', label: '高危储罐自控系统' },
+      ...(highRiskTank === '1' ? [{ id: 'highRiskTankSystem', label: '高危储罐自控系统' }] : []),
       { id: 'safeEquip', label: '安全设备' },
       {
         id: 'cofferdam',
         label: '有无围堰',
         render: ({ cofferdam }) => (+cofferdam === 1 ? '是' : '否'),
       },
-      { id: 'cofferdamArea', label: '围堰所围面积（㎡）' },
+      ...(cofferdam === '1' ? [{ id: 'cofferdamArea', label: '围堰所围面积（㎡）' }] : []),
       {
         id: 'setFire',
         label: '是否配套火柜',
@@ -208,22 +225,88 @@ export default class StorehouseDetail extends Component {
         render: ({ fireWaterFoam }) => (+fireWaterFoam === 1 ? '是' : '否'),
       },
       { id: 'remarks', label: '备注' },
-      // { id: 'scenePhotoList', label: '现场照片' },
-      // { id: 'otherFileList', label: '附件' },
-
-      // { id: 'environmentArea', label: '所处环境功能区', render: ({ environmentArea }) => EnvironmentAreas[environmentArea - 1] || NO_DATA },
-      // { id: 'newTankId', label: '选择包含的储罐', render: ({ tankNames }) => tankNames && tankNames.length ? tankNames.join('、') : NO_DATA },
-      // { id: 'minSpace', label: '两罐间最小间距（m）' },
-      // { id: 'hasCoffer', label: '有无围堰', render: ({ hasCoffer }) => this.generateJudgeLabel(hasCoffer) },
-      // { id: 'cofferArea', label: '围堰所围面积（㎡）' },
-      // { id: 'safeSpace', label: '周边安全防护间距（m）' },
-      // { id: 'hasPassage', label: '有无消防通道', render: ({ hasPassage }) => this.generateJudgeLabel(hasPassage) },
-      // { id: 'dangerType', label: '装卸危险化学品种类', render: ({ dangerTypeList }) => dangerTypeList && dangerTypeList.length ? dangerTypeList.join('、') : NO_DATA },
-      // { id: 'loadType', label: '装卸方式' },
+      {
+        id: 'scenePhotoList',
+        label: '现场照片',
+        render: ({ scenePhotoList }) => (
+          <div>
+            {!scenePhotoList || scenePhotoList.length === 0
+              ? NO_DATA
+              : scenePhotoList.map((img, i) => (
+                  <div key={i}>
+                    <a
+                      className={styles.clickable}
+                      href={img.webUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {img.fileName}
+                    </a>
+                  </div>
+                ))}
+          </div>
+        ),
+      },
+      {
+        id: 'otherFileList',
+        label: '附件',
+        render: ({ otherFileList }) => (
+          <div>
+            {!otherFileList || otherFileList.length === 0
+              ? NO_DATA
+              : otherFileList.map((img, i) => (
+                  <div key={i}>
+                    <a
+                      className={styles.clickable}
+                      href={img.webUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {img.fileName}
+                    </a>
+                  </div>
+                ))}
+          </div>
+        ),
+      },
+      {
+        id: 'locationType',
+        label: '区域位置录入方式',
+        render: ({ locationType }) => (+locationType === 1 ? '手填' : '选择建筑物-楼层'),
+      },
+      ...(+locationType === 1
+        ? [{ id: 'area', label: '所在区域' }, { id: 'location', label: '位置详情' }]
+        : [
+            {
+              id: 'buildingFloor',
+              label: '所属建筑物楼层',
+              render: ({ buildingId, floorId }) => (
+                <div>
+                  {(buildings.find(item => item.id === buildingId) || {}).buildingName || ''}-
+                  {(floors.find(item => item.id === floorId) || {}).floorName || ''}
+                </div>
+              ),
+            },
+            { id: 'location', label: '详细位置' },
+          ]),
+      {
+        id: 'mapLocation',
+        label: '地图定位',
+        render: ({ pointFixInfoList, companyId }) => {
+          if (pointFixInfoList && pointFixInfoList.length) {
+            let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+            const coord = { x: +xnum, y: +ynum, z: +znum };
+            groupId = +groupId;
+            return (
+              <MapMarkerSelect companyId={companyId} readonly value={{ groupId, coord, areaId }} />
+            );
+          } else {
+            return NO_DATA;
+          }
+        },
+      },
     ];
-    const items =
-      detail.hasCoffer === '1' ? dspItems : dspItems.filter(item => item.id !== 'cofferArea');
-    const fields = items.map(item => {
+    const fields = dspItems.map(item => {
       const { id, render } = item;
       return {
         ...item,
@@ -233,9 +316,10 @@ export default class StorehouseDetail extends Component {
         render:
           render && typeof render === 'function'
             ? () => <span>{render(detail)}</span>
-            : () => <span>{detail[id]}</span>,
+            : () => <span>{detail[id] || NO_DATA}</span>,
       };
     });
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <PageHeaderLayout title={TITLE} breadcrumbList={BREADCRUMB}>
@@ -251,8 +335,10 @@ export default class StorehouseDetail extends Component {
                 <Fragment>
                   <Button
                     onClick={e =>
-                      router.push(`/major-hazard-info/storage-area-management/edit/${detail.id}`)
+                      router.push(`/major-hazard-info/storage-management/edit/${detail.id}`)
                     }
+                    type="primary"
+                    disabled={!hasEditAuthority}
                   >
                     编辑
                   </Button>

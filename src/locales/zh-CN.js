@@ -83,7 +83,7 @@ export default {
   'menu.majorHazardInfo.storageAreaManagement.detail': '查看储罐区',
   'menu.majorHazardInfo.storageManagement': '储罐管理',
   'menu.majorHazardInfo.storageManagement.list': '储罐管理列表',
-  'menu.majorHazardInfo.storageManagement.view': '储罐详情',
+  'menu.majorHazardInfo.storageManagement.detail': '储罐详情',
   'menu.majorHazardInfo.storageManagement.add': '新增储罐',
   'menu.majorHazardInfo.storageManagement.edit': '编辑储罐',
   'menu.majorHazardInfo.reservoirRegionManagement': '库区管理',

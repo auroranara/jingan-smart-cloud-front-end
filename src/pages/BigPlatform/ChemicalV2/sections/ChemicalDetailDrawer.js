@@ -39,7 +39,7 @@ const Annuals = [
     render: (val, row) => val + (row.annualConsumptionUnit === '1' ? 't' : 'm³'),
   },
   {
-    label: '年生产能力',
+    label: '年产量',
     value: 'annualThroughput',
     render: (val, row) => val + (row.annualThroughputUnit === '1' ? 't' : 'm³'),
   },

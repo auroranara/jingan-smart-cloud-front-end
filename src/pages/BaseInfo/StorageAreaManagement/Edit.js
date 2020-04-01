@@ -482,6 +482,15 @@ export default class Edit extends PureComponent {
     }
   };
 
+  // 清空包含的储罐
+  // handleResetTank = () => {
+  //   const {
+  //     form: { setFieldsValue },
+  //   } = this.props;
+  //   setFieldsValue({ newTankId: undefined });
+  //   this.setState({ selectedTank: [], selectedTemp: [] });
+  // };
+
   // 选择储罐
   handleSelectTank = () => {
     const { selectedTemp } = this.state;
@@ -656,6 +665,9 @@ export default class Edit extends PureComponent {
                 <Button type="primary" onClick={this.handleViewTankModal}>
                   选择
                 </Button>
+                {/* <Button type="primary" onClick={this.handleResetTank}>
+                  清空
+                </Button> */}
               </Fragment>
             )}
           </FormItem>
@@ -1030,7 +1042,7 @@ export default class Edit extends PureComponent {
           rowSelection={{
             selectedRowKeys: selectedTemp.map(item => item.id),
             onChange: (keys, rows) => {
-              this.setState({ selectedTemp: rows });
+              this.setState({ selectedTemp: rows.filter(item => !!item) });
             },
           }}
           handleSelect={this.handleSelectTank}
@@ -1046,7 +1058,7 @@ export default class Edit extends PureComponent {
           rowSelection={{
             selectedRowKeys: selectedTemp.map(item => item.storageId),
             onChange: (keys, rows) => {
-              this.setState({ selectedTemp: rows });
+              this.setState({ selectedTemp: rows.filter(item => !!item) });
             },
           }}
           handleSelect={this.handleSelectChemical}
