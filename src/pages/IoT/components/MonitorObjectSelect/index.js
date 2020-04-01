@@ -25,8 +25,8 @@ const FIELDNAMES2 = {
 export default class MonitorObjectSelect extends Component {
   handleFirstChange = firstValue => {
     const { value, onChange } = this.props;
-    const secondValue = (value && value[1]) || undefined;
-    onChange && onChange([firstValue, secondValue]);
+    // const secondValue = (value && value[1]) || undefined;
+    onChange && onChange([firstValue, undefined]);
   };
 
   handleSecondChange = secondValue => {
@@ -67,7 +67,9 @@ export default class MonitorObjectSelect extends Component {
             fieldNames={FIELDNAMES2}
             onChange={this.handleSecondChange}
             allowClear
-            async
+            showSearch
+            filterOption={false}
+            labelInValue
           />
         </Col>
       </Row>

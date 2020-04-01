@@ -607,7 +607,7 @@ export default class MajorHazardDistributionDetail extends Component {
             </div>
           </div>
           <div className={styles.referenceWrapper}>
-            <div className={styles.referenceName}>周围500内常住人口数量：</div>
+            <div className={styles.referenceName}>周围500米内常住人口数量：</div>
             <div className={styles.referenceValue}>
               {personNum ? (
                 <Ellipsis lines={1} tooltip>

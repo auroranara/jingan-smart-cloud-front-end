@@ -263,14 +263,7 @@ export default class WorkingBillOther extends Component {
     }
   };
 
-  handlePersonSelect = (
-    _,
-    {
-      props: {
-        data: { departmentId },
-      },
-    }
-  ) => {
+  handlePersonSelect = (_, { data: { departmentId } }) => {
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -318,7 +311,9 @@ export default class WorkingBillOther extends Component {
                   label: '单位名称',
                   component: (
                     <Select
-                      async
+                      showSearch
+                      filterOption={false}
+                      labelInValue
                       mapper={COMPANY_LIST_MAPPER}
                       fieldNames={COMPANY_LIST_FIELDNAMES}
                       disabled={mode !== 'add'}

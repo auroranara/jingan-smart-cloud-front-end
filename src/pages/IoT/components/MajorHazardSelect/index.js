@@ -53,7 +53,9 @@ export default class MajorHazardSelect extends Component {
               fieldNames={FIELDNAMES}
               onChange={this.handleSecondChange}
               allowClear
-              async
+              showSearch
+              filterOption={false}
+              labelInValue
             />
           </Col>
         )}

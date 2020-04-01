@@ -440,7 +440,9 @@ export default class WorkingBillTablePage extends Component {
               label: '单位名称',
               component: (
                 <Select
-                  async
+                  showSearch
+                  filterOption={false}
+                  labelInValue
                   mapper={COMPANY_LIST_MAPPER}
                   fieldNames={COMPANY_LIST_FIELDNAMES}
                   allowClear
