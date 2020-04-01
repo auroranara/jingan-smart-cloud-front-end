@@ -887,4 +887,9 @@ export default {
       view: 'electronicInspection.productionArea.view',
     },
   },
+  // 系统配置
+  systemSetting: {
+    setting: 'systemManagement.systemSetting.setting',
+    addCompany: 'systemManagement.systemSetting.addCompany',
+  },
 };
