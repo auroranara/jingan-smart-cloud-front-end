@@ -66,14 +66,16 @@ export default class StorehouseDetail extends Component {
         pageSize: 10,
         id,
       },
-    });
-    // 获取存储物质及常规存储量
-    this.fetchChemicalList({
-      payload: { pageNum: 1, pageSize: 0 },
-      callback: ({ list }) => {
-        this.setState({ storageList: list });
+      callback: () => {
+        this.fetchChemicalList({
+          payload: { pageNum: 1, pageSize: 0 },
+          callback: ({ list }) => {
+            this.setState({ storageList: list });
+          },
+        });
       },
     });
+    // 获取存储物质及常规存储量
   };
 
   // 获取装卸危险化学品种类列表

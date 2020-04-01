@@ -131,7 +131,15 @@ export default class StorehouseDetail extends Component {
       ) {
         renderItem = <span>{data === '0' ? '否' : '是'}</span>;
       } else if (id === 'materialsName')
-        renderItem = <span>{data ? JSON.parse(data)[0].chineName : ''}</span>;
+        renderItem = (
+          <span>
+            {data
+              ? JSON.parse(data)
+                  .map(item => item.chineName)
+                  .join('，')
+              : ''}
+          </span>
+        );
       return {
         ...item,
         span: SPAN,
