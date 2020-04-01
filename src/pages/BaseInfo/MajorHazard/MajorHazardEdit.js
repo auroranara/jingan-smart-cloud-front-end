@@ -628,7 +628,6 @@ export default class MajorHazardEdit extends PureComponent {
       console.log('filterPieId', filterPieId);
       this.fetchEdit({ industryPipelineIds: filterPieId.join(',') });
       const allSelectedKeys = filterPieId.concat(areaIds, tankIds, productIds, gasometerIds);
-
       const pipelineNameArrray = pipelineList.reduce((arr, { id, name }) => {
         return allSelectedKeys.includes(id) ? [...arr, { id, name }] : arr;
       }, []);
