@@ -65,8 +65,9 @@ const exportList = [
 ];
 
 const url = 'http://data.jingan-china.cn/v2/chem/file1/%E4%BA%BA%E5%91%98%E6%A8%A1%E6%9D%BF.xls';
-@connect(({ realNameCertification, user, loading }) => ({
+@connect(({ realNameCertification, department, user, loading }) => ({
   realNameCertification,
+  department,
   user,
   loading: loading.effects['realNameCertification/fetchPersonList'],
 }))
@@ -96,6 +97,7 @@ export default class PersonnelList extends PureComponent {
         currentUser: { companyName },
       },
     } = this.props;
+    this.fetchDepartment();
     this.setState({ curCompanyName: companyName || routerCompanyName });
   }
 
@@ -111,6 +113,19 @@ export default class PersonnelList extends PureComponent {
     dispatch({
       type: 'realNameCertification/fetchPersonList',
       payload: { ...values, pageNum: 1, pageSize: 10, companyId },
+    });
+  };
+
+  fetchDepartment = () => {
+    const {
+      dispatch,
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'department/fetchDepartmentList',
+      payload: { companyId },
     });
   };
 
@@ -314,30 +329,35 @@ export default class PersonnelList extends PureComponent {
       },
     } = this.props;
     const { selectedRowKeys } = this.state;
-    const idMap = list.find(item => item.id);
-    console.log('selectedRowKeys', selectedRowKeys);
-    console.log('ids', idMap);
-    // if (+i === 1) {
-    //   dispatch({
-    //     type: 'realNameCertification/fetchPersonExport',
-    //     payload: { ids: selectedRowKeys },
-    //   });
-    // }
-    // if (+i === 2 || +i === 3) {
-    //   dispatch({
-    //     type: 'realNameCertification/fetchPersonExport',
-    //     payload: { ids: idMap },
-    //   });
-    // }
+    const idMap = list.map(({ id }) => id);
+    if (+i === 1) {
+      if (selectedRowKeys.length === 0) {
+        return message.warning('请在列表中选择需要导出的人员列表');
+      }
+      dispatch({
+        type: 'realNameCertification/fetchPersonExport',
+        payload: { ids: selectedRowKeys.join(',') },
+      });
+    }
+    if (+i === 2 || +i === 3) {
+      dispatch({
+        type: 'realNameCertification/fetchPersonExport',
+        payload: { ids: idMap.join(',') },
+      });
+    }
   };
 
   // 渲染筛选栏
   renderFilter = () => {
     const {
       realNameCertification: { personTypeDict },
+      department: {
+        data: { list: departmentList = [] },
+      },
     } = this.props;
     const { expand } = this.state;
 
+    const filterDepart = departmentList.map(({ id, name }) => ({ key: id, value: name }));
     const fields = [
       {
         id: 'name',
@@ -373,7 +393,7 @@ export default class PersonnelList extends PureComponent {
       //   id: 'department',
       //   label: '部门',
       //   span: DEFAULT_SPAN,
-      //   render: () => <SelectOrSpan placeholder="请选择" list={personTypeDict} allowClear />,
+      //   render: () => <SelectOrSpan placeholder="请选择" list={filterDepart} allowClear />,
       // },
       {
         id: 'icnumber',
@@ -402,7 +422,7 @@ export default class PersonnelList extends PureComponent {
           searchable={false}
           resetable={false}
           action={
-            <div>
+            <div style={{ textAlign: 'right' }}>
               <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>
                 查询
               </Button>
@@ -584,7 +604,7 @@ export default class PersonnelList extends PureComponent {
               style={{ marginRight: '10px' }}
               onClick={this.hanldlePersonModal}
             >
-              导入
+              导入人员
             </AuthButton>
             <AuthButton
               code={importPhotoCode}
@@ -597,6 +617,7 @@ export default class PersonnelList extends PureComponent {
               allowClear
               style={{ width: '130px', marginRight: '10px' }}
               placeholder="导出"
+              defaultValue="导出"
               onChange={i => this.handleExportChange(i)}
             >
               {exportList.map(({ id, label }) => (

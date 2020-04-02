@@ -522,9 +522,9 @@ export default class PersonnelAdd extends PureComponent {
                     rules: [{ required: true, message: '请选择人员类型' }],
                   })(
                     <Select placeholder="请选择" onSelect={this.handlePersonType}>
-                      {personTypeDict.map(({ key, label }) => (
+                      {personTypeDict.map(({ key, value }) => (
                         <Select.Option key={key} value={key}>
-                          {label}
+                          {value}
                         </Select.Option>
                       ))}
                     </Select>
