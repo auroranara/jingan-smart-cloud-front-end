@@ -1065,8 +1065,7 @@ export default class MajorHazardEdit extends PureComponent {
     );
   }
 
-  handleSelectChange = (v, rows) => {
-    console.log('vvvv', v);
+  handleSelectChange = v => {
     const {
       storageAreaManagement: { list: storageList = [] },
       reservoirRegion: {
@@ -1100,13 +1099,12 @@ export default class MajorHazardEdit extends PureComponent {
     }, []);
     console.log('storArray', storArray);
     this.setState({
-      dangerModalVisible: false,
       targetKeys: v,
-      tankAreaList: filterList(storArray),
-      wareHouseAreaList: filterList(resArrray),
-      gasHolderManageList: filterList(gasArrray),
-      productList: filterList(proArrray),
-      pipelineList: filterList(pipArrray),
+      tankAreaList: storArray.filter(item => !!item),
+      wareHouseAreaList: resArrray.filter(item => !!item),
+      gasHolderManageList: gasArrray.filter(item => !!item),
+      productList: proArrray.filter(item => !!item),
+      pipelineList: pipArrray.filter(item => !!item),
     });
   };
 
