@@ -421,22 +421,20 @@ export default class PersonnelList extends PureComponent {
           fields={filterField}
           searchable={false}
           resetable={false}
-          action={
-            <div style={{ textAlign: 'right' }}>
-              <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>
-                查询
-              </Button>
-              <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
-                重置
-              </Button>
-              <span className={styles.iconContainer} onClick={() => this.handleExpand()}>
-                <a>{expand ? '收起' : '展开'}</a>
-                <LegacyIcon className={expand ? styles.expandIcon : styles.icon} type="down" />
-              </span>
-            </div>
-          }
           wrappedComponentRef={this.setFormReference}
         />
+        <div style={{ textAlign: 'right' }}>
+          <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>
+            查询
+          </Button>
+          <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
+            重置
+          </Button>
+          <span className={styles.iconContainer} onClick={() => this.handleExpand()}>
+            <a>{expand ? '收起' : '展开'}</a>
+            <LegacyIcon className={expand ? styles.expandIcon : styles.icon} type="down" />
+          </span>
+        </div>
       </Card>
     );
   };
