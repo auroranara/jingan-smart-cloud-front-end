@@ -288,7 +288,6 @@ export function convertSections(secs, detail) {
         type: 'component',
         component: treeData ? getRiskCategoryLabel(value, treeData) : options ? findValueInOptions(value, options) : showValue,
       };
-      console.log(value, treeData, getRiskCategoryLabel(value, treeData));
       // if (Array.isArray(options)) field.options = options;
       return field;
     }),
