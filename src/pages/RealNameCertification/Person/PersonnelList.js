@@ -340,8 +340,24 @@ export default class PersonnelList extends PureComponent {
 
     const fields = [
       {
+        id: 'name',
+        label: '姓名',
+        span: DEFAULT_SPAN,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入" onPressEnter={handleSearch} maxLength={100} />
+        ),
+      },
+      {
         id: 'workerNumber',
-        label: '姓名/职工号/手机号',
+        label: '职工号',
+        span: DEFAULT_SPAN,
+        render: ({ handleSearch }) => (
+          <Input placeholder="请输入" onPressEnter={handleSearch} maxLength={100} />
+        ),
+      },
+      {
+        id: 'telephone',
+        label: '手机号',
         span: DEFAULT_SPAN,
         render: ({ handleSearch }) => (
           <Input placeholder="请输入" onPressEnter={handleSearch} maxLength={100} />
@@ -353,18 +369,12 @@ export default class PersonnelList extends PureComponent {
         span: DEFAULT_SPAN,
         render: () => <SelectOrSpan placeholder="请选择" list={personTypeDict} allowClear />,
       },
-      {
-        id: 'department',
-        label: '部门',
-        span: DEFAULT_SPAN,
-        render: () => <SelectOrSpan placeholder="请选择" list={personTypeDict} allowClear />,
-      },
-      {
-        id: 'job',
-        label: '岗位',
-        span: DEFAULT_SPAN,
-        render: () => <SelectOrSpan placeholder="请选择" list={personTypeDict} allowClear />,
-      },
+      // {
+      //   id: 'department',
+      //   label: '部门',
+      //   span: DEFAULT_SPAN,
+      //   render: () => <SelectOrSpan placeholder="请选择" list={personTypeDict} allowClear />,
+      // },
       {
         id: 'icnumber',
         label: 'IC卡号',
@@ -392,7 +402,7 @@ export default class PersonnelList extends PureComponent {
           searchable={false}
           resetable={false}
           action={
-            <div style={{ float: 'right' }}>
+            <div>
               <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>
                 查询
               </Button>
