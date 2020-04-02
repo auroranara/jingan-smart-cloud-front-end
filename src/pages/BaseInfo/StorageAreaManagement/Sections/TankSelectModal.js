@@ -22,28 +22,24 @@ const TankSelectModal = Form.create()(props => {
     handleSelect,
     model: {
       list = [],
-      pagination: {
-        pageNum = 1,
-        pageSize = defaultPageSize,
-        total = 0,
-      },
+      pagination: { pageNum = 1, pageSize = defaultPageSize, total = 0 },
     },
   } = props;
 
   const handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
-    const values = getFieldsValue()
+    const values = getFieldsValue();
     fetch({
       payload: {
         pageNum,
         pageSize,
         ...values,
       },
-    })
-  }
+    });
+  };
   const handleReset = () => {
-    resetFields()
-    handleQuery()
-  }
+    resetFields();
+    handleQuery();
+  };
   const columns = [
     {
       title: '统一编码',
@@ -69,7 +65,7 @@ const TankSelectModal = Form.create()(props => {
       align: 'center',
       width: 200,
     },
-  ]
+  ];
   return (
     <Modal
       title={title}
@@ -84,23 +80,29 @@ const TankSelectModal = Form.create()(props => {
         <Row gutter={16}>
           <Col {...colWrapper}>
             <FormItem {...formItemStyle}>
-              {getFieldDecorator('tankName')(
-                <Input placeholder="储罐名称" />
-              )}
+              {getFieldDecorator('tankName')(<Input placeholder="储罐名称" />)}
             </FormItem>
           </Col>
           <Col {...colWrapper}>
             <FormItem {...formItemStyle}>
-              {getFieldDecorator('number')(
-                <Input placeholder="位号" />
-              )}
+              {getFieldDecorator('number')(<Input placeholder="位号" />)}
             </FormItem>
           </Col>
           <Col {...colWrapper}>
             <FormItem {...formItemStyle}>
-              <Button style={{ marginRight: '10px' }} type="primary" onClick={() => handleQuery()}>查询</Button>
-              <Button style={{ marginRight: '10px' }} onClick={handleReset}>重置</Button>
-              <Button type="primary" onClick={handleSelect} disabled={rowSelection.selectedRowKeys.length === 0}>选择</Button>
+              <Button style={{ marginRight: '10px' }} type="primary" onClick={() => handleQuery()}>
+                查询
+              </Button>
+              <Button style={{ marginRight: '10px' }} onClick={handleReset}>
+                重置
+              </Button>
+              <Button
+                type="primary"
+                onClick={handleSelect}
+                disabled={rowSelection.selectedRowKeys.length === 0}
+              >
+                选择
+              </Button>
             </FormItem>
           </Col>
         </Row>
@@ -114,24 +116,25 @@ const TankSelectModal = Form.create()(props => {
           dataSource={list}
           bordered
           rowSelection={rowSelection}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: handleQuery,
-            onShowSizeChange: (num, size) => {
-              handleQuery(1, size);
-            },
-          }}
+          pagination={false}
+          // pagination={{
+          //   current: pageNum,
+          //   pageSize,
+          //   total,
+          //   showQuickJumper: true,
+          //   showSizeChanger: true,
+          //   pageSizeOptions: ['5', '10', '15', '20'],
+          //   onChange: handleQuery,
+          //   onShowSizeChange: (num, size) => {
+          //     handleQuery(1, size);
+          //   },
+          // }}
         />
       ) : (
-          <div style={{ textAlign: 'center', padding: '100px 0', color: '#808080ad' }}>暂无数据</div>
-        )}
+        <div style={{ textAlign: 'center', padding: '100px 0', color: '#808080ad' }}>暂无数据</div>
+      )}
     </Modal>
-  )
-})
+  );
+});
 
 export default TankSelectModal;
