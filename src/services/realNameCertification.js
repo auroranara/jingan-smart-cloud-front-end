@@ -47,6 +47,11 @@ export async function queryRecordList(params) {
   return request(`/acloud_new/v2/HGFace/hgFacePhotoHistory/page?${stringify(params)}`);
 }
 
+// 导出人员列表
+export async function queryPersonExport(params) {
+  return request(`/acloud_new/v2/ci/HGFace/exportPerson?${stringify(params)}`);
+}
+
 // 获取授权列表
 // export async function fetchAuthorizationList (params) {
 //   return request(`/acloud_new/v2/ci/HGFace/hgAuthorizationInfoForPage?${stringify(params)}`)

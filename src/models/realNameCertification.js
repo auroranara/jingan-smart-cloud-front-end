@@ -22,6 +22,7 @@ import {
   queryTagCardEdit,
   queryTagCardDel,
   queryTagExport,
+  queryPersonExport,
   queryRecordList,
 } from '@/services/realNameCertification';
 import fileDownload from 'js-file-download';
@@ -120,11 +121,11 @@ export default {
     idenSearchInfo: {},
     // 人员类型字典
     personTypeDict: [
-      { key: '4', label: '操作人员' },
-      { key: '5', label: '管理人员' },
-      { key: '6', label: '安全巡查人员' },
-      { key: '2', label: '外协人员' },
-      { key: '3', label: '临时人员' },
+      { key: '4', value: '操作人员' },
+      { key: '5', value: '管理人员' },
+      { key: '6', value: '安全巡查人员' },
+      { key: '2', value: '外协人员' },
+      { key: '3', value: '临时人员' },
     ],
     // 职务字典
     dutyDict: [
@@ -265,6 +266,11 @@ export default {
           payload: res.data,
         });
       }
+    },
+    // 导出人员列表
+    *fetchPersonExport({ payload }, { call }) {
+      const blob = yield call(queryPersonExport, payload);
+      fileDownload(blob, `人员_${moment().format('YYYYMMDD')}.xls`);
     },
     // 获取详情
     *fetchDetail({ payload, callback }, { call }) {
