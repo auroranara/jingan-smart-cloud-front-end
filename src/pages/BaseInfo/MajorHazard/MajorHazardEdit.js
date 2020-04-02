@@ -278,6 +278,7 @@ export default class MajorHazardEdit extends PureComponent {
             .map(item => item.areaId)
             .join(','),
         };
+        console.log('payload', payload);
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -503,11 +504,11 @@ export default class MajorHazardEdit extends PureComponent {
       return concatKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
 
-    const storageId = storArray.map(item => item.id).join(',');
-    const reserviorId = resArrray.map(item => item.id).join(',');
-    const gasId = gasArrray.map(item => item.id).join(',');
-    const productId = proArrray.map(item => item.id).join(',');
-    const pipelineId = pipArrray.map(item => item.id).join(',');
+    const storageId = storArray.map(item => item.id);
+    const reserviorId = resArrray.map(item => item.id);
+    const gasId = gasArrray.map(item => item.id);
+    const productId = proArrray.map(item => item.id);
+    const pipelineId = pipArrray.map(item => item.id);
 
     const allSelectedKeys = storageId.concat(reserviorId, gasId, productId, pipelineId);
 
@@ -515,11 +516,11 @@ export default class MajorHazardEdit extends PureComponent {
 
     this.setState({
       dangerModalVisible: false,
-      tankIds: storageId,
-      areaIds: reserviorId,
-      gasometerIds: gasId,
-      productIds: productId,
-      pipelineIds: pipelineId,
+      tankIds: [...new Set(storageId)].join(','),
+      areaIds: [...new Set(reserviorId)].join(','),
+      gasometerIds: [...new Set(gasId)].join(','),
+      productIds: [...new Set(productId)].join(','),
+      pipelineIds: [...new Set(pipelineId)].join(','),
       tankAreaList: filterList(storArray),
       wareHouseAreaList: filterList(resArrray),
       gasHolderManageList: filterList(gasArrray),
@@ -535,6 +536,7 @@ export default class MajorHazardEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
+
     dispatch({
       type: 'reservoirRegion/fetchSourceEdit',
       payload: {
