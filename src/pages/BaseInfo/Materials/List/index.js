@@ -19,7 +19,7 @@ import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 import styles from './index.less';
 // import index from '../../StorageAreaManagement';
@@ -377,7 +377,7 @@ export default class MaterialsList extends PureComponent {
               </div>
               <div>
                 危险性类别：
-                {RISK_CATEGORIES[riskCateg]}
+                {getRiskCategoryLabel(riskCateg, RISK_CATEGORIES)}
               </div>
               <div>
                 重点监管危险化学品：

@@ -7,7 +7,7 @@ import { Input, Button, Card, Popover, Select, message, Table } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 // 选择储罐弹窗
 import TankSelectModal from './Sections/TankSelectModal';
 // 选择装卸危险化学品种类弹窗
@@ -113,7 +113,8 @@ const materialsColumns = [
     title: '危险性类别',
     dataIndex: 'riskCateg',
     key: 'riskCateg',
-    render: data => RISK_CATEGORIES[data],
+    // render: data => RISK_CATEGORIES[data],
+    render: data => getRiskCategoryLabel(data, RISK_CATEGORIES),
   },
 ];
 const materialsFields = [

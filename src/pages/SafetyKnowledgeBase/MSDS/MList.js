@@ -1,8 +1,8 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import Link from 'umi/link';
-import { Button, Card, Input, message, Popconfirm, Select, Table } from 'antd';
+// import Link from 'umi/link';
+import { Card, Input, message, Popconfirm, Select, Table, TreeSelect } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -12,7 +12,7 @@ import { deleteEmptyProps, handleTableData, INDEXES, RISK_CATEGORIES } from './u
 import codes from '@/utils/codes';
 import { AuthButton, AuthLink, AuthSpan } from '@/utils/customAuth';
 
-const { Option } = Select;
+// const { Option } = Select;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -42,7 +42,9 @@ const FIELDS = [
     id: 'riskCateg',
     label: '危险品类别',
     span: SPAN,
-    render: () => <Select placeholder="请选择危险性类别" allowClear>{RISK_CATEGORIES.map((r, i) => <Option key={i}>{r}</Option>)}</Select>,
+    render: () => (
+      <TreeSelect placeholder="请选择危险性类别" treeData={RISK_CATEGORIES} allowClear />
+    ),
   },
   {
     id: 'casNo',
@@ -59,6 +61,7 @@ function getColumns(genHandleDelete) {
       title: '序号',
       dataIndex: 'index',
       key: 'index',
+      width: 60,
     },
     {
       title: '中文名',
@@ -90,7 +93,8 @@ function getColumns(genHandleDelete) {
       title: '技术说明书编码',
       dataIndex: 'bookCode',
       key: 'bookCode',
-      align: 'center',
+      width: 130,
+      // align: 'center',
       render(txt, record) {
         return <AuthLink to={`/safety-knowledge-base/msds/detail/${record.id}`} target="_blank" code={codes.safetyKnowledgeBase.msds.view}>{txt}</AuthLink>;
       },
@@ -99,7 +103,8 @@ function getColumns(genHandleDelete) {
       title: '操作',
       dataIndex: 'id',
       key: 'id',
-      align: 'center',
+      width: 120,
+      // align: 'center',
       render(id, record) {
         return (
           <Fragment>

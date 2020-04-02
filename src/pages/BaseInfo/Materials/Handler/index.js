@@ -7,7 +7,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // import { KEYSUPERVISION } from '../utils.js';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 import styles from './index.less';
 
@@ -532,7 +532,10 @@ export default class MaterialsHandler extends PureComponent {
             {getFieldDecorator('casNo')(<span>{selectedMsds.casNo || ''}</span>)}
           </FormItem>
           <FormItem label="危险性类别" {...formItemLayout}>
-            {getFieldDecorator('riskCateg')(<span>{selectedMsds.riskCateg ? RISK_CATEGORIES[selectedMsds.riskCateg] : ''}</span>)}
+            {getFieldDecorator('riskCateg')(
+              // <span>{selectedMsds.riskCateg ? RISK_CATEGORIES[selectedMsds.riskCateg] : ''}</span>
+              <span>{getRiskCategoryLabel(selectedMsds.riskCateg, RISK_CATEGORIES)}</span>
+            )}
           </FormItem>
           {/* <FormItem label="统一编码" {...formItemLayout}>
             {getFieldDecorator('unifiedCode')(<span>{selectedMsds.casNo}</span>)}

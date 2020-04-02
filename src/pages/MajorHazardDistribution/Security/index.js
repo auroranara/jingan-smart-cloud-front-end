@@ -6,7 +6,7 @@ import EmptyText from '@/jingan-components/View/EmptyText';
 import TextAreaEllipsis from '@/jingan-components/View/TextAreaEllipsis';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMB_LIST_PREFIX, NAMESPACE, SECURITY_LIST_API } from '../config';
 import styles from './index.less';
 
@@ -250,7 +250,7 @@ export default class Security extends Component {
               {type === TYPE_LIST[0].key && (
                 <Row>
                   {[
-                    { key: '危险性类别', value: RISK_CATEGORIES[riskCateg] },
+                    { key: '危险性类别', value: getRiskCategoryLabel(riskCateg, RISK_CATEGORIES) },
                     { key: '矫正系数β值', value: correctionCoefficient },
                     { key: '临界量（t）', value: limitValue },
                     {

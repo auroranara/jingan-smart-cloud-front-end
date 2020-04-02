@@ -8,7 +8,7 @@ import router from 'umi/router';
 import { BREADCRUMBLIST, LIST_URL } from './utils';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { getToken } from 'utils/authority';
 import { AutoList, ROUTER } from './utils';
 import moment from 'moment';
@@ -763,7 +763,8 @@ export default class Edit extends PureComponent {
         dataIndex: 'riskCateg',
         key: 'riskCateg',
         align: 'center',
-        render: data => RISK_CATEGORIES[data],
+        // render: data => RISK_CATEGORIES[data],
+        render: data => getRiskCategoryLabel(data, RISK_CATEGORIES),
       },
       // {
       //   title: '危化品数量(t)',

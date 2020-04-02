@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './ChemicalDetailDrawer.less';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { CardItem } from '../components/Components';
 
 const Types = ['生产原料', '中间产品', '最终产品'];
@@ -18,7 +18,8 @@ const basicFields = [
   {
     label: '危险性类别',
     value: 'riskCateg',
-    render: val => RISK_CATEGORIES[val] || NO_DATA,
+    // render: val => RISK_CATEGORIES[val] || NO_DATA,
+    render: val => getRiskCategoryLabel(val, RISK_CATEGORIES) || NO_DATA,
   },
   // { label: '危险特性', value: 'name' },
   { label: '物质形态', value: 'materialForm', render: val => Forms[val - 1] },

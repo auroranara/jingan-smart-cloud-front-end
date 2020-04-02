@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { Modal, Spin, Table, Input, message, Button, Empty } from 'antd';
 import CustomForm from '@/jingan-components/CustomForm';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
-import SelectOrSpan from '@/jingan-components/SelectOrSpan';
+// import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import { connect } from 'dva';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { getModalPageSize, setModalPageSize } from '@/utils/utils';
 import classNames from 'classnames';
 import styles from './index.less';
 
-export const RISKY_CATEGORIES = RISK_CATEGORIES.map((value, index) => ({ key: `${index}`, value }));
+// export const RISKY_CATEGORIES = RISK_CATEGORIES.map((value, index) => ({ key: `${index}`, value }));
 const LIST_API = 'pipeline/getMediumList';
 
 @connect(
@@ -188,7 +188,8 @@ export default class MediumModal extends Component {
       {
         title: '危险性类别',
         dataIndex: 'riskCateg',
-        render: value => <SelectOrSpan list={RISKY_CATEGORIES} value={`${value}`} type="span" />,
+        // render: value => <SelectOrSpan list={RISKY_CATEGORIES} value={`${value}`} type="span" />,
+        render: value => getRiskCategoryLabel(value, RISK_CATEGORIES),
         align: 'center',
       },
     ];

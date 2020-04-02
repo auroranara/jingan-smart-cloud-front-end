@@ -47,7 +47,7 @@ import {
   SURROUNDING_TYPE_MAPPER,
 } from '../config';
 import { getPageSize, setPageSize } from '@/utils/utils';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import iconTankAreaCount from '../assets/icon-tank-area-count.png';
 import iconTankCount from '../assets/icon-tank-count.png';
 import iconVideoCount from '../assets/icon-video-count.png';
@@ -625,40 +625,39 @@ export default class MajorHazardDistributionDetail extends Component {
               <List
                 grid={LIST_GRID}
                 dataSource={securityList}
-                renderItem={({ chineName, riskCateg, correctionCoefficient, limitValue }) => (
-                  <List.Item>
-                    <Card>
-                      <div className={styles.fieldContainer}>
-                        {[
-                          { key: '存储物质', value: chineName },
-                          {
-                            key: '危险性类别',
-                            value:
-                              RISK_CATEGORIES[riskCateg] &&
-                              `${RISK_CATEGORIES[riskCateg]}${
-                                correctionCoefficient ? `（${correctionCoefficient}）` : ''
-                              }`,
-                          },
-                          { key: '累计设计储量', value: undefined },
-                          { key: '临界量（Q）', value: limitValue !== null && `${limitValue}t` },
-                        ].map(({ key, value }) => (
-                          <div className={styles.fieldWrapper} key={key}>
-                            <div className={styles.fieldName}>{key}：</div>
-                            <div className={styles.fieldValue}>
-                              {value ? (
-                                <Ellipsis lines={1} tooltip>
-                                  {value}
-                                </Ellipsis>
-                              ) : (
-                                <EmptyText />
-                              )}
+                renderItem={({ chineName, riskCateg, correctionCoefficient, limitValue }) => {
+                  const rc = getRiskCategoryLabel(riskCateg, RISK_CATEGORIES);
+                  return (
+                    <List.Item>
+                      <Card>
+                        <div className={styles.fieldContainer}>
+                          {[
+                            { key: '存储物质', value: chineName },
+                            {
+                              key: '危险性类别',
+                              value: rc && `${rc}${correctionCoefficient ? `（${correctionCoefficient}）` : ''}`,
+                            },
+                            { key: '累计设计储量', value: undefined },
+                            { key: '临界量（Q）', value: limitValue !== null && `${limitValue}t` },
+                          ].map(({ key, value }) => (
+                            <div className={styles.fieldWrapper} key={key}>
+                              <div className={styles.fieldName}>{key}：</div>
+                              <div className={styles.fieldValue}>
+                                {value ? (
+                                  <Ellipsis lines={1} tooltip>
+                                    {value}
+                                  </Ellipsis>
+                                ) : (
+                                  <EmptyText />
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    </Card>
-                  </List.Item>
-                )}
+                          ))}
+                        </div>
+                      </Card>
+                    </List.Item>
+                  );
+                }}
               />
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
