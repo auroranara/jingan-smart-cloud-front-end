@@ -64,6 +64,11 @@ export default class PersonPosition extends PureComponent {
     })
   }
 
+  handleBack = () => {
+    const { listPath } = this.props;
+    router.push(listPath);
+  }
+
   render () {
     const {
       form: { getFieldDecorator },
@@ -114,7 +119,7 @@ export default class PersonPosition extends PureComponent {
           </FormItem>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Button style={{ marginRight: '16px' }}>返回</Button>
+          <Button style={{ marginRight: '16px' }} onClick={this.handleBack}>返回</Button>
           <Button type="primary" onClick={this.handleSubmit}>提交</Button>
         </div>
       </Card>

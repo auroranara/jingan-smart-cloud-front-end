@@ -117,7 +117,7 @@ export default class Park extends Component {
   transform = ({ manager, test, ...payload }) => {
     return {
       companyId: this.props.location.query.companyId,
-      managerId: manager && manager.key,
+      managerId: manager && manager.key ? manager.key : '',
       ...payload,
     };
   };
@@ -209,7 +209,7 @@ export default class Park extends Component {
             label: '数据库密码',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <Input placeholder="请输入数据库密码" type="Password" />,
+            render: () => <Input.Password placeholder="请输入数据库密码" />,
           },
           {
             id: 'test',

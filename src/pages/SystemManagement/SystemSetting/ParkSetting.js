@@ -82,7 +82,7 @@ export default class ParkSetting extends Component {
         title: '车场状态',
         dataIndex: 'parkStatus',
         align: 'center',
-        render: value => value ? <SelectOrSpan list={STATUSES} value={`${value}`} type="span" /> : '',
+        render: value => <SelectOrSpan list={STATUSES} value={`${value}`} type="span" />,
       },
       {
         title: '通道（个）',
