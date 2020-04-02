@@ -485,7 +485,7 @@ export default class Messages extends PureComponent {
           {
             value: () => {
               if (+statusType === -1 && +fixType === 5) return null;
-              else if ([-1, 1].includes(+statusType))
+              else if ([-1, 1].includes(+statusType) && fixType !== 5)
                 return (
                   <div>
                     <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>监测数值：</span>

@@ -7,7 +7,7 @@ import { Input, Button, Card, Popover, Select, message, Table, Radio } from 'ant
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 // 选择储罐弹窗
 import TankSelectModal from './Sections/TankSelectModal';
 // 选择装卸危险化学品种类弹窗
@@ -108,7 +108,8 @@ const materialsColumns = [
     title: '危险性类别',
     dataIndex: 'riskCateg',
     key: 'riskCateg',
-    render: data => RISK_CATEGORIES[data],
+    // render: data => RISK_CATEGORIES[data],
+    render: data => getRiskCategoryLabel(data, RISK_CATEGORIES),
   },
 ];
 const materialsFields = [
@@ -132,10 +133,11 @@ const materialsFields = [
   },
 ];
 
-@connect(({ loading, company, storehouse, materials, user, baseInfo }) => ({
+@connect(({ loading, company, storehouse, materials, user, baseInfo, storageAreaManagement }) => ({
   company,
   storehouse,
   materials,
+  storageAreaManagement,
   companyLoading: loading.effects['company/fetchModelList'],
   dangerSourceLoading: loading.effects['storehouse/fetchDangerSourceModel'],
   materialsLoading: loading.effects['materials/fetchMaterialsList'],
@@ -323,7 +325,7 @@ export default class Edit extends PureComponent {
       dispatch({
         type: 'baseInfo/fetchStorageTankForPage',
         ...actions,
-        payload: { ...actions.payload, tankArea: '', companyId: selectedCompany.id },
+        payload: { ...actions.payload, companyId: selectedCompany.id },
       });
     } else {
       message.error('请先选择单位');
@@ -948,6 +950,9 @@ export default class Edit extends PureComponent {
       materials: materialsModal,
       storehouse: { dangerSourceModal, chemical },
       baseInfo: { storageTank },
+      storageAreaManagement: {
+        list: [detail],
+      },
     } = this.props;
     const {
       companyModalVisible,
@@ -980,6 +985,8 @@ export default class Edit extends PureComponent {
         name: title,
       },
     ];
+
+    const { tankIds = '' } = detail || {};
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
@@ -1038,7 +1045,12 @@ export default class Edit extends PureComponent {
             this.setState({ tankModalVisible: false });
           }}
           fetch={this.fetchTankList}
-          model={storageTank}
+          model={{
+            ...storageTank,
+            list: storageTank.list.filter(
+              item => !item.tankArea || (tankIds && tankIds.includes(item.id))
+            ),
+          }}
           rowSelection={{
             selectedRowKeys: selectedTemp.map(item => item.id),
             onChange: (keys, rows) => {

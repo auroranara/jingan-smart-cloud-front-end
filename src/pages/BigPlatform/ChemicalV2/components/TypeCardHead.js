@@ -23,15 +23,15 @@ export default class TypeCardHead extends PureComponent {
     switch (type) {
       case 304:
         // 库房
-        url = 'major-hazard-info/storehouse/edit';
+        url = 'major-hazard-info/storehouse/detail';
         break;
       case 302:
         // 储罐
-        url = 'major-hazard-info/storage-management/edit';
+        url = 'major-hazard-info/storage-management/detail';
         break;
       case 311:
         // 生产装置
-        url = 'major-hazard-info/production-equipments/edit';
+        url = 'major-hazard-info/production-equipments/detail';
         break;
       case 312:
         // 气柜
