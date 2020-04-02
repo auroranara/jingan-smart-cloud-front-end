@@ -132,7 +132,13 @@ export default class Modals extends PureComponent {
       proEquipList,
       pipelineList,
       handleSelectChange,
+      selectedTankAreaList,
+      selectedWareList,
+      selectedGasList,
+      selectedProductList,
+      selectedPipeList,
     } = this.props;
+
     return (
       <Table
         style={{ marginTop: '16px' }}
@@ -151,11 +157,17 @@ export default class Modals extends PureComponent {
         columns={this.getColumns(dangerType)}
         pagination={false}
         rowSelection={{
-          // selectedRowKeys,
+          selectedRowKeys: this.getDataList(
+            dangerType,
+            selectedTankAreaList,
+            selectedWareList,
+            selectedProductList,
+            selectedGasList,
+            selectedPipeList
+          ).map(item => item.id),
           onChange: handleSelectChange,
           hideDefaultSelections: true,
           type: 'checkbox',
-          // ...rowSelection,
         }}
         onChange={this.handleChangePagination}
       />
