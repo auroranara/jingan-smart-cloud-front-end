@@ -136,7 +136,9 @@ export default class StorehouseHandler extends PureComponent {
     const {
       form: { setFieldsValue },
       match: { params: { id = null } = {} },
-      // storehouse: { detail: { companyId, companyName } = {} },
+      user: {
+        currentUser: { unitType, companyId, companyName },
+      },
     } = this.props;
     if (id) {
       this.fetchList(1, 10, { id }, res => {
@@ -219,6 +221,15 @@ export default class StorehouseHandler extends PureComponent {
             });
           }
         );
+      });
+    } else if (unitType === 4) {
+      this.setState({ selectedCompany: { id: companyId, name: companyName } }, () => {
+        this.fetchRegion({
+          payload: {
+            pageSize: 0,
+            pageNum: 1,
+          },
+        });
       });
     }
   }
