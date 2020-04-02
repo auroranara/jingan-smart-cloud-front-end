@@ -11,7 +11,7 @@ import router from 'umi/router';
 // 存储介质状态Enum
 import { storageMediumStatusEnum } from '@/utils/dict';
 // 介质类别
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 // 选择监测设备弹窗
 import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/MonitoringDeviceModal';
 
@@ -360,7 +360,7 @@ export default class StorageList extends PureComponent {
             </div>
             <div>
               危险性类别：
-              {RISK_CATEGORIES[riskCateg] || '暂无数据'}
+              {getRiskCategoryLabel(riskCateg, RISK_CATEGORIES) || '暂无数据'}
             </div>
           </div>
         ),

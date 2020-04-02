@@ -7,7 +7,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -744,7 +744,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
         title: '危险性类别',
         dataIndex: 'riskCateg',
         key: 'riskCateg',
-        render: data => RISK_CATEGORIES[data],
+        // render: data => RISK_CATEGORIES[data],
+        render: data => getRiskCategoryLabel(data, RISK_CATEGORIES),
       },
     ];
     const materialsFields = [
