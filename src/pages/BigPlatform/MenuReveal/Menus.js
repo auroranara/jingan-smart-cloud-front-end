@@ -89,7 +89,7 @@ export default class NewMenuReveal extends Component {
       modalVisible: false,
     };
   }
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
       user: {
@@ -234,25 +234,31 @@ export default class NewMenuReveal extends Component {
 
   // 确认单位
   handleConfirmCompany = () => {
-    this.formRef.current.validateFields().then(({ company }) => {
-      this.setState({ modalVisible: false }, () => {
-        window.open(`${window.publicPath}#/big-platform/chemical/${company.value}`, '_blank')
+    this.formRef.current
+      .validateFields()
+      .then(({ company }) => {
+        this.setState({ modalVisible: false }, () => {
+          window.open(`${window.publicPath}#/big-platform/chemical/${company.value}`, '_blank');
+        });
       })
-    }).catch(err => { });
-  }
+      .catch(err => {});
+  };
 
   handleViewBigPlatform = () => {
     const {
-      user: { isCompany, currentUser: { companyId } },
+      user: {
+        isCompany,
+        currentUser: { companyId },
+      },
     } = this.props;
     if (isCompany) {
       // 如果是单位用户
-      window.open(`${window.publicPath}#/big-platform/chemical/${companyId}`, '_blank')
+      window.open(`${window.publicPath}#/big-platform/chemical/${companyId}`, '_blank');
     } else {
       // 如果不是，弹出选择单位
       this.setState({ modalVisible: true });
     }
-  }
+  };
 
   formRef = createRef();
 
@@ -283,38 +289,38 @@ export default class NewMenuReveal extends Component {
       <div className={styles.innerContent}>
         {menuSys.length
           ? menuSys.map(block => (
-            <div key={block.name}>
-              <div className={styles.blockTitle}>
-                <Divider /> {block.title}
+              <div key={block.name}>
+                <div className={styles.blockTitle}>
+                  <Divider /> {block.title}
+                </div>
+                <Row className={styles.blockContent}>
+                  {block.routes && block.routes.length
+                    ? block.routes.map(item => (
+                        <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
+                          <div className={styles.item}>
+                            <div
+                              className={styles.itemInner}
+                              onClick={
+                                item.developing ? null : () => this.handleOpenMenu(item.path)
+                              }
+                            >
+                              <img src={this.generateSysUrl(item)} alt="logo" />
+                              <div>{item.title}</div>
+                              {item.developing ? <span className={styles.dot} /> : null}
+                            </div>
+                          </div>
+                        </Col>
+                      ))
+                    : null}
+                </Row>
               </div>
-              <Row className={styles.blockContent}>
-                {block.routes && block.routes.length
-                  ? block.routes.map(item => (
-                    <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
-                      <div className={styles.item}>
-                        <div
-                          className={styles.itemInner}
-                          onClick={
-                            item.developing ? null : () => this.handleOpenMenu(item.path)
-                          }
-                        >
-                          <img src={this.generateSysUrl(item)} alt="logo" />
-                          <div>{item.title}</div>
-                          {item.developing ? <span className={styles.dot} /> : null}
-                        </div>
-                      </div>
-                    </Col>
-                  ))
-                  : null}
-              </Row>
-            </div>
-          ))
+            ))
           : null}
       </div>
     );
   };
 
-  render () {
+  render() {
     const {
       user: {
         currentUser: { userName, unitType, companyId, permissionCodes },
@@ -400,7 +406,9 @@ export default class NewMenuReveal extends Component {
               rules={[{ type: 'object', required: true, message: '单位名称不能为空' }]}
             >
               <Select
-                async
+                showSearch
+                filterOption={false}
+                labelInValue
                 mapper={{
                   namespace: 'common',
                   list: 'unitList',

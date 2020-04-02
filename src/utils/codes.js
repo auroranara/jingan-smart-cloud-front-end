@@ -603,6 +603,7 @@ export default {
       delete: 'majorHazardInfo.reservoirRegionManagement.delete',
       bindSensor: 'majorHazardInfo.reservoirRegionManagement.bindSensor',
       unbindSensor: 'majorHazardInfo.reservoirRegionManagement.unbindSensor',
+      detail: 'majorHazardInfo.reservoirRegionManagement.detail',
     },
     // 重大危险源
     // majorHazard: {
@@ -660,6 +661,7 @@ export default {
       delete: 'majorHazardInfo.storageManagement.delete',
       bind: 'majorHazardInfo.storageManagement.bind',
       unbind: 'majorHazardInfo.storageManagement.unbind',
+      detail: 'majorHazardInfo.storageManagement.detail',
     },
     // 特种作业操作证人员
     specialOperationPermit: {
@@ -891,5 +893,10 @@ export default {
       delete: 'electronicInspection.productionArea.delete',
       view: 'electronicInspection.productionArea.view',
     },
+  },
+  // 系统配置
+  systemSetting: {
+    setting: 'systemManagement.systemSetting.setting',
+    addCompany: 'systemManagement.systemSetting.addCompany',
   },
 };

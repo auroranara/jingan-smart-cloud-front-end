@@ -15,16 +15,21 @@ export default class RenderInPopup extends Component {
   //   super(props);
   // }
   componentDidMount() {
-    const { popupContainer = document.querySelector('body'), className, dragHandle, draggable } = this.props;
+    const {
+      popupContainer = document.querySelector('body'),
+      className,
+      dragHandle,
+      draggable,
+    } = this.props;
     this.popup = document.createElement('div');
     this.rootDom = popupContainer;
     this.rootDom.appendChild(this.popup);
     this.popup.setAttribute('class', className);
     this.popup.setAttribute('className', className);
     this.popup.setAttribute('id', 'videoPlay');
-    setStyle(this.popup, this.props);
+    setStyle(this.popup, this.props.style);
     this._renderLayer();
-    if(!draggable) return;
+    if (!draggable) return;
     const oDiv = this.popup;
     /*鼠标点击的位置距离DIV左边的距离 */
     let disX = 0;
@@ -37,9 +42,9 @@ export default class RenderInPopup extends Component {
       // console.log('event',event);
       let ifHandle = false;
       event.path.forEach(element => {
-        if(element === handle) ifHandle = true;
+        if (element === handle) ifHandle = true;
       });
-      if(!ifHandle) return null;
+      if (!ifHandle) return null;
       // const event = e || window.event;
       disX = event.clientX - oDiv.offsetLeft;
       disY = event.clientY - oDiv.offsetTop;

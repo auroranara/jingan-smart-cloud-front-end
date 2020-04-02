@@ -263,14 +263,7 @@ export default class WorkingBillOther extends Component {
     }
   };
 
-  handlePersonSelect = (
-    _,
-    {
-      props: {
-        data: { departmentId },
-      },
-    }
-  ) => {
+  handlePersonSelect = (_, { data: { departmentId } }) => {
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -318,7 +311,9 @@ export default class WorkingBillOther extends Component {
                   label: '单位名称',
                   component: (
                     <Select
-                      async
+                      showSearch
+                      filterOption={false}
+                      labelInValue
                       mapper={COMPANY_LIST_MAPPER}
                       fieldNames={COMPANY_LIST_FIELDNAMES}
                       disabled={mode !== 'add'}
@@ -433,7 +428,7 @@ export default class WorkingBillOther extends Component {
                 {
                   key: 'range',
                   label: '作业期限',
-                  component: <RangePicker format={MINUTE_FORMAT} mode={mode} />,
+                  component: <RangePicker format={MINUTE_FORMAT} showTime mode={mode} />,
                   options: {
                     initialValue: detail.range,
                     rules: [{ type: 'array', len: 2, required: true, message: '作业期限不能为空' }],
@@ -715,7 +710,7 @@ export default class WorkingBillOther extends Component {
                 {
                   key: 'range',
                   label: '动火时间',
-                  component: <RangePicker format={MINUTE_FORMAT} mode={mode} />,
+                  component: <RangePicker format={MINUTE_FORMAT} showTime mode={mode} />,
                   options: {
                     initialValue: detail.range,
                     rules: [{ type: 'array', len: 2, required: true, message: '动火时间不能为空' }],
@@ -728,7 +723,7 @@ export default class WorkingBillOther extends Component {
                 {
                   key: 'range',
                   label: '检修期限',
-                  component: <RangePicker format={MINUTE_FORMAT} mode={mode} />,
+                  component: <RangePicker format={MINUTE_FORMAT} showTime mode={mode} />,
                   options: {
                     initialValue: detail.range,
                     rules: [{ type: 'array', len: 2, required: true, message: '检修期限不能为空' }],
@@ -806,7 +801,7 @@ export default class WorkingBillOther extends Component {
                 {
                   key: 'range',
                   label: '作业期限',
-                  component: <RangePicker format={MINUTE_FORMAT} mode={mode} />,
+                  component: <RangePicker format={MINUTE_FORMAT} showTime mode={mode} />,
                   options: {
                     initialValue: detail.range,
                     rules: [{ type: 'array', len: 2, required: true, message: '作业期限不能为空' }],
@@ -1501,7 +1496,7 @@ export default class WorkingBillOther extends Component {
                 {
                   key: 'range',
                   label: '作业期限',
-                  component: <RangePicker format={MINUTE_FORMAT} mode={mode} />,
+                  component: <RangePicker format={MINUTE_FORMAT} showTime mode={mode} />,
                   options: {
                     initialValue: detail.range,
                     rules: [{ type: 'array', len: 2, required: true, message: '作业期限不能为空' }],

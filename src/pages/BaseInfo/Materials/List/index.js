@@ -19,7 +19,7 @@ import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 import styles from './index.less';
 // import index from '../../StorageAreaManagement';
@@ -27,10 +27,7 @@ import styles from './index.less';
 // 判断选项
 const JUDGE_OPTIONS = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
 // 单位选项
-const unitOptions = [
-  { value: '1', label: 't' },
-  { value: '2', label: 'm³' },
-];
+const unitOptions = [{ value: '1', label: 't' }, { value: '2', label: 'm³' }];
 
 const {
   baseInfo: {
@@ -73,7 +70,7 @@ export default class MaterialsList extends PureComponent {
     formData: {},
   };
 
-  componentDidMount () {
+  componentDidMount() {
     this.fetchList(1);
   }
 
@@ -102,43 +99,45 @@ export default class MaterialsList extends PureComponent {
     } = this.props;
     const fields = [
       {
-        id: 'chineName',
-        render () {
-          return <Input placeholder="请输入品名" />;
+        id: 'chineNameOrCasNoKeywords',
+        render() {
+          return <Input placeholder="请输入名称或CAS号" />;
         },
         transform,
       },
-      {
-        id: 'riskCateg',
-        render () {
-          const options = RISK_CATEGORIES.map((item, index) => ({ value: index, name: item }));
-          return (
-            <Select
-              allowClear
-              showSearch
-              placeholder="请选择危险性类别"
-              getPopupContainer={getRootChild}
-              style={{ width: '100%' }}
-            >
-              {options.map(item => {
-                const { value, name } = item;
-                return (
-                  <Option value={value} key={value}>
-                    {name}
-                  </Option>
-                );
-              })}
-            </Select>
-          );
-        },
-      },
+      // {
+      //   id: 'riskCateg',
+      //   render () {
+      //     const options = RISK_CATEGORIES.map((item, index) => ({ value: index, name: item }));
+      //     return (
+      //       <Select
+      //         allowClear
+      //         showSearch
+      //         placeholder="请选择危险性类别"
+      //         getPopupContainer={getRootChild}
+      //         style={{ width: '100%' }}
+      //       >
+      //         {options.map(item => {
+      //           const { value, name } = item;
+      //           return (
+      //             <Option value={value} key={value}>
+      //               {name}
+      //             </Option>
+      //           );
+      //         })}
+      //       </Select>
+      //     );
+      //   },
+      // },
       {
         id: 'type',
-        render () {
+        render() {
           return (
             <Select placeholder="请选择物料类型">
               {materialTypeOptions.map(({ value, label }) => (
-                <Option value={value} key={value}>{label}</Option>
+                <Option value={value} key={value}>
+                  {label}
+                </Option>
               ))}
             </Select>
           );
@@ -169,94 +168,12 @@ export default class MaterialsList extends PureComponent {
       //   },
       // },
       {
-        id: 'highlyToxicChem',
-        render () {
-          const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
-          return (
-            <Select
-              allowClear
-              showSearch
-              placeholder="是否剧毒化学品"
-              getPopupContainer={getRootChild}
-              style={{ width: '100%' }}
-            >
-              {options.map(item => {
-                const { value, name } = item;
-                return (
-                  <Option value={value} key={value}>
-                    {name}
-                  </Option>
-                );
-              })}
-            </Select>
-          );
-        },
-      },
-      {
-        id: 'casNo',
-        render () {
-          return <Input placeholder="请输入CAS号" />;
-        },
-        transform,
-      },
-      ...isCompany ? [] : [
-        {
-          id: 'companyName',
-          render () {
-            return <Input placeholder="请输入单位名称" />;
-          },
-          transform,
-        },
-      ],
-      {
-        id: 'easyMakePoison',
-        render () {
-          const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
-          return (
-            <Select
-              allowClear
-              showSearch
-              placeholder="是否易制毒"
-              getPopupContainer={getRootChild}
-              style={{ width: '100%' }}
-            >
-              {options.map(item => {
-                const { value, name } = item;
-                return (
-                  <Option value={value} key={value}>
-                    {name}
-                  </Option>
-                );
-              })}
-            </Select>
-          );
-        },
-      },
-      {
-        id: 'easyMakeExplode',
-        render: () => (
-          <Select
-            allowClear
-            showSearch
-            placeholder="是否易制爆"
-            getPopupContainer={getRootChild}
-            style={{ width: '100%' }}
-          >
-            {JUDGE_OPTIONS.map(({ value, name }) => (
-              <Option value={value} key={value}>
-                {name}
-              </Option>
-            ))}
-          </Select>
-        ),
-      },
-      {
         id: 'superviseChemicals',
         render: () => (
           <Select
             allowClear
             showSearch
-            placeholder="是否重点监管危险化学品"
+            placeholder="重点监管危险化学品"
             getPopupContainer={getRootChild}
             style={{ width: '100%' }}
           >
@@ -268,6 +185,17 @@ export default class MaterialsList extends PureComponent {
           </Select>
         ),
       },
+      ...(isCompany
+        ? []
+        : [
+            {
+              id: 'companyName',
+              render() {
+                return <Input placeholder="请输入单位名称" />;
+              },
+              transform,
+            },
+          ]),
     ];
 
     // 是否有新增权限
@@ -308,7 +236,10 @@ export default class MaterialsList extends PureComponent {
     router.push(`/major-hazard-info/materials/edit/${id}`);
   };
 
-  generateUnit = value => unitOptions.find(item => item.value === value) ? unitOptions.find(item => item.value === value).label : ''
+  generateUnit = value =>
+    unitOptions.find(item => item.value === value)
+      ? unitOptions.find(item => item.value === value).label
+      : '';
 
   // 表格改变触发，包含分页变动
   handleTableChange = (pageNum, pageSize) => {
@@ -336,7 +267,7 @@ export default class MaterialsList extends PureComponent {
     });
   };
 
-  render () {
+  render() {
     const {
       loading = false,
       user: {
@@ -377,7 +308,7 @@ export default class MaterialsList extends PureComponent {
               </div>
               <div>
                 危险性类别：
-                {RISK_CATEGORIES[riskCateg]}
+                {getRiskCategoryLabel(riskCateg, RISK_CATEGORIES)}
               </div>
               <div>
                 重点监管危险化学品：
@@ -413,24 +344,24 @@ export default class MaterialsList extends PureComponent {
               <div>{['生产原料', '中间产品', '最终产品'][type - 1]}</div>
               {['2', '3'].includes(type) ? (
                 <div>
-                  年生产能力：
+                  年产量：
                   {annualThroughput}
                   {this.generateUnit(annualThroughputUnit)}
                 </div>
               ) : (
-                  <Fragment>
-                    <div>
-                      年消耗量：
-                      {annualConsumption}
-                      {this.generateUnit(annualConsumptionUnit)}
-                    </div>
-                    {/* <div>
+                <Fragment>
+                  <div>
+                    年消耗量：
+                    {annualConsumption}
+                    {this.generateUnit(annualConsumptionUnit)}
+                  </div>
+                  {/* <div>
                       最大存储量：
                     {maxStoreDay}
                       {maxStoreDayUnit}
                     </div> */}
-                  </Fragment>
-                )}
+                </Fragment>
+              )}
               {/* <div>
                 实际存储量：
                 {actualReserves}
@@ -441,28 +372,28 @@ export default class MaterialsList extends PureComponent {
         },
       },
       {
-        title: '重大危险源',
-        dataIndex: 'dangerSources',
-        key: 'dangerSources',
-        align: 'center',
-        // width: 100,
-        render: data => {
-          return data && data.length > 0 ? '是' : '否';
-        },
-      },
-      {
-        title: '剧毒化学品/易制毒/易制爆',
+        title: '剧毒化学品',
         dataIndex: 'highlyToxicChem',
         key: 'highlyToxicChem',
         align: 'center',
-        // width: 160,
-        render: (data, record) => {
-          const { highlyToxicChem, easyMakePoison, easyMakeExplode } = record;
-          const dataList = [highlyToxicChem, easyMakePoison, easyMakeExplode].map(
-            item => (item === '1' ? '是' : '否')
-          );
-          return dataList.join('/');
-        },
+        width: 160,
+        render: val => (val === '1' ? '是' : '否'),
+      },
+      {
+        title: '易制毒',
+        dataIndex: 'easyMakePoison',
+        key: 'easyMakePoison',
+        align: 'center',
+        width: 100,
+        render: val => (val === '1' ? '是' : '否'),
+      },
+      {
+        title: '易制爆',
+        dataIndex: 'easyMakeExplode',
+        key: 'easyMakeExplode',
+        align: 'center',
+        width: 100,
+        render: val => (val === '1' ? '是' : '否'),
       },
       // {
       //   title: '存储场所',
@@ -529,16 +460,16 @@ export default class MaterialsList extends PureComponent {
               total={total}
               onChange={this.handleTableChange}
               onShowSizeChange={this.handleTableChange}
-            // showTotal={total => `共 ${total} 条`}
+              // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-            <Spin spinning={loading}>
-              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-                <span>暂无数据</span>
-              </Card>
-            </Spin>
-          )}
+          <Spin spinning={loading}>
+            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+              <span>暂无数据</span>
+            </Card>
+          </Spin>
+        )}
       </PageHeaderLayout>
     );
   }

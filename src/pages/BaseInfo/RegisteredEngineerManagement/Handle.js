@@ -348,24 +348,23 @@ export default class RegSafetyEngEdit extends PureComponent {
   getCompanyId = () => {
     const {
       // form: { getFieldValue },
-      user: { currentUser: { unitType, companyId } },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
     let comId = companyId;
-    if (!isCompanyUser(+unitType))
-      comId = this.companyId;
+    if (!isCompanyUser(+unitType)) comId = this.companyId;
     return comId;
   };
 
   getUserList = name => {
-    const {
-      dispatch,
-    } = this.props;
-
+    const { dispatch } = this.props;
     const companyId = this.getCompanyId();
-    companyId && dispatch({
-      type: 'user/fetchUserList',
-      payload: { pageNum: 1, pageSize: 20, unitId: companyId, userName: name },
-    });
+    companyId &&
+      dispatch({
+        type: 'user/fetchUserList',
+        payload: { pageNum: 1, pageSize: 20, unitId: companyId, userName: name },
+      });
   };
 
   setUserList = () => {
@@ -377,12 +376,16 @@ export default class RegSafetyEngEdit extends PureComponent {
     const {
       form: { setFieldsValue },
       user: { userList },
-    } =  this.props;
+    } = this.props;
     const target = userList.find(({ loginId }) => loginId === value.key);
     console.log(userList, target);
     if (target) {
       const { sex, birth, phoneNumber } = target;
-      setFieldsValue({ sex, birth: typeof birth === 'number' ? moment(birth) : undefined, phone: phoneNumber });
+      setFieldsValue({
+        sex,
+        birth: typeof birth === 'number' ? moment(birth) : undefined,
+        phone: phoneNumber,
+      });
     }
   };
 
@@ -437,7 +440,9 @@ export default class RegSafetyEngEdit extends PureComponent {
     // );
     const nameInput = (
       <FormSelect
-        async
+        showSearch
+        filterOption={false}
+        labelInValue
         allowClear
         showArrow={false}
         fieldNames={COMPANY_LIST_FIELDNAMES}

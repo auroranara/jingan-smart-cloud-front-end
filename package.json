@@ -39,7 +39,7 @@
     "@babel/runtime": "^7.3.1",
     "@commitlint/cli": "^7.0.0",
     "@commitlint/config-conventional": "^7.0.1",
-    "antd": "^4.0.4",
+    "antd": "^4.1.0",
     "bizcharts": "^3.5.7",
     "bizcharts-plugin-slider": "^2.1.1",
     "braft-editor": "^2.1.28",

@@ -440,7 +440,9 @@ export default class WorkingBillTablePage extends Component {
               label: '单位名称',
               component: (
                 <Select
-                  async
+                  showSearch
+                  filterOption={false}
+                  labelInValue
                   mapper={COMPANY_LIST_MAPPER}
                   fieldNames={COMPANY_LIST_FIELDNAMES}
                   allowClear
@@ -522,7 +524,7 @@ export default class WorkingBillTablePage extends Component {
             {
               key: 'range',
               label: '检修期限',
-              component: <RangePicker format={MINUTE_FORMAT} allowClear />,
+              component: <RangePicker format={MINUTE_FORMAT} showTime allowClear />,
             },
           ]
         : []),
@@ -540,7 +542,7 @@ export default class WorkingBillTablePage extends Component {
             {
               key: 'range',
               label: '作业时间',
-              component: <RangePicker format={MINUTE_FORMAT} allowClear />,
+              component: <RangePicker format={MINUTE_FORMAT} showTime allowClear />,
             },
           ]
         : []),

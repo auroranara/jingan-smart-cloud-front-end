@@ -191,7 +191,7 @@ export default class Edit extends PureComponent {
     if (indexValue.indexOf(undefined) >= 0 || indexValue.indexOf('') >= 0)
       return message.warning('请先填写安全生产目标数值，不能为空！');
 
-    if (+dutyStatus === 3 && !personId.key) {
+    if (+dutyStatus === 3 && !personValue) {
       return message.warning(`个人选项不能为空！`);
     }
 

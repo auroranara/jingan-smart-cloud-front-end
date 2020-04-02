@@ -1,7 +1,7 @@
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Modal, Button, Row, Col, Input, Table } from 'antd';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 const FormItem = Form.Item;
 
@@ -75,7 +75,8 @@ const StorageMediumModal = Form.create()(props => {
       dataIndex: 'riskCateg',
       align: 'center',
       width: 200,
-      render: (val) => (<span>{RISK_CATEGORIES[val]}</span>),
+      // render: (val) => (<span>{RISK_CATEGORIES[val]}</span>),
+      render: data => getRiskCategoryLabel(data, RISK_CATEGORIES),
     },
   ]
   return (

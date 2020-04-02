@@ -5,7 +5,7 @@ import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceLvlDrawer.less';
 import { CardItem } from '../components/Components';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 const uniqueByid = array => {
   return array.reduce((prev, next) => {
@@ -23,7 +23,8 @@ const fields = [
     value: 'riskCateg',
     render: (val, data) => {
       const betaStr = data.beta || data.beta === 0 ? `（β=${data.beta}）` : '';
-      return RISK_CATEGORIES[val] ? `${RISK_CATEGORIES[val]}${betaStr}` : NO_DATA;
+      const rc = getRiskCategoryLabel(val, RISK_CATEGORIES);
+      return rc ? `${rc}${betaStr}` : NO_DATA;
     },
   },
   // { label: '实时储量(q)', value: 'acture' },

@@ -440,6 +440,30 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/system-management/system-setting', // 系统设置
+              name: 'systemSetting',
+              code: 'systemManagement.systemSetting',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/system-management/system-setting',
+                  redirect: '/system-management/system-setting/list',
+                },
+                {
+                  path: '/system-management/system-setting/list',
+                  name: 'companyList',
+                  code: 'systemManagement.systemSetting.companyList',
+                  component: './SystemManagement/SystemSetting/CompanyList',
+                },
+                {
+                  path: '/system-management/system-setting/setting/:id',
+                  name: 'setting',
+                  code: 'systemManagement.systemSetting.setting',
+                  component: './SystemManagement/SystemSetting/Setting',
+                },
+              ],
+            },
           ],
         },
 
@@ -753,6 +777,12 @@ module.exports = env => {
                   component: './BaseInfo/StorageManagement/StorageEdit',
                 },
                 {
+                  name: 'detail',
+                  code: 'majorHazardInfo.storageAreaManagement.detail',
+                  path: '/major-hazard-info/storage-management/detail/:id',
+                  component: './BaseInfo/StorageManagement/Detail',
+                },
+                {
                   name: 'add',
                   code: 'majorHazardInfo.storageAreaManagement.add',
                   path: '/major-hazard-info/storage-management/add',
@@ -785,9 +815,9 @@ module.exports = env => {
                 },
                 {
                   name: 'view',
-                  code: 'majorHazardInfo.reservoirRegionManagement.listView',
-                  path: '/major-hazard-info/reservoir-region-management/view/:id',
-                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
+                  code: 'majorHazardInfo.reservoirRegionManagement.detail',
+                  path: '/major-hazard-info/reservoir-region-management/detail/:id',
+                  component: './BaseInfo/ReservoirRegionManagement/Detail',
                 },
                 {
                   name: 'add',

@@ -1,16 +1,7 @@
 import { PureComponent, Fragment } from 'react';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import {
-  Card,
-  Input,
-  Button,
-  Radio,
-  Row,
-  message,
-  InputNumber,
-  DatePicker,
-} from 'antd';
+import { Card, Input, Button, Radio, Row, message, InputNumber, DatePicker, Select } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 // import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
@@ -21,6 +12,7 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const { Option } = Select;
 const { Group: RadioGroup } = Radio;
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
@@ -47,19 +39,19 @@ const regionColumns = [
 const regionFields = [
   {
     id: 'number',
-    render () {
+    render() {
       return <Input placeholder="库区编号" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
   {
     id: 'name',
-    render () {
+    render() {
       return <Input placeholder="库区名称" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
@@ -90,19 +82,19 @@ const dangerSourceColumns = [
 const dangerSourceFields = [
   {
     id: 'code',
-    render () {
+    render() {
       return <Input placeholder="统一编码" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
   {
     id: 'name',
-    render () {
+    render() {
       return <Input placeholder="危险源名称" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
@@ -136,14 +128,17 @@ export default class StorehouseHandler extends PureComponent {
       selectedMaterials: [],
       materialsNum: {},
       tempKeys: [],
+      regionId: undefined,
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       form: { setFieldsValue },
       match: { params: { id = null } = {} },
-      // storehouse: { detail: { companyId, companyName } = {} },
+      user: {
+        currentUser: { unitType, companyId, companyName },
+      },
     } = this.props;
     if (id) {
       this.fetchList(1, 10, { id }, res => {
@@ -170,8 +165,8 @@ export default class StorehouseHandler extends PureComponent {
               // dangerSource, //是否构成重大危险源
               // dangerSourceUnit, //所属危险化学品重大危险源单元
               // unitCode, //所属重大危险源单元编号
-              anumber, //库区编号
-              aname, //库区名
+              // anumber, //库区编号
+              // aname, //库区名
               // dangerSourceMessage,
             },
           ],
@@ -200,20 +195,40 @@ export default class StorehouseHandler extends PureComponent {
           // anumber, //库区编号
           // aname, //库区名
         });
-        this.setState({
-          selectedCompany: { id: companyId, name: companyName },
-          selectedRegion: { id: areaId, name: aname, number: anumber },
-          // dangerSourceUnitVisible: dangerSource === '1',
-          // selectedDangerSource: { ...dangerSourceMessage },
-          selectedMaterials: JSON.parse(materialsName).map(item => ({
-            ...item,
-            id: item.materialId,
-          })),
-          materialsNum: JSON.parse(materialsName).reduce((prev, next) => {
-            const { materialId, unitChemiclaNum } = next;
-            prev[materialId] = unitChemiclaNum;
-            return prev;
-          }, {}),
+        this.setState(
+          {
+            selectedCompany: { id: companyId, name: companyName },
+            regionId: areaId,
+            // selectedRegion: { id: areaId, name: aname, number: anumber },
+            // dangerSourceUnitVisible: dangerSource === '1',
+            // selectedDangerSource: { ...dangerSourceMessage },
+            selectedMaterials: JSON.parse(materialsName).map(item => ({
+              ...item,
+              id: item.materialId,
+            })),
+            materialsNum: JSON.parse(materialsName).reduce((prev, next) => {
+              const { materialId, unitChemiclaNum } = next;
+              prev[materialId] = unitChemiclaNum;
+              return prev;
+            }, {}),
+          },
+          () => {
+            this.fetchRegion({
+              payload: {
+                pageSize: 0,
+                pageNum: 1,
+              },
+            });
+          }
+        );
+      });
+    } else if (unitType === 4) {
+      this.setState({ selectedCompany: { id: companyId, name: companyName } }, () => {
+        this.fetchRegion({
+          payload: {
+            pageSize: 0,
+            pageNum: 1,
+          },
         });
       });
     }
@@ -311,21 +326,27 @@ export default class StorehouseHandler extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    this.setState({
-      selectedCompany,
-      companyModalVisible: false,
-      selectedMaterials: [],
-      selectedRegion: {},
-    });
+    this.setState(
+      {
+        selectedCompany,
+        companyModalVisible: false,
+        selectedMaterials: [],
+        selectedRegion: {},
+      },
+      () => {
+        this.fetchRegion({
+          payload: {
+            pageSize: 0,
+            pageNum: 1,
+          },
+        });
+      }
+    );
     setFieldsValue({ companyId: selectedCompany.id });
   };
 
-  handleSelectRegion = selectedRegion => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    this.setState({ selectedRegion, regionModalVisible: false });
-    setFieldsValue({ areaId: selectedRegion.id });
+  handleSelectRegion = regionId => {
+    this.setState({ regionId });
   };
 
   handleSelectDangerSource = selectedDangerSource => {
@@ -387,7 +408,10 @@ export default class StorehouseHandler extends PureComponent {
     const { selectedCompany, selectedRegion } = this.state;
     const fixCompanyId = selectedCompany.id || companyId;
     if (fixCompanyId) {
-      this.setState({ regionModalVisible: true, tempKeys: selectedRegion ? [selectedRegion.id] : [] });
+      this.setState({
+        regionModalVisible: true,
+        tempKeys: selectedRegion ? [selectedRegion.id] : [],
+      });
       this.fetchRegion({
         payload: {
           pageSize: 10,
@@ -441,7 +465,7 @@ export default class StorehouseHandler extends PureComponent {
   handleResetArea = () => {
     this.props.form.setFieldsValue({ areaId: '' });
     this.setState({ selectedRegion: {}, tempKeys: [] });
-  }
+  };
 
   /**
    * 渲染表单
@@ -452,6 +476,9 @@ export default class StorehouseHandler extends PureComponent {
         currentUser: { unitType },
       },
       form: { getFieldDecorator },
+      storehouse: {
+        regionModal: { list: regionList },
+      },
     } = this.props;
     const {
       selectedCompany,
@@ -460,6 +487,7 @@ export default class StorehouseHandler extends PureComponent {
       // selectedDangerSource,
       selectedMaterials,
       materialsNum,
+      regionId,
     } = this.state;
 
     return (
@@ -502,26 +530,35 @@ export default class StorehouseHandler extends PureComponent {
               rules: [{ required: true, message: '请输入库房名称' }],
             })(<Input placeholder="请输入库房名称" {...itemStyles} />)}
           </FormItem>
-          <FormItem label="库区名称" {...formItemLayout}>
+          <FormItem label="所属库区" {...formItemLayout}>
             {getFieldDecorator('areaId', {})(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedRegion.name}
-                  placeholder="请选择库区名称"
-                />
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleViewRegionModal}>
-                  选择
-                </Button>
-                <Button type="primary" onClick={this.handleResetArea}>
-                  清空
-                </Button>
-              </Fragment>
+              <Select {...itemStyles} onChange={this.handleSelectRegion} allowClear>
+                {regionList.map(({ id, name }) => (
+                  <Option key={id} value={id}>
+                    {name}
+                  </Option>
+                ))}
+              </Select>
+              // <Fragment>
+              //   <Input
+              //     {...itemStyles}
+              //     disabled
+              //     value={selectedRegion.name}
+              //     placeholder="请选择库区名称"
+              //   />
+              //   <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleViewRegionModal}>
+              //     选择
+              //   </Button>
+              //   <Button type="primary" onClick={this.handleResetArea}>
+              //     清空
+              //   </Button>
+              // </Fragment>
             )}
           </FormItem>
           <FormItem label="库区编号" {...formItemLayout}>
-            {getFieldDecorator('anumber')(<span>{selectedRegion.number || ''}</span>)}
+            {getFieldDecorator('anumber')(
+              <span>{(regionList.find(({ id }) => id === regionId) || {}).number || ''}</span>
+            )}
           </FormItem>
           <FormItem label="区域位置" {...formItemLayout}>
             {getFieldDecorator('position', {
@@ -698,7 +735,7 @@ export default class StorehouseHandler extends PureComponent {
     );
   };
 
-  render () {
+  render() {
     const {
       companyLoading,
       regionLoading,
@@ -785,19 +822,19 @@ export default class StorehouseHandler extends PureComponent {
     const materialsFields = [
       {
         id: 'casNo',
-        render () {
+        render() {
           return <Input placeholder="CAS号" />;
         },
-        transform (value) {
+        transform(value) {
           return value.trim();
         },
       },
       {
         id: 'chineName',
-        render () {
+        render() {
           return <Input placeholder="品名" />;
         },
-        transform (value) {
+        transform(value) {
           return value.trim();
         },
       },
@@ -832,7 +869,9 @@ export default class StorehouseHandler extends PureComponent {
           }}
           rowSelection={{
             selectedRowKeys: tempKeys,
-            onChange: (keys) => { this.setState({ tempKeys: keys }) },
+            onChange: keys => {
+              this.setState({ tempKeys: keys });
+            },
           }}
         />
         {/* 重大危险源 */}

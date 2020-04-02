@@ -11,7 +11,7 @@ import router from 'umi/router';
 // 存储介质状态Enum
 import { storageMediumStatusEnum } from '@/utils/dict';
 // 介质类别
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 // 选择监测设备弹窗
 import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/MonitoringDeviceModal';
 
@@ -23,6 +23,7 @@ const {
       delete: deleteCode,
       bind: bindCode,
       unbind: unbindCode,
+      detail: detailCode,
     },
   },
 } = codes;
@@ -52,38 +53,32 @@ const breadcrumbList = [
 const spanStyle = { md: 8, sm: 12, xs: 24 };
 const fields = [
   {
-    id: 'tankName',
-    label: '储罐名称',
+    id: 'nameOrCodeKeywords',
+    label: '储罐：',
     span: spanStyle,
-    render: () => <Input placeholder="请输入储罐名称" />,
+    render: () => <Input placeholder="请输入储罐编号或储罐名称" />,
     transform: v => v.trim(),
   },
   {
-    id: 'number',
-    label: '储罐位号',
+    id: 'chineNameOrCasNoKeywords',
+    label: '存储介质：',
     span: spanStyle,
-    render: () => <Input placeholder="请输入储罐位号" />,
+    render: () => <Input placeholder="请输入介质名称或CAS号" />,
     transform: v => v.trim(),
   },
   {
-    id: 'location',
-    label: '区域-位置',
+    id: 'areaLocation',
+    label: '区域-位置：',
     span: spanStyle,
     render: () => <Input placeholder="请输入区域位置" />,
     transform: v => v.trim(),
   },
   {
-    id: 'storageMedium',
-    label: '存储介质：',
+    id: 'aNameOrCodeKeywords',
+    label: '储罐区：',
     span: spanStyle,
-    render: () => <Input placeholder="请输入存储介质" />,
+    render: () => <Input placeholder="请输入储罐区编码或储罐区名称" />,
     transform: v => v.trim(),
-  },
-  {
-    id: 'casNo',
-    label: 'CAS号',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入CAS号" />,
   },
   {
     id: 'companyName',
@@ -115,16 +110,20 @@ export default class StorageList extends PureComponent {
 
   // 挂载后
   componentDidMount() {
-    this.handleQuery();
+    const {
+      location: { query },
+    } = this.props;
+    this.form.props.form.setFieldsValue(query);
+    this.handleQuery(undefined, undefined, query);
   }
 
   // 查询
-  handleQuery = (pageNum = 1, pageSize = DEFAULT_PAGE_SIZE) => {
+  handleQuery = (pageNum = 1, pageSize = DEFAULT_PAGE_SIZE, filters = {}) => {
     const { dispatch } = this.props;
     const fields = this.form.props.form.getFieldsValue();
     dispatch({
       type: 'baseInfo/fetchStorageTankForPage',
-      payload: { ...fields, pageNum, pageSize },
+      payload: { ...fields, pageNum, pageSize, ...filters },
     });
   };
 
@@ -299,7 +298,19 @@ export default class StorageList extends PureComponent {
         key: 'info',
         align: 'center',
         width: 300,
-        render: (val, { tankGroupNumber, unifiedCode, tankName, number }) => (
+        render: (
+          val,
+          {
+            tankGroupNumber,
+            unifiedCode,
+            tankName,
+            number,
+            area,
+            location,
+            buildingName,
+            floorName,
+          }
+        ) => (
           <div style={{ textAlign: 'left' }}>
             <div>
               统一编码：
@@ -314,8 +325,12 @@ export default class StorageList extends PureComponent {
               {tankName || '暂无数据'}
             </div>
             <div>
-              位号：
+              储罐编号：
               {number || '暂无数据'}
+            </div>
+            <div>
+              区域位置：
+              {`${buildingName || ''}${floorName || ''}${area || ''}${location || ''}`}
             </div>
           </div>
         ),
@@ -340,59 +355,64 @@ export default class StorageList extends PureComponent {
               {dangerChemcataSn || '暂无数据'}
             </div>
             <div>
-              介质状态：
+              物质形态：
               {storageMediumStatusEnum[materialForm] || '暂无数据'}
             </div>
             <div>
-              介质类别：
-              {RISK_CATEGORIES[riskCateg] || '暂无数据'}
+              危险性类别：
+              {getRiskCategoryLabel(riskCateg, RISK_CATEGORIES) || '暂无数据'}
             </div>
           </div>
         ),
       },
       {
-        title: '重大危险源 / 高危储罐',
-        dataIndex: 'chemicals',
+        title: '构成重大危险源',
+        dataIndex: 'majorHazard',
         align: 'center',
-        width: 200,
-        render: (val, { majorHazard, highRiskTank }) => (
-          <span>
-            {trueOrFalseLabel[+majorHazard]}/{trueOrFalseLabel[+highRiskTank]}
-          </span>
-        ),
+        width: 160,
+        render: val => trueOrFalseLabel[+val],
       },
       {
-        title: '区域位置',
-        dataIndex: 'area',
+        title: '高危储罐',
+        dataIndex: 'highRiskTank',
         align: 'center',
-        width: 200,
-        render: (val, { area, location, buildingName, floorName }) =>
-          `${buildingName || ''}${floorName || ''}${area || ''}${location || ''}`,
+        width: 160,
+        render: val => trueOrFalseLabel[+val],
       },
       {
-        title: '已绑监测设备',
+        title: '监测设备',
         dataIndex: 'monitorEquipmentCount',
         align: 'center',
         width: 120,
         render: (val, row) => (
-          <span
-            onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
-            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
-          >
-            {val}
-          </span>
+          <div>
+            <div
+              onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+            >
+              {val}
+            </div>
+            <div>
+              <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
+                绑定监测设备
+              </AuthA>
+            </div>
+          </div>
         ),
       },
       {
         title: '操作',
         key: 'operation',
         align: 'center',
-        width: 210,
+        width: 165,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
-              绑定监测设备
+            <AuthA
+              code={detailCode}
+              onClick={() => router.push(`/major-hazard-info/storage-management/detail/${row.id}`)}
+            >
+              查看
             </AuthA>
             <Divider type="vertical" />
             <AuthA
@@ -455,7 +475,7 @@ export default class StorageList extends PureComponent {
       },
       device: { monitoringDevice },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
@@ -509,7 +529,7 @@ export default class StorageList extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={fields}
+            fields={unitType === 4 ? fields.filter(({ id }) => id !== 'companyName') : fields}
             onSearch={(payload, ...res) => {
               this.handleQuery(...res);
             }}

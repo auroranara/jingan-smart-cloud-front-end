@@ -7,6 +7,9 @@
 | mode | 当前模式，可选'add'，'edit'，'detail' | string | - |
 | value | 受控值 | string | - |
 | onChange | value发生变化时的回调 | function(value, data) | - |
+| list | 外界传入的源数据 | array | - |
+| getList | 外界传入的获取数据的方法 | function | - |
+| loading | 外界传入的加载状态 | boolean | false |
 | buttonStyle | 默认为普通的圆形单选框，可选'outline'，'solid' | string | - |
 | fieldNames | 字段键值映射对象，如：{ key: 'id', value: 'name' } | object | { key: 'key', value: 'value' } |
 | mapper | 源数据及接口映射对象，如：{ namespace: 'common', list: 'unitList', getList: 'getUnitList' } | object | - |
@@ -17,7 +20,7 @@
 
 ## 示例
 
-> 全部参数
+> 普通
 
   ```js
   import Radio from '@/jingan-components/Form/Radio';

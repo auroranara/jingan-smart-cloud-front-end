@@ -149,7 +149,7 @@ export const MonitorConfig = {
           return <span style={{ fontSize: 16 }}>{val}</span>;
         },
       },
-      { label: '位号', value: 'number' },
+      { label: '储罐编号', value: 'number' },
       { label: '存储物质', value: 'chineName' },
       {
         label: '区域位置',
