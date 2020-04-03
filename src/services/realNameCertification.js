@@ -48,8 +48,11 @@ export async function queryRecordList(params) {
 }
 
 // 导出人员列表
-export async function queryPersonExport(params) {
-  return request(`/acloud_new/v2/ci/HGFace/exportPerson?${stringify(params)}`);
+export async function queryPersonExport(body) {
+  return request('/acloud_new/v2/ci/HGFace/exportPerson', {
+    method: 'POST',
+    body,
+  });
 }
 
 // 获取授权列表
@@ -171,6 +174,9 @@ export async function queryTagCardDel({ id }) {
 }
 
 // 导出标签卡
-export async function queryTagExport(params) {
-  return request(`/acloud_new/v2/HGFace/exportLabel?${stringify(params)}`);
+export async function queryTagExport(body) {
+  return request('/acloud_new/v2/HGFace/exportLabel', {
+    method: 'POST',
+    body,
+  });
 }
