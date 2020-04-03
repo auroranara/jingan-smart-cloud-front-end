@@ -85,10 +85,10 @@ export default class PersonnelList extends PureComponent {
     personFileList: [],
     selectedRowKeys: [],
     expand: false,
+    allList: [],
   };
 
   componentDidMount() {
-    this.handleQuery();
     const {
       location: {
         query: { companyName: routerCompanyName },
@@ -96,8 +96,20 @@ export default class PersonnelList extends PureComponent {
       user: {
         currentUser: { companyName },
       },
+      match: {
+        params: { companyId },
+      },
+      dispatch,
     } = this.props;
     this.fetchDepartment();
+    dispatch({
+      type: 'realNameCertification/fetchPersonList',
+      payload: { pageNum: 1, pageSize: 10, companyId },
+      callback: res => {
+        const { list } = res.data;
+        this.setState({ allList: list });
+      },
+    });
     this.setState({ curCompanyName: companyName || routerCompanyName });
   }
 
@@ -229,7 +241,13 @@ export default class PersonnelList extends PureComponent {
           personLoading: false,
         });
       } else {
-        message.error(res.msg);
+        res.data.errorMasssge.length === 0
+          ? message.error(res.msg)
+          : Modal.error({
+              title: '错误信息',
+              content: res.data.errorMasssge,
+              okText: '确定',
+            });
         this.setState({
           personLoading: false,
         });
@@ -328,8 +346,9 @@ export default class PersonnelList extends PureComponent {
         person: { list = [] },
       },
     } = this.props;
-    const { selectedRowKeys } = this.state;
+    const { selectedRowKeys, allList } = this.state;
     const idMap = list.map(({ id }) => id);
+    const idAll = allList.map(({ id }) => id);
     if (+i === 1) {
       if (selectedRowKeys.length === 0) {
         return message.warning('请在列表中选择需要导出的人员列表');
@@ -339,10 +358,16 @@ export default class PersonnelList extends PureComponent {
         payload: { ids: selectedRowKeys.join(',') },
       });
     }
-    if (+i === 2 || +i === 3) {
+    if (+i === 2) {
       dispatch({
         type: 'realNameCertification/fetchPersonExport',
         payload: { ids: idMap.join(',') },
+      });
+    }
+    if (+i === 3) {
+      dispatch({
+        type: 'realNameCertification/fetchPersonExport',
+        payload: { ids: idAll.join(',') },
       });
     }
   };
