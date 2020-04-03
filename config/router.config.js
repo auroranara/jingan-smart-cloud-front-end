@@ -5495,6 +5495,31 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'visitorRegistration', // 访客登记
+              code: 'realNameCertification.visitorRegistration',
+              path: '/real-name-certification/visitor-registration',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/visitor-registration',
+                  redirect: '/real-name-certification/visitor-registration/list',
+                },
+                {
+                  name: 'list',
+                  path: '/real-name-certification/visitor-registration/list',
+                  code: 'realNameCertification.visitorRegistration.visitorList',
+                  component: './RealNameCertification/VisitorRegistration/List',
+                },
+                {
+                  name: 'record',
+                  path: '/real-name-certification/visitor-registration/record/:id',
+                  code: 'realNameCertification.visitorRegistration.visitorRegistrationRecord',
+                  component: './RealNameCertification/VisitorRegistration/Record',
+                },
+              ],
+            },
             // {
             //   name: 'deviceManagement', // 设备管理
             //   path: '/real-name-certification/device-management',
