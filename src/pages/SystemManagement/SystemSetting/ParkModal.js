@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Button, message, Modal, Input } from 'antd';
+import { Button, message, Modal } from 'antd';
+import InputOrSpan from '@/jingan-components/InputOrSpan';
 import AsyncSelect from '@/jingan-components/AsyncSelect';
 import CustomForm from '@/jingan-components/CustomForm';
 import SwitchOrSpan from '@/jingan-components/SwitchOrSpan';
@@ -60,6 +61,20 @@ const MAPPER2 = {
         },
       });
     },
+    addPark (payload, callback) {
+      dispatch({
+        type: 'licensePlateRecognitionSystem/addPark',
+        payload,
+        callback: (success, data) => {
+          if (success) {
+            message.success('操作成功！');
+          } else {
+            message.error('操作失败！');
+          }
+          callback && callback(success, data);
+        },
+      });
+    },
   })
 )
 export default class Park extends Component {
@@ -80,11 +95,15 @@ export default class Park extends Component {
   }
 
   handleSubmit = () => {
-    const { onOk, detail, editPark } = this.props;
+    const { onOk, detail, editPark, addPark, modalType } = this.props;
     this.form && this.form.validateFields((err, values) => {
-      if (err || !detail.id) return;
+      if (err) return;
       const payload = values ? this.transform(values) : values;
-      editPark({ ...payload, id: detail.id }, onOk);
+      if (modalType === 'edit') {
+        editPark({ ...payload, id: detail.id }, onOk);
+      } else if (modalType === 'add') {
+        addPark({ ...payload }, onOk);
+      }
     })
   }
 
@@ -114,10 +133,11 @@ export default class Park extends Component {
     dbPassword: dbPassword || undefined,
   });
 
-  transform = ({ manager, test, ...payload }) => {
+  transform = ({ manager, managerPhone, ...payload }) => {
     return {
       companyId: this.props.location.query.companyId,
-      managerId: manager && manager.key,
+      managerId: manager && manager.key ? manager.key : '',
+      managerPhone: manager && manager.key ? managerPhone : '',
       ...payload,
     };
   };
@@ -126,30 +146,47 @@ export default class Park extends Component {
     this.form = form;
   };
 
+  handleManagerChange = value => {
+    if (value) return;
+    this.form && this.form.setFieldsValue({ managerPhone: undefined })
+  };
+
+  handleManagerSelect = value => {
+    const { phoneNumber } = value || {};
+    this.form && this.form.setFieldsValue({
+      managerPhone: phoneNumber ? `${phoneNumber}` : undefined,
+    });
+  }
+
   render () {
     const {
-      title = '车厂设置',
       visible,
+      modalType = 'add',
       onCancel,
       user: { currentUser: { unitType } },
       location: { query: { companyId } },
     } = this.props;
-
+    const isView = modalType === 'view';
+    const isAdd = modalType === 'add';
+    const isEdit = modalType === 'edit';
+    const title = (isAdd && '新增车厂信息') || (isEdit && '编辑车厂信息') || (isView && '查看车厂信息');
     const fields = [
-      {
-        id: 'parkId',
-        label: '车场ID',
-        span: SPAN,
-        labelCol: LABEL_COL,
-        render: () => <Input disabled />,
-      },
+      ...['view', 'edit'].includes(modalType) ? [
+        {
+          id: 'parkId',
+          label: '车场ID',
+          span: SPAN,
+          labelCol: LABEL_COL,
+          render: () => <InputOrSpan disabled type={isView ? 'span' : undefined} />,
+        },
+      ] : [],
       {
         id: 'parkName',
         label: '车场名称',
         span: SPAN,
         labelCol: LABEL_COL,
-        options: { rules: [{ required: true, message: '车厂名称不能为空' }] },
-        render: () => <Input placeholder="请输入车场名称" />,
+        options: { rules: isView ? undefined : [{ required: true, message: '车场名称不能为空' }] },
+        render: () => <InputOrSpan placeholder="请输入车场名称" type={isView ? 'span' : undefined} />,
       },
       {
         id: 'manager',
@@ -159,10 +196,12 @@ export default class Park extends Component {
         render: () => (
           <AsyncSelect
             placeholder="请选择车场联系人"
+            onChange={this.handleManagerChange}
             onSelect={this.handleManagerSelect}
             fieldNames={FIELDNAMES}
             mapper={MAPPER2}
             params={{ unitId: companyId }}
+            type={isView ? 'span' : ''}
           />
         ),
       },
@@ -171,7 +210,7 @@ export default class Park extends Component {
         label: '联系电话',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <Input placeholder="请输入联系电话" />,
+        render: () => <InputOrSpan placeholder="请输入联系电话" type={isView ? 'span' : undefined} />,
       },
       {
         id: 'parkStatus',
@@ -180,11 +219,12 @@ export default class Park extends Component {
         labelCol: LABEL_COL,
         options: {
           initialValue: STATUSES[0].key,
-          rules: [{ required: true, message: '车场状态不能为空' }],
+          rules: isView ? undefined : [{ required: true, message: '车场状态不能为空' }],
         },
         render: () => (
           <SwitchOrSpan
             list={STATUSES}
+            type={isView ? 'span' : ''}
           />
         ),
       },
@@ -195,32 +235,37 @@ export default class Park extends Component {
             label: '数据库连接地址',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <Input placeholder="请输入数据库连接地址" />,
+            render: () => <InputOrSpan placeholder="请输入数据库连接地址" type={isView ? 'span' : undefined} />,
           },
           {
             id: 'dbUserName',
             label: '数据库用户名',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <Input placeholder="请输入数据库用户名" />,
+            render: () => <InputOrSpan placeholder="请输入数据库用户名" type={isView ? 'span' : undefined} />,
           },
           {
             id: 'dbPassword',
             label: '数据库密码',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <Input placeholder="请输入数据库密码" type="Password" />,
+            render: () => <InputOrSpan placeholder="请输入数据库密码" type={isView ? 'span' : 'Password'} />,
           },
-          {
-            id: 'test',
-            label: '测试连接',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => (<Button type="primary" onClick={this.handleClick}>测试</Button>),
-          },
+          ...isEdit || isAdd ? [
+            {
+              id: 'test',
+              label: '测试连接',
+              span: SPAN,
+              labelCol: LABEL_COL,
+              render: () => (<Button type="primary" onClick={this.handleClick}>测试</Button>),
+            },
+          ] : [],
         ]
         : []),
     ];
+    const extraProps = isView ? {
+      footer: null,
+    } : {};
     return (
       <Modal
         width={700}
@@ -229,6 +274,7 @@ export default class Park extends Component {
         onCancel={onCancel}
         onOk={this.handleSubmit}
         destroyOnClose
+        {...extraProps}
       >
         <CustomForm
           fields={fields}

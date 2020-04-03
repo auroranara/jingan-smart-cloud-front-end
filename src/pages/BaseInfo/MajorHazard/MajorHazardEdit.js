@@ -9,7 +9,7 @@ import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
-import TableTransFer from './TabTransfer';
+import TableList from './TableList';
 import { hasAuthority } from '@/utils/customAuth';
 import Map from '../../RiskControl/FourColorImage/Map';
 import codes from '@/utils/codes';
@@ -33,6 +33,16 @@ const {
     majorHazard: { edit: editAuth },
   },
 } = codes;
+
+// function filterList(arr) {
+//   const newArr = arr.reduce(function(prev, element) {
+//     if (!prev.find(el => el.id === element.id)) {
+//       prev.push(element);
+//     }
+//     return prev;
+//   }, []);
+//   return newArr;
+// }
 
 @connect(
   ({
@@ -59,7 +69,6 @@ const {
     map,
     gasometer,
     loading: loading.models.reservoirRegion,
-    // personModalLoading:
   })
 )
 @Form.create()
@@ -92,8 +101,13 @@ export default class MajorHazardEdit extends PureComponent {
       groupId: '', // 地图当前楼层
       buildingId: [], // 区域Id列表
       modelIds: '', // 当前选中区域id列表
-      mapInfo: {},
       expandId: false, // 列表中展开项的id
+      selectedTankAreaList: [], // 编辑时危险源范围选中列表
+      selectedWareList: [],
+      selectedGasList: [],
+      selectedProductList: [],
+      selectedPipeList: [],
+      selectedKeys: [], // 危险源范围选中id
     };
   }
 
@@ -142,14 +156,8 @@ export default class MajorHazardEdit extends PureComponent {
             wareHouseAreaIds,
             gasHolderManageIds,
             productDeviceIds,
-            industryPipeline
+            industryIds
           );
-
-          this.fetchStorageAreaList({ companyId: companyId });
-          this.fetchReservoirAreaList({ companyId: companyId });
-          this.fetchGasList({ companyId: companyId });
-          this.fetchProductList({ companyId: companyId });
-          this.fetchPipelineList({ companyId: companyId });
 
           this.setState({
             detailList: currentList,
@@ -159,11 +167,11 @@ export default class MajorHazardEdit extends PureComponent {
             areaIds: wareHouseAreaIds.join(','),
             gasometerIds: gasHolderManageIds.join(','),
             productIds: productDeviceIds.join(','),
+            pipelineIds: industryIds.join(','),
             tankAreaList: tankArea,
             wareHouseAreaList: wareHouseArea,
             gasHolderManageList: gasHolderManage,
             productList: productDevice,
-            pipelineIds: industryIds.join(','),
             pipelineList: industryPipeline,
             points: coordinateList.map(item => ({
               x: +item.x,
@@ -176,6 +184,12 @@ export default class MajorHazardEdit extends PureComponent {
             }),
             groupId,
             modelIds,
+            selectedTankAreaList: tankArea,
+            selectedWareList: wareHouseArea,
+            selectedGasList: gasHolderManage,
+            selectedProductList: productDevice,
+            selectedPipeList: industryPipeline,
+            selectedKeys: allSelectedKeys,
           });
           setFieldsValue({ dangerSourceList: allSelectedKeys });
         },
@@ -190,9 +204,25 @@ export default class MajorHazardEdit extends PureComponent {
       this.setState({ curCompanyId: companyId });
     }
   }
+
   onRef = ref => {
     this.childMap = ref;
   };
+
+  isDetail = () => {
+    const {
+      match: { url },
+    } = this.props;
+    return url && url.includes('detail');
+  };
+
+  goBack = () => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
+  };
+
+  // 去除左右两边空白
+  handleTrim = e => e.target.value.trim();
 
   // 获取地图
   fetchMap = (params, callback) => {
@@ -207,21 +237,6 @@ export default class MajorHazardEdit extends PureComponent {
   // 获取地图上的坐标
   getPoints = (groupId, points) => {
     this.setState({ groupId, points });
-  };
-
-  /* 去除左右两边空白 */
-  handleTrim = e => e.target.value.trim();
-
-  isDetail = () => {
-    const {
-      match: { url },
-    } = this.props;
-    return url && url.includes('detail');
-  };
-
-  goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
   };
 
   // 提交
@@ -252,64 +267,19 @@ export default class MajorHazardEdit extends PureComponent {
           buildingId,
         } = this.state;
 
-        const {
-          companyName,
-          code,
-          name,
-          desc,
-          manageType,
-          memoryPlace,
-          antiStatic,
-          dangerTechnology,
-          location,
-          useDate,
-          r,
-          dangerLevel,
-          chemiclaNature,
-          industryArea,
-          environmentType,
-          environmentName,
-          environmentNum,
-          minSpace,
-          safetyDistance,
-          personNum,
-          linkman,
-          linkmanTel,
-          recordDate,
-          dutyPerson,
-        } = values;
+        const { useDate, recordDate, dangerSourceList, ...restVlaue } = values;
 
         const payload = {
+          ...restVlaue,
           companyId: curCompanyId,
-          companyName,
-          code,
-          name,
-          desc,
-          manageType,
-          memoryPlace,
-          antiStatic,
-          dangerTechnology,
-          personNum,
-          location,
+          dangerSourceList: dangerSourceList.length > 0 && undefined,
           useDate: useDate && useDate.format('YYYY-MM-DD'),
           recordDate: recordDate && recordDate.format('YYYY-MM-DD'),
-          r,
-          dangerLevel,
           tankIds,
           areaIds,
           gasometerIds,
           productIds,
           industryPipelineIds: pipelineIds,
-          chemiclaNature,
-          industryArea,
-          environmentType,
-          environmentName,
-          environmentNum,
-          minSpace,
-          safetyDistance,
-          linkman,
-          linkmanTel,
-          dutyPerson,
           coordinate:
             points.length > 0
               ? JSON.stringify(points.map(({ x, y, z, groupID }) => ({ x, y, z, groupID })))
@@ -321,7 +291,7 @@ export default class MajorHazardEdit extends PureComponent {
             .join(','),
         };
 
-        const success = res => {
+        const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
           message.success(msg, 1, this.goBack());
         };
@@ -337,27 +307,13 @@ export default class MajorHazardEdit extends PureComponent {
             submitting: false,
           });
         };
-        // 如果id存在的话，为编辑
-        if (id) {
-          dispatch({
-            type: 'reservoirRegion/fetchSourceEdit',
-            payload: {
-              id,
-              ...payload,
-            },
-            success,
-            error,
-          });
-        }
-        // 不存在id,则为新增
-        else {
-          dispatch({
-            type: 'reservoirRegion/fetchSourceAdd',
-            payload,
-            success,
-            error,
-          });
-        }
+
+        dispatch({
+          type: `reservoirRegion/fetchSource${id ? 'Edit' : 'Add'}`,
+          payload: id ? { id, ...payload } : payload,
+          success,
+          error,
+        });
       }
     });
   };
@@ -407,11 +363,6 @@ export default class MajorHazardEdit extends PureComponent {
       if (!mapInfo.mapId) return;
       this.childMap.initMap({ ...mapInfo });
     });
-    this.fetchStorageAreaList({ companyId: id });
-    this.fetchReservoirAreaList({ companyId: id });
-    this.fetchGasList({ companyId: id });
-    this.fetchProductList({ companyId: id });
-    this.fetchPipelineList({ companyId: id });
   };
 
   // 渲染企业模态框
@@ -501,33 +452,23 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 显示危险源弹框
   handleDangerModal = () => {
-    const {
-      match: {
-        params: { id },
-      },
-    } = this.props;
     const { curCompanyId } = this.state;
-    if (id) return this.setState({ dangerModalVisible: true });
     if (curCompanyId) {
       // 0 不是重大危险源
-      this.fetchStorageAreaList({ companyId: curCompanyId, isDanger: 0 });
-      this.fetchReservoirAreaList({ companyId: curCompanyId, dangerSource: 0 });
-      this.fetchProductList({ companyId: curCompanyId, dangerSource: 0 });
-      this.fetchGasList({ companyId: curCompanyId, majorHazard: 0 });
-      this.fetchPipelineList({ companyId: curCompanyId, dangerSource: 0 });
+      this.fetchStorageAreaList({ companyId: curCompanyId });
+      this.fetchReservoirAreaList({ companyId: curCompanyId });
+      this.fetchProductList({ companyId: curCompanyId });
+      this.fetchGasList({ companyId: curCompanyId });
+      this.fetchPipelineList({ companyId: curCompanyId });
       this.setState({ dangerModalVisible: true });
     } else {
       message.warning('请先选择单位！');
     }
   };
 
+  // 危险源弹框select切换
   onDangerTypeSelect = i => {
     this.setState({ dangerType: i });
-  };
-
-  // 获取穿梭框数据的keys
-  onTargetKeysClick = i => {
-    this.setState({ targetKeys: i });
   };
 
   // 选中的重大危险源数据
@@ -548,8 +489,8 @@ export default class MajorHazardEdit extends PureComponent {
         list: { list: pipelineList = [] },
       },
     } = this.props;
-    const { targetKeys } = this.state;
 
+    const { targetKeys } = this.state;
     const storArray = storageList.reduce((arr, { id, areaName }) => {
       return targetKeys.includes(id) ? [...arr, { id, areaName }] : arr;
     }, []);
@@ -566,11 +507,11 @@ export default class MajorHazardEdit extends PureComponent {
       return targetKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
 
-    const storageId = storArray.map(item => item.id).join(',');
-    const reserviorId = resArrray.map(item => item.id).join(',');
-    const gasId = gasArrray.map(item => item.id).join(',');
-    const productId = proArrray.map(item => item.id).join(',');
-    const pipelineId = pipArrray.map(item => item.id).join(',');
+    const storageId = storArray.map(item => item.id);
+    const reserviorId = resArrray.map(item => item.id);
+    const gasId = gasArrray.map(item => item.id);
+    const productId = proArrray.map(item => item.id);
+    const pipelineId = pipArrray.map(item => item.id);
 
     const allSelectedKeys = storageId.concat(reserviorId, gasId, productId, pipelineId);
 
@@ -578,16 +519,58 @@ export default class MajorHazardEdit extends PureComponent {
 
     this.setState({
       dangerModalVisible: false,
-      tankIds: storageId,
-      areaIds: reserviorId,
-      gasometerIds: gasId,
-      productIds: productId,
-      pipelineIds: pipelineId,
+      tankIds: storageId.join(','),
+      areaIds: reserviorId.join(','),
+      gasometerIds: gasId.join(','),
+      productIds: productId.join(','),
+      pipelineIds: pipelineId.join(','),
       tankAreaList: storArray,
       wareHouseAreaList: resArrray,
       gasHolderManageList: gasArrray,
       productList: proArrray,
       pipelineList: pipArrray,
+    });
+  };
+
+  //切换危险源范围选择数据
+  handleSelectChange = keys => {
+    const {
+      storageAreaManagement: { list: storageList = [] },
+      reservoirRegion: {
+        areaData: { list: areaList = [] },
+      },
+      gasometer: {
+        list: { list: gasList = [] },
+      },
+      productionEquipments: {
+        proData: { list: proEquipList = [] },
+      },
+      pipeline: {
+        list: { list: pipelineList = [] },
+      },
+    } = this.props;
+    const storArray = storageList.reduce((arr, { id, areaName }) => {
+      return keys.includes(id) ? [...arr, { id, areaName }] : arr;
+    }, []);
+    const resArrray = areaList.reduce((arr, { id, name }) => {
+      return keys.includes(id) ? [...arr, { id, name }] : arr;
+    }, []);
+    const gasArrray = gasList.reduce((arr, { id, gasholderName }) => {
+      return keys.includes(id) ? [...arr, { id, gasholderName }] : arr;
+    }, []);
+    const proArrray = proEquipList.reduce((arr, { id, name }) => {
+      return keys.includes(id) ? [...arr, { id, name }] : arr;
+    }, []);
+    const pipArrray = pipelineList.reduce((arr, { id, name }) => {
+      return keys.includes(id) ? [...arr, { id, name }] : arr;
+    }, []);
+    this.setState({
+      targetKeys: keys,
+      selectedTankAreaList: storArray.filter(item => !!item),
+      selectedWareList: resArrray.filter(item => !!item),
+      selectedGasList: gasArrray.filter(item => !!item),
+      selectedProductList: proArrray.filter(item => !!item),
+      selectedPipeList: pipArrray.filter(item => !!item),
     });
   };
 
@@ -756,23 +739,6 @@ export default class MajorHazardEdit extends PureComponent {
       modelIds,
       curCompanyId,
     } = this.state;
-    const {
-      companyName,
-      code,
-      name,
-      desc,
-      antiStatic,
-      dangerTechnology,
-      location,
-      useDate,
-      r,
-      dangerLevel,
-      personNum,
-      minSpace,
-      safetyDistance,
-      recordDate,
-      dutyPerson,
-    } = detailList;
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -786,7 +752,7 @@ export default class MajorHazardEdit extends PureComponent {
           {unitType !== 4 && (
             <FormItem {...formItemLayout} label="单位名称">
               {getFieldDecorator('companyId', {
-                initialValue: companyName,
+                initialValue: detailList.companyName,
                 rules: [
                   {
                     required: true,
@@ -812,7 +778,7 @@ export default class MajorHazardEdit extends PureComponent {
           )}
           <FormItem {...formItemLayout} label="统一编码">
             {getFieldDecorator('code', {
-              initialValue: code,
+              initialValue: detailList.code,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -824,7 +790,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="重大危险源名称">
             {getFieldDecorator('name', {
-              initialValue: name,
+              initialValue: detailList.name,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -836,7 +802,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="重大危险源描述">
             {getFieldDecorator('desc', {
-              initialValue: desc,
+              initialValue: detailList.desc,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -855,7 +821,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="R值">
             {getFieldDecorator('r', {
-              initialValue: r,
+              initialValue: detailList.r,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -876,7 +842,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="重大危险源等级">
             {getFieldDecorator('dangerLevel', {
-              initialValue: dangerLevel,
+              initialValue: detailList.dangerLevel,
               rules: [
                 {
                   required: true,
@@ -907,19 +873,29 @@ export default class MajorHazardEdit extends PureComponent {
                 <div {...itemStyles}>
                   <span className={styles.label}>
                     {tankAreaList.map(item => (
-                      <Tag key={item.id}>{item.areaName}</Tag>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
+                        {item.areaName}
+                      </Tag>
                     ))}
                     {wareHouseAreaList.map(item => (
-                      <Tag key={item.id}>{item.name}</Tag>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
+                        {item.name}
+                      </Tag>
                     ))}
                     {gasHolderManageList.map(item => (
-                      <Tag key={item.id}>{item.gasholderName}</Tag>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
+                        {item.gasholderName}
+                      </Tag>
                     ))}
                     {productList.map(item => (
-                      <Tag key={item.id}>{item.name}</Tag>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
+                        {item.name}
+                      </Tag>
                     ))}
                     {pipelineList.map(item => (
-                      <Tag key={item.id}>{item.name}</Tag>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
+                        {item.name}
+                      </Tag>
                     ))}
                   </span>
                   {!isDet && (
@@ -933,7 +909,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="备案日期">
             {getFieldDecorator('recordDate', {
-              initialValue: recordDate ? moment(+recordDate) : undefined,
+              initialValue: detailList.recordDate ? moment(+detailList.recordDate) : undefined,
               rules: [
                 {
                   required: true,
@@ -951,7 +927,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="重大危险源责任人">
             {getFieldDecorator('dutyPerson', {
-              initialValue: dutyPerson,
+              initialValue: detailList.dutyPerson,
               rules: [
                 {
                   required: true,
@@ -975,7 +951,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="防雷防静电设施是否定期接受检测">
             {getFieldDecorator('antiStatic', {
-              initialValue: antiStatic,
+              initialValue: detailList.antiStatic,
               rules: [
                 {
                   required: true,
@@ -994,7 +970,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="涉及危险工艺">
             {getFieldDecorator('dangerTechnology', {
-              initialValue: dangerTechnology,
+              initialValue: detailList.dangerTechnology,
               getValueFromEvent: this.handleTrim,
             })(
               <TextArea
@@ -1007,7 +983,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="区域位置">
             {getFieldDecorator('location', {
-              initialValue: location,
+              initialValue: detailList.location,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -1019,7 +995,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="投用日期">
             {getFieldDecorator('useDate', {
-              initialValue: useDate ? moment(+useDate) : undefined,
+              initialValue: detailList.useDate ? moment(+detailList.useDate) : undefined,
               rules: [
                 {
                   required: true,
@@ -1037,7 +1013,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="重大危险源周边安全间距(m)">
             {getFieldDecorator('safetyDistance', {
-              initialValue: safetyDistance,
+              initialValue: detailList.safetyDistance,
               getValueFromEvent: this.handleTrim,
             })(<Input {...itemStyles} placeholder="请填入专家评估算出的距离" maxLength={10} />)}
           </FormItem>
@@ -1049,7 +1025,7 @@ export default class MajorHazardEdit extends PureComponent {
                   message: '请填入周边500米内常住人口数量',
                 },
               ],
-              initialValue: personNum,
+              initialValue: detailList.personNum,
               getValueFromEvent: this.handleTrim,
             })(
               <Input {...itemStyles} placeholder="请填入周边500米内常住人口数量" maxLength={10} />
@@ -1057,7 +1033,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="周边防护目标最近距离(m)">
             {getFieldDecorator('minSpace', {
-              initialValue: minSpace,
+              initialValue: detailList.minSpace,
               getValueFromEvent: this.handleTrim,
             })(<Input {...itemStyles} placeholder="请填入专家评估算出的距离" maxLength={10} />)}
           </FormItem>
@@ -1158,7 +1134,21 @@ export default class MajorHazardEdit extends PureComponent {
       },
     } = this.props;
 
-    const { dangerType, targetKeys, dangerModalVisible, personModalVisible } = this.state;
+    const {
+      dangerType,
+      dangerModalVisible,
+      personModalVisible,
+      selectedTankAreaList,
+      selectedWareList,
+      selectedGasList,
+      selectedProductList,
+      selectedPipeList,
+      tankIds,
+      areaIds,
+      gasometerId,
+      productIds,
+      pipelineIds,
+    } = this.state;
 
     const isDet = this.isDetail();
 
@@ -1268,16 +1258,33 @@ export default class MajorHazardEdit extends PureComponent {
           }}
         >
           <ToolBar fields={fileds} searchable={false} resetable={false} />
-          <TableTransFer
-            areaList={areaList}
-            storageList={storageList}
-            gasList={gasList}
+          <TableList
+            areaList={areaList.filter(
+              item => +item.dangerSource === 0 || (areaIds && areaIds.split(',').includes(item.id))
+            )}
+            storageList={storageList.filter(
+              item => +item.isDanger === 0 || (tankIds && tankIds.split(',').includes(item.id))
+            )}
+            gasList={gasList.filter(
+              item =>
+                +item.majorHazard === 0 || (gasometerId && gasometerId.split(',').includes(item.id))
+            )}
             dangerType={dangerType}
-            proEquipList={proEquipList}
-            pipelineList={pipelineList}
-            targetKeys={targetKeys}
-            onTargetKeysClick={this.onTargetKeysClick}
-            onTargetKeysChange={this.onTargetKeysChange}
+            proEquipList={proEquipList.filter(
+              item =>
+                +item.dangerSource === 0 || (productIds && productIds.split(',').includes(item.id))
+            )}
+            pipelineList={pipelineList.filter(
+              item =>
+                +item.dangerSource === 0 ||
+                (pipelineIds && pipelineIds.split(',').includes(item.id))
+            )}
+            handleSelectChange={this.handleSelectChange}
+            selectedTankAreaList={selectedTankAreaList}
+            selectedWareList={selectedWareList}
+            selectedGasList={selectedGasList}
+            selectedProductList={selectedProductList}
+            selectedPipeList={selectedPipeList}
           />
         </Modal>
 

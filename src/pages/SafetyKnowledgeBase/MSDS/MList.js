@@ -1,8 +1,8 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import Link from 'umi/link';
-import { Button, Card, Input, message, Popconfirm, Select, Table } from 'antd';
+// import Link from 'umi/link';
+import { Card, Input, message, Popconfirm, Select, Table, TreeSelect } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -12,7 +12,7 @@ import { deleteEmptyProps, handleTableData, INDEXES, RISK_CATEGORIES } from './u
 import codes from '@/utils/codes';
 import { AuthButton, AuthLink, AuthSpan } from '@/utils/customAuth';
 
-const { Option } = Select;
+// const { Option } = Select;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -36,11 +36,7 @@ const FIELDS = [
     label: '危险品类别',
     span: SPAN,
     render: () => (
-      <Select placeholder="请选择危险性类别" allowClear>
-        {RISK_CATEGORIES.map((r, i) => (
-          <Option key={i}>{r}</Option>
-        ))}
-      </Select>
+      <TreeSelect placeholder="请选择危险性类别" treeData={RISK_CATEGORIES} allowClear />
     ),
   },
   {

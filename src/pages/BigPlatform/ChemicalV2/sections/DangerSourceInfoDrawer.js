@@ -3,7 +3,7 @@ import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/D
 import styles from './DangerSourceInfoDrawer.less';
 import { CardItem } from '../components/Components';
 import { MonitorConfig } from '../utils';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import iconAlarm from '@/assets/icon-alarm.png';
 
 const monitorTypes = ['302', '304', '311', '312', '314'];
@@ -129,7 +129,8 @@ export default class DangerSourceInfoDrawer extends PureComponent {
                       {
                         label: '危险性类别',
                         value: 'riskCateg',
-                        render: val => RISK_CATEGORIES[val] || NO_DATA,
+                        // render: val => RISK_CATEGORIES[val] || NO_DATA,
+                        render: val => getRiskCategoryLabel(val, RISK_CATEGORIES) || NO_DATA,
                       },
                       {
                         label: '设计储量',

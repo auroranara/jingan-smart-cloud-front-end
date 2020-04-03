@@ -42,6 +42,19 @@ export async function authorizationPerson(body) {
   });
 }
 
+// 批量导入照片记录
+export async function queryRecordList(params) {
+  return request(`/acloud_new/v2/HGFace/hgFacePhotoHistory/page?${stringify(params)}`);
+}
+
+// 导出人员列表
+export async function queryPersonExport(body) {
+  return request('/acloud_new/v2/ci/HGFace/exportPerson', {
+    method: 'POST',
+    body,
+  });
+}
+
 // 获取授权列表
 // export async function fetchAuthorizationList (params) {
 //   return request(`/acloud_new/v2/ci/HGFace/hgAuthorizationInfoForPage?${stringify(params)}`)
@@ -161,6 +174,9 @@ export async function queryTagCardDel({ id }) {
 }
 
 // 导出标签卡
-export async function queryTagExport(params) {
-  return request(`/acloud_new/v2/HGFace/exportLabel?${stringify(params)}`);
+export async function queryTagExport(body) {
+  return request('/acloud_new/v2/HGFace/exportLabel', {
+    method: 'POST',
+    body,
+  });
 }

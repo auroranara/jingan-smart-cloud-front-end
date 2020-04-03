@@ -6,7 +6,7 @@ import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import { getPageSize, setPageSize } from '@/utils/utils';
-import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import styles from './index.less';
 
 const GET_STORAGE_MEDIUM_LIST = 'gasometer/getStorageMediumList';
@@ -16,7 +16,7 @@ const MATERIAL_FORMS = [
   { key: '3', value: '气态' },
   { key: '4', value: '等离子态' },
 ];
-const RISKY_CATEGORIES = RISK_CATEGORIES.map((value, index) => ({ key: `${index}`, value }));
+// const RISKY_CATEGORIES = RISK_CATEGORIES.map((value, index) => ({ key: `${index}`, value }));
 
 // 存储介质
 @connect(
@@ -178,7 +178,8 @@ export default class Medium extends Component {
       {
         title: '危险性类别',
         dataIndex: 'riskCateg',
-        render: value => <SelectOrSpan list={RISKY_CATEGORIES} value={`${value}`} type="span" />,
+        // render: value => <SelectOrSpan list={RISKY_CATEGORIES} value={`${value}`} type="span" />,
+        render: value => getRiskCategoryLabel(value, RISK_CATEGORIES),
         align: 'center',
       },
     ];

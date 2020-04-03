@@ -42,6 +42,8 @@ export default class ReservoirRegionEdit extends PureComponent {
     editCompanyId: '',
     dangerSourceUnitId: [],
     wareHouseIds: '',
+    selectedTemp: [],
+    selectedWarehouse: [],
   };
 
   // 挂载后
@@ -60,14 +62,16 @@ export default class ReservoirRegionEdit extends PureComponent {
         payload: {
           pageSize: 18,
           pageNum: 1,
+          id,
         },
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { companyId } = currentList;
+          const { companyId, warehouseInfos } = currentList;
           this.setState({
             detailList: currentList,
             editCompanyId: companyId,
+            selectedWarehouse: warehouseInfos,
             // hasDangerSourse: dangerSource,
             // dangerSourceUnitId: dangerSourceMessage,
           });
@@ -222,7 +226,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
-    const { editCompanyId } = this.state;
+    const { editCompanyId, selectedWarehouse } = this.state;
     const fixedCompanyId = this.companyId || editCompanyId || companyId;
     if (fixedCompanyId) {
       this.fetchStoreHouseList({
@@ -231,7 +235,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           pageNum: 1,
         },
       });
-      this.setState({ storeHouseVisible: true });
+      this.setState({ storeHouseVisible: true, selectedTemp: selectedWarehouse });
     } else {
       message.warning('请先选择单位！');
     }
@@ -251,7 +255,9 @@ export default class ReservoirRegionEdit extends PureComponent {
       type: 'storehouse/fetchStorehouseList',
       payload: {
         ...payload,
-        isBind: 0, //0未绑定  1绑定
+        pageSize: 0,
+        pageNum: 1,
+        // isBind: 0, //0未绑定  1绑定
         companyId: fixedCompanyId,
       },
     });
@@ -262,9 +268,13 @@ export default class ReservoirRegionEdit extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
+    const { selectedTemp } = this.state;
     this.setState({ storeHouseVisible: false });
     setFieldsValue({ wareHouseName: item.map(item => item.name).join(',') });
-    this.setState({ wareHouseIds: item.map(item => item.id).join(',') });
+    this.setState({
+      wareHouseIds: item.map(item => item.id).join(','),
+      selectedWarehouse: selectedTemp,
+    });
   };
 
   // 清空包含的库房
@@ -273,7 +283,7 @@ export default class ReservoirRegionEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({ wareHouseName: '' });
-    this.setState({ wareHouseIds: '' });
+    this.setState({ wareHouseIds: '', selectedTemp: [], selectedWarehouse: [] });
   };
 
   renderInfo() {
@@ -561,10 +571,13 @@ export default class ReservoirRegionEdit extends PureComponent {
       },
       route: { name },
       storehouse,
+      reservoirRegion: {
+        areaData: {
+          list: [detail],
+        },
+      },
     } = this.props;
-    console.log('storehouse', storehouse);
-
-    const { storeHouseVisible } = this.state;
+    const { storeHouseVisible, selectedTemp } = this.state;
     const isDetail = name === 'view';
     const title = id ? (isDetail ? '详情' : editTitle) : addTitle;
 
@@ -638,6 +651,9 @@ export default class ReservoirRegionEdit extends PureComponent {
       },
     ];
 
+    const { warehouseInfos = [] } = detail || {};
+    const warehouseInfosIds = warehouseInfos.map(({ id }) => id);
+
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
@@ -647,10 +663,21 @@ export default class ReservoirRegionEdit extends PureComponent {
         <CompanyModal
           title="选择包含的库房"
           multiSelect
-          rowSelection={{ type: 'checkbox' }}
+          rowSelection={{
+            type: 'checkbox',
+            selectedRowKeys: selectedTemp.map(item => item.id),
+            onChange: (keys, rows) => {
+              this.setState({ selectedTemp: rows.filter(item => !!item) });
+            },
+          }}
           loading={storeHouseLoading}
           visible={storeHouseVisible}
-          modal={storehouse}
+          modal={{
+            ...storehouse,
+            list: storehouse.list.filter(
+              item => !item.areaId || (warehouseInfosIds && warehouseInfosIds.includes(item.id))
+            ),
+          }}
           columns={shColumns}
           field={shFields}
           fetch={this.fetchStoreHouseList}
@@ -658,6 +685,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           onClose={() => {
             this.setState({ storeHouseVisible: false });
           }}
+          pagination={false}
         />
       </PageHeaderLayout>
     );
