@@ -2,20 +2,39 @@ import React, { Fragment, useRef } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
 import { Select } from '@/jingan-components/Form';
-import { CATEGORIES, TYPES, STATUSES } from '../config';
+import { CATEGORIES, TYPES, STATUSES, COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../config';
 import styles from './index.less';
 
 const ContractorList = ({ route, match, location }) => {
   const formRef = useRef(null);
-  console.log(formRef);
   const props = {
     route,
     match,
     location,
     transform(values) {
       console.log(values);
+      console.log(formRef);
+      return {
+        name: values.companyName,
+      };
     },
     fields: [
+      {
+        name: 'companyName',
+        label: '单位名称',
+        component: 'Input',
+        // props: {
+        //   fieldNames: COMPANY_FIELDNAMES,
+        //   mapper: COMPANY_MAPPER,
+        //   showSearch: true,
+        //   filterOption: false,
+        //   allowClear: true,
+        // },
+        dependencies: [],
+        hide({ isUnit }) {
+          return isUnit;
+        },
+      },
       {
         name: 'contractorName',
         label: '承包商单位名称',
@@ -49,7 +68,15 @@ const ContractorList = ({ route, match, location }) => {
         },
       },
     ],
-    columns: ({ renderDetailButton, renderEditButton, renderDeleteButton }) => [
+    columns: ({ isUnit, renderDetailButton, renderEditButton, renderDeleteButton }) => [
+      ...(!isUnit
+        ? [
+            {
+              dataIndex: 'companyName',
+              title: '单位名称',
+            },
+          ]
+        : []),
       {
         dataIndex: 'contractorName',
         title: '承包商单位名称',
@@ -72,6 +99,7 @@ const ContractorList = ({ route, match, location }) => {
       {
         dataIndex: '操作',
         title: '操作',
+        fixed: 'right',
         render: (_, data) => (
           <Fragment>
             {/* {renderDetailButton(data)}
@@ -85,7 +113,7 @@ const ContractorList = ({ route, match, location }) => {
     ],
     formProps: {
       expandable: true,
-      // forwardRef: formRef,
+      // ref: formRef,
     },
   };
   return <TablePage {...props} />;

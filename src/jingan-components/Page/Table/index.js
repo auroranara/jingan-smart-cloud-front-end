@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useImperativeHandle, useRef } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { Card, Spin, Table, Empty } from 'antd';
 import Form from '@/jingan-components/Form';
@@ -23,8 +23,12 @@ const TablePage = props => {
     formProps = {},
     tableProps = {},
     transform,
+    isUnit,
+    unitId,
   } = props;
   const [values, setValues] = useState(undefined);
+  const form = useRef(null);
+  useImperativeHandle(formProps.ref, () => form.current);
   useEffect(() => {
     getList({
       ...(transform ? transform({ ...values }) : values),
@@ -32,6 +36,11 @@ const TablePage = props => {
   }, []);
   let columnList = columns || tableProps.columns;
   columnList = typeof columnList === 'function' ? columnList(props) : columnList;
+  const params = {
+    isUnit,
+    unitId,
+    ...formProps.params,
+  };
   return (
     <PageHeaderLayout
       title={breadcrumbList[breadcrumbList.length - 1].title}
@@ -41,19 +50,21 @@ const TablePage = props => {
         onSearch={values => {
           setValues(values);
           getList({
-            ...(transform ? transform({ ...values }) : values),
+            ...(transform ? transform({ ...params, ...values }) : values),
             pageSize,
           });
         }}
         onReset={() => {
           setValues(values);
           getList({
-            ...(transform ? transform({ ...values }) : values),
+            ...(transform ? transform({ ...params, ...values }) : values),
             pageSize,
           });
         }}
         {...formProps}
+        ref={form}
         fields={fields || formProps.fields}
+        params={params}
       />
       <Card className={styles.tableCard}>
         <Spin spinning={loading}>
@@ -83,7 +94,7 @@ const TablePage = props => {
                   pageNum: pageSize !== nextPageSize ? 1 : current,
                   pageSize: nextPageSize,
                 });
-                // 这里缺了还原values的操作，以后有空加上
+                form && (values ? form.current.setFieldsValue(values) : form.current.resetFields());
                 pageSize !== nextPageSize && setPageSize(nextPageSize);
               }}
             />
@@ -187,7 +198,7 @@ export default connect(
         }, {})),
     };
   },
-  (dispatch, { route: { code }, mapper }) => {
+  (dispatch, { route: { code }, mapper, params }) => {
     const {
       namespace = code.split('.').slice(-2)[0],
       getList: gl = 'getList',
@@ -201,6 +212,7 @@ export default connect(
           payload: {
             pageNum: 1,
             pageSize: getPageSize(),
+            ...params,
             ...payload,
           },
           callback,
