@@ -1193,14 +1193,11 @@ export default class WorkingBillOther extends Component {
                       showArrow={false}
                       filterOption={false}
                       mode={mode}
+                      showSearch
                     />
                   ),
                   options: {
-                    initialValue: isNotDetail
-                      ? detail.workingPersonnel
-                      : detail.workingPersonnel
-                        ? detail.workingPersonnel.join(',')
-                        : undefined,
+                    initialValue: detail.workingPersonnel,
                     getValueFromEvent: this.getWorkingPersonnelFromEvent,
                     rules: [{ required: true, message: '动火人不能为空' }],
                   },
@@ -1226,14 +1223,11 @@ export default class WorkingBillOther extends Component {
                       showArrow={false}
                       filterOption={false}
                       mode={mode}
+                      showSearch
                     />
                   ),
                   options: {
-                    initialValue: isNotDetail
-                      ? detail.workingPersonnel
-                      : detail.workingPersonnel
-                        ? detail.workingPersonnel.join(',')
-                        : undefined,
+                    initialValue: detail.workingPersonnel,
                     getValueFromEvent: this.getWorkingPersonnelFromEvent,
                     rules: [{ required: true, message: '作业人不能为空' }],
                   },
@@ -1371,14 +1365,11 @@ export default class WorkingBillOther extends Component {
                       showArrow={false}
                       filterOption={false}
                       mode={mode}
+                      showSearch
                     />
                   ),
                   options: {
-                    initialValue: isNotDetail
-                      ? detail.workingPersonnel
-                      : detail.workingPersonnel
-                        ? detail.workingPersonnel.join(',')
-                        : undefined,
+                    initialValue: detail.workingPersonnel,
                     getValueFromEvent: this.getWorkingPersonnelFromEvent,
                     rules: [{ required: true, message: '作业人不能为空' }],
                   },
@@ -1404,14 +1395,11 @@ export default class WorkingBillOther extends Component {
                       showArrow={false}
                       filterOption={false}
                       mode={mode}
+                      showSearch
                     />
                   ),
                   options: {
-                    initialValue: isNotDetail
-                      ? detail.workingPersonnel
-                      : detail.workingPersonnel
-                        ? detail.workingPersonnel.join(',')
-                        : undefined,
+                    initialValue: detail.workingPersonnel,
                     getValueFromEvent: this.getWorkingPersonnelFromEvent,
                     rules: [{ required: true, message: '吊装人员不能为空' }],
                   },
