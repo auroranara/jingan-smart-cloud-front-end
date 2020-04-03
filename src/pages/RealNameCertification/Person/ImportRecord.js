@@ -33,11 +33,15 @@ export default class PersonnelList extends PureComponent {
 
   // 记录列表
   fetchList = (pageNum = 1, pageSize = defaultPageSize) => {
-    const { dispatch } = this.props;
-
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     dispatch({
       type: 'realNameCertification/fetchRecordList',
-      payload: { pageNum, pageSize },
+      payload: { pageNum, pageSize, companyId: id },
     });
   };
 
