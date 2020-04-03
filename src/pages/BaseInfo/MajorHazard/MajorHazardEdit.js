@@ -1145,7 +1145,7 @@ export default class MajorHazardEdit extends PureComponent {
       selectedPipeList,
       tankIds,
       areaIds,
-      gasometerId,
+      gasometerIds,
       productIds,
       pipelineIds,
     } = this.state;
@@ -1267,7 +1267,8 @@ export default class MajorHazardEdit extends PureComponent {
             )}
             gasList={gasList.filter(
               item =>
-                +item.majorHazard === 0 || (gasometerId && gasometerId.split(',').includes(item.id))
+                +item.majorHazard === 0 ||
+                (gasometerIds && gasometerIds.split(',').includes(item.id))
             )}
             dangerType={dangerType}
             proEquipList={proEquipList.filter(

@@ -243,13 +243,14 @@ export default {
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取人员列表
-    *fetchPersonList({ payload }, { call, put }) {
+    *fetchPersonList({ payload, callback }, { call, put }) {
       const res = yield call(fetchPersonList, payload);
       if (res && res.code === 200) {
         yield put({
           type: 'savePerson',
           payload: res.data,
         });
+        if (callback) callback(res);
       }
     },
     // 删除人员

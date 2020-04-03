@@ -363,7 +363,9 @@ export default class AddEquipment extends Component {
    * 验证建筑物或者楼层是否已选择
    */
   validateBuildingFloor = (rule, value, callback) => {
-    if (value && value.buildingId && value.floorId) {
+    const { form: { getFieldsValue } } = this.props;
+    const { buildingId, floorId } = getFieldsValue();
+    if (buildingId && floorId) {
       callback();
     } else callback('请选择所属建筑物或楼层');
   };
