@@ -5437,6 +5437,24 @@ module.exports = env => {
                   code: 'realNameCertification.personnelManagement.edit',
                   component: './RealNameCertification/Person/PersonnelAdd',
                 },
+                {
+                  name: 'view',
+                  path: '/real-name-certification/personnel-management/detail/:id',
+                  code: 'realNameCertification.personnelManagement.view',
+                  component: './RealNameCertification/Person/PersonnelDetail',
+                },
+                {
+                  name: 'view',
+                  path: '/real-name-certification/personnel-management/detail/:id',
+                  code: 'realNameCertification.personnelManagement.view',
+                  component: './RealNameCertification/Person/PersonnelDetail',
+                },
+                {
+                  name: 'record',
+                  path: '/real-name-certification/personnel-management/record/:id',
+                  code: 'realNameCertification.personnelManagement.importPhoto',
+                  component: './RealNameCertification/Person/ImportRecord',
+                },
               ],
             },
             // {
