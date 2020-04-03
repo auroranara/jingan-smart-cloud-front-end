@@ -14,6 +14,10 @@ import {
   editChannelDevice,
   deleteChannelDevice,
   fetchChannelList,
+  refreshChannelDevice,
+  restartChannelDevice,
+  disabledChannelDevice,
+  enableChannelDevice,
   addChannel,
   editChannel,
   deleteChannel,
@@ -212,16 +216,10 @@ export default {
     tagCarDetail: {
       data: [],
     },
-    // 通道类型字典
-    channelTypeDict: [{ key: '1', value: '双向' }, { key: '2', value: '单向' }],
-    // 在线状态字典
-    onlineStateDict: [{ key: '1', value: '在线' }, { key: '2', value: '不在线', color: 'red' }],
-    // 方向字典
-    directionDict: [{ key: '1', value: '出口' }, { key: '2', value: '入口' }],
   },
   effects: {
     // 获取企业列表
-    *fetchCompanyList({ payload }, { call, put }) {
+    *fetchCompanyList ({ payload }, { call, put }) {
       const res = yield call(fetchCompanyList, payload);
       if (res && res.code === 200 && res.data) {
         yield put({
@@ -231,17 +229,17 @@ export default {
       }
     },
     // 新增人员
-    *addPerson({ payload, callback }, { call }) {
+    *addPerson ({ payload, callback }, { call }) {
       const res = yield call(addPerson, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 编辑人员
-    *editPerson({ payload, callback }, { call }) {
+    *editPerson ({ payload, callback }, { call }) {
       const res = yield call(editPerson, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取人员列表
-    *fetchPersonList({ payload }, { call, put }) {
+    *fetchPersonList ({ payload }, { call, put }) {
       const res = yield call(fetchPersonList, payload);
       if (res && res.code === 200) {
         yield put({
@@ -251,26 +249,26 @@ export default {
       }
     },
     // 删除人员
-    *deletePerson({ payload, callback }, { call }) {
+    *deletePerson ({ payload, callback }, { call }) {
       const res = yield call(deletePerson, payload);
       callback && callback(res && res.code === 200);
     },
     // 获取详情
-    *fetchDetail({ payload, callback }, { call }) {
+    *fetchDetail ({ payload, callback }, { call }) {
       const res = yield call(fetchPersonList, payload);
       if (res && res.code === 200 && res.data) {
         callback && callback(res.data.list[0]);
       } else if (callback) callback({});
     },
     // 批量授权人员
-    *authorizationPerson({ payload, callback }, { call }) {
+    *authorizationPerson ({ payload, callback }, { call }) {
       const res = yield call(authorizationPerson, payload);
       if (res && res.code === 200) {
         callback(res.data);
       }
     },
     // 获取授权列表
-    *fetchAuthorizationList({ payload }, { call, put }) {
+    *fetchAuthorizationList ({ payload }, { call, put }) {
       const res = yield call(fetchAuthorizationList, payload);
       if (res && res.code === 200 && res.data) {
         yield put({
@@ -280,17 +278,17 @@ export default {
       }
     },
     // 全部销权
-    *deleteAllAuthorization({ payload, callback }, { call }) {
+    *deleteAllAuthorization ({ payload, callback }, { call }) {
       const res = yield call(deleteAllAuthorization, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 销权
-    *deleteAuthorization({ payload, callback }, { call }) {
+    *deleteAuthorization ({ payload, callback }, { call }) {
       const res = yield call(deleteAuthorization, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取识别记录列表
-    *fetchIdentificationRecord({ payload }, { call, put }) {
+    *fetchIdentificationRecord ({ payload }, { call, put }) {
       const res = yield call(fetchIdentificationRecord, payload);
       if (res && res.code === 200) {
         yield put({
@@ -300,7 +298,7 @@ export default {
       }
     },
     // 获取通道设备列表
-    *fetchChannelDeviceList({ payload }, { call, put }) {
+    *fetchChannelDeviceList ({ payload }, { call, put }) {
       const res = yield call(fetchChannelDeviceList, payload);
       yield put({
         type: 'saveChannelDevice',
@@ -309,28 +307,30 @@ export default {
       });
     },
     // 新增通道设备
-    *addChannelDevice({ payload, callback }, { call }) {
+    *addChannelDevice ({ payload, callback }, { call }) {
       const res = yield call(addChannelDevice, payload);
-      callback && callback(res && res.code === 200, res.msg);
+      const { data: { result, msg } = {} } = res;
+      callback && callback(res && !!result, msg);
     },
     // 编辑通道设备
-    *editChannelDevice({ payload, callback }, { call }) {
+    *editChannelDevice ({ payload, callback }, { call }) {
       const res = yield call(editChannelDevice, payload);
-      callback && callback(res && res.code === 200, res.msg);
+      const { data: { result, msg } = {} } = res;
+      callback && callback(res && !!result, msg);
     },
     // 删除通道设备
-    *deleteChannelDevice({ payload, callback }, { call }) {
+    *deleteChannelDevice ({ payload, callback }, { call }) {
       const res = yield call(deleteChannelDevice, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取设备详情
-    *fetchDeviceDetail({ payload, callback }, { call }) {
+    *fetchDeviceDetail ({ payload, callback }, { call }) {
       const res = yield call(fetchChannelDeviceList, { ...payload, pageNum: 1, pageSize: 10 });
       const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
       callback && callback(res && res.code === 200, detail);
     },
     // 获取通道列表
-    *fetchChannelList({ payload }, { call, put }) {
+    *fetchChannelList ({ payload }, { call, put }) {
       const res = yield call(fetchChannelList, payload);
       yield put({
         type: 'saveChannel',
@@ -339,28 +339,50 @@ export default {
       });
     },
     // 获取通道详情
-    *fetchChannelDetail({ payload, callback }, { call }) {
+    *fetchChannelDetail ({ payload, callback }, { call }) {
       const res = yield call(fetchChannelList, { ...payload, pageNum: 1, pageSize: 10 });
       const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
       callback && callback(res && res.code === 200, detail);
     },
+    // 刷新通道设备
+    *refreshChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(refreshChannelDevice, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 重启通道设备
+    *restartChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(restartChannelDevice, payload);
+      const { data: { result, msg } = {} } = res;
+      callback && callback(res && !!result, msg);
+    },
+    // 禁用通道设备
+    *disabledChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(disabledChannelDevice, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 启用通道设备
+    *enableChannelDevice ({ payload, callback }, { call }) {
+      const res = yield call(enableChannelDevice, payload);
+      const { data: { result, msg } = {} } = res;
+      callback && callback(res && !!result, msg);
+    },
     // 新增通道
-    *addChannel({ payload, callback }, { call }) {
+    *addChannel ({ payload, callback }, { call }) {
       const res = yield call(addChannel, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 编辑通道
-    *editChannel({ payload, callback }, { call }) {
+    *editChannel ({ payload, callback }, { call }) {
       const res = yield call(editChannel, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 删除通道
-    *deleteChannel({ payload, callback }, { call }) {
+    *deleteChannel ({ payload, callback }, { call }) {
       const res = yield call(deleteChannel, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 标签卡列表
-    *fetchTagCardList({ payload, callback }, { call, put }) {
+    *fetchTagCardList ({ payload, callback }, { call, put }) {
       const response = yield call(queryTagCardList, { ...payload });
       if (response && response.code === 200) {
         yield put({
@@ -371,7 +393,7 @@ export default {
       }
     },
     // 新增标签卡
-    *fetchTagCardAdd({ payload, callback }, { call, put }) {
+    *fetchTagCardAdd ({ payload, callback }, { call, put }) {
       const response = yield call(queryTagCardAdd, payload);
       const { code, data } = response;
       if (code === 200) {
@@ -381,7 +403,7 @@ export default {
     },
 
     // 修改标签卡
-    *fetchTagCardEdit({ payload, callback }, { call, put }) {
+    *fetchTagCardEdit ({ payload, callback }, { call, put }) {
       const response = yield call(queryTagCardEdit, payload);
       if (response.code === 200) {
         yield put({ type: 'saveTagCardEdit', payload: response.data });
@@ -390,7 +412,7 @@ export default {
     },
 
     // 删除标签卡
-    *fetchTagCardDel({ payload, callback }, { put, call }) {
+    *fetchTagCardDel ({ payload, callback }, { put, call }) {
       const response = yield call(queryTagCardDel, payload);
       if (response.code === 200) {
         yield put({ type: 'saveTagCardDel', payload: payload.id });
@@ -399,19 +421,19 @@ export default {
     },
 
     // 导出标签卡
-    *fetchTagExport({ payload }, { call }) {
+    *fetchTagExport ({ payload }, { call }) {
       const blob = yield call(queryTagExport, payload);
       fileDownload(blob, `标签卡_${moment().format('YYYYMMDD')}.xls`);
     },
   },
   reducers: {
-    save(state, action) {
+    save (state, action) {
       return {
         ...state,
         ...action.payload,
       };
     },
-    saveCompany(state, action) {
+    saveCompany (state, action) {
       const { list = [], pageNum = 1, pageSize = 10, total = 0 } = action.payload;
       return {
         ...state,
@@ -422,7 +444,7 @@ export default {
         },
       };
     },
-    savePerson(state, { payload = {} }) {
+    savePerson (state, { payload = {} }) {
       const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
@@ -432,7 +454,7 @@ export default {
         },
       };
     },
-    saveAuthorization(state, { payload = {} }) {
+    saveAuthorization (state, { payload = {} }) {
       const { content: list = [], index: pageNum = 1, length: pageSize = 10, total = 0 } = payload;
       return {
         ...state,
@@ -442,7 +464,7 @@ export default {
         },
       };
     },
-    saveIdentificationRecord(state, { payload = {} }) {
+    saveIdentificationRecord (state, { payload = {} }) {
       const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
@@ -452,7 +474,7 @@ export default {
         },
       };
     },
-    saveChannelDevice(state, { payload = {} }) {
+    saveChannelDevice (state, { payload = {} }) {
       const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
@@ -462,19 +484,19 @@ export default {
         },
       };
     },
-    saveDeviceSearchInfo(state, action) {
+    saveDeviceSearchInfo (state, action) {
       return {
         ...state,
         deviceSearchInfo: action.payload || {},
       };
     },
-    saveChannelSearchInfo(state, action) {
+    saveChannelSearchInfo (state, action) {
       return {
         ...state,
         channelSearchInfo: action.payload || {},
       };
     },
-    saveChannel(state, { payload = {} }) {
+    saveChannel (state, { payload = {} }) {
       const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
@@ -484,19 +506,19 @@ export default {
         },
       };
     },
-    saveAuthSearchInfo(state, action) {
+    saveAuthSearchInfo (state, action) {
       return {
         ...state,
         authSearchInfo: action.payload || {},
       };
     },
-    saveIdenSearchInfo(state, action) {
+    saveIdenSearchInfo (state, action) {
       return {
         ...state,
         idenSearchInfo: action.payload || {},
       };
     },
-    saveTagCardList(state, { payload }) {
+    saveTagCardList (state, { payload }) {
       const { data } = payload;
       return {
         ...state,
@@ -504,14 +526,14 @@ export default {
       };
     },
 
-    saveTagCardAdd(state, { payload }) {
+    saveTagCardAdd (state, { payload }) {
       return {
         ...state,
         tagCarDetail: payload,
       };
     },
 
-    saveTagCardEdit(state, { payload }) {
+    saveTagCardEdit (state, { payload }) {
       return {
         ...state,
         tagCarDetail: {
@@ -521,7 +543,7 @@ export default {
       };
     },
 
-    saveTagCardDel(state, { payload: id }) {
+    saveTagCardDel (state, { payload: id }) {
       return {
         ...state,
         tagCardData: {
