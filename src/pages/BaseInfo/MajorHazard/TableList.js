@@ -139,6 +139,13 @@ export default class Modals extends PureComponent {
       selectedPipeList,
     } = this.props;
 
+    const allList = selectedTankAreaList.concat(
+      selectedWareList,
+      selectedWareList,
+      selectedProductList,
+      selectedGasList,
+      selectedPipeList,
+    );
     return (
       <Table
         style={{ marginTop: '16px' }}
@@ -157,14 +164,7 @@ export default class Modals extends PureComponent {
         columns={this.getColumns(dangerType)}
         pagination={false}
         rowSelection={{
-          selectedRowKeys: this.getDataList(
-            dangerType,
-            selectedTankAreaList,
-            selectedWareList,
-            selectedProductList,
-            selectedGasList,
-            selectedPipeList
-          ).map(item => item.id),
+          selectedRowKeys:allList.map(item => item.id),
           onChange: handleSelectChange,
           hideDefaultSelections: true,
           type: 'checkbox',
