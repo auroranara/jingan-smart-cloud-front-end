@@ -8,8 +8,6 @@ import {
   Card,
   Button,
   BackTop,
-  Col,
-  Row,
   Select,
   message,
   Table,
@@ -624,7 +622,7 @@ export default class PersonnelList extends PureComponent {
               disabled={!exportAuth}
               placeholder="导出"
               defaultValue="导出"
-              onChange={i => this.handleExportChange(i)}
+              onSelect={i => this.handleExportChange(i)}
             >
               {exportList.map(({ id, label }) => (
                 <Select.Option value={id} key={id}>
