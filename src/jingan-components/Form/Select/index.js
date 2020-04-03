@@ -59,8 +59,46 @@ const FormSelect = ({
             value.length &&
             (!data || !data.length || value.some(vk => !data.find(({ key }) => key === vk)))
           ) {
-            getList &&
-              getList(
+            getList
+              ? getList(
+                  typeof initializeParams === 'function'
+                    ? initializeParams(value)
+                    : {
+                        [initializeParams || k]: value.join(','),
+                      },
+                  (success, list) => {
+                    if (success) {
+                      setData(
+                        value.map(vk => {
+                          const item = list.find(item => item[k] === vk);
+                          return item
+                            ? {
+                                key: item[k],
+                                value: item[k],
+                                label: item[v],
+                              }
+                            : {
+                                key: vk,
+                                value: vk,
+                                label: vk,
+                              };
+                        })
+                      );
+                    }
+                  }
+                )
+              : setData(
+                  value.map(vk => ({
+                    key: vk,
+                    value: vk,
+                    label: vk,
+                  }))
+                );
+            getList && getList();
+          }
+        } else if (!data || data.key !== value) {
+          getList
+            ? getList(
                 typeof initializeParams === 'function'
                   ? initializeParams(value)
                   : {
@@ -68,54 +106,28 @@ const FormSelect = ({
                     },
                 (success, list) => {
                   if (success) {
+                    const item = list.find(item => item[k] === value);
                     setData(
-                      value.map(vk => {
-                        const item = list.find(item => item[k] === vk);
-                        return item
-                          ? {
-                              key: item[k],
-                              value: item[k],
-                              label: item[v],
-                            }
-                          : {
-                              key: vk,
-                              value: vk,
-                              label: vk,
-                            };
-                      })
+                      item
+                        ? {
+                            key: item[k],
+                            value: item[k],
+                            label: item[v],
+                          }
+                        : {
+                            key: value,
+                            value,
+                            label: value,
+                          }
                     );
                   }
                 }
-              );
-            getList && getList();
-          }
-        } else if (!data || data.key !== value) {
-          getList &&
-            getList(
-              typeof initializeParams === 'function'
-                ? initializeParams(value)
-                : {
-                    [initializeParams || k]: value.join(','),
-                  },
-              (success, list) => {
-                if (success) {
-                  const item = list.find(item => item[k] === value);
-                  setData(
-                    item
-                      ? {
-                          key: item[k],
-                          value: item[k],
-                          label: item[v],
-                        }
-                      : {
-                          key: value,
-                          value,
-                          label: value,
-                        }
-                  );
-                }
-              }
-            );
+              )
+            : setData({
+                key: value,
+                value,
+                label: value,
+              });
           getList && getList();
         }
       }
