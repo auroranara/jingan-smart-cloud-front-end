@@ -177,6 +177,12 @@ module.exports = env => {
         //   name: 'gasStation',
         //   component: './BigPlatform/GasStation',
         // },
+        {
+          path: '/big-platform/process/:companyId',
+          code: 'dashboard.gasStation',
+          name: 'process',
+          component: './BigPlatform/Process',
+        },
       ],
     },
     // 档案分析报告
