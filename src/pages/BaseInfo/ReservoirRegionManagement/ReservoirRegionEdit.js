@@ -255,6 +255,8 @@ export default class ReservoirRegionEdit extends PureComponent {
       type: 'storehouse/fetchStorehouseList',
       payload: {
         ...payload,
+        pageSize: 0,
+        pageNum: 1,
         // isBind: 0, //0未绑定  1绑定
         companyId: fixedCompanyId,
       },
