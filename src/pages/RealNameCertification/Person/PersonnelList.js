@@ -27,6 +27,7 @@ import router from 'umi/router';
 import { stringify } from 'qs';
 import { SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
 import ImagePreview from '@/jingan-components/ImagePreview';
+import { hasAuthority } from '@/utils/customAuth';
 import styles from './CompanyList.less';
 const {
   realNameCertification: {
@@ -37,6 +38,7 @@ const {
       view: viewCode,
       import: importCode,
       importPhoto: importPhotoCode,
+      export: exportCode,
     },
   },
 } = codes;
@@ -452,8 +454,13 @@ export default class PersonnelList extends PureComponent {
           pagination: { pageNum = 1, pageSize = defaultPageSize, total = 0 },
         },
       },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
     const { selectedRowKeys, curCompanyName } = this.state;
+    const exportAuth = hasAuthority(exportCode, permissionCodes);
+    const importAuth = hasAuthority(importCode, permissionCodes);
 
     const rowSelection = {
       selectedRowKeys,
@@ -614,6 +621,7 @@ export default class PersonnelList extends PureComponent {
             <Select
               allowClear
               style={{ width: '130px', marginRight: '10px' }}
+              disabled={!exportAuth}
               placeholder="导出"
               defaultValue="导出"
               onChange={i => this.handleExportChange(i)}
@@ -624,7 +632,7 @@ export default class PersonnelList extends PureComponent {
                 </Select.Option>
               ))}
             </Select>
-            {importPhotoCode ? (
+            {importAuth ? (
               <a onClick={this.hanldleImgRecord}>导入记录</a>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>导入记录</span>
