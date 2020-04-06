@@ -864,6 +864,13 @@ export default {
       edit: 'realNameCertification.channelDevice.edit',
       delete: 'realNameCertification.channelDevice.delete',
     },
+    // 访客登记
+    visitorRegistration:{
+      list:'realNameCertification.visitorRegistration.visitorList',
+      add:'realNameCertification.visitorRegistration.visitorAdd',
+      record:'realNameCertification.visitorRegistration.visitorRegistrationRecord',
+      cancelCard:'realNameCertification.visitorRegistration.cancelCard',
+    },
   },
   // 操作规程
   operatingProcedures: {
