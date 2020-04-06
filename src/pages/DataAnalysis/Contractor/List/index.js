@@ -30,7 +30,6 @@ const ContractorList = ({ route, match, location }) => {
         //   filterOption: false,
         //   allowClear: true,
         // },
-        dependencies: [],
         hide({ isUnit }) {
           return isUnit;
         },
@@ -47,6 +46,10 @@ const ContractorList = ({ route, match, location }) => {
         props: {
           list: CATEGORIES,
           allowClear: true,
+        },
+        dependencies: ['contractorName'],
+        hide({ contractorName }) {
+          return !contractorName;
         },
       },
       {
@@ -102,18 +105,18 @@ const ContractorList = ({ route, match, location }) => {
         fixed: 'right',
         render: (_, data) => (
           <Fragment>
-            {/* {renderDetailButton(data)}
+            {renderDetailButton(data)}
             <Divider type="vertical" />
             {renderEditButton(data)}
             <Divider type="vertical" />
-            {renderDeleteButton(data)} */}
+            {renderDeleteButton(data)}
           </Fragment>
-        ), // 这里注意一下value的类型
+        ),
       },
     ],
     formProps: {
       expandable: true,
-      // ref: formRef,
+      ref: formRef,
     },
   };
   return <TablePage {...props} />;

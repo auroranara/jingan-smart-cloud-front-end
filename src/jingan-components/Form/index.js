@@ -57,7 +57,43 @@ const GET_OFFSET = (expand, spanList, operationSpan) => {
         return rest;
       }
     }
+    return rest;
   }
+};
+const GET_GRID = (fields, payload, gridSize, operationSpan, expandable, expand) => {
+  const { spanList, length } = fields.reduce(
+    (result, { hide, col = COL }) => {
+      const hidden = hide ? hide(payload) : false;
+      const span = GET_SPAN(col, gridSize);
+      if (!expandable || expand) {
+        if (!hidden) {
+          result.spanList.push(span);
+        }
+        result.length += 1;
+      } else {
+        if (!hidden) {
+          result.total += span;
+          if (result.total <= 24) {
+            result.spanList.push(span);
+          }
+        }
+        if (result.total <= 24) {
+          result.length += 1;
+        }
+      }
+      return result;
+    },
+    {
+      spanList: [],
+      length: 0,
+      total: operationSpan,
+    }
+  );
+  return {
+    length,
+    offset: GET_OFFSET(expand, spanList, operationSpan),
+    gridSize,
+  };
 };
 
 const componentReference = {
@@ -90,6 +126,7 @@ const FormIndex = forwardRef(
       onFinish,
       onSearch,
       onReset,
+      onValuesChange,
       params,
       ...rest
     },
@@ -97,10 +134,12 @@ const FormIndex = forwardRef(
   ) => {
     const [form] = Form.useForm();
     const [expand, setExpand] = useState(false);
-    const [length, setLength] = useState(Infinity);
-    const [offset, setOffset] = useState(0);
-    const [gridSize, setGridSize] = useState(windowSize);
     const windowSize = useMediaQuery();
+    const [grid, setGrid] = useState({
+      length: Infinity,
+      offset: 0,
+      gridSize: windowSize,
+    });
     let list = Array.isArray(fields)
       ? fields[0].fields
         ? fields
@@ -116,39 +155,11 @@ const FormIndex = forwardRef(
     useEffect(
       () => {
         if (!mode) {
+          const fields = (list[0] && list[0].fields) || [];
           const values = form.getFieldsValue();
           const payload = { ...params, expand, ...values };
-          const { spanList, length } = ((list[0] && list[0].fields) || []).reduce(
-            (result, { hide, col = COL }) => {
-              const hidden = hide ? hide(payload) : false;
-              const span = GET_SPAN(col, windowSize);
-              if (!expandable || expand) {
-                if (!hidden) {
-                  result.spanList.push(span);
-                }
-                result.length += 1;
-              } else {
-                if (!hidden) {
-                  result.total += span;
-                  if (result.total <= 24) {
-                    result.spanList.push(span);
-                  }
-                }
-                if (result.total <= 24) {
-                  result.length += 1;
-                }
-              }
-              return result;
-            },
-            {
-              spanList: [],
-              length: 0,
-              total: operationSpan,
-            }
-          );
-          setLength(length);
-          setOffset(GET_OFFSET(expand, spanList, operationSpan));
-          setGridSize(windowSize);
+          const grid = GET_GRID(fields, payload, windowSize, operationSpan, expandable, expand);
+          setGrid(grid);
         }
       },
       [windowSize, expand]
@@ -163,10 +174,31 @@ const FormIndex = forwardRef(
               }
             : onFinish
         }
-        onValuesChange={(changedValues, allValues) => {
-          console.log(changedValues);
-          console.log(allValues);
-        }}
+        onValuesChange={
+          !mode
+            ? (changedValues, values) => {
+                const fields = (list[0] && list[0].fields) || [];
+                const dependency = Object.keys(changedValues)[0];
+                if (
+                  fields.some(
+                    ({ dependencies }) => dependencies && dependencies.includes(dependency)
+                  )
+                ) {
+                  const payload = { ...params, expand, ...values };
+                  const grid = GET_GRID(
+                    fields,
+                    payload,
+                    windowSize,
+                    operationSpan,
+                    expandable,
+                    expand
+                  );
+                  setGrid(grid);
+                }
+                onValuesChange && onValuesChange(changedValues, values);
+              }
+            : onValuesChange
+        }
         form={form}
         {...rest}
       >
@@ -208,7 +240,7 @@ const FormIndex = forwardRef(
                         ruleList = Component.getRules({ label, ...props }).concat(rules || []);
                       }
                     }
-                    return index < length ? (
+                    return index < grid.length ? (
                       hide ? (
                         <Form.Item
                           key={key || name}
@@ -218,7 +250,7 @@ const FormIndex = forwardRef(
                               ? dependencies.some(
                                   dependency => prevValues[dependency] !== values[dependency]
                                 )
-                              : true
+                              : false
                           }
                         >
                           {({ getFieldsValue }) => {
@@ -228,7 +260,7 @@ const FormIndex = forwardRef(
                               <Col
                                 {...col}
                                 {...!mode && {
-                                  span: GET_SPAN(col, gridSize),
+                                  span: GET_SPAN(col, grid.gridSize),
                                   xxl: undefined,
                                   xl: undefined,
                                   lg: undefined,
@@ -255,7 +287,7 @@ const FormIndex = forwardRef(
                           key={key || name}
                           {...col}
                           {...!mode && {
-                            span: GET_SPAN(col, gridSize),
+                            span: GET_SPAN(col, grid.gridSize),
                             xxl: undefined,
                             xl: undefined,
                             lg: undefined,
@@ -282,8 +314,8 @@ const FormIndex = forwardRef(
                   <Col
                     {...operationCol}
                     {...!mode && {
-                      offset,
-                      span: GET_SPAN(operationCol, gridSize),
+                      offset: grid.offset,
+                      span: GET_SPAN(operationCol, grid.gridSize),
                       xxl: undefined,
                       xl: undefined,
                       lg: undefined,
@@ -303,7 +335,8 @@ const FormIndex = forwardRef(
                           <Button
                             onClick={() => {
                               form.resetFields();
-                              onReset && onReset();
+                              const values = form.getFieldsValue();
+                              onReset && onReset(values);
                             }}
                           >
                             重置
