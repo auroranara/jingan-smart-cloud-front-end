@@ -3,6 +3,7 @@ import { Spin, Card, Button } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import ImagePreview from '@/jingan-components/ImagePreview';
+import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import { connect } from 'dva';
 import router from 'umi/router';
 
@@ -95,11 +96,12 @@ export default class PersonnelDetail extends Component {
         currentUser: { companyName },
       },
       loading,
+      realNameCertification: { personTypeDict },
     } = this.props;
 
     const { detail, images, currentImage } = this.state;
     const noCompanyName = detail.perType === '2' || detail.perType === '3';
-
+    const { personType } = detail;
     const dspItems = [
       { id: 'name', label: '姓名' },
       {
@@ -116,10 +118,19 @@ export default class PersonnelDetail extends Component {
       {
         id: 'personType',
         label: '人员类型',
-        render: ({ personType }) => getPersonType[personType],
+        render: ({ personType }) => (
+          <SelectOrSpan
+            placeholder="请选择"
+            value={personType}
+            list={personTypeDict}
+            type={'span'}
+            allowClear
+          />
+        ),
       },
-      { id: 'partName', label: '部门' },
-      ...(noCompanyName ? { id: 'personCompany', label: '单位名称' } : []),
+      ...(personType === '1'
+        ? [{ id: 'partName', label: '部门' }, { id: 'companyJobName', label: '岗位' }]
+        : [{ id: 'personCompany', label: '单位名称' }]),
       { id: 'icnumber', label: 'IC卡号', render: ({ icnumber }) => icnumber || NO_DATA },
       {
         id: 'entranceNumber',
