@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Input, Card, Table, Divider, Row, Col, message } from 'antd';
+import { Button, Input, Card, Table, Divider, Row, Col, message, Dropdown, Menu } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -9,8 +9,8 @@ import codes from '@/utils/codes'
 import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
-export const LIST_PATH = '/real-name-certification/channelDevice/list';
-export const ADD_PATH = '/real-name-certification/channelDevice/add'
+export const LIST_PATH = '/real-name-certification/channel-device/list';
+export const ADD_PATH = '/real-name-certification/channel-device/add'
 // 到期状态
 export const EXPIRE_STATUSES = [
   { key: '0', value: '未到期' /* , color: '#52c41a' */ },
@@ -63,6 +63,7 @@ const colWrapper = {
   sm: 12,
 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
+const menuItenStyle = { style: { color: '#1890ff', padding: '0.5em 2em' } };
 
 @connect(({ user, realNameCertification, resourceManagement, loading }) => ({
   user,
@@ -136,12 +137,12 @@ export default class ChannelDeviceList extends Component {
 
   // 点击查看
   handleView = id => {
-    router.push(`/real-name-certification/channelDevice/view/${id}`)
+    router.push(`/real-name-certification/channel-device/view/${id}`)
   }
 
   // 点击编辑
   handleEdit = id => {
-    router.push(`/real-name-certification/channelDevice/edit/${id}`)
+    router.push(`/real-name-certification/channel-device/edit/${id}`)
   }
 
   // 删除
@@ -178,6 +179,74 @@ export default class ChannelDeviceList extends Component {
     dispatch({
       type: 'realNameCertification/saveDeviceSearchInfo',
       payload: { company },
+    })
+  }
+
+  // 点击刷新
+  handleRefresh = (payload = {}) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'realNameCertification/refreshChannelDevice',
+      payload,
+      callback: (success, msg) => {
+        if (success) {
+          message.success('操作成功！');
+          this.handleQuery();
+        } else {
+          message.error(msg || '操作失败！');
+        }
+      },
+    })
+  }
+
+  // 点击重启
+  handleRestart = (payload = {}) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'realNameCertification/restartChannelDevice',
+      payload,
+      callback: (success, msg) => {
+        if (success) {
+          message.success('操作成功！');
+          this.handleQuery();
+        } else {
+          message.error(msg || '操作失败！');
+        }
+      },
+    })
+  }
+
+  // 点击禁用
+  handleDisable = (payload = {}) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'realNameCertification/disabledChannelDevice',
+      payload,
+      callback: (success, msg) => {
+        if (success) {
+          message.success('操作成功！');
+          this.handleQuery();
+        } else {
+          message.error(msg || '操作失败！');
+        }
+      },
+    })
+  }
+
+  // 点击启用
+  handleEnable = (payload = {}) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'realNameCertification/enableChannelDevice',
+      payload,
+      callback: (success, msg) => {
+        if (success) {
+          message.success('操作成功！');
+          this.handleQuery();
+        } else {
+          message.error(msg || '操作失败！');
+        }
+      },
     })
   }
 
@@ -274,25 +343,64 @@ export default class ChannelDeviceList extends Component {
       {
         title: '操作',
         dataIndex: 'id',
-        width: 200,
+        width: 250,
         align: 'center',
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (_, { id, status }) => (
+        render: (_, { id, status, companyId, deviceCode, forbidden } = {}) => (
           <Fragment>
-            <AuthA code={viewCode} onClick={() => this.handleView(id)}>
-              查看
-            </AuthA>
+            <a onClick={() => this.handleRefresh({ companyId, deviceCode })}>
+              <LegacyIcon type="sync" />
+            </a>
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleEdit(id)}>编辑</AuthA>
-            <Divider type="vertical" />
-            <AuthPopConfirm
-              code={deleteCode}
-              title="确认要删除该数据吗？"
-              onConfirm={() => this.handleDelete(id)}
-              style={{ color: '#ff4d4f' }}
-            >
-              删除
-            </AuthPopConfirm>
+            {+forbidden === 1 ? (
+              <Fragment>
+                <span>
+                  <a onClick={() => this.handleEnable({ companyId, deviceCode })}>启用</a>
+                </span>
+                <Divider type="vertical" />
+                <AuthPopConfirm
+                  code={deleteCode}
+                  title="确认要删除该数据吗？"
+                  onConfirm={() => this.handleDelete(id)}
+                  style={{ color: '#ff4d4f' }}
+                >
+                  删除
+                </AuthPopConfirm>
+              </Fragment>
+            ) : (
+                <span>
+                  <AuthA code={viewCode} onClick={() => this.handleView(id)}>
+                    查看
+                  </AuthA>
+                  <Divider type="vertical" />
+                  <AuthA code={editCode} onClick={() => this.handleEdit(id)}>编辑</AuthA>
+                  <Divider type="vertical" />
+                  <AuthPopConfirm
+                    code={deleteCode}
+                    title="确认要删除该数据吗？"
+                    onConfirm={() => this.handleDelete(id)}
+                    style={{ color: '#ff4d4f' }}
+                  >
+                    删除
+                  </AuthPopConfirm>
+                  <Divider type="vertical" />
+                  <Dropdown
+                    overlay={(
+                      <Menu>
+                        <Menu.Item>
+                          <a {...menuItenStyle} onClick={() => this.handleRestart({ companyId, deviceCode })}>重启</a>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <a {...menuItenStyle} onClick={() => this.handleDisable({ companyId, deviceCode })}>禁用</a>
+                        </Menu.Item>
+                      </Menu>
+                    )}
+                    trigger={['click']}
+                    placement="bottomCenter">
+                    <a style={{ fontWeight: '700' }}>···</a>
+                  </Dropdown>
+                </span>
+              )}
           </Fragment>
         ),
       },

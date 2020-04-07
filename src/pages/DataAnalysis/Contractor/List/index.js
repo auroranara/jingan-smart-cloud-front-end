@@ -47,10 +47,6 @@ const ContractorList = ({ route, match, location }) => {
           list: CATEGORIES,
           allowClear: true,
         },
-        dependencies: ['contractorName'],
-        hide({ contractorName }) {
-          return !contractorName;
-        },
       },
       {
         name: 'type',
@@ -114,10 +110,7 @@ const ContractorList = ({ route, match, location }) => {
         ),
       },
     ],
-    formProps: {
-      expandable: true,
-      ref: formRef,
-    },
+    formRef,
   };
   return <TablePage {...props} />;
 };

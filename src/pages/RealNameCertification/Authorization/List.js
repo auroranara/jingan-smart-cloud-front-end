@@ -6,7 +6,6 @@ import {
   Card,
   Button,
   Modal,
-  BackTop,
   Col,
   Row,
   Select,
@@ -386,11 +385,26 @@ export default class AuthorizationList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
+                {getFieldDecorator('time')(
+                  <RangePicker
+                    style={{ width: '100%' }}
+                    showTime={{
+                      format: 'HH:mm:ss',
+                      defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                    }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    placeholder={['授权开始时间', '授权结束时间']}
+                  />
+                )}
+              </FormItem>
+            </Col>
+            {/* <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
                 {getFieldDecorator('personGuid')(
                   <Input placeholder="GUID" />
                 )}
               </FormItem>
-            </Col>
+            </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('deviceName')(
@@ -401,7 +415,7 @@ export default class AuthorizationList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('deviceKey')(
-                  <Input placeholder="序列号" />
+                  <Input placeholder="设备序列号" />
                 )}
               </FormItem>
             </Col>
@@ -416,7 +430,7 @@ export default class AuthorizationList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
+            {/* <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('deviceType')(
                   <Select placeholder="设备类型">
@@ -426,22 +440,7 @@ export default class AuthorizationList extends PureComponent {
                   </Select>
                 )}
               </FormItem>
-            </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('time')(
-                  <RangePicker
-                    style={{ width: '100%' }}
-                    showTime={{
-                      format: 'HH:mm:ss',
-                      defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-                    }}
-                    format="YYYY-MM-DD HH:mm:ss"
-                    placeholder={['创建开始时间', '创建结束时间']}
-                  />
-                )}
-              </FormItem>
-            </Col>
+            </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
@@ -484,13 +483,6 @@ export default class AuthorizationList extends PureComponent {
         // width: 200,
       },
       {
-        title: '储存位置',
-        dataIndex: 'type',
-        align: 'center',
-        // width: 150,
-        render: (val) => (+val === 1 && '本地') || (+val === 2 && '云端') || '',
-      },
-      {
         title: '照片',
         dataIndex: 'faceOutputs',
         align: 'center',
@@ -519,27 +511,34 @@ export default class AuthorizationList extends PureComponent {
         ),
       },
       {
-        title: '人员编号(GUID)',
-        dataIndex: 'personGuid',
+        title: '储存位置',
+        dataIndex: 'type',
         align: 'center',
-        width: 300,
+        // width: 150,
+        render: (val) => (+val === 1 && '本地') || (+val === 2 && '云端') || '',
       },
+      // {
+      //   title: '人员编号(GUID)',
+      //   dataIndex: 'personGuid',
+      //   align: 'center',
+      //   width: 300,
+      // },
       {
         title: '设备名称',
         dataIndex: 'deviceName',
         align: 'center',
         // width: 200,
       },
-      {
-        title: '设备类型',
-        dataIndex: 'deviceType',
-        align: 'center',
-        // width: 150,
-        render: (val) => {
-          const target = deviceTypeDict.find(item => +item.key === +val);
-          return target ? target.label : '';
-        },
-      },
+      // {
+      //   title: '设备类型',
+      //   dataIndex: 'deviceType',
+      //   align: 'center',
+      //   // width: 150,
+      //   render: (val) => {
+      //     const target = deviceTypeDict.find(item => +item.key === +val);
+      //     return target ? target.label : '';
+      //   },
+      // },
       {
         title: '设备序列号',
         dataIndex: 'deviceKey',
@@ -547,7 +546,7 @@ export default class AuthorizationList extends PureComponent {
         // width: 200,
       },
       {
-        title: '操作时间',
+        title: '授权时间',
         dataIndex: 'createTime',
         align: 'center',
         // width: 200,

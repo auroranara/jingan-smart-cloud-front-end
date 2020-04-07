@@ -30,6 +30,13 @@ const FormDatePicker = ({
         allowClear={allowClear}
         mode={originalMode}
         inputReadOnly={inputReadOnly}
+        showTime={
+          format.includes(' ')
+            ? {
+                format: format.split(' ').slice(-1)[0],
+              }
+            : undefined
+        }
         {...rest}
       />
     );

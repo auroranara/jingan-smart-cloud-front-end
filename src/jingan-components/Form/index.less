@@ -1,6 +1,10 @@
 .card {
   margin-bottom: 24px;
 
+  &.modeCard:last-child {
+    margin-bottom: 0;
+  }
+
   :global {
     .ant-card-body {
       padding-bottom: 0;
@@ -11,12 +15,12 @@
   display: flex;
   flex-wrap: nowrap;
   justify-content: flex-end;
-  // align-items: center;
-  margin: 0 -6px;
+  align-items: center;
+  margin: 0 -4px;
 
   .operationWrapper {
     flex: none;
-    padding: 0 6px;
+    padding: 0 4px;
   }
 }
 .expandButton {
