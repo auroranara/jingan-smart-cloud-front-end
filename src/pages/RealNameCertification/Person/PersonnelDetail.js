@@ -118,7 +118,7 @@ export default class PersonnelDetail extends Component {
         label: '人员类型',
         render: ({ personType }) => getPersonType[personType],
       },
-      { id: 'partId', label: '部门' },
+      { id: 'partName', label: '部门' },
       ...(noCompanyName ? { id: 'personCompany', label: '单位名称' } : []),
       { id: 'icnumber', label: 'IC卡号', render: ({ icnumber }) => icnumber || NO_DATA },
       {

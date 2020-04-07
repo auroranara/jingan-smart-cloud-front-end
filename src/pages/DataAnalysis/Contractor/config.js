@@ -15,3 +15,5 @@ export const STATUSES = [
   { key: '2', value: '即将过期' },
   { key: '3', value: '已过期' },
 ];
+export const COMPANY_FIELDNAMES = { key: 'id', value: 'name' };
+export const COMPANY_MAPPER = { namespace: 'common', list: 'unitList', getList: 'getUnitList' };

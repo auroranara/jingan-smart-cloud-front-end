@@ -765,13 +765,14 @@ export default class GatewayOther extends Component {
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const { company, marker, buildingFloor, installDate, cardExpireDate, productDate, mapLocation, ...rest } = values;
-        const [buildingId, floorId] = buildingFloor || marker.reduce((result, { ichnographyType, buildingId, floorId }) => {
-          if (ichnographyType === '2') {
-            result[0] = buildingId;
-            result[1] = floorId;
-          }
-          return result;
-        }, []);
+        // const [buildingId, floorId] = buildingFloor || marker.reduce((result, { ichnographyType, buildingId, floorId }) => {
+        //   if (ichnographyType === '2') {
+        //     result[0] = buildingId;
+        //     result[1] = floorId;
+        //   }
+        //   return result;
+        // }, []);
+        const [buildingId, floorId] = buildingFloor || ['', ''];
         const payload = {
           ...rest,
           id,

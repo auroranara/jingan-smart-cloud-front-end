@@ -760,7 +760,7 @@ export default class PersonnelList extends PureComponent {
                 name="file"
                 accept=".xls,.xlsx"
                 headers={{ 'JA-Token': getToken() }}
-                action={`/acloud_new/v2/ci/HGFace/importPerson`} // 上传地址
+                action={`/acloud_new/v2/ci/HGFace/importPerson/${companyId}`} // 上传地址
                 fileList={personFileList}
                 onChange={this.handlePersonExChange}
                 beforeUpload={this.handlePersonBefore}
