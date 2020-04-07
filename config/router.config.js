@@ -1823,97 +1823,49 @@ module.exports = env => {
           systemType: 3,
           routes: [
             {
-              path: '/personnel-management',
-              redirect: '/personnel-management/tag-card',
-            },
-            // 标签卡管理
-            {
-              path: '/personnel-management/tag-card',
+              path: '/personnel-management/tag-card', // 标签卡管理
               code: 'personnelManagement.tagCardManagement',
               name: 'tagCardManagement',
+              hideChildrenInMenu: true,
               routes: [
                 {
                   path: '/personnel-management/tag-card',
+                  name: 'tagCardManagement',
                   redirect: '/personnel-management/tag-card/index',
                 },
-                // 标签卡
                 {
                   path: '/personnel-management/tag-card/index',
                   code: 'personnelManagement.tagCardManagement.list',
                   name: 'tagCardList',
-                  hideChildrenInMenu: true,
-                  routes: [
-                    {
-                      path: '/personnel-management/tag-card',
-                      name: 'tagCardManagement',
-                      redirect: '/personnel-management/tag-card/index',
-                    },
-                    {
-                      path: '/personnel-management/tag-card/index',
-                      code: 'personnelManagement.tagCardManagement.list',
-                      name: 'tagCardList',
-                      component: './RealNameCertification/TagCardManagement/List',
-                    },
-                    {
-                      path: '/personnel-management/tag-card/add',
-                      code: 'personnelManagement.tagCardManagement.add',
-                      name: 'tagCardAdd',
-                      component: './RealNameCertification/TagCardManagement/Handle',
-                    },
-                    {
-                      path: '/personnel-management/tag-card/edit/:id',
-                      code: 'personnelManagement.tagCardManagement.edit',
-                      name: 'tagCardEdit',
-                      component: './RealNameCertification/TagCardManagement/Handle',
-                    },
-                    {
-                      path: '/personnel-management/tag-card/detail/:id',
-                      code: 'personnelManagement.tagCardManagement.view',
-                      name: 'tagCardDetail',
-                      component: './RealNameCertification/TagCardManagement/Handle',
-                    },
-                  ],
+                  component: './RealNameCertification/TagCardManagement/List',
                 },
-                // 访客卡
                 {
-                  path: '/personnel-management/visitor-card/index',
-                  code: 'personnelManagement.tagCardManagement.visitorCard.listView',
-                  name: 'visitorCard',
-                  hideChildrenInMenu: true,
-                  routes: [
-                    {
-                      path: '/personnel-management/visitor-card',
-                      name: 'visitorCard',
-                      redirect: '/personnel-management/visitor-card/index',
-                    },
-                    {
-                      path: '/personnel-management/visitor-card/index',
-                      code: 'personnelManagement.tagCardManagement.visitorCard.listView',
-                      name: 'visitorCardList',
-                      component: './RealNameCertification/VisitorCard/List',
-                    },
-                    {
-                      path: '/personnel-management/visitor-card/add',
-                      code: 'personnelManagement.tagCardManagement.visitorCard.add',
-                      name: 'visitorCardAdd',
-                      component: './RealNameCertification/VisitorCard/Handle',
-                    },
-                    {
-                      path: '/personnel-management/visitor-card/edit/:id',
-                      code: 'personnelManagement.tagCardManagement.visitorCard.edit',
-                      name: 'visitorCardEdit',
-                      component: './RealNameCertification/VisitorCard/Handle',
-                    },
-                    // {
-                    //   path: '/personnel-management/visitor-card/detail/:id',
-                    //   code: 'personnelManagement.tagCardManagement.visitor-card.view',
-                    //   name: 'visitorCardDetail',
-                    //   component: './RealNameCertification/VisitorCard/Handle',
-                    // },
-                  ],
+                  path: '/personnel-management/tag-card/add',
+                  code: 'personnelManagement.tagCardManagement.add',
+                  name: 'tagCardAdd',
+                  component: './RealNameCertification/TagCardManagement/Handle',
+                },
+                {
+                  path: '/personnel-management/tag-card/edit/:id',
+                  code: 'personnelManagement.tagCardManagement.edit',
+                  name: 'tagCardEdit',
+                  component: './RealNameCertification/TagCardManagement/Handle',
+                },
+                {
+                  path: '/personnel-management/tag-card/detail/:id',
+                  code: 'personnelManagement.tagCardManagement.view',
+                  name: 'tagCardDetail',
+                  component: './RealNameCertification/TagCardManagement/Handle',
+                },
+                {
+                  path: '/personnel-management/tag-card/detail/:id',
+                  code: 'personnelManagement.tagCardManagement.view',
+                  name: 'tagCardDetail',
+                  component: './RealNameCertification/TagCardManagement/Handle',
                 },
               ],
             },
+
             {
               path: '/personnel-management/post-management', // 岗位管理
               code: 'personnelManagement.postManagement',
