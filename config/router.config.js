@@ -5501,12 +5501,6 @@ module.exports = env => {
                   component: './RealNameCertification/Person/PersonnelDetail',
                 },
                 {
-                  name: 'view',
-                  path: '/real-name-certification/personnel-management/detail/:id',
-                  code: 'realNameCertification.personnelManagement.view',
-                  component: './RealNameCertification/Person/PersonnelDetail',
-                },
-                {
                   name: 'record',
                   path: '/real-name-certification/personnel-management/record/:id',
                   code: 'realNameCertification.personnelManagement.importPhoto',
@@ -5640,35 +5634,35 @@ module.exports = env => {
             },
             {
               name: 'channelDevice', // 通道设备
-              path: '/real-name-certification/channelDevice',
+              path: '/real-name-certification/channel-device',
               code: 'realNameCertification.channelDevice',
               hideChildrenInMenu: true,
               routes: [
                 {
-                  path: '/real-name-certification/channelDevice',
-                  redirect: '/real-name-certification/channelDevice/list',
+                  path: '/real-name-certification/channel-device',
+                  redirect: '/real-name-certification/channel-device/list',
                 },
                 {
                   name: 'list',
-                  path: '/real-name-certification/channelDevice/list',
+                  path: '/real-name-certification/channel-device/list',
                   code: 'realNameCertification.channelDevice.listView',
                   component: './RealNameCertification/ChannelDevice/List',
                 },
                 {
                   name: 'add',
-                  path: '/real-name-certification/channelDevice/add',
+                  path: '/real-name-certification/channel-device/add',
                   code: 'realNameCertification.channelDevice.add',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },
                 {
                   name: 'edit',
-                  path: '/real-name-certification/channelDevice/edit/:id',
+                  path: '/real-name-certification/channel-device/edit/:id',
                   code: 'realNameCertification.channelDevice.edit',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },
                 {
                   name: 'view',
-                  path: '/real-name-certification/channelDevice/view/:id',
+                  path: '/real-name-certification/channel-device/view/:id',
                   code: 'realNameCertification.channelDevice.view',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },

@@ -89,6 +89,13 @@ const FormRangePicker = ({
         separator={<span className={styles.separator}>{separator}</span>}
         mode={originalMode}
         ranges={rangeList}
+        showTime={
+          format.includes(' ')
+            ? {
+                format: format.split(' ').slice(-1)[0],
+              }
+            : undefined
+        }
         {...rest}
       />
     );
