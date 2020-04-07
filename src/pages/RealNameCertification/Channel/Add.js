@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Spin, message, Card, Row, Col, Input } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -64,7 +65,7 @@ export default class AddOperatingProdures extends Component {
             });
             setTimeout(() => {
               // type 1 双向 2 单向
-              const device = (+type === 1 && [{ direction: '1', code: exitDeviceCode, id: exit }, { direction: '2', code: entranceDeviceCode, id: entrance }]) || (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance }]) || [];
+              const device = (+type === 1 && [{ direction: '1', code: exitDeviceCode, id: exit }, { direction: '2', code: entranceDeviceCode, id: entrance }]) || (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance, code: exitDeviceCode || entranceDeviceCode }]) || [];
               this.form && this.form.setFieldsValue({ device });
               this.setState({ device });
             }, 0);
@@ -148,7 +149,6 @@ export default class AddOperatingProdures extends Component {
         selectedDeviceKeys: id ? [id] : [],
       })
     } else message.warning('请先选择单位')
-
   }
 
   // 选择关联设备
@@ -161,6 +161,32 @@ export default class AddOperatingProdures extends Component {
     const newDevice = device.map((item, i) => currentDevice === i ? { ...item, id, code: deviceCode } : item)
     this.setState({ device: newDevice, deviceModalVisible: false });
     this.form && this.form.setFieldsValue({ device: newDevice });
+  }
+
+  // 清空设备
+  handleResetDevice = (i, item) => {
+    const { dispatch, match: { params: { id } } } = this.props;
+    let device = [...this.state.device || []];
+    device.splice(i, 1, { ...item, code: undefined, id: undefined });
+    if (id && item.code) {
+      // 如果编辑，需要解绑
+      dispatch({
+        type: 'realNameCertification/editChannel',
+        payload: { id, exit: +item.direction === 1 ? null : undefined, entrance: +item.direction === 2 ? null : undefined },
+        callback: (success) => {
+          if (success) {
+            message.success('操作成功');
+            this.setState({ device });
+            this.form && this.form.setFieldsValue({ device });
+          } else {
+            message.error('操作失败')
+          }
+        },
+      })
+    } else {
+      this.setState({ device });
+      this.form && this.form.setFieldsValue({ device });
+    };
   }
 
   // 提交
@@ -195,9 +221,10 @@ export default class AddOperatingProdures extends Component {
           }
         })
       } else if (+type === 2 && +device[0].direction === 1) { // 单向 出口
-        payload.exit = device[0].id;
+        payload = { ...payload, exit: device[0].id, entrance: null };
       } else if (+type === 2 && +device[0].direction === 2) { // 单向 入口
         payload.entrance = device[0].id;
+        payload = { ...payload, entrance: device[0].id, exit: null };
       }
       const callback = (success, msg) => {
         if (success) {
@@ -245,13 +272,13 @@ export default class AddOperatingProdures extends Component {
         directionDict,
       },
     } = this.props;
-    const { deviceModalVisible, selectedDeviceKeys } = this.state;
+    const { deviceModalVisible, selectedDeviceKeys, device } = this.state;
     const href = location.href;
     const isNotDetail = !href.includes('view');
     const isEdit = href.includes('edit');
     const title = (href.includes('add') && '新增通道') || (href.includes('edit') && '编辑通道') || (href.includes('view') && '查看通道');
     const type = this.form && this.form.getFieldValue('type');
-    const device = this.form && this.form.getFieldValue('device') || [];
+    // const device = this.form && this.form.getFieldValue('device') || [];
     const breadcrumbList = [
       {
         title: '首页',
@@ -365,7 +392,11 @@ export default class AddOperatingProdures extends Component {
                     </Col>
                     {isNotDetail && (
                       <Col span={5}>
-                        <Button size="small" onClick={() => this.hadnleViewDeviceModal(item.id, i)} type="primary">选择设备</Button>
+                        <LegacyIcon
+                          className={item.code ? styles.warnIcon : styles.disabledIcon}
+                          onClick={() => item.code ? this.handleResetDevice(i, item) : null}
+                          type="delete" />
+                        <Button className={styles.ml10} size="small" onClick={() => this.hadnleViewDeviceModal(item.id, i)} type="primary">选择设备</Button>
                       </Col>
                     )}
                   </Row>
