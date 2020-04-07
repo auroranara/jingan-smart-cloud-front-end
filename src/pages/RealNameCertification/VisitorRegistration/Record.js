@@ -29,14 +29,7 @@ export default class TableList extends PureComponent {
     super(props);
     this.pageNum = 1;
     this.pageSize = 10;
-    this.state = {
-      formData: {},
-      modalTitle: '', // 弹窗标题
-      modalStatus: '', // 弹窗状态
-      modalVisible: false, // 弹窗是否可见
-      detail: {}, // 详情
-      expend: false,
-    };
+    this.state = {};
   }
 
   componentDidMount() {

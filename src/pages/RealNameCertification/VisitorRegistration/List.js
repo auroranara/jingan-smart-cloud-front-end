@@ -212,7 +212,6 @@ export default class TableList extends PureComponent {
               loading={loading}
               columns={columns}
               dataSource={list}
-              onChange={this.onTableChange}
               scroll={{ x: 'max-content' }}
               pagination={{
                 current: pageNum,

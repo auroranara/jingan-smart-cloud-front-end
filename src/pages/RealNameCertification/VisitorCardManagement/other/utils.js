@@ -1,33 +1,34 @@
 import React, { Fragment } from 'react';
-import { Input, Select, Divider } from 'antd';
-import { AuthPopConfirm, AuthLink } from '@/utils/customAuth';
-import codes from '@/utils/codes';
+// import Link from 'umi/link';
+// import moment from 'moment';
+import { Input, Divider, Select } from 'antd';
+
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
+import codes from '@/utils/codes';
+import { AuthPopConfirm, AuthLink } from '@/utils/customAuth';
 
 // 权限
 const {
-  realNameCertification: {
-    visitorRegistration: { cancelCard: cancelCardCode },
+  personnelManagement: {
+    tagCardManagement: { visitorCardEdit: editCode, visitorCardDelete: deleteCode },
   },
 } = codes;
 
-const useStatus = [{ key: '0', value: '已使用' }, { key: '1', value: '未使用' }];
-
 export const PAGE_SIZE = 20;
-export const ROUTER = 'real-name-certification/visitor-registration'; // modify
-export const LIST_URL = `${ROUTER}/list`;
+export const ROUTER = '/personnel-management/tag-card'; // modify
+export const LIST_URL = `${ROUTER}/visitor-card-list`;
 
 export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '基础信息', name: '基础信息' },
   { title: '标签卡管理', name: '标签卡管理' },
   { title: '访客卡管理', name: '访客卡管理', href: LIST_URL },
 ];
 
+const useStatus = [{ key: '0', value: '已使用' }, { key: '1', value: '未使用' }];
+
 export function getSearchFields(unitType) {
   const fields = [
-    // modify
     {
       id: 'user',
       label: '单位名称',
@@ -66,13 +67,14 @@ export function getSearchFields(unitType) {
       ),
     },
   ];
+
   if (isCompanyUser(+unitType)) fields.shift();
+
   return fields;
 }
 
-export function getTableColumns(handleConfirmDelete, unitType) {
+export function getTableColumns(handleConfirmDelete, showModal, unitType) {
   const columns = [
-    // modify
     {
       title: '单位名称',
       dataIndex: 'companyName',
@@ -111,7 +113,7 @@ export function getTableColumns(handleConfirmDelete, unitType) {
       render: (val, row) => (
         <Fragment>
           <AuthLink
-            // code={editCode}
+            code={editCode}
             // to={`${ROUTER}/edit/${id}`}
             target="_blank"
             style={{ marginLeft: 8 }}
@@ -120,7 +122,7 @@ export function getTableColumns(handleConfirmDelete, unitType) {
           </AuthLink>
           <Divider type="vertical" />
           <AuthPopConfirm
-            // code={deleteCode}
+            code={deleteCode}
             title="删除卡后会导致该卡历史定位记录也被删除，是否继续？"
             // onConfirm={e => handleConfirmDelete(id)}
             okText="确定"
@@ -132,6 +134,7 @@ export function getTableColumns(handleConfirmDelete, unitType) {
       ),
     },
   ];
+
   if (isCompanyUser(+unitType)) columns.shift();
   return columns;
 }
