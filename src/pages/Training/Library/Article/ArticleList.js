@@ -157,7 +157,7 @@ export default class ArticleList extends PureComponent {
   }
 
   // 点击改变发布状态
-  handleChangeStatus = (id, oldStatus, auth) => {
+  handleChangeStatus = ({ id, status: oldStatus, type, ...restProps }, auth) => {
     const { dispatch } = this.props
     if (!auth) {
       message.error('您没有权限')
@@ -168,6 +168,7 @@ export default class ArticleList extends PureComponent {
         id,
         status: oldStatus === '1' ? '0' : '1',
         type: '1',
+        ...restProps,
       },
       success: () => { message.success(`${oldStatus === '1' ? '取消发布' : '发布'}文章成功`) },
       error: () => { message.error(`${oldStatus === '1' ? '取消发布' : '发布'}文章失败`) },
@@ -371,7 +372,7 @@ export default class ArticleList extends PureComponent {
                 </div>
                 {item.knowledges && (<Tag className={styles.tags}>{item.knowledges.join(' > ')}</Tag>)}
                 {statusAuth ? (
-                  <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}文章吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, statusAuth) }}>
+                  <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}文章吗？`} onConfirm={() => { this.handleChangeStatus(item, statusAuth) }}>
                     <Tag className={styles.tags} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
                   </Popconfirm>
                 ) : (

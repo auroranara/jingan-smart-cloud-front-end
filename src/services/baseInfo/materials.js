@@ -41,5 +41,11 @@ export async function queryMsdsList (params) {
 
 // 根据CAS号获取信息
 export async function fetchInfoByCas (params) {
-  return request(`/acloud_new/v2/ci/materialInfo/materialChemicalInfo?${stringify(params)}`)
+  return request(`/acloud_new/v2/ci/materialInfo/materialChemicalInfo?${stringify(params)}`);
+}
+
+
+// 获取虚拟监测对象列表
+export async function queryMonitorList(params) {
+  return request(`/acloud_new/v2/monitor/beMonitorTarget/page?${stringify(params)}`);
 }
