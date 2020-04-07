@@ -476,6 +476,7 @@ export default class PersonnelList extends PureComponent {
           list = [],
           pagination: { pageNum = 1, pageSize = defaultPageSize, total = 0 },
         },
+        personTypeDict,
       },
       user: {
         currentUser: { permissionCodes },
@@ -524,7 +525,15 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'personType',
         align: 'center',
         width: 200,
-        render: val => getPersonType[val],
+        render: val => (
+          <SelectOrSpan
+            placeholder="请选择"
+            value={val}
+            list={personTypeDict}
+            type={'span'}
+            allowClear
+          />
+        ),
       },
       {
         title: (
