@@ -1857,15 +1857,27 @@ module.exports = env => {
                   name: 'tagCardDetail',
                   component: './RealNameCertification/TagCardManagement/Handle',
                 },
+                // 访客卡
                 {
-                  path: '/personnel-management/tag-card/detail/:id',
-                  code: 'personnelManagement.tagCardManagement.view',
-                  name: 'tagCardDetail',
-                  component: './RealNameCertification/TagCardManagement/Handle',
+                  path: '/personnel-management/tag-card/visitor-card-list',
+                  code: 'personnelManagement.tagCardManagement.visitorCardList',
+                  name: 'visitorCardList',
+                  component: './RealNameCertification/VisitorCardManagement/List',
+                },
+                {
+                  path: '/personnel-management/tag-card/visitor-card-add',
+                  code: 'personnelManagement.tagCardManagement.visitorCardAdd',
+                  name: 'visitorCardAdd',
+                  component: './RealNameCertification/VisitorCardManagement/Handle',
+                },
+                {
+                  path: '/personnel-management/tag-card/visitor-card-edit/:id',
+                  code: 'personnelManagement.tagCardManagement.visitorCardEdit',
+                  name: 'visitorCardEdit',
+                  component: './RealNameCertification/VisitorCardManagement/Handle',
                 },
               ],
             },
-
             {
               path: '/personnel-management/post-management', // 岗位管理
               code: 'personnelManagement.postManagement',

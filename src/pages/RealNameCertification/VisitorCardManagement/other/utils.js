@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import { Input, Select,Divider } from 'antd';
-import { AuthPopConfirm,AuthLink} from '@/utils/customAuth';
+import { Input, Select, Divider } from 'antd';
+import { AuthPopConfirm, AuthLink } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 
@@ -132,6 +132,6 @@ export function getTableColumns(handleConfirmDelete, unitType) {
       ),
     },
   ];
+  if (isCompanyUser(+unitType)) columns.shift();
   return columns;
 }
-

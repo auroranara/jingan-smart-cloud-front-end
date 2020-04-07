@@ -10,13 +10,18 @@ import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, ROUTER, getSearchFields, getTableColumns } from '../Other/utils';
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 
 // 权限
 const {
   personnelManagement: {
-    tagCardManagement: { add: addCode, import: importCode, export: exportCode },
+    tagCardManagement: {
+      add: addCode,
+      import: importCode,
+      export: exportCode,
+      visitorCardList: cardCode,
+    },
   },
 } = codes;
 
@@ -231,6 +236,13 @@ export default class TableList extends PureComponent {
         content={
           <div>
             <span>标签总数 ：{total}</span>
+            <a
+              // code={cardCode}
+              href={'#/personnel-management/tag-card/visitor-card-list'}
+              style={{ float: 'right', marginRight: '10px' }}
+            >
+              访客卡管理
+            </a>
             <Button
               onClick={this.handleExportShow}
               type="primary"

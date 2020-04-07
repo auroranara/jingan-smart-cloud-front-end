@@ -8,7 +8,13 @@ import { AuthButton } from '@/utils/customAuth';
 import { hasAuthority } from '@/utils/customAuth';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { BREADCRUMBLIST, ROUTER, getSearchFields, getTableColumns, EditModal } from './utils';
+import {
+  BREADCRUMBLIST,
+  ROUTER,
+  getSearchFields,
+  getTableColumns,
+  EditModal,
+} from '../other/utils';
 import codes from '@/utils/codes';
 
 // 权限
