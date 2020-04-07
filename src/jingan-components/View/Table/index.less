@@ -1,0 +1,49 @@
+.tableCard {
+  :global {
+    .ant-card-body {
+      padding-bottom: 8px;
+    }
+  }
+}
+.table {
+  :global {
+    .ant-table {
+      td,
+      th {
+        white-space: nowrap;
+      }
+    }
+
+    .ant-table-content {
+      overflow-x: auto !important;
+    }
+  }
+}
+.operationContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0 -4px 16px;
+
+  .operationWrapper {
+    flex: none;
+    padding: 0 4px;
+  }
+}
+.actionContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0 -8px;
+
+  .actionWrapper {
+    flex: none;
+    padding: 0 8px;
+
+    .action {
+      font-size: 16px;
+      cursor: pointer;
+    }
+  }
+}

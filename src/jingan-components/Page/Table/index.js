@@ -1,49 +1,71 @@
 import React, { useEffect, useState, useImperativeHandle, useRef } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { Card, Spin, Table, Empty, Button, Popconfirm } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import Form from '@/jingan-components/Form';
-import { Link } from '@/jingan-components/View';
+import { Link, Table } from '@/jingan-components/View';
 import { connect } from 'dva';
-import classNames from 'classnames';
 import locales from '@/locales/zh-CN';
 import { kebabCase } from 'lodash';
 import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
 
-const PAGE_SIZE_OPTIONS = ['5', '10', '15', '20'];
-
 const TablePage = props => {
   const {
     breadcrumbList,
     children,
-    list: { list = [], pagination: { total = 0, pageNum = 1, pageSize = getPageSize() } = {} },
+    list,
     loading,
     getList,
     fields,
     columns,
-    formProps = {},
-    tableProps = {},
     transform,
     isUnit,
     unitId,
-    operation,
+    formOperation,
+    tableAction,
+    tableOperation,
+    formRef,
+    tableRef,
+    showAddButton = true,
+    showExportButton,
   } = props;
   const [values, setValues] = useState(undefined);
   const form = useRef(null);
-  useImperativeHandle(formProps.ref, () => form.current);
+  useImperativeHandle(formRef, () => form.current);
+  const reload = () => {
+    const { pagination: { pageSize = getPageSize() } = {} } = list;
+    getList({
+      ...(transform
+        ? transform({
+            isUnit,
+            unitId,
+            ...values,
+          })
+        : values),
+      pageSize,
+    });
+  };
+  useImperativeHandle(tableRef, () => ({
+    reload,
+  }));
   useEffect(() => {
     getList({
-      ...(transform ? transform({ ...values }) : values),
+      ...(transform
+        ? transform({
+            isUnit,
+            unitId,
+            ...values,
+          })
+        : values),
     });
   }, []);
-  let columnList = columns || tableProps.columns;
-  columnList =
-    typeof columnList === 'function'
-      ? columnList({
+  const columnList =
+    typeof columns === 'function'
+      ? columns({
           isUnit,
           unitId,
-          ...(operation || []).reduce(
-            (result, { code: codeName }) => {
+          ...(tableOperation || []).reduce(
+            (result, { code: codeName, children, onClick, to }) => {
               const upperName = codeName.includes('.')
                 ? codeName
                     .split('.')
@@ -51,113 +73,139 @@ const TablePage = props => {
                     .map(v => `${v[0].toUpperCase()}${v.slice(1)}`)
                     .join('')
                 : `${codeName[0].toUpperCase()}${codeName.slice(1)}`;
-              result[`render${upperName}Button`] = () => {};
+              result[`render${upperName}Button`] = data => (
+                <Link
+                  to={
+                    !onClick ? (to ? to(data) : `${props.editPath}/${data.id || data}`) : undefined
+                  }
+                  onClick={onClick ? () => onClick(data) : undefined}
+                  disabled={!props[`has${upperName}Authority`]}
+                >
+                  {children}
+                </Link>
+              );
               return result;
             },
             {
-              renderAddButton: () => (
-                <Button type="primary" href={props.addPath} disabled={!props.hasAddAuthority}>
-                  新增
-                </Button>
-              ),
-              renderEditButton: () => (
-                <Link to={props.editPath} disabled={!props.hasEditAuthority}>
+              renderEditButton: data => (
+                <Link
+                  to={`${props.editPath}/${data.id || data}`}
+                  disabled={!props.hasEditAuthority}
+                >
                   编辑
                 </Link>
               ),
               renderDetailButton: data => (
-                <Link to={props.detailPath} disabled={!props.hasDetailAuthority}>
+                <Link
+                  to={`${props.detailPath}/${data.id || data}`}
+                  disabled={!props.hasDetailAuthority}
+                >
                   查看
                 </Link>
               ),
               renderDeleteButton: data => (
                 <Popconfirm
                   title="您确定要删除吗?"
-                  onConfirm={() => props.delete(data)}
-                  // disabled={!props.hasDeleteAuthority}
+                  onConfirm={() =>
+                    props.delete(data, success => {
+                      if (success) {
+                        reload();
+                      }
+                    })
+                  }
+                  disabled={!props.hasDeleteAuthority}
                 >
-                  <Link to="/" disabled={props.hasDeleteAuthority}>
-                    删除
-                  </Link>
+                  <Link to="/">删除</Link>
                 </Popconfirm>
-              ),
-              renderExportButton: () => (
-                <Button type="primary" disabled={!props.hasExportAuthority}>
-                  导出
-                </Button>
               ),
             }
           ),
         })
-      : columnList;
+      : columns;
   return (
     <PageHeaderLayout
       title={breadcrumbList[breadcrumbList.length - 1].title}
       breadcrumbList={breadcrumbList}
     >
       <Form
-        {...formProps}
-        onSearch={values => {
-          setValues(values);
-          getList({
-            ...(transform ? transform({ ...values }) : values),
-            pageSize,
-          });
-          formProps.onSearch && formProps.onSearch(values);
-        }}
-        onReset={values => {
-          setValues(values);
-          getList({
-            ...(transform ? transform({ ...values }) : values),
-            pageSize,
-          });
-          formProps.onReset && formProps.onReset(values);
-        }}
         ref={form}
-        fields={fields || formProps.fields}
+        fields={fields}
         params={{
           isUnit,
           unitId,
-          ...formProps.params,
+        }}
+        onSearch={values => {
+          const {
+            pagination: { pageSize },
+          } = list;
+          setValues(values);
+          getList({
+            ...(transform
+              ? transform({
+                  isUnit,
+                  unitId,
+                  ...values,
+                })
+              : values),
+            pageSize,
+          });
+        }}
+        onReset={values => {
+          const {
+            pagination: { pageSize },
+          } = list;
+          setValues(values);
+          getList({
+            ...(transform
+              ? transform({
+                  isUnit,
+                  unitId,
+                  ...values,
+                })
+              : values),
+            pageSize,
+          });
         }}
       />
-      <Card className={styles.tableCard}>
-        <Spin spinning={loading}>
-          {list && list.length ? (
-            <Table
-              dataSource={list}
-              rowKey="id"
-              scroll={{
-                x: true,
-              }}
-              {...tableProps}
-              className={classNames(styles.table, tableProps.className)}
-              columns={columnList}
-              pagination={{
-                total,
-                current: pageNum,
-                pageSize,
-                pageSizeOptions: PAGE_SIZE_OPTIONS,
-                showTotal: total => `共 ${total} 条记录`,
-                showQuickJumper: true,
-                showSizeChanger: true,
-                ...tableProps.pagination,
-              }}
-              onChange={({ current, pageSize: nextPageSize }) => {
-                getList({
-                  ...(transform ? transform({ ...values }) : values),
-                  pageNum: pageSize !== nextPageSize ? 1 : current,
-                  pageSize: nextPageSize,
-                });
-                form && (values ? form.current.setFieldsValue(values) : form.current.resetFields());
-                pageSize !== nextPageSize && setPageSize(nextPageSize);
-              }}
-            />
-          ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          )}
-        </Spin>
-      </Card>
+      <Table
+        list={list}
+        loading={loading}
+        columns={columnList}
+        onChange={({ current, pageSize }) => {
+          const {
+            pagination: { pageSize: prevPageSize },
+          } = list;
+          getList({
+            ...(transform
+              ? transform({
+                  isUnit,
+                  unitId,
+                  ...values,
+                })
+              : values),
+            pageNum: pageSize !== prevPageSize ? 1 : current,
+            pageSize,
+          });
+          // values ? form.current.setFieldsValue(values) : form.current.resetFields();
+          pageSize !== prevPageSize && setPageSize(pageSize);
+        }}
+        operation={(tableAction || []).reduce((result, { code: codeName, ...rest }) => {
+          const upperName = codeName.includes('.')
+            ? codeName
+                .split('.')
+                .slice(-2)
+                .map(v => `${v[0].toUpperCase()}${v.slice(1)}`)
+                .join('')
+            : `${codeName[0].toUpperCase()}${codeName.slice(1)}`;
+          result.push(<Button disabled={!props[`has${upperName}Authority`]} {...rest} />);
+          return result;
+        }, [])}
+        onReload={reload}
+        showAddButton={showAddButton}
+        showExportButton={showExportButton}
+        addPath={props.addPath}
+        hasAddAuthority={props.hasAddAuthority}
+      />
       {children}
     </PageHeaderLayout>
   );
@@ -166,7 +214,15 @@ const TablePage = props => {
 export default connect(
   (
     state,
-    { route: { name, code }, location: { pathname }, mapper, breadcrumbList: b, operation }
+    {
+      route: { name, code },
+      location: { pathname },
+      mapper,
+      breadcrumbList: b,
+      formOperation,
+      tableAction,
+      tableOperation,
+    }
   ) => {
     const {
       namespace = code.split('.').slice(-2)[0],
@@ -239,8 +295,10 @@ export default connect(
         { code: 'delete' },
         { code: 'export' },
       ]
-        .concat(operation || [])
-        .reduce((result, { code: codeName, onClick, href }) => {
+        .concat(formOperation || [])
+        .concat(tableAction || [])
+        .concat(tableOperation || [])
+        .reduce((result, { code: codeName }) => {
           if (codeName.includes('.')) {
             result[
               `has${codeName

@@ -1,6 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Form, Button, Card, Row, Col } from 'antd';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
+import FooterToolbar from '@/components/FooterToolbar';
 import useMediaQuery from 'use-media-antd-query';
 import Input from './Input';
 import Select from './Select';
@@ -120,14 +121,18 @@ const FormIndex = forwardRef(
     {
       fields,
       mode,
-      expandable,
+      expandable = true,
       operation,
       operationCol = COL,
-      onFinish,
       onSearch,
       onReset,
       onValuesChange,
       params,
+      hasEditAuthority,
+      editPath,
+      listPath,
+      onSubmit,
+      submitting,
       ...rest
     },
     ref
@@ -151,13 +156,13 @@ const FormIndex = forwardRef(
       : [];
     list = !mode ? list.slice(0, 1) : list;
     useImperativeHandle(ref, () => form);
-    const operationSpan = GET_SPAN(operationCol, windowSize);
     useEffect(
       () => {
         if (!mode) {
           const fields = (list[0] && list[0].fields) || [];
           const values = form.getFieldsValue();
-          const payload = { ...params, expand, ...values };
+          const payload = { ...params, ...values };
+          const operationSpan = GET_SPAN(operationCol, windowSize);
           const grid = GET_GRID(fields, payload, windowSize, operationSpan, expandable, expand);
           setGrid(grid);
         }
@@ -166,14 +171,6 @@ const FormIndex = forwardRef(
     );
     return (
       <Form
-        onFinish={
-          !mode
-            ? values => {
-                onSearch && onSearch(values);
-                onFinish && onFinish(values);
-              }
-            : onFinish
-        }
         onValuesChange={
           !mode
             ? (changedValues, values) => {
@@ -184,7 +181,8 @@ const FormIndex = forwardRef(
                     ({ dependencies }) => dependencies && dependencies.includes(dependency)
                   )
                 ) {
-                  const payload = { ...params, expand, ...values };
+                  const payload = { ...params, ...values };
+                  const operationSpan = GET_SPAN(operationCol, windowSize);
                   const grid = GET_GRID(
                     fields,
                     payload,
@@ -205,7 +203,7 @@ const FormIndex = forwardRef(
         {list.map(({ key, title, fields, className, ...rest }, index) => {
           return (
             <Card
-              className={classNames(styles.card, className)}
+              className={classNames(styles.card, mode && styles.modeCard, className)}
               key={key || title || index}
               title={title}
               {...rest}
@@ -255,7 +253,7 @@ const FormIndex = forwardRef(
                         >
                           {({ getFieldsValue }) => {
                             const values = getFieldsValue();
-                            const hidden = hide({ ...params, expand, ...values });
+                            const hidden = hide({ ...params, ...values });
                             return !hidden ? (
                               <Col
                                 {...col}
@@ -310,10 +308,10 @@ const FormIndex = forwardRef(
                     ) : null;
                   }
                 )}
-                {!mode && (
+                {!mode ? (
                   <Col
                     {...operationCol}
-                    {...!mode && {
+                    {...{
                       offset: grid.offset,
                       span: GET_SPAN(operationCol, grid.gridSize),
                       xxl: undefined,
@@ -327,7 +325,13 @@ const FormIndex = forwardRef(
                     <Form.Item>
                       <div className={styles.operationContainer}>
                         <div className={styles.operationWrapper}>
-                          <Button type="primary" htmlType="submit">
+                          <Button
+                            type="primary"
+                            onClick={() => {
+                              const values = form.getFieldsValue();
+                              onSearch && onSearch(values);
+                            }}
+                          >
                             查询
                           </Button>
                         </div>
@@ -343,10 +347,10 @@ const FormIndex = forwardRef(
                           </Button>
                         </div>
                         {Array.isArray(operation) &&
-                          operation.map(({ key, children, ...rest }) => {
+                          operation.map((item, index) => {
                             return (
-                              <div key={key || children} className={styles.operationWrapper}>
-                                <Button children={children} {...rest} />
+                              <div key={index} className={styles.operationWrapper}>
+                                {item}
                               </div>
                             );
                           })}
@@ -372,11 +376,85 @@ const FormIndex = forwardRef(
                       </div>
                     </Form.Item>
                   </Col>
+                ) : (
+                  list.length === 1 && (
+                    <Col span={24}>
+                      <Form.Item>
+                        <div className={styles.operationContainer}>
+                          <div className={styles.operationWrapper}>
+                            {mode === 'detail' ? (
+                              <Button href={`#${editPath}`} disabled={!hasEditAuthority}>
+                                编辑
+                              </Button>
+                            ) : (
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  const values = form.getFieldsValue();
+                                  onSubmit && onSubmit(values);
+                                }}
+                                loading={submitting}
+                              >
+                                提交
+                              </Button>
+                            )}
+                          </div>
+                          <div className={styles.operationWrapper}>
+                            <Button href={`#${listPath}`}>返回</Button>
+                          </div>
+                          {Array.isArray(operation) &&
+                            operation.map((item, index) => {
+                              return (
+                                <div key={index} className={styles.operationWrapper}>
+                                  {item}
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  )
                 )}
               </Row>
             </Card>
           );
         })}
+        {mode &&
+          list.length > 1 && (
+            <FooterToolbar>
+              <div className={styles.operationContainer}>
+                <div className={styles.operationWrapper}>
+                  {mode === 'detail' ? (
+                    <Button href={`#${editPath}`} disabled={!hasEditAuthority}>
+                      编辑
+                    </Button>
+                  ) : (
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        const values = form.getFieldsValue();
+                        onSubmit && onSubmit(values);
+                      }}
+                      loading={submitting}
+                    >
+                      提交
+                    </Button>
+                  )}
+                </div>
+                <div className={styles.operationWrapper}>
+                  <Button href={`#${listPath}`}>返回</Button>
+                </div>
+                {Array.isArray(operation) &&
+                  operation.map((item, index) => {
+                    return (
+                      <div key={index} className={styles.operationWrapper}>
+                        {item}
+                      </div>
+                    );
+                  })}
+              </div>
+            </FooterToolbar>
+          )}
       </Form>
     );
   }
