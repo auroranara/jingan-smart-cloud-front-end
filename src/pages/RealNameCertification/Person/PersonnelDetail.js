@@ -26,13 +26,13 @@ const getPersonType = {
 };
 
 const getEducation = {
-  1: '初中',
-  2: '高中',
-  3: '中专',
-  4: '大专',
-  5: '本科',
-  6: '硕士',
-  7: '博士',
+  0: '初中',
+  1: '高中',
+  2: '中专',
+  3: '大专',
+  4: '本科',
+  5: '硕士',
+  6: '博士',
 };
 @connect(({ realNameCertification, loading, user }) => ({
   realNameCertification,
