@@ -16,23 +16,19 @@ const {
 } = codes;
 
 const cardType = [
-  { key: '1', value: '本单位人员' },
-  { key: '2', value: '来访人员' },
-  { key: '3', value: '外包人员' },
-  { key: '4', value: '本单位车辆' },
-  { key: '5', value: '来访车辆' },
-  { key: '6', value: '其他' },
+  { key: '1', value: '单位人员' },
+  { key: '2', value: '临时人员' },
+  { key: '3', value: '外协人员' },
+  { key: '4', value: '单位车辆' },
 ];
 
 const useStatus = [{ key: '0', value: '已使用' }, { key: '1', value: '未使用' }];
 
 const getCardType = {
-  1: '本单位人员',
-  2: '来访人员',
-  3: '外包人员',
-  4: '本单位车辆',
-  5: '来访车辆',
-  6: '其他',
+  1: '单位人员',
+  2: '临时人员',
+  3: '外协人员',
+  4: '单位车辆',
 };
 
 const getStatus = {
