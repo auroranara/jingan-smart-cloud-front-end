@@ -49,10 +49,11 @@ const DEGREES = [
 ];
 
 @Form.create()
-@connect(({ realNameCertification, user, department, loading }) => ({
+@connect(({ realNameCertification, user, department, postManagement, loading }) => ({
   realNameCertification,
   user,
   department,
+  postManagement,
   submitting:
     loading.effects['realNameCertification/addPerson'] ||
     loading.effects['realNameCertification/editPerson'],
@@ -71,7 +72,7 @@ export default class PersonnelAdd extends PureComponent {
         educationCertificateDetails: [],
       },
       sexValue: '0', // 默认性别为男
-      perType: '4', // 人员选择类型
+      perType: '1', // 人员选择类型
       curCompanyName: '', // 当前单位
       filterTagList: {},
       curLabelList: [],
@@ -93,6 +94,7 @@ export default class PersonnelAdd extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     this.fetchDepartment();
+    this.fetchPostList();
     this.setState({
       curCompanyName: unitType !== 4 ? companyName : routerCompanyName,
       curCompanyId: unitType !== 4 ? companyId : unitCompantId,
@@ -313,16 +315,31 @@ export default class PersonnelAdd extends PureComponent {
     });
   };
 
+  // 获取岗位列表
+  fetchPostList = () => {
+    const {
+      dispatch,
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'postManagement/fetchPostList',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+    });
+  };
+
   handlePersonType = id => {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const isId = id !== '2' && id !== '3';
+    // const isId = id === '1';
     this.setState({ perType: id });
     setFieldsValue({ personCompany: undefined });
-    if (isId) {
-      this.fetchDepartment();
-    }
+    // if (isId) {
+    //   this.fetchPostList();
+    //   this.fetchDepartment();
+    // }
   };
 
   // 获取标签卡列表
@@ -426,6 +443,7 @@ export default class PersonnelAdd extends PureComponent {
       department: {
         data: { list: departmentList = [] },
       },
+      postManagement: { postData: { list: postList = [] } = {} },
       form: { getFieldDecorator, getFieldValue },
       realNameCertification: { personTypeDict },
     } = this.props;
@@ -444,7 +462,7 @@ export default class PersonnelAdd extends PureComponent {
     const title = id ? '编辑人员信息' : '新增人员信息';
     console.log('curLabelList', curLabelList);
 
-    const hasCompanyName = perType === '4' || perType === '5' || perType === '6';
+    const hasCompanyName = perType === '1';
     const noCompanyName = perType === '2' || perType === '3';
     //面包屑
     const breadcrumbList = [
@@ -532,21 +550,39 @@ export default class PersonnelAdd extends PureComponent {
                 </FormItem>
               </Col>
               {hasCompanyName && (
-                <Col {...colLayout}>
-                  <FormItem label="部门" {...formItemLayout}>
-                    {getFieldDecorator('partId', {
-                      initialValue: id ? detail.partId : undefined,
-                    })(
-                      <Select placeholder="请选择">
-                        {departmentList.map(({ id, name }) => (
-                          <Select.Option key={id} value={id}>
-                            {name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
+                <Fragment>
+                  <Col {...colLayout}>
+                    <FormItem label="部门" {...formItemLayout}>
+                      {getFieldDecorator('partId', {
+                        initialValue: id ? detail.partId : undefined,
+                      })(
+                        <Select placeholder="请选择" allowClear>
+                          {departmentList.map(({ id, name }) => (
+                            <Select.Option key={id} value={id}>
+                              {name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col {...colLayout}>
+                    <FormItem label="岗位" {...formItemLayout}>
+                      {getFieldDecorator('companyJob', {
+                        initialValue: id ? detail.companyJob : undefined,
+                        // rules: [{ required: true, message: '请选择岗位' }],
+                      })(
+                        <Select placeholder="请选择岗位" allowClear>
+                          {postList.map(({ id, jobName }) => (
+                            <Select.Option key={id} value={id}>
+                              {jobName}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                </Fragment>
               )}
               {noCompanyName && (
                 <Col {...colLayout}>

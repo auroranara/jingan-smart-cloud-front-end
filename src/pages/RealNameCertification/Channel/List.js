@@ -16,12 +16,7 @@ const FormItem = Form.Item;
 
 const {
   realNameCertification: {
-    channel: {
-      add: addCode,
-      edit: editCode,
-      delete: deleteCode,
-      view: viewCode,
-    },
+    channel: { add: addCode, edit: editCode, delete: deleteCode, view: viewCode },
   },
 } = codes;
 
@@ -47,38 +42,44 @@ const breadcrumbList = [
   },
 ];
 
-@connect(({ realNameCertification, user, resourceManagement, loading }) => ({
+@connect(({ realNameCertification, user, resourceManagement, electronicInspection, loading }) => ({
   realNameCertification,
   user,
   resourceManagement,
+  electronicInspection,
   companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
   tableLoading: loading.effects['realNameCertification/fetchChannelList'],
 }))
 @Form.create()
 export default class ChannelList extends PureComponent {
-
   state = {
     company: {}, // 选择的单位
-    visible: false,// 选择单位弹窗可见
+    visible: false, // 选择单位弹窗可见
     images: [], // 图片预览列表
     currentImage: 0,
   };
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
-      user: { isCompany, currentUser: { companyId, companyName } },
+      user: {
+        isCompany,
+        currentUser: { companyId, companyName },
+      },
       realNameCertification: { channelSearchInfo: searchInfo = {} },
     } = this.props;
     if (isCompany) {
       this.setState({ company: { id: companyId, name: companyName } }, () => {
         this.handleQuery();
-      })
+      });
+      this.fetchProductionArea(companyId);
     } else if (searchInfo.company && searchInfo.company.id) {
       // 如果redux中保存了单位
-      this.setState({ company: searchInfo.company }, () => { this.handleQuery() })
+      this.setState({ company: searchInfo.company }, () => {
+        this.handleQuery();
+      });
     } else {
-      dispatch({ type: 'realNameCertification/saveChannel' })
+      dispatch({ type: 'realNameCertification/saveChannel' });
     }
   }
 
@@ -98,14 +99,29 @@ export default class ChannelList extends PureComponent {
         ...values,
         companyId: company.id,
       },
-    })
-  }
+    });
+  };
+
+  // 获取生产区域
+  fetchProductionArea = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'electronicInspection/fetchProductionArea',
+      payload: {
+        pageNum: 1,
+        pageSize: 0,
+        companyId,
+      },
+    });
+  };
 
   handleReset = () => {
-    const { form: { resetFields } } = this.props;
+    const {
+      form: { resetFields },
+    } = this.props;
     resetFields();
     this.handleQuery();
-  }
+  };
 
   // 获取单位列表
   fetchCompanyList = action => {
@@ -115,18 +131,18 @@ export default class ChannelList extends PureComponent {
 
   // 点击新增
   handleToAdd = () => {
-    router.push('/real-name-certification/channel/add')
-  }
+    router.push('/real-name-certification/channel/add');
+  };
 
   // 点击查看
   handleView = id => {
-    router.push(`/real-name-certification/channel/view/${id}`)
-  }
+    router.push(`/real-name-certification/channel/view/${id}`);
+  };
 
   // 点击编辑
   handleEdit = id => {
-    router.push(`/real-name-certification/channel/edit/${id}`)
-  }
+    router.push(`/real-name-certification/channel/edit/${id}`);
+  };
 
   // 删除
   handleDelete = id => {
@@ -138,10 +154,12 @@ export default class ChannelList extends PureComponent {
         if (success) {
           message.success('删除成功');
           this.handleQuery();
-        } else { message.error(msg || '删除失败') }
+        } else {
+          message.error(msg || '删除失败');
+        }
       },
-    })
-  }
+    });
+  };
 
   // 点击打开选择单位
   handleViewModal = () => {
@@ -151,7 +169,7 @@ export default class ChannelList extends PureComponent {
         this.setState({ visible: true });
       },
     });
-  }
+  };
 
   // 选择单位
   handleSelectCompany = company => {
@@ -162,15 +180,17 @@ export default class ChannelList extends PureComponent {
     dispatch({
       type: 'realNameCertification/saveChannelSearchInfo',
       payload: { company },
-    })
-  }
+    });
+    this.fetchProductionArea(company.id);
+  };
 
   // 渲染筛选栏
   renderForm = () => {
     const {
       form: { getFieldDecorator },
-      realNameCertification: {
-        channelTypeDict,
+      realNameCertification: { channelTypeDict },
+      electronicInspection: {
+        productionArea: { list: productionAreaList = [] },
       },
     } = this.props;
 
@@ -180,17 +200,17 @@ export default class ChannelList extends PureComponent {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('channelName')(
-                  <Input placeholder="通道名称" />
-                )}
+                {getFieldDecorator('channelName')(<Input placeholder="请输入通道名称" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('type')(
-                  <Select placeholder="通道类型">
+                  <Select placeholder="请选择通道类型">
                     {channelTypeDict.map(({ key, value }) => (
-                      <Select.Option key={key} value={key}>{value}</Select.Option>
+                      <Select.Option key={key} value={key}>
+                        {value}
+                      </Select.Option>
                     ))}
                   </Select>
                 )}
@@ -198,7 +218,24 @@ export default class ChannelList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
+                {getFieldDecorator('productArea')(
+                  <Select placeholder="请选择所属区域">
+                    {productionAreaList.map(({ id, areaName }) => (
+                      <Select.Option key={id} value={id}>
+                        {areaName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.handleQuery()}
+                >
                   查询
                 </Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
@@ -212,8 +249,8 @@ export default class ChannelList extends PureComponent {
           </Row>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
 
   // 渲染表格
   renderTable = () => {
@@ -226,15 +263,19 @@ export default class ChannelList extends PureComponent {
         },
         channelTypeDict,
       },
-      user: { isCompany },
+      // user: { isCompany },
     } = this.props;
     const columns = [
-      ...(isCompany ? [] : [{
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
-        width: 250,
-      }]),
+      // ...(isCompany
+      //   ? []
+      //   : [
+      //       {
+      //         title: '单位名称',
+      //         dataIndex: 'companyName',
+      //         align: 'center',
+      //         width: 250,
+      //       },
+      //     ]),
       {
         title: '通道名称',
         dataIndex: 'channelName',
@@ -252,7 +293,7 @@ export default class ChannelList extends PureComponent {
         dataIndex: 'type',
         align: 'center',
         width: 150,
-        render: (val) => {
+        render: val => {
           const target = channelTypeDict.find(item => +item.key === +val);
           return target ? target.value : undefined;
         },
@@ -262,41 +303,60 @@ export default class ChannelList extends PureComponent {
         dataIndex: 'direction',
         align: 'center',
         width: 150,
-        render: (val, { type, exit, entrance }) => +type === 1 ? (
-          <div>
-            <div>入口</div>
-            <Divider style={{ width: '100%' }} type="horizontal" />
-            <div>出口</div>
-          </div>
-        ) : (exit ? '出口' : '入口'),
+        render: (val, { type, exit, entrance }) =>
+          +type === 1 ? (
+            <div>
+              <div>入口</div>
+              <Divider style={{ width: '100%' }} type="horizontal" />
+              <div>出口</div>
+            </div>
+          ) : exit ? (
+            '出口'
+          ) : (
+            '入口'
+          ),
       },
       {
         title: '设备序列号',
         dataIndex: 'deviceCode',
         align: 'center',
         width: 250,
-        render: (val, { type, exitDeviceCode, entranceDeviceCode }) => +type === 1 ? (
-          <div>
-            <div>{entranceDeviceCode}</div>
-            <Divider style={{ width: '100%' }} type="horizontal" />
-            <div>{exitDeviceCode}</div>
-          </div>
-        ) : (exitDeviceCode || entranceDeviceCode),
+        render: (val, { type, exitDeviceCode, entranceDeviceCode }) =>
+          +type === 1 ? (
+            <div>
+              <div>{entranceDeviceCode}</div>
+              <Divider style={{ width: '100%' }} type="horizontal" />
+              <div>{exitDeviceCode}</div>
+            </div>
+          ) : (
+            exitDeviceCode || entranceDeviceCode
+          ),
+      },
+      {
+        title: '所属区域',
+        dataIndex: 'productAreaName',
+        align: 'center',
+        width: 200,
       },
       {
         title: '通道照片',
         dataIndex: 'accessoryDetails',
         align: 'center',
         width: 200,
-        render: (val) => Array.isArray(val) ? val.map(({ webUrl, name }, i) => (
-          <img
-            key={i}
-            style={{ width: '40px', height: '40px', margin: '0 5px', cursor: 'pointer' }}
-            onClick={() => { this.setState({ images: val.map(item => item.webUrl), currentImage: i }) }}
-            src={webUrl}
-            alt="照片"
-          />
-        )) : '',
+        render: val =>
+          Array.isArray(val)
+            ? val.map(({ webUrl, name }, i) => (
+                <img
+                  key={i}
+                  style={{ width: '40px', height: '40px', margin: '0 5px', cursor: 'pointer' }}
+                  onClick={() => {
+                    this.setState({ images: val.map(item => item.webUrl), currentImage: i });
+                  }}
+                  src={webUrl}
+                  alt="照片"
+                />
+              ))
+            : '',
       },
       {
         title: '操作',
@@ -306,9 +366,13 @@ export default class ChannelList extends PureComponent {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={viewCode} onClick={() => this.handleView(row.id)}>查看</AuthA>
+            <AuthA code={viewCode} onClick={() => this.handleView(row.id)}>
+              查看
+            </AuthA>
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleEdit(row.id)}>编辑</AuthA>
+            <AuthA code={editCode} onClick={() => this.handleEdit(row.id)}>
+              编辑
+            </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               title="确认要删除该数据吗？"
@@ -347,11 +411,11 @@ export default class ChannelList extends PureComponent {
         />
       </Card>
     ) : (
-        <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
-      )
-  }
+      <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
+    );
+  };
 
-  render () {
+  render() {
     const {
       companyLoading,
       resourceManagement: { companyList },
@@ -371,7 +435,7 @@ export default class ChannelList extends PureComponent {
           <div>
             <p>
               通道总数:
-            <span style={{ paddingLeft: 8 }}>{total}</span>
+              <span style={{ paddingLeft: 8 }}>{total}</span>
             </p>
             {!isCompany && (
               <div>
@@ -383,7 +447,7 @@ export default class ChannelList extends PureComponent {
                 />
                 <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleViewModal}>
                   选择单位
-              </Button>
+                </Button>
               </div>
             )}
           </div>
@@ -394,7 +458,9 @@ export default class ChannelList extends PureComponent {
             {this.renderForm()}
             {this.renderTable()}
           </div>
-        ) : (<div style={{ textAlign: 'center' }}>请先选择单位</div>)}
+        ) : (
+          <div style={{ textAlign: 'center' }}>请先选择单位</div>
+        )}
         <CompanyModal
           title="选择单位"
           loading={companyLoading}
@@ -402,11 +468,13 @@ export default class ChannelList extends PureComponent {
           modal={companyList}
           fetch={this.fetchCompanyList}
           onSelect={this.handleSelectCompany}
-          onClose={() => { this.setState({ visible: false }) }}
+          onClose={() => {
+            this.setState({ visible: false });
+          }}
         />
         {/* 图片查看 */}
         <ImagePreview images={images} currentImage={currentImage} />
       </PageHeaderLayout>
-    )
+    );
   }
 }
