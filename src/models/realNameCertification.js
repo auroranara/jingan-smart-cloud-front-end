@@ -121,9 +121,10 @@ export default {
     idenSearchInfo: {},
     // 人员类型字典
     personTypeDict: [
-      { key: '4', value: '操作人员' },
-      { key: '5', value: '管理人员' },
-      { key: '6', value: '安全巡查人员' },
+      // { key: '4', value: '操作人员' },
+      // { key: '5', value: '管理人员' },
+      // { key: '6', value: '安全巡查人员' },
+      { key: '1', value: '单位人员' },
       { key: '2', value: '外协人员' },
       { key: '3', value: '临时人员' },
     ],

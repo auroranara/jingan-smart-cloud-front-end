@@ -64,7 +64,7 @@ const exportList = [
   { id: '3', label: '导出全部' },
 ];
 
-const url = 'http://data.jingan-china.cn/v2/chem/file1/%E4%BA%BA%E5%91%98%E6%A8%A1%E6%9D%BF.xls';
+const url = 'http://data.jingan-china.cn/v2/chem/file2/%E4%BA%BA%E5%91%98%E6%A8%A1%E6%9D%BF.xls';
 @connect(({ realNameCertification, department, user, loading }) => ({
   realNameCertification,
   department,
@@ -85,7 +85,6 @@ export default class PersonnelList extends PureComponent {
     personFileList: [],
     selectedRowKeys: [],
     expand: false,
-    allList: [],
   };
 
   componentDidMount() {
@@ -105,10 +104,6 @@ export default class PersonnelList extends PureComponent {
     dispatch({
       type: 'realNameCertification/fetchPersonList',
       payload: { pageNum: 1, pageSize: 10, companyId },
-      callback: res => {
-        const { list } = res.data;
-        this.setState({ allList: list });
-      },
     });
     this.setState({ curCompanyName: companyName || routerCompanyName });
   }
@@ -149,12 +144,20 @@ export default class PersonnelList extends PureComponent {
 
   // 分页变动
   handlePageChange = (pageNum, pageSize) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    const values = this.form.getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchPersonList',
       payload: {
+        ...values,
         pageSize,
         pageNum,
+        companyId,
       },
     });
   };
@@ -340,15 +343,9 @@ export default class PersonnelList extends PureComponent {
 
   // 导出
   handleExportChange = i => {
-    const {
-      dispatch,
-      realNameCertification: {
-        person: { list = [] },
-      },
-    } = this.props;
-    const { selectedRowKeys, allList } = this.state;
-    const idMap = list.map(({ id }) => id);
-    const idAll = allList.map(({ id }) => id);
+    const { dispatch } = this.props;
+    const { selectedRowKeys } = this.state;
+    const values = this.form.getFieldsValue();
     if (+i === 1) {
       if (selectedRowKeys.length === 0) {
         return message.warning('请在列表中选择需要导出的人员列表');
@@ -361,13 +358,13 @@ export default class PersonnelList extends PureComponent {
     if (+i === 2) {
       dispatch({
         type: 'realNameCertification/fetchPersonExport',
-        payload: { ids: idMap.join(',') },
+        payload: { ...values, status: 1 },
       });
     }
     if (+i === 3) {
       dispatch({
         type: 'realNameCertification/fetchPersonExport',
-        payload: { ids: idAll.join(',') },
+        payload: { status: 1 },
       });
     }
   };
@@ -476,6 +473,7 @@ export default class PersonnelList extends PureComponent {
           list = [],
           pagination: { pageNum = 1, pageSize = defaultPageSize, total = 0 },
         },
+        personTypeDict,
       },
       user: {
         currentUser: { permissionCodes },
@@ -524,7 +522,15 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'personType',
         align: 'center',
         width: 200,
-        render: val => getPersonType[val],
+        render: val => (
+          <SelectOrSpan
+            placeholder="请选择"
+            value={val}
+            list={personTypeDict}
+            type={'span'}
+            allowClear
+          />
+        ),
       },
       {
         title: (
