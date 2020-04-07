@@ -13,6 +13,7 @@ import {
   Tooltip,
   Radio,
   Spin,
+  TreeSelect,
   // AutoComplete,
 } from 'antd';
 import debounce from 'lodash/debounce';
@@ -26,6 +27,7 @@ import { getToken } from '@/utils/authority';
 import { phoneReg } from '@/utils/validate';
 // import PIC from '@/assets/picExample.png';
 
+const { TreeNode: TreeSelectNode } = TreeSelect;
 const FormItem = Form.Item;
 const { Option } = Select;
 
@@ -48,6 +50,18 @@ const DEGREES = [
   { key: '6', label: '博士' },
 ];
 
+function treeData(data) {
+  return data.map(item => {
+    if (item.children) {
+      return (
+        <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id}>
+          {treeData(item.children)}
+        </TreeSelectNode>
+      );
+    }
+    return <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id} />;
+  });
+}
 @Form.create()
 @connect(({ realNameCertification, user, department, postManagement, loading }) => ({
   realNameCertification,
@@ -447,6 +461,7 @@ export default class PersonnelAdd extends PureComponent {
       form: { getFieldDecorator, getFieldValue },
       realNameCertification: { personTypeDict },
     } = this.props;
+    const treeList = treeData(departmentList);
 
     const {
       photoLoading,
@@ -556,13 +571,13 @@ export default class PersonnelAdd extends PureComponent {
                       {getFieldDecorator('partId', {
                         initialValue: id ? detail.partId : undefined,
                       })(
-                        <Select placeholder="请选择" allowClear>
-                          {departmentList.map(({ id, name }) => (
-                            <Select.Option key={id} value={id}>
-                              {name}
-                            </Select.Option>
-                          ))}
-                        </Select>
+                        <TreeSelect
+                          allowClear
+                          dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                          placeholder="请选择所属部门"
+                        >
+                          {treeList}
+                        </TreeSelect>
                       )}
                     </FormItem>
                   </Col>
