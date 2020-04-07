@@ -3887,6 +3887,44 @@ module.exports = env => {
                 },
               ],
             },
+
+            // 承包商管理
+            {
+              path: '/operation-safety/contractor',
+              code: 'operationSafety.contractor',
+              name: 'contractor',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/operation-safety/contractor',
+                  redirect: '/operation-safety/contractor/list',
+                },
+                {
+                  path: '/operation-safety/contractor/list',
+                  code: 'operationSafety.contractor.list',
+                  name: 'list',
+                  component: './DataAnalysis/Contractor/List',
+                },
+                {
+                  path: '/operation-safety/contractor/detail/:id',
+                  code: 'operationSafety.contractor.detail',
+                  name: 'detail',
+                  component: './DataAnalysis/Contractor/Form',
+                },
+                {
+                  path: '/operation-safety/contractor/add',
+                  code: 'operationSafety.contractor.add',
+                  name: 'add',
+                  component: './DataAnalysis/Contractor/Form',
+                },
+                {
+                  path: '/operation-safety/contractor/edit/:id',
+                  code: 'operationSafety.contractor.edit',
+                  name: 'edit',
+                  component: './DataAnalysis/Contractor/Form',
+                },
+              ],
+            },
           ],
         },
 
@@ -5436,6 +5474,18 @@ module.exports = env => {
                   path: '/real-name-certification/personnel-management/edit/:id',
                   code: 'realNameCertification.personnelManagement.edit',
                   component: './RealNameCertification/Person/PersonnelAdd',
+                },
+                {
+                  name: 'view',
+                  path: '/real-name-certification/personnel-management/detail/:id',
+                  code: 'realNameCertification.personnelManagement.view',
+                  component: './RealNameCertification/Person/PersonnelDetail',
+                },
+                {
+                  name: 'record',
+                  path: '/real-name-certification/personnel-management/record/:id',
+                  code: 'realNameCertification.personnelManagement.importPhoto',
+                  component: './RealNameCertification/Person/ImportRecord',
                 },
               ],
             },

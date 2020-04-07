@@ -122,7 +122,7 @@ const filterMarkerList = markerList => {
 export default class Map extends PureComponent {
   state = {
     gdMapVisible: false,
-    visibles: [true, true, true, true],
+    visibles: [true, false, false, false],
     videoVisible: false,
     videoList: [],
     keyId: undefined,

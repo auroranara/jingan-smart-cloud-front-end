@@ -9,7 +9,6 @@ import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
-// import TableTransFer from './TabTransfer';
 import TableList from './TableList';
 import { hasAuthority } from '@/utils/customAuth';
 import Map from '../../RiskControl/FourColorImage/Map';
@@ -35,15 +34,15 @@ const {
   },
 } = codes;
 
-function filterList(arr) {
-  const newArr = arr.reduce(function(prev, element) {
-    if (!prev.find(el => el.id === element.id)) {
-      prev.push(element);
-    }
-    return prev;
-  }, []);
-  return newArr;
-}
+// function filterList(arr) {
+//   const newArr = arr.reduce(function(prev, element) {
+//     if (!prev.find(el => el.id === element.id)) {
+//       prev.push(element);
+//     }
+//     return prev;
+//   }, []);
+//   return newArr;
+// }
 
 @connect(
   ({
@@ -102,8 +101,13 @@ export default class MajorHazardEdit extends PureComponent {
       groupId: '', // 地图当前楼层
       buildingId: [], // 区域Id列表
       modelIds: '', // 当前选中区域id列表
-      mapInfo: {},
       expandId: false, // 列表中展开项的id
+      selectedTankAreaList: [], // 编辑时危险源范围选中列表
+      selectedWareList: [],
+      selectedGasList: [],
+      selectedProductList: [],
+      selectedPipeList: [],
+      selectedKeys: [], // 危险源范围选中id
     };
   }
 
@@ -154,6 +158,7 @@ export default class MajorHazardEdit extends PureComponent {
             productDeviceIds,
             industryIds
           );
+
           this.setState({
             detailList: currentList,
             curCompanyId: companyId,
@@ -179,6 +184,12 @@ export default class MajorHazardEdit extends PureComponent {
             }),
             groupId,
             modelIds,
+            selectedTankAreaList: tankArea,
+            selectedWareList: wareHouseArea,
+            selectedGasList: gasHolderManage,
+            selectedProductList: productDevice,
+            selectedPipeList: industryPipeline,
+            selectedKeys: allSelectedKeys,
           });
           setFieldsValue({ dangerSourceList: allSelectedKeys });
         },
@@ -193,9 +204,25 @@ export default class MajorHazardEdit extends PureComponent {
       this.setState({ curCompanyId: companyId });
     }
   }
+
   onRef = ref => {
     this.childMap = ref;
   };
+
+  isDetail = () => {
+    const {
+      match: { url },
+    } = this.props;
+    return url && url.includes('detail');
+  };
+
+  goBack = () => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
+  };
+
+  // 去除左右两边空白
+  handleTrim = e => e.target.value.trim();
 
   // 获取地图
   fetchMap = (params, callback) => {
@@ -210,21 +237,6 @@ export default class MajorHazardEdit extends PureComponent {
   // 获取地图上的坐标
   getPoints = (groupId, points) => {
     this.setState({ groupId, points });
-  };
-
-  // 去除左右两边空白
-  handleTrim = e => e.target.value.trim();
-
-  isDetail = () => {
-    const {
-      match: { url },
-    } = this.props;
-    return url && url.includes('detail');
-  };
-
-  goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
   };
 
   // 提交
@@ -278,7 +290,6 @@ export default class MajorHazardEdit extends PureComponent {
             .map(item => item.areaId)
             .join(','),
         };
-        console.log('payload', payload);
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -305,10 +316,6 @@ export default class MajorHazardEdit extends PureComponent {
         });
       }
     });
-  };
-
-  onDangerTypeSelect = i => {
-    this.setState({ dangerType: i });
   };
 
   // 显示企业弹框
@@ -448,15 +455,20 @@ export default class MajorHazardEdit extends PureComponent {
     const { curCompanyId } = this.state;
     if (curCompanyId) {
       // 0 不是重大危险源
-      this.fetchStorageAreaList({ companyId: curCompanyId, isDanger: 0 });
-      this.fetchReservoirAreaList({ companyId: curCompanyId, dangerSource: 0 });
-      this.fetchProductList({ companyId: curCompanyId, dangerSource: 0 });
-      this.fetchGasList({ companyId: curCompanyId, majorHazard: 0 });
-      this.fetchPipelineList({ companyId: curCompanyId, dangerSource: 0 });
+      this.fetchStorageAreaList({ companyId: curCompanyId });
+      this.fetchReservoirAreaList({ companyId: curCompanyId });
+      this.fetchProductList({ companyId: curCompanyId });
+      this.fetchGasList({ companyId: curCompanyId });
+      this.fetchPipelineList({ companyId: curCompanyId });
       this.setState({ dangerModalVisible: true });
     } else {
       message.warning('请先选择单位！');
     }
+  };
+
+  // 危险源弹框select切换
+  onDangerTypeSelect = i => {
+    this.setState({ dangerType: i });
   };
 
   // 选中的重大危险源数据
@@ -469,7 +481,7 @@ export default class MajorHazardEdit extends PureComponent {
       gasometer: {
         list: { list: gasList = [] },
       },
-      form: { setFieldsValue, getFieldValue },
+      form: { setFieldsValue },
       productionEquipments: {
         proData: { list: proEquipList = [] },
       },
@@ -478,30 +490,21 @@ export default class MajorHazardEdit extends PureComponent {
       },
     } = this.props;
 
-    const {
-      targetKeys,
-      tankAreaList,
-      wareHouseAreaList,
-      gasHolderManageList,
-      productList,
-      pipelineList: pilineList,
-    } = this.state;
-    const concatKeys = getFieldValue('dangerSourceList').concat(targetKeys);
-
-    const storArray = storageList.concat(tankAreaList).reduce((arr, { id, areaName }) => {
-      return concatKeys.includes(id) ? [...arr, { id, areaName }] : arr;
+    const { targetKeys } = this.state;
+    const storArray = storageList.reduce((arr, { id, areaName }) => {
+      return targetKeys.includes(id) ? [...arr, { id, areaName }] : arr;
     }, []);
-    const resArrray = areaList.concat(wareHouseAreaList).reduce((arr, { id, name }) => {
-      return concatKeys.includes(id) ? [...arr, { id, name }] : arr;
+    const resArrray = areaList.reduce((arr, { id, name }) => {
+      return targetKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
-    const gasArrray = gasList.concat(gasHolderManageList).reduce((arr, { id, gasholderName }) => {
-      return concatKeys.includes(id) ? [...arr, { id, gasholderName }] : arr;
+    const gasArrray = gasList.reduce((arr, { id, gasholderName }) => {
+      return targetKeys.includes(id) ? [...arr, { id, gasholderName }] : arr;
     }, []);
-    const proArrray = proEquipList.concat(productList).reduce((arr, { id, name }) => {
-      return concatKeys.includes(id) ? [...arr, { id, name }] : arr;
+    const proArrray = proEquipList.reduce((arr, { id, name }) => {
+      return targetKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
-    const pipArrray = pipelineList.concat(pilineList).reduce((arr, { id, name }) => {
-      return concatKeys.includes(id) ? [...arr, { id, name }] : arr;
+    const pipArrray = pipelineList.reduce((arr, { id, name }) => {
+      return targetKeys.includes(id) ? [...arr, { id, name }] : arr;
     }, []);
 
     const storageId = storArray.map(item => item.id);
@@ -516,130 +519,59 @@ export default class MajorHazardEdit extends PureComponent {
 
     this.setState({
       dangerModalVisible: false,
-      tankIds: [...new Set(storageId)].join(','),
-      areaIds: [...new Set(reserviorId)].join(','),
-      gasometerIds: [...new Set(gasId)].join(','),
-      productIds: [...new Set(productId)].join(','),
-      pipelineIds: [...new Set(pipelineId)].join(','),
-      tankAreaList: filterList(storArray),
-      wareHouseAreaList: filterList(resArrray),
-      gasHolderManageList: filterList(gasArrray),
-      productList: filterList(proArrray),
-      pipelineList: filterList(pipArrray),
+      tankIds: storageId.join(','),
+      areaIds: reserviorId.join(','),
+      gasometerIds: gasId.join(','),
+      productIds: productId.join(','),
+      pipelineIds: pipelineId.join(','),
+      tankAreaList: storArray,
+      wareHouseAreaList: resArrray,
+      gasHolderManageList: gasArrray,
+      productList: proArrray,
+      pipelineList: pipArrray,
     });
   };
 
-  fetchEdit = payload => {
+  //切换危险源范围选择数据
+  handleSelectChange = keys => {
     const {
-      dispatch,
-      match: {
-        params: { id },
+      storageAreaManagement: { list: storageList = [] },
+      reservoirRegion: {
+        areaData: { list: areaList = [] },
+      },
+      gasometer: {
+        list: { list: gasList = [] },
+      },
+      productionEquipments: {
+        proData: { list: proEquipList = [] },
+      },
+      pipeline: {
+        list: { list: pipelineList = [] },
       },
     } = this.props;
-
-    dispatch({
-      type: 'reservoirRegion/fetchSourceEdit',
-      payload: {
-        id,
-        ...payload,
-      },
+    const storArray = storageList.reduce((arr, { id, areaName }) => {
+      return keys.includes(id) ? [...arr, { id, areaName }] : arr;
+    }, []);
+    const resArrray = areaList.reduce((arr, { id, name }) => {
+      return keys.includes(id) ? [...arr, { id, name }] : arr;
+    }, []);
+    const gasArrray = gasList.reduce((arr, { id, gasholderName }) => {
+      return keys.includes(id) ? [...arr, { id, gasholderName }] : arr;
+    }, []);
+    const proArrray = proEquipList.reduce((arr, { id, name }) => {
+      return keys.includes(id) ? [...arr, { id, name }] : arr;
+    }, []);
+    const pipArrray = pipelineList.reduce((arr, { id, name }) => {
+      return keys.includes(id) ? [...arr, { id, name }] : arr;
+    }, []);
+    this.setState({
+      targetKeys: keys,
+      selectedTankAreaList: storArray.filter(item => !!item),
+      selectedWareList: resArrray.filter(item => !!item),
+      selectedGasList: gasArrray.filter(item => !!item),
+      selectedProductList: proArrray.filter(item => !!item),
+      selectedPipeList: pipArrray.filter(item => !!item),
     });
-  };
-
-  handleTagDel = (s, id) => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-
-    const {
-      tankIds,
-      areaIds,
-      productIds,
-      gasometerIds,
-      pipelineIds,
-      tankAreaList,
-      wareHouseAreaList,
-      gasHolderManageList,
-      productList,
-      pipelineList,
-    } = this.state;
-
-    if (s === 1) {
-      const filterTankId = tankIds.split(',').filter(item => item !== id);
-      console.log('filterTankId', filterTankId);
-      this.fetchEdit({ tankIds: filterTankId.join(',') });
-      const allSelectedKeys = filterTankId.concat(areaIds, productIds, gasometerIds, pipelineIds);
-      const storageNameArray = tankAreaList.reduce((arr, { id, areaName }) => {
-        return allSelectedKeys.includes(id) ? [...arr, { id, areaName }] : arr;
-      }, []);
-      this.setState({
-        targetKeys: allSelectedKeys,
-        tankIds: filterTankId.join(','),
-        tankAreaList: storageNameArray,
-      });
-      setFieldsValue({ dangerSourceList: allSelectedKeys.filter(item => item) });
-    }
-    if (s === 2) {
-      const filterAreaId = areaIds.split(',').filter(item => item !== id);
-      console.log('filterAreaId', filterAreaId);
-      this.fetchEdit({ areaIds: filterAreaId.join(',') });
-      const allSelectedKeys = filterAreaId.concat(tankIds, productIds, gasometerIds, pipelineIds);
-      const reserviorNameArrray = wareHouseAreaList.reduce((arr, { id, name }) => {
-        return allSelectedKeys.includes(id) ? [...arr, { id, name }] : arr;
-      }, []);
-      this.setState({
-        targetKeys: allSelectedKeys,
-        areaIds: filterAreaId.join(','),
-        wareHouseAreaList: reserviorNameArrray,
-      });
-      setFieldsValue({ dangerSourceList: allSelectedKeys.filter(item => item) });
-    }
-    if (s === 3) {
-      const filterGasId = gasometerIds.split(',').filter(item => item !== id);
-      console.log('filterGasId', filterGasId);
-      this.fetchEdit({ gasometerIds: filterGasId.join(',') });
-      const allSelectedKeys = filterGasId.concat(areaIds, tankIds, productIds, pipelineIds);
-      const gasNameArrray = gasHolderManageList.reduce((arr, { id, gasholderName }) => {
-        return allSelectedKeys.includes(id) ? [...arr, { id, gasholderName }] : arr;
-      }, []);
-      this.setState({
-        targetKeys: allSelectedKeys,
-        gasometerIds: filterGasId.join(','),
-        gasHolderManageList: gasNameArrray,
-      });
-      setFieldsValue({ dangerSourceList: allSelectedKeys.filter(item => item) });
-    }
-    if (s === 4) {
-      const filterProId = productIds.split(',').filter(item => item !== id);
-      console.log('filterProId', filterProId);
-      this.fetchEdit({ productIds: filterProId.join(',') });
-      const allSelectedKeys = filterProId.concat(areaIds, tankIds, gasometerIds, pipelineIds);
-
-      const productNameArrray = productList.reduce((arr, { id, name }) => {
-        return allSelectedKeys.includes(id) ? [...arr, { id, name }] : arr;
-      }, []);
-      this.setState({
-        targetKeys: allSelectedKeys,
-        productIds: filterProId.join(','),
-        productList: productNameArrray,
-      });
-      setFieldsValue({ dangerSourceList: allSelectedKeys.filter(item => item) });
-    }
-    if (s === 5) {
-      const filterPieId = pipelineIds.split(',').filter(item => item !== id);
-      console.log('filterPieId', filterPieId);
-      this.fetchEdit({ industryPipelineIds: filterPieId.join(',') });
-      const allSelectedKeys = filterPieId.concat(areaIds, tankIds, productIds, gasometerIds);
-      const pipelineNameArrray = pipelineList.reduce((arr, { id, name }) => {
-        return allSelectedKeys.includes(id) ? [...arr, { id, name }] : arr;
-      }, []);
-      this.setState({
-        targetKeys: allSelectedKeys,
-        pipelineIds: filterPieId.join(','),
-        pipelineList: pipelineNameArrray,
-      });
-      setFieldsValue({ dangerSourceList: allSelectedKeys.filter(item => item) });
-    }
   };
 
   // 打开责任人弹框
@@ -941,27 +873,27 @@ export default class MajorHazardEdit extends PureComponent {
                 <div {...itemStyles}>
                   <span className={styles.label}>
                     {tankAreaList.map(item => (
-                      <Tag key={item.id} closable onClose={() => this.handleTagDel(1, item.id)}>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
                         {item.areaName}
                       </Tag>
                     ))}
                     {wareHouseAreaList.map(item => (
-                      <Tag key={item.id} closable onClose={() => this.handleTagDel(2, item.id)}>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
                         {item.name}
                       </Tag>
                     ))}
                     {gasHolderManageList.map(item => (
-                      <Tag key={item.id} closable onClose={() => this.handleTagDel(3, item.id)}>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
                         {item.gasholderName}
                       </Tag>
                     ))}
                     {productList.map(item => (
-                      <Tag key={item.id} closable onClose={() => this.handleTagDel(4, item.id)}>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
                         {item.name}
                       </Tag>
                     ))}
                     {pipelineList.map(item => (
-                      <Tag key={item.id} closable onClose={() => this.handleTagDel(5, item.id)}>
+                      <Tag key={item.id} style={{ cursor: 'pointer' }}>
                         {item.name}
                       </Tag>
                     ))}
@@ -1176,10 +1108,6 @@ export default class MajorHazardEdit extends PureComponent {
     );
   }
 
-  handleSelectChange = v => {
-    this.setState({ targetKeys: v });
-  };
-
   // 渲染页面所有信息
   render() {
     const {
@@ -1206,7 +1134,21 @@ export default class MajorHazardEdit extends PureComponent {
       },
     } = this.props;
 
-    const { dangerType, dangerModalVisible, personModalVisible } = this.state;
+    const {
+      dangerType,
+      dangerModalVisible,
+      personModalVisible,
+      selectedTankAreaList,
+      selectedWareList,
+      selectedGasList,
+      selectedProductList,
+      selectedPipeList,
+      tankIds,
+      areaIds,
+      gasometerIds,
+      productIds,
+      pipelineIds,
+    } = this.state;
 
     const isDet = this.isDetail();
 
@@ -1317,13 +1259,33 @@ export default class MajorHazardEdit extends PureComponent {
         >
           <ToolBar fields={fileds} searchable={false} resetable={false} />
           <TableList
-            areaList={areaList}
-            storageList={storageList}
-            gasList={gasList}
+            areaList={areaList.filter(
+              item => +item.dangerSource === 0 || (areaIds && areaIds.split(',').includes(item.id))
+            )}
+            storageList={storageList.filter(
+              item => +item.isDanger === 0 || (tankIds && tankIds.split(',').includes(item.id))
+            )}
+            gasList={gasList.filter(
+              item =>
+                +item.majorHazard === 0 ||
+                (gasometerIds && gasometerIds.split(',').includes(item.id))
+            )}
             dangerType={dangerType}
-            proEquipList={proEquipList}
-            pipelineList={pipelineList}
+            proEquipList={proEquipList.filter(
+              item =>
+                +item.dangerSource === 0 || (productIds && productIds.split(',').includes(item.id))
+            )}
+            pipelineList={pipelineList.filter(
+              item =>
+                +item.dangerSource === 0 ||
+                (pipelineIds && pipelineIds.split(',').includes(item.id))
+            )}
             handleSelectChange={this.handleSelectChange}
+            selectedTankAreaList={selectedTankAreaList}
+            selectedWareList={selectedWareList}
+            selectedGasList={selectedGasList}
+            selectedProductList={selectedProductList}
+            selectedPipeList={selectedPipeList}
           />
         </Modal>
 
