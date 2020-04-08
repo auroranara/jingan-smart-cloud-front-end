@@ -4,57 +4,64 @@ import router from 'umi/router';
 import { Button, Card, Empty, Modal, Table, message } from 'antd';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { AuthButton } from '@/utils/customAuth';
-import { hasAuthority } from '@/utils/customAuth';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { BREADCRUMBLIST, ROUTER, RECORD_FIELDS, getRecordColumns } from './utils';
-import codes from '@/utils/codes';
+import { BREADCRUMBLIST_OTHER, ROUTER, LIST_URL, RECORD_FIELDS, getRecordColumns } from './utils';
 import styles from './Record.less';
+// import moment from 'moment';
 
-// 权限
-const {
-  realNameCertification: {
-    visitorRegistration: { add: addCode, record: recordCode },
-  },
-} = codes;
-
-@connect(({ user, realNameCertification, loading }) => ({
+@connect(({ user, visitorRegistration, loading }) => ({
   user,
-  realNameCertification,
-  loading: loading.models.realNameCertification,
+  visitorRegistration,
+  loading: loading.models.visitorRegistration,
 }))
 export default class TableList extends PureComponent {
   constructor(props) {
     super(props);
     this.pageNum = 1;
     this.pageSize = 10;
-    this.state = {};
+    this.state = {
+      currentPage: 1,
+    };
   }
 
   componentDidMount() {
-    this.fetchList();
+    this.fetchList(1, 10);
   }
 
+  hanldleBack = () => {
+    router.push(`${LIST_URL}`);
+  };
   setFormReference = toobar => {
     this.form = toobar && toobar.props && toobar.props.form;
   };
 
   fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const { dispatch } = this.props;
     dispatch({
-      type: 'realNameCertification/fetchTagCardList',
+      type: 'visitorRegistration/fetchVisitorList',
       payload: {
         ...params,
         pageSize,
         pageNum,
+        companyId: id,
       },
     });
   };
 
   handleSearch = () => {
-    const values = this.form.getFieldsValue();
-    this.fetchList(1, this.pageSize, { ...values });
+    const { registrationDate, ...values } = this.form.getFieldsValue();
+    const [start_time, end_time] = registrationDate || [];
+    this.fetchList(1, this.pageSize, {
+      ...values,
+      startDate: start_time && `${start_time.format('YYYY/MM/DD')} 00:00:00`,
+      endDate: end_time && `${end_time.format('YYYY/MM/DD')} 23:59:59`,
+    });
   };
 
   handleReset = () => {
@@ -78,23 +85,31 @@ export default class TableList extends PureComponent {
     this.setState({ expand: !expand });
   };
 
+  handleTableData = (list = [], indexBase) => {
+    return list.map((item, index) => {
+      return {
+        ...item,
+        index: indexBase + index + 1,
+      };
+    });
+  };
+
   render() {
     const {
       loading,
-      user: {
-        currentUser: { unitType },
-      },
-      realNameCertification: {
-        tagCardData: {
+      visitorRegistration: {
+        registrationData: {
           list = [],
           pagination: { total, pageNum, pageSize },
         },
       },
     } = this.props;
 
-    const { expand } = this.state;
+    const { expand, currentPage } = this.state;
 
-    const breadcrumbList = Array.from(BREADCRUMBLIST);
+    const indexBase = (currentPage - 1) * 10;
+
+    const breadcrumbList = Array.from(BREADCRUMBLIST_OTHER);
     breadcrumbList.push({ title: '列表', name: '列表' });
 
     const columns = getRecordColumns();
@@ -103,8 +118,15 @@ export default class TableList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
+        title={BREADCRUMBLIST_OTHER[BREADCRUMBLIST_OTHER.length - 1].title}
         breadcrumbList={breadcrumbList}
+        action={
+          <div style={{ float: 'right' }}>
+            <Button type="primary" onClick={this.hanldleBack}>
+              返回
+            </Button>
+          </div>
+        }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
@@ -133,7 +155,7 @@ export default class TableList extends PureComponent {
               bordered
               loading={loading}
               columns={columns}
-              dataSource={list}
+              dataSource={this.handleTableData(list, indexBase)}
               onChange={this.onTableChange}
               scroll={{ x: 'max-content' }}
               pagination={{

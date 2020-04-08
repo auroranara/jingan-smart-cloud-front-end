@@ -8,6 +8,7 @@ import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './index.less';
 import { AuthButton } from '@/utils/customAuth';
+import { Form } from '@ant-design/compatible';
 import {
   BREADCRUMBLIST,
   ROUTER,
@@ -29,50 +30,103 @@ const {
   visitorRegistration,
   loading: loading.models.visitorRegistration,
 }))
+@Form.create()
 export default class index extends PureComponent {
   state = {
     expand: false,
     editVisible: false,
-    editDetail:{},
+    editDetail: {},
   };
-  values = {};
-
   componentDidMount() {
-    this.fetchList();
+    this.handleQuery();
   }
 
-  fetchList = () => {};
+  setFormReference = toobar => {
+    this.form = toobar && toobar.props && toobar.props.form;
+  };
 
-  handleSearch = () => {};
+  handleQuery = () => {
+    const { dispatch } = this.props;
+    const values = this.form.getFieldsValue();
+    dispatch({
+      type: 'visitorRegistration/fetchCardList',
+      payload: { ...values, pageNum: 1, pageSize: 10 },
+    });
+  };
 
-  handleReset = () => {};
+  handleReset = () => {
+    this.form.resetFields();
+    this.handleQuery();
+  };
 
   handleAdd = () => {
     router.push(`${ROUTER}/visitor-card-add`);
   };
 
-  handlePageChange = () => {};
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    const values = this.form.getFieldsValue();
+    dispatch({
+      type: 'visitorRegistration/fetchCardList',
+      payload: {
+        ...values,
+        pageSize,
+        pageNum,
+        companyId,
+      },
+    });
+  };
 
   handleExpand = () => {
     const { expand } = this.state;
     this.setState({ expand: !expand });
   };
 
-  handleDelete = id => {};
-
-  // 编辑弹框显示
-  handleEditModal = (row) => {
-    this.setState({ editVisible: true,editDetail:{...row} });
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'visitorRegistration/fetchCardDel',
+      payload: { id },
+      callback: success => {
+        if (success) {
+          message.success('删除卡成功');
+          this.handleQuery();
+        } else {
+          message.error('删除卡失败');
+        }
+      },
+    });
   };
 
-  handleModalEdit =(formData)=>{
-    
-  }
+  // 编辑弹框显示
+  handleEditModal = row => {
+    this.setState({ editVisible: true, editDetail: { ...row } });
+  };
+
+  handleModalEdit = formData => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'visitorRegistration/fetchCardEdit',
+      payload: { ...formData },
+      callback: response => {
+        if (response && response.code === 200) {
+          this.handleModalClose();
+          this.handleQuery();
+          message.success('编辑成功！');
+        } else message.error(response.msg);
+      },
+    });
+  };
 
   // 编辑弹框关闭
-  handleModalClose  = ()=>{
+  handleModalClose = () => {
     this.setState({ editVisible: false });
-  }
+  };
 
   render() {
     const {
@@ -80,20 +134,15 @@ export default class index extends PureComponent {
       user: {
         currentUser: { unitType },
       },
-      // visitorRegistration: {
-      //   // registrationData: { list },
-      // },
-    } = this.props;
-
-    const { expand } = this.state;
-    const list = [
-      {
-        companyName: '1111',
-        name: '卡一',
+      visitorRegistration: {
+        cardData: {
+          list = [],
+          pagination: { total, pageNum, pageSize },
+        },
       },
-    ];
+    } = this.props;
+    const { expand } = this.state;
     const breadcrumbList = Array.from(BREADCRUMBLIST);
-    breadcrumbList.push({ title: '列表', name: '列表' });
 
     const fields = getSearchFields(unitType);
     const columns = getTableColumns(this.handleDelete, this.handleEditModal, unitType);
@@ -118,7 +167,7 @@ export default class index extends PureComponent {
             wrappedComponentRef={this.setFormReference}
           />
           <div style={{ textAlign: 'right' }}>
-            <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleSearch}>
+            <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>
               查询
             </Button>
             <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
@@ -151,9 +200,9 @@ export default class index extends PureComponent {
               columns={columns}
               dataSource={list}
               pagination={{
-                // current: pageNum,
-                // pageSize,
-                // total,
+                current: pageNum,
+                pageSize,
+                total,
                 showQuickJumper: true,
                 showSizeChanger: true,
                 showTotal: t => `共 ${t} 条记录`,

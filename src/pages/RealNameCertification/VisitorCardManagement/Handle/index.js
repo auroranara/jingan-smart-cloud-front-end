@@ -16,6 +16,7 @@ import styles from './index.less';
   visitorRegistration,
   realNameCertification,
   loading: loading.models.visitorRegistration,
+  cardLoading: loading.effects['realNameCertification/fetchTagCardList'],
 }))
 @Form.create()
 export default class Edit extends PureComponent {
@@ -29,21 +30,16 @@ export default class Edit extends PureComponent {
 
   componentDidMount() {
     const {
-      match: {
-        params: { id },
-      },
       form: { setFieldsValue },
       user: {
         currentUser: { unitType, companyId, companyName },
       },
     } = this.props;
-    if (id) this.getDetail(id);
-    else if (isCompanyUser(+unitType)) {
+    if (isCompanyUser(+unitType)) {
+      this.setState({ curCompanyId: companyId });
       setFieldsValue({ companyId: { key: companyId, label: companyName } });
     }
   }
-
-  getDetail = () => {};
 
   handleBack = () => {
     router.push(`${LIST_URL}`);
@@ -52,11 +48,8 @@ export default class Edit extends PureComponent {
   handleSubmit = e => {
     const {
       form: { validateFields },
-      match: {
-        params: { id },
-      },
       user: {
-        currentUser: { companyId: unitId },
+        currentUser: { unitType, companyId: unitId },
       },
       dispatch,
     } = this.props;
@@ -65,16 +58,14 @@ export default class Edit extends PureComponent {
     validateFields((errors, values) => {
       if (errors) return;
       const { companyId } = values;
-      console.log('values', values);
       const vals = {
-        companyId: companyId.key || unitId,
+        companyId: unitType !== 4 ? companyId.key : unitId,
         labelCardList: cardList,
       };
 
-      const tag = id ? '编辑' : '新增';
       const callback = (success, msg) => {
         if (success) {
-          message.success(`${tag}成功`);
+          message.success(`新增成功`);
           router.push(LIST_URL);
         } else {
           message.error(msg);
@@ -82,8 +73,8 @@ export default class Edit extends PureComponent {
       };
 
       dispatch({
-        type: `visitorRegistration/fetchCard${id ? 'Edit' : 'Add'}`,
-        payload: id ? { id, ...vals } : vals,
+        type: `visitorRegistration/fetchCardAdd`,
+        payload: vals,
         callback,
       });
     });
@@ -91,7 +82,7 @@ export default class Edit extends PureComponent {
 
   // 获取companyId
   handleCompanyChange = company => {
-    this.setState({ curCompanyId: company.key });
+    this.setState({ curCompanyId: company.key, cardList: [] });
   };
 
   // 新增卡
@@ -110,19 +101,21 @@ export default class Edit extends PureComponent {
   // 显示Modal
   handleCardModal = (curList, index) => {
     this.setState({ visible: true, curIndex: index, curList: curList });
-    this.fetchCardList();
+    this.fetchCardList({});
   };
 
   // 获取IC卡和SN卡列表
-  fetchCardList = () => {
-    const { dispatch } = this.props;
+  fetchCardList = ({ payload }) => {
     const { curCompanyId } = this.state;
+    const { dispatch } = this.props;
     dispatch({
       type: 'realNameCertification/fetchTagCardList',
       payload: {
+        ...payload,
         pageNum: 1,
         pageSize: 0,
         personCar: 3,
+        status: 1,
         companyId: curCompanyId,
       },
     });
@@ -159,38 +152,38 @@ export default class Edit extends PureComponent {
     this.handleCardClose();
   };
 
+  // 关闭Modal
   handleCardClose = () => {
     this.setState({ visible: false });
   };
 
   render() {
     const {
+      cardLoading,
       match: {
         params: { id },
       },
       form: { getFieldDecorator },
       user: {
-        currentUser: { unitType },
+        currentUser: { unitType, companyId },
       },
       realNameCertification: {
         tagCardData: { list = [], pagination },
       },
     } = this.props;
 
-    const { cardList, visible } = this.state;
+    const { cardList, visible, curCompanyId } = this.state;
 
     const filterId = cardList.map(item => item.id).filter(item => item !== '');
-
     const filterData = {
       list: list.filter(item => filterId && !filterId.includes(item.id)),
       pagination,
     };
 
+    const isCompanyId = curCompanyId || companyId;
     const title = id ? '编辑' : '新增';
-
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
-
     const isComUser = isCompanyUser(+unitType);
 
     const formItemCol = {
@@ -250,7 +243,6 @@ export default class Edit extends PureComponent {
             {!isComUser && (
               <Form.Item label="单位名称" {...formItemCol}>
                 {getFieldDecorator('companyId', {
-                  // initialValue: { key: detail.companyId, label: detail.companyName },
                   rules: [
                     {
                       required: true,
@@ -271,7 +263,6 @@ export default class Edit extends PureComponent {
               <Col key={index} className={styles.colStyle}>
                 <Form.Item label="卡名称" {...formItemCol}>
                   {getFieldDecorator(`name${index}`, {
-                    // initialValue: item.name,
                     rules: [
                       {
                         required: true,
@@ -293,7 +284,6 @@ export default class Edit extends PureComponent {
                 </Form.Item>
                 <Form.Item label="选择卡" {...formItemCol}>
                   {getFieldDecorator(`cardNum${index}`, {
-                    // initialValue: item.ic,
                     rules: [
                       {
                         required: true,
@@ -304,10 +294,15 @@ export default class Edit extends PureComponent {
                     <Input
                       {...itemStyles}
                       placeholder="请选择"
+                      disabled
                       addonAfter={
                         <span
                           style={{ cursor: 'pointer', color: '#' }}
-                          onClick={() => this.handleCardModal(item, index)}
+                          onClick={() =>
+                            !isCompanyId
+                              ? message.warning('请先选择单位！')
+                              : this.handleCardModal(item, index)
+                          }
                         >
                           选择
                         </span>
@@ -335,7 +330,7 @@ export default class Edit extends PureComponent {
         </Card>
         <CompanyModal
           title="选择卡号"
-          // loading={companyLoading}
+          loading={cardLoading}
           visible={visible}
           field={field}
           columns={columns}

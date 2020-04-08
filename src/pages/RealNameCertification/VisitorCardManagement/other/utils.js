@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 // import Link from 'umi/link';
 // import moment from 'moment';
 import { Form } from '@ant-design/compatible';
-import { Input, Divider, Select,Modal } from 'antd';
+import { Input, Divider, Select, Modal } from 'antd';
 
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import codes from '@/utils/codes';
@@ -23,7 +23,7 @@ export const LIST_URL = `${ROUTER}/visitor-card-list`;
 export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '标签卡管理', name: '标签卡管理', href:TAG_URL},
+  { title: '标签卡管理', name: '标签卡管理', href: TAG_URL },
   { title: '访客卡管理', name: '访客卡管理', href: LIST_URL },
 ];
 
@@ -32,25 +32,25 @@ const useStatus = [{ key: '0', value: '已使用' }, { key: '1', value: '未使�
 export function getSearchFields(unitType) {
   const fields = [
     {
-      id: 'user',
+      id: 'companyName',
       label: '单位名称',
       render: () => <Input placeholder="请输入" allowClear />,
       transform: v => v.trim(),
     },
     {
-      id: 'name',
+      id: 'cardName',
       label: '卡名称',
       render: () => <Input placeholder="请输入" allowClear />,
       transform: v => v.trim(),
     },
     {
-      id: 'ic',
+      id: 'icNumber',
       label: 'IC卡号',
       render: () => <Input placeholder="请输入" allowClear />,
       transform: v => v.trim(),
     },
     {
-      id: 'sn',
+      id: 'snNumber',
       label: 'SN卡号',
       render: () => <Input placeholder="请输入" allowClear />,
       transform: v => v.trim(),
@@ -84,23 +84,24 @@ export function getTableColumns(handleConfirmDelete, handleEditModal, unitType) 
     },
     {
       title: '卡名称',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'cardName',
+      key: 'cardName',
     },
     {
       title: 'IC卡号',
-      dataIndex: 'ic',
-      key: 'ic',
+      dataIndex: 'icNumber',
+      key: 'icNumber',
     },
     {
       title: 'SN卡号',
-      dataIndex: 'sn',
-      key: 'ic',
+      dataIndex: 'snNumber',
+      key: 'snNumber',
     },
     {
       title: '使用次数',
-      dataIndex: 'useNum',
-      key: 'useNum',
+      dataIndex: 'useCount',
+      key: 'useCount',
+      render: val => <span style={{ color: val !== 0 && '#1890ff' }}>{val}</span>,
     },
     {
       title: '使用状态',
@@ -114,18 +115,14 @@ export function getTableColumns(handleConfirmDelete, handleEditModal, unitType) 
       key: 'reason',
       render: (val, row) => (
         <Fragment>
-          <AuthA
-            code={editCode}
-            onClick ={()=>handleEditModal(row)}
-            target="_blank"
-          >
+          <AuthA code={editCode} onClick={() => handleEditModal(row)} target="_blank">
             编辑
           </AuthA>
           <Divider type="vertical" />
           <AuthPopConfirm
             code={deleteCode}
             title="删除卡后会导致该卡历史定位记录也被删除，是否继续？"
-            // onConfirm={e => handleConfirmDelete(id)}
+            onConfirm={e => handleConfirmDelete(row.id)}
             okText="确定"
             cancelText="取消"
           >
@@ -165,9 +162,11 @@ export const EditModal = Form.create()(props => {
       };
       if (err) return;
       resetFields();
-      return (
-        handleModalEdit({ ...payload, id: editDetail.id,companyId:editDetail.companyId})
-      );
+      return handleModalEdit({
+        ...payload,
+        id: editDetail.id,
+        companyId: editDetail.companyId,
+      });
     });
   };
 
@@ -182,7 +181,7 @@ export const EditModal = Form.create()(props => {
         <Form.Item {...formItemCol} label="卡名称：">
           {getFieldDecorator('cardName', {
             getValueFromEvent: e => e.target.value.trim(),
-            initialValue:editDetail.name,
+            initialValue: editDetail.cardName,
             rules: [{ required: true, message: '请输入卡名称' }],
           })(<Input placeholder="请输入" />)}
         </Form.Item>
@@ -190,4 +189,3 @@ export const EditModal = Form.create()(props => {
     </Modal>
   );
 });
-

@@ -25,18 +25,17 @@ export async function queryCardList(params) {
   return request(`/acloud_new/v2/HGFace/tempCard/list?${stringify(params)}`);
 }
 
+// 删除访客卡
+export async function queryCardDel(params) {
+  return request(`/acloud_new/v2/HGFace/tempCard//${params.id}`, {
+    method: 'DELETE',
+  });
+}
+
 // 新增访客登记
 export async function queryVisitorAdd(body) {
   return request('/acloud_new/v2/HGFace/hgTempPerson', {
     method: 'POST',
-    body,
-  });
-}
-
-// 编辑访客登记
-export async function queryVisitorEdit(body) {
-  return request('/acloud_new/v2/HGFace/hgTempPerson', {
-    method: 'PUT',
     body,
   });
 }

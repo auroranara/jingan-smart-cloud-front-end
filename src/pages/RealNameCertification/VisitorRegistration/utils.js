@@ -1,9 +1,10 @@
 import React from 'react';
-import { Input, Modal, Select, DatePicker } from 'antd';
+import { Input, Modal, Select, DatePicker, Tag } from 'antd';
 import { AuthPopConfirm } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { Form } from '@ant-design/compatible';
 import moment from 'moment';
+import Ellipsis from '@/components/Ellipsis';
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -15,7 +16,7 @@ const {
 } = codes;
 
 export const PAGE_SIZE = 20;
-export const ROUTER = 'real-name-certification/visitor-registration'; // modify
+export const ROUTER = '/real-name-certification/visitor-registration'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 
 export const BREADCRUMBLIST = [
@@ -23,6 +24,12 @@ export const BREADCRUMBLIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '实名制认证系统', name: '实名制认证系统' },
   { title: '访客登记', name: '访客登记', href: LIST_URL },
+];
+
+export const BREADCRUMBLIST_OTHER = [
+  { title: '首页', name: '首页', href: '/' },
+  { title: '访客登记', name: '访客登记', href: LIST_URL },
+  { title: '访客登记记录', name: '访客登记记录' },
 ];
 
 export const SEARCH_FIELDS = [
@@ -34,13 +41,13 @@ export const SEARCH_FIELDS = [
     transform: v => v.trim(),
   },
   {
-    id: 'phone',
+    id: 'telephone',
     label: '手机号',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'name',
+    id: 'cardName',
     label: '卡名称',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
@@ -52,23 +59,24 @@ export function getTableColumns(handleConfirmDelete, unitType) {
     // modify
     {
       title: '使用人',
-      dataIndex: 'user',
-      key: 'user',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
-      title: '手机号',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: '手机号码',
+      dataIndex: 'telephone',
+      key: 'telephone',
     },
     {
       title: '登记时间',
-      dataIndex: 'time',
-      key: 'time',
+      dataIndex: 'registrationDate',
+      key: 'registrationDate',
+      render: v => moment(v).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '卡名称',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'cardName',
+      key: 'cardName',
     },
     {
       title: '来访事由',
@@ -81,9 +89,9 @@ export function getTableColumns(handleConfirmDelete, unitType) {
       key: 'reason',
       render: (val, row) => (
         <AuthPopConfirm
-          title="您确定现在要退卡"
+          title="您确定现在要退卡?"
           code={cancelCardCode}
-          onConfirm={() => this.handleConfirmDelete(row.id)}
+          onConfirm={() => handleConfirmDelete(row.id)}
         >
           退卡
         </AuthPopConfirm>
@@ -96,15 +104,14 @@ export function getTableColumns(handleConfirmDelete, unitType) {
 export const EditModal = Form.create()(props => {
   const {
     form: { getFieldDecorator, validateFields, resetFields },
-    detail,
-    unitType,
-    // companyId: unitId,
+    // unitType,
+    companyId: unitId,
     modalTitle,
+    cardList,
     modalVisible,
     modalStatus,
     handleModalClose,
     handleModalAdd,
-    handleModalEdit,
     hanldleCardAdd,
   } = props;
 
@@ -119,18 +126,18 @@ export const EditModal = Form.create()(props => {
 
   const onConfirm = () => {
     validateFields((err, fieldsValue) => {
-      const { targetName, checkFrequency, companyId } = fieldsValue;
+      const { name, telephone, labelId, reason, note } = fieldsValue;
       const payload = {
-        targetName,
-        checkFrequency,
-        // companyId: unitType === 4 ? unitId : companyId.key,
+        name,
+        telephone,
+        labelId,
+        reason,
+        note,
+        companyId: unitId,
       };
       if (err) return;
       resetFields();
-      return (
-        (modalStatus === 'add' && handleModalAdd(payload)) ||
-        (modalStatus === 'edit' && handleModalEdit({ ...payload, id: detail.id }))
-      );
+      return modalStatus === 'add' && handleModalAdd(payload);
     });
   };
 
@@ -144,31 +151,29 @@ export const EditModal = Form.create()(props => {
   return (
     <Modal title={modalTitle} visible={modalVisible} onCancel={handleClose} onOk={onConfirm}>
       <Form>
-        {unitType !== 4 && (
-          <Form.Item {...formItemCol} label="姓名:">
-            {getFieldDecorator('name', {
-              getValueFromEvent: e => e.target.value.trim(),
-              rules: [
-                {
-                  required: true,
-                  message: '请输入姓名',
-                },
-              ],
-            })(<Input {...itemStyles} placeholder="请输入" />)}
-          </Form.Item>
-        )}
+        <Form.Item {...formItemCol} label="姓名:">
+          {getFieldDecorator('name', {
+            getValueFromEvent: e => e.target.value.trim(),
+            rules: [
+              {
+                required: true,
+                message: '请输入姓名',
+              },
+            ],
+          })(<Input {...itemStyles} placeholder="请输入" />)}
+        </Form.Item>
         <Form.Item {...formItemCol} label="手机号：">
-          {getFieldDecorator('phone', {
+          {getFieldDecorator('telephone', {
             getValueFromEvent: e => e.target.value.trim(),
             rules: [{ required: true, message: '请输入手机号' }],
           })(<Input {...itemStyles} placeholder="请输入" />)}
         </Form.Item>
         <Form.Item {...formItemCol} label="选择卡：">
-          {getFieldDecorator('card')(
+          {getFieldDecorator('labelId')(
             <Select {...itemStyles} placeholder="请选择" allowClear>
-              {[].map(({ key, value }) => (
-                <Select.Option key={key} value={key}>
-                  {value}
+              {cardList.map(({ id, cardName }) => (
+                <Select.Option key={id} value={id}>
+                  {cardName}
                 </Select.Option>
               ))}
             </Select>
@@ -196,37 +201,37 @@ export const RECORD_FIELDS = [
     transform: v => v.trim(),
   },
   {
-    id: 'ic',
+    id: 'icNumber',
     label: 'IC卡号',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'sn',
+    id: 'snNumber',
     label: 'SN卡号',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'user',
+    id: 'name',
     label: '使用人',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'opration',
+    id: 'operationPerson',
     label: '操作人',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'phone',
+    id: 'telephone',
     label: '手机号',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'time',
+    id: 'registrationDate',
     label: '创建时间',
     render: () => (
       <RangePicker
@@ -249,38 +254,99 @@ export function getRecordColumns() {
     },
     {
       title: '使用人',
-      dataIndex: 'user',
-      key: 'user',
+      dataIndex: 'name',
+      key: 'name',
+      width: 150,
     },
     {
       title: '手机号',
-      dataIndex: 'phone',
-      key: 'phone',
+      dataIndex: 'telephone',
+      key: 'telephone',
+      width: 150,
     },
     {
       title: '卡名称',
       dataIndex: 'cardName',
       key: 'cardName',
+      width: 150,
     },
     {
       title: 'IC卡号/SN卡号',
       dataIndex: 'cardNo',
       key: 'cardNo',
+      width: 250,
+      render: (val, row) => {
+        return (
+          <div>
+            <p>
+              {row.icNumber}
+              <Tag color="blue" style={{ marginLeft: 6 }}>
+                IC卡
+              </Tag>
+            </p>
+            <p>
+              {row.snNumber}
+              <Tag color="blue" style={{ marginLeft: 6 }}>
+                SN卡
+              </Tag>
+            </p>
+          </div>
+        );
+      },
     },
     {
       title: '登记时间',
-      dataIndex: 'resTime',
-      key: 'resTime',
+      dataIndex: 'registrationDate',
+      key: 'registrationDate',
+      width: 200,
+      render: v => moment(v).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '退卡时间',
-      dataIndex: 'cancelTime',
-      key: 'cancelTime',
+      dataIndex: 'returnDate',
+      key: 'returnDate',
+      width: 200,
+      render: v => moment(v).format('YYYY-MM-DD HH:mm:ss'),
+    },
+    {
+      title: '用卡时长（时）',
+      dataIndex: 'useCount',
+      key: 'useCount',
+      width: 150,
+    },
+    {
+      title: '操作人',
+      dataIndex: 'operationPerson',
+      key: 'operationPerson',
+      width: 200,
+    },
+    {
+      title: '联系方式',
+      dataIndex: 'operationPhone',
+      key: 'operationPhone',
+      width: 150,
+    },
+    {
+      title: '来访事由',
+      dataIndex: 'reason',
+      key: 'reason',
+      width: 200,
+      render: val => (
+        <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
+          {val}
+        </Ellipsis>
+      ),
     },
     {
       title: '备注',
       dataIndex: 'note',
       key: 'note',
+      width: 200,
+      render: val => (
+        <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
+          {val}
+        </Ellipsis>
+      ),
     },
   ];
   return columns;

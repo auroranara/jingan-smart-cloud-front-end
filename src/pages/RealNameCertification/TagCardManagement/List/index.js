@@ -9,7 +9,7 @@ import { getToken } from 'utils/authority';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { BREADCRUMBLIST, ROUTER, getSearchFields, getTableColumns } from '../Other/utils';
-import {  AuthA, AuthButton } from '@/utils/customAuth';
+import { AuthA, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 
 // 权限
@@ -195,7 +195,6 @@ export default class TableList extends PureComponent {
 
     const { modalVisible, importLoading, fileList, selectedRowKeys } = this.state;
 
-
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
 
@@ -218,9 +217,8 @@ export default class TableList extends PureComponent {
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
-        content={
+        action={
           <div>
-            <span>标签总数 ：{total}</span>
             <AuthA
               code={cardCode}
               href={'#/personnel-management/tag-card/visitor-card-list'}
@@ -232,21 +230,13 @@ export default class TableList extends PureComponent {
         }
       >
         <Card style={{ marginBottom: 15 }}>
-          <ToolBar
-            fields={fields}
-            onSearch={this.handleSearch}
-            onReset={this.handleReset}
-          />
+          <ToolBar fields={fields} onSearch={this.handleSearch} onReset={this.handleReset} />
         </Card>
         <Card
           title="标签卡列表"
           extra={
             <div>
-              <AuthButton
-                code={addCode}
-                type="primary"
-                onClick={this.handleAdd}
-              >
+              <AuthButton code={addCode} type="primary" onClick={this.handleAdd}>
                 新增
               </AuthButton>
               <Button style={{ marginLeft: '10px' }}>

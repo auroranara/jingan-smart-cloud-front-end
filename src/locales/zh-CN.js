@@ -707,7 +707,7 @@ export default {
   'menu.realNameCertification.visitorRegistration': '访客登记',
   'menu.realNameCertification.visitorRegistration.companyList': '企业列表',
   'menu.realNameCertification.visitorRegistration.list': '访客登记列表',
-  'menu.realNameCertification.visitorRegistration.record': '访客登录记录',
+  'menu.realNameCertification.visitorRegistration.record': '访客登记记录',
   'menu.electronicInspection': '电子巡检',
   'menu.electronicInspection.productionArea': '生产区域',
   'menu.electronicInspection.productionArea.list': '生产区域',
