@@ -130,8 +130,8 @@ export default class AuthorizationList extends PureComponent {
         ...resValues,
         index: pageNum,
         length: pageSize,
-        startTime: time ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
-        endTime: time ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        startTime: time && time[0] ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        endTime: time && time[1] ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
         companyId: company.id,
       },
     })
@@ -139,8 +139,9 @@ export default class AuthorizationList extends PureComponent {
 
   // 点击重置
   handleReset = () => {
-    const { form: { resetFields } } = this.props;
+    const { form: { resetFields, setFieldsValue } } = this.props;
     resetFields();
+    setFieldsValue({ time: [] });
     this.handleQuery();
   }
 

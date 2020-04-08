@@ -186,7 +186,7 @@ export default class ChannelDeviceAdd extends Component {
             label: '设备序列号',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入设备序列号" type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => <InputOrSpan disabled={isEdit} className={styles.item} placeholder="请输入设备序列号" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
               rules: isNotDetail ? [
                 {

@@ -83,7 +83,7 @@ export default class AddOperatingProdures extends Component {
                   { direction: '1', code: exitDeviceCode, id: exit },
                   { direction: '2', code: entranceDeviceCode, id: entrance },
                 ]) ||
-                (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance }]) ||
+                (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance, code: exitDeviceCode || entranceDeviceCode }]) ||
                 [];
               this.form && this.form.setFieldsValue({ device });
               this.setState({ device });

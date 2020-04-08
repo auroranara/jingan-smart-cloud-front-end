@@ -70,7 +70,7 @@ export default class AddAuthorization extends PureComponent {
     accessType: '1',
     accessTime: [], // 准入时间
     permissions: ['facePermission', 'idCardPermission', 'faceAndCardPermission', 'idCardFacePermission'], // 人员权限
-    typeLocal: [], // 存储位置-本地
+    typeLocal: ['1'], // 存储位置-本地
     typeCloud: [], // 存储位置-云端
     // 操作结果
     result: [],
