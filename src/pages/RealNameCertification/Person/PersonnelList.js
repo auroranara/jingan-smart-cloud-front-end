@@ -343,7 +343,12 @@ export default class PersonnelList extends PureComponent {
 
   // 导出
   handleExportChange = i => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     const { selectedRowKeys } = this.state;
     const values = this.form.getFieldsValue();
     if (+i === 1) {
@@ -358,13 +363,13 @@ export default class PersonnelList extends PureComponent {
     if (+i === 2) {
       dispatch({
         type: 'realNameCertification/fetchPersonExport',
-        payload: { ...values, status: 1 },
+        payload: { ...values, status: 1,companyId },
       });
     }
     if (+i === 3) {
       dispatch({
         type: 'realNameCertification/fetchPersonExport',
-        payload: { status: 1 },
+        payload: { status: 1,companyId },
       });
     }
   };
