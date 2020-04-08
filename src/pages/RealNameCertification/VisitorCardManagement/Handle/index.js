@@ -11,9 +11,10 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import styles from './index.less';
-@connect(({ user, visitorRegistration, loading }) => ({
+@connect(({ user, realNameCertification, visitorRegistration, loading }) => ({
   user,
   visitorRegistration,
+  realNameCertification,
   loading: loading.models.visitorRegistration,
 }))
 @Form.create()
@@ -21,6 +22,9 @@ export default class Edit extends PureComponent {
   state = {
     cardList: [], // 卡列表
     visible: false, // 是否显示弹框
+    curCompanyId: '',
+    curIndex: '',
+    curList: {},
   };
 
   componentDidMount() {
@@ -44,6 +48,7 @@ export default class Edit extends PureComponent {
   handleBack = () => {
     router.push(`${LIST_URL}`);
   };
+
   handleSubmit = e => {
     const {
       form: { validateFields },
@@ -57,36 +62,42 @@ export default class Edit extends PureComponent {
     } = this.props;
     e.preventDefault();
     const { cardList } = this.state;
-    console.log('cardList', cardList);
-
     validateFields((errors, values) => {
       if (errors) return;
+      const { companyId } = values;
+      console.log('values', values);
       const vals = {
-        companyId: unitId,
-        ...values,
+        companyId: companyId.key || unitId,
+        labelCardList: cardList,
       };
+
       const tag = id ? '编辑' : '新增';
       const callback = (success, msg) => {
         if (success) {
           message.success(`${tag}成功`);
           router.push(LIST_URL);
         } else {
-          message.error(msg || `${tag}人员失败`);
+          message.error(msg);
         }
       };
 
-      // dispatch({
-      //   type: `visitorRegistration/fetchTagCard${id ? 'Edit' : 'Add'}`,
-      //   payload: id ? { id, ...vals } : vals,
-      //   callback,
-      // });
+      dispatch({
+        type: `visitorRegistration/fetchCard${id ? 'Edit' : 'Add'}`,
+        payload: id ? { id, ...vals } : vals,
+        callback,
+      });
     });
+  };
+
+  // 获取companyId
+  handleCompanyChange = company => {
+    this.setState({ curCompanyId: company.key });
   };
 
   // 新增卡
   handleCardAdd = () => {
     const { cardList } = this.state;
-    const nextCardList = cardList.concat({ key: '' });
+    const nextCardList = cardList.concat({ id: '' });
     this.setState({ cardList: nextCardList });
   };
 
@@ -97,26 +108,60 @@ export default class Edit extends PureComponent {
   };
 
   // 显示Modal
-  handleCardModal = () => {
-    this.setState({ visible: true });
+  handleCardModal = (curList, index) => {
+    this.setState({ visible: true, curIndex: index, curList: curList });
     this.fetchCardList();
   };
 
   // 获取IC卡和SN卡列表
-  fetchCardList = () => {};
+  fetchCardList = () => {
+    const { dispatch } = this.props;
+    const { curCompanyId } = this.state;
+    dispatch({
+      type: 'realNameCertification/fetchTagCardList',
+      payload: {
+        pageNum: 1,
+        pageSize: 0,
+        personCar: 3,
+        companyId: curCompanyId,
+      },
+    });
+  };
 
   // 输入值改变
-  handleInputChange =(item, value, i, key) =>{
+  handleInputChange = (item, value, i, key) => {
     item[key] = value;
     this.setState(({ cardList }) => {
       let temp = [...cardList];
       temp.splice(i, 1, item);
       return { cardList: temp };
     });
-  }
+  };
 
   // 确定卡号
-  handleCardSelect = () => {};
+  handleCardSelect = value => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    const { curIndex, curList } = this.state;
+    setFieldsValue({
+      [`cardNum${curIndex}`]: value.icNumber + '/' + value.snNumber,
+    });
+
+    curList['icNumber'] = value.icNumber;
+    curList['snNumber'] = value.snNumber;
+    curList['id'] = value.id;
+    this.setState(({ cardList }) => {
+      let temp = [...cardList];
+      temp.splice(curIndex, 1, curList);
+      return { cardList: temp };
+    });
+    this.handleCardClose();
+  };
+
+  handleCardClose = () => {
+    this.setState({ visible: false });
+  };
 
   render() {
     const {
@@ -127,10 +172,19 @@ export default class Edit extends PureComponent {
       user: {
         currentUser: { unitType },
       },
-      visitorRegistration: { registrationData },
+      realNameCertification: {
+        tagCardData: { list = [], pagination },
+      },
     } = this.props;
 
     const { cardList, visible } = this.state;
+
+    const filterId = cardList.map(item => item.id).filter(item => item !== '');
+
+    const filterData = {
+      list: list.filter(item => filterId && !filterId.includes(item.id)),
+      pagination,
+    };
 
     const title = id ? '编辑' : '新增';
 
@@ -159,7 +213,7 @@ export default class Edit extends PureComponent {
 
     const field = [
       {
-        id: 'ic',
+        id: 'icNumber',
         render() {
           return <Input placeholder="请输入IC卡" />;
         },
@@ -168,7 +222,7 @@ export default class Edit extends PureComponent {
         },
       },
       {
-        id: 'sn',
+        id: 'snNumber',
         render() {
           return <Input placeholder="请输入SN卡" />;
         },
@@ -180,13 +234,13 @@ export default class Edit extends PureComponent {
     const columns = [
       {
         title: 'IC卡',
-        dataIndex: 'ic',
-        key: 'ic',
+        dataIndex: 'icNumber',
+        key: 'icNumber',
       },
       {
         title: 'SN卡',
-        dataIndex: 'sn',
-        key: 'sn',
+        dataIndex: 'snNumber',
+        key: 'snNumber',
       },
     ];
     return (
@@ -204,14 +258,20 @@ export default class Edit extends PureComponent {
                       transform: value => value && value.label,
                     },
                   ],
-                })(<CompanySelect {...itemStyles} placeholder="请选择" />)}
+                })(
+                  <CompanySelect
+                    {...itemStyles}
+                    placeholder="请选择"
+                    onChange={this.handleCompanyChange}
+                  />
+                )}
               </Form.Item>
             )}
             {cardList.map((item, index) => (
               <Col key={index} className={styles.colStyle}>
                 <Form.Item label="卡名称" {...formItemCol}>
                   {getFieldDecorator(`name${index}`, {
-                    initialValue: item.cardName,
+                    // initialValue: item.name,
                     rules: [
                       {
                         required: true,
@@ -233,7 +293,7 @@ export default class Edit extends PureComponent {
                 </Form.Item>
                 <Form.Item label="选择卡" {...formItemCol}>
                   {getFieldDecorator(`cardNum${index}`, {
-                    initialValue: item.ic,
+                    // initialValue: item.ic,
                     rules: [
                       {
                         required: true,
@@ -244,13 +304,10 @@ export default class Edit extends PureComponent {
                     <Input
                       {...itemStyles}
                       placeholder="请选择"
-                      onChange={e => {
-                        this.handleInputChange(item, e.target.value, index, 'cardNum');
-                      }}
                       addonAfter={
                         <span
                           style={{ cursor: 'pointer', color: '#' }}
-                          onClick={this.handleCardModal}
+                          onClick={() => this.handleCardModal(item, index)}
                         >
                           选择
                         </span>
@@ -277,17 +334,16 @@ export default class Edit extends PureComponent {
           </Form>
         </Card>
         <CompanyModal
-          title="选择单位"
+          title="选择卡号"
           // loading={companyLoading}
           visible={visible}
           field={field}
           columns={columns}
-          modal={registrationData}
+          modal={filterData}
           fetch={this.fetchCardList}
           onSelect={this.handleCardSelect}
-          onClose={() => {
-            this.setState({ visible: false });
-          }}
+          onClose={this.handleCardClose}
+          pagination={false}
         />
       </PageHeaderLayout>
     );
