@@ -78,3 +78,24 @@ export const DATA = {
   intermediate: '乙烯',
   product: '辛酸',
 }
+
+export function getProcessTables(monitorList) {
+  return TABLES.map(item => ({ ...item, params: getParamsByName(item.title, monitorList) }));
+}
+
+const TABLES = [
+  { title: ['丁二烯', '计量罐'], position: [978,390], width: 208, params: [] },
+  { title: ['苯乙烯', '计量罐'], position: [482,390], width: 208, params: [] },
+  { title: ['水相', '计量罐'], position: [1444,390], width: 208, params: [] },
+  { title: '油相釜', position: [558,1160], width: 208, params: [] },
+  { title: '1#反应釜', position: [1160,1160], width: 350, params: [], showLabel: true },
+  { title: '2#反应釜', position: [1936,1160], width: 350, params: [], showLabel: true },
+];
+
+function getParamsByName(title, list) {
+  const name = Array.isArray(title) ? title.join('') : title;
+  const target = list.find(({ name: n }) => name === n);
+  if (target && Array.isArray(target.allMonitorParam))
+    return target.allMonitorParam;
+  return [];
+}

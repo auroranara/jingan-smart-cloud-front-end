@@ -3,6 +3,15 @@ import React from 'react';
 import styles from './ProcessBody.less';
 import { WIDTH, getDirectionStyle } from '../utils';
 
+function getValueByStatus(value, linkStatus, status) {
+  if (linkStatus === 0) { // 正常
+    if (status === 0)
+      return value;
+    return <span className={styles.warning}>{value}</span>;
+  }
+  return '-';
+}
+
 export default function ProcessTable(props) {
   const { showLabel, title, width, position=[0,0], params, ...restProps } = props;
   const widthPercent = width/WIDTH*100;
@@ -22,10 +31,12 @@ export default function ProcessTable(props) {
         ))}
       </thead>
       <tbody>
-        {params.map(({ name, label, value, unit }) => (
-          <tr className={styles.tr} key={name}>
+        {params.map(({ id, paramDesc: label, realValue: value, paramUnit: unit, linkStatus, status }) => (
+          <tr className={styles.tr} key={id}>
             <td className={styles[`tdLabel${classNameIndex}`]}>{showLabel ? label : ''}</td>
-            <td className={styles[`tdValue${classNameIndex}`]}>{value}</td>
+            <td className={styles[`tdValue${classNameIndex}`]}>
+              {getValueByStatus(value, linkStatus, status)}
+            </td>
             <td className={styles[`tdUnit${classNameIndex}`]}>{unit}</td>
           </tr>
         ))}

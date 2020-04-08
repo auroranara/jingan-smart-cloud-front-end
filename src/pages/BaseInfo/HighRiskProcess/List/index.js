@@ -4,7 +4,7 @@ import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Card, Input, Pagination, Select, Modal, Table, Spin, Divider, message } from 'antd';
 import router from 'umi/router';
-import { AuthButton, AuthA, AuthPopConfirm, hasAuthority } from '@/utils/customAuth';
+import { AuthButton, AuthA, AuthPopConfirm, AuthUmiLink, hasAuthority } from '@/utils/customAuth';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
@@ -453,13 +453,16 @@ export default class HighRiskProcessList extends PureComponent {
         key: 'operation',
         align: 'center',
         fixed: 'right',
-        width: 210,
+        width: 150,
         render: (val, row) => (
           <Fragment>
             {/* <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
               绑定监测设备
-            </AuthA>
-            <Divider type="vertical" /> */}
+            </AuthA> */}
+            <AuthUmiLink code={bindCode} to={`/major-hazard-info/high-risk-process/detail/${row.id}`} target="_blank">
+              查看
+            </AuthUmiLink>
+            <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row.id)}>
               编辑
             </AuthA>

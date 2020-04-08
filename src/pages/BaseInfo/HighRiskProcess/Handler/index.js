@@ -9,6 +9,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { CONTROL_OPTIONS, MOINTOR_TYPES, TECHNICAL_OPTIONS, getTypeLabel } from '../utils';
 
 const { Group: CheckboxGroup } = Checkbox;
 const FormItem = Form.Item;
@@ -16,19 +17,6 @@ const { TextArea } = Input;
 const Option = Select.Option;
 const { Group: RadioGroup } = Radio;
 
-const CONTROL_OPTIONS = ['报警', '温度压力联锁', '进料紧急切断', '安全阀', '爆破片'].map((t, i) => ({ label: t, value: (i + 1).toString() }));
-const TECHNICAL_OPTIONS = ['自行研发', '技术转让', '其他'].map((t, i) =>({ label: t, value: i.toString() }) );
-const MOINTOR_TYPES = [
-  { label: '储罐', value: '302' },
-  { label: '生产装置', value: '311' },
-];
-function getTypeLabel(type) {
-  if (type === null || type === undefined)
-    return;
-
-  const target = MOINTOR_TYPES.find(({ value }) => value === type.toString());
-  if (target) return target.label;
-}
 /* root下的div */
 // const getRootChild = () => document.querySelector('#root>div');
 const formItemLayout = {
@@ -923,7 +911,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
         title: '类别',
         dataIndex: 'type',
         key: 'type',
-        render: t => getTypeLabel(t),
+        render: t => getTypeLabel(t, MOINTOR_TYPES),
       },
       {
         title: '编码',
