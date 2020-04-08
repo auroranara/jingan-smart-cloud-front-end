@@ -29,9 +29,9 @@ const keyPointsData1 = [
   { icon: iconHigh, label: '高危工艺', value: 2 },
 ];
 const keyPointsList = [
-  { icon: iconDangerSource, label: '重大危险源', value: 0, key: 'dangerSource' },
+  { icon: iconHigh, label: '重点监管危险化工工艺', value: 0, key: 'iskeySupervisionProcess' },
   { icon: iconChemical, label: '重点监管危险化学品', value: 0, key: 'superviseChemicals' },
-  // { icon: iconHigh, label: '重点监管危险化工工艺', value: 0, key: 'iskeySupervisionProcess' },
+  { icon: iconDangerSource, label: '重大危险源', value: 0, key: 'dangerSource' },
 ];
 
 export default class KeyPoints extends PureComponent {
@@ -48,10 +48,15 @@ export default class KeyPoints extends PureComponent {
 
   handleClickKey = (index, value) => {
     if (+value === 0) return null;
-    const { handleShowProcessList, handleClickDangerSource, handleShowChemicalList } = this.props;
-    index === 0 && handleClickDangerSource();
+    const {
+      handleShowProcessList,
+      handleClickDangerSource,
+      handleShowChemicalList,
+      companyId,
+    } = this.props;
+    index === 2 && handleClickDangerSource();
     index === 1 && handleShowChemicalList();
-    index === 2 && handleShowProcessList();
+    index === 0 && window.open(`${window.publicPath}#/big-platform/process/${companyId}`);
   };
 
   render() {
