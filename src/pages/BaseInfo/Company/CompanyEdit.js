@@ -98,6 +98,7 @@ const fieldLabels = {
   workCompanyType: '生产经营活动类型',
   workPlaceOwn: '生产场所产权',
   storePlaceOwn: '存储场所产权',
+  businessLicense: '营业执照附件',
 };
 // 报警接收电话类型
 const phoneTypes = [{ value: 1, label: '手机' }, { value: 0, label: '固话' }];
@@ -156,70 +157,70 @@ const PLACE_OWN = [
   }),
   dispatch => ({
     // 修改
-    editCompany(action) {
+    editCompany (action) {
       dispatch({
         type: 'company/editCompany',
         ...action,
       });
     },
     // 添加
-    insert(action) {
+    insert (action) {
       dispatch({
         type: 'company/insertCompany',
         ...action,
       });
     },
     // 获取详情
-    fetchCompany(action) {
+    fetchCompany (action) {
       dispatch({
         type: 'company/fetchCompany',
         ...action,
       });
     },
     // 获取字典
-    fetchDict(action) {
+    fetchDict (action) {
       dispatch({
         type: 'company/fetchDict',
         ...action,
       });
     },
     // gsafe版获取字典
-    gsafeFetchDict(action) {
+    gsafeFetchDict (action) {
       dispatch({
         type: 'company/gsafeFetchDict',
         ...action,
       });
     },
     // 获取行业类别
-    fetchIndustryType(action) {
+    fetchIndustryType (action) {
       dispatch({
         type: 'company/fetchIndustryType',
         ...action,
       });
     },
     // 返回
-    goBack() {
+    goBack () {
       dispatch(routerRedux.push(listUrl));
     },
     // 获取行政区域
-    fetchArea(action) {
+    fetchArea (action) {
       dispatch({
         type: 'company/fetchArea',
         ...action,
       });
     },
-    fetchOptions(action) {
+    fetchOptions (action) {
       dispatch({
         type: 'company/fetchOptions',
         ...action,
       });
     },
     // 异常
-    goToException() {
+    goToException () {
       dispatch(routerRedux.push(exceptionUrl));
     },
     // 清空详情
-    clearDetail() {
+    clearDetail () {
       dispatch({
         type: 'company/clearDetail',
       });
@@ -244,10 +245,11 @@ export default class CompanyDetail extends PureComponent {
     },
     gridTree: [],
     showChemFields: false,
+    businessLicenseList: [],
   };
 
   /* 生命周期函数 */
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       fetchCompany,
@@ -306,9 +308,18 @@ export default class CompanyDetail extends PureComponent {
           gridId,
           // companyType,
           regulatoryClassification,
+          businessLicenseDetails,
         }) => {
           this.setShowChemFields(regulatoryClassification);
-
+          this.setState({
+            businessLicenseList: Array.isArray(businessLicenseDetails) ? businessLicenseDetails.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              url: webUrl,
+              dbUrl,
+            })) : [],
+          })
           // const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
           // const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
           // const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
@@ -507,7 +518,7 @@ export default class CompanyDetail extends PureComponent {
         content: '是否需要添加安全信息或消防信息',
         okText: '是',
         cancelText: '否',
-        onOk() {
+        onOk () {
           dispatch(routerRedux.push(`${editUrl}${companyId}?isFromAdd=1`));
         },
         onCancel: goBack,
@@ -524,6 +535,7 @@ export default class CompanyDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
+    const { businessLicenseList } = this.state;
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
       (
@@ -585,6 +597,11 @@ export default class CompanyDetail extends PureComponent {
             // companyType: getCompanyType(importantHost, importantSafety),
             companyType: !id ? '2' : undefined,
             workCompanyType: Array.isArray(workCompanyType) ? workCompanyType.join(',') : workCompanyType,
+            businessLicenseDetails: Array.isArray(businessLicenseList) ? businessLicenseList.map(({ name, url, dbUrl }) => ({
+              name,
+              webUrl: url,
+              dbUrl,
+            })) : [],
           };
           // 成功回调
           const success = companyId => {
@@ -919,38 +936,38 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 上传文件按钮 */
-  renderUploadButton = (fileList, onChange, multiple = true, tips) => {
-    return (
-      <Upload
-        name="files"
-        data={{
-          folder,
-        }}
-        multiple={multiple}
-        action={uploadAction}
-        fileList={fileList}
-        onChange={onChange}
-        // beforeUpload={this.handleBeforeUploadUnitPhoto}
-        headers={{ 'JA-Token': getToken() }}
-      >
-        <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-          <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
-          <div style={{ marginTop: '8px' }}>点击上传</div>
-        </Button>
-        {tips && (
-          <span
-            style={{ whiteSpace: 'nowrap', marginLeft: '25px' }}
-            onClick={e => {
-              e.stopPropagation();
-              return null;
-            }}
-          >
-            {tips}
-          </span>
-        )}
-      </Upload>
-    );
-  };
+  // renderUploadButton = (fileList, onChange, multiple = true, tips) => {
+  //   return (
+  //     <Upload
+  //       name="files"
+  //       data={{
+  //         folder,
+  //       }}
+  //       multiple={multiple}
+  //       action={uploadAction}
+  //       fileList={fileList}
+  //       onChange={onChange}
+  //       // beforeUpload={this.handleBeforeUploadUnitPhoto}
+  //       headers={{ 'JA-Token': getToken() }}
+  //     >
+  //       <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+  //         <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
+  //         <div style={{ marginTop: '8px' }}>点击上传</div>
+  //       </Button>
+  //       {tips && (
+  //         <span
+  //           style={{ whiteSpace: 'nowrap', marginLeft: '25px' }}
+  //           onClick={e => {
+  //             e.stopPropagation();
+  //             return null;
+  //           }}
+  //         >
+  //           {tips}
+  //         </span>
+  //       )}
+  //     </Upload>
+  //   );
+  // };
 
   /**
    * 复制经纬度
@@ -993,7 +1010,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染行业类别 */
-  renderIndustryCategory() {
+  renderIndustryCategory () {
     const {
       company: {
         industryCategories,
@@ -1030,7 +1047,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染单位状态 */
-  renderCompanyStatus() {
+  renderCompanyStatus () {
     const {
       company: {
         companyStatuses,
@@ -1045,7 +1062,7 @@ export default class CompanyDetail extends PureComponent {
       <Col lg={8} md={12} sm={24}>
         <Form.Item label={fieldLabels.companyStatus}>
           {getFieldDecorator('companyStatus', {
-            initialValue: companyStatus,
+            initialValue: companyStatus || '1',
             rules: [{ required: true, message: '请选择单位状态' }],
           })(
             <Select placeholder="请选择单位状态" getPopupContainer={getRootChild}>
@@ -1062,7 +1079,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染地图 */
-  renderMap() {
+  renderMap () {
     const {
       map: { visible, center = defaultPosition, point },
     } = this.state;
@@ -1082,7 +1099,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染基础信息 */
-  renderBasicInfo() {
+  renderBasicInfo () {
     const {
       match: {
         params: { id },
@@ -1301,7 +1318,7 @@ export default class CompanyDetail extends PureComponent {
                     id && phoneTypes.find(item => item.value === detailCallType)
                       ? phoneTypes.find(item => item.value === detailCallType).value
                       : undefined,
-                  rules: [{ required: true, message: '请选择电话类型' }],
+                  // rules: [{ required: true, message: '请选择电话类型' }],
                 })(
                   <Select
                     style={{ width: '100%' }}
@@ -1322,7 +1339,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('warningCallNumber', {
                   initialValue: warningCallNumber,
                   rules: [
-                    { required: true, message: '请输入电话号码' },
+                    // { required: true, message: '请输入电话号码' },
                     {
                       pattern:
                         +warningCallType === 1
@@ -1404,8 +1421,56 @@ export default class CompanyDetail extends PureComponent {
     setFieldsValue({ workCompanyType: value ? ['3', '4'].includes(value) ? ['0', '1', '2', '3'] : value : undefined });
   };
 
+  handleUploadChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        businessLicenseList: fileList,
+        uploading: true,
+      });
+    } else if (file.status === 'done' && file.response.code === 200) {
+      const {
+        data: {
+          list: [result],
+        },
+      } = file.response;
+      if (result) {
+        this.setState({
+          businessLicenseList: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          uploading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        businessLicenseList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        uploading: false,
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        businessLicenseList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        uploading: false,
+      });
+    }
+  };
+
   /* 渲染更多信息 */
-  renderMoreInfo() {
+  renderMoreInfo () {
     const {
       company: {
         economicTypes,
@@ -1435,7 +1500,7 @@ export default class CompanyDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { showChemFields } = this.state;
+    const { showChemFields, businessLicenseList, uploading } = this.state;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -1485,7 +1550,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale', {
-                  initialValue: scale || undefined,
+                  initialValue: scale || '1',
                 })(
                   <Select allowClear placeholder="请选择规模情况" getPopupContainer={getRootChild}>
                     {scales.map(item => (
@@ -1547,7 +1612,7 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请选择化工企业类型' }],
                   })(
                     <Select placeholder="请选择化工企业类型" onChange={this.handleChemComTypeChange} allowClear>
-                      {CHEM_COM_TYPES .map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
+                      {CHEM_COM_TYPES.map(({ value, name }) => <Option key={value} value={value}>{name}</Option>)}
                     </Select>
                   )}
                 </Form.Item>
@@ -1570,7 +1635,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.workPlaceOwn}>
                 {getFieldDecorator('workPlaceOwn', {
-                  initialValue: workPlaceOwn || undefined,
+                  initialValue: workPlaceOwn || '0',
                   rules: [{ required: true, message: '请选择生产场所产权' }],
                 })(
                   <Select placeholder="请选择生产场所产权" allowClear>
@@ -1582,7 +1647,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.storePlaceOwn}>
                 {getFieldDecorator('storePlaceOwn', {
-                  initialValue: storePlaceOwn || undefined,
+                  initialValue: storePlaceOwn || '0',
                   rules: [{ required: true, message: '请选择存储场所产权' }],
                 })(
                   <Select placeholder="请选择存储场所产权" allowClear>
@@ -1600,6 +1665,30 @@ export default class CompanyDetail extends PureComponent {
                 })(<TextArea rows={4} placeholder="请输入经营范围" maxLength="500" />)}
               </Form.Item>
             </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.businessScope}>
+                {getFieldDecorator('businessLicenseDetails')(
+                  <Upload
+                    name="files"
+                    accept=".jpg,.png" // 接受的文件格式
+                    headers={{ 'JA-Token': getToken() }} // 上传的请求头部
+                    data={{ folder }} // 附带参数
+                    action={uploadAction} // 上传地址
+                    fileList={businessLicenseList}
+                    onChange={this.handleUploadChange}
+                  >
+                    <Button
+                      type="dashed"
+                      style={{ width: '96px', height: '96px' }}
+                      disabled={uploading}
+                    >
+                      <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
+                      <div style={{ marginTop: '8px' }}>点击上传</div>
+                    </Button>
+                  </Upload>
+                )}
+              </Form.Item>
+            </Col>
           </Row>
         </Form>
       </Card>
@@ -1607,7 +1696,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染人员信息 */
-  renderPersonalInfo() {
+  renderPersonalInfo () {
     const {
       form: { getFieldDecorator },
       company: {
@@ -1735,7 +1824,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染错误信息 */
-  renderErrorInfo() {
+  renderErrorInfo () {
     const {
       form: { getFieldsError },
     } = this.props;
@@ -1779,7 +1868,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar() {
+  renderFooterToolbar () {
     const { loading } = this.props;
     const { submitting } = this.state;
     return (
@@ -1797,7 +1886,7 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       loading,
       safetyLoading,
