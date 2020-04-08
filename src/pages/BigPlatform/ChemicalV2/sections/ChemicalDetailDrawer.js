@@ -26,12 +26,12 @@ const basicFields = [
   { label: '是否剧毒化学品', value: 'highlyToxicChem', render: renderYesOrNo },
   { label: '是否易制毒', value: 'easyMakePoison', render: renderYesOrNo },
   { label: '是否易制爆', value: 'easyMakeExplode', render: renderYesOrNo },
-  { label: '是否高危化学品', value: 'isDangerChemicals', render: renderYesOrNo },
-  {
-    label: '高危化学品种类',
-    value: 'highRiskChemicals',
-    render: val => HighRiskChemicals[val] || NO_DATA,
-  },
+  // { label: '是否高危化学品', value: 'isDangerChemicals', render: renderYesOrNo },
+  // {
+  //   label: '高危化学品种类',
+  //   value: 'highRiskChemicals',
+  //   render: val => HighRiskChemicals[val] || NO_DATA,
+  // },
 ];
 const Annuals = [
   {
