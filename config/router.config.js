@@ -179,7 +179,7 @@ module.exports = env => {
         // },
         {
           path: '/big-platform/process/:companyId',
-          code: 'dashboard.gasStation',
+          code: 'dashboard.process',
           name: 'process',
           component: './BigPlatform/Process',
         },
