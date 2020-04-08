@@ -6,7 +6,14 @@ import ImagePreview from '@/jingan-components/ImagePreview';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
+const {
+  realNameCertification: {
+    personnelManagement: { edit: editCode },
+  },
+} = codes;
 const title = '查看人员信息';
 
 const BUTTON_WRAPPER_SPAN = {
@@ -16,15 +23,7 @@ const BUTTON_WRAPPER_SPAN = {
 const SPAN = { sm: 24, xs: 24 };
 const LABELCOL = { span: 6 };
 const WRAPPERCOL = { span: 13 };
-const NO_DATA = '暂无数据';
-
-const getPersonType = {
-  4: '操作人员',
-  5: '管理人员',
-  6: '安全巡查人员',
-  1: '外协人员',
-  2: '临时人员',
-};
+const NO_DATA = '---';
 
 const getEducation = {
   0: '初中',
@@ -93,7 +92,7 @@ export default class PersonnelDetail extends Component {
         query: { companyName: routerCompanyName, companyId },
       },
       user: {
-        currentUser: { companyName },
+        currentUser: { companyName, permissionCodes },
       },
       loading,
       realNameCertification: { personTypeDict },
@@ -218,7 +217,7 @@ export default class PersonnelDetail extends Component {
         render:
           render && typeof render === 'function'
             ? () => <span>{render(detail)}</span>
-            : () => <span>{detail[id]}</span>,
+            : () => <span>{detail[id] || NO_DATA}</span>,
       };
     });
 
@@ -243,6 +242,7 @@ export default class PersonnelDetail extends Component {
         name: title,
       },
     ];
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={BREADCRUMB}>
@@ -265,6 +265,7 @@ export default class PersonnelDetail extends Component {
                         }?companyId=${companyId}&&companyName=${companyName}`
                       )
                     }
+                    disabled={!hasEditAuthority}
                   >
                     编辑
                   </Button>
