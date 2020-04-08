@@ -140,7 +140,7 @@ class VideoPlay extends Component {
     // 清空视频链接
     this.setState({ videoSrc: '' });
     let index = videoList.findIndex(item => {
-      return item.key_id === videoId;
+      return item.key_id === videoId || item.keyId === videoId;
     });
     // console.log(videoId, index, videoList);
     if (index > -1) {

@@ -1,18 +1,22 @@
 import { PureComponent, Fragment } from 'react';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Card, Input, Select, Button, Radio, Row, message, InputNumber, Upload } from 'antd';
 import { connect } from 'dva';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
+import { Card, Checkbox, Input, Select, Button, Radio, Row, message, InputNumber, Upload } from 'antd';
+
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { CONTROL_OPTIONS, MOINTOR_TYPES, TECHNICAL_OPTIONS, getTypeLabel } from '../utils';
 
+const { Group: CheckboxGroup } = Checkbox;
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const Option = Select.Option;
 const { Group: RadioGroup } = Radio;
+
 /* root下的div */
 // const getRootChild = () => document.querySelector('#root>div');
 const formItemLayout = {
@@ -42,6 +46,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
   user,
   companyLoading: loading.effects['sensor/fetchModelList'],
   middleLoading: loading.effects['materials/fetchMaterialsList'],
+  monitorLoading: loading.effects['materials/fetchMonitorList'],
 }))
 export default class EmergencySuppliesHandler extends PureComponent {
   constructor(props) {
@@ -49,15 +54,20 @@ export default class EmergencySuppliesHandler extends PureComponent {
     this.state = {
       // 选中的企业
       selectedCompany: {},
+      rawModalVisible: false,
       // 中间产品弹窗可见
       middleModalVisible: false,
       // 最终产品弹窗可见
       finalModalVisible: false,
+      monitorModalVisible: false,
+      selectedRaw: [],
       // 选中的中间产品
       selectedMiddle: [],
       // 选中的最终产品
       selectedFinal: [],
       selectedTemp: [],
+      selectedMonitor: [],
+      selectedMonitorTemp: [],
       // 带控制点的工艺流程图
       flowChartList: [],
       // 设备一览表
@@ -85,8 +95,10 @@ export default class EmergencySuppliesHandler extends PureComponent {
         callback: ({
           companyId,
           companyName,
+          rawList,
           middleList,
           finalList,
+          keyMonitoringUnitList,
           flowChartControlPointDetails,
           equipmentListDetails,
           equipmentLayoutDetails,
@@ -97,8 +109,10 @@ export default class EmergencySuppliesHandler extends PureComponent {
           +iskeySupervisionProcess === 1 && setFieldsValue({ keySupervisionProcess });
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
+            selectedRaw: rawList || [],
             selectedMiddle: middleList || [],
             selectedFinal: finalList || [],
+            selectedMonitor: keyMonitoringUnitList || [],
             flowChartList: flowChartControlPointDetails ? flowChartControlPointDetails.map(item => ({
               ...item,
               uid: item.id,
@@ -143,6 +157,24 @@ export default class EmergencySuppliesHandler extends PureComponent {
     });
   };
 
+  fetchMonitors = ({ payload }) => {
+    const {
+      dispatch,
+      match: { params: { id } },
+    } = this.props;
+    const { selectedCompany } = this.state;
+
+    const pl = { ...payload };
+    if (Array.isArray(payload.types))
+      pl.types = payload.types.join(',');
+    else
+      pl.types = '302,311';
+    dispatch({
+      type: 'materials/fetchMonitorList',
+      payload: { ...pl, companyId: selectedCompany.id, bindTechnologyId: id || '-1' },
+    });
+  };
+
   handleSubmit = () => {
     const {
       dispatch,
@@ -166,12 +198,14 @@ export default class EmergencySuppliesHandler extends PureComponent {
     }
     validateFields((err, formData) => {
       if (err) return;
+      const { controlMode } = formData;
       const payload = {
         ...formData,
         companyId: selectedCompany.id,
         flowChartControlPoint: JSON.stringify(flowChartList),
         equipmentList: JSON.stringify(equipmentList),
         equipmentLayout: JSON.stringify(equipmentLayoutList),
+        controlMode: controlMode.join(','),
       }
       // console.log('提交', payload)
       const success = () => {
@@ -223,6 +257,16 @@ export default class EmergencySuppliesHandler extends PureComponent {
     });
   };
 
+  handleViewRaw = () => {
+    this.setState(({ selectedRaw }) => ({ rawModalVisible: true, selectedTemp: selectedRaw }));
+    this.fetchMaterials({
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  }
+
   // 点击打开选择中间产品弹窗
   handleViewMiddle = () => {
     this.setState(({ selectedMiddle }) => ({ middleModalVisible: true, selectedTemp: selectedMiddle }))
@@ -244,6 +288,16 @@ export default class EmergencySuppliesHandler extends PureComponent {
       },
     });
   }
+
+  handleViewMonitor = () => {
+    this.setState(({ selectedMonitor }) => ({ monitorModalVisible: true, selectedMonitorTemp: selectedMonitor }));
+    this.fetchMonitors({
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  };
 
   // 验证是否数字
   validateNumber = (rule, value, callback) => {
@@ -292,6 +346,13 @@ export default class EmergencySuppliesHandler extends PureComponent {
     this.setState(newState)
   }
 
+  handleSelectRaw = () => {
+    const { setFieldsValue } = this.props.form;
+    const { selectedTemp } = this.state;
+    this.setState({ selectedRaw: selectedTemp, rawModalVisible: false });
+    setFieldsValue({ rawId: selectedTemp.map((item) => item.id).join(',') });
+  };
+
   handleSelectMiddle = () => {
     const { setFieldsValue } = this.props.form;
     const { selectedTemp } = this.state;
@@ -306,7 +367,14 @@ export default class EmergencySuppliesHandler extends PureComponent {
     setFieldsValue({ finalId: selectedTemp.map((item) => item.id).join(',') })
   }
 
-  trim = e => e.target.value.replace(/\s/, '')
+  handleSelectMonitor = () => {
+    const { setFieldsValue } = this.props.form;
+    const { selectedMonitorTemp } = this.state;
+    this.setState({ selectedMonitor: selectedMonitorTemp, monitorModalVisible: false });
+    setFieldsValue({ keyMonitoringUnit: selectedMonitorTemp.map((item) => item.id).join(',') });
+  };
+
+  trim = e => e.target.value.replace(/\s/, '');
 
   /**
    * 渲染表单
@@ -329,8 +397,10 @@ export default class EmergencySuppliesHandler extends PureComponent {
     const isDetail = /detail/i.test(window.location.href);
     const {
       selectedCompany,
+      selectedRaw,
       selectedMiddle,
       selectedFinal,
+      selectedMonitor,
       // 带控制点的工艺流程图
       flowChartList,
       // 设备一览表
@@ -364,7 +434,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
               )}
             </FormItem>
           )}
-          <FormItem label="统一编码" {...formItemLayout}>
+          <FormItem label="工艺编码" {...formItemLayout}>
             {getFieldDecorator('unifiedCode', {
               initialValue: id ? detail.unifiedCode : undefined,
               rules: [
@@ -416,6 +486,22 @@ export default class EmergencySuppliesHandler extends PureComponent {
               getValueFromEvent: this.trim,
             })(<Input placeholder="请输入反应类型" {...itemStyles} />)}
           </FormItem>
+          <FormItem label="生产原料" {...formItemLayout}>
+            {getFieldDecorator('rawId', {
+              initialValue: id && detail.rawList ? detail.rawList.map(item => item.id).join(',') : undefined,
+              rules: [{ required: true, message: '请选择生产原料' }],
+            })(
+              <Fragment>
+                <TextArea
+                  value={selectedRaw && selectedRaw.length ? selectedRaw.map(({ chineName }) => chineName).join('、') : undefined}
+                  {...itemStyles}
+                  disabled
+                  rows={4}
+                  placeholder="请选择生产原料" />
+                <Button type="primary" onClick={this.handleViewRaw}>选择</Button>
+              </Fragment>
+            )}
+          </FormItem>
           <FormItem label="中间产品" {...formItemLayout}>
             {getFieldDecorator('middleId', {
               initialValue: id && detail.middleList ? detail.middleList.map(item => item.id).join(',') : undefined,
@@ -448,13 +534,30 @@ export default class EmergencySuppliesHandler extends PureComponent {
               </Fragment>
             )}
           </FormItem>
-          <FormItem label="重点监控单元" {...formItemLayout}>
+          {/* <FormItem label="重点监控单元" {...formItemLayout}>
             {getFieldDecorator('keyMonitoringUnit', {
               initialValue: id ? detail.keyMonitoringUnit : undefined,
               rules: [{ required: true, message: '请输入重点监控单元' }],
               getValueFromEvent: this.trim,
             })(
               <TextArea rows={4} placeholder="请输入重点监控单元" {...itemStyles} />
+            )}
+          </FormItem> */}
+          <FormItem label="重点监控单元" {...formItemLayout}>
+            {getFieldDecorator('keyMonitoringUnit', {
+              initialValue: id ? detail.keyMonitoringUnit : undefined,
+              rules: [{ required: true, message: '请输入重点监控单元' }],
+              getValueFromEvent: this.trim,
+            })(
+              <Fragment>
+                <TextArea
+                  value={selectedMonitor && selectedMonitor.length ? selectedMonitor.map(({ name }) => name).join('、') : undefined}
+                  {...itemStyles}
+                  disabled
+                  rows={4}
+                  placeholder="请选择重点监控单元" />
+                <Button type="primary" onClick={this.handleViewMonitor}>选择</Button>
+              </Fragment>
             )}
           </FormItem>
           <FormItem label="工艺危险特点" {...formItemLayout}>
@@ -478,7 +581,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
               <TextArea rows={4} placeholder="请输入工艺系统简况" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="最高温度（℃）" {...formItemLayout}>
+          {/* <FormItem label="最高温度（℃）" {...formItemLayout}>
             {getFieldDecorator('maxTemperature', {
               initialValue: id ? detail.maxTemperature : undefined,
               rules: [{ required: true, validator: this.validateNumber }],
@@ -495,7 +598,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem label="岗位操作人数" {...formItemLayout}>
             {getFieldDecorator('operationNumber', {
               initialValue: id ? detail.operationNumber : undefined,
@@ -524,13 +627,20 @@ export default class EmergencySuppliesHandler extends PureComponent {
               />
             )}
           </FormItem>
-          <FormItem label="技术来源" {...formItemLayout}>
+          {/* <FormItem label="技术来源" {...formItemLayout}>
             {getFieldDecorator('technicalSource', {
               initialValue: id ? detail.technicalSource : undefined,
               getValueFromEvent: this.trim,
               rules: [{ max: 50, message: '请输入不超过50个字符' }],
             })(
               <TextArea rows={4} placeholder="请输入技术来源"  {...itemStyles} />
+            )}
+          </FormItem> */}
+          <FormItem label="技术来源" {...formItemLayout}>
+            {getFieldDecorator('technicalSource', {
+              initialValue: id ? detail.technicalSource : undefined,
+            })(
+              <RadioGroup options={TECHNICAL_OPTIONS} />
             )}
           </FormItem>
           <FormItem label="设计单位" {...formItemLayout}>
@@ -547,14 +657,26 @@ export default class EmergencySuppliesHandler extends PureComponent {
               initialValue: id ? detail.qualificationGrade : undefined,
               rules: [{ required: true, message: '请输入设计单位资质等级' }],
             })(
-              <Select placeholder="请选择设计单位资质等级" {...itemStyles}>
-                {qualificationLevelDict.map(({ value, label }) => (
-                  <Option key={value} value={value}>{label}</Option>
-                ))}
-              </Select>
+              // <Select placeholder="请选择设计单位资质等级" {...itemStyles}>
+              //   {qualificationLevelDict.map(({ value, label }) => (
+              //     <Option key={value} value={value}>{label}</Option>
+              //   ))}
+              // </Select>
+              <RadioGroup options={qualificationLevelDict} />
             )}
           </FormItem>
-          <FormItem label="资质等级描述" {...formItemLayout}>
+          <FormItem label="是否满足国家规定的要求" {...formItemLayout}>
+            {getFieldDecorator('nationalRegulations', {
+              initialValue: id ? detail.nationalRegulations : undefined,
+              rules: [{ required: true, message: '请选择是否满足国家规定的要求' }],
+            })(
+              <RadioGroup>
+                <Radio value={0}>否</Radio>
+                <Radio value={1}>是</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          {/* <FormItem label="资质等级描述" {...formItemLayout}>
             {getFieldDecorator('qualifGradeDescription', {
               initialValue: id ? detail.qualifGradeDescription : undefined,
               rules: [
@@ -565,7 +687,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             })(
               <TextArea rows={4} placeholder="请输入资质等级描述" {...itemStyles} />
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem label="安全控制基本要求" {...formItemLayout}>
             {getFieldDecorator('basicControlRequire', {
               initialValue: id ? detail.basicControlRequire : undefined,
@@ -582,13 +704,23 @@ export default class EmergencySuppliesHandler extends PureComponent {
               />
             )}
           </FormItem>
+          <FormItem label="控制方式" {...formItemLayout}>
+            {getFieldDecorator('controlMode', {
+              initialValue: id && detail.controlMode ? detail.controlMode.split(',').filter(s => s) : undefined,
+              rules: [
+                { required: true, message: '请选择控制方式' },
+              ],
+            })(
+              <CheckboxGroup options={CONTROL_OPTIONS} />
+            )}
+          </FormItem>
           <FormItem label="自动控制措施" {...formItemLayout}>
             {getFieldDecorator('autoControl', {
               initialValue: id ? detail.autoControl : undefined,
               getValueFromEvent: this.trim,
               rules: [{ max: 50, message: '请输入不超过50个字符' }],
             })(
-              <TextArea rows={4} placeholder="请输入自动控制措施"  {...itemStyles} />
+              <TextArea rows={4} placeholder="如：PLC自动控制"  {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="安全仪表系统" {...formItemLayout}>
@@ -608,14 +740,15 @@ export default class EmergencySuppliesHandler extends PureComponent {
               initialValue: id ? detail.sisLevel : undefined,
               rules: [{ required: true, message: '请选择SIL等级' }],
             })(
-              <Select placeholder="请选择SIL等级" {...itemStyles}>
-                {SILLevelDict.map(({ value, label }) => (
-                  <Option key={value} value={value}>{label}</Option>
-                ))}
-              </Select>
+              // <Select placeholder="请选择SIL等级" {...itemStyles}>
+              //   {SILLevelDict.map(({ value, label }) => (
+              //     <Option key={value} value={value}>{label}</Option>
+              //   ))}
+              // </Select>
+              <RadioGroup options={SILLevelDict} />
             )}
           </FormItem>
-          <FormItem label="安全阀/爆破片" {...formItemLayout}>
+          {/* <FormItem label="安全阀/爆破片" {...formItemLayout}>
             {getFieldDecorator('safetyValve', {
               initialValue: id ? detail.safetyValve : undefined,
               rules: [
@@ -630,7 +763,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
                 {...itemStyles}
               />
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem label="带控制点的工艺流程图" {...formItemLayout}>
             {getFieldDecorator('flowChartControlPoint')(
               <Fragment>
@@ -705,18 +838,23 @@ export default class EmergencySuppliesHandler extends PureComponent {
     const {
       middleLoading,
       companyLoading,
+      monitorLoading,
       match: { params: { id = null } = {} },
       sensor: { companyModal },
       materials,
     } = this.props;
     const {
       companyModalVisible,
+      rawModalVisible,
       middleModalVisible,
       finalModalVisible,
       selectedTemp,
+      monitorModalVisible,
+      selectedMonitorTemp,
     } = this.state;
-    // 是否是详情
-    const isDetail = /detail/i.test(window.location.href);
+
+    const { monitorModal } = materials;
+    const isDetail = /detail/i.test(window.location.href); // 是否是详情
     const title = id ? isDetail ? '高危工艺流程详情' : '编辑高危工艺流程' : '新增高危工艺流程';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -768,6 +906,46 @@ export default class EmergencySuppliesHandler extends PureComponent {
         },
       },
     ];
+    const monitorColumns = [
+      {
+        title: '类别',
+        dataIndex: 'type',
+        key: 'type',
+        render: t => getTypeLabel(t, MOINTOR_TYPES),
+      },
+      {
+        title: '编码',
+        dataIndex: 'code',
+        key: 'code',
+      },
+      {
+        title: '名称',
+        dataIndex: 'name',
+        key: 'name',
+      },
+    ];
+    const monitorFields = [
+      {
+        id: 'types',
+        render () {
+          return (
+            <Select placeholder="请选择单元类别" mode="multiple" allowClear>
+              {MOINTOR_TYPES.map(({ value, label }) => <Option key={value} value={value}>{label}</Option>)}
+            </Select>
+          );
+        },
+      },
+      // {
+      //   id: 'chineName',
+      //   render () {
+      //     return <Input placeholder="品名" />;
+      //   },
+      //   transform (value) {
+      //     return value.trim();
+      //   },
+      // },
+    ];
+
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
@@ -782,6 +960,24 @@ export default class EmergencySuppliesHandler extends PureComponent {
           onClose={() => {
             this.setState({ companyModalVisible: false });
           }}
+        />
+        <CompanyModal
+          title="选择生产原料"
+          multiSelect
+          rowSelection={{
+            type: 'checkbox',
+            selectedRowKeys: selectedTemp.map(item => item.id),
+            onChange: (keys, rows) => { this.setState({ selectedTemp: rows }) },
+          }}
+          columns={materialsColumns}
+          field={materialsFields}
+          butonStyles={{ width: 'auto' }}
+          loading={middleLoading}
+          visible={rawModalVisible}
+          modal={materials}
+          fetch={this.fetchMaterials}
+          onSelect={this.handleSelectRaw}
+          onClose={() => { this.setState({ rawModalVisible: false }) }}
         />
         {/* 选择中间产品弹窗 */}
         <CompanyModal
@@ -820,6 +1016,24 @@ export default class EmergencySuppliesHandler extends PureComponent {
           fetch={this.fetchMaterials}
           onSelect={this.handleSelectFinal}
           onClose={() => { this.setState({ finalModalVisible: false }) }}
+        />
+        <CompanyModal
+          title="选择重点监控单元"
+          multiSelect
+          rowSelection={{
+            type: 'checkbox',
+            selectedRowKeys: selectedMonitorTemp.map(item => item.id),
+            onChange: (keys, rows) => { this.setState({ selectedMonitorTemp: rows }) },
+          }}
+          columns={monitorColumns}
+          field={monitorFields}
+          butonStyles={{ width: 'auto' }}
+          loading={monitorLoading}
+          visible={monitorModalVisible}
+          modal={monitorModal}
+          fetch={this.fetchMonitors}
+          onSelect={this.handleSelectMonitor}
+          onClose={() => { this.setState({ monitorModalVisible: false }) }}
         />
       </PageHeaderLayout>
     );
