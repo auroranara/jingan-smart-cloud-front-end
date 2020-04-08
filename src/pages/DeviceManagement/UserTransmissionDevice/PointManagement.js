@@ -326,7 +326,6 @@ export default class PointManagement extends Component {
         <Form>
           <FormItem label="系统类型" {...formItemLayout}>
             {getFieldDecorator('systemType', {
-              validateTrigger: 'onBlur',
               rules: [{ required: true, message: '请选择系统类型' }],
             })(
               <Select placeholder="请选择系统类型" allowClear>
@@ -338,7 +337,6 @@ export default class PointManagement extends Component {
           </FormItem>
           <FormItem label="部件类型" {...formItemLayout}>
             {getFieldDecorator('unitType', {
-              validateTrigger: 'onBlur',
               rules: [{ required: true, message: '请选择部件类型' }],
             })(
               <Select placeholder="请选择部件类型" allowClear>
@@ -538,7 +536,7 @@ export default class PointManagement extends Component {
                   onClick={() => { this.handleToEdit(row) }}
                 >
                   编辑
-            </AuthA>
+                </AuthA>
               )}
             <Divider type="vertical" />
             {deleteAuth && row.hasData ? (

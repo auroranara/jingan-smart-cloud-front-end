@@ -313,13 +313,18 @@ export default class AuthorizationList extends PureComponent {
   // 选择单位
   handleSelectCompany = company => {
     const { dispatch } = this.props;
-    this.setState({ company, visible: false }, () => {
+    if (company && company.id) {
+      this.setState({ company, visible: false }, () => {
+        this.handleQuery();
+      });
+      dispatch({
+        type: 'realNameCertification/saveAuthSearchInfo',
+        payload: { company },
+      })
+    } else {
+      this.setState({ visible: false });
       this.handleQuery();
-    });
-    dispatch({
-      type: 'realNameCertification/saveAuthSearchInfo',
-      payload: { company },
-    })
+    }
   }
 
   // 编辑操作

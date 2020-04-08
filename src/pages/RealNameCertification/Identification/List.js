@@ -136,13 +136,18 @@ export default class IdentificationRecord extends PureComponent {
   // 选择单位
   handleSelectCompany = company => {
     const { dispatch } = this.props;
-    this.setState({ company, visible: false }, () => {
+    if (company && company.id) {
+      this.setState({ company, visible: false }, () => {
+        this.handleQuery();
+      });
+      dispatch({
+        type: 'realNameCertification/saveIdenSearchInfo',
+        payload: { company },
+      });
+    } else {
+      this.setState({ visible: false });
       this.handleQuery();
-    });
-    dispatch({
-      type: 'realNameCertification/saveIdenSearchInfo',
-      payload: { company },
-    });
+    }
   };
 
   // 点击打开选择单位
@@ -287,6 +292,7 @@ export default class IdentificationRecord extends PureComponent {
         accessDict,
       },
     } = this.props;
+    const { tabActiveKey } = this.state;
     const columns = [
       {
         title: '姓名',
@@ -361,34 +367,36 @@ export default class IdentificationRecord extends PureComponent {
         width: 150,
         render: val => (+val === 1 ? '已授权' : '未授权'),
       },
-      {
-        title: '有效期',
-        dataIndex: 'permissionTimeType',
-        align: 'center',
-        width: 150,
-        render: val => {
-          const target = validateDict.find(item => +item.key === +val);
-          return target ? (
-            <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
-          ) : (
-              ''
-            );
+      ...tabActiveKey === '1' ? [
+        {
+          title: '有效期',
+          dataIndex: 'permissionTimeType',
+          align: 'center',
+          width: 150,
+          render: val => {
+            const target = validateDict.find(item => +item.key === +val);
+            return target ? (
+              <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
+            ) : (
+                ''
+              );
+          },
         },
-      },
-      {
-        title: '准入时间',
-        dataIndex: 'passTimeType',
-        align: 'center',
-        width: 150,
-        render: val => {
-          const target = accessDict.find(item => +item.key === +val);
-          return target ? (
-            <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
-          ) : (
-              ''
-            );
+        {
+          title: '准入时间',
+          dataIndex: 'passTimeType',
+          align: 'center',
+          width: 150,
+          render: val => {
+            const target = accessDict.find(item => +item.key === +val);
+            return target ? (
+              <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
+            ) : (
+                ''
+              );
+          },
         },
-      },
+      ] : [],
       // {
       //   title: '人员编号(GUID)',
       //   dataIndex: 'personGuid',
