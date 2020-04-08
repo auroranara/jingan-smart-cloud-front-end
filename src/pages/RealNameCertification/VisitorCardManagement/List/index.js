@@ -8,7 +8,13 @@ import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './index.less';
 import { AuthButton } from '@/utils/customAuth';
-import { BREADCRUMBLIST, ROUTER, getSearchFields, getTableColumns } from '../other/utils';
+import {
+  BREADCRUMBLIST,
+  ROUTER,
+  getSearchFields,
+  getTableColumns,
+  EditModal,
+} from '../other/utils';
 import codes from '@/utils/codes';
 
 // 权限
@@ -26,6 +32,8 @@ const {
 export default class index extends PureComponent {
   state = {
     expand: false,
+    editVisible: false,
+    editDetail:{},
   };
   values = {};
 
@@ -52,26 +60,51 @@ export default class index extends PureComponent {
 
   handleDelete = id => {};
 
+  // 编辑弹框显示
+  handleEditModal = (row) => {
+    this.setState({ editVisible: true,editDetail:{...row} });
+  };
+
+  handleModalEdit =(formData)=>{
+    
+  }
+
+  // 编辑弹框关闭
+  handleModalClose  = ()=>{
+    this.setState({ editVisible: false });
+  }
+
   render() {
     const {
       loading,
       user: {
         currentUser: { unitType },
       },
-      visitorRegistration: {
-        registrationData: { list },
-      },
+      // visitorRegistration: {
+      //   // registrationData: { list },
+      // },
     } = this.props;
 
     const { expand } = this.state;
-
+    const list = [
+      {
+        companyName: '1111',
+        name: '卡一',
+      },
+    ];
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
 
     const fields = getSearchFields(unitType);
-    const columns = getTableColumns(this.handleDelete, this.showModal, unitType);
+    const columns = getTableColumns(this.handleDelete, this.handleEditModal, unitType);
     const filterField = expand ? fields : fields.slice(0, 3);
 
+    const modalData = {
+      ...this.state,
+      handleModalClose: this.handleModalClose,
+      handleModalEdit: this.handleModalEdit,
+      list,
+    };
     return (
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
@@ -135,6 +168,7 @@ export default class index extends PureComponent {
             <Empty />
           )}
         </Card>
+        <EditModal {...modalData} />
       </PageHeaderLayout>
     );
   }

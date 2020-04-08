@@ -1,11 +1,12 @@
 import React, { Fragment } from 'react';
 // import Link from 'umi/link';
 // import moment from 'moment';
-import { Input, Divider, Select } from 'antd';
+import { Form } from '@ant-design/compatible';
+import { Input, Divider, Select,Modal } from 'antd';
 
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import codes from '@/utils/codes';
-import { AuthPopConfirm, AuthLink } from '@/utils/customAuth';
+import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
 
 // 权限
 const {
@@ -16,12 +17,13 @@ const {
 
 export const PAGE_SIZE = 20;
 export const ROUTER = '/personnel-management/tag-card'; // modify
+export const TAG_URL = `${ROUTER}/index`;
 export const LIST_URL = `${ROUTER}/visitor-card-list`;
 
 export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '标签卡管理', name: '标签卡管理' },
+  { title: '标签卡管理', name: '标签卡管理', href:TAG_URL},
   { title: '访客卡管理', name: '访客卡管理', href: LIST_URL },
 ];
 
@@ -73,7 +75,7 @@ export function getSearchFields(unitType) {
   return fields;
 }
 
-export function getTableColumns(handleConfirmDelete, showModal, unitType) {
+export function getTableColumns(handleConfirmDelete, handleEditModal, unitType) {
   const columns = [
     {
       title: '单位名称',
@@ -112,14 +114,13 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
       key: 'reason',
       render: (val, row) => (
         <Fragment>
-          <AuthLink
+          <AuthA
             code={editCode}
-            // to={`${ROUTER}/edit/${id}`}
+            onClick ={()=>handleEditModal(row)}
             target="_blank"
-            style={{ marginLeft: 8 }}
           >
             编辑
-          </AuthLink>
+          </AuthA>
           <Divider type="vertical" />
           <AuthPopConfirm
             code={deleteCode}
@@ -138,3 +139,55 @@ export function getTableColumns(handleConfirmDelete, showModal, unitType) {
   if (isCompanyUser(+unitType)) columns.shift();
   return columns;
 }
+
+export const EditModal = Form.create()(props => {
+  const {
+    form: { getFieldDecorator, validateFields, resetFields },
+    editDetail,
+    editVisible,
+    handleModalClose,
+    handleModalEdit,
+  } = props;
+
+  const formItemCol = {
+    labelCol: {
+      span: 5,
+    },
+    wrapperCol: {
+      span: 15,
+    },
+  };
+  const onConfirm = () => {
+    validateFields((err, fieldsValue) => {
+      const { cardName } = fieldsValue;
+      const payload = {
+        cardName,
+      };
+      if (err) return;
+      resetFields();
+      return (
+        handleModalEdit({ ...payload, id: editDetail.id,companyId:editDetail.companyId})
+      );
+    });
+  };
+
+  const handleClose = () => {
+    resetFields();
+    handleModalClose();
+  };
+
+  return (
+    <Modal title={'编辑'} visible={editVisible} onCancel={handleClose} onOk={onConfirm}>
+      <Form>
+        <Form.Item {...formItemCol} label="卡名称：">
+          {getFieldDecorator('cardName', {
+            getValueFromEvent: e => e.target.value.trim(),
+            initialValue:editDetail.name,
+            rules: [{ required: true, message: '请输入卡名称' }],
+          })(<Input placeholder="请输入" />)}
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+});
+

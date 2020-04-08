@@ -705,6 +705,7 @@ export default {
   'menu.realNameCertification.channelDevice.edit': '编辑通道',
   'menu.realNameCertification.channelDevice.view': '查看通道',
   'menu.realNameCertification.visitorRegistration': '访客登记',
+  'menu.realNameCertification.visitorRegistration.companyList': '企业列表',
   'menu.realNameCertification.visitorRegistration.list': '访客登记列表',
   'menu.realNameCertification.visitorRegistration.record': '访客登录记录',
   'menu.electronicInspection': '电子巡检',
