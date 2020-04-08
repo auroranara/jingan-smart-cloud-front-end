@@ -93,6 +93,7 @@ export default class AddAuthorization extends PureComponent {
     } else {
       message.warning('请重新选择单位');
       router.push(listPath);
+      return;
     }
     this.fetchPersonList();
   }
@@ -177,8 +178,12 @@ export default class AddAuthorization extends PureComponent {
   }
 
   // 授权
-  handleAuthorization = ({ deviceKey, name }) => {
-    const { dispatch } = this.props;
+  handleAuthorization = ({ deviceKey, deviceName }) => {
+    const {
+      dispatch,
+      user: { isCompany, currentUser },
+      realNameCertification: { authSearchInfo: searchInfo = {} },
+    } = this.props;
     const {
       selectedPerson, // 选中的人员
       validType,
@@ -198,11 +203,12 @@ export default class AddAuthorization extends PureComponent {
       idCardPermission: permissions.includes('idCardPermission') ? 2 : 1,
       faceAndCardPermission: permissions.includes('faceAndCardPermission') ? 2 : 1,
       idCardFacePermission: permissions.includes('idCardFacePermission') ? 2 : 1,
+      companyId: isCompany ? currentUser.companyId : searchInfo.company.id,
     };
     // console.log('payload', payload);
     const callback = (data) => {
       const success = data && data.result === 1;
-      this.setState(({ result }) => ({ result: [...result, { name, deviceKey, success }] }));
+      this.setState(({ result }) => ({ result: [...result, { name: deviceName, deviceKey, success }] }));
       success ? message.success('授权成功') : message.error(data.msg || '授权失败');
     };
     if (typeCloud && typeCloud.includes('2')) {
