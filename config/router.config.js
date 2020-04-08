@@ -177,6 +177,12 @@ module.exports = env => {
         //   name: 'gasStation',
         //   component: './BigPlatform/GasStation',
         // },
+        {
+          path: '/big-platform/process/:companyId',
+          code: 'dashboard.process',
+          name: 'process',
+          component: './BigPlatform/Process',
+        },
       ],
     },
     // 档案分析报告
@@ -940,7 +946,7 @@ module.exports = env => {
                   path: '/major-hazard-info/high-risk-process/detail/:id',
                   code: 'majorHazardInfo.highRiskProcess.detail',
                   name: 'detail',
-                  component: './BaseInfo/HighRiskProcess/Handler/index',
+                  component: './BaseInfo/HighRiskProcess/Detail/index',
                 },
               ],
             },
