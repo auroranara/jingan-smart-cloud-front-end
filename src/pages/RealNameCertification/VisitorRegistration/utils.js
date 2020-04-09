@@ -260,8 +260,12 @@ export const RECORD_FIELDS = [
   {
     id: 'registrationDate',
     label: '创建时间',
+    span: 16,
+    labelCol: 3,
+    wrapperCol: 12,
     render: () => (
       <RangePicker
+        style={{ width: '100%' }}
         showTime={{
           hideDisabledOptions: true,
           defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('00:00:00', 'HH:mm:ss')],
