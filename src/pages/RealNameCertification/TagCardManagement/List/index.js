@@ -25,7 +25,7 @@ const {
 } = codes;
 
 const url =
-  'http://data.jingan-china.cn/v2/chem/file2/%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xls';
+  'http://data.jingan-china.cn/v2/chem/file3/%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xls';
 
 @connect(({ user, realNameCertification, loading }) => ({
   user,
