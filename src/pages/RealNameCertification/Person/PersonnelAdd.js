@@ -107,6 +107,7 @@ export default class PersonnelAdd extends PureComponent {
       },
       form: { setFieldsValue },
     } = this.props;
+    const { perType } = this.state;
     this.fetchDepartment();
     this.fetchPostList();
     this.setState({
@@ -137,7 +138,11 @@ export default class PersonnelAdd extends PureComponent {
             })),
           });
           this.fetchTagCard(
-            { companyId: companyId || unitCompantId, snNumber: detail.entranceNumber },
+            {
+              companyId: companyId || unitCompantId,
+              snNumber: detail.entranceNumber,
+              personType: perType,
+            },
             res => {
               const { list } = res.data;
               const filterTagList = list.find(item => item.icNumber === detail.icnumber);
@@ -147,10 +152,13 @@ export default class PersonnelAdd extends PureComponent {
         },
       });
     }
-    this.fetchTagCard({ companyId: companyId || unitCompantId, status: 1 }, res => {
-      const { list } = res.data;
-      this.setState({ curLabelList: list });
-    });
+    this.fetchTagCard(
+      { companyId: companyId || unitCompantId, status: 1, personType: perType },
+      res => {
+        const { list } = res.data;
+        this.setState({ curLabelList: list });
+      }
+    );
   }
 
   // 提交
@@ -353,19 +361,15 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    // const isId = id === '1';
+    const { curCompanyId } = this.state;
+    this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: id });
     this.setState({ perType: id });
-    setFieldsValue({ personCompany: undefined });
-    // if (isId) {
-    //   this.fetchPostList();
-    //   this.fetchDepartment();
-    // }
+    setFieldsValue({ personCompany: undefined, icnumber: undefined, entranceNumber: undefined });
   };
 
   // 获取标签卡列表
   fetchTagCard = ({ ...params }, callback) => {
     const { dispatch } = this.props;
-    const { perType } = this.state;
     // 根据输入值获取列表
     dispatch({
       type: 'realNameCertification/fetchTagCardList',
@@ -374,17 +378,16 @@ export default class PersonnelAdd extends PureComponent {
         pageNum: 1,
         pageSize: 30,
         personCar: 1,
-        personType: perType,
       },
       callback,
     });
   };
 
   handleICSearch = value => {
-    const { curCompanyId } = this.state;
+    const { curCompanyId, perType } = this.state;
     // 根据输入值获取列表
     this.fetchTagCard(
-      { icNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
+      { icNumber: value && value.trim(), companyId: curCompanyId, status: 1, personType: perType },
       res => {
         const { list } = res.data;
         this.setState({ curLabelList: list });
@@ -396,14 +399,14 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { curCompanyId, curLabelList } = this.state;
+    const { curCompanyId, curLabelList, perType } = this.state;
     if (value === undefined) {
       this.handleICSearch.cancel();
       setFieldsValue({
         icnumber: undefined,
         entranceNumber: undefined,
       });
-      this.fetchTagCard({ companyId: curCompanyId, status: 1 });
+      this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: perType });
     } else {
       const sn = curLabelList.find(item => item.id === value.key).snNumber;
       const snId = curLabelList.find(item => item.id === value.key).id;
@@ -414,10 +417,10 @@ export default class PersonnelAdd extends PureComponent {
   };
 
   handleSNSearch = value => {
-    const { curCompanyId } = this.state;
+    const { curCompanyId, perType } = this.state;
     // 根据输入值获取列表
     this.fetchTagCard(
-      { snNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
+      { snNumber: value && value.trim(), companyId: curCompanyId, status: 1, personType: perType },
       res => {
         const { list } = res.data;
         this.setState({ curLabelList: list });
@@ -429,7 +432,7 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { curCompanyId, curLabelList } = this.state;
+    const { curCompanyId, curLabelList, perType } = this.state;
     // 根据value判断是否是手动输入
     if (value === undefined) {
       this.handleSNSearch.cancel();
@@ -437,7 +440,7 @@ export default class PersonnelAdd extends PureComponent {
         icnumber: undefined,
         entranceNumber: undefined,
       });
-      this.fetchTagCard({ companyId: curCompanyId, status: 1 });
+      this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: perType });
     } else {
       const ic = curLabelList.find(item => item.id === value.key).icNumber;
       const icId = curLabelList.find(item => item.id === value.key).id;
