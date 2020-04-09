@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Input, Button, Card, Popover, Select, message, Table } from 'antd';
+import { Input, Button, Card, Popover, Select, message, Table, Radio } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
@@ -17,17 +17,12 @@ import styles from './Edit.less';
 
 const { Option } = Select;
 const FormItem = Form.Item;
+const { Group: RadioGroup } = Radio;
 
 // 编辑页面标题
 const editTitle = '编辑储罐区';
 // 添加页面标题
 const addTitle = '新增储罐区';
-
-const envirTypeList = [
-  { key: '1', value: '一类区' },
-  { key: '2', value: '二类区' },
-  // { key: '3', value: '三类区' },
-];
 
 const RISKLVL = ['一级', '二级', '三级', '四级'];
 const materialForms = ['固态', '液态', '气态', '等离子态'];
@@ -69,19 +64,19 @@ const dangerSourceColumns = [
 const dangerSourceFields = [
   {
     id: 'code',
-    render () {
+    render() {
       return <Input placeholder="统一编码" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
   {
     id: 'name',
-    render () {
+    render() {
       return <Input placeholder="危险源名称" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
@@ -120,28 +115,29 @@ const materialsColumns = [
 const materialsFields = [
   {
     id: 'casNo',
-    render () {
+    render() {
       return <Input placeholder="CAS号" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
   {
     id: 'chineName',
-    render () {
+    render() {
       return <Input placeholder="品名" />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
 ];
 
-@connect(({ loading, company, storehouse, materials, user, baseInfo }) => ({
+@connect(({ loading, company, storehouse, materials, user, baseInfo, storageAreaManagement }) => ({
   company,
   storehouse,
   materials,
+  storageAreaManagement,
   companyLoading: loading.effects['company/fetchModelList'],
   dangerSourceLoading: loading.effects['storehouse/fetchDangerSourceModel'],
   materialsLoading: loading.effects['materials/fetchMaterialsList'],
@@ -161,19 +157,16 @@ export default class Edit extends PureComponent {
     dangerUnitVisible: false,
     companySelectVisible: false,
     tankModalVisible: false, // 选择储罐弹窗
-    chemicalModalVisible: false,// 选择装卸危险化学品种类弹窗
+    chemicalModalVisible: false, // 选择装卸危险化学品种类弹窗
     selectedTemp: [],
     selectedTank: [], // 已选择储罐
     selectedChemical: [], // 已选择装卸危险化学品种类
   };
 
   // 挂载后
-  componentDidMount () {
+  componentDidMount() {
     const {
-      user: {
-        currentUser,
-        isCompany,
-      },
+      user: { currentUser, isCompany },
       form: { setFieldsValue },
       match: { params: { id = null } = {} },
     } = this.props;
@@ -245,8 +238,12 @@ export default class Edit extends PureComponent {
             //   .map((item, index) => ({ id: item, name: chineNameList[index] })),
             cofferAreaVisible: +hasCoffer === 1,
             // dangerUnitVisible: +isDanger === 1,
-            selectedTank: Array.isArray(tankIds) ? tankIds.map((id, i) => ({ id, tankName: tankNames[i] })) : [],
-            selectedChemical: Array.isArray(dangerTypes) ? dangerTypes.map((storageId, i) => ({ storageId, chineName: dangerTypeList[i] })) : [],
+            selectedTank: Array.isArray(tankIds)
+              ? tankIds.map((id, i) => ({ id, tankName: tankNames[i] }))
+              : [],
+            selectedChemical: Array.isArray(dangerTypes)
+              ? dangerTypes.map((storageId, i) => ({ storageId, chineName: dangerTypeList[i] }))
+              : [],
           },
           () => {
             setFieldsValue({ cofferArea });
@@ -258,11 +255,13 @@ export default class Edit extends PureComponent {
           callback: ({ list }) => {
             setFieldsValue({ storageList: list });
           },
-        })
+        });
       });
     } else if (isCompany) {
       // 如果是企业登录
-      this.setState({ selectedCompany: { id: currentUser.companyId, name: currentUser.companyName } });
+      this.setState({
+        selectedCompany: { id: currentUser.companyId, name: currentUser.companyName },
+      });
     }
   }
 
@@ -295,7 +294,12 @@ export default class Edit extends PureComponent {
       selectedChemical: [], // 已选择装卸危险化学品种类
     });
     // 清空包含的储罐、
-    setFieldsValue({ companyId: selectedCompany.id, newTankId: undefined, storageList: [], dangerType: undefined });
+    setFieldsValue({
+      companyId: selectedCompany.id,
+      newTankId: undefined,
+      storageList: [],
+      dangerType: undefined,
+    });
   };
 
   handleViewCompanyModal = () => {
@@ -314,15 +318,15 @@ export default class Edit extends PureComponent {
   };
 
   // 获取储罐列表
-  fetchTankList = (actions) => {
+  fetchTankList = actions => {
     const { dispatch } = this.props;
     const { selectedCompany } = this.state;
     if (selectedCompany && selectedCompany.id) {
       dispatch({
         type: 'baseInfo/fetchStorageTankForPage',
         ...actions,
-        payload: { ...actions.payload, tankArea: '', companyId: selectedCompany.id },
-      })
+        payload: { ...actions.payload, companyId: selectedCompany.id },
+      });
     } else {
       message.error('请先选择单位');
       return;
@@ -330,14 +334,20 @@ export default class Edit extends PureComponent {
   };
 
   // 获取装卸危险化学品种类列表
-  fetchChemicalList = (actions) => {
-    const { dispatch, form: { getFieldValue }, match: { params: { id } } } = this.props;
+  fetchChemicalList = actions => {
+    const {
+      dispatch,
+      form: { getFieldValue },
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const newTankId = getFieldValue('newTankId');
     dispatch({
       type: 'storehouse/fetchChemicalList',
       ...actions,
       payload: { ...actions.payload, newTankId, id },
-    })
+    });
   };
 
   handleSelectDangerSource = selectedDangerSource => {
@@ -443,12 +453,15 @@ export default class Edit extends PureComponent {
     });
   };
 
-  handleChangeHasCoffer = val => {
+  handleChangeHasCoffer = e => {
     const {
       form: { setFieldsValue },
     } = this.props;
-    this.setState({ cofferAreaVisible: val === '1' });
+    const {
+      target: { value },
+    } = e;
     setFieldsValue({ cofferArea: undefined });
+    this.setState({ cofferAreaVisible: value === '1' });
   };
 
   handleChangeIsDanger = val => {
@@ -469,12 +482,23 @@ export default class Edit extends PureComponent {
       message.error('请先选择单位');
       return;
     }
-  }
+  };
+
+  // 清空包含的储罐
+  // handleResetTank = () => {
+  //   const {
+  //     form: { setFieldsValue },
+  //   } = this.props;
+  //   setFieldsValue({ newTankId: undefined });
+  //   this.setState({ selectedTank: [], selectedTemp: [] });
+  // };
 
   // 选择储罐
   handleSelectTank = () => {
     const { selectedTemp } = this.state;
-    const { form: { setFieldsValue } } = this.props;
+    const {
+      form: { setFieldsValue },
+    } = this.props;
     setFieldsValue({ newTankId: selectedTemp.map(item => item.id).join(',') });
     this.setState({ selectedTank: selectedTemp, tankModalVisible: false });
     // 获取存储物质及常规存储量
@@ -483,47 +507,48 @@ export default class Edit extends PureComponent {
       callback: ({ list }) => {
         setFieldsValue({ storageList: list });
       },
-    })
-  }
+    });
+  };
 
   // 打开选择装卸危险化学品种类弹窗
   handleViewChemicalModal = () => {
     const { selectedChemical } = this.state;
     this.fetchChemicalList({ payload: { pageNum: 1, pageSize: 10 } });
     this.setState({ chemicalModalVisible: true, selectedTemp: selectedChemical });
-  }
+  };
 
   // 选择装卸危险化学品种类
   handleSelectChemical = () => {
     const { selectedTemp } = this.state;
-    const { form: { setFieldsValue } } = this.props;
+    const {
+      form: { setFieldsValue },
+    } = this.props;
     setFieldsValue({ dangerType: selectedTemp.map(item => item.storageId).join(',') });
     this.setState({ selectedChemical: selectedTemp, chemicalModalVisible: false });
-  }
+  };
 
   // 存储物质及常规存储量--常规储量改变
   handleNomalStorageChange = (value, key) => {
     if (isNaN(value)) return;
-    const { form: { getFieldValue, setFieldsValue } } = this.props;
+    const {
+      form: { getFieldValue, setFieldsValue },
+    } = this.props;
     const storageList = getFieldValue('storageList');
     setFieldsValue({
-      storageList: storageList.map(item => item.storageId === key ? ({ ...item, nomalStorage: value }) : item),
-    })
-  }
+      storageList: storageList.map(
+        item => (item.storageId === key ? { ...item, nomalStorage: value } : item)
+      ),
+    });
+  };
 
-  renderInfo () {
+  renderInfo() {
     const {
       user: {
         currentUser: { unitType },
       },
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
-    const {
-      selectedCompany,
-      cofferAreaVisible,
-      selectedTank,
-      selectedChemical,
-    } = this.state;
+    const { selectedCompany, cofferAreaVisible, selectedTank, selectedChemical } = this.state;
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -622,13 +647,10 @@ export default class Edit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择所处环境功能区">
-                {envirTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
+              <RadioGroup {...itemStyles}>
+                <Radio value="1">一类区</Radio>
+                <Radio value="2">二类区</Radio>
+              </RadioGroup>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="选择包含的储罐">
@@ -644,7 +666,10 @@ export default class Edit extends PureComponent {
                 />
                 <Button type="primary" onClick={this.handleViewTankModal}>
                   选择
-                  </Button>
+                </Button>
+                {/* <Button type="primary" onClick={this.handleResetTank}>
+                  清空
+                </Button> */}
               </Fragment>
             )}
           </FormItem>
@@ -668,15 +693,10 @@ export default class Edit extends PureComponent {
                 },
               ],
             })(
-              <Select
-                {...itemStyles}
-                allowClear
-                placeholder="请选择有无围堰"
-                onChange={this.handleChangeHasCoffer}
-              >
-                <Option value="0">无</Option>
-                <Option value="1">有</Option>
-              </Select>
+              <Radio.Group {...itemStyles} onChange={this.handleChangeHasCoffer}>
+                <Radio value="0">无</Radio>
+                <Radio value="1">有</Radio>
+              </Radio.Group>
             )}
           </FormItem>
           {cofferAreaVisible && (
@@ -726,10 +746,10 @@ export default class Edit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择有无消防通道">
-                <Option value="1">有</Option>
-                <Option value="0">无</Option>
-              </Select>
+              <Radio.Group {...itemStyles}>
+                <Radio value="0">无</Radio>
+                <Radio value="1">有</Radio>
+              </Radio.Group>
             )}
           </FormItem>
 
@@ -746,7 +766,7 @@ export default class Edit extends PureComponent {
                 />
                 <Button type="primary" onClick={this.handleViewChemicalModal}>
                   选择
-                  </Button>
+                </Button>
               </Fragment>
             )}
           </FormItem>
@@ -791,21 +811,25 @@ export default class Edit extends PureComponent {
                         width: 200,
                       },
                       {
-                        title: (<span className={styles.requiredText}>常规存储量（t）</span>),
+                        title: <span className={styles.requiredText}>常规存储量（t）</span>,
                         dataIndex: 'nomalStorage',
                         align: 'center',
                         width: 200,
                         render: (val, row) => (
                           <Input
                             value={val}
-                            onChange={e => this.handleNomalStorageChange(e.target.value, row.storageId)}
+                            onChange={e =>
+                              this.handleNomalStorageChange(e.target.value, row.storageId)
+                            }
                           />
                         ),
                       },
                     ]}
                     pagination={false}
                   />
-                ) : '请选择包含的储罐'}
+                ) : (
+                  '请选择包含的储罐'
+                )}
               </Fragment>
             )}
           </FormItem>
@@ -855,7 +879,7 @@ export default class Edit extends PureComponent {
   }
 
   /* 渲染错误信息 */
-  renderErrorInfo () {
+  renderErrorInfo() {
     const {
       form: { getFieldsError },
     } = this.props;
@@ -899,7 +923,7 @@ export default class Edit extends PureComponent {
   }
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar () {
+  renderFooterToolbar() {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
@@ -914,7 +938,7 @@ export default class Edit extends PureComponent {
   }
 
   // 渲染页面所有信息
-  render () {
+  render() {
     const {
       match: {
         params: { id },
@@ -926,6 +950,9 @@ export default class Edit extends PureComponent {
       materials: materialsModal,
       storehouse: { dangerSourceModal, chemical },
       baseInfo: { storageTank },
+      storageAreaManagement: {
+        list: [detail],
+      },
     } = this.props;
     const {
       companyModalVisible,
@@ -958,6 +985,8 @@ export default class Edit extends PureComponent {
         name: title,
       },
     ];
+
+    const { tankIds = '' } = detail || {};
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
@@ -1012,24 +1041,37 @@ export default class Edit extends PureComponent {
         <TankSelectModal
           title="选择包含的储罐"
           visible={tankModalVisible}
-          onCancel={() => { this.setState({ tankModalVisible: false }) }}
+          onCancel={() => {
+            this.setState({ tankModalVisible: false });
+          }}
           fetch={this.fetchTankList}
-          model={storageTank}
+          model={{
+            ...storageTank,
+            list: storageTank.list.filter(
+              item => !item.tankArea || (tankIds && tankIds.includes(item.id))
+            ),
+          }}
           rowSelection={{
             selectedRowKeys: selectedTemp.map(item => item.id),
-            onChange: (keys, rows) => { this.setState({ selectedTemp: rows }) },
+            onChange: (keys, rows) => {
+              this.setState({ selectedTemp: rows.filter(item => !!item) });
+            },
           }}
           handleSelect={this.handleSelectTank}
         />
         <ChemicalsSelectModal
           title="选择装卸危险化学品种类"
           visible={chemicalModalVisible}
-          onCancel={() => { this.setState({ chemicalModalVisible: false }) }}
+          onCancel={() => {
+            this.setState({ chemicalModalVisible: false });
+          }}
           fetch={this.fetchChemicalList}
           model={chemical}
           rowSelection={{
             selectedRowKeys: selectedTemp.map(item => item.storageId),
-            onChange: (keys, rows) => { this.setState({ selectedTemp: rows }) },
+            onChange: (keys, rows) => {
+              this.setState({ selectedTemp: rows.filter(item => !!item) });
+            },
           }}
           handleSelect={this.handleSelectChemical}
         />

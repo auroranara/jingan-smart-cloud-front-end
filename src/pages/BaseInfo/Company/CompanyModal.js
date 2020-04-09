@@ -18,10 +18,10 @@ const fields = [
     //   //   message: `请输入${fieldList.name}`,
     //   // }],
     // },
-    render () {
+    render() {
       return <Input placeholder={fieldList.name} />;
     },
-    transform (value) {
+    transform(value) {
       return value.trim();
     },
   },
@@ -49,7 +49,7 @@ export default class CompanyModal extends PureComponent {
     name: undefined,
   };
 
-  getSnapshotBeforeUpdate (prevProps, prevState) {
+  getSnapshotBeforeUpdate(prevProps, prevState) {
     return (
       this.props.visible === true &&
       !!this.props.rowSelection &&
@@ -57,7 +57,7 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     if (snapshot) {
       this.setState({ selectedRowKeys: this.props.rowSelection.selectedRowKeys });
     }
@@ -67,6 +67,7 @@ export default class CompanyModal extends PureComponent {
   handleClose = () => {
     const { onClose } = this.props;
     if (onClose) {
+      this.setState({ selectedRowKeys: [] });
       onClose();
     }
   };
@@ -94,10 +95,7 @@ export default class CompanyModal extends PureComponent {
         ...value,
       });
     } else {
-      this.setState({
-        ...value,
-        selectedRowKeys: [],
-      });
+      this.setState({ ...value });
     }
     fetch({
       payload: {
@@ -131,6 +129,7 @@ export default class CompanyModal extends PureComponent {
     if (onSelect) {
       onSelect(selectedData);
     }
+    this.setState({ selectedRowKeys: [] });
   };
 
   /* 重置按钮点击事件 */
@@ -191,8 +190,9 @@ export default class CompanyModal extends PureComponent {
   };
 
   /* 渲染选择按钮 */
-  renderSelectButton () {
+  renderSelectButton() {
     const { selectedRowKeys } = this.state;
+
     return (
       <Button type="primary" onClick={this.handleSelect} disabled={!selectedRowKeys.length}>
         选择
@@ -200,7 +200,7 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
-  render () {
+  render() {
     const {
       visible,
       width,
@@ -254,16 +254,20 @@ export default class CompanyModal extends PureComponent {
           rowKey={rowKey || 'id'}
           dataSource={list || []}
           columns={columns || defaultColumns}
-          pagination={{
-            total,
-            current: pageNum,
-            pageSize,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            showTotal: t => `共 ${t} 条记录`,
-            pageSizeOptions: defaultPageSizeOptions,
-            ...pagination,
-          }}
+          pagination={
+            pagination === false
+              ? false
+              : {
+                  total,
+                  current: pageNum,
+                  pageSize,
+                  showQuickJumper: true,
+                  showSizeChanger: true,
+                  showTotal: t => `共 ${t} 条记录`,
+                  pageSizeOptions: defaultPageSizeOptions,
+                  ...pagination,
+                }
+          }
           rowSelection={{
             selectedRowKeys,
             onChange: this.handleSelectChange,

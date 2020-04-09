@@ -61,10 +61,10 @@ module.exports = env => {
         },
       ],
     },
-    {
-      path: '/test',
-      component: './Test',
-    },
+    // {
+    //   path: '/test',
+    //   component: './Test',
+    // },
     //big platform
     {
       path: '/big-platform',
@@ -177,6 +177,12 @@ module.exports = env => {
         //   name: 'gasStation',
         //   component: './BigPlatform/GasStation',
         // },
+        {
+          path: '/big-platform/process/:companyId',
+          code: 'dashboard.process',
+          name: 'process',
+          component: './BigPlatform/Process',
+        },
       ],
     },
     // 档案分析报告
@@ -437,6 +443,30 @@ module.exports = env => {
                   code: 'systemManagement.appAuthority.edit',
                   name: 'edit',
                   component: './SystemManagement/AppAuthority/AppAuthorityAddOrEdit',
+                },
+              ],
+            },
+            {
+              path: '/system-management/system-setting', // 系统设置
+              name: 'systemSetting',
+              code: 'systemManagement.systemSetting',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/system-management/system-setting',
+                  redirect: '/system-management/system-setting/list',
+                },
+                {
+                  path: '/system-management/system-setting/list',
+                  name: 'companyList',
+                  code: 'systemManagement.systemSetting.companyList',
+                  component: './SystemManagement/SystemSetting/CompanyList',
+                },
+                {
+                  path: '/system-management/system-setting/setting/:id',
+                  name: 'setting',
+                  code: 'systemManagement.systemSetting.setting',
+                  component: './SystemManagement/SystemSetting/Setting',
                 },
               ],
             },
@@ -753,6 +783,12 @@ module.exports = env => {
                   component: './BaseInfo/StorageManagement/StorageEdit',
                 },
                 {
+                  name: 'detail',
+                  code: 'majorHazardInfo.storageAreaManagement.detail',
+                  path: '/major-hazard-info/storage-management/detail/:id',
+                  component: './BaseInfo/StorageManagement/Detail',
+                },
+                {
                   name: 'add',
                   code: 'majorHazardInfo.storageAreaManagement.add',
                   path: '/major-hazard-info/storage-management/add',
@@ -785,9 +821,9 @@ module.exports = env => {
                 },
                 {
                   name: 'view',
-                  code: 'majorHazardInfo.reservoirRegionManagement.listView',
-                  path: '/major-hazard-info/reservoir-region-management/view/:id',
-                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
+                  code: 'majorHazardInfo.reservoirRegionManagement.detail',
+                  path: '/major-hazard-info/reservoir-region-management/detail/:id',
+                  component: './BaseInfo/ReservoirRegionManagement/Detail',
                 },
                 {
                   name: 'add',
@@ -910,7 +946,7 @@ module.exports = env => {
                   path: '/major-hazard-info/high-risk-process/detail/:id',
                   code: 'majorHazardInfo.highRiskProcess.detail',
                   name: 'detail',
-                  component: './BaseInfo/HighRiskProcess/Handler/index',
+                  component: './BaseInfo/HighRiskProcess/Detail/index',
                 },
               ],
             },
@@ -1826,6 +1862,25 @@ module.exports = env => {
                   code: 'personnelManagement.tagCardManagement.view',
                   name: 'tagCardDetail',
                   component: './RealNameCertification/TagCardManagement/Handle',
+                },
+                // 访客卡
+                {
+                  path: '/personnel-management/tag-card/visitor-card-list',
+                  code: 'personnelManagement.tagCardManagement.visitorCardList',
+                  name: 'visitorCardList',
+                  component: './RealNameCertification/VisitorCardManagement/List',
+                },
+                {
+                  path: '/personnel-management/tag-card/visitor-card-add',
+                  code: 'personnelManagement.tagCardManagement.visitorCardAdd',
+                  name: 'visitorCardAdd',
+                  component: './RealNameCertification/VisitorCardManagement/Handle',
+                },
+                {
+                  path: '/personnel-management/tag-card/visitor-card-edit/:id',
+                  code: 'personnelManagement.tagCardManagement.visitorCardEdit',
+                  name: 'visitorCardEdit',
+                  component: './RealNameCertification/VisitorCardManagement/Handle',
                 },
               ],
             },
@@ -3857,6 +3912,272 @@ module.exports = env => {
                 },
               ],
             },
+
+            // // 承包商管理
+            // {
+            //   path: '/operation-safety/contractor',
+            //   code: 'operationSafety.contractor',
+            //   name: 'contractor',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/contractor',
+            //       redirect: '/operation-safety/contractor/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor/list',
+            //       code: 'operationSafety.contractor.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/Contractor/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor/detail/:id',
+            //       code: 'operationSafety.contractor.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/Contractor/Detail',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor/add',
+            //       code: 'operationSafety.contractor.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/Contractor/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor/edit/:id',
+            //       code: 'operationSafety.contractor.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/Contractor/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 承包商施工管理
+            // {
+            //   path: '/operation-safety/contractor-construction',
+            //   code: 'operationSafety.contractorConstruction',
+            //   name: 'contractorConstruction',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/contractor-construction',
+            //       redirect: '/operation-safety/contractor-construction/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-construction/list',
+            //       code: 'operationSafety.contractorConstruction.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/ContractorConstruction/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-construction/detail/:id',
+            //       code: 'operationSafety.contractorConstruction.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/ContractorConstruction/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-construction/add',
+            //       code: 'operationSafety.contractorConstruction.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/ContractorConstruction/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-construction/edit/:id',
+            //       code: 'operationSafety.contractorConstruction.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/ContractorConstruction/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 承包商评定管理
+            // {
+            //   path: '/operation-safety/contractor-evaluation',
+            //   code: 'operationSafety.contractorEvaluation',
+            //   name: 'contractorEvaluation',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/contractor-evaluation',
+            //       redirect: '/operation-safety/contractor-evaluation/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-evaluation/list',
+            //       code: 'operationSafety.contractorEvaluation.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/ContractorEvaluation/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-evaluation/detail/:id',
+            //       code: 'operationSafety.contractorEvaluation.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/ContractorEvaluation/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-evaluation/add',
+            //       code: 'operationSafety.contractorEvaluation.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/ContractorEvaluation/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-evaluation/edit/:id',
+            //       code: 'operationSafety.contractorEvaluation.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/ContractorEvaluation/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 承包商违章记录
+            // {
+            //   path: '/operation-safety/contractor-violation-record',
+            //   code: 'operationSafety.contractorViolationRecord',
+            //   name: 'contractorViolationRecord',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/contractor-violation-record',
+            //       redirect: '/operation-safety/contractor-violation-record/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-violation-record/list',
+            //       code: 'operationSafety.contractorViolationRecord.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/ContractorViolationRecord/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-violation-record/detail/:id',
+            //       code: 'operationSafety.contractorViolationRecord.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/ContractorViolationRecord/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-violation-record/add',
+            //       code: 'operationSafety.contractorViolationRecord.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/ContractorViolationRecord/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-violation-record/edit/:id',
+            //       code: 'operationSafety.contractorViolationRecord.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/ContractorViolationRecord/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 供应商管理
+            // {
+            //   path: '/operation-safety/supplier',
+            //   code: 'operationSafety.supplier',
+            //   name: 'supplier',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/supplier',
+            //       redirect: '/operation-safety/supplier/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier/list',
+            //       code: 'operationSafety.supplier.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/Supplier/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier/detail/:id',
+            //       code: 'operationSafety.supplier.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/Supplier/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier/add',
+            //       code: 'operationSafety.supplier.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/Supplier/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier/edit/:id',
+            //       code: 'operationSafety.supplier.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/Supplier/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 供应商考核管理
+            // {
+            //   path: '/operation-safety/supplier-evaluation',
+            //   code: 'operationSafety.supplierEvaluation',
+            //   name: 'supplierEvaluation',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/supplier-evaluation',
+            //       redirect: '/operation-safety/supplier-evaluation/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier-evaluation/list',
+            //       code: 'operationSafety.supplierEvaluation.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/SupplierEvaluation/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier-evaluation/detail/:id',
+            //       code: 'operationSafety.supplierEvaluation.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/SupplierEvaluation/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier-evaluation/add',
+            //       code: 'operationSafety.supplierEvaluation.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/SupplierEvaluation/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier-evaluation/edit/:id',
+            //       code: 'operationSafety.supplierEvaluation.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/SupplierEvaluation/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 警示牌管理
+            // {
+            //   path: '/operation-safety/warning-sign',
+            //   code: 'operationSafety.warningSign',
+            //   name: 'warningSign',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/warning-sign',
+            //       redirect: '/operation-safety/warning-sign/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/warning-sign/list',
+            //       code: 'operationSafety.warningSign.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/WarningSign/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/warning-sign/detail/:id',
+            //       code: 'operationSafety.warningSign.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/WarningSign/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/warning-sign/add',
+            //       code: 'operationSafety.warningSign.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/WarningSign/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/warning-sign/edit/:id',
+            //       code: 'operationSafety.warningSign.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/WarningSign/Form',
+            //     },
+            //   ],
+            // },
           ],
         },
 
@@ -5407,6 +5728,43 @@ module.exports = env => {
                   code: 'realNameCertification.personnelManagement.edit',
                   component: './RealNameCertification/Person/PersonnelAdd',
                 },
+                {
+                  name: 'view',
+                  path: '/real-name-certification/personnel-management/detail/:id',
+                  code: 'realNameCertification.personnelManagement.view',
+                  component: './RealNameCertification/Person/PersonnelDetail',
+                },
+                {
+                  name: 'record',
+                  path: '/real-name-certification/personnel-management/record/:id',
+                  code: 'realNameCertification.personnelManagement.importPhoto',
+                  component: './RealNameCertification/Person/ImportRecord',
+                },
+              ],
+            },
+            {
+              name: 'visitorRegistration', // 访客登记
+              code: 'realNameCertification.visitorRegistration',
+              path: '/real-name-certification/visitor-registration',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/visitor-registration',
+                  redirect: '/real-name-certification/visitor-registration/list',
+                },
+                {
+                  name: 'list',
+                  path: '/real-name-certification/visitor-registration/list',
+                  code: 'realNameCertification.visitorRegistration.visitorList',
+                  component: './RealNameCertification/VisitorRegistration/List',
+                },
+                {
+                  name: 'record',
+                  path: '/real-name-certification/visitor-registration/record/:id',
+                  code: 'realNameCertification.visitorRegistration.visitorRegistrationRecord',
+                  component: './RealNameCertification/VisitorRegistration/Record',
+                },
               ],
             },
             // {
@@ -5510,35 +5868,35 @@ module.exports = env => {
             },
             {
               name: 'channelDevice', // 通道设备
-              path: '/real-name-certification/channelDevice',
+              path: '/real-name-certification/channel-device',
               code: 'realNameCertification.channelDevice',
               hideChildrenInMenu: true,
               routes: [
                 {
-                  path: '/real-name-certification/channelDevice',
-                  redirect: '/real-name-certification/channelDevice/list',
+                  path: '/real-name-certification/channel-device',
+                  redirect: '/real-name-certification/channel-device/list',
                 },
                 {
                   name: 'list',
-                  path: '/real-name-certification/channelDevice/list',
+                  path: '/real-name-certification/channel-device/list',
                   code: 'realNameCertification.channelDevice.listView',
                   component: './RealNameCertification/ChannelDevice/List',
                 },
                 {
                   name: 'add',
-                  path: '/real-name-certification/channelDevice/add',
+                  path: '/real-name-certification/channel-device/add',
                   code: 'realNameCertification.channelDevice.add',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },
                 {
                   name: 'edit',
-                  path: '/real-name-certification/channelDevice/edit/:id',
+                  path: '/real-name-certification/channel-device/edit/:id',
                   code: 'realNameCertification.channelDevice.edit',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },
                 {
                   name: 'view',
-                  path: '/real-name-certification/channelDevice/view/:id',
+                  path: '/real-name-certification/channel-device/view/:id',
                   code: 'realNameCertification.channelDevice.view',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },

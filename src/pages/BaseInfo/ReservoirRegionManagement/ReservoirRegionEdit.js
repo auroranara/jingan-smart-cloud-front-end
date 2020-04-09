@@ -4,7 +4,7 @@ import router from 'umi/router';
 import { routerRedux } from 'dva/router';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Input, Button, Card, Popover, Select, message } from 'antd';
+import { Input, Button, Card, Popover, Select, message, Radio } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
@@ -42,10 +42,12 @@ export default class ReservoirRegionEdit extends PureComponent {
     editCompanyId: '',
     dangerSourceUnitId: [],
     wareHouseIds: '',
+    selectedTemp: [],
+    selectedWarehouse: [],
   };
 
   // 挂载后
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
       match: {
@@ -60,14 +62,16 @@ export default class ReservoirRegionEdit extends PureComponent {
         payload: {
           pageSize: 18,
           pageNum: 1,
+          id,
         },
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { companyId } = currentList;
+          const { companyId, warehouseInfos } = currentList;
           this.setState({
             detailList: currentList,
             editCompanyId: companyId,
+            selectedWarehouse: warehouseInfos,
             // hasDangerSourse: dangerSource,
             // dangerSourceUnitId: dangerSourceMessage,
           });
@@ -197,7 +201,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   };
 
   // 渲染企业模态框
-  renderModal () {
+  renderModal() {
     const {
       videoMonitor: { modal },
       loading,
@@ -222,7 +226,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
-    const { editCompanyId } = this.state;
+    const { editCompanyId, selectedWarehouse } = this.state;
     const fixedCompanyId = this.companyId || editCompanyId || companyId;
     if (fixedCompanyId) {
       this.fetchStoreHouseList({
@@ -231,7 +235,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           pageNum: 1,
         },
       });
-      this.setState({ storeHouseVisible: true });
+      this.setState({ storeHouseVisible: true, selectedTemp: selectedWarehouse });
     } else {
       message.warning('请先选择单位！');
     }
@@ -251,7 +255,9 @@ export default class ReservoirRegionEdit extends PureComponent {
       type: 'storehouse/fetchStorehouseList',
       payload: {
         ...payload,
-        isBind: 0, //0未绑定  1绑定
+        pageSize: 0,
+        pageNum: 1,
+        // isBind: 0, //0未绑定  1绑定
         companyId: fixedCompanyId,
       },
     });
@@ -262,9 +268,13 @@ export default class ReservoirRegionEdit extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
+    const { selectedTemp } = this.state;
     this.setState({ storeHouseVisible: false });
     setFieldsValue({ wareHouseName: item.map(item => item.name).join(',') });
-    this.setState({ wareHouseIds: item.map(item => item.id).join(',') });
+    this.setState({
+      wareHouseIds: item.map(item => item.id).join(','),
+      selectedWarehouse: selectedTemp,
+    });
   };
 
   // 清空包含的库房
@@ -273,10 +283,10 @@ export default class ReservoirRegionEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({ wareHouseName: '' });
-    this.setState({ wareHouseIds: '' });
-  }
+    this.setState({ wareHouseIds: '', selectedTemp: [], selectedWarehouse: [] });
+  };
 
-  renderInfo () {
+  renderInfo() {
     const {
       form: { getFieldDecorator },
       reservoirRegion: { envirTypeList },
@@ -396,13 +406,13 @@ export default class ReservoirRegionEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择所处环境功能区">
+              <Radio.Group {...itemStyles}>
                 {envirTypeList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
+                  <Radio key={key} value={key}>
                     {value}
-                  </Option>
+                  </Radio>
                 ))}
-              </Select>
+              </Radio.Group>
             )}
           </FormItem>
 
@@ -421,7 +431,12 @@ export default class ReservoirRegionEdit extends PureComponent {
                 maxLength="2000"
               />
             )}
-            <Button style={{ marginRight: '10px' }} type="primary" size="small" onClick={this.handleShowModal}>
+            <Button
+              style={{ marginRight: '10px' }}
+              type="primary"
+              size="small"
+              onClick={this.handleShowModal}
+            >
               选择
             </Button>
             <Button type="primary" size="small" onClick={this.handleResetWareHouse}>
@@ -455,17 +470,17 @@ export default class ReservoirRegionEdit extends PureComponent {
             })(<Input {...itemStyles} placeholder="请输入周边安全防护间距（m）" maxLength={10} />)}
           </FormItem>
 
-          <FormItem {...formItemLayout} label="与周边装置的距离">
+          <FormItem {...formItemLayout} label="与周边装置的距离（m）">
             {getFieldDecorator('deviceDistance', {
               initialValue: deviceDistance,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
-                  message: '请输入与周边装置的距离',
+                  message: '请输入与周边装置的距离（m）',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入与周边装置的距离" maxLength={10} />)}
+            })(<Input {...itemStyles} placeholder="请输入与周边装置的距离（m）" maxLength={10} />)}
           </FormItem>
         </Form>
       </Card>
@@ -473,7 +488,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 渲染错误信息
-  renderErrorInfo () {
+  renderErrorInfo() {
     const {
       form: { getFieldsError },
     } = this.props;
@@ -517,7 +532,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 渲染底部工具栏
-  renderFooterToolbar (isDetail, id) {
+  renderFooterToolbar(isDetail, id) {
     const { submitting } = this.state;
     return (
       <FooterToolbar>
@@ -531,15 +546,15 @@ export default class ReservoirRegionEdit extends PureComponent {
             编辑
           </Button>
         ) : (
-            <Button
-              type="primary"
-              size="large"
-              loading={submitting}
-              onClick={this.handleClickValidate}
-            >
-              提交
+          <Button
+            type="primary"
+            size="large"
+            loading={submitting}
+            onClick={this.handleClickValidate}
+          >
+            提交
           </Button>
-          )}
+        )}
         <Button size="large" onClick={this.goBack}>
           返回
         </Button>
@@ -548,7 +563,7 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 渲染页面所有信息
-  render () {
+  render() {
     const {
       storeHouseLoading,
       match: {
@@ -556,10 +571,13 @@ export default class ReservoirRegionEdit extends PureComponent {
       },
       route: { name },
       storehouse,
+      reservoirRegion: {
+        areaData: {
+          list: [detail],
+        },
+      },
     } = this.props;
-    console.log('storehouse', storehouse);
-
-    const { storeHouseVisible } = this.state;
+    const { storeHouseVisible, selectedTemp } = this.state;
     const isDetail = name === 'view';
     const title = id ? (isDetail ? '详情' : editTitle) : addTitle;
 
@@ -615,23 +633,26 @@ export default class ReservoirRegionEdit extends PureComponent {
     const shFields = [
       {
         id: 'name',
-        render () {
+        render() {
           return <Input placeholder="请输入库房名称" />;
         },
-        transform (value) {
+        transform(value) {
           return value.trim();
         },
       },
       {
         id: 'code',
-        render () {
+        render() {
           return <Input placeholder="请输入库房编号" />;
         },
-        transform (value) {
+        transform(value) {
           return value.trim();
         },
       },
     ];
+
+    const { warehouseInfos = [] } = detail || {};
+    const warehouseInfosIds = warehouseInfos.map(({ id }) => id);
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
@@ -642,10 +663,21 @@ export default class ReservoirRegionEdit extends PureComponent {
         <CompanyModal
           title="选择包含的库房"
           multiSelect
-          rowSelection={{ type: 'checkbox' }}
+          rowSelection={{
+            type: 'checkbox',
+            selectedRowKeys: selectedTemp.map(item => item.id),
+            onChange: (keys, rows) => {
+              this.setState({ selectedTemp: rows.filter(item => !!item) });
+            },
+          }}
           loading={storeHouseLoading}
           visible={storeHouseVisible}
-          modal={storehouse}
+          modal={{
+            ...storehouse,
+            list: storehouse.list.filter(
+              item => !item.areaId || (warehouseInfosIds && warehouseInfosIds.includes(item.id))
+            ),
+          }}
           columns={shColumns}
           field={shFields}
           fetch={this.fetchStoreHouseList}
@@ -653,6 +685,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           onClose={() => {
             this.setState({ storeHouseVisible: false });
           }}
+          pagination={false}
         />
       </PageHeaderLayout>
     );

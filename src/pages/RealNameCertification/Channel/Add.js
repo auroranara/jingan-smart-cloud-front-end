@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Spin, message, Card, Row, Col, Input } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -10,20 +11,20 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import router from 'umi/router';
 import { connect } from 'dva';
 import { AuthButton } from '@/utils/customAuth';
-import codes from '@/utils/codes'
+import codes from '@/utils/codes';
 import styles from './Add.less';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
 const LIST_PATH = '/real-name-certification/channel/list';
 
-@connect(({ realNameCertification, user, loading }) => ({
+@connect(({ realNameCertification, user, electronicInspection, loading }) => ({
   realNameCertification,
+  electronicInspection,
   user,
   deviceLoading: loading.effects['realNameCertification/fetchChannelDeviceList'],
 }))
 export default class AddOperatingProdures extends Component {
-
   state = {
     device: [], // 关联设备
     deviceModalVisible: false, // 选择关联设备弹窗
@@ -34,7 +35,9 @@ export default class AddOperatingProdures extends Component {
   componentDidMount () {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       realNameCertification: { channelSearchInfo: searchInfo = {} },
     } = this.props;
     if (id) {
@@ -54,17 +57,34 @@ export default class AddOperatingProdures extends Component {
               entrance, // 入口设备id
               exitDeviceCode,
               entranceDeviceCode,
+              productArea,
             } = detail;
-            this.form && this.form.setFieldsValue({
-              company: companyId ? { key: companyId, label: companyName } : undefined,
-              accessoryDetails: accessoryDetails ? accessoryDetails.map((item) => ({ ...item, uid: item.id, url: item.webUrl, status: 'done' })) : [],
-              channelName: channelName || undefined,
-              channelLocation,
-              type: type || undefined,
-            });
+            this.form &&
+              this.form.setFieldsValue({
+                company: companyId ? { key: companyId, label: companyName } : undefined,
+                accessoryDetails: accessoryDetails
+                  ? accessoryDetails.map(item => ({
+                    ...item,
+                    uid: item.id,
+                    url: item.webUrl,
+                    status: 'done',
+                  }))
+                  : [],
+                channelName: channelName || undefined,
+                channelLocation,
+                type: type || undefined,
+                productArea,
+              });
+            this.fetchProductionArea(companyId);
             setTimeout(() => {
               // type 1 双向 2 单向
-              const device = (+type === 1 && [{ direction: '1', code: exitDeviceCode, id: exit }, { direction: '2', code: entranceDeviceCode, id: entrance }]) || (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance }]) || [];
+              const device =
+                (+type === 1 && [
+                  { direction: '1', code: exitDeviceCode, id: exit },
+                  { direction: '2', code: entranceDeviceCode, id: entrance },
+                ]) ||
+                (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance, code: exitDeviceCode || entranceDeviceCode }]) ||
+                [];
               this.form && this.form.setFieldsValue({ device });
               this.setState({ device });
             }, 0);
@@ -72,7 +92,7 @@ export default class AddOperatingProdures extends Component {
             message.error('获取详情失败，请稍后重试或联系管理人员！');
           }
         },
-      })
+      });
     } else {
       const device = [{ direction: '1' }, { direction: '2' }];
       this.form && this.form.setFieldsValue({ type: '1', device });
@@ -88,7 +108,10 @@ export default class AddOperatingProdures extends Component {
 
   // 获取设备列表-未绑定
   fetchDevice = ({ payload = { pageNum: 1, pageSize: 10 } } = {}) => {
-    const { dispatch, user: { isCompany, currentUser } } = this.props;
+    const {
+      dispatch,
+      user: { isCompany, currentUser },
+    } = this.props;
     const company = this.form && this.form.getFieldValue('company');
     dispatch({
       type: 'realNameCertification/fetchChannelDeviceList',
@@ -98,10 +121,27 @@ export default class AddOperatingProdures extends Component {
         companyId: isCompany ? currentUser.companyId : company.key,
       },
     });
-  }
+  };
+
+  handleChangeCompany = company => {
+    this.fetchProductionArea(company.key);
+  };
+
+  // 获取生产区域
+  fetchProductionArea = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'electronicInspection/fetchProductionArea',
+      payload: {
+        pageNum: 1,
+        pageSize: 0,
+        companyId,
+      },
+    });
+  };
 
   // 上传前
-  handleBeforeUpload = (file) => {
+  handleBeforeUpload = file => {
     const isJpgOrPng = file.type.includes('image');
     if (!isJpgOrPng) {
       message.error('文件上传只支持图片!');
@@ -111,93 +151,130 @@ export default class AddOperatingProdures extends Component {
     //   message.error('文件上传最大支持2MB!');
     // }
     return isJpgOrPng;
-  }
+  };
 
   // 跳转到编辑页面
   handleEditButtonClick = () => {
-    const { match: { params: { id } } } = this.props;
-    router.push(`/real-name-certification/channel/edit/${id}`)
-  }
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    router.push(`/real-name-certification/channel/edit/${id}`);
+  };
 
   // 监听通道类型改变
   onTypeChange = type => {
     console.log('type', type);
     // type 1 双向 2 单向
-    const device = (+type === 1 && [{ direction: '1' }, { direction: '2' }]) || (+type === 2 && [{ direction: undefined }]) || []
+    const device =
+      (+type === 1 && [{ direction: '1' }, { direction: '2' }]) ||
+      (+type === 2 && [{ direction: undefined }]) ||
+      [];
     this.setState({ device });
     this.form && this.form.setFieldsValue({ device });
-  }
+  };
 
   // 监听通道方向改变
-  onDirectionChange = (direction) => {
+  onDirectionChange = direction => {
     const { device } = this.state;
     const newDevice = [{ ...device[0], direction }];
     this.setState({ device: newDevice });
     this.form && this.form.setFieldsValue({ device: newDevice });
-  }
+  };
 
   // 打开选择关联设备弹窗
   hadnleViewDeviceModal = (id, i) => {
-    const { user: { isCompany } } = this.props;
+    const {
+      user: { isCompany },
+    } = this.props;
     const company = this.form && this.form.getFieldValue('company');
-    if (!isCompany && company && company.key || isCompany) {
+    if ((!isCompany && company && company.key) || isCompany) {
       this.fetchDevice();
       this.setState({
         currentDevice: i,
         deviceModalVisible: true,
         selectedDeviceKeys: id ? [id] : [],
-      })
-    } else message.warning('请先选择单位')
-
-  }
+      });
+    } else message.warning('请先选择单位');
+  };
 
   // 选择关联设备
   handleSelectDevice = ({ id, deviceCode }) => {
     const { currentDevice, device } = this.state;
     if (device.some(item => item.id === id)) {
-      message.warning('该设备已选择！')
+      message.warning('该设备已选择！');
       return;
     }
-    const newDevice = device.map((item, i) => currentDevice === i ? { ...item, id, code: deviceCode } : item)
+    const newDevice = device.map(
+      (item, i) => (currentDevice === i ? { ...item, id, code: deviceCode } : item)
+    );
     this.setState({ device: newDevice, deviceModalVisible: false });
     this.form && this.form.setFieldsValue({ device: newDevice });
+  };
+
+  // 清空设备
+  handleResetDevice = (i, item) => {
+    const { dispatch, match: { params: { id } } } = this.props;
+    let device = [...this.state.device || []];
+    device.splice(i, 1, { ...item, code: undefined, id: undefined });
+    if (id && item.code) {
+      // 如果编辑，需要解绑
+      dispatch({
+        type: 'realNameCertification/editChannel',
+        payload: { id, exit: +item.direction === 1 ? null : undefined, entrance: +item.direction === 2 ? null : undefined },
+        callback: (success) => {
+          if (success) {
+            message.success('操作成功');
+            this.setState({ device });
+            this.form && this.form.setFieldsValue({ device });
+          } else {
+            message.error('操作失败')
+          }
+        },
+      })
+    } else {
+      this.setState({ device });
+      this.form && this.form.setFieldsValue({ device });
+    };
   }
 
   // 提交
   handleSubmitButtonClick = () => {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       user: { isCompany, currentUser },
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((err, values) => {
       if (err) return;
-      const {
-        company,
-        device,
-        type,
-        ...resValues
-      } = values;
+      const { company, device, type, ...resValues } = values;
       let payload = {
         ...resValues,
         type,
         companyId: isCompany ? currentUser.companyId : company.key,
       };
-      console.log('device', device)
-      if (+type === 1) { // 双向
+      // console.log('device', device);
+      if (+type === 1) {
+        // 双向
         device.forEach(item => {
           // direction 1 出口 2 入口
-          if (+item.direction === 1) { // 出口
+          if (+item.direction === 1) {
+            // 出口
             payload.exit = item.id;
-          } else if (+item.direction === 2) { // 入口
+          } else if (+item.direction === 2) {
+            // 入口
             payload.entrance = item.id;
           }
         })
       } else if (+type === 2 && +device[0].direction === 1) { // 单向 出口
-        payload.exit = device[0].id;
+        payload = { ...payload, exit: device[0].id, entrance: null };
       } else if (+type === 2 && +device[0].direction === 2) { // 单向 入口
         payload.entrance = device[0].id;
+        payload = { ...payload, entrance: device[0].id, exit: null };
       }
       const callback = (success, msg) => {
         if (success) {
@@ -206,52 +283,54 @@ export default class AddOperatingProdures extends Component {
         } else {
           message.error(msg || '操作失败');
         }
-      }
+      };
       if (id) {
         // 如果编辑
         dispatch({
           type: 'realNameCertification/editChannel',
           payload: { ...payload, id },
           callback,
-        })
+        });
       } else {
         dispatch({
           type: 'realNameCertification/addChannel',
           payload,
           callback,
-        })
+        });
       }
-    })
-  }
+    });
+  };
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   validateDevice = (rule, value, callback) => {
     if (Array.isArray(value) && value.every(item => item.direction && item.id)) {
-      callback()
-    } else callback('关联设备不能为空')
-  }
+      callback();
+    } else callback('关联设备不能为空');
+  };
 
   render () {
     const {
       deviceLoading,
       submitting = false,
       user: { isCompany },
-      realNameCertification: {
-        channelDevice,
-        channelTypeDict,
-        directionDict,
+      realNameCertification: { channelDevice, channelTypeDict, directionDict },
+      electronicInspection: {
+        productionArea: { list: productionAreaList = [] },
       },
     } = this.props;
-    const { deviceModalVisible, selectedDeviceKeys } = this.state;
+    const { deviceModalVisible, selectedDeviceKeys, device } = this.state;
     const href = location.href;
     const isNotDetail = !href.includes('view');
     const isEdit = href.includes('edit');
-    const title = (href.includes('add') && '新增通道') || (href.includes('edit') && '编辑通道') || (href.includes('view') && '查看通道');
+    const title =
+      (href.includes('add') && '新增通道') ||
+      (href.includes('edit') && '编辑通道') ||
+      (href.includes('view') && '查看通道');
     const type = this.form && this.form.getFieldValue('type');
-    const device = this.form && this.form.getFieldValue('device') || [];
+    // const device = this.form && this.form.getFieldValue('device') || [];
     const breadcrumbList = [
       {
         title: '首页',
@@ -276,36 +355,57 @@ export default class AddOperatingProdures extends Component {
       {
         key: '1',
         fields: [
-          ...isCompany ? [] : [{
-            id: 'company',
-            label: '单位名称',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => <CompanySelect className={styles.item} disabled={isEdit} type={isNotDetail || 'span'} />,
-            options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '单位名称不能为空',
-                  transform: value => value && value.label,
+          ...(isCompany
+            ? []
+            : [
+              {
+                id: 'company',
+                label: '单位名称',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => (
+                  <CompanySelect
+                    className={styles.item}
+                    disabled={isEdit}
+                    type={isNotDetail || 'span'}
+                    onChange={this.handleChangeCompany}
+                  />
+                ),
+                options: {
+                  rules: isNotDetail
+                    ? [
+                      {
+                        required: true,
+                        message: '单位名称不能为空',
+                        transform: value => value && value.label,
+                      },
+                    ]
+                    : undefined,
                 },
-              ] : undefined,
-            },
-          }],
+              },
+            ]),
           {
             id: 'channelName',
             label: '通道名称',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入通道名称" type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入通道名称"
+                type={isNotDetail ? 'Input' : 'span'}
+              />
+            ),
             options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '通道名称不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '通道名称不能为空',
+                  },
+                ]
+                : undefined,
             },
           },
           {
@@ -313,15 +413,23 @@ export default class AddOperatingProdures extends Component {
             label: '通道位置',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入通道位置" type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入通道位置"
+                type={isNotDetail ? 'Input' : 'span'}
+              />
+            ),
             options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '通道位置不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '通道位置不能为空',
+                  },
+                ]
+                : undefined,
             },
           },
           {
@@ -339,13 +447,41 @@ export default class AddOperatingProdures extends Component {
               />
             ),
             options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '通道类型不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '通道类型不能为空',
+                  },
+                ]
+                : undefined,
+            },
+          },
+          {
+            id: 'productArea',
+            label: '所属区域',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => (
+              <SelectOrSpan
+                className={styles.item}
+                placeholder="请选择所属区域"
+                type={isNotDetail ? 'Select' : 'span'}
+                list={productionAreaList.map(({ id, areaName }) => ({ key: id, value: areaName }))}
+                allowClear
+              />
+            ),
+            options: {
+              rules: isNotDetail
+                ? [
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '通道类型不能为空',
+                  },
+                ]
+                : undefined,
             },
           },
           {
@@ -358,14 +494,36 @@ export default class AddOperatingProdures extends Component {
                 {device.map((item, i) => (
                   <Row key={i} gutter={16}>
                     <Col span={isNotDetail ? 5 : 2}>
-                      <SelectOrSpan onChange={this.onDirectionChange} disabled={+type === 1} value={item.direction} list={directionDict} placeholder="请选择方向" type={isNotDetail ? 'Select' : 'span'} />
+                      <SelectOrSpan
+                        onChange={this.onDirectionChange}
+                        disabled={+type === 1}
+                        value={item.direction}
+                        list={directionDict}
+                        placeholder="请选择方向"
+                        type={isNotDetail ? 'Select' : 'span'}
+                      />
                     </Col>
                     <Col span={10}>
-                      <InputOrSpan disabled value={item.code} placeholder="设备序列号" type={isNotDetail ? 'Input' : 'span'} />
+                      <InputOrSpan
+                        disabled
+                        value={item.code}
+                        placeholder="设备序列号"
+                        type={isNotDetail ? 'Input' : 'span'}
+                      />
                     </Col>
                     {isNotDetail && (
                       <Col span={5}>
-                        <Button size="small" onClick={() => this.hadnleViewDeviceModal(item.id, i)} type="primary">选择设备</Button>
+                        <LegacyIcon
+                          className={item.code ? styles.warnIcon : styles.disabledIcon}
+                          onClick={() => item.code ? this.handleResetDevice(i, item) : null}
+                          type="delete" />
+                        <Button
+                          className={styles.ml10}
+                          size="small"
+                          onClick={() => this.hadnleViewDeviceModal(item.id, i)}
+                          type="primary">
+                          选择设备
+                          </Button>
                       </Col>
                     )}
                   </Row>
@@ -373,12 +531,14 @@ export default class AddOperatingProdures extends Component {
               </div>
             ),
             options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  validator: this.validateDevice,
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                  {
+                    required: true,
+                    validator: this.validateDevice,
+                  },
+                ]
+                : undefined,
             },
           },
           {
@@ -386,16 +546,19 @@ export default class AddOperatingProdures extends Component {
             label: '通道照片',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <CustomUpload folder="operationProdures" beforeUpload={this.handleBeforeUpload} type={isNotDetail || 'span'} />,
+            render: () => (
+              <CustomUpload
+                folder="operationProdures"
+                beforeUpload={this.handleBeforeUpload}
+                type={isNotDetail || 'span'}
+              />
+            ),
           },
         ],
       },
     ];
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Spin spinning={false}>
           <Card title="基础信息" bordered={false}>
             <CustomForm
@@ -408,11 +571,26 @@ export default class AddOperatingProdures extends Component {
             />
           </Card>
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <Button style={{ marginRight: '10px' }} onClick={() => { router.goBack() }}>返回</Button>
+            <Button
+              style={{ marginRight: '10px' }}
+              onClick={() => {
+                router.goBack();
+              }}
+            >
+              返回
+            </Button>
             {isNotDetail ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>
+                提交
+              </Button>
             ) : (
-                <AuthButton code={codes.realNameCertification.channel.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
+                <AuthButton
+                  code={codes.realNameCertification.channel.edit}
+                  type="primary"
+                  onClick={this.handleEditButtonClick}
+                >
+                  编辑
+                </AuthButton>
               )}
           </div>
         </Spin>
@@ -452,7 +630,9 @@ export default class AddOperatingProdures extends Component {
           ]}
           rowSelection={{
             selectedRowKeys: selectedDeviceKeys,
-            onChange: selectedDeviceKeys => { this.setState({ selectedDeviceKeys }) },
+            onChange: selectedDeviceKeys => {
+              this.setState({ selectedDeviceKeys });
+            },
           }}
           butonStyles={{ width: '30%' }}
         />

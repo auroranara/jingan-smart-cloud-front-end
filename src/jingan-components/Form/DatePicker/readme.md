@@ -12,7 +12,7 @@
 | format | 日期格式 | string | 'YYYY-MM-DD' |
 | allowClear | 是否显示清空按钮 | boolean | false |
 | inputReadOnly | 输入框是否只读 | boolean | true |
-| emtpy | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
+| empty | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
 | ellipsis | mode为'detail'时起效果，当value超出容器宽度时是否显示省略号 | boolean/object  | true |
 其它同Antd的DatePicker组件
 
@@ -28,7 +28,7 @@ import DatePicker from '@/jingan-components/Form/DatePicker';
   showTime
   allowClear
   inputReadOnly={false}
-  emtpy={<Empty />}
+  empty={<Empty />}
   ellipsis={{ lines: 3 }}
 />
 ```

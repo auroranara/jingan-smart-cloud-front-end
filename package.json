@@ -39,7 +39,7 @@
     "@babel/runtime": "^7.3.1",
     "@commitlint/cli": "^7.0.0",
     "@commitlint/config-conventional": "^7.0.1",
-    "antd": "^4.0.4",
+    "antd": "^4.1.0",
     "bizcharts": "^3.5.7",
     "bizcharts-plugin-slider": "^2.1.1",
     "braft-editor": "^2.1.28",
@@ -84,8 +84,10 @@
     "react-loadable": "^5.4.0",
     "react-transform-components": "^0.0.3",
     "react-visibility-sensor": "^3.11.0",
+    "screenfull": "^5.0.2",
     "setprototypeof": "^1.1.0",
     "url-polyfill": "^1.0.13",
+    "use-media-antd-query": "^1.0.1",
     "video-react": "^0.13.0"
   },
   "devDependencies": {

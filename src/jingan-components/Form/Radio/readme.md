@@ -7,17 +7,20 @@
 | mode | 当前模式，可选'add'，'edit'，'detail' | string | - |
 | value | 受控值 | string | - |
 | onChange | value发生变化时的回调 | function(value, data) | - |
+| list | 外界传入的源数据 | array | - |
+| getList | 外界传入的获取数据的方法 | function | - |
+| loading | 外界传入的加载状态 | boolean | false |
 | buttonStyle | 默认为普通的圆形单选框，可选'outline'，'solid' | string | - |
 | fieldNames | 字段键值映射对象，如：{ key: 'id', value: 'name' } | object | { key: 'key', value: 'value' } |
 | mapper | 源数据及接口映射对象，如：{ namespace: 'common', list: 'unitList', getList: 'getUnitList' } | object | - |
 | params | 通过mapper请求接口时传递的额外参数 | object | - |
-| emtpy | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
+| empty | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
 | ellipsis | mode为'detail'时起效果，当文本超出容器宽度时是否显示省略号 | boolean/object  | true |
 其它同Antd的Radio.Group组件
 
 ## 示例
 
-> 全部参数
+> 普通
 
   ```js
   import Radio from '@/jingan-components/Form/Radio';
@@ -29,7 +32,7 @@
     fieldNames={{ key: 'id', value: 'name' }}
     mapper={{ namespace: 'common', list: 'unitList', getList: 'getUnitList' }}
     params={{ companyId: '1' }}
-    emtpy={<Empty />}
+    empty={<Empty />}
     ellipsis={{ lines: 3 }}
   />
   ```

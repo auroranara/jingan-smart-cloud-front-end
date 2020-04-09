@@ -39,17 +39,17 @@ export default class ChannelDeviceAdd extends Component {
               companyName,
               deviceName,
               deviceCode,
-              appId,
-              appKey,
-              appSecret,
+              // appId,
+              // appKey,
+              // appSecret,
             } = detail;
             this.form && this.form.setFieldsValue({
               company: companyId ? { key: companyId, label: companyName } : undefined,
               deviceName: deviceName || undefined,
               deviceCode: deviceCode || undefined,
-              appId: appId || undefined,
-              appKey: appKey || undefined,
-              appSecret: appSecret || undefined,
+              // appId: appId || undefined,
+              // appKey: appKey || undefined,
+              // appSecret: appSecret || undefined,
             });
           } else {
             message.error('获取详情失败，请稍后重试或联系管理人员！');
@@ -66,7 +66,7 @@ export default class ChannelDeviceAdd extends Component {
   // 跳转到编辑页面
   handleEditButtonClick = () => {
     const { match: { params: { id } } } = this.props;
-    router.push(`/real-name-certification/channelDevice/edit/${id}`)
+    router.push(`/real-name-certification/channel-device/edit/${id}`)
   }
 
   // 提交
@@ -186,7 +186,7 @@ export default class ChannelDeviceAdd extends Component {
             label: '设备序列号',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入设备序列号" type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => <InputOrSpan disabled={isEdit} className={styles.item} placeholder="请输入设备序列号" type={isNotDetail ? 'Input' : 'span'} />,
             options: {
               rules: isNotDetail ? [
                 {
@@ -202,69 +202,69 @@ export default class ChannelDeviceAdd extends Component {
               getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
             },
           },
-          {
-            id: 'appId',
-            label: 'appID',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入appID" type={isNotDetail ? 'Input' : 'span'} />,
-            options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: 'appID不能为空',
-                },
-                {
-                  pattern: /^[0-9A-Za-z]*$/,
-                  message: '请输入英文和数字',
-                },
-              ] : undefined,
-              getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
-            },
-          },
-          {
-            id: 'appKey',
-            label: 'appKey',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入appKey" type={isNotDetail ? 'Input' : 'span'} />,
-            options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: 'appKey不能为空',
-                },
-                {
-                  pattern: /^[0-9A-Za-z]*$/,
-                  message: '请输入英文和数字',
-                },
-              ] : undefined,
-              getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
-            },
-          },
-          {
-            id: 'appSecret',
-            label: 'appSecret',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入appSecret" type={isNotDetail ? 'Input' : 'span'} />,
-            options: {
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: 'appSecret不能为空',
-                },
-                {
-                  pattern: /^[0-9A-Za-z]*$/,
-                  message: '请输入英文和数字',
-                },
-              ] : undefined,
-              getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
-            },
-          },
+          // {
+          //   id: 'appId',
+          //   label: 'appID',
+          //   span: SPAN,
+          //   labelCol: LABEL_COL,
+          //   render: () => <InputOrSpan className={styles.item} placeholder="请输入appID" type={isNotDetail ? 'Input' : 'span'} />,
+          //   options: {
+          //     rules: isNotDetail ? [
+          //       {
+          //         required: true,
+          //         whitespace: true,
+          //         message: 'appID不能为空',
+          //       },
+          //       {
+          //         pattern: /^[0-9A-Za-z]*$/,
+          //         message: '请输入英文和数字',
+          //       },
+          //     ] : undefined,
+          //     getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
+          //   },
+          // },
+          // {
+          //   id: 'appKey',
+          //   label: 'appKey',
+          //   span: SPAN,
+          //   labelCol: LABEL_COL,
+          //   render: () => <InputOrSpan className={styles.item} placeholder="请输入appKey" type={isNotDetail ? 'Input' : 'span'} />,
+          //   options: {
+          //     rules: isNotDetail ? [
+          //       {
+          //         required: true,
+          //         whitespace: true,
+          //         message: 'appKey不能为空',
+          //       },
+          //       {
+          //         pattern: /^[0-9A-Za-z]*$/,
+          //         message: '请输入英文和数字',
+          //       },
+          //     ] : undefined,
+          //     getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
+          //   },
+          // },
+          // {
+          //   id: 'appSecret',
+          //   label: 'appSecret',
+          //   span: SPAN,
+          //   labelCol: LABEL_COL,
+          //   render: () => <InputOrSpan className={styles.item} placeholder="请输入appSecret" type={isNotDetail ? 'Input' : 'span'} />,
+          //   options: {
+          //     rules: isNotDetail ? [
+          //       {
+          //         required: true,
+          //         whitespace: true,
+          //         message: 'appSecret不能为空',
+          //       },
+          //       {
+          //         pattern: /^[0-9A-Za-z]*$/,
+          //         message: '请输入英文和数字',
+          //       },
+          //     ] : undefined,
+          //     getValueFromEvent: e => e.target.value.replace(/\s/g, ''),
+          //   },
+          // },
         ],
       },
     ];

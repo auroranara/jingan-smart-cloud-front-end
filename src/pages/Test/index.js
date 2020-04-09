@@ -5,19 +5,38 @@ const list = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
 
 export default class Test extends Component {
   state = {
+    key: 1,
     initialValues: {
       username: '123',
       unitId: '123456789',
       remember: '1',
+      companyId: ['8vdotq1ct7b6at7a', 'DccBRhlrSiu9gMV7fmvizw'],
+      departmentId: 'yz76Wf2HRm2n8YbqVuNI_g',
     },
   };
 
+  componentDidMount() {
+    // setTimeout(() => {
+    //   this.setState({
+    //     key: 2,
+    //     initialValues: {
+    //       username: '123',
+    //       unitId: '123456789',
+    //       remember: '1',
+    //       companyId: ['8vdotq1ct7b6at7a', 'DccBRhlrSiu9gMV7fmvizw'],
+    //       departmentId: 'yz76Wf2HRm2n8YbqVuNI_g',
+    //     },
+    //   });
+    // }, 2000);
+  }
+
   render() {
-    const { initialValues } = this.state;
+    const { key, initialValues } = this.state;
 
     return (
       <div>
         <Form
+          key={key}
           initialValues={initialValues}
           fields={[
             {
@@ -78,8 +97,57 @@ export default class Test extends Component {
               props: {
                 format: 'YYYY-MM-DD HH:mm:ss',
                 showTime: true,
+                ranges: ['最近一周', '最近一个月', '最近一年'],
                 // picker: 'week',
                 // originalMode: 'month',
+                onChange: v => console.log(v),
+              },
+              enableDefaultRules: true,
+            },
+            {
+              key: 'companyId',
+              label: '单位名称',
+              component: 'Select',
+              props: {
+                mapper: { namespace: 'common', list: 'unitList', getList: 'getUnitList' },
+                fieldNames: {
+                  key: 'id',
+                  value: 'name',
+                },
+                showSearch: true,
+                filterOption: false,
+                allowClear: true,
+                // labelInValue: true,
+                originalMode: 'tags',
+                onChange: v => console.log(v),
+              },
+              enableDefaultRules: true,
+            },
+            {
+              key: 'departmentId',
+              label: '部门名称',
+              component: 'TreeSelect',
+              props: {
+                mapper: {
+                  namespace: 'common',
+                  list: 'departmentList',
+                  getList: 'getDepartmentList',
+                },
+                fieldNames: {
+                  key: 'id',
+                  value: 'name',
+                  isLeaf() {
+                    return false;
+                  },
+                },
+                params: {
+                  companyId: 'DccBRhlrSiu9gMV7fmvizw',
+                },
+                // showSearch: true,
+                // filterTreeNode: false,
+                allowClear: true,
+                // labelInValue: true,
+                // loadData: true,
                 onChange: v => console.log(v),
               },
               enableDefaultRules: true,

@@ -2,13 +2,35 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Card, Button, message, Row, Col, Input, TimePicker } from 'antd';
+import { Card, Button, message, Radio, Input, TimePicker } from 'antd';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import moment from 'moment';
+import styles from './PostList.less';
+
+import helmet1 from './imgs/helmet-1.png';
+import helmet2 from './imgs/helmet-2.png';
+import helmet3 from './imgs/helmet-3.png';
+import helmet4 from './imgs/helmet-4.png';
+import helmet5 from './imgs/helmet-5.png';
+import helmet6 from './imgs/helmet-6.png';
+
 // 标题
 const addTitle = '新增岗位';
 const editTitle = '编辑岗位';
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
+const itemStyles = { style: { width: '70%', marginRight: '10px' } };
+const mapIcons = [
+  { key: '1', value: helmet1 },
+  { key: '2', value: helmet2 },
+  { key: '3', value: helmet3 },
+  { key: '4', value: helmet4 },
+  { key: '5', value: helmet5 },
+  { key: '6', value: helmet6 },
+];
 
 // 上传文件地址
 
@@ -45,11 +67,12 @@ export default class PostEdit extends PureComponent {
         payload: { id },
         callback: res => {
           const {
-            data: { jobName, jobSite, startTime, endTime },
+            data: { jobName, jobSite, startTime, endTime, iconID },
           } = res;
           setFieldsValue({
             jobName,
             jobSite,
+            iconID,
           });
           this.setState({
             startTime: startTime && moment(startTime),
@@ -176,45 +199,52 @@ export default class PostEdit extends PureComponent {
     const { submitting, startTime, endTime } = this.state;
 
     return (
-      <Card title="岗位信息" bordered={false}>
-        <Form layout="vertical">
-          <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label="岗位名称">
-                {getFieldDecorator('jobName', {
-                  rules: [{ required: true, message: '请输入岗位名称', whitespace: true }],
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入岗位名称" maxLength={100} />)}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label="岗位地点">
-                {getFieldDecorator('jobSite', {
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入岗位地点" maxLength={100} />)}
-              </Form.Item>
-            </Col>
-
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label="岗位时间">
-                {getFieldDecorator('time', {})(
-                  <Fragment>
-                    <TimePicker
-                      format={'HH:mm'}
-                      onChange={time => this.onTimeChange({ time, order: 0 })}
-                      value={startTime}
-                    />
-                    ~
-                    <TimePicker
-                      format={'HH:mm'}
-                      onChange={time => this.onTimeChange({ time, order: 1 })}
-                      value={endTime}
-                    />
-                  </Fragment>
-                )}
-              </Form.Item>
-            </Col>
-          </Row>
+      <Card bordered={false}>
+        <Form>
+          <Form.Item label="岗位名称" {...formItemLayout}>
+            {getFieldDecorator('jobName', {
+              rules: [{ required: true, message: '请输入岗位名称', whitespace: true }],
+              getValueFromEvent: this.handleTrim,
+            })(<Input placeholder="请输入岗位名称" maxLength={100} {...itemStyles} />)}
+          </Form.Item>
+          <Form.Item label="岗位地点" {...formItemLayout}>
+            {getFieldDecorator('jobSite', {
+              getValueFromEvent: this.handleTrim,
+            })(<Input placeholder="请输入岗位地点" maxLength={100} {...itemStyles} />)}
+          </Form.Item>
+          <Form.Item label="岗位时间" {...formItemLayout}>
+            {getFieldDecorator('time', {})(
+              <div {...formItemLayout}>
+                <TimePicker
+                  format={'HH:mm'}
+                  onChange={time => this.onTimeChange({ time, order: 0 })}
+                  value={startTime}
+                />
+                ~
+                <TimePicker
+                  format={'HH:mm'}
+                  onChange={time => this.onTimeChange({ time, order: 1 })}
+                  value={endTime}
+                />
+              </div>
+            )}
+          </Form.Item>
+          <Form.Item label="地图上展示图标" {...formItemLayout}>
+            {getFieldDecorator('iconID', {
+              rules: [{ required: true, message: '请选择地图上展示图标' }],
+            })(
+              <Radio.Group {...itemStyles}>
+                {mapIcons.map(({ key, value }) => (
+                  <Radio key={key} value={key}>
+                    <div className={styles.stylesImg}>
+                      <img src={value} alt="" />
+                      <div className={styles.label}>{key}</div>
+                    </div>
+                  </Radio>
+                ))}
+              </Radio.Group>
+            )}
+          </Form.Item>
         </Form>
         <div style={{ textAlign: 'center' }}>
           <Button onClick={this.goBack} style={{ marginRight: '24px' }}>

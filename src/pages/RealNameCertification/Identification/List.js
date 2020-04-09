@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Card, Button, BackTop, Col, Row, Select, Table, Input, DatePicker } from 'antd';
+import { Card, Button, BackTop, Col, Row, Select, Table, Input, DatePicker, Divider } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import codes from '@/utils/codes';
 // import { hasAuthority } from '@/utils/customAuth';
@@ -54,7 +54,7 @@ export default class IdentificationRecord extends PureComponent {
     visible: false, // 选择单位弹窗可见
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       user: {
@@ -136,13 +136,18 @@ export default class IdentificationRecord extends PureComponent {
   // 选择单位
   handleSelectCompany = company => {
     const { dispatch } = this.props;
-    this.setState({ company, visible: false }, () => {
+    if (company && company.id) {
+      this.setState({ company, visible: false }, () => {
+        this.handleQuery();
+      });
+      dispatch({
+        type: 'realNameCertification/saveIdenSearchInfo',
+        payload: { company },
+      });
+    } else {
+      this.setState({ visible: false });
       this.handleQuery();
-    });
-    dispatch({
-      type: 'realNameCertification/saveIdenSearchInfo',
-      payload: { company },
-    });
+    }
   };
 
   // 点击打开选择单位
@@ -161,8 +166,6 @@ export default class IdentificationRecord extends PureComponent {
     const {
       form: { getFieldDecorator },
       realNameCertification: {
-        storageLocationDict, // 存储位置字典
-        deviceTypeDict, // 设备类型字典
         identificationDict, // 识别模式字典
         livingBodyDict, // 活体判断字典
         validateDict, // 有效期判断字典
@@ -180,45 +183,22 @@ export default class IdentificationRecord extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('personGuid')(<Input placeholder="GUID" />)}
-              </FormItem>
-            </Col>
-            {/* <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('deviceName')(
-                  <Input placeholder="设备名称" />
-                )}
-              </FormItem>
-            </Col> */}
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('deviceKey')(<Input placeholder="序列号" />)}
-              </FormItem>
-            </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('type')(
-                  <Select placeholder="储存位置" allowClear>
-                    {storageLocationDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>
-                        {label}
-                      </Select.Option>
-                    ))}
-                  </Select>
+                {getFieldDecorator('time')(
+                  <RangePicker
+                    style={{ width: '100%' }}
+                    showTime={{
+                      format: 'HH:mm:ss',
+                      defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                    }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    placeholder={['识别开始时间', '识别结束时间']}
+                  />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('deviceType')(
-                  <Select placeholder="设备类型" allowClear>
-                    {deviceTypeDict.map(({ key, label }) => (
-                      <Select.Option key={key} value={key}>
-                        {label}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                )}
+                {getFieldDecorator('channelName')(<Input placeholder="通道名称" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
@@ -231,21 +211,6 @@ export default class IdentificationRecord extends PureComponent {
                       </Select.Option>
                     ))}
                   </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('time')(
-                  <RangePicker
-                    style={{ width: '100%' }}
-                    showTime={{
-                      format: 'HH:mm:ss',
-                      defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-                    }}
-                    format="YYYY-MM-DD HH:mm:ss"
-                    placeholder={['创建开始时间', '创建结束时间']}
-                  />
                 )}
               </FormItem>
             </Col>
@@ -322,12 +287,12 @@ export default class IdentificationRecord extends PureComponent {
           pagination: { pageNum = 1, pageSize = 10, total = 0 },
         },
         livingBodyDict,
-        deviceTypeDict,
         identificationDict,
         validateDict,
         accessDict,
       },
     } = this.props;
+    const { tabActiveKey } = this.state;
     const columns = [
       {
         title: '姓名',
@@ -360,32 +325,16 @@ export default class IdentificationRecord extends PureComponent {
           ) : null,
       },
       {
-        title: '人员编号(GUID)',
-        dataIndex: 'personGuid',
+        title: '通道名称',
+        dataIndex: 'channelName',
         align: 'center',
-        width: 200,
-      },
-      // {
-      //   title: '设备名称',
-      //   dataIndex: 'deviceName',
-      //   align: 'center',
-      //   width: 200,
-      // },
-      {
-        title: '设备类型',
-        dataIndex: 'deviceType',
-        align: 'center',
-        width: 180,
-        render: val => {
-          const target = deviceTypeDict.find(item => +item.key === +val);
-          return target ? target.label : '';
-        },
+        width: 150,
       },
       {
-        title: '设备序列号',
-        dataIndex: 'deviceKey',
+        title: '方向',
+        dataIndex: 'direction',
         align: 'center',
-        width: 200,
+        width: 150,
       },
       {
         title: '识别模式',
@@ -407,45 +356,75 @@ export default class IdentificationRecord extends PureComponent {
           return target ? (
             <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
           ) : (
-            ''
-          );
+              ''
+            );
         },
       },
       {
         title: '人员权限',
-        dataIndex: 'type',
+        dataIndex: 'recModeType',
         align: 'center',
         width: 150,
         render: val => (+val === 1 ? '已授权' : '未授权'),
       },
-      {
-        title: '有效期',
-        dataIndex: 'permissionTimeType',
-        align: 'center',
-        width: 150,
-        render: val => {
-          const target = validateDict.find(item => +item.key === +val);
-          return target ? (
-            <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
-          ) : (
-            ''
-          );
+      ...tabActiveKey === '1' ? [
+        {
+          title: '有效期',
+          dataIndex: 'permissionTimeType',
+          align: 'center',
+          width: 150,
+          render: val => {
+            const target = validateDict.find(item => +item.key === +val);
+            return target ? (
+              <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
+            ) : (
+                ''
+              );
+          },
         },
-      },
-      {
-        title: '准入时间',
-        dataIndex: 'passTimeType',
-        align: 'center',
-        width: 150,
-        render: val => {
-          const target = accessDict.find(item => +item.key === +val);
-          return target ? (
-            <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
-          ) : (
-            ''
-          );
+        {
+          title: '准入时间',
+          dataIndex: 'passTimeType',
+          align: 'center',
+          width: 150,
+          render: val => {
+            const target = accessDict.find(item => +item.key === +val);
+            return target ? (
+              <span style={{ color: target.color || 'inherit' }}>{target.label}</span>
+            ) : (
+                ''
+              );
+          },
         },
-      },
+      ] : [],
+      // {
+      //   title: '人员编号(GUID)',
+      //   dataIndex: 'personGuid',
+      //   align: 'center',
+      //   width: 200,
+      // },
+      // {
+      //   title: '设备名称',
+      //   dataIndex: 'deviceName',
+      //   align: 'center',
+      //   width: 200,
+      // },
+      // {
+      //   title: '设备类型',
+      //   dataIndex: 'deviceType',
+      //   align: 'center',
+      //   width: 180,
+      //   render: val => {
+      //     const target = deviceTypeDict.find(item => +item.key === +val);
+      //     return target ? target.label : '';
+      //   },
+      // },
+      // {
+      //   title: '设备序列号',
+      //   dataIndex: 'deviceKey',
+      //   align: 'center',
+      //   width: 200,
+      // },
     ];
     return list && list.length ? (
       <Card style={{ marginTop: '24px' }}>
@@ -471,11 +450,11 @@ export default class IdentificationRecord extends PureComponent {
         />
       </Card>
     ) : (
-      <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
-    );
+        <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
+      );
   };
 
-  render() {
+  render () {
     const {
       companyLoading,
       resourceManagement: { companyList },
@@ -515,8 +494,8 @@ export default class IdentificationRecord extends PureComponent {
             {this.renderList()}
           </div>
         ) : (
-          <div style={{ textAlign: 'center' }}>请先选择单位</div>
-        )}
+            <div style={{ textAlign: 'center' }}>请先选择单位</div>
+          )}
         {/* 图片查看 */}
         <ImagePreview images={images} currentImage={currentImage} />
         <CompanyModal

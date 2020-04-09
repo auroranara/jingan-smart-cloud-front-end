@@ -3,11 +3,60 @@ import { DatePicker } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import classNames from 'classnames';
+import moment from 'moment';
 import styles from './index.less';
 const { RangePicker } = DatePicker;
 
 const PLACEHOLDER = ['开始时间', '结束时间'];
 const FORMAT = 'YYYY-MM-DD';
+const GET_RANGES = (ranges = ['今天', '最近一周', '最近一个月']) => {
+  return ranges.reduce((result, item) => {
+    if (item === '今天') {
+      result[item] = [moment().startOf('day'), moment().endOf('day')];
+    } else if (item === '最近一周') {
+      result[item] = [
+        moment()
+          .startOf('day')
+          .subtract(7, 'day')
+          .add(1, 'day'),
+        moment().endOf('day'),
+      ];
+    } else if (item === '最近一个月') {
+      result[item] = [
+        moment()
+          .startOf('day')
+          .subtract(1, 'month')
+          .add(1, 'day'),
+        moment().endOf('day'),
+      ];
+    } else if (item === '最近三个月') {
+      result[item] = [
+        moment()
+          .startOf('day')
+          .subtract(3, 'month')
+          .add(1, 'day'),
+        moment().endOf('day'),
+      ];
+    } else if (item === '最近半年') {
+      result[item] = [
+        moment()
+          .startOf('day')
+          .subtract(6, 'month')
+          .add(1, 'day'),
+        moment().endOf('day'),
+      ];
+    } else if (item === '最近一年') {
+      result[item] = [
+        moment()
+          .startOf('day')
+          .subtract(1, 'year')
+          .add(1, 'day'),
+        moment().endOf('day'),
+      ];
+    }
+    return result;
+  }, {});
+};
 
 const FormRangePicker = ({
   className,
@@ -20,11 +69,14 @@ const FormRangePicker = ({
   allowClear = false,
   inputReadOnly = true,
   separator = '~',
-  emtpy = <EmptyText />,
+  ranges,
+  empty = <EmptyText />,
   ellipsis = true,
   ...rest
 }) => {
   if (mode !== 'detail') {
+    const rangeList =
+      Array.isArray(ranges) || ranges === undefined ? GET_RANGES(ranges) : ranges || undefined;
     return (
       <RangePicker
         className={classNames(styles.container, className)}
@@ -36,6 +88,14 @@ const FormRangePicker = ({
         inputReadOnly={inputReadOnly}
         separator={<span className={styles.separator}>{separator}</span>}
         mode={originalMode}
+        ranges={rangeList}
+        showTime={
+          format.includes(' ')
+            ? {
+                format: format.split(' ').slice(-1)[0],
+              }
+            : undefined
+        }
         {...rest}
       />
     );
@@ -49,7 +109,7 @@ const FormRangePicker = ({
         <span>{value.map(time => time.format(format)).join(` ${separator} `)}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

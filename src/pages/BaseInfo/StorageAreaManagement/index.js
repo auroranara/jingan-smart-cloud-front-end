@@ -22,6 +22,7 @@ const {
       bind: bindCode,
       unbind: unbindCode,
     },
+    storageManagement: { list: tankListCode },
   },
 } = codes;
 const { Option } = Select;
@@ -50,36 +51,22 @@ const breadcrumbList = [
 const spanStyle = { md: 8, sm: 12, xs: 24 };
 const fields = [
   {
-    id: 'areaName',
-    label: '储罐区名称',
+    id: 'nameOrCodeKeywords',
+    label: '储罐区',
     span: spanStyle,
-    render: () => <Input placeholder="请输入" />,
+    render: () => <Input placeholder="请输入名称或统一编码" />,
     transform: v => v.trim(),
   },
   {
-    id: 'code',
-    label: '统一编码',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'location',
-    label: '区域位置',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'chineName',
+    id: 'chineNameOrCasNoKeywords',
     label: '存储介质',
     span: spanStyle,
-    render: () => <Input placeholder="请输入" />,
+    render: () => <Input placeholder="请输入化学品名称或CAS号" />,
     transform: v => v.trim(),
   },
   {
     id: 'isDanger',
-    label: '是否重大危险源',
+    label: '构成重大危险源',
     span: spanStyle,
     render: () => (
       <Select allowClear placeholder="请选择">
@@ -149,6 +136,10 @@ export default class StorageAreaManagement extends PureComponent {
   handleReset = () => {
     this.setState({ formData: {} });
     this.handleQuery(1, this.pageSize);
+  };
+
+  handleJumpToTank = id => {
+    router.push(`/major-hazard-info/storage-management/list?tankArea=${id}`);
   };
 
   goDetail = id => {
@@ -325,7 +316,7 @@ export default class StorageAreaManagement extends PureComponent {
         align: 'center',
         width: 300,
         render: (val, row) => {
-          const { code, areaName, tankCount } = row;
+          const { code, areaName, location } = row;
           return (
             <div className={styles.multi}>
               <div>
@@ -333,10 +324,25 @@ export default class StorageAreaManagement extends PureComponent {
                 {code || '暂无数据'}{' '}
               </div>
               <div>储罐区名称： {areaName || '暂无数据'}</div>
-              <div>储罐个数： {tankCount || 0}</div>
+              <div>区域位置： {location || 0}</div>
             </div>
           );
         },
+      },
+      {
+        title: '储罐个数',
+        key: 'tankCount',
+        dataIndex: 'tankCount',
+        align: 'center',
+        width: 120,
+        render: (val, row) =>
+          +val ? (
+            <AuthA code={tankListCode} onClick={() => this.handleJumpToTank(row.id)}>
+              {val}
+            </AuthA>
+          ) : (
+            0
+          ),
       },
       {
         title: '存储介质',
@@ -347,33 +353,33 @@ export default class StorageAreaManagement extends PureComponent {
         render: val => val && val.join(', '),
       },
       {
-        title: '重大危险源',
+        title: '构成重大危险源',
         key: 'isDanger',
         dataIndex: 'isDanger',
         align: 'center',
-        width: 120,
+        width: 150,
         render: val => (+val === 0 ? '否' : '是'),
       },
       {
-        title: '区域位置',
-        key: 'location',
-        dataIndex: 'location',
-        align: 'center',
-        width: 200,
-      },
-      {
-        title: '已绑定监测设备',
+        title: '监测设备',
         dataIndex: 'monitorEquipmentCount',
         key: 'monitorEquipmentCount',
         align: 'center',
         width: 150,
         render: (val, row) => (
-          <span
-            onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
-            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
-          >
-            {val}
-          </span>
+          <Fragment>
+            <div
+              onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+            >
+              {val}
+            </div>
+            <div>
+              <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
+                绑定监测设备
+              </AuthA>
+            </div>
+          </Fragment>
         ),
       },
       {
@@ -381,13 +387,9 @@ export default class StorageAreaManagement extends PureComponent {
         key: 'operation',
         align: 'center',
         fixed: 'right',
-        width: 270,
+        width: 165,
         render: (val, row) => (
           <Fragment>
-            <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
-              绑定监测设备
-            </AuthA>
-            <Divider type="vertical" />
             <AuthA code={detailCode} onClick={() => this.goDetail(row.id)}>
               查看
             </AuthA>
@@ -519,7 +521,7 @@ export default class StorageAreaManagement extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
+            fields={unitType === 4 ? fields.filter(({ id }) => id !== 'companyName') : fields}
             onSearch={() => this.handleQuery()}
             onReset={this.handleReset}
             action={

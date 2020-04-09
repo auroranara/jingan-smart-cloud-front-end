@@ -1486,6 +1486,7 @@ export default class Chemical extends PureComponent {
                   handleShowChemicalList={this.handleShowChemicalList}
                   handleShowProcessList={this.handleShowProcessList}
                   handleShowMonitorList={this.handleShowMonitorList}
+                  companyId={companyId}
                 />
               </div>
             </Col>
@@ -1608,6 +1609,7 @@ export default class Chemical extends PureComponent {
 
         <NewVideoPlay
           showList={true}
+          style1111={{ position: 'fixed' }}
           videoList={videoList}
           visible={videoVisible}
           keyId={videoList.length > 0 ? videoList[0].key_id : undefined} // keyId

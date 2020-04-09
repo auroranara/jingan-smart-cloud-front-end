@@ -1,0 +1,56 @@
+.card {
+  margin-bottom: 24px;
+
+  &.modeCard:last-child {
+    margin-bottom: 0;
+  }
+
+  :global {
+    .ant-card-body {
+      padding-bottom: 0;
+    }
+  }
+}
+.operationContainer {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0 -4px;
+
+  &.modeOperationContainer {
+    justify-content: flex-start;
+  }
+
+  .operationWrapper {
+    flex: none;
+    padding: 0 4px;
+  }
+}
+.expandButton {
+  color: #1890ff;
+  cursor: pointer;
+  transition: color 0.3s;
+  line-height: 32px;
+
+  &:hover {
+    color: #40a9ff;
+  }
+
+  &:active {
+    color: #096dd9;
+  }
+
+  .expandButtonIcon {
+    margin-left: 0.5em;
+    transform: rotate(0turn);
+    transition: all 0.3s;
+
+    &.expanded {
+      transform: rotate(0.5turn);
+    }
+  }
+}
+.hidden {
+  visibility: hidden;
+}

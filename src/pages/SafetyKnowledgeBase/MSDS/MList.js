@@ -26,16 +26,9 @@ const SPAN = { md: 8, sm: 12, xs: 24 };
 const FIELDS = [
   {
     id: 'chineName',
-    label: '中文名称一：',
+    label: '化学品：',
     span: SPAN,
-    render: () => <Input placeholder="请输入中文名称一" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'chineName2',
-    label: '中文名称二：',
-    span: SPAN,
-    render: () => <Input placeholder="请输入中文名称二" allowClear />,
+    render: () => <Input placeholder="请输入中文名称/英文名" allowClear />,
     transform: v => v.trim(),
   },
   {
@@ -68,7 +61,14 @@ function getColumns(genHandleDelete) {
       dataIndex: 'chineNames',
       key: 'chineNames',
       render(names) {
-        return names.length === 2 ? names.map((n, i) => <p key={n} className={styles.p}>名称{INDEXES[i]}：{n}</p>) : names[0];
+        return names.length === 2
+          ? names.map((n, i) => (
+              <p key={n} className={styles.p}>
+                名称
+                {INDEXES[i]}：{n}
+              </p>
+            ))
+          : names[0];
       },
     },
     {
@@ -76,7 +76,14 @@ function getColumns(genHandleDelete) {
       dataIndex: 'engName',
       key: 'engNames',
       render(names) {
-        return names.length === 2 ? names.map((n, i) => <p key={n} className={styles.p}>名称{INDEXES[i]}：{n}</p>) : names[0];
+        return names.length === 2
+          ? names.map((n, i) => (
+              <p key={n} className={styles.p}>
+                名称
+                {INDEXES[i]}：{n}
+              </p>
+            ))
+          : names[0];
       },
     },
     {
@@ -96,7 +103,15 @@ function getColumns(genHandleDelete) {
       width: 130,
       // align: 'center',
       render(txt, record) {
-        return <AuthLink to={`/safety-knowledge-base/msds/detail/${record.id}`} target="_blank" code={codes.safetyKnowledgeBase.msds.view}>{txt}</AuthLink>;
+        return (
+          <AuthLink
+            to={`/safety-knowledge-base/msds/detail/${record.id}`}
+            target="_blank"
+            code={codes.safetyKnowledgeBase.msds.view}
+          >
+            {txt}
+          </AuthLink>
+        );
       },
     },
     {
@@ -108,13 +123,23 @@ function getColumns(genHandleDelete) {
       render(id, record) {
         return (
           <Fragment>
-            <AuthLink to={`/safety-knowledge-base/msds/edit/${id}`} target="_blank" code={codes.safetyKnowledgeBase.msds.edit}>编辑</AuthLink>
+            <AuthLink
+              to={`/safety-knowledge-base/msds/edit/${id}`}
+              target="_blank"
+              code={codes.safetyKnowledgeBase.msds.edit}
+            >
+              编辑
+            </AuthLink>
             <Popconfirm
               title="确定删除当前项目？"
               onConfirm={genHandleDelete(id)}
               okText="确定"
               cancelText="取消"
-            ><AuthSpan className={styles.delete} code={codes.safetyKnowledgeBase.msds.delete}>删除</AuthSpan></Popconfirm>
+            >
+              <AuthSpan className={styles.delete} code={codes.safetyKnowledgeBase.msds.delete}>
+                删除
+              </AuthSpan>
+            </Popconfirm>
           </Fragment>
         );
       },
@@ -193,7 +218,12 @@ export default class MList extends PureComponent {
     const indexBase = (currentPage - 1) * PAGE_SIZE;
 
     const toolBarAction = (
-      <AuthButton type="primary" code={codes.safetyKnowledgeBase.msds.add} onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <AuthButton
+        type="primary"
+        code={codes.safetyKnowledgeBase.msds.add}
+        onClick={this.handleAdd}
+        style={{ marginTop: '8px' }}
+      >
         新增MSDS
       </AuthButton>
     );
@@ -204,7 +234,8 @@ export default class MList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles.total}>
-            共计：{total}
+            共计：
+            {total}
           </p>
         }
       >
@@ -215,7 +246,7 @@ export default class MList extends PureComponent {
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             buttonStyle={{ textAlign: 'right' }}
-            buttonSpan={{ xl: 16, sm: 12, xs: 24 }}
+            buttonSpan={{ xl: 24, sm: 24, xs: 24 }}
           />
         </Card>
         <div className={styles.container}>

@@ -188,7 +188,7 @@ export default class CoursewareList extends PureComponent {
   }
 
   // 点击改变课件发布状态
-  handleChangeStatus = (id, oldStatus, type, auth) => {
+  handleChangeStatus = ({ id, status: oldStatus, type, ...restProps }, auth) => {
     const { dispatch } = this.props
     if (!auth) {
       message.error('您没有权限')
@@ -199,6 +199,7 @@ export default class CoursewareList extends PureComponent {
         id,
         status: oldStatus === '1' ? '0' : '1',
         type,
+        ...restProps,
       },
       success: () => { message.success(`${oldStatus === '1' ? '取消发布' : '发布'}课件成功`) },
       error: () => { message.error(`${oldStatus === '1' ? '取消发布' : '发布'}课件失败`) },
@@ -361,7 +362,7 @@ export default class CoursewareList extends PureComponent {
                   {item.knowledges && (<Tag>{item.knowledges.join(' > ')}</Tag>)}
                   <Tag>{item.type === '2' ? '视频' : '文档'}</Tag>
                   {statusAuth ? (
-                    <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, item.type, statusAuth) }}>
+                    <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item, statusAuth) }}>
                       <Tag className={styles.tag} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
                     </Popconfirm>
                   ) : (

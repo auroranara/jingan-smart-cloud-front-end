@@ -19,7 +19,7 @@ const FormTextArea = ({
   maxLength = 500,
   autoSize = AUTO_SIZE,
   allowClear = false,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   ...rest
 }) => {
@@ -43,7 +43,7 @@ const FormTextArea = ({
         <span>{value}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

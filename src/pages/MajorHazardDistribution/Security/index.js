@@ -252,7 +252,7 @@ export default class Security extends Component {
                   {[
                     { key: '危险性类别', value: getRiskCategoryLabel(riskCateg, RISK_CATEGORIES) },
                     { key: '矫正系数β值', value: correctionCoefficient },
-                    { key: '临界量（t）', value: limitValue },
+                    { key: '临界量（Q）', value: limitValue !== null && `${limitValue}t` },
                     {
                       key: '侵入途径',
                       value: invasionRoute && <TextAreaEllipsis value={invasionRoute} />,

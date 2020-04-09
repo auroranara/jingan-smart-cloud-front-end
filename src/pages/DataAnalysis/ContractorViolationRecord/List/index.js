@@ -1,0 +1,92 @@
+import React, { Fragment } from 'react';
+import { Divider } from 'antd';
+import TablePage from '@/jingan-components/Page/Table';
+import moment from 'moment';
+import { FORMAT } from '../config';
+// import styles from './index.less';
+
+const ContractorViolationRecordList = ({ route, match, location }) => {
+  const props = {
+    route,
+    match,
+    location,
+    transform({ companyName, contractorName, range }) {
+      const [violationDateStart, violationDateEnd] = range || [];
+      return {
+        companyName: companyName && companyName.trim(),
+        contractorName: contractorName && contractorName.trim(),
+        violationDateStart: violationDateStart && violationDateStart.format(FORMAT),
+        violationDateEnd: violationDateEnd && violationDateEnd.format(FORMAT),
+      };
+    },
+    fields: [
+      {
+        name: 'companyName',
+        label: '单位名称',
+        component: 'Input',
+        hide({ isUnit }) {
+          return isUnit;
+        },
+      },
+      {
+        name: 'contractorName',
+        label: '承包商单位名称',
+        component: 'Input',
+      },
+      {
+        name: 'range',
+        label: '违章日期',
+        component: 'RangePicker',
+        props: {
+          allowClear: true,
+        },
+      },
+    ],
+    columns: ({ isUnit, renderDetailButton, renderEditButton, renderDeleteButton }) => [
+      ...(!isUnit
+        ? [
+            {
+              dataIndex: 'companyName',
+              title: '单位名称',
+            },
+          ]
+        : []),
+      {
+        dataIndex: 'contractorName',
+        title: '承包商单位名称',
+      },
+      {
+        dataIndex: 'projectName',
+        title: '项目名称',
+      },
+      {
+        dataIndex: 'violationDate',
+        title: '违章日期',
+        render: value => value && moment(value).format(FORMAT),
+      },
+      {
+        dataIndex: 'violators',
+        title: '违章人姓名',
+        render: value => value && value.replace(',', '、'),
+      },
+      {
+        dataIndex: '操作',
+        title: '操作',
+        fixed: 'right',
+        width: 150,
+        render: (_, data) => (
+          <Fragment>
+            {renderDetailButton(data)}
+            <Divider type="vertical" />
+            {renderEditButton(data)}
+            <Divider type="vertical" />
+            {renderDeleteButton(data)}
+          </Fragment>
+        ),
+      },
+    ],
+  };
+  return <TablePage {...props} />;
+};
+
+export default ContractorViolationRecordList;

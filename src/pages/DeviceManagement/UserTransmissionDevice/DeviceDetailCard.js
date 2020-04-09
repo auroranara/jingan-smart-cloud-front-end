@@ -147,50 +147,32 @@ export default class DeviceDetailCard extends Component {
       {
         title: '操作',
         key: 'action',
-        width: 180,
+        width: 230,
         render(text, record, index) {
-          const menu = (
-            <Menu>
-              <MenuItem>
-                {/* <AuthA
-                  code={buttonCodes.deviceManagement.transmission.host.delete}
-                  onClick={() => handleHostDeleteClick(id, record.id)}
-                >
-                  删除
-                </AuthA> */}
-                <AuthPopConfirm
-                  title="确认要删除该设备吗？"
-                  code={buttonCodes.deviceManagement.transmission.host.delete}
-                  onConfirm={() => handleHostDeleteClick(id, record.id)}
-                >
-                  删除
-                </AuthPopConfirm>
-              </MenuItem>
-              <MenuItem>
-                {/* <Link
-                  to={{
-                    pathname: `/fire-control/user-transmission-device/${companyId}/import-point-position/${
-                      record.id
-                    }`,
-                  }}
-                  onClick={getOnClick(HOST_IMPORT_CODE, codes, ERROR_MSG)}
-                  // className={styles.itemNotAllowed}
-                  className={getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}
-                >
-                  导入点位
-                </Link> */}
-                <AuthLink
-                  // codes={[]}
-                  code={buttonCodes.deviceManagement.transmission.host.import}
-                  to={`/device-management/user-transmission-device/${companyId}/import-point-position/${
-                    record.id
-                    }`}
-                >
-                  导入点位
-                </AuthLink>
-              </MenuItem>
-            </Menu>
-          );
+          // const menu = (
+          //   <Menu>
+          //     <MenuItem>
+          //       <AuthPopConfirm
+          //         title="确认要删除该设备吗？"
+          //         code={buttonCodes.deviceManagement.transmission.host.delete}
+          //         onConfirm={() => handleHostDeleteClick(id, record.id)}
+          //       >
+          //         删除
+          //       </AuthPopConfirm>
+          //     </MenuItem>
+          //     <MenuItem>
+          //       <AuthLink
+          //         // codes={[]}
+          //         code={buttonCodes.deviceManagement.transmission.host.import}
+          //         to={`/device-management/user-transmission-device/${companyId}/import-point-position/${
+          //           record.id
+          //           }`}
+          //       >
+          //         导入点位
+          //       </AuthLink>
+          //     </MenuItem>
+          //   </Menu>
+          // );
 
           return (
             <Fragment>
@@ -205,7 +187,6 @@ export default class DeviceDetailCard extends Component {
               </AuthA>
               <AuthA
                 code={buttonCodes.deviceManagement.transmission.host.update}
-                // codes={[]}
                 style={hostTableAStyle}
                 onClick={() =>
                   handleHostUpdateClick({
@@ -217,12 +198,21 @@ export default class DeviceDetailCard extends Component {
               >
                 编辑
               </AuthA>
-              <Dropdown overlay={menu}>
-                {/* <a
-                  className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}
-                >
-                  更多<Icon type="down" />
-                </a> */}
+              <AuthPopConfirm
+                title="确认要删除该设备吗？"
+                code={buttonCodes.deviceManagement.transmission.host.delete}
+                onConfirm={() => handleHostDeleteClick(id, record.id)}
+              >
+                删除
+              </AuthPopConfirm>
+              <AuthLink
+                style={{ marginLeft: 10 }}
+                code={buttonCodes.deviceManagement.transmission.host.import}
+                to={`/device-management/user-transmission-device/${companyId}/import-point-position/${record.id}`}
+              >
+                导入点位
+              </AuthLink>
+              {/* <Dropdown overlay={menu}>
                 <AuthA
                   // hasAuthFn = {() => false}
                   hasAuthFn={codes =>
@@ -233,7 +223,7 @@ export default class DeviceDetailCard extends Component {
                   更多
                   <LegacyIcon type="down" />
                 </AuthA>
-              </Dropdown>
+              </Dropdown> */}
             </Fragment>
           );
         },

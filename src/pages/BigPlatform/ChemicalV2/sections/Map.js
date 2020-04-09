@@ -122,7 +122,7 @@ const filterMarkerList = markerList => {
 export default class Map extends PureComponent {
   state = {
     gdMapVisible: false,
-    visibles: [true, true, true, true],
+    visibles: [true, false, false, false],
     videoVisible: false,
     videoList: [],
     keyId: undefined,
@@ -447,7 +447,8 @@ export default class Map extends PureComponent {
               handleClickFireMonitor(markerProps);
             } else {
               // 监测设备
-              handleClickMonitorIcon(markerProps);
+              this.handleClickMonitorEquip(markerProps.id);
+              // handleClickMonitorIcon(markerProps);
             }
             break;
           case 3:
@@ -464,6 +465,22 @@ export default class Map extends PureComponent {
             break;
         }
       }
+    });
+  };
+
+  // 点击监测设备重新获取信息 重绘点位 显示详情内容
+  handleClickMonitorEquip = equipmentId => {
+    const { dispatch, handleClickMonitorIcon } = this.props;
+    dispatch({
+      type: 'alarmWorkOrder/getDeviceDetail',
+      payload: { id: equipmentId },
+      callback: (success, deviceDetail) => {
+        if (success) {
+          this.removeMarkerById(equipmentId);
+          this.renderPoints([deviceDetail], 2);
+          handleClickMonitorIcon(deviceDetail);
+        }
+      },
     });
   };
 

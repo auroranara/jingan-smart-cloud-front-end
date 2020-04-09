@@ -17,19 +17,19 @@ const FormRadio = ({
   mode,
   fieldNames,
   list,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   getList,
   ...rest
 }) => {
   const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
-  const handleChange = ({ target: { value, data } }) => {
-    onChange && onChange(value, data);
-  };
   useEffect(() => {
     getList && getList();
   }, []);
   if (mode !== 'detail') {
+    const handleChange = ({ target: { value, data } }) => {
+      onChange && onChange(value, data);
+    };
     const Item = buttonStyle ? Radio.Button : Radio;
     return (
       <Radio.Group value={value} onChange={handleChange} buttonStyle={buttonStyle} {...rest}>
@@ -52,7 +52,7 @@ const FormRadio = ({
         <span>{label}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };
@@ -72,7 +72,7 @@ export default connect(
       list: namespace && l ? state[namespace][l] : list,
     };
   },
-  (dispatch, { mapper, params, getList }) => {
+  (dispatch, { mapper, params, getList, callback }) => {
     const { namespace, getList: gl } = mapper || {};
     return {
       getList:
@@ -81,12 +81,13 @@ export default connect(
               dispatch({
                 type: `${namespace}/${gl}`,
                 payload: params,
+                callback,
               });
             }
           : getList,
     };
   },
-  (stateProps, dispatchProps, { mapper, params, list, getList, ...ownProps }) => ({
+  (stateProps, dispatchProps, { mapper, params, list, getList, callback, ...ownProps }) => ({
     ...ownProps,
     ...stateProps,
     ...dispatchProps,

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Select, Spin } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import EmptyText from '@/jingan-components/View/EmptyText';
@@ -13,136 +13,305 @@ const FIELDNAMES = {
   value: 'value',
 };
 
-@connect(
-  (state, { mapper }) => {
-    const { namespace, list, getList } = mapper || {};
+const FormSelect = ({
+  className,
+  value,
+  originalMode,
+  mode,
+  fieldNames,
+  list,
+  loading = false,
+  placeholder = '请选择',
+  showArrow = true,
+  showSearch = false,
+  labelInValue = false,
+  optionFilterProp = 'children',
+  filterOption = true,
+  empty = <EmptyText />,
+  ellipsis = true,
+  getList,
+  onSearch,
+  onChange,
+  notFoundContent,
+  initializeParams,
+  searchParams,
+  separator = ',',
+  ...rest
+}) => {
+  const [data, setData] = useState(undefined);
+  const async = showSearch && !filterOption;
+  const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
+  useEffect(() => {
+    if (
+      !async ||
+      labelInValue ||
+      !value ||
+      ((originalMode === 'multiple' || originalMode === 'tags') && !value.length)
+    ) {
+      getList && getList();
+    }
+  }, []);
+  useEffect(
+    () => {
+      // 当开启后台筛选且labelInValue为false时，根据value进行初始化（需要区分模式是多选还是单选）
+      if (async && !labelInValue && value) {
+        if (originalMode === 'multiple' || originalMode === 'tags') {
+          if (
+            value.length &&
+            (!data || !data.length || value.some(vk => !data.find(({ key }) => key === vk)))
+          ) {
+            getList
+              ? getList(
+                  {
+                    pageSize: value.length,
+                    ...(typeof initializeParams === 'function'
+                      ? initializeParams(value)
+                      : {
+                          [initializeParams || k]: value.join(','),
+                        }),
+                  },
+                  (success, list) => {
+                    if (success) {
+                      setData(
+                        value.map(vk => {
+                          const item = list.find(item => item[k] === vk);
+                          return item
+                            ? {
+                                key: item[k],
+                                value: item[k],
+                                label: item[v],
+                              }
+                            : {
+                                key: vk,
+                                value: vk,
+                                label: vk,
+                              };
+                        })
+                      );
+                    }
+                  }
+                )
+              : setData(
+                  value.map(vk => ({
+                    key: vk,
+                    value: vk,
+                    label: vk,
+                  }))
+                );
+            getList && getList();
+          }
+        } else if (!data || data.key !== value) {
+          getList
+            ? getList(
+                {
+                  pageSize: 1,
+                  ...(typeof initializeParams === 'function'
+                    ? initializeParams(value)
+                    : {
+                        [initializeParams || k]: value,
+                      }),
+                },
+                (success, list) => {
+                  if (success) {
+                    const item = list.find(item => item[k] === value);
+                    setData(
+                      item
+                        ? {
+                            key: item[k],
+                            value: item[k],
+                            label: item[v],
+                          }
+                        : {
+                            key: value,
+                            value,
+                            label: value,
+                          }
+                    );
+                  }
+                }
+              )
+            : setData({
+                key: value,
+                value,
+                label: value,
+              });
+          getList && getList();
+        }
+      }
+    },
+    [value]
+  );
+  if (mode !== 'detail') {
+    const debouncedGetList = getList && debounce(getList, 300);
+    // 根据输入值进行后台筛选
+    const handleSearch = searchValue => {
+      const value = searchValue && searchValue.trim();
+      debouncedGetList &&
+        debouncedGetList(
+          typeof searchParams === 'function'
+            ? searchParams(value)
+            : {
+                [searchParams || v]: value,
+              }
+        );
+      onSearch && onSearch(value);
+    };
+    // 当开启后台筛选且labelInValue为false时，对选中的源数据进行保存，并对value进行处理（需要区分模式是多选还是单选）
+    const handleChange = (nextValue, option) => {
+      if (originalMode === 'multiple' || originalMode === 'tags') {
+        if (nextValue && nextValue.length) {
+          if (nextValue.length > (value || []).length) {
+            const vk = nextValue[nextValue.length - 1].key;
+            const item = option[option.length - 1].data || { [k]: vk, [v]: vk };
+            setData((data = []) => data.concat({ key: item[k], value: item[k], label: item[v] }));
+            onChange && onChange(nextValue.map(({ key }) => key), option);
+          } else {
+            const values = nextValue.map(({ key }) => key);
+            setData((data = []) => data.filter(({ key }) => values.includes(key)));
+            onChange && onChange(values, option);
+          }
+        } else {
+          setData(undefined);
+          onChange && onChange(undefined, option);
+        }
+      } else {
+        if (nextValue) {
+          const item = option.data;
+          setData({ key: item[k], value: item[k], label: item[v] });
+          onChange && onChange(nextValue.key, option);
+        } else {
+          setData(undefined);
+          onChange && onChange(undefined, option);
+        }
+      }
+    };
+    return (
+      <Select
+        className={classNames(styles.container, className)}
+        placeholder={placeholder}
+        value={async && !labelInValue ? data : value}
+        showArrow={showArrow}
+        showSearch={showSearch}
+        labelInValue={async || labelInValue}
+        notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
+        optionFilterProp={optionFilterProp}
+        filterOption={filterOption}
+        onSearch={async ? handleSearch : onSearch}
+        onChange={async && !labelInValue ? handleChange : onChange}
+        mode={originalMode}
+        {...rest}
+      >
+        {(!loading && list ? list : []).map(item => (
+          <Option key={item[k]} value={item[k]} title={item[v]} data={item}>
+            {item[v]}
+          </Option>
+        ))}
+      </Select>
+    );
+  } else {
+    let label;
+    if (labelInValue) {
+      if (originalMode === 'multiple' || originalMode === 'tags') {
+        label = value && value.map(({ label }) => label).join(separator);
+      } else {
+        label = value && value.label;
+      }
+    } else {
+      if (async) {
+        if (originalMode === 'multiple' || originalMode === 'tags') {
+          label = data && data.map(({ label }) => label).join(separator);
+        } else {
+          label = data && data.label;
+        }
+      } else {
+        if (originalMode === 'multiple' || originalMode === 'tags') {
+          label =
+            value &&
+            value
+              .map(vk => ((list || []).find(item => item[k] === vk) || {})[v] || vk)
+              .join(separator);
+        } else {
+          label = ((list || []).find(item => item[k] === value) || {})[v] || value;
+        }
+      }
+    }
+    return label ? (
+      ellipsis ? (
+        <Ellipsis lines={1} tooltip {...ellipsis}>
+          {label}
+        </Ellipsis>
+      ) : (
+        <span>{label}</span>
+      )
+    ) : (
+      empty
+    );
+  }
+};
+
+FormSelect.getRules = ({ label, labelInValue, originalMode }) => {
+  const multiple = originalMode === 'multiple' || originalMode === 'tags';
+  return [
+    {
+      type: multiple ? 'array' : labelInValue ? 'object' : 'string',
+      min: multiple ? 1 : undefined,
+      required: true,
+      message: `${label || ''}不能为空`,
+    },
+  ];
+};
+
+export default connect(
+  (state, { mapper, list, loading }) => {
+    const { namespace, list: l, getList: gl } = mapper || {};
     return {
-      list: namespace && list ? state[namespace][list] : [],
-      loading: namespace && getList ? state.loading.effects[`${namespace}/${getList}`] : false,
+      list: namespace && l ? state[namespace][l] : list,
+      loading: namespace && gl ? state.loading.effects[`${namespace}/${gl}`] : loading,
     };
   },
-  null,
-  (stateProps, { dispatch }, { mapper, params, async, ...ownProps }) => {
-    const { namespace, getList } = mapper || {};
+  (dispatch, { mapper, params, getList, callback }) => {
+    const { namespace, getList: gl } = mapper || {};
     return {
-      ...stateProps,
-      ...ownProps,
-      async,
       getList:
-        namespace && getList
-          ? (payload, callback) => {
+        namespace && gl
+          ? (payload, cb) => {
               dispatch({
-                type: `${namespace}/${getList}`,
+                type: `${namespace}/${gl}`,
                 payload: {
-                  ...(async && {
-                    pageNum: 1,
-                    pageSize: 10,
-                  }),
+                  pageNum: 1,
+                  pageSize: 10,
                   ...params,
                   ...payload,
                 },
-                callback,
+                callback(...args) {
+                  cb && cb(...args);
+                  callback && callback(...args);
+                },
               });
             }
-          : undefined,
+          : getList,
     };
-  }
-)
-export default class FormSelect extends Component {
-  constructor(props) {
-    super(props);
-    this.debouncedHandleSearch = debounce(this.handleSearch, 300);
-  }
-
-  componentDidMount() {
-    const { getList } = this.props;
-    getList && getList();
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return (
-      nextProps.value !== this.props.value ||
-      nextProps.list !== this.props.list ||
-      nextProps.loading !== this.props.loading ||
-      nextProps.mode !== this.props.mode
-    );
-  }
-
-  handleSearch = value => {
-    const { async, fieldNames, getList } = this.props;
-    const { value: v, [v]: name = v } = { ...FIELDNAMES, ...fieldNames };
-    async &&
-      getList &&
-      getList({
-        [name]: value && value.trim(),
-      });
-  };
-
-  render() {
-    const {
-      className,
-      value,
-      originalMode,
-      mode = 'add',
-      fieldNames,
-      list = [],
-      loading = false,
-      placeholder = '请选择',
-      showArrow = true,
-      showSearch = false,
-      labelInValue = false,
-      async = false,
-      optionFilterProp = 'children',
-      filterOption = true,
-      emtpy = <EmptyText />,
-      ellipsis = true,
-      getList,
-      ...restProps
-    } = this.props;
-    const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
-
-    if (mode !== 'detail') {
-      const realShowSearch = async || showSearch;
+  },
+  (
+    stateProps,
+    dispatchProps,
+    { mapper, params, list, loading, getList, callback, ...ownProps }
+  ) => ({
+    ...ownProps,
+    ...stateProps,
+    ...dispatchProps,
+  }),
+  {
+    areStatesEqual: () => false,
+    areOwnPropsEqual: () => false,
+    areStatePropsEqual: () => false,
+    areMergedPropsEqual: (props, nextProps) => {
       return (
-        <Select
-          className={classNames(styles.container, className)}
-          placeholder={placeholder}
-          value={value}
-          showArrow={showArrow}
-          showSearch={realShowSearch}
-          labelInValue={async || labelInValue}
-          notFoundContent={loading ? <Spin size="small" /> : undefined}
-          optionFilterProp={optionFilterProp}
-          filterOption={async ? false : filterOption}
-          onSearch={realShowSearch ? this.debouncedHandleSearch : undefined}
-          mode={originalMode}
-          {...restProps}
-        >
-          {(!loading && list ? list : []).map(item => (
-            <Option key={item[k]} value={item[k]} title={item[v]} data={item}>
-              {item[v]}
-            </Option>
-          ))}
-        </Select>
+        props.value === nextProps.value &&
+        props.list === nextProps.list &&
+        props.loading === nextProps.loading &&
+        props.mode === nextProps.mode
       );
-    } else {
-      const label =
-        async || labelInValue
-          ? value && value.label
-          : list && list.length
-            ? (list.find(item => item[k] === value) || {})[v]
-            : value;
-      return label ? (
-        ellipsis ? (
-          <Ellipsis lines={1} tooltip {...ellipsis}>
-            {label}
-          </Ellipsis>
-        ) : (
-          <span>{label}</span>
-        )
-      ) : (
-        emtpy
-      );
-    }
+    },
   }
-}
+)(FormSelect);

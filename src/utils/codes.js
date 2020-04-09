@@ -473,6 +473,10 @@ export default {
       delete: 'personnelManagement.tagCardManagement.delete',
       import: 'personnelManagement.tagCardManagement.import',
       export: 'personnelManagement.tagCardManagement.export',
+      visitorCardList: 'personnelManagement.tagCardManagement.visitorCardList',
+      visitorCardAdd: 'personnelManagement.tagCardManagement.visitorCardAdd',
+      visitorCardEdit: 'personnelManagement.tagCardManagement.visitorCardEdit',
+      visitorCardDelete: 'personnelManagement.tagCardManagement.visitorCardDelete',
     },
     postManagement: {
       listView: 'personnelManagement.postManagement.listView',
@@ -603,6 +607,7 @@ export default {
       delete: 'majorHazardInfo.reservoirRegionManagement.delete',
       bindSensor: 'majorHazardInfo.reservoirRegionManagement.bindSensor',
       unbindSensor: 'majorHazardInfo.reservoirRegionManagement.unbindSensor',
+      detail: 'majorHazardInfo.reservoirRegionManagement.detail',
     },
     // 重大危险源
     // majorHazard: {
@@ -660,6 +665,7 @@ export default {
       delete: 'majorHazardInfo.storageManagement.delete',
       bind: 'majorHazardInfo.storageManagement.bind',
       unbind: 'majorHazardInfo.storageManagement.unbind',
+      detail: 'majorHazardInfo.storageManagement.detail',
     },
     // 特种作业操作证人员
     specialOperationPermit: {
@@ -830,9 +836,13 @@ export default {
     // 人员管理
     personnelManagement: {
       list: 'realNameCertification.personnelManagement.listView',
+      view: 'realNameCertification.personnelManagement.view',
       add: 'realNameCertification.personnelManagement.add',
       edit: 'realNameCertification.personnelManagement.edit',
       delete: 'realNameCertification.personnelManagement.delete',
+      import: 'realNameCertification.personnelManagement.import',
+      importPhoto: 'realNameCertification.personnelManagement.importPhoto',
+      export: 'realNameCertification.personnelManagement.export',
     },
     // 授权管理
     authorization: {
@@ -857,6 +867,13 @@ export default {
       add: 'realNameCertification.channelDevice.add',
       edit: 'realNameCertification.channelDevice.edit',
       delete: 'realNameCertification.channelDevice.delete',
+    },
+    // 访客登记
+    visitorRegistration: {
+      list: 'realNameCertification.visitorRegistration.visitorList',
+      add: 'realNameCertification.visitorRegistration.visitorAdd',
+      record: 'realNameCertification.visitorRegistration.visitorRegistrationRecord',
+      cancelCard: 'realNameCertification.visitorRegistration.cancelCard',
     },
   },
   // 操作规程
@@ -887,5 +904,10 @@ export default {
       delete: 'electronicInspection.productionArea.delete',
       view: 'electronicInspection.productionArea.view',
     },
+  },
+  // 系统配置
+  systemSetting: {
+    setting: 'systemManagement.systemSetting.setting',
+    addCompany: 'systemManagement.systemSetting.addCompany',
   },
 };

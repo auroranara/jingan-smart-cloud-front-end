@@ -13,6 +13,7 @@ import {
   Tooltip,
   Radio,
   Spin,
+  TreeSelect,
   // AutoComplete,
 } from 'antd';
 import debounce from 'lodash/debounce';
@@ -26,6 +27,7 @@ import { getToken } from '@/utils/authority';
 import { phoneReg } from '@/utils/validate';
 // import PIC from '@/assets/picExample.png';
 
+const { TreeNode: TreeSelectNode } = TreeSelect;
 const FormItem = Form.Item;
 const { Option } = Select;
 
@@ -48,11 +50,24 @@ const DEGREES = [
   { key: '6', label: '博士' },
 ];
 
+function treeData(data) {
+  return data.map(item => {
+    if (item.children) {
+      return (
+        <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id}>
+          {treeData(item.children)}
+        </TreeSelectNode>
+      );
+    }
+    return <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id} />;
+  });
+}
 @Form.create()
-@connect(({ realNameCertification, user, department, loading }) => ({
+@connect(({ realNameCertification, user, department, postManagement, loading }) => ({
   realNameCertification,
   user,
   department,
+  postManagement,
   submitting:
     loading.effects['realNameCertification/addPerson'] ||
     loading.effects['realNameCertification/editPerson'],
@@ -71,7 +86,7 @@ export default class PersonnelAdd extends PureComponent {
         educationCertificateDetails: [],
       },
       sexValue: '0', // 默认性别为男
-      perType: '4', // 人员选择类型
+      perType: '1', // 人员选择类型
       curCompanyName: '', // 当前单位
       filterTagList: {},
       curLabelList: [],
@@ -93,6 +108,7 @@ export default class PersonnelAdd extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     this.fetchDepartment();
+    this.fetchPostList();
     this.setState({
       curCompanyName: unitType !== 4 ? companyName : routerCompanyName,
       curCompanyId: unitType !== 4 ? companyId : unitCompantId,
@@ -107,7 +123,13 @@ export default class PersonnelAdd extends PureComponent {
           const photoDetails = detail.photoDetails || [];
           const educationCertificateDetails = detail.educationCertificateDetails || [];
           setFieldsValue({
-            photoDetails: photoDetails.map(item => ({ ...item, uid: item.id, url: item.webUrl })),
+            photoDetails: photoDetails.map(item => ({
+              dbUrl: item.dbUrl,
+              fileName: item.fileName,
+              id: item.id,
+              uid: item.id,
+              url: item.webUrl,
+            })),
             educationCertificateDetails: educationCertificateDetails.map(item => ({
               ...item,
               uid: item.id,
@@ -313,21 +335,37 @@ export default class PersonnelAdd extends PureComponent {
     });
   };
 
+  // 获取岗位列表
+  fetchPostList = () => {
+    const {
+      dispatch,
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'postManagement/fetchPostList',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+    });
+  };
+
   handlePersonType = id => {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const isId = id !== '2' && id !== '3';
+    // const isId = id === '1';
     this.setState({ perType: id });
     setFieldsValue({ personCompany: undefined });
-    if (isId) {
-      this.fetchDepartment();
-    }
+    // if (isId) {
+    //   this.fetchPostList();
+    //   this.fetchDepartment();
+    // }
   };
 
   // 获取标签卡列表
   fetchTagCard = ({ ...params }, callback) => {
     const { dispatch } = this.props;
+    const { perType } = this.state;
     // 根据输入值获取列表
     dispatch({
       type: 'realNameCertification/fetchTagCardList',
@@ -336,6 +374,7 @@ export default class PersonnelAdd extends PureComponent {
         pageNum: 1,
         pageSize: 30,
         personCar: 1,
+        perType: perType,
       },
       callback,
     });
@@ -381,8 +420,6 @@ export default class PersonnelAdd extends PureComponent {
       { snNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
       res => {
         const { list } = res.data;
-        console.log('list', list);
-
         this.setState({ curLabelList: list });
       }
     );
@@ -426,9 +463,11 @@ export default class PersonnelAdd extends PureComponent {
       department: {
         data: { list: departmentList = [] },
       },
+      postManagement: { postData: { list: postList = [] } = {} },
       form: { getFieldDecorator, getFieldValue },
       realNameCertification: { personTypeDict },
     } = this.props;
+    const treeList = treeData(departmentList);
 
     const {
       photoLoading,
@@ -441,10 +480,9 @@ export default class PersonnelAdd extends PureComponent {
     } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
-    const title = id ? '编辑人员信息' : '新增人员信息';
-    console.log('curLabelList', curLabelList);
 
-    const hasCompanyName = perType === '4' || perType === '5' || perType === '6';
+    const title = id ? '编辑人员信息' : '新增人员信息';
+    const hasCompanyName = perType === '1';
     const noCompanyName = perType === '2' || perType === '3';
     //面包屑
     const breadcrumbList = [
@@ -522,9 +560,9 @@ export default class PersonnelAdd extends PureComponent {
                     rules: [{ required: true, message: '请选择人员类型' }],
                   })(
                     <Select placeholder="请选择" onSelect={this.handlePersonType}>
-                      {personTypeDict.map(({ key, label }) => (
+                      {personTypeDict.map(({ key, value }) => (
                         <Select.Option key={key} value={key}>
-                          {label}
+                          {value}
                         </Select.Option>
                       ))}
                     </Select>
@@ -532,21 +570,39 @@ export default class PersonnelAdd extends PureComponent {
                 </FormItem>
               </Col>
               {hasCompanyName && (
-                <Col {...colLayout}>
-                  <FormItem label="部门" {...formItemLayout}>
-                    {getFieldDecorator('partId', {
-                      initialValue: id ? detail.partId : undefined,
-                    })(
-                      <Select placeholder="请选择">
-                        {departmentList.map(({ id, name }) => (
-                          <Select.Option key={id} value={id}>
-                            {name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
+                <Fragment>
+                  <Col {...colLayout}>
+                    <FormItem label="部门" {...formItemLayout}>
+                      {getFieldDecorator('partId', {
+                        initialValue: id ? detail.partId : undefined,
+                      })(
+                        <TreeSelect
+                          allowClear
+                          dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                          placeholder="请选择所属部门"
+                        >
+                          {treeList}
+                        </TreeSelect>
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col {...colLayout}>
+                    <FormItem label="岗位" {...formItemLayout}>
+                      {getFieldDecorator('companyJob', {
+                        initialValue: id ? detail.companyJob : undefined,
+                        // rules: [{ required: true, message: '请选择岗位' }],
+                      })(
+                        <Select placeholder="请选择岗位" allowClear>
+                          {postList.map(({ id, jobName }) => (
+                            <Select.Option key={id} value={id}>
+                              {jobName}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                </Fragment>
               )}
               {noCompanyName && (
                 <Col {...colLayout}>
@@ -762,7 +818,7 @@ export default class PersonnelAdd extends PureComponent {
             </Button>
             <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
               {submitting && <LegacyIcon type="loading" />}
-              确定
+              提交
             </Button>
           </div>
         </Card>

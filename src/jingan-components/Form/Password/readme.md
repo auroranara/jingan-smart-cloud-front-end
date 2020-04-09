@@ -10,7 +10,7 @@
 | placeholder | 提示文字 | string | '请输入' |
 | maxLength | 可输入的最大长度 | number | 100 |
 | allowClear | 是否显示清空按钮 | boolean | false |
-| emtpy | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
+| empty | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
 | ellipsis | mode为'detail'时起效果，当value超出容器宽度时是否显示省略号 | boolean/object  | true |
 其它同Antd的Input.Password组件
 
@@ -25,7 +25,7 @@ import Password from '@/jingan-components/Form/Password';
   placeholder="请输入用户名"
   maxLength={50}
   allowClear
-  emtpy={<Empty />}
+  empty={<Empty />}
   ellipsis={{ lines: 3 }}
 />
 ```

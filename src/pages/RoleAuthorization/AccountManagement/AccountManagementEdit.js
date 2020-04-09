@@ -220,6 +220,7 @@ export default class AccountManagementEdit extends PureComponent {
       fetchRoles,
       fetchExecCertificateType,
       fetchUserType,
+      fetchDepartmentList,
       user: {
         currentUser: { unitType, unitId },
       },
@@ -269,13 +270,16 @@ export default class AccountManagementEdit extends PureComponent {
       clearDetail();
       // 获取角色列表
       let actions;
-      if (isUnitUser)
+      if (isUnitUser) {
         actions = {
           payload: { unitType, companyId: unitId },
           success: this.genRolesSuccess(unitType),
           error: goToException,
         };
-      else
+        fetchDepartmentList({
+          payload: { companyId: unitId },
+        });
+      } else
         actions = {
           payload: { unitType: COM },
           success: this.genRolesSuccess(COM),
@@ -1021,6 +1025,7 @@ export default class AccountManagementEdit extends PureComponent {
     const isValidateLoginName = id ? [] : [{ validator: this.validateUserName }];
     const treeList = treeData(departments);
     const gridList = treeData(grids);
+    console.log(departments, treeList);
 
     return (
       <Form layout="vertical">

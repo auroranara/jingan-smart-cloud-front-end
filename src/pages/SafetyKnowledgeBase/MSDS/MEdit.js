@@ -9,16 +9,24 @@ import styles1 from '@/pages/BaseInfo/Company/Company.less';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
-import { getFieldLabels, convertSections, renderSections, LIST_URL, RISK_CATEGORIES } from './utils';
+import {
+  getFieldLabels,
+  convertSections,
+  renderSections,
+  LIST_URL,
+  RISK_CATEGORIES,
+} from './utils';
 
 @Form.create()
 @connect(({ msds, loading }) => ({ msds, loading: loading.models.msds }))
 export default class MEdit extends PureComponent {
-  state={ sections: [] };
+  state = { sections: [] };
 
   componentDidMount() {
     const {
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
     } = this.props;
     const sections = [
       {
@@ -51,7 +59,7 @@ export default class MEdit extends PureComponent {
           { name: 'limitValue', label: '临界量(t)', required: false },
           { name: 'invasionRoute', label: '侵入途径', type: 'text', required: false },
           { name: 'healthHazard', label: '健康危害', type: 'text' },
-          { name: 'environmentalHarm', label: '环境危害', type: 'text' },
+          { name: 'environmentalHarm', label: '环境危害', type: 'text', required: false },
           { name: 'deflagration', label: '爆燃危险', type: 'text' },
         ],
       },
@@ -74,9 +82,7 @@ export default class MEdit extends PureComponent {
       },
       {
         title: '第六部分：泄露应急处理',
-        fields: [
-          { name: 'leakDisposal', label: '泄露处理', type: 'text' },
-        ],
+        fields: [{ name: 'leakDisposal', label: '泄露处理', type: 'text' }],
       },
       {
         title: '第七部分：操作处置与储存',
@@ -88,7 +94,7 @@ export default class MEdit extends PureComponent {
       {
         title: '第八部分：接触控制/个体防护',
         fields: [
-          { name: 'occupationalExposureLimit', label: '职业接触限值' },
+          { name: 'occupationalExposureLimit', label: '职业接触限值', required: false },
           // { name: 'MAC_CN', label: <span>中国MAC(mg/m<sub>3</sub>)</span> },
           { name: 'macCn', label: '中国MAC(mg/m3)' },
           { name: 'macSov', label: '前苏联MAC(mg/m3)' },
@@ -180,9 +186,7 @@ export default class MEdit extends PureComponent {
       },
       {
         title: '第十五部分：法规信息',
-        fields: [
-          { name: 'law', label: '法规信息', type: 'text', required: false },
-        ],
+        fields: [{ name: 'law', label: '法规信息', type: 'text', required: false }],
       },
       {
         title: '第十六部分：其他信息',
@@ -198,7 +202,10 @@ export default class MEdit extends PureComponent {
 
     this.fieldLabels = getFieldLabels(sections);
 
-    this.setState({ sections: this.isDetail() ? convertSections(sections, {}) : sections }, id ? this.getDetail() : null);
+    this.setState(
+      { sections: this.isDetail() ? convertSections(sections, {}) : sections },
+      id ? this.getDetail() : null
+    );
   }
 
   fieldLabels = {};
@@ -206,7 +213,9 @@ export default class MEdit extends PureComponent {
   getDetail = () => {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { setFieldsValue },
     } = this.props;
     dispatch({
@@ -214,9 +223,11 @@ export default class MEdit extends PureComponent {
       payload: id,
       callback: detail => {
         if (this.isDetail())
-          this.setState(({ sections }) => ({ sections: convertSections(sections, detail) }), () => setFieldsValue(detail));
-        else
-          setFieldsValue(detail);
+          this.setState(
+            ({ sections }) => ({ sections: convertSections(sections, detail) }),
+            () => setFieldsValue(detail)
+          );
+        else setFieldsValue(detail);
       },
     });
   };
@@ -272,12 +283,7 @@ export default class MEdit extends PureComponent {
         {this.renderErrorInfo()}
         {/* <Button onClick={e => router.push(LIST_URL)}>返回</Button> */}
         {!this.isDetail() && (
-          <Button
-            type="primary"
-            size="large"
-            onClick={this.handleClickValidate}
-            loading={loading}
-          >
+          <Button type="primary" size="large" onClick={this.handleClickValidate} loading={loading}>
             提交
           </Button>
         )}
@@ -291,45 +297,51 @@ export default class MEdit extends PureComponent {
       type: 'msds/addMSDS',
       payload: values,
       callback: genOperateCallback(LIST_URL),
-    })
+    });
   };
 
   update = values => {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
     } = this.props;
     dispatch({
       type: 'msds/editMSDS',
       payload: { ...values, id },
       callback: genOperateCallback(LIST_URL),
-    })
+    });
   };
 
   handleClickValidate = () => {
     const {
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { validateFieldsAndScroll },
     } = this.props;
 
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        if (id)
-          this.update(values);
-        else
-          this.add(values);
+        if (id) this.update(values);
+        else this.add(values);
       }
     });
   };
 
   isDetail = () => {
-    const { match: { url } } = this.props;
+    const {
+      match: { url },
+    } = this.props;
     return url && url.includes('detail');
   };
 
   render() {
     const {
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { getFieldDecorator },
     } = this.props;
     const { sections } = this.state;
@@ -344,13 +356,8 @@ export default class MEdit extends PureComponent {
     ];
 
     return (
-      <PageHeaderLayout
-        title={`MSDS${title}`}
-        breadcrumbList={breadcrumbList}
-      >
-        <Card style={{ marginBottom: 15 }}>
-          {renderSections(sections, getFieldDecorator)}
-        </Card>
+      <PageHeaderLayout title={`MSDS${title}`} breadcrumbList={breadcrumbList}>
+        <Card style={{ marginBottom: 15 }}>{renderSections(sections, getFieldDecorator)}</Card>
         {!isDetail && this.renderFooterToolbar()}
       </PageHeaderLayout>
     );
