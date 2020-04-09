@@ -139,6 +139,7 @@ const FormIndex = forwardRef(
       onSubmit,
       onFinish,
       submitting,
+      showOperation = true,
       ...rest
     },
     ref
@@ -288,11 +289,13 @@ const FormIndex = forwardRef(
                                   name={name}
                                   label={label}
                                   rules={
-                                    enableDefaultRules && Component.getRules
-                                      ? Component.getRules({ label, ...properties }).concat(
-                                          rules || []
-                                        )
-                                      : rules
+                                    mode !== 'detail'
+                                      ? enableDefaultRules && Component.getRules
+                                        ? Component.getRules({ label, ...properties }).concat(
+                                            rules || []
+                                          )
+                                        : rules
+                                      : undefined
                                   }
                                   dependencies={dependencies}
                                   {...rest}
@@ -334,9 +337,11 @@ const FormIndex = forwardRef(
                             name={name}
                             label={label}
                             rules={
-                              enableDefaultRules && Component.getRules
-                                ? Component.getRules({ label, ...properties }).concat(rules || [])
-                                : rules
+                              mode !== 'detail'
+                                ? enableDefaultRules && Component.getRules
+                                  ? Component.getRules({ label, ...properties }).concat(rules || [])
+                                  : rules
+                                : undefined
                             }
                             dependencies={dependencies}
                             {...rest}
@@ -424,6 +429,7 @@ const FormIndex = forwardRef(
                     </Form.Item>
                   </Col>
                 ) : (
+                  showOperation &&
                   list.length === 1 && (
                     <Form.Item
                       noStyle
@@ -495,6 +501,7 @@ const FormIndex = forwardRef(
           );
         })}
         {mode &&
+          showOperation &&
           list.length > 1 && (
             <Form.Item
               noStyle
