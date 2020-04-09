@@ -308,11 +308,12 @@ export default class CheckContent extends PureComponent {
     const l = getFieldValue('l') || 1;
     const e = getFieldValue('e') || 1;
     const c = getFieldValue('c') || 1;
-    const riskValue = getFieldValue('riskValue') || 1;
 
     setFieldsValue({
       riskValue: ((l * e * c * value) / (getFieldValue(name) || 1)).toFixed(1),
     });
+
+    const riskValue = getFieldValue('riskValue') || 1;
 
     const payload = { l, e, c, riskValue, [name]: value };
 

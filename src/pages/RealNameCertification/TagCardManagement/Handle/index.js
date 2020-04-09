@@ -121,12 +121,6 @@ export default class Edit extends PureComponent {
     } = this.props;
     return url && url.includes('detail');
   };
-  validateIc = (rule, value, callback) => {
-    const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
-    if (value && value.length < 50 && !chineseRe.test(value)) {
-      callback();
-    } else callback('格式不正确');
-  };
 
   validateIc = (rule, value, callback) => {
     const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');

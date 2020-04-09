@@ -473,6 +473,10 @@ export default {
       delete: 'personnelManagement.tagCardManagement.delete',
       import: 'personnelManagement.tagCardManagement.import',
       export: 'personnelManagement.tagCardManagement.export',
+      visitorCardList: 'personnelManagement.tagCardManagement.visitorCardList',
+      visitorCardAdd: 'personnelManagement.tagCardManagement.visitorCardAdd',
+      visitorCardEdit: 'personnelManagement.tagCardManagement.visitorCardEdit',
+      visitorCardDelete: 'personnelManagement.tagCardManagement.visitorCardDelete',
     },
     postManagement: {
       listView: 'personnelManagement.postManagement.listView',
@@ -863,6 +867,13 @@ export default {
       add: 'realNameCertification.channelDevice.add',
       edit: 'realNameCertification.channelDevice.edit',
       delete: 'realNameCertification.channelDevice.delete',
+    },
+    // 访客登记
+    visitorRegistration: {
+      list: 'realNameCertification.visitorRegistration.visitorList',
+      add: 'realNameCertification.visitorRegistration.visitorAdd',
+      record: 'realNameCertification.visitorRegistration.visitorRegistrationRecord',
+      cancelCard: 'realNameCertification.visitorRegistration.cancelCard',
     },
   },
   // 操作规程

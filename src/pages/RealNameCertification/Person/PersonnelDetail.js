@@ -6,14 +6,7 @@ import ImagePreview from '@/jingan-components/ImagePreview';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { hasAuthority } from '@/utils/customAuth';
-import codes from '@/utils/codes';
 
-const {
-  realNameCertification: {
-    personnelManagement: { edit: editCode },
-  },
-} = codes;
 const title = '查看人员信息';
 
 const BUTTON_WRAPPER_SPAN = {
@@ -23,7 +16,7 @@ const BUTTON_WRAPPER_SPAN = {
 const SPAN = { sm: 24, xs: 24 };
 const LABELCOL = { span: 6 };
 const WRAPPERCOL = { span: 13 };
-const NO_DATA = '---';
+const NO_DATA = '暂无数据';
 
 const getEducation = {
   0: '初中',
@@ -92,14 +85,13 @@ export default class PersonnelDetail extends Component {
         query: { companyName: routerCompanyName, companyId },
       },
       user: {
-        currentUser: { companyName, permissionCodes },
+        currentUser: { companyName },
       },
       loading,
       realNameCertification: { personTypeDict },
     } = this.props;
 
     const { detail, images, currentImage } = this.state;
-    const noCompanyName = detail.perType === '2' || detail.perType === '3';
     const { personType } = detail;
     const dspItems = [
       { id: 'name', label: '姓名' },
@@ -128,8 +120,11 @@ export default class PersonnelDetail extends Component {
         ),
       },
       ...(personType === '1'
-        ? [{ id: 'partName', label: '部门' }, { id: 'companyJobName', label: '岗位' }]
-        : [{ id: 'personCompany', label: '单位名称' }]),
+        ? [
+            { id: 'partName', label: '部门' } || NO_DATA,
+            { id: 'companyJobName', label: '岗位' } || NO_DATA,
+          ]
+        : [{ id: 'personCompany', label: '单位名称' } || NO_DATA]),
       { id: 'icnumber', label: 'IC卡号', render: ({ icnumber }) => icnumber || NO_DATA },
       {
         id: 'entranceNumber',
@@ -217,7 +212,7 @@ export default class PersonnelDetail extends Component {
         render:
           render && typeof render === 'function'
             ? () => <span>{render(detail)}</span>
-            : () => <span>{detail[id] || NO_DATA}</span>,
+            : () => <span>{detail[id]}</span>,
       };
     });
 
@@ -242,7 +237,6 @@ export default class PersonnelDetail extends Component {
         name: title,
       },
     ];
-    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={BREADCRUMB}>
@@ -265,7 +259,6 @@ export default class PersonnelDetail extends Component {
                         }?companyId=${companyId}&&companyName=${companyName}`
                       )
                     }
-                    disabled={!hasEditAuthority}
                   >
                     编辑
                   </Button>

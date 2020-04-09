@@ -472,6 +472,7 @@ export default class PersonnelAdd extends PureComponent {
     } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
+
     const title = id ? '编辑人员信息' : '新增人员信息';
     const hasCompanyName = perType === '1';
     const noCompanyName = perType === '2' || perType === '3';

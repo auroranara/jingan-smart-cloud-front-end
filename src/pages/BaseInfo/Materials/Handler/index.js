@@ -372,10 +372,10 @@ export default class MaterialsHandler extends PureComponent {
     setFieldsValue({ msds: selectedMsds.id });
     // 如果存在CAS号 带入危险化学品目录序号
     const casNumber = selectedMsds ? selectedMsds.casNo : undefined;
-    const isDangerChemical = selectedMsds ? selectedMsds.isDangerChemical : undefined;
+    const isDangerChemical = selectedMsds ? selectedMsds.isDangerChemical : '0';
     setFieldsValue({
       dangerChemcataSn: casNumber,
-      isDangerChemicals: isDangerChemical || '0',
+      isDangerChemicals: isDangerChemical,
     });
     if (casNumber) {
       // 是否重点监管危险化学品
@@ -400,12 +400,12 @@ export default class MaterialsHandler extends PureComponent {
         },
       });
       // 是否危险化学品
-      // this.fetchInfoByCas({
-      //   payload: { casNumber, type: '4' },
-      //   callback: value => {
-      //     setFieldsValue({ isDangerChemicals: value });
-      //   },
-      // });
+      this.fetchInfoByCas({
+        payload: { casNumber, type: '4' },
+        callback: value => {
+          setFieldsValue({ isDangerChemicals: value });
+        },
+      });
       // 是否易制毒化学品
       this.fetchInfoByCas({
         payload: { casNumber, type: '5' },
@@ -488,7 +488,7 @@ export default class MaterialsHandler extends PureComponent {
       // dangerSources,
     } = this.state;
     // 是否高危化学品
-    // const isDangerChemicals = getFieldValue('isDangerChemicals');
+    const isDangerChemicals = getFieldValue('isDangerChemicals');
     return (
       <Card>
         <Form>
@@ -618,7 +618,7 @@ export default class MaterialsHandler extends PureComponent {
               </Radio.Group>
             )}
           </FormItem>
-          {/* <FormItem label="是否高危化学品" {...formItemLayout}>
+          <FormItem label="是否高危化学品" {...formItemLayout}>
             {getFieldDecorator('isDangerChemicals', {
               rules: [{ required: true, message: '请选择是否高危化学品' }],
             })(
@@ -640,7 +640,7 @@ export default class MaterialsHandler extends PureComponent {
                 </Select>
               )}
             </FormItem>
-          )} */}
+          )}
           <FormItem label="物质形态" {...formItemLayout}>
             {getFieldDecorator('materialForm', {
               initialValue: '1',

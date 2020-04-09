@@ -16,8 +16,9 @@ const breadcrumbList = [
 ];
 
 @Form.create()
-@connect(({ majorHazardInfo }) => ({
+@connect(({ majorHazardInfo, user }) => ({
   majorHazardInfo,
+  user,
 }))
 export default class HighRiskProcessDetail extends Component {
   componentDidMount() {
@@ -34,11 +35,12 @@ export default class HighRiskProcessDetail extends Component {
 
   render() {
     const {
+      user: { isCompany },
       form: { getFieldDecorator },
       majorHazardInfo,
     } = this.props;
 
-    const fields = handleDetail(majorHazardInfo);
+    const fields = handleDetail(majorHazardInfo, isCompany);
     return (
       <PageHeaderLayout title="详情" breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>{renderSections(fields, getFieldDecorator)}</Card>

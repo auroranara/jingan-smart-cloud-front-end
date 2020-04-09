@@ -33,6 +33,7 @@ const getCardType = {
   4: '单位车辆',
   5: '来访车辆',
   6: '其他',
+  7: '访客卡',
 };
 
 const getStatus = {

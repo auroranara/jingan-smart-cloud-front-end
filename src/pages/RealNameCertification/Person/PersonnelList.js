@@ -296,7 +296,7 @@ export default class PersonnelList extends PureComponent {
     }
     if (res) {
       if (res.code && res.code === 200) {
-        message.success(res.msg);
+        message.success(res.data);
         this.handleImgClose();
         this.handleQuery();
         this.setState({
@@ -363,13 +363,13 @@ export default class PersonnelList extends PureComponent {
     if (+i === 2) {
       dispatch({
         type: 'realNameCertification/fetchPersonExport',
-        payload: { ...values, status: 1,companyId },
+        payload: { ...values, status: 1, companyId },
       });
     }
     if (+i === 3) {
       dispatch({
         type: 'realNameCertification/fetchPersonExport',
-        payload: { status: 1,companyId },
+        payload: { status: 1, companyId },
       });
     }
   };

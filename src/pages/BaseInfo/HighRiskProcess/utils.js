@@ -18,7 +18,7 @@ export function getTypeLabel(type, list) {
   if (target) return target.label;
 }
 
-export function handleDetail(model) {
+export function handleDetail(model, isCompany) {
   const {
     highRiskProcessDetail: detail,
     keySupervisionProcessOptions,
@@ -54,6 +54,9 @@ export function handleDetail(model) {
     { name: 'equipmentListDetails', label: '设备一览表' },
     { name: 'equipmentLayoutDetails', label: '设备布置图' },
   ];
+
+  if (isCompany)
+    fields.shift();
 
   return fields.map(({ name, label }) => {
     let value = getDetailByName(name, detail);
