@@ -361,10 +361,10 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { curCompanyId } = this.state;
-    this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: id });
     this.setState({ perType: id });
     setFieldsValue({ personCompany: undefined, icnumber: undefined, entranceNumber: undefined });
+    this.handleICSearch();
+    this.handleSNSearch();
   };
 
   // 获取标签卡列表
@@ -399,14 +399,13 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { curCompanyId, curLabelList, perType } = this.state;
+    const { curLabelList } = this.state;
     if (value === undefined) {
-      this.handleICSearch.cancel();
+      this.handleICSearch();
       setFieldsValue({
         icnumber: undefined,
         entranceNumber: undefined,
       });
-      this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: perType });
     } else {
       const sn = curLabelList.find(item => item.id === value.key).snNumber;
       const snId = curLabelList.find(item => item.id === value.key).id;
@@ -432,15 +431,14 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { curCompanyId, curLabelList, perType } = this.state;
+    const { curLabelList } = this.state;
     // 根据value判断是否是手动输入
     if (value === undefined) {
-      this.handleSNSearch.cancel();
+      this.handleSNSearch();
       setFieldsValue({
         icnumber: undefined,
         entranceNumber: undefined,
       });
-      this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: perType });
     } else {
       const ic = curLabelList.find(item => item.id === value.key).icNumber;
       const icId = curLabelList.find(item => item.id === value.key).id;
