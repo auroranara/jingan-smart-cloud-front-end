@@ -20,8 +20,6 @@ const cardType = [
   { key: '2', value: '临时人员' },
   { key: '3', value: '外协人员' },
   { key: '4', value: '单位车辆' },
-  { key: '5', value: '来访车辆' },
-  { key: '6', value: '其他' },
 ];
 
 const useStatus = [{ key: '0', value: '已使用' }, { key: '1', value: '未使用' }];
@@ -31,8 +29,6 @@ const getCardType = {
   2: '临时人员',
   3: '外协人员',
   4: '单位车辆',
-  5: '来访车辆',
-  6: '其他',
 };
 
 const getStatus = {

@@ -8,15 +8,19 @@ import { getToken } from 'utils/authority';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { BREADCRUMBLIST, ROUTER, getSearchFields, getTableColumns } from '../Other/utils';
-import { hasAuthority } from '@/utils/customAuth';
+import { AuthA, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 
 // 权限
 const {
   personnelManagement: {
-    tagCardManagement: { add: addCode, import: importCode, export: exportCode },
+    tagCardManagement: {
+      add: addCode,
+      import: importCode,
+      export: exportCode,
+      visitorCardList: cardCode,
+    },
   },
 } = codes;
 
@@ -179,7 +183,7 @@ export default class TableList extends PureComponent {
     const {
       loading,
       user: {
-        currentUser: { permissionCodes, unitType },
+        currentUser: { unitType },
       },
       realNameCertification: {
         tagCardData: {
@@ -191,10 +195,6 @@ export default class TableList extends PureComponent {
 
     const { modalVisible, importLoading, fileList, selectedRowKeys } = this.state;
 
-    const addAuth = hasAuthority(addCode, permissionCodes);
-    const importAuth = hasAuthority(importCode, permissionCodes);
-    const exportAuth = hasAuthority(exportCode, permissionCodes);
-
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
 
@@ -202,17 +202,6 @@ export default class TableList extends PureComponent {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-
-    const toolBarAction = (
-      <Button
-        disabled={!addAuth}
-        type="primary"
-        onClick={this.handleAdd}
-        style={{ marginTop: '8px' }}
-      >
-        新增
-      </Button>
-    );
 
     const fields = getSearchFields(unitType);
     const columns = getTableColumns(this.handleDelete, unitType, this.handlePesonListClick);
@@ -228,40 +217,48 @@ export default class TableList extends PureComponent {
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
-        content={
+        action={
           <div>
-            <span>标签总数 ：{total}</span>
-            <Button
-              onClick={this.handleExportShow}
-              type="primary"
+            <AuthA
+              code={cardCode}
+              href={'#/personnel-management/tag-card/visitor-card-list'}
               style={{ float: 'right', marginRight: '10px' }}
-              disabled={!exportAuth}
             >
-              批量导出
-            </Button>
-            <Button
-              type="primary"
-              style={{ float: 'right', marginRight: '10px' }}
-              onClick={this.handleImportShow}
-              disabled={!importAuth}
-            >
-              批量导入
-            </Button>
-            <Button type="primary" style={{ float: 'right', marginRight: '10px' }}>
-              <a href={url}>模板下载</a>
-            </Button>
+              访客卡管理
+            </AuthA>
           </div>
         }
       >
         <Card style={{ marginBottom: 15 }}>
-          <ToolBar
-            fields={fields}
-            action={toolBarAction}
-            onSearch={this.handleSearch}
-            onReset={this.handleReset}
-          />
+          <ToolBar fields={fields} onSearch={this.handleSearch} onReset={this.handleReset} />
         </Card>
-        <div className={styles1.container}>
+        <Card
+          title="标签卡列表"
+          extra={
+            <div>
+              <AuthButton code={addCode} type="primary" onClick={this.handleAdd}>
+                新增
+              </AuthButton>
+              <Button style={{ marginLeft: '10px' }}>
+                <a href={url}>模板下载</a>
+              </Button>
+              <AuthButton
+                style={{ marginLeft: '10px' }}
+                onClick={this.handleImportShow}
+                code={importCode}
+              >
+                批量导入
+              </AuthButton>
+              <AuthButton
+                onClick={this.handleExportShow}
+                style={{ marginLeft: '10px' }}
+                code={exportCode}
+              >
+                批量导出
+              </AuthButton>
+            </div>
+          }
+        >
           {list.length ? (
             <Table
               rowKey="id"
@@ -288,7 +285,7 @@ export default class TableList extends PureComponent {
           ) : (
             <Empty />
           )}
-        </div>
+        </Card>
         <Modal
           title="导入"
           visible={modalVisible}

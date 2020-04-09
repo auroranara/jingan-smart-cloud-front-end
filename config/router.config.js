@@ -1863,6 +1863,25 @@ module.exports = env => {
                   name: 'tagCardDetail',
                   component: './RealNameCertification/TagCardManagement/Handle',
                 },
+                // 访客卡
+                {
+                  path: '/personnel-management/tag-card/visitor-card-list',
+                  code: 'personnelManagement.tagCardManagement.visitorCardList',
+                  name: 'visitorCardList',
+                  component: './RealNameCertification/VisitorCardManagement/List',
+                },
+                {
+                  path: '/personnel-management/tag-card/visitor-card-add',
+                  code: 'personnelManagement.tagCardManagement.visitorCardAdd',
+                  name: 'visitorCardAdd',
+                  component: './RealNameCertification/VisitorCardManagement/Handle',
+                },
+                {
+                  path: '/personnel-management/tag-card/visitor-card-edit/:id',
+                  code: 'personnelManagement.tagCardManagement.visitorCardEdit',
+                  name: 'visitorCardEdit',
+                  component: './RealNameCertification/VisitorCardManagement/Handle',
+                },
               ],
             },
             {
@@ -5492,6 +5511,31 @@ module.exports = env => {
                   path: '/real-name-certification/personnel-management/record/:id',
                   code: 'realNameCertification.personnelManagement.importPhoto',
                   component: './RealNameCertification/Person/ImportRecord',
+                },
+              ],
+            },
+            {
+              name: 'visitorRegistration', // 访客登记
+              code: 'realNameCertification.visitorRegistration',
+              path: '/real-name-certification/visitor-registration',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/visitor-registration',
+                  redirect: '/real-name-certification/visitor-registration/list',
+                },
+                {
+                  name: 'list',
+                  path: '/real-name-certification/visitor-registration/list',
+                  code: 'realNameCertification.visitorRegistration.visitorList',
+                  component: './RealNameCertification/VisitorRegistration/List',
+                },
+                {
+                  name: 'record',
+                  path: '/real-name-certification/visitor-registration/record/:id',
+                  code: 'realNameCertification.visitorRegistration.visitorRegistrationRecord',
+                  component: './RealNameCertification/VisitorRegistration/Record',
                 },
               ],
             },
