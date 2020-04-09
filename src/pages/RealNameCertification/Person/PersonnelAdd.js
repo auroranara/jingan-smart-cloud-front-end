@@ -123,7 +123,13 @@ export default class PersonnelAdd extends PureComponent {
           const photoDetails = detail.photoDetails || [];
           const educationCertificateDetails = detail.educationCertificateDetails || [];
           setFieldsValue({
-            photoDetails: photoDetails.map(item => ({ ...item, uid: item.id, url: item.webUrl })),
+            photoDetails: photoDetails.map(item => ({
+              dbUrl: item.dbUrl,
+              fileName: item.fileName,
+              id: item.id,
+              uid: item.id,
+              url: item.webUrl,
+            })),
             educationCertificateDetails: educationCertificateDetails.map(item => ({
               ...item,
               uid: item.id,
@@ -359,6 +365,7 @@ export default class PersonnelAdd extends PureComponent {
   // 获取标签卡列表
   fetchTagCard = ({ ...params }, callback) => {
     const { dispatch } = this.props;
+    const { perType } = this.state;
     // 根据输入值获取列表
     dispatch({
       type: 'realNameCertification/fetchTagCardList',
@@ -367,6 +374,7 @@ export default class PersonnelAdd extends PureComponent {
         pageNum: 1,
         pageSize: 30,
         personCar: 1,
+        perType: perType,
       },
       callback,
     });
