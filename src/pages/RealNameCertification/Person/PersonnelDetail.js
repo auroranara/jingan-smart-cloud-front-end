@@ -121,10 +121,20 @@ export default class PersonnelDetail extends Component {
       },
       ...(personType === '1'
         ? [
-            { id: 'partName', label: '部门' } || NO_DATA,
-            { id: 'companyJobName', label: '岗位' } || NO_DATA,
+            { id: 'partName', label: '部门', render: ({ partName }) => partName || NO_DATA },
+            {
+              id: 'companyJobName',
+              label: '岗位',
+              render: ({ companyJobName }) => companyJobName || NO_DATA,
+            },
           ]
-        : [{ id: 'personCompany', label: '单位名称' } || NO_DATA]),
+        : [
+            {
+              id: 'personCompany',
+              label: '单位名称',
+              render: ({ personCompany }) => personCompany || NO_DATA,
+            },
+          ]),
       { id: 'icnumber', label: 'IC卡号', render: ({ icnumber }) => icnumber || NO_DATA },
       {
         id: 'entranceNumber',
@@ -245,7 +255,7 @@ export default class PersonnelDetail extends Component {
             <CustomForm
               buttonWrapperSpan={BUTTON_WRAPPER_SPAN}
               buttonWrapperStyle={{ textAlign: 'center' }}
-              fields={unitType === 4 ? fields.slice(1, fields.length) : fields}
+              fields={fields}
               searchable={false}
               resetable={false}
               action={
