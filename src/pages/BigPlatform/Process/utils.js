@@ -84,8 +84,8 @@ export function getProcessTables(monitorList) {
 }
 
 const TABLES = [
-  { title: ['丁二烯', '计量罐'], position: [978,390], width: 208, params: [] },
-  { title: ['苯乙烯', '计量罐'], position: [482,390], width: 208, params: [] },
+  { title: ['丁二烯', '计量罐'], position: [482,390], width: 208, params: [] },
+  { title: ['苯乙烯', '计量罐'], position: [978,390], width: 208, params: [] },
   { title: ['水相', '计量罐'], position: [1444,390], width: 208, params: [] },
   { title: '油相釜', position: [558,1160], width: 208, params: [] },
   { title: '1#反应釜', position: [1160,1160], width: 350, params: [], showLabel: true },
