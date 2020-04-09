@@ -61,10 +61,10 @@ module.exports = env => {
         },
       ],
     },
-    {
-      path: '/test',
-      component: './Test',
-    },
+    // {
+    //   path: '/test',
+    //   component: './Test',
+    // },
     //big platform
     {
       path: '/big-platform',
@@ -3913,43 +3913,271 @@ module.exports = env => {
               ],
             },
 
-            // 承包商管理
-            {
-              path: '/operation-safety/contractor',
-              code: 'operationSafety.contractor',
-              name: 'contractor',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/operation-safety/contractor',
-                  redirect: '/operation-safety/contractor/list',
-                },
-                {
-                  path: '/operation-safety/contractor/list',
-                  code: 'operationSafety.contractor.list',
-                  name: 'list',
-                  component: './DataAnalysis/Contractor/List',
-                },
-                {
-                  path: '/operation-safety/contractor/detail/:id',
-                  code: 'operationSafety.contractor.detail',
-                  name: 'detail',
-                  component: './DataAnalysis/Contractor/Form',
-                },
-                {
-                  path: '/operation-safety/contractor/add',
-                  code: 'operationSafety.contractor.add',
-                  name: 'add',
-                  component: './DataAnalysis/Contractor/Form',
-                },
-                {
-                  path: '/operation-safety/contractor/edit/:id',
-                  code: 'operationSafety.contractor.edit',
-                  name: 'edit',
-                  component: './DataAnalysis/Contractor/Form',
-                },
-              ],
-            },
+            // // 承包商管理
+            // {
+            //   path: '/operation-safety/contractor',
+            //   code: 'operationSafety.contractor',
+            //   name: 'contractor',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/contractor',
+            //       redirect: '/operation-safety/contractor/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor/list',
+            //       code: 'operationSafety.contractor.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/Contractor/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor/detail/:id',
+            //       code: 'operationSafety.contractor.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/Contractor/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor/add',
+            //       code: 'operationSafety.contractor.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/Contractor/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor/edit/:id',
+            //       code: 'operationSafety.contractor.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/Contractor/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 承包商施工管理
+            // {
+            //   path: '/operation-safety/contractor-construction',
+            //   code: 'operationSafety.contractorConstruction',
+            //   name: 'contractorConstruction',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/contractor-construction',
+            //       redirect: '/operation-safety/contractor-construction/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-construction/list',
+            //       code: 'operationSafety.contractorConstruction.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/ContractorConstruction/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-construction/detail/:id',
+            //       code: 'operationSafety.contractorConstruction.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/ContractorConstruction/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-construction/add',
+            //       code: 'operationSafety.contractorConstruction.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/ContractorConstruction/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-construction/edit/:id',
+            //       code: 'operationSafety.contractorConstruction.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/ContractorConstruction/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 承包商评定管理
+            // {
+            //   path: '/operation-safety/contractor-evaluation',
+            //   code: 'operationSafety.contractorEvaluation',
+            //   name: 'contractorEvaluation',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/contractor-evaluation',
+            //       redirect: '/operation-safety/contractor-evaluation/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-evaluation/list',
+            //       code: 'operationSafety.contractorEvaluation.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/ContractorEvaluation/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-evaluation/detail/:id',
+            //       code: 'operationSafety.contractorEvaluation.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/ContractorEvaluation/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-evaluation/add',
+            //       code: 'operationSafety.contractorEvaluation.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/ContractorEvaluation/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-evaluation/edit/:id',
+            //       code: 'operationSafety.contractorEvaluation.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/ContractorEvaluation/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 承包商违章记录
+            // {
+            //   path: '/operation-safety/contractor-violation-record',
+            //   code: 'operationSafety.contractorViolationRecord',
+            //   name: 'contractorViolationRecord',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/contractor-violation-record',
+            //       redirect: '/operation-safety/contractor-violation-record/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-violation-record/list',
+            //       code: 'operationSafety.contractorViolationRecord.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/ContractorViolationRecord/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-violation-record/detail/:id',
+            //       code: 'operationSafety.contractorViolationRecord.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/ContractorViolationRecord/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-violation-record/add',
+            //       code: 'operationSafety.contractorViolationRecord.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/ContractorViolationRecord/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/contractor-violation-record/edit/:id',
+            //       code: 'operationSafety.contractorViolationRecord.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/ContractorViolationRecord/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 供应商管理
+            // {
+            //   path: '/operation-safety/supplier',
+            //   code: 'operationSafety.supplier',
+            //   name: 'supplier',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/supplier',
+            //       redirect: '/operation-safety/supplier/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier/list',
+            //       code: 'operationSafety.supplier.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/Supplier/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier/detail/:id',
+            //       code: 'operationSafety.supplier.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/Supplier/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier/add',
+            //       code: 'operationSafety.supplier.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/Supplier/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier/edit/:id',
+            //       code: 'operationSafety.supplier.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/Supplier/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 供应商考核管理
+            // {
+            //   path: '/operation-safety/supplier-evaluation',
+            //   code: 'operationSafety.supplierEvaluation',
+            //   name: 'supplierEvaluation',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/supplier-evaluation',
+            //       redirect: '/operation-safety/supplier-evaluation/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier-evaluation/list',
+            //       code: 'operationSafety.supplierEvaluation.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/SupplierEvaluation/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier-evaluation/detail/:id',
+            //       code: 'operationSafety.supplierEvaluation.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/SupplierEvaluation/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier-evaluation/add',
+            //       code: 'operationSafety.supplierEvaluation.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/SupplierEvaluation/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/supplier-evaluation/edit/:id',
+            //       code: 'operationSafety.supplierEvaluation.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/SupplierEvaluation/Form',
+            //     },
+            //   ],
+            // },
+
+            // // 警示牌管理
+            // {
+            //   path: '/operation-safety/warning-sign',
+            //   code: 'operationSafety.warningSign',
+            //   name: 'warningSign',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/warning-sign',
+            //       redirect: '/operation-safety/warning-sign/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/warning-sign/list',
+            //       code: 'operationSafety.warningSign.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/WarningSign/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/warning-sign/detail/:id',
+            //       code: 'operationSafety.warningSign.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/WarningSign/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/warning-sign/add',
+            //       code: 'operationSafety.warningSign.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/WarningSign/Form',
+            //     },
+            //     {
+            //       path: '/operation-safety/warning-sign/edit/:id',
+            //       code: 'operationSafety.warningSign.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/WarningSign/Form',
+            //     },
+            //   ],
+            // },
           ],
         },
 

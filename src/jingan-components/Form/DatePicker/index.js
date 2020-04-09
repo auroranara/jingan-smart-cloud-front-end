@@ -16,7 +16,7 @@ const FormDatePicker = ({
   format = FORMAT,
   allowClear = false,
   inputReadOnly = true,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   ...rest
 }) => {
@@ -50,7 +50,7 @@ const FormDatePicker = ({
         <span>{value.format(format)}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

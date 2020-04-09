@@ -14,6 +14,7 @@ import Upload from './Upload';
 import Radio from './Radio';
 import Map from './Map';
 import AMap from './AMap';
+import InputNumber from './InputNumber';
 import classNames from 'classnames';
 import styles from './index.less';
 
@@ -24,6 +25,9 @@ const COL = {
   md: 12,
   sm: 12,
   xs: 24,
+};
+const COL2 = {
+  span: 24,
 };
 const SIZE_MAPPER = {
   xxl: 'xl',
@@ -109,6 +113,7 @@ const componentReference = {
   Radio,
   Map,
   AMap,
+  InputNumber,
 };
 
 /**
@@ -123,7 +128,7 @@ const FormIndex = forwardRef(
       mode,
       expandable = true,
       operation,
-      operationCol = COL,
+      operationCol = !mode ? COL : COL2,
       onSearch,
       onReset,
       onValuesChange,
@@ -132,6 +137,7 @@ const FormIndex = forwardRef(
       editPath,
       listPath,
       onSubmit,
+      onFinish,
       submitting,
       ...rest
     },
@@ -169,6 +175,14 @@ const FormIndex = forwardRef(
       },
       [windowSize, expand]
     );
+    const dependencies = list.reduce((result, { fields }) => {
+      return fields.reduce((result, { name, component }) => {
+        if (component === 'Upload') {
+          result.push(name);
+        }
+        return result;
+      }, result);
+    }, []);
     return (
       <Form
         onValuesChange={
@@ -197,7 +211,13 @@ const FormIndex = forwardRef(
               }
             : onValuesChange
         }
+        onFinish={values => {
+          onSearch && onSearch(values);
+          onSubmit && onSubmit(values);
+          onFinish && onFinish(values);
+        }}
         form={form}
+        scrollToFirstError
         {...rest}
       >
         {list.map(({ key, title, fields, className, ...rest }, index) => {
@@ -219,41 +239,38 @@ const FormIndex = forwardRef(
                       props,
                       enableDefaultRules,
                       rules,
-                      col = COL,
+                      col = !mode ? COL : COL2,
                       hide,
                       render,
                       dependencies,
+                      onChange,
                       ...rest
                     },
                     index
                   ) => {
-                    let children;
-                    let ruleList;
-                    if (typeof render === 'function') {
-                      children = render();
-                    } else {
-                      const Component = componentReference[component] || component;
-                      children = <Component {...props} />;
-                      if (enableDefaultRules && typeof Component.getRules === 'function') {
-                        ruleList = Component.getRules({ label, ...props }).concat(rules || []);
-                      }
-                    }
+                    const Component = componentReference[component] || component;
+                    const properties =
+                      typeof props === 'function' ? props({ mode, ...params }) : props;
                     return index < grid.length ? (
-                      hide ? (
+                      (hide || typeof props === 'function') &&
+                      dependencies &&
+                      dependencies.length ? (
                         <Form.Item
                           key={key || name}
                           noStyle
                           shouldUpdate={(prevValues, values) =>
-                            dependencies
-                              ? dependencies.some(
-                                  dependency => prevValues[dependency] !== values[dependency]
-                                )
-                              : false
+                            dependencies.some(
+                              dependency => prevValues[dependency] !== values[dependency]
+                            )
                           }
                         >
                           {({ getFieldsValue }) => {
                             const values = getFieldsValue();
-                            const hidden = hide({ ...params, ...values });
+                            const hidden = hide && hide({ mode, ...params, ...values });
+                            const properties =
+                              typeof props === 'function'
+                                ? props({ mode, ...params, ...values })
+                                : props;
                             return !hidden ? (
                               <Col
                                 {...col}
@@ -270,17 +287,36 @@ const FormIndex = forwardRef(
                                 <Form.Item
                                   name={name}
                                   label={label}
-                                  rules={ruleList || rules}
+                                  rules={
+                                    enableDefaultRules && Component.getRules
+                                      ? Component.getRules({ label, ...properties }).concat(
+                                          rules || []
+                                        )
+                                      : rules
+                                  }
                                   dependencies={dependencies}
                                   {...rest}
                                 >
-                                  {children}
+                                  <Component
+                                    mode={mode}
+                                    onChange={
+                                      onChange
+                                        ? (...args) => {
+                                            const values = onChange(...args);
+                                            if (values) {
+                                              form.setFieldsValue(values);
+                                            }
+                                          }
+                                        : undefined
+                                    }
+                                    {...properties}
+                                  />
                                 </Form.Item>
                               </Col>
                             ) : null;
                           }}
                         </Form.Item>
-                      ) : (
+                      ) : !hide || !hide({ mode, ...params }) ? (
                         <Col
                           key={key || name}
                           {...col}
@@ -297,14 +333,31 @@ const FormIndex = forwardRef(
                           <Form.Item
                             name={name}
                             label={label}
-                            rules={ruleList || rules}
+                            rules={
+                              enableDefaultRules && Component.getRules
+                                ? Component.getRules({ label, ...properties }).concat(rules || [])
+                                : rules
+                            }
                             dependencies={dependencies}
                             {...rest}
                           >
-                            {children}
+                            <Component
+                              mode={mode}
+                              onChange={
+                                onChange
+                                  ? (...args) => {
+                                      const values = onChange(...args);
+                                      if (values) {
+                                        form.setFieldsValue(values);
+                                      }
+                                    }
+                                  : undefined
+                              }
+                              {...properties}
+                            />
                           </Form.Item>
                         </Col>
-                      )
+                      ) : null
                     ) : null;
                   }
                 )}
@@ -325,13 +378,7 @@ const FormIndex = forwardRef(
                     <Form.Item>
                       <div className={styles.operationContainer}>
                         <div className={styles.operationWrapper}>
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              const values = form.getFieldsValue();
-                              onSearch && onSearch(values);
-                            }}
-                          >
+                          <Button type="primary" htmlType="submit">
                             查询
                           </Button>
                         </div>
@@ -378,41 +425,69 @@ const FormIndex = forwardRef(
                   </Col>
                 ) : (
                   list.length === 1 && (
-                    <Col span={24}>
-                      <Form.Item>
-                        <div className={styles.operationContainer}>
-                          <div className={styles.operationWrapper}>
-                            {mode === 'detail' ? (
-                              <Button href={`#${editPath}`} disabled={!hasEditAuthority}>
-                                编辑
-                              </Button>
-                            ) : (
-                              <Button
-                                type="primary"
-                                onClick={() => {
-                                  const values = form.getFieldsValue();
-                                  onSubmit && onSubmit(values);
-                                }}
-                                loading={submitting}
+                    <Form.Item
+                      noStyle
+                      shouldUpdate={(prevValues, values) =>
+                        dependencies.some(
+                          dependency => prevValues[dependency] !== values[dependency]
+                        )
+                      }
+                    >
+                      {({ getFieldsValue }) => {
+                        const values = getFieldsValue();
+                        const uploading = dependencies.some(
+                          dependency =>
+                            values[dependency] &&
+                            values[dependency].some(({ status }) => status !== 'done')
+                        );
+                        return (
+                          <Col {...operationCol}>
+                            <Form.Item
+                              label={<span className={styles.hidden}>操作</span>}
+                              colon={false}
+                            >
+                              <div
+                                className={classNames(
+                                  styles.operationContainer,
+                                  styles.modeOperationContainer
+                                )}
                               >
-                                提交
-                              </Button>
-                            )}
-                          </div>
-                          <div className={styles.operationWrapper}>
-                            <Button href={`#${listPath}`}>返回</Button>
-                          </div>
-                          {Array.isArray(operation) &&
-                            operation.map((item, index) => {
-                              return (
-                                <div key={index} className={styles.operationWrapper}>
-                                  {item}
+                                <div className={styles.operationWrapper}>
+                                  {mode === 'detail' ? (
+                                    <Button
+                                      type="primary"
+                                      href={`#${editPath}`}
+                                      disabled={!hasEditAuthority}
+                                    >
+                                      编辑
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      type="primary"
+                                      htmlType="submit"
+                                      loading={submitting || uploading}
+                                    >
+                                      提交
+                                    </Button>
+                                  )}
                                 </div>
-                              );
-                            })}
-                        </div>
-                      </Form.Item>
-                    </Col>
+                                <div className={styles.operationWrapper}>
+                                  <Button href={`#${listPath}`}>返回</Button>
+                                </div>
+                                {Array.isArray(operation) &&
+                                  operation.map((item, index) => {
+                                    return (
+                                      <div key={index} className={styles.operationWrapper}>
+                                        {item}
+                                      </div>
+                                    );
+                                  })}
+                              </div>
+                            </Form.Item>
+                          </Col>
+                        );
+                      }}
+                    </Form.Item>
                   )
                 )}
               </Row>
@@ -421,39 +496,52 @@ const FormIndex = forwardRef(
         })}
         {mode &&
           list.length > 1 && (
-            <FooterToolbar>
-              <div className={styles.operationContainer}>
-                <div className={styles.operationWrapper}>
-                  {mode === 'detail' ? (
-                    <Button href={`#${editPath}`} disabled={!hasEditAuthority}>
-                      编辑
-                    </Button>
-                  ) : (
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        const values = form.getFieldsValue();
-                        onSubmit && onSubmit(values);
-                      }}
-                      loading={submitting}
-                    >
-                      提交
-                    </Button>
-                  )}
-                </div>
-                <div className={styles.operationWrapper}>
-                  <Button href={`#${listPath}`}>返回</Button>
-                </div>
-                {Array.isArray(operation) &&
-                  operation.map((item, index) => {
-                    return (
-                      <div key={index} className={styles.operationWrapper}>
-                        {item}
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, values) =>
+                dependencies.some(dependency => prevValues[dependency] !== values[dependency])
+              }
+            >
+              {({ getFieldsValue }) => {
+                const values = getFieldsValue();
+                const uploading = dependencies.some(
+                  dependency =>
+                    values[dependency] && values[dependency].some(({ status }) => status !== 'done')
+                );
+                return (
+                  <FooterToolbar>
+                    <div className={styles.operationContainer}>
+                      <div className={styles.operationWrapper}>
+                        {mode === 'detail' ? (
+                          <Button type="primary" href={`#${editPath}`} disabled={!hasEditAuthority}>
+                            编辑
+                          </Button>
+                        ) : (
+                          <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={submitting || uploading}
+                          >
+                            提交
+                          </Button>
+                        )}
                       </div>
-                    );
-                  })}
-              </div>
-            </FooterToolbar>
+                      <div className={styles.operationWrapper}>
+                        <Button href={`#${listPath}`}>返回</Button>
+                      </div>
+                      {Array.isArray(operation) &&
+                        operation.map((item, index) => {
+                          return (
+                            <div key={index} className={styles.operationWrapper}>
+                              {item}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </FooterToolbar>
+                );
+              }}
+            </Form.Item>
           )}
       </Form>
     );
@@ -474,4 +562,5 @@ export {
   Radio,
   Map,
   AMap,
+  InputNumber,
 };

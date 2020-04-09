@@ -17,7 +17,7 @@ const FormRadio = ({
   mode,
   fieldNames,
   list,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   getList,
   ...rest
@@ -52,7 +52,7 @@ const FormRadio = ({
         <span>{label}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

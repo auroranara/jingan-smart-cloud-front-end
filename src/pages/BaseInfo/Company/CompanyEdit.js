@@ -143,7 +143,7 @@ const WORK_COM_TYPES = [
   { value: '3', name: '存储' },
 ];
 
-const PLACE_OWN = [
+export const PLACE_OWN = [
   { value: '0', name: '自有' },
   { value: '1', name: '租赁' },
 ];
@@ -1666,7 +1666,7 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.businessScope}>
+              <Form.Item label={fieldLabels.businessLicense}>
                 {getFieldDecorator('businessLicenseDetails')(
                   <Upload
                     name="files"

@@ -12,7 +12,7 @@ const FormInput = ({
   placeholder = '请输入',
   maxLength = 100,
   allowClear = false,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   ...rest
 }) => {
@@ -37,7 +37,7 @@ const FormInput = ({
         <span>{value}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

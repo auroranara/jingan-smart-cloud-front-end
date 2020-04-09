@@ -1,11 +1,23 @@
 .container {
-  line-height: 1.5;
-  text-align: left;
-
   .item {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+}
+.pictureContainer {
+  display: flex;
+  margin: -4px;
+
+  .pictureWrapper {
+    flex: none;
+    padding: 4px;
+
+    .picture {
+      height: 40px;
+      vertical-align: top;
+      cursor: pointer;
+    }
   }
 }
 .clickable {

@@ -1,21 +1,30 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
 import { Select } from '@/jingan-components/Form';
-import { CATEGORIES, TYPES, STATUSES, COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../config';
-import styles from './index.less';
+import { Badge } from '@/jingan-components/View';
+import { CATEGORIES, TYPES, STATUSES } from '../config';
+import { isNumber } from '@/utils/utils';
+// import styles from './index.less';
 
 const ContractorList = ({ route, match, location }) => {
-  const formRef = useRef(null);
   const props = {
     route,
     match,
     location,
-    transform(values) {
-      console.log(values);
-      console.log(formRef);
+    transform({
+      companyName,
+      contractorName,
+      contractorCategory,
+      contractorType,
+      certificateExpireStatus,
+    }) {
       return {
-        name: values.companyName,
+        companyName: companyName && companyName.trim(),
+        contractorName: contractorName && contractorName.trim(),
+        contractorCategory,
+        contractorType,
+        certificateExpireStatus,
       };
     },
     fields: [
@@ -23,13 +32,6 @@ const ContractorList = ({ route, match, location }) => {
         name: 'companyName',
         label: '单位名称',
         component: 'Input',
-        // props: {
-        //   fieldNames: COMPANY_FIELDNAMES,
-        //   mapper: COMPANY_MAPPER,
-        //   showSearch: true,
-        //   filterOption: false,
-        //   allowClear: true,
-        // },
         hide({ isUnit }) {
           return isUnit;
         },
@@ -40,7 +42,7 @@ const ContractorList = ({ route, match, location }) => {
         component: 'Input',
       },
       {
-        name: 'category',
+        name: 'contractorCategory',
         label: '承包商类别',
         component: 'Select',
         props: {
@@ -49,7 +51,7 @@ const ContractorList = ({ route, match, location }) => {
         },
       },
       {
-        name: 'type',
+        name: 'contractorType',
         label: '承包商类型',
         component: 'Select',
         props: {
@@ -58,7 +60,7 @@ const ContractorList = ({ route, match, location }) => {
         },
       },
       {
-        name: 'status',
+        name: 'certificateExpireStatus',
         label: '资质证书状态',
         component: 'Select',
         props: {
@@ -81,24 +83,37 @@ const ContractorList = ({ route, match, location }) => {
         title: '承包商单位名称',
       },
       {
-        dataIndex: 'category',
+        dataIndex: 'contractorCategory',
         title: '承包商类别',
-        render: value => value && <Select list={CATEGORIES} value={`${value}`} mode="detail" />, // 这里注意一下value的类型
+        render: value =>
+          isNumber(value) && (
+            <Select
+              list={CATEGORIES}
+              value={`${value}`}
+              mode="detail"
+              empty={null}
+              ellipsis={false}
+            />
+          ),
       },
       {
-        dataIndex: 'type',
+        dataIndex: 'contractorType',
         title: '承包商类型',
-        render: value => value && <Select list={TYPES} value={`${value}`} mode="detail" />, // 这里注意一下value的类型
+        render: value =>
+          isNumber(value) && (
+            <Select list={TYPES} value={`${value}`} mode="detail" empty={null} ellipsis={false} />
+          ),
       },
       {
-        dataIndex: 'category',
+        dataIndex: 'certificateExpireStatus',
         title: '资质证书状态',
-        render: value => value && <Select list={STATUSES} value={`${value}`} mode="detail" />, // 这里注意一下value的类型
+        render: value => <Badge list={STATUSES} value={`${value}`} />,
       },
       {
         dataIndex: '操作',
         title: '操作',
         fixed: 'right',
+        width: 150,
         render: (_, data) => (
           <Fragment>
             {renderDetailButton(data)}
@@ -110,7 +125,6 @@ const ContractorList = ({ route, match, location }) => {
         ),
       },
     ],
-    formRef,
   };
   return <TablePage {...props} />;
 };

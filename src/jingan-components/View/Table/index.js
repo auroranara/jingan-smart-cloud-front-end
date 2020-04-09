@@ -67,7 +67,7 @@ const TableIndex = ({
     />
   );
   return showCard ? (
-    <Card className={styles.tableCard}>
+    <Card>
       {operation && (
         <div className={styles.operationContainer}>
           {showAddButton && (
