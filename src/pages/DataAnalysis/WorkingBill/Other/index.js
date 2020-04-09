@@ -1191,7 +1191,6 @@ export default class WorkingBillOther extends Component {
                       originalMode="tags"
                       notFoundContent={null}
                       showArrow={false}
-                      filterOption={false}
                       mode={mode}
                       showSearch
                     />
@@ -1221,7 +1220,6 @@ export default class WorkingBillOther extends Component {
                       originalMode="tags"
                       notFoundContent={null}
                       showArrow={false}
-                      filterOption={false}
                       mode={mode}
                       showSearch
                     />
@@ -1363,7 +1361,6 @@ export default class WorkingBillOther extends Component {
                       originalMode="tags"
                       notFoundContent={null}
                       showArrow={false}
-                      filterOption={false}
                       mode={mode}
                       showSearch
                     />
@@ -1393,7 +1390,6 @@ export default class WorkingBillOther extends Component {
                       originalMode="tags"
                       notFoundContent={null}
                       showArrow={false}
-                      filterOption={false}
                       mode={mode}
                       showSearch
                     />

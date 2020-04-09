@@ -28,6 +28,7 @@ const TablePage = props => {
     tableRef,
     showAddButton = true,
     showExportButton,
+    initialValues,
   } = props;
   const [values, setValues] = useState(undefined);
   const form = useRef(null);
@@ -166,6 +167,7 @@ const TablePage = props => {
             pageSize,
           });
         }}
+        initialValues={initialValues}
       />
       <Table
         list={list}
@@ -320,7 +322,7 @@ export default connect(
         }, {}),
     };
   },
-  (dispatch, { route: { code }, mapper, params }) => {
+  (dispatch, { route: { code }, mapper }) => {
     const {
       namespace = code.split('.').slice(-2)[0],
       getList: gl = 'getList',
@@ -334,7 +336,6 @@ export default connect(
           payload: {
             pageNum: 1,
             pageSize: getPageSize(),
-            ...params,
             ...payload,
           },
           callback,

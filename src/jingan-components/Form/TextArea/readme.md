@@ -11,7 +11,7 @@
 | maxLength | 可输入的最大长度 | number | 500 |
 | autoSize | 自适应内容高度 | boolean/object | { minRows: 3, maxRows: 10 } |
 | allowClear | 是否显示清空按钮 | boolean | false |
-| emtpy | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
+| empty | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
 | ellipsis | mode为'detail'时起效果，当value超出容器宽度时是否显示省略号 | boolean/object  | true |
 其它同Antd的Input.TextArea组件
 
@@ -27,7 +27,7 @@ import TextArea from '@/jingan-components/Form/TextArea';
   maxLength={50}
   allowClear
   autoSize={false}
-  emtpy={<Empty />}
+  empty={<Empty />}
   ellipsis={{ lines: 3 }}
 />
 ```

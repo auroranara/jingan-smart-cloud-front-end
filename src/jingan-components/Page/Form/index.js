@@ -27,6 +27,9 @@ const FormPage = props => {
     transform,
     loading,
     submitting,
+    labelCol,
+    wrapperCol,
+    initialValues,
   } = props;
   const form = useRef(null);
   useImperativeHandle(formRef, () => form.current);
@@ -35,7 +38,7 @@ const FormPage = props => {
       if (id) {
         getDetail(undefined, (success, data) => {
           if (success) {
-            form.current.setFieldsValues(initialize ? initialize(data) : data);
+            form.current.setFieldsValue(initialize ? initialize(data) : data);
           }
         });
       }
@@ -79,6 +82,9 @@ const FormPage = props => {
             );
           }}
           submitting={submitting}
+          labelCol={labelCol}
+          wrapperCol={wrapperCol}
+          initialValues={initialValues}
         />
       </Spin>
     </PageHeaderLayout>

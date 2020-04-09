@@ -13,7 +13,7 @@ const FormPassword = ({
   placeholder = '请输入',
   maxLength = 100,
   allowClear = false,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   ...rest
 }) => {
@@ -38,7 +38,7 @@ const FormPassword = ({
         <span>{value}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

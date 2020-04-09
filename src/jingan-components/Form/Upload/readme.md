@@ -7,10 +7,9 @@
 | value | 文件列表受控值 | array | - |
 | onChange | 文件列表发生变化时的回调 | function(value) | - |
 | folder | 文件存放目录 | string | 'file' |
-| limitLength | 文件列表的限制数量，超出后会覆盖最初的文件，默认不做限制 | number | - |
+| limitLength | 文件列表的限制数量，默认不做限制 | number | - |
 | limitType | 文件的限制类型，如`['PNG', 'JPG']`，默认不做限制 | array | - |
 | limitSize | 文件的限制大小，单位为kb，默认不做限制 | number | - |
-| type | 表现形式，可选`button`，`photoWall`（暂未完成） | string | 'button' |
 以及其他antd/Upload支持的属性
 
 ## 示例
@@ -25,6 +24,5 @@ import Upload from '@/jingan-components/Form/Upload';
   limitLength={10}
   limitType={['PNG', 'JPG']}
   limitSize={1024}
-  type="photoWall"
 />
 ```
