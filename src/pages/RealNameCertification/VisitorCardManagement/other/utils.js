@@ -104,7 +104,7 @@ export function getTableColumns(handleConfirmDelete, handleEditModal, unitType, 
       render: (val, row) => (
         <span
           style={{ color: val !== 0 && '#1890ff', cursor: val !== 0 && 'pointer' }}
-          onClick={() => val !== 0 && handlRecordPage(row.companyId)}
+          onClick={() => val !== 0 && handlRecordPage(row.companyId, row.snNumber)}
         >
           {val}
         </span>

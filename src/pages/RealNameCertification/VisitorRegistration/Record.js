@@ -41,6 +41,9 @@ export default class TableList extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { num },
+      },
     } = this.props;
     const { dispatch } = this.props;
     dispatch({
@@ -50,6 +53,7 @@ export default class TableList extends PureComponent {
         pageSize,
         pageNum,
         companyId: id,
+        snNumber: num ? num : undefined,
       },
     });
   };
@@ -111,7 +115,6 @@ export default class TableList extends PureComponent {
     const indexBase = (currentPage - 1) * 10;
 
     const breadcrumbList = Array.from(BREADCRUMBLIST_OTHER);
-    breadcrumbList.push({ title: '列表', name: '列表' });
 
     const columns = getRecordColumns();
 

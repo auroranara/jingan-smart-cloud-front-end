@@ -45,8 +45,8 @@ export default class index extends PureComponent {
     this.form = toobar && toobar.props && toobar.props.form;
   };
 
-  handlRecordPage = id => {
-    router.push(`/real-name-certification/visitor-registration/record/${id}`);
+  handlRecordPage = (id, num) => {
+    router.push(`/real-name-certification/visitor-registration/record/${id}?num=${num}`);
   };
 
   handleQuery = () => {
