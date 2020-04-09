@@ -61,10 +61,10 @@ module.exports = env => {
         },
       ],
     },
-    {
-      path: '/test',
-      component: './Test',
-    },
+    // {
+    //   path: '/test',
+    //   component: './Test',
+    // },
     //big platform
     {
       path: '/big-platform',
