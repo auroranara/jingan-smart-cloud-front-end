@@ -64,7 +64,7 @@ export default class ArticleDeatil extends PureComponent {
     return (
       <PageHeaderLayout title="文章阅读" breadcrumbList={breadcrumbList}>
         <Row gutter={16}>
-          <Col>
+          <Col span={24}>
             <Card>
               <div className={styles.detailFirst}>
                 <div className={styles.detailTitle}>{name}</div>

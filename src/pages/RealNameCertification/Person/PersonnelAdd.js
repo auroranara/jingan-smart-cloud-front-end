@@ -374,7 +374,7 @@ export default class PersonnelAdd extends PureComponent {
         pageNum: 1,
         pageSize: 30,
         personCar: 1,
-        perType: perType,
+        personType: perType,
       },
       callback,
     });
