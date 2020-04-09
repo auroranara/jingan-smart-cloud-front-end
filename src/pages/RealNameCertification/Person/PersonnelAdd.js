@@ -361,10 +361,13 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
+    const { curCompanyId } = this.state;
     this.setState({ perType: id });
     setFieldsValue({ personCompany: undefined, icnumber: undefined, entranceNumber: undefined });
-    this.handleICSearch();
-    this.handleSNSearch();
+    this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: id }, res => {
+      const { list } = res.data;
+      this.setState({ curLabelList: list });
+    });
   };
 
   // 获取标签卡列表
