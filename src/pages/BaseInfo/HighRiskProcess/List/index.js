@@ -28,7 +28,7 @@ const {
 } = codes;
 const addUrl = '/major-hazard-info/high-risk-process/add';
 const editUrl = '/major-hazard-info/high-risk-process/edit/';
-const detailUrl = '/major-hazard-info/high-risk-process/detail/';
+const detailUrl = '/major-hazard-info/high-risk-process/detail';
 const { Option } = Select;
 const title = '高危工艺流程';
 const breadcrumbList = [
@@ -241,17 +241,22 @@ export default class HighRiskProcessList extends PureComponent {
       user: { isCompany },
     } = this.props;
     const fields = [
-      // ...(isCompany
-      //   ? []
-      //   : [
-      //     {
-      //       id: 'processName',
-      //       render () {
-      //         return <Input placeholder="请输入高危工艺名称" />;
-      //       },
-      //       transform,
-      //     },
-      //   ]),
+      ...(isCompany
+        ? []
+        : [{
+            id: 'companyName',
+            render () {
+              return <Input placeholder="请输入单位名称" />;
+            },
+            transform,
+        }]),
+      // {
+      //   id: 'processName',
+      //   render () {
+      //     return <Input placeholder="请输入高危工艺名称" />;
+      //   },
+      //   transform,
+      // },
       // {
       //   id: 'unifiedCode',
       //   render () {
@@ -319,13 +324,6 @@ export default class HighRiskProcessList extends PureComponent {
           );
         },
       },
-      {
-        id: 'companyName',
-        render () {
-          return <Input placeholder="请输入单位名称" />;
-        },
-        transform,
-      },
     ];
 
     return (
@@ -388,7 +386,7 @@ export default class HighRiskProcessList extends PureComponent {
               {processName}
             </div>
             <div>
-              统一编码：
+              工艺编码：
               {unifiedCode}
             </div>
             <div>
@@ -398,6 +396,14 @@ export default class HighRiskProcessList extends PureComponent {
           </div>
         ),
         width: 300,
+      },
+      {
+        title: '生产原料',
+        dataIndex: 'rawList',
+        align: 'center',
+        width: 250,
+        render: val =>
+          val && val.length ? val.map(item => item.chineName).join('、') : '暂无数据',
       },
       {
         title: '中间产品',
@@ -459,7 +465,7 @@ export default class HighRiskProcessList extends PureComponent {
             {/* <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
               绑定监测设备
             </AuthA> */}
-            <AuthUmiLink code={bindCode} to={`/major-hazard-info/high-risk-process/detail/${row.id}`} target="_blank">
+            <AuthUmiLink code={detailCode} to={`${detailUrl}/${row.id}`} target="_blank">
               查看
             </AuthUmiLink>
             <Divider type="vertical" />

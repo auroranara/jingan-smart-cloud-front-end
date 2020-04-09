@@ -438,11 +438,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
             {getFieldDecorator('unifiedCode', {
               initialValue: id ? detail.unifiedCode : undefined,
               rules: [
-                { required: true, message: '请输入统一编码' },
+                { required: true, message: '请输入工艺编码' },
                 { max: 12, message: '请输入不超过12个字符' },
               ],
               getValueFromEvent: this.trim,
-            })(<Input placeholder="请输入统一编码" {...itemStyles} />)}
+            })(<Input placeholder="请输入工艺编码" {...itemStyles} />)}
           </FormItem>
           <FormItem label="生产工艺名称" {...formItemLayout}>
             {getFieldDecorator('processName', {
@@ -546,7 +546,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="重点监控单元" {...formItemLayout}>
             {getFieldDecorator('keyMonitoringUnit', {
               initialValue: id ? detail.keyMonitoringUnit : undefined,
-              rules: [{ required: true, message: '请输入重点监控单元' }],
+              rules: [{ required: true, message: '请选择重点监控单元' }],
               getValueFromEvent: this.trim,
             })(
               <Fragment>
@@ -655,7 +655,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="设计单位资质等级" {...formItemLayout}>
             {getFieldDecorator('qualificationGrade', {
               initialValue: id ? detail.qualificationGrade : undefined,
-              rules: [{ required: true, message: '请输入设计单位资质等级' }],
+              rules: [{ required: true, message: '请选择设计单位资质等级' }],
             })(
               // <Select placeholder="请选择设计单位资质等级" {...itemStyles}>
               //   {qualificationLevelDict.map(({ value, label }) => (
