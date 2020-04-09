@@ -133,7 +133,15 @@ export default class AddAuthorization extends PureComponent {
 
   // 表格勾选改变
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
-    this.setState({ selectedPerson: selectedRows })
+    this.setState(({ selectedPerson }) => {
+      const temp = [...selectedPerson, ...selectedRows];
+      return {
+        selectedPerson: selectedRowKeys.reduce((arr, id) => {
+          const target = temp.find(item => item && item.id === id);
+          return target ? [...arr, target] : arr;
+        }, []),
+      };
+    })
   }
 
   // 权限有效期类型改变
@@ -179,11 +187,7 @@ export default class AddAuthorization extends PureComponent {
 
   // 授权
   handleAuthorization = ({ deviceKey, deviceName }) => {
-    const {
-      dispatch,
-      user: { isCompany, currentUser },
-      realNameCertification: { authSearchInfo: searchInfo = {} },
-    } = this.props;
+    const { dispatch } = this.props;
     const {
       selectedPerson, // 选中的人员
       validType,
@@ -193,6 +197,7 @@ export default class AddAuthorization extends PureComponent {
       permissions, // 人员权限
       typeCloud,
       typeLocal,
+      company,
     } = this.state;
     const payload = {
       deviceKey,
@@ -203,7 +208,7 @@ export default class AddAuthorization extends PureComponent {
       idCardPermission: permissions.includes('idCardPermission') ? 2 : 1,
       faceAndCardPermission: permissions.includes('faceAndCardPermission') ? 2 : 1,
       idCardFacePermission: permissions.includes('idCardFacePermission') ? 2 : 1,
-      companyId: isCompany ? currentUser.companyId : searchInfo.company.id,
+      companyId: company.id,
     };
     // console.log('payload', payload);
     const callback = (data) => {
@@ -368,8 +373,8 @@ export default class AddAuthorization extends PureComponent {
                         pageSize: personPagination.pageSize,
                         total: personPagination.total,
                         showQuickJumper: true,
-                        showSizeChanger: true,
-                        pageSizeOptions: ['5', '10', '15', '20'],
+                        showSizeChanger: false,
+                        // pageSizeOptions: ['5', '10', '15', '20'],
                         onChange: this.fetchPersonList,
                         onShowSizeChange: (num, size) => {
                           this.fetchPersonList(1, size);
@@ -387,7 +392,7 @@ export default class AddAuthorization extends PureComponent {
                     <span>已选人员</span>
                     <span className={styles.statistics}>{personLen}/100</span>
                   </div>
-                  <Row gutter={16} style={{ padding: '10px', overflow: 'hidden' }} className={styles.outerLine}>
+                  <Row gutter={16} style={{ padding: '10px', overflow: 'hidden', alignContent: 'flex-start' }} className={styles.outerLine}>
                     {selectedPerson.map(({ id, name }) => (
                       <Col span={9} key={id} className={styles.tag}>{name}</Col>
                     ))}
@@ -507,7 +512,7 @@ export default class AddAuthorization extends PureComponent {
                     <span>已选人员</span>
                     <span className={styles.statistics}>{personLen}/100</span>
                   </div>
-                  <Row style={{ padding: '10px', overflow: 'hidden' }} className={styles.outerLine}>
+                  <Row style={{ padding: '10px', overflow: 'hidden', alignContent: 'flex-start' }} className={styles.outerLine}>
                     {selectedPerson.map(({ id, name }) => (
                       <Col span={8} key={id} className={styles.tag}>{name}</Col>
                     ))}

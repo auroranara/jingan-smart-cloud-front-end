@@ -123,7 +123,8 @@ export default class AuthorizationList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const { company } = this.state;
-    const { time, deviceName, deviceKey, ...resValues } = getFieldsValue();
+    const { time, serDeviceName, serDeviceKey, ...resValues } = getFieldsValue();
+    console.log('resValues', resValues);
     dispatch({
       type: 'realNameCertification/fetchAuthorizationList',
       payload: {
@@ -133,6 +134,8 @@ export default class AuthorizationList extends PureComponent {
         startTime: time && time[0] ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
         endTime: time && time[1] ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
         companyId: company.id,
+        deviceKey: serDeviceKey,
+        deviceName: serDeviceName,
       },
     })
   }
@@ -195,15 +198,16 @@ export default class AuthorizationList extends PureComponent {
   // 销权
   handleDelete = ({ personGuid, deviceKey, type }) => {
     const { dispatch } = this.props;
+    const { company } = this.state;
     dispatch({
       type: 'realNameCertification/deleteAuthorization',
-      payload: { deviceKey, personGuid, type },
+      payload: { deviceKey, personGuid, type, companyId: company.id },
       callback: (success, msg) => {
         if (success) {
           message.success('销权成功');
           this.handleQuery();
         } else {
-          message.error('销权失败')
+          message.error(msg || '销权失败')
         }
       },
     })
@@ -212,7 +216,7 @@ export default class AuthorizationList extends PureComponent {
   // 设备销权
   handleDeleteAll = ({ deviceKey }) => {
     const { dispatch } = this.props;
-    const { deleteLocation } = this.state;
+    const { deleteLocation, company } = this.state;
     if (!deleteLocation || deleteLocation.length === 0) {
       message.error('未选择删除位置');
       return;
@@ -228,14 +232,14 @@ export default class AuthorizationList extends PureComponent {
     if (deleteLocation.includes('1')) {
       dispatch({
         type: 'realNameCertification/deleteAllAuthorization',
-        payload: { deviceKey, type: '1' },
+        payload: { deviceKey, companyId: company.id, type: '1' },
         callback,
       })
     }
     if (deleteLocation.includes('2')) {
       dispatch({
         type: 'realNameCertification/deleteAllAuthorization',
-        payload: { deviceKey, type: '2' },
+        payload: { deviceKey, companyId: company.id, type: '2' },
         callback,
       })
     }
@@ -413,14 +417,14 @@ export default class AuthorizationList extends PureComponent {
             </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('deviceName')(
+                {getFieldDecorator('serDeviceName')(
                   <Input placeholder="设备名称" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('deviceKey')(
+                {getFieldDecorator('serDeviceKey')(
                   <Input placeholder="设备序列号" />
                 )}
               </FormItem>

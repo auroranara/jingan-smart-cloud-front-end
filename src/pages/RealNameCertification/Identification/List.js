@@ -362,7 +362,7 @@ export default class IdentificationRecord extends PureComponent {
       },
       {
         title: '人员权限',
-        dataIndex: 'type',
+        dataIndex: 'recModeType',
         align: 'center',
         width: 150,
         render: val => (+val === 1 ? '已授权' : '未授权'),
