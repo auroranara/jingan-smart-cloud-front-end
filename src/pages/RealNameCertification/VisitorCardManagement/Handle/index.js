@@ -322,7 +322,12 @@ export default class Edit extends PureComponent {
               <Button type="primary" onClick={this.handleSubmit}>
                 提交
               </Button>
-              <Button style={{ marginLeft: 10 }} onClick={this.handleBack}>
+              <Button
+                style={{ marginLeft: 10 }}
+                onClick={() => {
+                  router.goBack();
+                }}
+              >
                 返回
               </Button>
             </Form.Item>

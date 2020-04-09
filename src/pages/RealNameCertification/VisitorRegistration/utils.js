@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Modal, Select, DatePicker, Tag } from 'antd';
-import { AuthPopConfirm } from '@/utils/customAuth';
+import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { Form } from '@ant-design/compatible';
 import moment from 'moment';
@@ -12,6 +12,9 @@ const { RangePicker } = DatePicker;
 const {
   realNameCertification: {
     visitorRegistration: { cancelCard: cancelCardCode },
+  },
+  personnelManagement: {
+    tagCardManagement: { visitorCardAdd: addCode },
   },
 } = codes;
 
@@ -179,7 +182,9 @@ export const EditModal = Form.create()(props => {
             </Select>
           )}
           <span>
-            <a onClick={hanldleCardAdd}>新增临时卡</a>
+            <AuthA code={addCode} onClick={hanldleCardAdd}>
+              新增临时卡
+            </AuthA>
           </span>
         </Form.Item>
         <Form.Item {...formItemCol} label="来访事由：">

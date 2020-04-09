@@ -75,7 +75,7 @@ export function getSearchFields(unitType) {
   return fields;
 }
 
-export function getTableColumns(handleConfirmDelete, handleEditModal, unitType) {
+export function getTableColumns(handleConfirmDelete, handleEditModal, unitType, handlRecordPage) {
   const columns = [
     {
       title: '单位名称',
@@ -101,7 +101,14 @@ export function getTableColumns(handleConfirmDelete, handleEditModal, unitType) 
       title: '使用次数',
       dataIndex: 'useCount',
       key: 'useCount',
-      render: val => <span style={{ color: val !== 0 && '#1890ff' }}>{val}</span>,
+      render: (val, row) => (
+        <span
+          style={{ color: val !== 0 && '#1890ff', cursor: val !== 0 && 'pointer' }}
+          onClick={() => val !== 0 && handlRecordPage(row.companyId)}
+        >
+          {val}
+        </span>
+      ),
     },
     {
       title: '使用状态',

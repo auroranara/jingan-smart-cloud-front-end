@@ -45,6 +45,10 @@ export default class index extends PureComponent {
     this.form = toobar && toobar.props && toobar.props.form;
   };
 
+  handlRecordPage = id => {
+    router.push(`/real-name-certification/visitor-registration/record/${id}`);
+  };
+
   handleQuery = () => {
     const { dispatch } = this.props;
     const values = this.form.getFieldsValue();
@@ -145,7 +149,12 @@ export default class index extends PureComponent {
     const breadcrumbList = Array.from(BREADCRUMBLIST);
 
     const fields = getSearchFields(unitType);
-    const columns = getTableColumns(this.handleDelete, this.handleEditModal, unitType);
+    const columns = getTableColumns(
+      this.handleDelete,
+      this.handleEditModal,
+      unitType,
+      this.handlRecordPage
+    );
     const filterField = expand ? fields : fields.slice(0, 3);
 
     const modalData = {

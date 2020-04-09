@@ -123,7 +123,12 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         action={
           <div style={{ float: 'right' }}>
-            <Button type="primary" onClick={this.hanldleBack}>
+            <Button
+              type="primary"
+              onClick={() => {
+                router.goBack();
+              }}
+            >
               返回
             </Button>
           </div>
