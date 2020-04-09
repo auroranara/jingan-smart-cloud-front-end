@@ -345,6 +345,7 @@ export default class AuthorizationList extends PureComponent {
         type,
         personGuid,
       },
+      company,
     } = this.state;
     const payload = {
       deviceKey: deviceKey,
@@ -356,6 +357,7 @@ export default class AuthorizationList extends PureComponent {
       idCardFacePermission: permissions.includes('idCardFacePermission') ? 2 : 1,
       type: type, // 存储位置
       personGuids: personGuid,
+      companyId: company.id,
     };
     // console.log('payload', payload);
     dispatch({
