@@ -18,14 +18,6 @@ const LABELCOL = { span: 6 };
 const WRAPPERCOL = { span: 13 };
 const NO_DATA = '暂无数据';
 
-const getPersonType = {
-  4: '操作人员',
-  5: '管理人员',
-  6: '安全巡查人员',
-  1: '外协人员',
-  2: '临时人员',
-};
-
 const getEducation = {
   0: '初中',
   1: '高中',
@@ -100,7 +92,6 @@ export default class PersonnelDetail extends Component {
     } = this.props;
 
     const { detail, images, currentImage } = this.state;
-    const noCompanyName = detail.perType === '2' || detail.perType === '3';
     const { personType } = detail;
     const dspItems = [
       { id: 'name', label: '姓名' },
@@ -129,8 +120,11 @@ export default class PersonnelDetail extends Component {
         ),
       },
       ...(personType === '1'
-        ? [{ id: 'partName', label: '部门' }, { id: 'companyJobName', label: '岗位' }]
-        : [{ id: 'personCompany', label: '单位名称' }]),
+        ? [
+            { id: 'partName', label: '部门' } || NO_DATA,
+            { id: 'companyJobName', label: '岗位' } || NO_DATA,
+          ]
+        : [{ id: 'personCompany', label: '单位名称' } || NO_DATA]),
       { id: 'icnumber', label: 'IC卡号', render: ({ icnumber }) => icnumber || NO_DATA },
       {
         id: 'entranceNumber',

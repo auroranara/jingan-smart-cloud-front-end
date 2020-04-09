@@ -177,6 +177,12 @@ module.exports = env => {
         //   name: 'gasStation',
         //   component: './BigPlatform/GasStation',
         // },
+        {
+          path: '/big-platform/process/:companyId',
+          code: 'dashboard.process',
+          name: 'process',
+          component: './BigPlatform/Process',
+        },
       ],
     },
     // 档案分析报告
@@ -940,7 +946,7 @@ module.exports = env => {
                   path: '/major-hazard-info/high-risk-process/detail/:id',
                   code: 'majorHazardInfo.highRiskProcess.detail',
                   name: 'detail',
-                  component: './BaseInfo/HighRiskProcess/Handler/index',
+                  component: './BaseInfo/HighRiskProcess/Detail/index',
                 },
               ],
             },
@@ -1856,6 +1862,25 @@ module.exports = env => {
                   code: 'personnelManagement.tagCardManagement.view',
                   name: 'tagCardDetail',
                   component: './RealNameCertification/TagCardManagement/Handle',
+                },
+                // 访客卡
+                {
+                  path: '/personnel-management/tag-card/visitor-card-list',
+                  code: 'personnelManagement.tagCardManagement.visitorCardList',
+                  name: 'visitorCardList',
+                  component: './RealNameCertification/VisitorCardManagement/List',
+                },
+                {
+                  path: '/personnel-management/tag-card/visitor-card-add',
+                  code: 'personnelManagement.tagCardManagement.visitorCardAdd',
+                  name: 'visitorCardAdd',
+                  component: './RealNameCertification/VisitorCardManagement/Handle',
+                },
+                {
+                  path: '/personnel-management/tag-card/visitor-card-edit/:id',
+                  code: 'personnelManagement.tagCardManagement.visitorCardEdit',
+                  name: 'visitorCardEdit',
+                  component: './RealNameCertification/VisitorCardManagement/Handle',
                 },
               ],
             },
@@ -5717,6 +5742,31 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'visitorRegistration', // 访客登记
+              code: 'realNameCertification.visitorRegistration',
+              path: '/real-name-certification/visitor-registration',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companyList',
+                  path: '/real-name-certification/visitor-registration',
+                  redirect: '/real-name-certification/visitor-registration/list',
+                },
+                {
+                  name: 'list',
+                  path: '/real-name-certification/visitor-registration/list',
+                  code: 'realNameCertification.visitorRegistration.visitorList',
+                  component: './RealNameCertification/VisitorRegistration/List',
+                },
+                {
+                  name: 'record',
+                  path: '/real-name-certification/visitor-registration/record/:id',
+                  code: 'realNameCertification.visitorRegistration.visitorRegistrationRecord',
+                  component: './RealNameCertification/VisitorRegistration/Record',
+                },
+              ],
+            },
             // {
             //   name: 'deviceManagement', // 设备管理
             //   path: '/real-name-certification/device-management',
@@ -5818,35 +5868,35 @@ module.exports = env => {
             },
             {
               name: 'channelDevice', // 通道设备
-              path: '/real-name-certification/channelDevice',
+              path: '/real-name-certification/channel-device',
               code: 'realNameCertification.channelDevice',
               hideChildrenInMenu: true,
               routes: [
                 {
-                  path: '/real-name-certification/channelDevice',
-                  redirect: '/real-name-certification/channelDevice/list',
+                  path: '/real-name-certification/channel-device',
+                  redirect: '/real-name-certification/channel-device/list',
                 },
                 {
                   name: 'list',
-                  path: '/real-name-certification/channelDevice/list',
+                  path: '/real-name-certification/channel-device/list',
                   code: 'realNameCertification.channelDevice.listView',
                   component: './RealNameCertification/ChannelDevice/List',
                 },
                 {
                   name: 'add',
-                  path: '/real-name-certification/channelDevice/add',
+                  path: '/real-name-certification/channel-device/add',
                   code: 'realNameCertification.channelDevice.add',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },
                 {
                   name: 'edit',
-                  path: '/real-name-certification/channelDevice/edit/:id',
+                  path: '/real-name-certification/channel-device/edit/:id',
                   code: 'realNameCertification.channelDevice.edit',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },
                 {
                   name: 'view',
-                  path: '/real-name-certification/channelDevice/view/:id',
+                  path: '/real-name-certification/channel-device/view/:id',
                   code: 'realNameCertification.channelDevice.view',
                   component: './RealNameCertification/ChannelDevice/Add',
                 },

@@ -1486,6 +1486,7 @@ export default class Chemical extends PureComponent {
                   handleShowChemicalList={this.handleShowChemicalList}
                   handleShowProcessList={this.handleShowProcessList}
                   handleShowMonitorList={this.handleShowMonitorList}
+                  companyId={companyId}
                 />
               </div>
             </Col>

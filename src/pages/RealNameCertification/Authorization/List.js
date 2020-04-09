@@ -6,7 +6,6 @@ import {
   Card,
   Button,
   Modal,
-  BackTop,
   Col,
   Row,
   Select,
@@ -124,24 +123,28 @@ export default class AuthorizationList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const { company } = this.state;
-    const { time, deviceName, deviceKey, ...resValues } = getFieldsValue();
+    const { time, serDeviceName, serDeviceKey, ...resValues } = getFieldsValue();
+    console.log('resValues', resValues);
     dispatch({
       type: 'realNameCertification/fetchAuthorizationList',
       payload: {
         ...resValues,
         index: pageNum,
         length: pageSize,
-        startTime: time ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
-        endTime: time ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        startTime: time && time[0] ? time[0].format('YYYY-MM-DD HH:mm:ss') : undefined,
+        endTime: time && time[1] ? time[1].format('YYYY-MM-DD HH:mm:ss') : undefined,
         companyId: company.id,
+        deviceKey: serDeviceKey,
+        deviceName: serDeviceName,
       },
     })
   }
 
   // 点击重置
   handleReset = () => {
-    const { form: { resetFields } } = this.props;
+    const { form: { resetFields, setFieldsValue } } = this.props;
     resetFields();
+    setFieldsValue({ time: [] });
     this.handleQuery();
   }
 
@@ -195,15 +198,16 @@ export default class AuthorizationList extends PureComponent {
   // 销权
   handleDelete = ({ personGuid, deviceKey, type }) => {
     const { dispatch } = this.props;
+    const { company } = this.state;
     dispatch({
       type: 'realNameCertification/deleteAuthorization',
-      payload: { deviceKey, personGuid, type },
+      payload: { deviceKey, personGuid, type, companyId: company.id },
       callback: (success, msg) => {
         if (success) {
           message.success('销权成功');
           this.handleQuery();
         } else {
-          message.error('销权失败')
+          message.error(msg || '销权失败')
         }
       },
     })
@@ -212,7 +216,7 @@ export default class AuthorizationList extends PureComponent {
   // 设备销权
   handleDeleteAll = ({ deviceKey }) => {
     const { dispatch } = this.props;
-    const { deleteLocation } = this.state;
+    const { deleteLocation, company } = this.state;
     if (!deleteLocation || deleteLocation.length === 0) {
       message.error('未选择删除位置');
       return;
@@ -228,14 +232,14 @@ export default class AuthorizationList extends PureComponent {
     if (deleteLocation.includes('1')) {
       dispatch({
         type: 'realNameCertification/deleteAllAuthorization',
-        payload: { deviceKey, type: '1' },
+        payload: { deviceKey, companyId: company.id, type: '1' },
         callback,
       })
     }
     if (deleteLocation.includes('2')) {
       dispatch({
         type: 'realNameCertification/deleteAllAuthorization',
-        payload: { deviceKey, type: '2' },
+        payload: { deviceKey, companyId: company.id, type: '2' },
         callback,
       })
     }
@@ -313,13 +317,18 @@ export default class AuthorizationList extends PureComponent {
   // 选择单位
   handleSelectCompany = company => {
     const { dispatch } = this.props;
-    this.setState({ company, visible: false }, () => {
+    if (company && company.id) {
+      this.setState({ company, visible: false }, () => {
+        this.handleQuery();
+      });
+      dispatch({
+        type: 'realNameCertification/saveAuthSearchInfo',
+        payload: { company },
+      })
+    } else {
+      this.setState({ visible: false });
       this.handleQuery();
-    });
-    dispatch({
-      type: 'realNameCertification/saveAuthSearchInfo',
-      payload: { company },
-    })
+    }
   }
 
   // 编辑操作
@@ -386,22 +395,37 @@ export default class AuthorizationList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
+                {getFieldDecorator('time')(
+                  <RangePicker
+                    style={{ width: '100%' }}
+                    showTime={{
+                      format: 'HH:mm:ss',
+                      defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                    }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    placeholder={['授权开始时间', '授权结束时间']}
+                  />
+                )}
+              </FormItem>
+            </Col>
+            {/* <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
                 {getFieldDecorator('personGuid')(
                   <Input placeholder="GUID" />
                 )}
               </FormItem>
-            </Col>
+            </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('deviceName')(
+                {getFieldDecorator('serDeviceName')(
                   <Input placeholder="设备名称" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('deviceKey')(
-                  <Input placeholder="序列号" />
+                {getFieldDecorator('serDeviceKey')(
+                  <Input placeholder="设备序列号" />
                 )}
               </FormItem>
             </Col>
@@ -416,7 +440,7 @@ export default class AuthorizationList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
+            {/* <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('deviceType')(
                   <Select placeholder="设备类型">
@@ -426,22 +450,7 @@ export default class AuthorizationList extends PureComponent {
                   </Select>
                 )}
               </FormItem>
-            </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('time')(
-                  <RangePicker
-                    style={{ width: '100%' }}
-                    showTime={{
-                      format: 'HH:mm:ss',
-                      defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-                    }}
-                    format="YYYY-MM-DD HH:mm:ss"
-                    placeholder={['创建开始时间', '创建结束时间']}
-                  />
-                )}
-              </FormItem>
-            </Col>
+            </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
@@ -484,13 +493,6 @@ export default class AuthorizationList extends PureComponent {
         // width: 200,
       },
       {
-        title: '储存位置',
-        dataIndex: 'type',
-        align: 'center',
-        // width: 150,
-        render: (val) => (+val === 1 && '本地') || (+val === 2 && '云端') || '',
-      },
-      {
         title: '照片',
         dataIndex: 'faceOutputs',
         align: 'center',
@@ -519,27 +521,34 @@ export default class AuthorizationList extends PureComponent {
         ),
       },
       {
-        title: '人员编号(GUID)',
-        dataIndex: 'personGuid',
+        title: '储存位置',
+        dataIndex: 'type',
         align: 'center',
-        width: 300,
+        // width: 150,
+        render: (val) => (+val === 1 && '本地') || (+val === 2 && '云端') || '',
       },
+      // {
+      //   title: '人员编号(GUID)',
+      //   dataIndex: 'personGuid',
+      //   align: 'center',
+      //   width: 300,
+      // },
       {
         title: '设备名称',
         dataIndex: 'deviceName',
         align: 'center',
         // width: 200,
       },
-      {
-        title: '设备类型',
-        dataIndex: 'deviceType',
-        align: 'center',
-        // width: 150,
-        render: (val) => {
-          const target = deviceTypeDict.find(item => +item.key === +val);
-          return target ? target.label : '';
-        },
-      },
+      // {
+      //   title: '设备类型',
+      //   dataIndex: 'deviceType',
+      //   align: 'center',
+      //   // width: 150,
+      //   render: (val) => {
+      //     const target = deviceTypeDict.find(item => +item.key === +val);
+      //     return target ? target.label : '';
+      //   },
+      // },
       {
         title: '设备序列号',
         dataIndex: 'deviceKey',
@@ -547,7 +556,7 @@ export default class AuthorizationList extends PureComponent {
         // width: 200,
       },
       {
-        title: '操作时间',
+        title: '授权时间',
         dataIndex: 'createTime',
         align: 'center',
         // width: 200,

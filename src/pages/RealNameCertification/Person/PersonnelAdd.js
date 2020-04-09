@@ -412,8 +412,6 @@ export default class PersonnelAdd extends PureComponent {
       { snNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
       res => {
         const { list } = res.data;
-        console.log('list', list);
-
         this.setState({ curLabelList: list });
       }
     );
@@ -474,9 +472,8 @@ export default class PersonnelAdd extends PureComponent {
     } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
-    const title = id ? '编辑人员信息' : '新增人员信息';
-    console.log('curLabelList', curLabelList);
 
+    const title = id ? '编辑人员信息' : '新增人员信息';
     const hasCompanyName = perType === '1';
     const noCompanyName = perType === '2' || perType === '3';
     //面包屑

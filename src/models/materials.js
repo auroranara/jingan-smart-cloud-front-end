@@ -6,6 +6,7 @@ import {
   queryDangerSourceList,
   queryMsdsList,
   fetchInfoByCas,
+  queryMonitorList,
 } from '@/services/baseInfo/materials';
 
 const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 };
@@ -25,6 +26,7 @@ export default {
     companyNum: 0,
     dangerSourceModal: { list: [], pagination: defaultPagination },
     msdsModal: { list: [], pagination: defaultPagination },
+    monitorModal: { list: [], pagination: defaultPagination },
   },
   effects: {
     // 查询物料列表
@@ -113,6 +115,18 @@ export default {
         callback && callback(res.data.list.length ? '1' : '0');
       }
     },
+    *fetchMonitorList({ payload, callback }, { call, put }) {
+      const response = yield call(queryMonitorList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveMonitorModal',
+          payload: response.data,
+        });
+        if (callback) {
+          callback(response);
+        }
+      }
+    },
   },
   reducers: {
     saveList (state, { payload }) {
@@ -139,6 +153,12 @@ export default {
       return {
         ...state,
         msdsModal: payload,
+      };
+    },
+    saveMonitorModal(state, { payload }) {
+      return {
+        ...state,
+        monitorModal: payload,
       };
     },
   },

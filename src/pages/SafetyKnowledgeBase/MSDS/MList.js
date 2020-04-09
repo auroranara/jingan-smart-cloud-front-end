@@ -54,6 +54,7 @@ function getColumns(genHandleDelete) {
       title: '序号',
       dataIndex: 'index',
       key: 'index',
+      width: 60,
     },
     {
       title: '中文名',
@@ -99,7 +100,8 @@ function getColumns(genHandleDelete) {
       title: '技术说明书编码',
       dataIndex: 'bookCode',
       key: 'bookCode',
-      align: 'center',
+      width: 130,
+      // align: 'center',
       render(txt, record) {
         return (
           <AuthLink
@@ -116,7 +118,8 @@ function getColumns(genHandleDelete) {
       title: '操作',
       dataIndex: 'id',
       key: 'id',
-      align: 'center',
+      width: 120,
+      // align: 'center',
       render(id, record) {
         return (
           <Fragment>

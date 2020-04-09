@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Spin, message, Card, Row, Col, Input } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -31,7 +32,7 @@ export default class AddOperatingProdures extends Component {
     selectedDeviceKeys: [], // modal选中设备的id数组
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -63,11 +64,11 @@ export default class AddOperatingProdures extends Component {
                 company: companyId ? { key: companyId, label: companyName } : undefined,
                 accessoryDetails: accessoryDetails
                   ? accessoryDetails.map(item => ({
-                      ...item,
-                      uid: item.id,
-                      url: item.webUrl,
-                      status: 'done',
-                    }))
+                    ...item,
+                    uid: item.id,
+                    url: item.webUrl,
+                    status: 'done',
+                  }))
                   : [],
                 channelName: channelName || undefined,
                 channelLocation,
@@ -82,7 +83,7 @@ export default class AddOperatingProdures extends Component {
                   { direction: '1', code: exitDeviceCode, id: exit },
                   { direction: '2', code: entranceDeviceCode, id: entrance },
                 ]) ||
-                (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance }]) ||
+                (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance, code: exitDeviceCode || entranceDeviceCode }]) ||
                 [];
               this.form && this.form.setFieldsValue({ device });
               this.setState({ device });
@@ -212,6 +213,32 @@ export default class AddOperatingProdures extends Component {
     this.form && this.form.setFieldsValue({ device: newDevice });
   };
 
+  // 清空设备
+  handleResetDevice = (i, item) => {
+    const { dispatch, match: { params: { id } } } = this.props;
+    let device = [...this.state.device || []];
+    device.splice(i, 1, { ...item, code: undefined, id: undefined });
+    if (id && item.code) {
+      // 如果编辑，需要解绑
+      dispatch({
+        type: 'realNameCertification/editChannel',
+        payload: { id, exit: +item.direction === 1 ? null : undefined, entrance: +item.direction === 2 ? null : undefined },
+        callback: (success) => {
+          if (success) {
+            message.success('操作成功');
+            this.setState({ device });
+            this.form && this.form.setFieldsValue({ device });
+          } else {
+            message.error('操作失败')
+          }
+        },
+      })
+    } else {
+      this.setState({ device });
+      this.form && this.form.setFieldsValue({ device });
+    };
+  }
+
   // 提交
   handleSubmitButtonClick = () => {
     const {
@@ -230,7 +257,7 @@ export default class AddOperatingProdures extends Component {
         type,
         companyId: isCompany ? currentUser.companyId : company.key,
       };
-      console.log('device', device);
+      // console.log('device', device);
       if (+type === 1) {
         // 双向
         device.forEach(item => {
@@ -242,13 +269,12 @@ export default class AddOperatingProdures extends Component {
             // 入口
             payload.entrance = item.id;
           }
-        });
-      } else if (+type === 2 && +device[0].direction === 1) {
-        // 单向 出口
-        payload.exit = device[0].id;
-      } else if (+type === 2 && +device[0].direction === 2) {
-        // 单向 入口
+        })
+      } else if (+type === 2 && +device[0].direction === 1) { // 单向 出口
+        payload = { ...payload, exit: device[0].id, entrance: null };
+      } else if (+type === 2 && +device[0].direction === 2) { // 单向 入口
         payload.entrance = device[0].id;
+        payload = { ...payload, entrance: device[0].id, exit: null };
       }
       const callback = (success, msg) => {
         if (success) {
@@ -285,7 +311,7 @@ export default class AddOperatingProdures extends Component {
     } else callback('关联设备不能为空');
   };
 
-  render() {
+  render () {
     const {
       deviceLoading,
       submitting = false,
@@ -295,7 +321,7 @@ export default class AddOperatingProdures extends Component {
         productionArea: { list: productionAreaList = [] },
       },
     } = this.props;
-    const { deviceModalVisible, selectedDeviceKeys } = this.state;
+    const { deviceModalVisible, selectedDeviceKeys, device } = this.state;
     const href = location.href;
     const isNotDetail = !href.includes('view');
     const isEdit = href.includes('edit');
@@ -304,7 +330,7 @@ export default class AddOperatingProdures extends Component {
       (href.includes('edit') && '编辑通道') ||
       (href.includes('view') && '查看通道');
     const type = this.form && this.form.getFieldValue('type');
-    const device = (this.form && this.form.getFieldValue('device')) || [];
+    // const device = this.form && this.form.getFieldValue('device') || [];
     const breadcrumbList = [
       {
         title: '首页',
@@ -332,32 +358,32 @@ export default class AddOperatingProdures extends Component {
           ...(isCompany
             ? []
             : [
-                {
-                  id: 'company',
-                  label: '单位名称',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () => (
-                    <CompanySelect
-                      className={styles.item}
-                      disabled={isEdit}
-                      type={isNotDetail || 'span'}
-                      onChange={this.handleChangeCompany}
-                    />
-                  ),
-                  options: {
-                    rules: isNotDetail
-                      ? [
-                          {
-                            required: true,
-                            message: '单位名称不能为空',
-                            transform: value => value && value.label,
-                          },
-                        ]
-                      : undefined,
-                  },
+              {
+                id: 'company',
+                label: '单位名称',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => (
+                  <CompanySelect
+                    className={styles.item}
+                    disabled={isEdit}
+                    type={isNotDetail || 'span'}
+                    onChange={this.handleChangeCompany}
+                  />
+                ),
+                options: {
+                  rules: isNotDetail
+                    ? [
+                      {
+                        required: true,
+                        message: '单位名称不能为空',
+                        transform: value => value && value.label,
+                      },
+                    ]
+                    : undefined,
                 },
-              ]),
+              },
+            ]),
           {
             id: 'channelName',
             label: '通道名称',
@@ -373,12 +399,12 @@ export default class AddOperatingProdures extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: '通道名称不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '通道名称不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
@@ -397,12 +423,12 @@ export default class AddOperatingProdures extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: '通道位置不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '通道位置不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
@@ -423,12 +449,12 @@ export default class AddOperatingProdures extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: '通道类型不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '通道类型不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
@@ -449,12 +475,12 @@ export default class AddOperatingProdures extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: '通道类型不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '通道类型不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
@@ -487,13 +513,17 @@ export default class AddOperatingProdures extends Component {
                     </Col>
                     {isNotDetail && (
                       <Col span={5}>
+                        <LegacyIcon
+                          className={item.code ? styles.warnIcon : styles.disabledIcon}
+                          onClick={() => item.code ? this.handleResetDevice(i, item) : null}
+                          type="delete" />
                         <Button
+                          className={styles.ml10}
                           size="small"
                           onClick={() => this.hadnleViewDeviceModal(item.id, i)}
-                          type="primary"
-                        >
+                          type="primary">
                           选择设备
-                        </Button>
+                          </Button>
                       </Col>
                     )}
                   </Row>
@@ -503,11 +533,11 @@ export default class AddOperatingProdures extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      validator: this.validateDevice,
-                    },
-                  ]
+                  {
+                    required: true,
+                    validator: this.validateDevice,
+                  },
+                ]
                 : undefined,
             },
           },
@@ -554,14 +584,14 @@ export default class AddOperatingProdures extends Component {
                 提交
               </Button>
             ) : (
-              <AuthButton
-                code={codes.realNameCertification.channel.edit}
-                type="primary"
-                onClick={this.handleEditButtonClick}
-              >
-                编辑
-              </AuthButton>
-            )}
+                <AuthButton
+                  code={codes.realNameCertification.channel.edit}
+                  type="primary"
+                  onClick={this.handleEditButtonClick}
+                >
+                  编辑
+                </AuthButton>
+              )}
           </div>
         </Spin>
         <CompanyModal
