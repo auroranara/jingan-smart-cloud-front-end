@@ -3934,7 +3934,7 @@ module.exports = env => {
             //       path: '/operation-safety/contractor/detail/:id',
             //       code: 'operationSafety.contractor.detail',
             //       name: 'detail',
-            //       component: './DataAnalysis/Contractor/Form',
+            //       component: './DataAnalysis/Contractor/Detail',
             //     },
             //     {
             //       path: '/operation-safety/contractor/add',

@@ -1,7 +1,7 @@
 import React from 'react';
 import FormPage from '@/jingan-components/Page/Form';
-import { CATEGORIES, TYPES, COMPANY_FIELDNAMES, COMPANY_MAPPER, FORMAT } from '../config';
 import moment from 'moment';
+import { CATEGORIES, TYPES, COMPANY_FIELDNAMES, COMPANY_MAPPER, FORMAT } from '../config';
 import { phoneReg, emailReg } from '@/utils/validate';
 // import styles from './index.less';
 
