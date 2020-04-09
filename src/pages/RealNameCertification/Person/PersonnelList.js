@@ -296,7 +296,7 @@ export default class PersonnelList extends PureComponent {
     }
     if (res) {
       if (res.code && res.code === 200) {
-        message.success(res.msg);
+        message.success(res.data);
         this.handleImgClose();
         this.handleQuery();
         this.setState({

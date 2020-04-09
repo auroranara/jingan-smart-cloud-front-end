@@ -59,13 +59,14 @@ export default class TableList extends PureComponent {
     const [start_time, end_time] = registrationDate || [];
     this.fetchList(1, this.pageSize, {
       ...values,
-      startDate: start_time && `${start_time.format('YYYY/MM/DD')} 00:00:00`,
-      endDate: end_time && `${end_time.format('YYYY/MM/DD')} 23:59:59`,
+      startDate: start_time && `${start_time.format('YYYY-MM-DD HH:mm:ss')}`,
+      endDate: end_time && `${end_time.format('YYYY-MM-DD HH:mm:ss')}`,
     });
   };
 
   handleReset = () => {
     this.form.resetFields();
+    this.form.setFieldsValue({ registrationDate: [] });
     this.fetchList(1, this.pageSize);
   };
 
