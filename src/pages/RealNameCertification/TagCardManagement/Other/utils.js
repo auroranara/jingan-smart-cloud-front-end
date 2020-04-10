@@ -33,7 +33,6 @@ const getCardType = {
   4: '单位车辆',
   5: '来访车辆',
   6: '其他',
-  7: '访客卡',
 };
 
 const getStatus = {
@@ -133,15 +132,23 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
       dataIndex: 'labelType',
       key: 'labelType',
       align: 'center',
-      width: 220,
+      width: 180,
       render: val => getCardType[val],
+    },
+    {
+      title: '是否访客卡',
+      dataIndex: 'istempCard',
+      key: 'istempCard',
+      align: 'center',
+      width: 120,
+      render: val => (val === '1' ? '是' : ''),
     },
     {
       title: '使用对象',
       dataIndex: 'name',
       key: 'name',
       align: 'center',
-      width: 200,
+      width: 120,
     },
     {
       title: '电量',

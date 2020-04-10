@@ -385,7 +385,6 @@ export default class PersonnelList extends PureComponent {
     } = this.props;
     const { expand } = this.state;
 
-    const filterDepart = departmentList.map(({ id, name }) => ({ key: id, value: name }));
     const fields = [
       {
         id: 'name',
@@ -499,19 +498,19 @@ export default class PersonnelList extends PureComponent {
         title: '职工号',
         dataIndex: 'workerNumber',
         align: 'center',
-        width: 200,
+        width: 120,
       },
       {
         title: '姓名',
         dataIndex: 'name',
         align: 'center',
-        width: 200,
+        width: 120,
       },
       {
         title: '性别',
         dataIndex: 'sex',
         align: 'center',
-        width: 150,
+        width: 80,
         render: val => {
           const target = SEXES.find(item => +item.key === +val);
           return target ? target.label : '';
@@ -521,13 +520,13 @@ export default class PersonnelList extends PureComponent {
         title: '电话',
         dataIndex: 'telephone',
         align: 'center',
-        width: 200,
+        width: 160,
       },
       {
         title: '人员类型',
         dataIndex: 'personType',
         align: 'center',
-        width: 200,
+        width: 150,
         render: val => (
           <SelectOrSpan
             placeholder="请选择"
@@ -547,7 +546,7 @@ export default class PersonnelList extends PureComponent {
         ),
         dataIndex: 'icnumber',
         align: 'center',
-        width: 200,
+        width: 160,
       },
       {
         title: (
@@ -558,7 +557,7 @@ export default class PersonnelList extends PureComponent {
         ),
         dataIndex: 'entranceNumber',
         align: 'center',
-        width: 200,
+        width: 160,
       },
       {
         title: '照片',
@@ -654,7 +653,6 @@ export default class PersonnelList extends PureComponent {
               批量导入照片
             </AuthButton>
             <Select
-              allowClear
               style={{ width: '130px', marginRight: '10px' }}
               disabled={!exportAuth}
               placeholder="导出"

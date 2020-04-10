@@ -135,6 +135,7 @@ export default class LearningLayout extends PureComponent {
       type: 'learning/fetch',
       payload: {
         type: '1',
+        status: 1,
         companyId: this.companyId,
       },
     });
@@ -230,10 +231,7 @@ export default class LearningLayout extends PureComponent {
             <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
               <TabPane tab="文章" key="article">
                 {activeKey === 'article' && (
-                  <Article
-                    handleArticleList={this.handleArticleList}
-                    companyId={this.companyId}
-                  />
+                  <Article handleArticleList={this.handleArticleList} companyId={this.companyId} />
                 )}
               </TabPane>
               <TabPane tab="课件" key="courseware">

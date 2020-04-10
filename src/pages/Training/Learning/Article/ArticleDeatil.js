@@ -31,12 +31,16 @@ export default class ArticleDeatil extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { companyId },
+      },
     } = this.props;
     // 获取详情
     dispatch({
       type: 'learning/fetch',
       payload: {
         id,
+        companyId,
       },
     });
     dispatch({

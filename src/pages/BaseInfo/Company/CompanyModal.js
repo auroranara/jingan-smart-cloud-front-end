@@ -84,6 +84,7 @@ export default class CompanyModal extends PureComponent {
   handleSearch = value => {
     const {
       fetch,
+      extraFetchParams,
       modal: {
         pagination: { pageSize },
       },
@@ -103,6 +104,7 @@ export default class CompanyModal extends PureComponent {
         pageNum: 1,
         pageSize,
         ...payload,
+        ...extraFetchParams,
       },
     });
   };
@@ -136,6 +138,7 @@ export default class CompanyModal extends PureComponent {
   handleReset = value => {
     const {
       fetch,
+      extraFetchParams,
       modal: {
         pagination: { pageSize },
       },
@@ -159,6 +162,7 @@ export default class CompanyModal extends PureComponent {
         pageNum: 1,
         pageSize,
         ...payload,
+        ...extraFetchParams,
       },
     });
   };
@@ -172,7 +176,7 @@ export default class CompanyModal extends PureComponent {
 
   /* 更换页码或显示数量 */
   handleChangePagination = ({ current, pageSize }) => {
-    const { fetch, payload, cameraKeys } = this.props;
+    const { fetch, payload, cameraKeys, extraFetchParams } = this.props;
     const { selectedRowKeys, ...resValues } = this.state;
     if (!cameraKeys) {
       this.setState({
@@ -185,6 +189,7 @@ export default class CompanyModal extends PureComponent {
         pageNum: current,
         pageSize,
         ...payload,
+        ...extraFetchParams,
       },
     });
   };

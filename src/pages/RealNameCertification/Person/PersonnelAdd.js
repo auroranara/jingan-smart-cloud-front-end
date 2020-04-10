@@ -88,7 +88,6 @@ export default class PersonnelAdd extends PureComponent {
       sexValue: '0', // 默认性别为男
       perType: '1', // 人员选择类型
       curCompanyName: '', // 当前单位
-      filterTagList: {},
       curLabelList: [],
     };
   }
@@ -137,28 +136,22 @@ export default class PersonnelAdd extends PureComponent {
               url: item.webUrl,
             })),
           });
-          this.fetchTagCard(
-            {
-              companyId: companyId || unitCompantId,
-              snNumber: detail.entranceNumber,
-              personType: perType,
-            },
-            res => {
-              const { list } = res.data;
-              const filterTagList = list.find(item => item.icNumber === detail.icnumber);
-              this.setState({ filterTagList });
-            }
-          );
+          this.fetchTagCard({
+            companyId: companyId || unitCompantId,
+            personType: detail.personType,
+            status: 1,
+          });
         },
       });
+    } else {
+      this.fetchTagCard(
+        { companyId: companyId || unitCompantId, status: 1, personType: perType },
+        res => {
+          const { list } = res.data;
+          this.setState({ curLabelList: list });
+        }
+      );
     }
-    this.fetchTagCard(
-      { companyId: companyId || unitCompantId, status: 1, personType: perType },
-      res => {
-        const { list } = res.data;
-        this.setState({ curLabelList: list });
-      }
-    );
   }
 
   // 提交
@@ -473,18 +466,10 @@ export default class PersonnelAdd extends PureComponent {
     } = this.props;
     const treeList = treeData(departmentList);
 
-    const {
-      photoLoading,
-      sexValue,
-      detail,
-      diplomaLoading,
-      curLabelList,
-      filterTagList,
-      perType,
-    } = this.state;
+    const { photoLoading, sexValue, detail, diplomaLoading, curLabelList, perType } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
-
+    console.log('detail', detail);
     const title = id ? '编辑人员信息' : '新增人员信息';
     const hasCompanyName = perType === '1';
     const noCompanyName = perType === '2' || perType === '3';
@@ -638,10 +623,7 @@ export default class PersonnelAdd extends PureComponent {
                   {...formItemLayout}
                 >
                   {getFieldDecorator('icnumber', {
-                    initialValue:
-                      id && filterTagList
-                        ? { key: filterTagList.id, label: filterTagList.icNumber }
-                        : undefined,
+                    initialValue: id ? { key: detail.lableId, label: detail.icnumber } : undefined,
                   })(
                     <Select
                       allowClear
@@ -676,10 +658,9 @@ export default class PersonnelAdd extends PureComponent {
                   {...formItemLayout}
                 >
                   {getFieldDecorator('entranceNumber', {
-                    initialValue:
-                      id && filterTagList
-                        ? { key: filterTagList.id, label: filterTagList.snNumber }
-                        : undefined,
+                    initialValue: id
+                      ? { key: detail.lableId, label: detail.entranceNumber }
+                      : undefined,
                   })(
                     <Select
                       allowClear

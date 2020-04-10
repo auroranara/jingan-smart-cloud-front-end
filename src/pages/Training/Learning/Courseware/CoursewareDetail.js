@@ -7,13 +7,6 @@ import moment from 'moment';
 
 import style from './Courseware.less';
 
-const breadcrumbList = [
-  { title: '首页', name: '首页', href: '/' },
-  { title: '教育培训', name: '教育培训' },
-  { title: '学习管理', name: '学习管理', href: '/training/learning/courseware/list' },
-  { title: '课件学习', name: '课件学习' },
-];
-
 function getTime(t) {
   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
 }
@@ -44,6 +37,9 @@ export default class LearningLayout extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { companyId },
+      },
     } = this.props;
 
     // 获取详情
@@ -51,6 +47,7 @@ export default class LearningLayout extends PureComponent {
       type: 'learning/fetch',
       payload: {
         id,
+        companyId,
       },
       success: ({ list }) => {
         const { webFileUrl, webVideoCover, fileUrl, remarks } = list[0];
@@ -91,6 +88,13 @@ export default class LearningLayout extends PureComponent {
 
     const { name, createTime, totalPerson, totalRead, content, type } = detail;
 
+    const breadcrumbList = [
+      { title: '首页', name: '首页', href: '/' },
+      { title: '教育培训', name: '教育培训' },
+      { title: '学习管理', name: '学习管理', href: '/training/learning/courseware/list' },
+      { title: '课件学习', name: '课件学习' },
+    ];
+
     return (
       <PageHeaderLayout title="课件学习" breadcrumbList={breadcrumbList}>
         <Row gutter={16} className={style.learningCourseWare}>
@@ -117,14 +121,14 @@ export default class LearningLayout extends PureComponent {
                   {+type === 3 ? (
                     <Resource src={fileSrc} styles={styles} extension={fileType} />
                   ) : (
-                      <Resource
-                        src={fileSrc}
-                        styles={styles}
-                        poster={coverSrc}
-                        extension={fileType}
-                        fluid={false}
-                      />
-                    )}
+                    <Resource
+                      src={fileSrc}
+                      styles={styles}
+                      poster={coverSrc}
+                      extension={fileType}
+                      fluid={false}
+                    />
+                  )}
                 </div>
                 <div>
                   <h3 className={style.contentDetail}>

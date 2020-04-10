@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 // import moment from 'moment';
-
+import Wave from '@/jingan-components/Wave';
 import styles from './TypeCard.less';
 import TypeCardHead from './TypeCardHead';
 import TypeCardBody from './TypeCardBody';
@@ -13,7 +13,7 @@ const TYPE_LABELS = {
   312: ['气柜名称', '区域位置', '设计柜容(m³)', '设计压力(KPa)'], // 气柜
   314: ['管道名称', '是否危化品管道', '是否压力管道', '设计压力(KPa)'], // 管道
 };
-
+const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
 const TYPE_IMGS = {
   304: 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png',
   302: 'http://data.jingan-china.cn/v2/chem/chemScreen/storage.png',
@@ -69,6 +69,21 @@ export default class TypeCard extends PureComponent {
       ],
     };
 
+    const tankIcon = (
+      <div
+        className={styles.iconWrapper}
+        style={{
+          background: `url(${storageImg}) center center / 100% 100% no-repeat`,
+        }}
+      >
+        <Wave
+          frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
+          backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
+        />
+        <div className={styles.tankName}>{tankName}</div>
+      </div>
+    );
+
     return (
       <div className={styles.container}>
         <TypeCardHead
@@ -82,6 +97,7 @@ export default class TypeCard extends PureComponent {
               <TypeCardBody
                 key={index}
                 url={TYPE_IMGS[type]}
+                icon={type === 302 && tankIcon}
                 data={item}
                 handleShowVideo={handleShowVideo}
               />

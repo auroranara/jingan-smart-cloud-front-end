@@ -1,9 +1,9 @@
 .container {
   padding: 10px 4px;
-  border: 1px solid #0FF;
+  border: 1px solid #0ff;
   font-size: 14px;
 
-  &+.container {
+  & + .container {
     margin-top: 15px;
   }
 }
@@ -14,7 +14,7 @@
 }
 
 .label {
-  color: #0FF;
+  color: #0ff;
 }
 
 .p {
@@ -70,7 +70,7 @@
 }
 
 .detail {
-  color: #1475ED;
+  color: #1475ed;
   position: absolute;
   bottom: 0;
   right: 10px;
@@ -80,11 +80,11 @@
 .body {
   margin-top: 8px;
   padding: 10px;
-  border-top: 1px solid #586D88;
+  border-top: 1px solid #586d88;
 }
 
 .h4 {
-  color: #FFF;
+  color: #fff;
 }
 
 .bodyInner {
@@ -109,4 +109,20 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.iconWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 70%;
+  height: 100%;
+  margin: 0 auto;
+
+  .tankName {
+    padding: 0 5px;
+    color: #3697b6;
+    text-align: center;
+  }
 }

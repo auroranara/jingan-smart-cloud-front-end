@@ -76,9 +76,7 @@ const TablePage = props => {
                 : `${codeName[0].toUpperCase()}${codeName.slice(1)}`;
               result[`render${upperName}Button`] = data => (
                 <Link
-                  to={
-                    !onClick ? (to ? to(data) : `${props.editPath}/${data.id || data}`) : undefined
-                  }
+                  to={!onClick ? (to ? to(data) : `${props.editPath}/${data.id || data}`) : '/'}
                   onClick={onClick ? () => onClick(data) : undefined}
                   disabled={!props[`has${upperName}Authority`]}
                 >
