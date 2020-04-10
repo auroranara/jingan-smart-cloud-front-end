@@ -103,7 +103,7 @@ export default class Edit extends PureComponent {
           message.success(`${tag}成功`);
           router.push(LIST_URL);
         } else {
-          message.error(msg || `${tag}人员失败`);
+          message.error(msg || `${tag}失败`);
         }
       };
 

@@ -63,12 +63,13 @@ export default class Edit extends PureComponent {
         labelCardList: cardList,
       };
 
-      const callback = (success, msg) => {
+      const callback = (success, msg, data) => {
+        console.log('data', data);
         if (success) {
           message.success(`新增成功`);
           router.push(LIST_URL);
         } else {
-          message.error(msg);
+          message.error(msg + data);
         }
       };
 
@@ -82,7 +83,15 @@ export default class Edit extends PureComponent {
 
   // 获取companyId
   handleCompanyChange = company => {
-    this.setState({ curCompanyId: company.key, cardList: [] });
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    const { curIndex } = this.state;
+    this.setState({
+      curCompanyId: company.key,
+      cardList: [{ id: '' }],
+    });
+    setFieldsValue({ [`name${curIndex}`]: '', [`cardNum${curIndex}`]: '' });
   };
 
   // 新增卡
