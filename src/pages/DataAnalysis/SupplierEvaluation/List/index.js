@@ -3,6 +3,7 @@ import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
 import moment from 'moment';
 import { FORMAT } from '../config';
+import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 import { DEPARTMENT_FIELDNAMES, DEPARTMENT_MAPPER } from '../../ContractorEvaluation/config';
 // import styles from './index.less';
 
@@ -11,11 +12,10 @@ const SupplierEvaluationList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ isUnit, unitId, companyName, supplierName, queryAssessDepartmentId, range }) {
+    transform({ isUnit, unitId, companyId, supplierName, queryAssessDepartmentId, range }) {
       const [assessDateStart, assessDateEnd] = range || [];
       return {
-        companyId: isUnit ? unitId : undefined,
-        companyName: companyName && companyName.trim(),
+        companyId: isUnit ? unitId : companyId,
         supplierName: supplierName && supplierName.trim(),
         queryAssessDepartmentId,
         assessDateStart: assessDateStart && assessDateStart.format(FORMAT),
@@ -25,9 +25,16 @@ const SupplierEvaluationList = ({ route, match, location }) => {
     },
     fields: [
       {
-        name: 'companyName',
+        name: 'companyId',
         label: '单位名称',
-        component: 'Input',
+        component: 'Select',
+        props: {
+          fieldNames: COMPANY_FIELDNAMES,
+          mapper: COMPANY_MAPPER,
+          showSearch: true,
+          filterOption: false,
+          allowClear: true,
+        },
         hide({ isUnit }) {
           return isUnit;
         },
@@ -50,6 +57,7 @@ const SupplierEvaluationList = ({ route, match, location }) => {
             params: {
               companyId: key,
             },
+            allowClear: true,
             key,
           };
         },
@@ -61,6 +69,9 @@ const SupplierEvaluationList = ({ route, match, location }) => {
         name: 'range',
         label: '考核日期',
         component: 'RangePicker',
+        props: {
+          allowClear: true,
+        },
       },
     ],
     columns: ({ isUnit, renderDetailButton, renderEditButton, renderDeleteButton }) => [

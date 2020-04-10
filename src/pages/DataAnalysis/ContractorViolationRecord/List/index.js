@@ -3,6 +3,7 @@ import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
 import moment from 'moment';
 import { FORMAT } from '../config';
+import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 // import styles from './index.less';
 
 const ContractorViolationRecordList = ({ route, match, location }) => {
@@ -10,11 +11,10 @@ const ContractorViolationRecordList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ isUnit, unitId, companyName, contractorName, range }) {
+    transform({ isUnit, unitId, companyId, contractorName, range }) {
       const [violationDateStart, violationDateEnd] = range || [];
       return {
-        companyId: isUnit ? unitId : undefined,
-        companyName: companyName && companyName.trim(),
+        companyId: isUnit ? unitId : companyId,
         contractorName: contractorName && contractorName.trim(),
         violationDateStart: violationDateStart && violationDateStart.format(FORMAT),
         violationDateEnd: violationDateEnd && violationDateEnd.format(FORMAT),
@@ -22,9 +22,16 @@ const ContractorViolationRecordList = ({ route, match, location }) => {
     },
     fields: [
       {
-        name: 'companyName',
+        name: 'companyId',
         label: '单位名称',
-        component: 'Input',
+        component: 'Select',
+        props: {
+          fieldNames: COMPANY_FIELDNAMES,
+          mapper: COMPANY_MAPPER,
+          showSearch: true,
+          filterOption: false,
+          allowClear: true,
+        },
         hide({ isUnit }) {
           return isUnit;
         },

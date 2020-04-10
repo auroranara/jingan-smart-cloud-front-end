@@ -3,7 +3,7 @@ import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
 import { Select } from '@/jingan-components/Form';
 import { Badge } from '@/jingan-components/View';
-import { CATEGORIES, TYPES, STATUSES } from '../config';
+import { CATEGORIES, TYPES, STATUSES, COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../config';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
@@ -15,15 +15,14 @@ const ContractorList = ({ route, match, location }) => {
     transform({
       isUnit,
       unitId,
-      companyName,
+      companyId,
       contractorName,
       contractorCategory,
       contractorType,
       certificateExpireStatus,
     }) {
       return {
-        companyId: isUnit ? unitId : undefined,
-        companyName: companyName && companyName.trim(),
+        companyId: isUnit ? unitId : companyId,
         contractorName: contractorName && contractorName.trim(),
         contractorCategory,
         contractorType,
@@ -32,9 +31,16 @@ const ContractorList = ({ route, match, location }) => {
     },
     fields: [
       {
-        name: 'companyName',
+        name: 'companyId',
         label: '单位名称',
-        component: 'Input',
+        component: 'Select',
+        props: {
+          fieldNames: COMPANY_FIELDNAMES,
+          mapper: COMPANY_MAPPER,
+          showSearch: true,
+          filterOption: false,
+          allowClear: true,
+        },
         hide({ isUnit }) {
           return isUnit;
         },

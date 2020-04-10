@@ -124,6 +124,7 @@ const componentReference = {
 const FormIndex = forwardRef(
   (
     {
+      className,
       fields,
       mode,
       expandable = true,
@@ -186,6 +187,7 @@ const FormIndex = forwardRef(
     }, []);
     return (
       <Form
+        className={classNames(styles.form, className)}
         onValuesChange={
           !mode
             ? (changedValues, values) => {
