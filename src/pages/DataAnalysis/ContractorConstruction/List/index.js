@@ -11,9 +11,10 @@ const ContractorConstructionList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, contractorName, range, blacklistStatus }) {
+    transform({ isUnit, unitId, companyName, contractorName, range, blacklistStatus }) {
       const [enteringDateStart, enteringDateEnd] = range || [];
       return {
+        companyId: isUnit ? unitId : undefined,
         companyName: companyName && companyName.trim(),
         contractorName: contractorName && contractorName.trim(),
         enteringDateStart: enteringDateStart && enteringDateStart.format(FORMAT),

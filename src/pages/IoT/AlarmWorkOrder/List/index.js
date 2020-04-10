@@ -276,7 +276,7 @@ export default class AlarmWorkOrderList extends Component {
         },
         {
           code: 'monitorTrend',
-          name: '查看监测趋势',
+          name: '趋势统计',
         },
         {
           code: 'detail',

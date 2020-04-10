@@ -555,7 +555,7 @@ const ContractorDetail = props => {
       {
         dataIndex: 'violators',
         title: '违章人姓名',
-        render: value => value && value.replace(',', '、'),
+        render: value => value && value.split(',').join('、'),
       },
       {
         dataIndex: 'processingResult',

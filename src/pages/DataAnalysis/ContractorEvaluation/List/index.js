@@ -11,9 +11,10 @@ const ContractorEvaluationList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, contractorName, range, assessResult }) {
+    transform({ isUnit, unitId, companyName, contractorName, range, assessResult }) {
       const [assessDateStart, assessDateEnd] = range || [];
       return {
+        companyId: isUnit ? unitId : undefined,
         companyName: companyName && companyName.trim(),
         contractorName: contractorName && contractorName.trim(),
         assessDateStart: assessDateStart && assessDateStart.format(FORMAT),

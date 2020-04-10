@@ -11,8 +11,9 @@ const SupplierList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, supplierName, certificateExpireStatus }) {
+    transform({ isUnit, unitId, companyName, supplierName, certificateExpireStatus }) {
       return {
+        companyId: isUnit ? unitId : undefined,
         companyName: companyName && companyName.trim(),
         supplierName: supplierName && supplierName.trim(),
         certificateExpireStatus,

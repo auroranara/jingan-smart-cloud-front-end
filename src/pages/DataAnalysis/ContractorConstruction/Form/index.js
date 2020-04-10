@@ -131,7 +131,7 @@ const ContractorConstructionForm = ({ route, match, location }) => {
         label: '所属承包商',
         component: 'Select',
         dependencies: ['companyId'],
-        props({ mode, isUnit, unitId, companyId }) {
+        props({ mode, isUnit, unitId, companyId, contractorId, contractorName }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: CONTRACTOR_FIELDNAMES,
@@ -142,6 +142,12 @@ const ContractorConstructionForm = ({ route, match, location }) => {
               companyId: key,
             },
             disabled: mode === 'edit',
+            extraList: [
+              {
+                id: contractorId,
+                contractorName,
+              },
+            ],
             key,
           };
         },

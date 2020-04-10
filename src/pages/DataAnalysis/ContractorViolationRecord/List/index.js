@@ -10,9 +10,10 @@ const ContractorViolationRecordList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, contractorName, range }) {
+    transform({ isUnit, unitId, companyName, contractorName, range }) {
       const [violationDateStart, violationDateEnd] = range || [];
       return {
+        companyId: isUnit ? unitId : undefined,
         companyName: companyName && companyName.trim(),
         contractorName: contractorName && contractorName.trim(),
         violationDateStart: violationDateStart && violationDateStart.format(FORMAT),
@@ -67,7 +68,7 @@ const ContractorViolationRecordList = ({ route, match, location }) => {
       {
         dataIndex: 'violators',
         title: '违章人姓名',
-        render: value => value && value.replace(',', '、'),
+        render: value => value && value.split(',').join('、'),
       },
       {
         dataIndex: '操作',

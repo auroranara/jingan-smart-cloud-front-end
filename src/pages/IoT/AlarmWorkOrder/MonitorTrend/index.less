@@ -91,15 +91,15 @@
         flex: none;
         width: 8px;
         height: 2px;
-        background-color: #720EBC;
+        background-color: #720ebc;
       }
 
-      &>div {
+      & > div {
         flex: none;
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        border: 1px solid #720EBC;
+        border: 1px solid #720ebc;
       }
 
       &:after {
@@ -107,7 +107,7 @@
         flex: none;
         width: 8px;
         height: 2px;
-        background-color: #720EBC;
+        background-color: #720ebc;
       }
     }
 
@@ -118,19 +118,19 @@
 
     &:first-child {
       .legendIcon {
-        background-color: #8FB4F2;
+        background-color: #8fb4f2;
       }
     }
 
     &:nth-child(2) {
       .legendIcon {
-        background-color: #E8B176;
+        background-color: #e8b176;
       }
     }
 
     &:nth-child(3) {
       .legendIcon {
-        background-color: #F5868E;
+        background-color: #f5868e;
       }
     }
   }
@@ -157,4 +157,37 @@
       cursor: pointer;
     }
   }
+}
+.historyCountSubTitle {
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: bold;
+}
+.historyCountItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+
+  & > :first-child {
+    flex: none;
+    margin-right: 12px;
+    width: 30px;
+  }
+
+  & > :nth-child(2) {
+    flex: none;
+    margin-right: 12px;
+  }
+
+  & > :nth-child(3) {
+    flex: none;
+    margin-right: 24px;
+  }
+
+  & > :nth-child(4) {
+    flex: 1;
+  }
+}
+.emphasis {
+  font-weight: bold;
 }

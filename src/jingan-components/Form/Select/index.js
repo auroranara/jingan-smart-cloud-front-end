@@ -36,6 +36,7 @@ const FormSelect = ({
   initializeParams,
   searchParams,
   separator = ',',
+  extraList,
   ...rest
 }) => {
   const [data, setData] = useState(undefined);
@@ -67,14 +68,15 @@ const FormSelect = ({
                     ...(typeof initializeParams === 'function'
                       ? initializeParams(value)
                       : {
-                          [initializeParams || k]: value.join(','),
+                          [initializeParams || `${k}s`]: value.join(','),
                         }),
                   },
                   (success, list) => {
                     if (success) {
+                      const array = list.concat(extraList || []);
                       setData(
                         value.map(vk => {
-                          const item = list.find(item => item[k] === vk);
+                          const item = array.find(item => item[k] === vk);
                           return item
                             ? {
                                 key: item[k],
@@ -113,7 +115,8 @@ const FormSelect = ({
                 },
                 (success, list) => {
                   if (success) {
-                    const item = list.find(item => item[k] === value);
+                    const array = list.concat(extraList || []);
+                    const item = array.find(item => item[k] === value);
                     setData(
                       item
                         ? {
@@ -228,10 +231,15 @@ const FormSelect = ({
           label =
             value &&
             value
-              .map(vk => ((list || []).find(item => item[k] === vk) || {})[v] || vk)
+              .map(
+                vk =>
+                  ((list || []).concat(extraList || []).find(item => item[k] === vk) || {})[v] || vk
+              )
               .join(separator);
         } else {
-          label = ((list || []).find(item => item[k] === value) || {})[v] || value;
+          label =
+            ((list || []).concat(extraList || []).find(item => item[k] === value) || {})[v] ||
+            value;
         }
       }
     }
