@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import { Radio } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
-import EmptyText from '@/jingan-components/View/EmptyText';
+import { EmptyText, Badge } from '@/jingan-components/View';
 import { connect } from 'dva';
 // import styles from './index.less';
 
 const FIELDNAMES = {
   key: 'key',
   value: 'value',
+  status: 'status',
 };
 
 const FormRadio = ({
@@ -22,7 +23,8 @@ const FormRadio = ({
   getList,
   ...rest
 }) => {
-  const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
+  const map = { ...FIELDNAMES, ...fieldNames };
+  const { key: k, value: v, status: s } = map;
   useEffect(() => {
     getList && getList();
   }, []);
@@ -42,14 +44,16 @@ const FormRadio = ({
       </Radio.Group>
     );
   } else {
-    const label = list && (list.find(item => item[k] === value) || {})[v];
-    return label ? (
-      ellipsis ? (
+    const item = list && (list.find(item => item[k] === value) || {});
+    return item ? (
+      item[s] ? (
+        <Badge fieldNames={map} list={list} value={value} />
+      ) : ellipsis ? (
         <Ellipsis lines={1} tooltip {...ellipsis}>
-          {label}
+          {item[v]}
         </Ellipsis>
       ) : (
-        <span>{label}</span>
+        <span>{item[v]}</span>
       )
     ) : (
       empty

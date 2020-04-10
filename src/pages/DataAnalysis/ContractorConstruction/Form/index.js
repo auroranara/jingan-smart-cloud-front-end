@@ -235,7 +235,7 @@ const ContractorConstructionForm = ({ route, match, location }) => {
       },
       {
         name: 'enteringDate',
-        label: '进厂日期',
+        label: '进场日期',
         component: 'DatePicker',
       },
       {
