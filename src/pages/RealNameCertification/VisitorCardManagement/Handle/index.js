@@ -21,7 +21,7 @@ import styles from './index.less';
 @Form.create()
 export default class Edit extends PureComponent {
   state = {
-    cardList: [], // 卡列表
+    cardList: [{ id: '' }], // 卡列表
     visible: false, // 是否显示弹框
     curCompanyId: '',
     curIndex: '',
@@ -287,7 +287,7 @@ export default class Edit extends PureComponent {
                     rules: [
                       {
                         required: true,
-                        message: '请输入卡名称',
+                        message: '请选择卡',
                       },
                     ],
                   })(
@@ -322,7 +322,12 @@ export default class Edit extends PureComponent {
               <Button type="primary" onClick={this.handleSubmit}>
                 提交
               </Button>
-              <Button style={{ marginLeft: 10 }} onClick={this.handleBack}>
+              <Button
+                style={{ marginLeft: 10 }}
+                onClick={() => {
+                  router.goBack();
+                }}
+              >
                 返回
               </Button>
             </Form.Item>

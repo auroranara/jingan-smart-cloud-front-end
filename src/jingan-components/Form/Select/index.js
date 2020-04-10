@@ -27,7 +27,7 @@ const FormSelect = ({
   labelInValue = false,
   optionFilterProp = 'children',
   filterOption = true,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   getList,
   onSearch,
@@ -35,6 +35,7 @@ const FormSelect = ({
   notFoundContent,
   initializeParams,
   searchParams,
+  separator = ',',
   ...rest
 }) => {
   const [data, setData] = useState(undefined);
@@ -61,11 +62,14 @@ const FormSelect = ({
           ) {
             getList
               ? getList(
-                  typeof initializeParams === 'function'
-                    ? initializeParams(value)
-                    : {
-                        [initializeParams || k]: value.join(','),
-                      },
+                  {
+                    pageSize: value.length,
+                    ...(typeof initializeParams === 'function'
+                      ? initializeParams(value)
+                      : {
+                          [initializeParams || k]: value.join(','),
+                        }),
+                  },
                   (success, list) => {
                     if (success) {
                       setData(
@@ -99,11 +103,14 @@ const FormSelect = ({
         } else if (!data || data.key !== value) {
           getList
             ? getList(
-                typeof initializeParams === 'function'
-                  ? initializeParams(value)
-                  : {
-                      [initializeParams || k]: value.join(','),
-                    },
+                {
+                  pageSize: 1,
+                  ...(typeof initializeParams === 'function'
+                    ? initializeParams(value)
+                    : {
+                        [initializeParams || k]: value,
+                      }),
+                },
                 (success, list) => {
                   if (success) {
                     const item = list.find(item => item[k] === value);
@@ -205,15 +212,27 @@ const FormSelect = ({
     let label;
     if (labelInValue) {
       if (originalMode === 'multiple' || originalMode === 'tags') {
-        label = value && value.map(({ label }) => label).join(',');
+        label = value && value.map(({ label }) => label).join(separator);
       } else {
         label = value && value.label;
       }
     } else {
-      if (originalMode === 'multiple' || originalMode === 'tags') {
-        label = data && data.map(({ label }) => label).join(',');
+      if (async) {
+        if (originalMode === 'multiple' || originalMode === 'tags') {
+          label = data && data.map(({ label }) => label).join(separator);
+        } else {
+          label = data && data.label;
+        }
       } else {
-        label = ((list || []).find(item => item[k] === value) || {})[v] || value;
+        if (originalMode === 'multiple' || originalMode === 'tags') {
+          label =
+            value &&
+            value
+              .map(vk => ((list || []).find(item => item[k] === vk) || {})[v] || vk)
+              .join(separator);
+        } else {
+          label = ((list || []).find(item => item[k] === value) || {})[v] || value;
+        }
       }
     }
     return label ? (
@@ -225,7 +244,7 @@ const FormSelect = ({
         <span>{label}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

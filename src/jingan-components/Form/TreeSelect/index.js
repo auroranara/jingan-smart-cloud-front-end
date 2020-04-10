@@ -36,7 +36,7 @@ const FormTreeSelect = ({
   filterTreeNode = true,
   allowClear = false,
   showArrow = true,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   getList,
   notFoundContent,
@@ -47,7 +47,8 @@ const FormTreeSelect = ({
   loadParams,
   ...rest
 }) => {
-  const [data, setData] = useState(undefined);
+  const [hackKey, setHackKey] = useState(1);
+  // const [data, setData] = useState(undefined);
   const {
     key: k,
     value: v,
@@ -62,6 +63,12 @@ const FormTreeSelect = ({
   useEffect(() => {
     getList && getList();
   }, []);
+  useEffect(
+    () => {
+      setHackKey(hackKey => hackKey + 1);
+    },
+    [list]
+  );
   if (mode !== 'detail') {
     const handleLoadData = node => {
       return new Promise((resolve, reject) => {
@@ -107,9 +114,10 @@ const FormTreeSelect = ({
     };
     return (
       <TreeSelect
+        key={hackKey}
         className={classNames(styles.container, className)}
         placeholder={placeholder}
-        value={loading ? undefined : value}
+        value={value}
         notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
         treeNodeFilterProp={treeNodeFilterProp}
         filterTreeNode={filterTreeNode}
@@ -147,7 +155,7 @@ const FormTreeSelect = ({
         <span>{label}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

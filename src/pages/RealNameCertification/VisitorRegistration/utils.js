@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Modal, Select, DatePicker, Tag } from 'antd';
-import { AuthPopConfirm } from '@/utils/customAuth';
+import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { Form } from '@ant-design/compatible';
 import moment from 'moment';
@@ -12,6 +12,9 @@ const { RangePicker } = DatePicker;
 const {
   realNameCertification: {
     visitorRegistration: { cancelCard: cancelCardCode },
+  },
+  personnelManagement: {
+    tagCardManagement: { visitorCardAdd: addCode },
   },
 } = codes;
 
@@ -35,7 +38,7 @@ export const BREADCRUMBLIST_OTHER = [
 export const SEARCH_FIELDS = [
   // modify
   {
-    id: 'user',
+    id: 'name',
     label: '使用人',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
@@ -79,9 +82,31 @@ export function getTableColumns(handleConfirmDelete, unitType) {
       key: 'cardName',
     },
     {
+      title: '用卡时长（时）',
+      dataIndex: 'useCount',
+      key: 'useCount',
+      width: 150,
+    },
+    {
       title: '来访事由',
       dataIndex: 'reason',
       key: 'reason',
+      render: val => (
+        <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
+          {val}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '备注',
+      dataIndex: 'note',
+      key: 'note',
+      width: 200,
+      render: val => (
+        <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
+          {val}
+        </Ellipsis>
+      ),
     },
     {
       title: '操作',
@@ -179,7 +204,9 @@ export const EditModal = Form.create()(props => {
             </Select>
           )}
           <span>
-            <a onClick={hanldleCardAdd}>新增临时卡</a>
+            <AuthA code={addCode} onClick={hanldleCardAdd}>
+              新增临时卡
+            </AuthA>
           </span>
         </Form.Item>
         <Form.Item {...formItemCol} label="来访事由：">
@@ -233,8 +260,12 @@ export const RECORD_FIELDS = [
   {
     id: 'registrationDate',
     label: '创建时间',
+    span: 16,
+    labelCol: 3,
+    wrapperCol: 12,
     render: () => (
       <RangePicker
+        style={{ width: '100%' }}
         showTime={{
           hideDisabledOptions: true,
           defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('00:00:00', 'HH:mm:ss')],
@@ -278,18 +309,22 @@ export function getRecordColumns() {
       render: (val, row) => {
         return (
           <div>
-            <p>
-              {row.icNumber}
-              <Tag color="blue" style={{ marginLeft: 6 }}>
-                IC卡
-              </Tag>
-            </p>
-            <p>
-              {row.snNumber}
-              <Tag color="blue" style={{ marginLeft: 6 }}>
-                SN卡
-              </Tag>
-            </p>
+            {row.icNumber && (
+              <p>
+                {row.icNumber}
+                <Tag color="blue" style={{ marginLeft: 6 }}>
+                  IC卡
+                </Tag>
+              </p>
+            )}
+            {row.snNumber && (
+              <p>
+                {row.snNumber}
+                <Tag color="blue" style={{ marginLeft: 6 }}>
+                  SN卡
+                </Tag>
+              </p>
+            )}
           </div>
         );
       },
@@ -299,14 +334,14 @@ export function getRecordColumns() {
       dataIndex: 'registrationDate',
       key: 'registrationDate',
       width: 200,
-      render: v => moment(v).format('YYYY-MM-DD HH:mm:ss'),
+      render: v => v && moment(v).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '退卡时间',
       dataIndex: 'returnDate',
       key: 'returnDate',
       width: 200,
-      render: v => moment(v).format('YYYY-MM-DD HH:mm:ss'),
+      render: v => v && moment(v).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '用卡时长（时）',

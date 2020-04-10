@@ -310,7 +310,8 @@ export default {
     // 销权
     *deleteAuthorization ({ payload, callback }, { call }) {
       const res = yield call(deleteAuthorization, payload);
-      callback && callback(res && res.code === 200, res.msg);
+      const { data: { result, msg } = {} } = res;
+      callback && callback(res && !!result, msg);
     },
     // 获取识别记录列表
     *fetchIdentificationRecord ({ payload }, { call, put }) {

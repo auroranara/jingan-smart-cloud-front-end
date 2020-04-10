@@ -70,7 +70,7 @@ const FormRangePicker = ({
   inputReadOnly = true,
   separator = '~',
   ranges,
-  emtpy = <EmptyText />,
+  empty = <EmptyText />,
   ellipsis = true,
   ...rest
 }) => {
@@ -109,7 +109,7 @@ const FormRangePicker = ({
         <span>{value.map(time => time.format(format)).join(` ${separator} `)}</span>
       )
     ) : (
-      emtpy
+      empty
     );
   }
 };

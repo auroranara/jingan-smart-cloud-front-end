@@ -5,7 +5,7 @@ import Form from '@/jingan-components/Form';
 import { connect } from 'dva';
 import router from 'umi/router';
 import locales from '@/locales/zh-CN';
-import styles from './index.less';
+// import styles from './index.less';
 
 const FormPage = props => {
   const {
@@ -27,6 +27,9 @@ const FormPage = props => {
     transform,
     loading,
     submitting,
+    labelCol,
+    wrapperCol,
+    initialValues,
   } = props;
   const form = useRef(null);
   useImperativeHandle(formRef, () => form.current);
@@ -35,7 +38,7 @@ const FormPage = props => {
       if (id) {
         getDetail(undefined, (success, data) => {
           if (success) {
-            form.current.setFieldsValues(initialize ? initialize(data) : data);
+            form.current.setFieldsValue(initialize ? initialize(data) : data);
           }
         });
       }
@@ -79,6 +82,9 @@ const FormPage = props => {
             );
           }}
           submitting={submitting}
+          labelCol={labelCol}
+          wrapperCol={wrapperCol}
+          initialValues={initialValues}
         />
       </Spin>
     </PageHeaderLayout>
@@ -120,6 +126,7 @@ export default connect(
       },
     } = state;
     const isUnit = +unitType === 4;
+    const listPath = pathname.replace(new RegExp(`${name}.*`), 'list');
     if (b) {
       breadcrumbList =
         typeof b === 'function'
@@ -136,25 +143,23 @@ export default connect(
             })
           : b;
     } else {
-      ({ breadcrumbList } = code
-        .split('.')
-        .slice(0, -1)
-        .reduce(
-          (result, item) => {
-            const key = `${result.key}.${item}`;
-            const title = locales[key];
-            result.key = key;
-            result.breadcrumbList.push({
-              title,
-              name: title,
-            });
-            return result;
-          },
-          {
-            breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
-            key: 'menu',
-          }
-        ));
+      ({ breadcrumbList } = code.split('.').reduce(
+        (result, item, index, list) => {
+          const key = `${result.key}.${item}`;
+          const title = locales[key];
+          result.key = key;
+          result.breadcrumbList.push({
+            title,
+            name: title,
+            href: index === list.length - 2 ? listPath : undefined,
+          });
+          return result;
+        },
+        {
+          breadcrumbList: [{ title: '首页', name: '首页', href: '/' }],
+          key: 'menu',
+        }
+      ));
     }
     return {
       isUnit,
@@ -166,7 +171,7 @@ export default connect(
       mode: name,
       hasEditAuthority: permissionCodes.includes(code.replace(/[^\.]+$/, 'edit')),
       editPath: pathname.replace(new RegExp(`${name}.*`), `edit/${id}`),
-      listPath: pathname.replace(new RegExp(`${name}.*`), 'list'),
+      listPath,
     };
   },
   (

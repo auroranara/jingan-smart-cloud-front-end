@@ -7,6 +7,8 @@ import {
   getPersonList,
   getDepartmentList,
   getMapList,
+  getContractorList,
+  getSupplierList,
 } from '@/services/common';
 
 const transformMonitorTypeList = list => {
@@ -46,6 +48,8 @@ export default {
     staffList: [],
     unitList: [],
     mapList: [],
+    contractorList: [],
+    supplierList: [],
   },
 
   effects: {
@@ -222,6 +226,40 @@ export default {
           },
         });
         callback && callback(true, mapList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取承包商列表
+    *getContractorList({ payload, callback }, { call, put }) {
+      const response = yield call(getContractorList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const contractorList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            contractorList,
+          },
+        });
+        callback && callback(true, contractorList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取供应商列表
+    *getSupplierList({ payload, callback }, { call, put }) {
+      const response = yield call(getSupplierList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const supplierList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            supplierList,
+          },
+        });
+        callback && callback(true, supplierList);
       } else {
         callback && callback(false, msg);
       }

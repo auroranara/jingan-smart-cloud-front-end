@@ -100,13 +100,14 @@ export default class TableList extends PureComponent {
 
   handleDelete = id => {
     const { dispatch } = this.props;
+    const { company } = this.state;
     dispatch({
       type: 'visitorRegistration/fetchCancelCard',
       payload: { id: id },
       callback: (success, msg) => {
         if (success) {
           message.success(`退卡成功`);
-          this.fetchList(1, 10, { companyId: this.companyId });
+          this.fetchList(1, 10, { companyId: company.id });
         } else {
           message.error(msg || `退卡失败`);
         }
@@ -122,6 +123,7 @@ export default class TableList extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
+    const { company } = this.state;
     this.setState({
       modalVisible: true,
       modalStatus: status,
@@ -130,20 +132,22 @@ export default class TableList extends PureComponent {
     });
     dispatch({
       type: 'visitorRegistration/fetchCardList',
-      payload: { pageNum: 1, pageSize: 10, companyId: this.companyId || companyId, status: 1 },
+      payload: { pageNum: 1, pageSize: 10, companyId: company.id || companyId, status: 1 },
     });
   };
 
   // 提交
   handleModalAdd = formData => {
     const { dispatch } = this.props;
+    const { company } = this.state;
+
     dispatch({
       type: 'visitorRegistration/fetchVisitorAdd',
       payload: { ...formData },
       callback: response => {
         if (response && response.code === 200) {
           this.handleModalClose();
-          this.fetchList(1, 10, { companyId: this.companyId });
+          this.fetchList(1, 10, { companyId: company.id });
           message.success('新建成功！');
         } else message.error(response.msg);
       },

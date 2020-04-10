@@ -43,3 +43,13 @@ export async function getDepartmentList(params) {
 export async function getMapList(params) {
   return request(`/acloud_new/v2/ThreedMap/threedMap?${stringify(params)}`);
 }
+
+// 获取承包商列表
+export async function getContractorList(params) {
+  return request(`/acloud_new/v2/safetyWork/contractor/page?${stringify(params)}`);
+}
+
+// 获取供应商列表
+export async function getSupplierList(params) {
+  return request(`/acloud_new/v2/safetyWork/supplier/page?${stringify(params)}`);
+}

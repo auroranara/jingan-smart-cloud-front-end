@@ -50,13 +50,13 @@ const DEFAULT_SPAN = {
   xs: 24,
 };
 
-const getPersonType = {
-  2: '外协人员',
-  3: '临时人员',
-  4: '操作人员',
-  5: '管理人员',
-  6: '安全巡查人员',
-};
+// const getPersonType = {
+//   2: '外协人员',
+//   3: '临时人员',
+//   4: '操作人员',
+//   5: '管理人员',
+//   6: '安全巡查人员',
+// };
 
 const exportList = [
   { id: '1', label: '导出选中' },
@@ -121,6 +121,7 @@ export default class PersonnelList extends PureComponent {
       type: 'realNameCertification/fetchPersonList',
       payload: { ...values, pageNum: 1, pageSize: 10, companyId },
     });
+    this.setState({ selectedRowKeys: [] });
   };
 
   fetchDepartment = () => {

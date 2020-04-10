@@ -20,6 +20,7 @@ import { getImportantTypes } from '../utils';
 import styles from './Company.less';
 import SafetyDetail from './SafetyDetail';
 import FireControlDetail from './FireControlDetail';
+import { PLACE_OWN } from './CompanyEdit';
 
 const { Description } = DescriptionList;
 
@@ -90,6 +91,10 @@ const fieldLabels = {
   importantHost: '消防重点单位',
   unitPhoto: '单位图片',
   warningCall: '报警接收电话',
+  regulatoryClassification: '监管分类',
+  workPlaceOwn: '生产场所产权',
+  storePlaceOwn: '存储场所产权',
+  businessLicense: '营业执照附件',
 };
 // tab列表
 const tabList = [
@@ -121,19 +126,26 @@ const getEmptyData = () => {
   }),
   dispatch => ({
     // 获取详情
-    fetchCompany(action) {
+    fetchCompany (action) {
       dispatch({
         type: 'company/fetchCompany',
         ...action,
       });
     },
     // 跳转到编辑页面
-    goToEdit(id) {
+    goToEdit (id) {
       dispatch(routerRedux.push(editUrl + id));
     },
     // 异常
-    goToException() {
+    goToException () {
       dispatch(routerRedux.push(exceptionUrl));
+    },
+    // 获取监管分类字典
+    fetchRegulatoryClassification (action) {
+      dispatch({
+        type: 'company/fetchRegulatoryClassification',
+        ...action,
+      });
     },
   })
 )
@@ -147,9 +159,10 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /* 生命周期函数 */
-  componentDidMount() {
+  componentDidMount () {
     const {
       fetchCompany,
+      fetchRegulatoryClassification,
       match: {
         params: { id },
       },
@@ -170,6 +183,8 @@ export default class CompanyDetail extends PureComponent {
         goToException();
       },
     });
+    // 获取监管分类字典
+    fetchRegulatoryClassification();
   }
 
   // 从子组件中获取值并将获取menus接口的flag置为true
@@ -196,7 +211,7 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /* 渲染行业类别 */
-  renderIndustryCategory() {
+  renderIndustryCategory () {
     const {
       company: {
         detail: {
@@ -213,7 +228,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染单位状态 */
-  renderCompanyStatus() {
+  renderCompanyStatus () {
     const {
       company: {
         detail: {
@@ -230,7 +245,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染基础信息 */
-  renderBasicInfo() {
+  renderBasicInfo () {
     const {
       company: {
         detail: {
@@ -367,7 +382,7 @@ export default class CompanyDetail extends PureComponent {
   /**
    * 渲染地图
    */
-  renderMap() {
+  renderMap () {
     const {
       company: {
         detail: {
@@ -396,7 +411,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染更多信息 */
-  renderMoreInfo() {
+  renderMoreInfo () {
     const {
       company: {
         detail: {
@@ -407,12 +422,17 @@ export default class CompanyDetail extends PureComponent {
             createTime,
             groupName,
             businessScope,
-            companyTypeLabel,
+            // companyTypeLabel,
+            regulatoryClassification,
+            workPlaceOwn,
+            storePlaceOwn,
+            businessLicenseDetails,
           },
         },
+        regulatoryClassificationList, // 监管分类字典
       },
     } = this.props;
-
+    const regulatoryTarget = regulatoryClassificationList.find(item => item.type_id === regulatoryClassification)
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
@@ -435,13 +455,31 @@ export default class CompanyDetail extends PureComponent {
           <Description term={fieldLabels.businessScope}>
             {businessScope || getEmptyData()}
           </Description>
+          <Description term={fieldLabels.regulatoryClassification}>
+            {regulatoryTarget ? regulatoryTarget.type_name : getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.workPlaceOwn}>
+            {workPlaceOwn ? PLACE_OWN[+workPlaceOwn].name : getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.storePlaceOwn}>
+            {storePlaceOwn ? PLACE_OWN[+storePlaceOwn].name : getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.businessLicense}>
+            {Array.isArray(businessLicenseDetails) ? businessLicenseDetails.map(({ id, webUrl }, index) => (
+              <div key={id}>
+                <a href={webUrl} target="_blank" rel="noopener noreferrer">
+                  {`附件${index + 1}`}
+                </a>
+              </div>
+            )) : getEmptyData()}
+          </Description>
         </DescriptionList>
       </Card>
     );
   }
 
   /* 渲染人员信息 */
-  renderPersonalInfo() {
+  renderPersonalInfo () {
     const {
       company: {
         detail: {
@@ -501,7 +539,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar() {
+  renderFooterToolbar () {
     const {
       goToEdit,
       match: {
@@ -530,7 +568,7 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       loading,
       match: {

@@ -20,7 +20,7 @@
 | fieldNames | 字段键值映射对象，如：{ key: 'id', value: 'name' } | object | { key: 'key', value: 'value' } |
 | mapper | 源数据及接口映射对象，如：{ namespace: 'common', list: 'unitList', getList: 'getUnitList' } | object | - |
 | params | 通过mapper请求接口时传递的额外参数 | object | - |
-| emtpy | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
+| empty | mode为'detail'时起效果，当value为falsy时显示 | ReactNode | <EmptyText /> |
 | ellipsis | mode为'detail'时起效果，当文本超出容器宽度时是否显示省略号 | boolean/object  | true |
 其它同Antd的Select组件
 
@@ -104,5 +104,18 @@
     showSearch
     filterOption={false}
     labelInValue
+  />
+  ```
+
+> 多人输入框
+
+  ```js
+  import Select from '@/jingan-components/Form/Select';
+
+  <Select
+    originalMode="tags"
+    notFoundContent={null}
+    showArrow={false}
+    showSearch
   />
   ```

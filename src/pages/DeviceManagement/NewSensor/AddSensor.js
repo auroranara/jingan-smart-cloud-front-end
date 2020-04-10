@@ -388,6 +388,7 @@ export default class AddNewSensor extends Component {
       },
     } = this.props
     this.setState(({ paramWarnStrategyDtos }) => {
+      let temp = [...parameterList];
       let newList = [...paramWarnStrategyDtos]
       // 寻找保存在state中的paramWarnStrategyDtos [ {paramId,paramWarnStrategyList[]} ]
       const index = paramWarnStrategyDtos.findIndex(item => item.paramId === paramId)
@@ -404,9 +405,9 @@ export default class AddNewSensor extends Component {
       }
       // 参数列表更新 参数--报警策略数量
       const customStrategyCount = list.length
-      const paramIndex = parameterList.findIndex(item => item.id === paramId)
-      parameterList.splice(paramIndex, 1, { ...parameterList[paramIndex], customStrategyCount })
-      this.saveParameters({ payload: { list: parameterList } })
+      const paramIndex = temp.findIndex(item => item.id === paramId)
+      temp.splice(paramIndex, 1, { ...temp[paramIndex], customStrategyCount })
+      this.saveParameters({ payload: { list: temp } })
       return { paramWarnStrategyDtos: newList }
     })
   }
