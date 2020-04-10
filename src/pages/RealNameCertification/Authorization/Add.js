@@ -86,16 +86,19 @@ export default class AddAuthorization extends PureComponent {
     if (isCompany) {
       this.setState({ company: { id: companyId, name: companyName } }, () => {
         this.fetchDeviceList();
+        this.fetchPersonList();
       })
     } else if (searchInfo.company && searchInfo.company.id) {
       // 如果redux中保存了单位
-      this.setState({ company: searchInfo.company }, () => { this.fetchDeviceList() })
+      this.setState({ company: searchInfo.company }, () => {
+        this.fetchDeviceList();
+        this.fetchPersonList();
+      })
     } else {
       message.warning('请重新选择单位');
       router.push(listPath);
       return;
     }
-    this.fetchPersonList();
   }
 
   // 查询列表，获取人员列表
@@ -104,10 +107,11 @@ export default class AddAuthorization extends PureComponent {
       dispatch,
       form: { getFieldsValue },
     } = this.props;
+    const { company } = this.state;
     const { name, icnumber } = getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchPersonList',
-      payload: { name: name || undefined, icnumber: icnumber || undefined, pageNum, pageSize },
+      payload: { name: name || undefined, icnumber: icnumber || undefined, pageNum, pageSize, companyId: company.id },
     })
   }
 
@@ -248,7 +252,7 @@ export default class AddAuthorization extends PureComponent {
           list: deviceList = [],
           pagination: devicePagination,
         },
-        deviceTypeDict, // 设备类型字典
+        // deviceTypeDict, // 设备类型字典
         permissionsDict,// 人员权限字典
       },
     } = this.props;
