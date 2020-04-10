@@ -15,6 +15,7 @@ import {
   Input,
   Modal,
   Upload,
+  Empty,
   // Icon,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -618,7 +619,7 @@ export default class PersonnelList extends PureComponent {
       },
     ];
 
-    return list && list.length ? (
+    return (
       <Card
         style={{ marginTop: '24px' }}
         title="人员列表"
@@ -673,31 +674,33 @@ export default class PersonnelList extends PureComponent {
           </div>
         }
       >
-        <Table
-          rowKey="id"
-          loading={loading}
-          columns={columns}
-          dataSource={list}
-          bordered
-          scroll={{ x: 'max-content' }}
-          rowSelection={rowSelection}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            showTotal: t => `共 ${t} 条记录`,
-            pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: this.handlePageChange,
-            onShowSizeChange: (num, size) => {
-              this.handlePageChange(1, size);
-            },
-          }}
-        />
+        {list && list.length ? (
+          <Table
+            rowKey="id"
+            loading={loading}
+            columns={columns}
+            dataSource={list}
+            bordered
+            scroll={{ x: 'max-content' }}
+            rowSelection={rowSelection}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              showTotal: t => `共 ${t} 条记录`,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handlePageChange,
+              onShowSizeChange: (num, size) => {
+                this.handlePageChange(1, size);
+              },
+            }}
+          />
+        ) : (
+          <Empty />
+        )}
       </Card>
-    ) : (
-      <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
     );
   };
 
