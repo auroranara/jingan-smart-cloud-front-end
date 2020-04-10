@@ -136,11 +136,17 @@ export default class PersonnelAdd extends PureComponent {
               url: item.webUrl,
             })),
           });
-          this.fetchTagCard({
-            companyId: companyId || unitCompantId,
-            personType: detail.personType,
-            status: 1,
-          });
+          this.fetchTagCard(
+            {
+              companyId: companyId || unitCompantId,
+              personType: detail.personType,
+              status: 1,
+            },
+            res => {
+              const { list } = res.data;
+              this.setState({ curLabelList: list });
+            }
+          );
         },
       });
     } else {
