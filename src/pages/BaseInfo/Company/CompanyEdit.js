@@ -118,10 +118,10 @@ const tabList = [
     key: '2',
     tab: '消防信息',
   },
-  {
-    key: '3',
-    tab: '3D地图',
-  },
+  // {
+  //   key: '3',
+  //   tab: '3D地图',
+  // },
 ];
 // 默认选中一般企业
 const defaultCompanyNature = '一般企业';
@@ -1955,13 +1955,13 @@ export default class CompanyDetail extends PureComponent {
               handleTabChange={this.handleTabChange}
             />
           </div>
-          <div style={{ display: tabActiveKey === tabList[3].key ? 'block' : 'none' }}>
+          {/* <div style={{ display: tabActiveKey === tabList[3].key ? 'block' : 'none' }}>
             <ThreeDMap
               dispatch={dispatch}
               companyId={id}
               data={this.props.company.map}
             />
-          </div>
+          </div> */}
         </Spin>
       </PageHeaderLayout>
     );

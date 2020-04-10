@@ -8,6 +8,7 @@ export default class TypeCardBody extends PureComponent {
     const {
       data: { name, allMonitorParam, videoList },
       url,
+      icon,
       handleShowVideo,
     } = this.props;
 
@@ -22,7 +23,11 @@ export default class TypeCardBody extends PureComponent {
         </h4>
         <div className={styles.bodyInner}>
           <div className={styles.imgContainer}>
-            <div className={styles.img} style={{ backgroundImage: `url(${url})` }} />
+            {icon ? (
+              icon
+            ) : (
+              <div className={styles.img} style={{ backgroundImage: `url(${url})` }} />
+            )}
           </div>
           <div className={styles.info}>
             {allMonitorParam.map((item, index) => (

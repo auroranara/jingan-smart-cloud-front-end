@@ -30,6 +30,7 @@ const FormPage = props => {
     labelCol,
     wrapperCol,
     initialValues,
+    detail,
   } = props;
   const form = useRef(null);
   useImperativeHandle(formRef, () => form.current);
@@ -59,6 +60,7 @@ const FormPage = props => {
           params={{
             isUnit,
             unitId,
+            ...detail,
           }}
           hasEditAuthority={hasEditAuthority}
           editPath={editPath}
@@ -165,7 +167,7 @@ export default connect(
       isUnit,
       unitId,
       breadcrumbList,
-      detail: detail || {},
+      detail: name !== 'add' && detail ? detail : {},
       loading: loading || false,
       submitting: adding || editing || false,
       mode: name,

@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
-import { Badge } from '@/jingan-components/View';
+import DueDate from '../../Contractor/components/DueDate';
 import moment from 'moment';
 import { STATUSES, FORMAT } from '../config';
 import styles from './index.less';
@@ -69,10 +69,12 @@ const SupplierList = ({ route, match, location }) => {
                 <div className={styles.fieldWrapper}>
                   <div>到期日期：</div>
                   <div>
-                    {moment(certificateExpireDate).format(FORMAT)}
-                    <span className={styles.badgeWrapper}>
-                      <Badge list={STATUSES} value={`${certificateExpireStatus}`} />
-                    </span>
+                    <DueDate
+                      list={STATUSES}
+                      value={moment(certificateExpireDate)}
+                      status={certificateExpireStatus}
+                      mode="detail"
+                    />
                   </div>
                 </div>
               </Fragment>

@@ -13,6 +13,7 @@ const ViewLink = props => {
         if (props.disabled) {
           e.preventDefault();
         } else if (props.onClick) {
+          e.preventDefault();
           props.onClick(e);
         }
       }}
