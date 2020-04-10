@@ -309,6 +309,14 @@ export default class AuthorizationList extends PureComponent {
     })
   }
 
+  handleDeleteTime = index => {
+    this.setState(({ accessTime }) => {
+      let temp = [...accessTime];
+      temp.splice(index, 1);
+      return { accessTime: temp };
+    })
+  }
+
   // 添加准入时间
   handleAddAccess = () => {
     this.setState(({ accessTime }) => ({ accessTime: [...accessTime, []] }))
