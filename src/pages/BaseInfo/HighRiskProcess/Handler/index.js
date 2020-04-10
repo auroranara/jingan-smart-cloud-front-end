@@ -263,6 +263,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        type: 1,
       },
     });
   }
@@ -274,6 +275,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        type: 2,
       },
     });
   }
@@ -285,6 +287,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        type: 3,
       },
     });
   }
@@ -349,22 +352,25 @@ export default class EmergencySuppliesHandler extends PureComponent {
   handleSelectRaw = () => {
     const { setFieldsValue } = this.props.form;
     const { selectedTemp } = this.state;
-    this.setState({ selectedRaw: selectedTemp, rawModalVisible: false });
-    setFieldsValue({ rawId: selectedTemp.map((item) => item.id).join(',') });
+    const selectedTmp = Array.isArray(selectedTemp) ? selectedTemp.filter(({ type }) => +type === 1) : []; // 处理以前的数据
+    this.setState({ selectedRaw: selectedTmp, rawModalVisible: false });
+    setFieldsValue({ rawId: selectedTmp.map((item) => item.id).join(',') });
   };
 
   handleSelectMiddle = () => {
     const { setFieldsValue } = this.props.form;
     const { selectedTemp } = this.state;
-    this.setState({ selectedMiddle: selectedTemp, middleModalVisible: false })
-    setFieldsValue({ middleId: selectedTemp.map((item) => item.id).join(',') })
+    const selectedTmp = Array.isArray(selectedTemp) ? selectedTemp.filter(({ type }) => +type === 2) : [];
+    this.setState({ selectedMiddle: selectedTmp, middleModalVisible: false })
+    setFieldsValue({ middleId: selectedTmp.map((item) => item.id).join(',') })
   }
 
   handleSelectFinal = () => {
     const { setFieldsValue } = this.props.form;
     const { selectedTemp } = this.state;
-    this.setState({ selectedFinal: selectedTemp, finalModalVisible: false })
-    setFieldsValue({ finalId: selectedTemp.map((item) => item.id).join(',') })
+    const selectedTmp = Array.isArray(selectedTemp) ? selectedTemp.filter(({ type }) => +type === 3) : [];
+    this.setState({ selectedFinal: selectedTmp, finalModalVisible: false })
+    setFieldsValue({ finalId: selectedTmp.map((item) => item.id).join(',') })
   }
 
   handleSelectMonitor = () => {
@@ -914,7 +920,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
         render: t => getTypeLabel(t, MOINTOR_TYPES),
       },
       {
-        title: '编码',
+        title: '编号',
         dataIndex: 'code',
         key: 'code',
       },
@@ -976,6 +982,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
           visible={rawModalVisible}
           modal={materials}
           fetch={this.fetchMaterials}
+          extraFetchParams={{ type: 1 }}
           onSelect={this.handleSelectRaw}
           onClose={() => { this.setState({ rawModalVisible: false }) }}
         />
@@ -995,6 +1002,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
           visible={middleModalVisible}
           modal={materials}
           fetch={this.fetchMaterials}
+          extraFetchParams={{ type: 2 }}
           onSelect={this.handleSelectMiddle}
           onClose={() => { this.setState({ middleModalVisible: false }) }}
         />
@@ -1014,6 +1022,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
           visible={finalModalVisible}
           modal={materials}
           fetch={this.fetchMaterials}
+          extraFetchParams={{ type: 3 }}
           onSelect={this.handleSelectFinal}
           onClose={() => { this.setState({ finalModalVisible: false }) }}
         />
