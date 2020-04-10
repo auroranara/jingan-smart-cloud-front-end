@@ -58,7 +58,7 @@ const WarningSignList = ({ route, match, location }) => {
       },
       {
         dataIndex: 'category',
-        title: '承包商类别',
+        title: '警示牌类别',
         render: value =>
           isNumber(value) && (
             <Select

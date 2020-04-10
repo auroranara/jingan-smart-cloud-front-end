@@ -128,7 +128,7 @@ const defaultCompanyNature = '一般企业';
 // 默认经纬度坐标
 const defaultPosition = { longitude: 120.30, latitude: 31.57 };
 
-const CHEM_COM_TYPES = [
+export const CHEM_COM_TYPES = [
   { value: '0', name: '危化品生产企业' },
   { value: '1', name: '危化品经营企业' },
   { value: '2', name: '危化品使用企业' },
@@ -136,7 +136,7 @@ const CHEM_COM_TYPES = [
   { value: '4', name: '其他' },
 ];
 
-const WORK_COM_TYPES = [
+export const WORK_COM_TYPES = [
   { value: '0', name: '生产' },
   { value: '1', name: '经营' },
   { value: '2', name: '使用' },
