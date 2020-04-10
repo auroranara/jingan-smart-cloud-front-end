@@ -222,7 +222,7 @@ export default class TableList extends PureComponent {
             <AuthA
               code={cardCode}
               href={'#/personnel-management/tag-card/visitor-card-list'}
-              style={{ float: 'right', marginRight: '10px' }}
+              style={{ float: 'right', marginRight: '10px', fontSize: '16px' }}
             >
               访客卡管理
             </AuthA>

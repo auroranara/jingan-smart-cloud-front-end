@@ -27,7 +27,7 @@ export default {
     // 新增访客卡
     *fetchCardAdd({ payload, callback }, { call }) {
       const res = yield call(queryCardAdd, payload);
-      callback && callback(res && res.code === 200, res.msg);
+      callback && callback(res && res.code === 200, res.msg, res.data);
     },
 
     // 编辑访客卡

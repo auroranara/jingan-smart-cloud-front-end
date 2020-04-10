@@ -51,6 +51,7 @@ export default class ArticleAdd extends PureComponent {
         payload: {
           type: '1', // type 1文章
           id,
+          companyId,
         },
         callback: detail => {
           setFieldsValue({ content: BraftEditor.createEditorState(detail.content) });

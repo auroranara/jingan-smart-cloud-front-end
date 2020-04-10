@@ -88,7 +88,6 @@ export default class PersonnelAdd extends PureComponent {
       sexValue: '0', // 默认性别为男
       perType: '1', // 人员选择类型
       curCompanyName: '', // 当前单位
-      filterTagList: {},
       curLabelList: [],
     };
   }
@@ -107,6 +106,7 @@ export default class PersonnelAdd extends PureComponent {
       },
       form: { setFieldsValue },
     } = this.props;
+    const { perType } = this.state;
     this.fetchDepartment();
     this.fetchPostList();
     this.setState({
@@ -136,21 +136,22 @@ export default class PersonnelAdd extends PureComponent {
               url: item.webUrl,
             })),
           });
-          this.fetchTagCard(
-            { companyId: companyId || unitCompantId, snNumber: detail.entranceNumber },
-            res => {
-              const { list } = res.data;
-              const filterTagList = list.find(item => item.icNumber === detail.icnumber);
-              this.setState({ filterTagList });
-            }
-          );
+          this.fetchTagCard({
+            companyId: companyId || unitCompantId,
+            personType: detail.personType,
+            status: 1,
+          });
         },
       });
+    } else {
+      this.fetchTagCard(
+        { companyId: companyId || unitCompantId, status: 1, personType: perType },
+        res => {
+          const { list } = res.data;
+          this.setState({ curLabelList: list });
+        }
+      );
     }
-    this.fetchTagCard({ companyId: companyId || unitCompantId, status: 1 }, res => {
-      const { list } = res.data;
-      this.setState({ curLabelList: list });
-    });
   }
 
   // 提交
@@ -353,19 +354,18 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    // const isId = id === '1';
+    const { curCompanyId } = this.state;
     this.setState({ perType: id });
-    setFieldsValue({ personCompany: undefined });
-    // if (isId) {
-    //   this.fetchPostList();
-    //   this.fetchDepartment();
-    // }
+    setFieldsValue({ personCompany: undefined, icnumber: undefined, entranceNumber: undefined });
+    this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: id }, res => {
+      const { list } = res.data;
+      this.setState({ curLabelList: list });
+    });
   };
 
   // 获取标签卡列表
   fetchTagCard = ({ ...params }, callback) => {
     const { dispatch } = this.props;
-    const { perType } = this.state;
     // 根据输入值获取列表
     dispatch({
       type: 'realNameCertification/fetchTagCardList',
@@ -374,17 +374,16 @@ export default class PersonnelAdd extends PureComponent {
         pageNum: 1,
         pageSize: 30,
         personCar: 1,
-        perType: perType,
       },
       callback,
     });
   };
 
   handleICSearch = value => {
-    const { curCompanyId } = this.state;
+    const { curCompanyId, perType } = this.state;
     // 根据输入值获取列表
     this.fetchTagCard(
-      { icNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
+      { icNumber: value && value.trim(), companyId: curCompanyId, status: 1, personType: perType },
       res => {
         const { list } = res.data;
         this.setState({ curLabelList: list });
@@ -396,14 +395,13 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { curCompanyId, curLabelList } = this.state;
+    const { curLabelList } = this.state;
     if (value === undefined) {
-      this.handleICSearch.cancel();
+      this.handleICSearch();
       setFieldsValue({
         icnumber: undefined,
         entranceNumber: undefined,
       });
-      this.fetchTagCard({ companyId: curCompanyId, status: 1 });
     } else {
       const sn = curLabelList.find(item => item.id === value.key).snNumber;
       const snId = curLabelList.find(item => item.id === value.key).id;
@@ -414,10 +412,10 @@ export default class PersonnelAdd extends PureComponent {
   };
 
   handleSNSearch = value => {
-    const { curCompanyId } = this.state;
+    const { curCompanyId, perType } = this.state;
     // 根据输入值获取列表
     this.fetchTagCard(
-      { snNumber: value && value.trim(), companyId: curCompanyId, status: 1 },
+      { snNumber: value && value.trim(), companyId: curCompanyId, status: 1, personType: perType },
       res => {
         const { list } = res.data;
         this.setState({ curLabelList: list });
@@ -429,15 +427,14 @@ export default class PersonnelAdd extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { curCompanyId, curLabelList } = this.state;
+    const { curLabelList } = this.state;
     // 根据value判断是否是手动输入
     if (value === undefined) {
-      this.handleSNSearch.cancel();
+      this.handleSNSearch();
       setFieldsValue({
         icnumber: undefined,
         entranceNumber: undefined,
       });
-      this.fetchTagCard({ companyId: curCompanyId, status: 1 });
     } else {
       const ic = curLabelList.find(item => item.id === value.key).icNumber;
       const icId = curLabelList.find(item => item.id === value.key).id;
@@ -469,18 +466,10 @@ export default class PersonnelAdd extends PureComponent {
     } = this.props;
     const treeList = treeData(departmentList);
 
-    const {
-      photoLoading,
-      sexValue,
-      detail,
-      diplomaLoading,
-      curLabelList,
-      filterTagList,
-      perType,
-    } = this.state;
+    const { photoLoading, sexValue, detail, diplomaLoading, curLabelList, perType } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
-
+    console.log('detail', detail);
     const title = id ? '编辑人员信息' : '新增人员信息';
     const hasCompanyName = perType === '1';
     const noCompanyName = perType === '2' || perType === '3';
@@ -634,10 +623,7 @@ export default class PersonnelAdd extends PureComponent {
                   {...formItemLayout}
                 >
                   {getFieldDecorator('icnumber', {
-                    initialValue:
-                      id && filterTagList
-                        ? { key: filterTagList.id, label: filterTagList.icNumber }
-                        : undefined,
+                    initialValue: id ? { key: detail.lableId, label: detail.icnumber } : undefined,
                   })(
                     <Select
                       allowClear
@@ -672,10 +658,9 @@ export default class PersonnelAdd extends PureComponent {
                   {...formItemLayout}
                 >
                   {getFieldDecorator('entranceNumber', {
-                    initialValue:
-                      id && filterTagList
-                        ? { key: filterTagList.id, label: filterTagList.snNumber }
-                        : undefined,
+                    initialValue: id
+                      ? { key: detail.lableId, label: detail.entranceNumber }
+                      : undefined,
                   })(
                     <Select
                       allowClear

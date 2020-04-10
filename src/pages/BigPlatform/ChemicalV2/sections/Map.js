@@ -479,6 +479,9 @@ export default class Map extends PureComponent {
           this.removeMarkerById(equipmentId);
           this.renderPoints([deviceDetail], 2);
           handleClickMonitorIcon(deviceDetail);
+          setTimeout(() => {
+            this.handleMarkerJump(equipmentId, this.jumpEquipIds);
+          }, 50);
         }
       },
     });

@@ -18,3 +18,8 @@ export const STATUSES = [
 export const COMPANY_FIELDNAMES = { key: 'id', value: 'name' };
 export const COMPANY_MAPPER = { namespace: 'common', list: 'unitList', getList: 'getUnitList' };
 export const FORMAT = 'YYYY-MM-DD';
+export const TAB_LIST = [
+  { key: '1', tab: '施工记录' },
+  { key: '2', tab: '评定记录' },
+  { key: '3', tab: '违章记录' },
+];

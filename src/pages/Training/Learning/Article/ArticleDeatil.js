@@ -31,12 +31,16 @@ export default class ArticleDeatil extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { companyId },
+      },
     } = this.props;
     // 获取详情
     dispatch({
       type: 'learning/fetch',
       payload: {
         id,
+        companyId,
       },
     });
     dispatch({
@@ -64,7 +68,7 @@ export default class ArticleDeatil extends PureComponent {
     return (
       <PageHeaderLayout title="文章阅读" breadcrumbList={breadcrumbList}>
         <Row gutter={16}>
-          <Col>
+          <Col span={24}>
             <Card>
               <div className={styles.detailFirst}>
                 <div className={styles.detailTitle}>{name}</div>
