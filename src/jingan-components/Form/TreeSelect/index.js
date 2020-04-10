@@ -42,13 +42,12 @@ const FormTreeSelect = ({
   notFoundContent,
   showSearch = false,
   loadData,
-  initializeParams,
-  searchParams,
   loadParams,
+  labelInValue,
   ...rest
 }) => {
   const [hackKey, setHackKey] = useState(1);
-  // const [data, setData] = useState(undefined);
+  const [data, setData] = useState(undefined);
   const {
     key: k,
     value: v,
@@ -59,7 +58,7 @@ const FormTreeSelect = ({
     selectable,
     checkable,
   } = { ...FIELDNAMES, ...fieldNames };
-  const async = !!loadData;
+  const async = showSearch && !filterTreeNode;
   useEffect(() => {
     getList && getList();
   }, []);
@@ -117,14 +116,15 @@ const FormTreeSelect = ({
         key={hackKey}
         className={classNames(styles.container, className)}
         placeholder={placeholder}
-        value={value}
+        value={async && !labelInValue ? data : value}
+        labelInValue={async || labelInValue}
         notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
         treeNodeFilterProp={treeNodeFilterProp}
         filterTreeNode={filterTreeNode}
         allowClear={allowClear}
         showArrow={showArrow}
         showSearch={showSearch}
-        loadData={async ? handleLoadData : undefined}
+        loadData={loadData ? handleLoadData : undefined}
         {...rest}
       >
         {renderTreeNodes(list)}
