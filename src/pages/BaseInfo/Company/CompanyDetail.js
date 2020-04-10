@@ -439,9 +439,9 @@ export default class CompanyDetail extends PureComponent {
     const regulatoryTarget = regulatoryClassificationList.find(item => item.type_id === regulatoryClassification);
     const showChemFields = regulatoryClassificationList.some(({ type_name, type_id }) => type_name === '化工' && type_id === regulatoryClassification);
     const ciCompanyTypeLabel = ciCompanyType ? CHEM_COM_TYPES[+ciCompanyType].name : getEmptyData();
-    const workCompanyTypeLabel = workCompanyType ? workCompanyType.split(',').reduce((str, item) => {
+    const workCompanyTypeLabel = workCompanyType ? workCompanyType.split(',').reduce((str, item, index) => {
       const label = item ? WORK_COM_TYPES[+item].name : '';
-      return label ? str + '、' + label : str;
+      return label ? `${str}${index === 0 ? '' : '、'}${label}` : str;
     }, '') : getEmptyData();
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
