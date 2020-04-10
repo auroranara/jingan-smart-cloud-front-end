@@ -13,6 +13,8 @@ const ContractorList = ({ route, match, location }) => {
     match,
     location,
     transform({
+      isUnit,
+      unitId,
       companyName,
       contractorName,
       contractorCategory,
@@ -20,6 +22,7 @@ const ContractorList = ({ route, match, location }) => {
       certificateExpireStatus,
     }) {
       return {
+        companyId: isUnit ? unitId : undefined,
         companyName: companyName && companyName.trim(),
         contractorName: contractorName && contractorName.trim(),
         contractorCategory,

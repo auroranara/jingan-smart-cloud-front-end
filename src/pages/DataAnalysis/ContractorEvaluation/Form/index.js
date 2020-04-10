@@ -113,7 +113,7 @@ const ContractorEvaluationForm = ({ route, match, location }) => {
         label: '被考核承包商',
         component: 'Select',
         dependencies: ['companyId'],
-        props({ mode, isUnit, unitId, companyId }) {
+        props({ mode, isUnit, unitId, companyId, beAssessId, contractorName }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: CONTRACTOR_FIELDNAMES,
@@ -124,6 +124,13 @@ const ContractorEvaluationForm = ({ route, match, location }) => {
               companyId: key,
             },
             disabled: mode === 'edit',
+            extraList: [
+              // hack处理，防止选项被删除
+              {
+                id: beAssessId,
+                contractorName,
+              },
+            ],
             key,
           };
         },

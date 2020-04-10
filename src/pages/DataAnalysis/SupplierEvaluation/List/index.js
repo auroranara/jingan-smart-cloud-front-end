@@ -11,9 +11,10 @@ const SupplierEvaluationList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, supplierName, queryAssessDepartmentId, range }) {
+    transform({ isUnit, unitId, companyName, supplierName, queryAssessDepartmentId, range }) {
       const [assessDateStart, assessDateEnd] = range || [];
       return {
+        companyId: isUnit ? unitId : undefined,
         companyName: companyName && companyName.trim(),
         supplierName: supplierName && supplierName.trim(),
         queryAssessDepartmentId,

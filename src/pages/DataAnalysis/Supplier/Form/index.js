@@ -1,9 +1,8 @@
 import React from 'react';
 import FormPage from '@/jingan-components/Page/Form';
 import moment from 'moment';
-import { FORMAT, STATUSES } from '../config';
+import { FORMAT, YES_OR_NO } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
-import { YES_OR_NO } from '../../ContractorConstruction/config';
 import { phoneReg, postcodeReg } from '@/utils/validate';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';

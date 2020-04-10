@@ -12,8 +12,9 @@ const WarningSignList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, name, category }) {
+    transform({ isUnit, unitId, companyName, name, category }) {
       return {
+        companyId: isUnit ? unitId : undefined,
         companyName: companyName && companyName.trim(),
         name: name && name.trim(),
         category,

@@ -4,4 +4,5 @@ export const STATUSES = [
   { key: '3', value: '已过期', status: 'error' },
   { key: '4', value: '无有效期', status: 'default' },
 ];
+export const YES_OR_NO = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
 export const FORMAT = 'YYYY-MM-DD';
