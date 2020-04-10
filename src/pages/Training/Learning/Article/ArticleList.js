@@ -3,19 +3,7 @@ import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import {
-  List,
-  Card,
-  Row,
-  Button,
-  Tag,
-  Col,
-  Input,
-  Divider,
-  Select,
-  TreeSelect,
-  Spin,
-} from 'antd';
+import { List, Card, Row, Button, Tag, Col, Input, Divider, Select, TreeSelect, Spin } from 'antd';
 import moment from 'moment';
 
 import styles from './Article.less';
@@ -101,8 +89,8 @@ export default class ArticleList extends PureComponent {
 
   // 跳转到详情页面
   goToDetail = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/learning/article/detail/${id}`));
+    const { dispatch, companyId } = this.props;
+    dispatch(routerRedux.push(`/training/learning/article/detail/${id}?companyId=${companyId}`));
   };
 
   /**
