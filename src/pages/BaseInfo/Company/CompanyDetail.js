@@ -20,7 +20,7 @@ import { getImportantTypes } from '../utils';
 import styles from './Company.less';
 import SafetyDetail from './SafetyDetail';
 import FireControlDetail from './FireControlDetail';
-import { PLACE_OWN } from './CompanyEdit';
+import { PLACE_OWN, CHEM_COM_TYPES, WORK_COM_TYPES } from './CompanyEdit';
 
 const { Description } = DescriptionList;
 
@@ -95,6 +95,8 @@ const fieldLabels = {
   workPlaceOwn: '生产场所产权',
   storePlaceOwn: '存储场所产权',
   businessLicense: '营业执照附件',
+  ciCompanyType: '化工企业类型',
+  workCompanyType: '生产经营活动类型',
 };
 // tab列表
 const tabList = [
@@ -427,12 +429,20 @@ export default class CompanyDetail extends PureComponent {
             workPlaceOwn,
             storePlaceOwn,
             businessLicenseDetails,
+            ciCompanyType,
+            workCompanyType,
           },
         },
         regulatoryClassificationList, // 监管分类字典
       },
     } = this.props;
-    const regulatoryTarget = regulatoryClassificationList.find(item => item.type_id === regulatoryClassification)
+    const regulatoryTarget = regulatoryClassificationList.find(item => item.type_id === regulatoryClassification);
+    const showChemFields = regulatoryClassificationList.some(({ type_name, type_id }) => type_name === '化工' && type_id === regulatoryClassification);
+    const ciCompanyTypeLabel = ciCompanyType ? CHEM_COM_TYPES[+ciCompanyType].name : getEmptyData();
+    const workCompanyTypeLabel = workCompanyType ? workCompanyType.split(',').reduce((str, item) => {
+      const label = item ? WORK_COM_TYPES[+item].name : '';
+      return label ? str + '、' + label : str;
+    }, '') : getEmptyData();
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
@@ -458,6 +468,12 @@ export default class CompanyDetail extends PureComponent {
           <Description term={fieldLabels.regulatoryClassification}>
             {regulatoryTarget ? regulatoryTarget.type_name : getEmptyData()}
           </Description>
+          {showChemFields && (
+            <Description term={fieldLabels.ciCompanyType}>{ciCompanyTypeLabel}</Description>
+          )}
+          {showChemFields && (
+            <Description term={fieldLabels.workCompanyType}>{workCompanyTypeLabel}</Description>
+          )}
           <Description term={fieldLabels.workPlaceOwn}>
             {workPlaceOwn ? PLACE_OWN[+workPlaceOwn].name : getEmptyData()}
           </Description>
