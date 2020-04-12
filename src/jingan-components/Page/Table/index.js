@@ -7,7 +7,7 @@ import { connect } from 'dva';
 import locales from '@/locales/zh-CN';
 import { kebabCase } from 'lodash';
 import { getPageSize, setPageSize } from '@/utils/utils';
-import styles from './index.less';
+// import styles from './index.less';
 
 const TablePage = props => {
   const {
@@ -21,7 +21,7 @@ const TablePage = props => {
     transform,
     isUnit,
     unitId,
-    formOperation,
+    // formOperation,
     tableAction,
     tableOperation,
     formRef,

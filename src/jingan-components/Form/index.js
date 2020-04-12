@@ -35,69 +35,64 @@ const SIZE_MAPPER = {
   lg: 'md',
   md: 'sm',
 };
+// 获取当前栅格大小下所占格数
 const GET_SPAN = (col, size) => {
   if (col) {
-    if (col.span) {
-      return col.span;
-    } else if (col[size]) {
+    if (col[size]) {
       return col[size];
     } else if (SIZE_MAPPER[size]) {
       return GET_SPAN(col, SIZE_MAPPER[size]);
+    } else if (col.span) {
+      return col.span;
     }
   }
   return 24;
 };
-const GET_OFFSET = (expand, spanList, operationSpan) => {
-  if (expand) {
-    const restSpan = spanList.reduce((result, span) => {
-      return result >= span ? result - span : 24 - span;
-    }, 24);
-    return restSpan >= operationSpan ? restSpan - operationSpan : 24 - operationSpan;
-  } else {
-    let rest = 24 - operationSpan;
-    for (const span of spanList) {
-      if (rest >= span) {
-        rest = rest - span;
-      } else {
-        return rest;
-      }
-    }
-    return rest;
-  }
-};
-const GET_GRID = (fields, payload, gridSize, operationSpan, expandable, expand) => {
-  const { spanList, length } = fields.reduce(
+// 获取控制显示的变量
+const GET_GRID = (fields, payload, size, operationSpan, expand) => {
+  const { length, multipleLine, restSpan } = fields.reduce(
     (result, { hide, col = COL }) => {
       const hidden = hide ? hide(payload) : false;
-      const span = GET_SPAN(col, gridSize);
-      if (!expandable || expand) {
+      const span = GET_SPAN(col, size);
+      if (expand) {
         if (!hidden) {
-          result.spanList.push(span);
+          if (result.restSpan >= span) {
+            result.restSpan -= span;
+          } else {
+            result.restSpan = 24 - span;
+            result.multipleLine = true;
+          }
         }
         result.length += 1;
       } else {
         if (!hidden) {
-          result.total += span;
-          if (result.total <= 24) {
-            result.spanList.push(span);
+          if (result.restSpan >= span) {
+            result.restSpan -= span;
+          } else {
+            result.multipleLine = true;
           }
         }
-        if (result.total <= 24) {
+        if (!result.multipleLine) {
           result.length += 1;
         }
       }
       return result;
     },
     {
-      spanList: [],
       length: 0,
-      total: operationSpan,
+      multipleLine: false,
+      restSpan: expand ? 24 : 24 - operationSpan,
     }
   );
   return {
     length,
-    offset: GET_OFFSET(expand, spanList, operationSpan),
-    gridSize,
+    offset: expand
+      ? restSpan >= operationSpan
+        ? restSpan - operationSpan
+        : 24 - operationSpan
+      : restSpan,
+    size,
+    showExpandButton: expand ? (restSpan >= operationSpan ? multipleLine : true) : multipleLine,
   };
 };
 
@@ -145,14 +140,22 @@ const FormIndex = forwardRef(
     },
     ref
   ) => {
+    // 创建form的引用
     const [form] = Form.useForm();
+    // 将form的引用暴露到父组件
+    useImperativeHandle(ref, () => form);
+    // 创建是否展开的变量
     const [expand, setExpand] = useState(false);
+    // 获取当前栅格大小
     const windowSize = useMediaQuery();
+    // 创建控制显示的变量（显示数量、按钮偏移、栅格大小）
     const [grid, setGrid] = useState({
       length: Infinity,
       offset: 0,
-      gridSize: windowSize,
+      size: windowSize,
+      showExpandButton: false,
     });
+    // 对fields做统一化处理
     let list = Array.isArray(fields)
       ? fields[0].fields
         ? fields
@@ -163,7 +166,7 @@ const FormIndex = forwardRef(
           ]
       : [];
     list = !mode ? list.slice(0, 1) : list;
-    useImperativeHandle(ref, () => form);
+    // 当栅格大小和是否展开发生变化时且为普通模式时重置控制显示的变量
     useEffect(
       () => {
         if (!mode) {
@@ -171,13 +174,20 @@ const FormIndex = forwardRef(
           const values = form.getFieldsValue();
           const payload = { ...params, ...values };
           const operationSpan = GET_SPAN(operationCol, windowSize);
-          const grid = GET_GRID(fields, payload, windowSize, operationSpan, expandable, expand);
+          const grid = GET_GRID(
+            fields,
+            payload,
+            windowSize,
+            operationSpan,
+            expandable ? expand : true
+          );
           setGrid(grid);
         }
       },
       [windowSize, expand]
     );
-    const dependencies = list.reduce((result, { fields }) => {
+    // 获取所有上传相关的字段名称
+    const uploadDependencies = list.reduce((result, { fields }) => {
       return fields.reduce((result, { name, component }) => {
         if (component === 'Upload') {
           result.push(name);
@@ -193,6 +203,7 @@ const FormIndex = forwardRef(
             ? (changedValues, values) => {
                 const fields = (list[0] && list[0].fields) || [];
                 const dependency = Object.keys(changedValues)[0];
+                // 当发生变化的字段被依赖时重置控制显示的变量
                 if (
                   fields.some(
                     ({ dependencies }) => dependencies && dependencies.includes(dependency)
@@ -205,8 +216,7 @@ const FormIndex = forwardRef(
                     payload,
                     windowSize,
                     operationSpan,
-                    expandable,
-                    expand
+                    expandable ? expand : true
                   );
                   setGrid(grid);
                 }
@@ -278,7 +288,7 @@ const FormIndex = forwardRef(
                               <Col
                                 {...col}
                                 {...!mode && {
-                                  span: GET_SPAN(col, grid.gridSize),
+                                  span: GET_SPAN(col, grid.size),
                                   xxl: undefined,
                                   xl: undefined,
                                   lg: undefined,
@@ -326,7 +336,7 @@ const FormIndex = forwardRef(
                           key={key || name}
                           {...col}
                           {...!mode && {
-                            span: GET_SPAN(col, grid.gridSize),
+                            span: GET_SPAN(col, grid.size),
                             xxl: undefined,
                             xl: undefined,
                             lg: undefined,
@@ -368,152 +378,153 @@ const FormIndex = forwardRef(
                     ) : null;
                   }
                 )}
-                {!mode ? (
-                  <Col
-                    {...operationCol}
-                    {...{
-                      offset: grid.offset,
-                      span: GET_SPAN(operationCol, grid.gridSize),
-                      xxl: undefined,
-                      xl: undefined,
-                      lg: undefined,
-                      md: undefined,
-                      sm: undefined,
-                      xs: undefined,
-                    }}
-                  >
-                    <Form.Item>
-                      <div className={styles.operationContainer}>
-                        <div className={styles.operationWrapper}>
-                          <Button type="primary" htmlType="submit">
-                            查询
-                          </Button>
-                        </div>
-                        <div className={styles.operationWrapper}>
-                          <Button
-                            onClick={() => {
-                              form.resetFields();
-                              const values = form.getFieldsValue();
-                              onReset && onReset(values);
-                            }}
-                          >
-                            重置
-                          </Button>
-                        </div>
-                        {Array.isArray(operation) &&
-                          operation.map((item, index) => {
-                            return (
-                              <div key={index} className={styles.operationWrapper}>
-                                {item}
-                              </div>
-                            );
-                          })}
-                        {expandable && (
+                {showOperation &&
+                  (!mode ? (
+                    <Col
+                      {...operationCol}
+                      {...{
+                        offset: grid.offset,
+                        span: GET_SPAN(operationCol, grid.size),
+                        xxl: undefined,
+                        xl: undefined,
+                        lg: undefined,
+                        md: undefined,
+                        sm: undefined,
+                        xs: undefined,
+                      }}
+                    >
+                      <Form.Item>
+                        <div className={styles.operationContainer}>
                           <div className={styles.operationWrapper}>
-                            <span
-                              className={styles.expandButton}
+                            <Button type="primary" htmlType="submit">
+                              查询
+                            </Button>
+                          </div>
+                          <div className={styles.operationWrapper}>
+                            <Button
                               onClick={() => {
-                                setExpand(expand => !expand);
+                                form.resetFields();
+                                const values = form.getFieldsValue();
+                                onReset && onReset(values);
                               }}
                             >
-                              {expand ? '收起' : '展开'}
-                              <LegacyIcon
-                                className={classNames(
-                                  styles.expandButtonIcon,
-                                  expand && styles.expanded
-                                )}
-                                type="down"
-                              />
-                            </span>
+                              重置
+                            </Button>
                           </div>
-                        )}
-                      </div>
-                    </Form.Item>
-                  </Col>
-                ) : (
-                  showOperation &&
-                  list.length === 1 && (
-                    <Form.Item
-                      noStyle
-                      shouldUpdate={(prevValues, values) =>
-                        dependencies.some(
-                          dependency => prevValues[dependency] !== values[dependency]
-                        )
-                      }
-                    >
-                      {({ getFieldsValue }) => {
-                        const values = getFieldsValue();
-                        const uploading = dependencies.some(
-                          dependency =>
-                            values[dependency] &&
-                            values[dependency].some(({ status }) => status !== 'done')
-                        );
-                        return (
-                          <Col {...operationCol}>
-                            <Form.Item
-                              label={<span className={styles.hidden}>操作</span>}
-                              colon={false}
-                            >
-                              <div
-                                className={classNames(
-                                  styles.operationContainer,
-                                  styles.modeOperationContainer
-                                )}
-                              >
-                                <div className={styles.operationWrapper}>
-                                  {mode === 'detail' ? (
-                                    <Button
-                                      type="primary"
-                                      href={`#${editPath}`}
-                                      disabled={!hasEditAuthority}
-                                    >
-                                      编辑
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      type="primary"
-                                      htmlType="submit"
-                                      loading={submitting || uploading}
-                                    >
-                                      提交
-                                    </Button>
-                                  )}
+                          {Array.isArray(operation) &&
+                            operation.map((item, index) => {
+                              return (
+                                <div key={index} className={styles.operationWrapper}>
+                                  {item}
                                 </div>
-                                <div className={styles.operationWrapper}>
-                                  <Button href={`#${listPath}`}>返回</Button>
-                                </div>
-                                {Array.isArray(operation) &&
-                                  operation.map((item, index) => {
-                                    return (
-                                      <div key={index} className={styles.operationWrapper}>
-                                        {item}
-                                      </div>
-                                    );
-                                  })}
+                              );
+                            })}
+                          {expandable &&
+                            grid.showExpandButton && (
+                              <div className={styles.operationWrapper}>
+                                <span
+                                  className={styles.expandButton}
+                                  onClick={() => {
+                                    setExpand(expand => !expand);
+                                  }}
+                                >
+                                  {expand ? '收起' : '展开'}
+                                  <LegacyIcon
+                                    className={classNames(
+                                      styles.expandButtonIcon,
+                                      expand && styles.expanded
+                                    )}
+                                    type="down"
+                                  />
+                                </span>
                               </div>
-                            </Form.Item>
-                          </Col>
-                        );
-                      }}
-                    </Form.Item>
-                  )
-                )}
+                            )}
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  ) : (
+                    list.length === 1 && (
+                      <Form.Item
+                        noStyle
+                        shouldUpdate={(prevValues, values) =>
+                          uploadDependencies.some(
+                            dependency => prevValues[dependency] !== values[dependency]
+                          )
+                        }
+                      >
+                        {({ getFieldsValue }) => {
+                          const values = getFieldsValue();
+                          const uploading = uploadDependencies.some(
+                            dependency =>
+                              values[dependency] &&
+                              values[dependency].some(({ status }) => status !== 'done')
+                          );
+                          return (
+                            <Col {...operationCol}>
+                              <Form.Item
+                                label={<span className={styles.hidden}>操作</span>}
+                                colon={false}
+                              >
+                                <div
+                                  className={classNames(
+                                    styles.operationContainer,
+                                    styles.modeOperationContainer
+                                  )}
+                                >
+                                  <div className={styles.operationWrapper}>
+                                    {mode === 'detail' ? (
+                                      <Button
+                                        type="primary"
+                                        href={`#${editPath}`}
+                                        disabled={!hasEditAuthority}
+                                      >
+                                        编辑
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        loading={submitting || uploading}
+                                      >
+                                        提交
+                                      </Button>
+                                    )}
+                                  </div>
+                                  <div className={styles.operationWrapper}>
+                                    <Button href={`#${listPath}`}>返回</Button>
+                                  </div>
+                                  {Array.isArray(operation) &&
+                                    operation.map((item, index) => {
+                                      return (
+                                        <div key={index} className={styles.operationWrapper}>
+                                          {item}
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </Form.Item>
+                            </Col>
+                          );
+                        }}
+                      </Form.Item>
+                    )
+                  ))}
               </Row>
             </Card>
           );
         })}
-        {mode &&
-          showOperation &&
+        {showOperation &&
+          mode &&
           list.length > 1 && (
             <Form.Item
               noStyle
               shouldUpdate={(prevValues, values) =>
-                dependencies.some(dependency => prevValues[dependency] !== values[dependency])
+                uploadDependencies.some(dependency => prevValues[dependency] !== values[dependency])
               }
             >
               {({ getFieldsValue }) => {
                 const values = getFieldsValue();
-                const uploading = dependencies.some(
+                const uploading = uploadDependencies.some(
                   dependency =>
                     values[dependency] && values[dependency].some(({ status }) => status !== 'done')
                 );
