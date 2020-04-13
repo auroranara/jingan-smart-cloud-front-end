@@ -69,7 +69,7 @@ const RenderModal = Form.create()(props => {
       resetFields();
       return (
         (modalStatus === 'add' && doAdd(fieldsValue)) ||
-        (modalStatus === 'addUnder' && doAdd(fieldsValue)) ||
+        (modalStatus === 'addUnder' && doAdd({ ...fieldsValue, parentId: detail.id })) ||
         (modalStatus === 'edit' && doEdit({ ...fieldsValue, id: detail.id }))
       );
     });
@@ -113,17 +113,19 @@ const RenderModal = Form.create()(props => {
         <FormItem {...formItemCol} label="上级部门：">
           {getFieldDecorator('parentId', {
             initialValue:
-              (modalStatus === 'addUnder' && detail.id) ||
+              // (modalStatus === 'addUnder' && detail.id) ||
               (modalStatus === 'edit' && detail.parentId !== '0' && detail.parentId) ||
               '',
           })(
-            <TreeSelect
-              disabled={modalStatus === 'addUnder'}
-              dropdownStyle={{ maxHeight: 600, overflow: 'auto' }}
-              allowClear
-            >
-              {renderTreeNodes(list)}
-            </TreeSelect>
+            modalStatus === 'addUnder' ? (<span>{detail.name}</span>) : (
+              <TreeSelect
+                disabled={modalStatus === 'addUnder'}
+                dropdownStyle={{ maxHeight: 600, overflow: 'auto' }}
+                allowClear
+              >
+                {renderTreeNodes(list)}
+              </TreeSelect>
+            )
           )}
         </FormItem>
       </Form>
@@ -147,11 +149,11 @@ export default class DepartmentList extends PureComponent {
     total: 0,
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.getDepartments();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { dispatch } = this.props;
     dispatch({
       type: 'department/saveDepartment',
@@ -207,7 +209,7 @@ export default class DepartmentList extends PureComponent {
   };
 
   // 判断数组中的名称是否包含搜索内容
-  hasName(name, list, results) {
+  hasName (name, list, results) {
     for (const item of list) {
       if (item.name.includes(name)) {
         results.push(item.name);
@@ -253,8 +255,8 @@ export default class DepartmentList extends PureComponent {
   };
 
   // 打开新建弹窗,status有三个参数：add\addUnder\edit
-  handleShowModal = async (status, rows = {}) => {
-    await this.setState({
+  handleShowModal = (status, rows = {}) => {
+    this.setState({
       modalVisible: true,
       modalStatus: status,
       modalTitle:
@@ -338,7 +340,7 @@ export default class DepartmentList extends PureComponent {
   };
 
   // 渲染搜索栏
-  renderQuery() {
+  renderQuery () {
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -374,7 +376,7 @@ export default class DepartmentList extends PureComponent {
   }
 
   // 渲染部门树
-  renderTable() {
+  renderTable () {
     const {
       tableLoading,
       department: {
@@ -397,8 +399,8 @@ export default class DepartmentList extends PureComponent {
               {val.substr(index + searchName.length)}
             </span>
           ) : (
-            <span>{val}</span>
-          );
+              <span>{val}</span>
+            );
         },
       },
       {
@@ -447,13 +449,13 @@ export default class DepartmentList extends PureComponent {
             defaultExpandAllRows={true}
           />
         ) : (
-          <div style={{ textAlign: 'center' }}>暂无数据</div>
-        )}
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
+          )}
       </Card>
     );
   }
 
-  render() {
+  render () {
     const {
       department: {
         data: { list },
@@ -475,8 +477,8 @@ export default class DepartmentList extends PureComponent {
           {total}
         </span>
       ) : (
-        <span>部门总数：0</span>
-      );
+          <span>部门总数：0</span>
+        );
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={content}>
         {this.renderQuery()}
