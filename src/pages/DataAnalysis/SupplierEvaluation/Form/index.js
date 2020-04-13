@@ -87,7 +87,7 @@ const SupplierEvaluationForm = ({ route, match, location }) => {
         label: '被考核供应商',
         component: 'Select',
         dependencies: ['companyId'],
-        props({ mode, isUnit, unitId, companyId, beAssessId, supplierName }) {
+        props({ mode, isUnit, unitId, companyId }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: SUPPLIER_FIELDNAMES,
@@ -98,12 +98,6 @@ const SupplierEvaluationForm = ({ route, match, location }) => {
               companyId: key,
             },
             disabled: mode === 'edit',
-            extraList: [
-              {
-                id: beAssessId,
-                supplierName,
-              },
-            ],
             key,
           };
         },

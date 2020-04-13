@@ -114,7 +114,9 @@ const TablePage = props => {
                   }
                   disabled={!props.hasDeleteAuthority}
                 >
-                  <Link to="/">删除</Link>
+                  <Link to="/" disabled={!props.hasDeleteAuthority}>
+                    删除
+                  </Link>
                 </Popconfirm>
               ),
             }

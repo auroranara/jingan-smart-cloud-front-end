@@ -53,7 +53,7 @@
   />
   ```
 
-> 自动请求接口不开启筛选
+> 自动请求接口不开启筛选（考虑到选项被删的可能，建议设置labelInValue）
 
   ```js
   import Select from '@/jingan-components/Form/Select';
@@ -92,7 +92,7 @@
   />
   ```
 
-> 自动请求接口并开启后台筛选（后台不支持根据key值筛选）
+> 自动请求接口并开启后台筛选（后台不支持根据key值筛选，考虑到选项被删的可能，建议使用这种）
 
   ```js
   import Select from '@/jingan-components/Form/Select';

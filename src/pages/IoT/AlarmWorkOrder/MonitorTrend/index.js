@@ -45,19 +45,22 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
     );
     const namespace = code.replace(/.*\.(.*)\..*/, '$1');
     const {
-      [namespace]: { deviceDetail, monitorTrend },
+      [namespace]: { deviceDetail, monitorTrend, historyCount },
       loading: {
         effects: {
           [`${namespace}/getDeviceDetail`]: loading,
           [`${namespace}/getMonitorTrend`]: loadingMonitorTrend,
+          [`${namespace}/getHistoryCount`]: loadingHistoryCount,
         },
       },
     } = state;
     return {
       deviceDetail,
       monitorTrend,
+      historyCount,
       loading,
       loadingMonitorTrend,
+      loadingHistoryCount,
       breadcrumbList,
     };
   },
@@ -102,6 +105,21 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
           },
         });
       },
+      getHistoryCount(payload, callback) {
+        dispatch({
+          type: `${namespace}/getHistoryCount`,
+          payload: {
+            deviceId: id,
+            ...payload,
+          },
+          callback: (success, data) => {
+            if (!success) {
+              message.error('获取历史统计失败，请稍后重试或联系管理人员！');
+            }
+            callback && callback(success, data);
+          },
+        });
+      },
     };
   }
 )
@@ -121,6 +139,13 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         this.handleCurrentIndexChange('0');
       }
     });
+    this.handleRangeChange([
+      moment()
+        .startOf('day')
+        .subtract(7, 'day')
+        .add(1, 'day'),
+      moment().endOf('day'),
+    ]);
   }
 
   showVideo = () => {
@@ -177,11 +202,17 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
   };
 
   handleRangeChange = range => {
-    console.log(range);
+    const { getHistoryCount } = this.props;
+    const [queryCreateStartDate, queryCreateEndDate] = range || [];
     this.setState({
       range,
     });
-    // 这里调接口
+    getHistoryCount({
+      queryCreateStartDate:
+        queryCreateStartDate && queryCreateStartDate.format(`${DEFAULT_FORMAT} 00:00:00`),
+      queryCreateEndDate:
+        queryCreateEndDate && queryCreateEndDate.format(`${DEFAULT_FORMAT} 23:59:59`),
+    });
   };
 
   renderBasicInfo() {
@@ -254,6 +285,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
     const {
       deviceDetail: { allMonitorParam } = {},
       monitorTrend,
+      loading = false,
       loadingMonitorTrend = false,
     } = this.props;
     const { date, currentIndex } = this.state;
@@ -631,7 +663,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         activeTabKey={currentIndex}
         onTabChange={this.handleCurrentIndexChange}
       >
-        <Spin spinning={loadingMonitorTrend}>
+        <Spin spinning={!loading && loadingMonitorTrend}>
           {paramDesc && visible ? (
             <Fragment>
               <ReactEcharts key={paramDesc} option={option} />
@@ -667,6 +699,11 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
   }
 
   renderHistoryCount() {
+    const {
+      loading = false,
+      loadingHistoryCount = false,
+      historyCount: { warningCountMap, unConnectCountMap, faultCountMap } = {},
+    } = this.props;
     const { range } = this.state;
 
     return (
@@ -680,43 +717,50 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
           />
         }
       >
-        <div className={styles.historyCountSubTitle}>工单处理情况</div>
-        <div className={styles.historyCountList}>
-          {[
-            {
-              title: '报警',
-              icon: iconAlarm,
-              unprocessed: 1,
-              processed: 9,
-            },
-            {
-              title: '失联',
-              icon: iconLoss,
-              unprocessed: 1,
-              processed: 9,
-            },
-            {
-              title: '故障',
-              icon: iconFault,
-              unprocessed: 1,
-              processed: 9,
-            },
-          ].map(({ title, icon, unprocessed, processed }) => (
-            <div key={title} className={styles.historyCountItem}>
-              <img src={icon} alt="" />
-              <span>{title}</span>
-              <span>
-                <span className={styles.emphasis}>{unprocessed + processed}</span> 次
-              </span>
-              <span>
-                （待处理 / 处理中 <span className={styles.emphasis}>{unprocessed}</span> 次 ，已处理{' '}
-                <span className={styles.emphasis}>{processed}</span> 次）
-              </span>
-            </div>
-          ))}
-        </div>
-        <Divider />
-        <div className={styles.historyCountSubTitle}>监测参数报警情况</div>
+        <Spin spinning={!loading && loadingHistoryCount}>
+          <div className={styles.historyCountSubTitle}>工单处理情况</div>
+          <div className={styles.historyCountList}>
+            {[
+              {
+                title: '报警',
+                icon: iconAlarm,
+                unprocessed: warningCountMap
+                  ? (warningCountMap.waitCount || 0) + (warningCountMap.ingCount || 0)
+                  : 0,
+                processed: warningCountMap ? warningCountMap.endCount : 0,
+              },
+              {
+                title: '失联',
+                icon: iconLoss,
+                unprocessed: unConnectCountMap
+                  ? (unConnectCountMap.waitCount || 0) + (unConnectCountMap.ingCount || 0)
+                  : 0,
+                processed: unConnectCountMap ? unConnectCountMap.endCount : 0,
+              },
+              {
+                title: '故障',
+                icon: iconFault,
+                unprocessed: faultCountMap
+                  ? (faultCountMap.waitCount || 0) + (faultCountMap.ingCount || 0)
+                  : 0,
+                processed: faultCountMap ? faultCountMap.endCount : 0,
+              },
+            ].map(({ title, icon, unprocessed, processed }) => (
+              <div key={title} className={styles.historyCountItem}>
+                <img src={icon} alt="" />
+                <span>{title}</span>
+                <span>
+                  <span className={styles.emphasis}>{unprocessed + processed}</span> 次
+                </span>
+                <span>
+                  （待处理 / 处理中
+                  <span className={styles.emphasis}>{unprocessed}</span> 次 ，已处理
+                  <span className={styles.emphasis}>{processed}</span> 次）
+                </span>
+              </div>
+            ))}
+          </div>
+        </Spin>
       </Card>
     );
   }
@@ -748,7 +792,7 @@ export default class AlarmWorkOrderMonitorTrend extends Component {
         <Spin spinning={loading}>
           {this.renderBasicInfo()}
           {this.renderMonitorDataTrend()}
-          {/* {this.renderHistoryCount()} */}
+          {this.renderHistoryCount()}
           {this.renderVideo()}
         </Spin>
       </PageHeaderLayout>

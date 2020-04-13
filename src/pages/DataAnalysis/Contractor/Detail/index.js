@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { Spin, Card, Drawer } from 'antd';
 import Form from '@/jingan-components/Form';
-import { Table, Link, Badge } from '@/jingan-components/View';
+import { Table, Link, Badge, TextAreaEllipsis } from '@/jingan-components/View';
 import DueDate from '../components/DueDate';
 import { connect } from 'dva';
 import locales from '@/locales/zh-CN';
@@ -221,6 +221,7 @@ const ContractorDetail = props => {
       {
         dataIndex: 'workCompanyDesc',
         title: '施工单位简介',
+        render: value => <TextAreaEllipsis value={value} length={20} />,
       },
       {
         dataIndex: '施工队伍',
@@ -287,7 +288,6 @@ const ContractorDetail = props => {
                     planAssessDate,
                     blacklistStatus,
                   } = data;
-                  console.log(data);
                   form2.current.setFieldsValue({
                     teamBusinessGrade: teamBusinessGrade || undefined,
                     creditCode: creditCode || undefined,
@@ -386,7 +386,7 @@ const ContractorDetail = props => {
           },
           {
             name: 'enteringDate',
-            label: '进场日期',
+            label: '进厂日期',
             component: 'DatePicker',
           },
           {
@@ -560,6 +560,7 @@ const ContractorDetail = props => {
       {
         dataIndex: 'processingResult',
         title: '处理结果',
+        render: value => <TextAreaEllipsis value={value} length={20} />,
       },
     ];
     drawerTitle = '违章记录详情';

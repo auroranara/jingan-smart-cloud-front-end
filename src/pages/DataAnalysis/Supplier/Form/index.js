@@ -185,6 +185,7 @@ const SupplierForm = ({ route, match, location }) => {
         props: {
           list: YES_OR_NO,
         },
+        enableDefaultRules: true,
       },
       {
         name: 'certificateGetDate',
@@ -194,6 +195,7 @@ const SupplierForm = ({ route, match, location }) => {
         hide({ certificateExpireType }) {
           return certificateExpireType !== YES_OR_NO[0].key;
         },
+        enableDefaultRules: true,
       },
       {
         name: 'certificateExpireDate',
@@ -214,6 +216,7 @@ const SupplierForm = ({ route, match, location }) => {
         hide({ certificateExpireType }) {
           return certificateExpireType !== YES_OR_NO[0].key;
         },
+        enableDefaultRules: true,
       },
     ],
   };

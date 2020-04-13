@@ -82,7 +82,7 @@ const ContractorViolationRecordForm = ({ route, match, location }) => {
         label: '所属承包商',
         component: 'Select',
         dependencies: ['companyId'],
-        props({ mode, isUnit, unitId, companyId, contractorId, contractorName }) {
+        props({ mode, isUnit, unitId, companyId }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: CONTRACTOR_FIELDNAMES,
@@ -93,12 +93,6 @@ const ContractorViolationRecordForm = ({ route, match, location }) => {
               companyId: key,
             },
             disabled: mode === 'edit',
-            extraList: [
-              {
-                id: contractorId,
-                contractorName,
-              },
-            ],
             key,
           };
         },

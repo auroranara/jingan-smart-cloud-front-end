@@ -131,7 +131,7 @@ const ContractorConstructionForm = ({ route, match, location }) => {
         label: '所属承包商',
         component: 'Select',
         dependencies: ['companyId'],
-        props({ mode, isUnit, unitId, companyId, contractorId, contractorName }) {
+        props({ mode, isUnit, unitId, companyId }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: CONTRACTOR_FIELDNAMES,
@@ -142,12 +142,6 @@ const ContractorConstructionForm = ({ route, match, location }) => {
               companyId: key,
             },
             disabled: mode === 'edit',
-            extraList: [
-              {
-                id: contractorId,
-                contractorName,
-              },
-            ],
             key,
           };
         },
@@ -241,7 +235,7 @@ const ContractorConstructionForm = ({ route, match, location }) => {
       },
       {
         name: 'enteringDate',
-        label: '进场日期',
+        label: '进厂日期',
         component: 'DatePicker',
       },
       {

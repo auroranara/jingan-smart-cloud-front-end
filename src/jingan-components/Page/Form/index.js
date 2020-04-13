@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useRef } from 'react';
+import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { Spin } from 'antd';
 import Form from '@/jingan-components/Form';
@@ -34,12 +34,13 @@ const FormPage = props => {
   } = props;
   const form = useRef(null);
   useImperativeHandle(formRef, () => form.current);
+  const [values, setValues] = useState(initialValues);
   useEffect(
     () => {
       if (id) {
         getDetail(undefined, (success, data) => {
           if (success) {
-            form.current.setFieldsValue(initialize ? initialize(data) : data);
+            setValues(initialize ? initialize(data) : data);
           }
         });
       }
@@ -86,7 +87,7 @@ const FormPage = props => {
           submitting={submitting}
           labelCol={labelCol}
           wrapperCol={wrapperCol}
-          initialValues={initialValues}
+          initialValues={values}
         />
       </Spin>
     </PageHeaderLayout>

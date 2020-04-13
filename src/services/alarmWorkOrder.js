@@ -25,3 +25,8 @@ export async function getDeviceDetail({ id }) {
 export async function getMonitorTrend(params) {
   return request(`/acloud_new/v2/monitor/history/date?${stringify(params)}`);
 }
+
+// 获取历史统计
+export async function getHistoryCount(params) {
+  return request(`/acloud_new/v2/fireManage/process/deviceCountStatusMap?${stringify(params)}`);
+}

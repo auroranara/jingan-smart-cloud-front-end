@@ -45,7 +45,7 @@ const ContractorConstructionList = ({ route, match, location }) => {
       },
       {
         name: 'range',
-        label: '进场日期',
+        label: '进厂日期',
         component: 'RangePicker',
         props: {
           allowClear: true,
@@ -81,7 +81,7 @@ const ContractorConstructionList = ({ route, match, location }) => {
       },
       {
         dataIndex: 'enteringDate',
-        title: '进场日期',
+        title: '进厂日期',
         render: value => value && moment(value).format(FORMAT),
       },
       {

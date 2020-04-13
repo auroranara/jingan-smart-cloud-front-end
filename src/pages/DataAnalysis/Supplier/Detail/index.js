@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { Spin, Card } from 'antd';
 import Form from '@/jingan-components/Form';
-import { Table } from '@/jingan-components/View';
+import { Table, TextAreaEllipsis } from '@/jingan-components/View';
 import DueDate from '../../Contractor/components/DueDate';
 import { connect } from 'dva';
 import locales from '@/locales/zh-CN';
@@ -242,6 +242,7 @@ const SupplierDetail = props => {
     {
       dataIndex: 'assessResult',
       title: '考核结果',
+      render: value => <TextAreaEllipsis value={value} length={20} />,
     },
   ];
   return (
