@@ -1060,6 +1060,42 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/major-hazard-info/work-site',
+              code: 'majorHazardInfo.workSite',
+              name: 'workSite',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/major-hazard-info/work-site',
+                  redirect: '/major-hazard-info/work-site/list',
+                },
+                {
+                  name: 'list',
+                  path: '/major-hazard-info/work-site/list',
+                  code: 'majorHazardInfo.workSite.listView',
+                  component: './BaseInfo/WorkSite/List',
+                },
+                {
+                  name: 'add',
+                  path: '/major-hazard-info/work-site/add',
+                  code: 'majorHazardInfo.workSite.add',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+                {
+                  name: 'edit',
+                  path: '/major-hazard-info/work-site/edit/:id',
+                  code: 'majorHazardInfo.workSite.edit',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+                {
+                  name: 'view',
+                  path: '/major-hazard-info/work-site/view/:id',
+                  code: 'majorHazardInfo.workSite.view',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+              ],
+            },
           ],
         },
 
