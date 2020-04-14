@@ -2902,6 +2902,67 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'productionFacility', // 生产设施
+              code: 'facilityManagement.productionFacility',
+              path: '/facility-management/production-facility',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/facility-management/production-facility',
+                  redirect: '/facility-management/production-facility/list',
+                },
+                {
+                  name: 'list',
+                  code: 'facilityManagement.productionFacility.list',
+                  path: '/facility-management/production-facility/list',
+                  component: './FacilityManagement/ProductionFacility/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'facilityManagement.productionFacility.view',
+                  path: '/facility-management/production-facility/detail/:id',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'add',
+                  code: 'facilityManagement.productionFacility.add',
+                  path: '/facility-management/production-facility/add',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'facilityManagement.productionFacility.edit',
+                  path: '/facility-management/production-facility/edit/:id',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'checkList',
+                  code: 'facilityManagement.productionFacility.check.list',
+                  path: '/facility-management/production-facility/check/:id/list',
+                  component: './FacilityManagement/ProductionFacility/Check',
+                },
+                {
+                  name: 'checkDetail',
+                  code: 'facilityManagement.productionFacility.check.view',
+                  path: '/facility-management/production-facility/check/:id/detail/:checkId',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
+                },
+                {
+                  name: 'checkAdd',
+                  code: 'facilityManagement.productionFacility.check.add',
+                  path: '/facility-management/production-facility/check/:id/add',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
+                },
+                {
+                  name: 'checkEdit',
+                  code: 'facilityManagement.productionFacility.check.edit',
+                  path: '/facility-management/production-facility/check/:id/edit/:checkId',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
+                },
+              ],
+            },
           ],
         },
         {
