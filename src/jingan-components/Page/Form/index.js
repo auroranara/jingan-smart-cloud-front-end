@@ -215,5 +215,24 @@ export default connect(
         });
       },
     };
+  },
+  (stateProps, dispatchProps, ownProps) => ({
+    ...ownProps,
+    ...stateProps,
+    ...dispatchProps,
+  }),
+  {
+    areStatesEqual: () => false,
+    areOwnPropsEqual: () => false,
+    areStatePropsEqual: () => false,
+    areMergedPropsEqual: (props, nextProps) => {
+      return (
+        props.detail === nextProps.detail &&
+        props.loading === nextProps.loading &&
+        props.submitting === nextProps.submitting &&
+        props.mode === nextProps.mode &&
+        props.children === nextProps.children
+      );
+    },
   }
 )(FormPage);

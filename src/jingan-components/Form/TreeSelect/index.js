@@ -65,7 +65,7 @@ const FormTreeSelect = ({
   const async = showSearch && !filterTreeNode;
   const multiple = originalMultiple || treeCheckable || false;
   useEffect(() => {
-    if (!labelInValue && value && (!multiple || value.length)) {
+    if (!labelInValue && value && (!multiple || value.length) && !data) {
       const callback = (success, list) => {
         if (success) {
           const getItemByKey = (list, key) => {

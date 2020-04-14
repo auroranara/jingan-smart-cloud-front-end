@@ -5,8 +5,16 @@ import { CATEGORIES, TYPES, COMPANY_FIELDNAMES, COMPANY_MAPPER, FORMAT } from '.
 import { phoneReg, emailReg } from '@/utils/validate';
 // import styles from './index.less';
 
-const ContractorForm = ({ route, match, location }) => {
+const ContractorForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,

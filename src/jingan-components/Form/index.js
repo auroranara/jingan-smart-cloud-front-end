@@ -143,13 +143,11 @@ const FormIndex = forwardRef(
   ) => {
     // 创建form的引用
     const [form] = Form.useForm();
-    // 创建key值
-    const [key, setKey] = useState(1);
     useEffect(
       () => {
         // 这么写是有问题的，等学会如何比较props以后再来改
         if (initialValues) {
-          setKey(key => key + 1);
+          form.resetFields(); // 新版的reset似乎会让所有控件重新渲染
         }
       },
       [initialValues]
@@ -209,7 +207,6 @@ const FormIndex = forwardRef(
     }, []);
     return (
       <Form
-        key={key}
         className={classNames(styles.form, className)}
         onValuesChange={
           !mode

@@ -7,8 +7,16 @@ import { phoneReg, postcodeReg } from '@/utils/validate';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
-const SupplierForm = ({ route, match, location }) => {
+const SupplierForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,

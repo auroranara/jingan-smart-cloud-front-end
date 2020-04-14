@@ -44,7 +44,7 @@ const FormSelect = ({
   const async = showSearch && !filterOption;
   const multiple = originalMode === 'multiple' || originalMode === 'tags';
   useEffect(() => {
-    if (!labelInValue && value && (!multiple || value.length)) {
+    if (!labelInValue && value && (!multiple || value.length) && !data) {
       const callback = (success, list) => {
         if (success) {
           const data = (multiple ? value : [value]).map(key => {

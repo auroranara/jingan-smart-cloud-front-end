@@ -44,7 +44,7 @@ const FormRadio = ({
       </Radio.Group>
     );
   } else {
-    const item = list && (list.find(item => item[k] === value) || {});
+    const item = (list || []).find(item => item[k] === value);
     return item ? (
       item[s] ? (
         <Badge fieldNames={map} list={list} value={value} />
