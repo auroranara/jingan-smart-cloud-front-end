@@ -1060,6 +1060,7 @@ module.exports = env => {
                 },
               ],
             },
+            // 生产场所
             {
               path: '/major-hazard-info/work-site',
               code: 'majorHazardInfo.workSite',

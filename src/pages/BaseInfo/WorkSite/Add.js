@@ -546,7 +546,7 @@ export default class StorageEdit extends PureComponent {
               <Button onClick={e => router.push(LIST_URL)} style={{ marginRight: 20 }}>
                 取消
             </Button>
-              {isEdit && (
+              {(isEdit || isAdd) && (
                 <Button type="primary" htmlType="submit">
                   提交
                 </Button>
