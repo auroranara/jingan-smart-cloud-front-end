@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { Spin, Card } from 'antd';
 import Form from '@/jingan-components/Form';
-import { Table } from '@/jingan-components/View';
+import { Table, TextAreaEllipsis } from '@/jingan-components/View';
 import DueDate from '../../Contractor/components/DueDate';
 import { connect } from 'dva';
 import locales from '@/locales/zh-CN';
@@ -11,6 +11,7 @@ import { FORMAT, STATUSES, YES_OR_NO } from '../config';
 import { getPageSize, setPageSize } from '@/utils/utils';
 import { isNumber } from '@/utils/utils';
 import styles from './index.less';
+import { useState } from 'react';
 
 const SupplierDetail = props => {
   const {
@@ -28,7 +29,7 @@ const SupplierDetail = props => {
     getEvaluationList,
     loadingList,
   } = props;
-  const form = useRef(null);
+  const [initialValues, setInitialValues] = useState(undefined);
   useEffect(
     () => {
       if (id) {
@@ -51,7 +52,7 @@ const SupplierDetail = props => {
               certificateGetDate,
               certificateExpireDate,
             } = data;
-            form.current.setFieldsValue({
+            setInitialValues({
               supplierName: supplierName || undefined,
               contractorCategory: contractorCategory || undefined,
               contractorType: contractorType || undefined,
@@ -242,16 +243,24 @@ const SupplierDetail = props => {
     {
       dataIndex: 'assessResult',
       title: '考核结果',
+      render: value => <TextAreaEllipsis value={value} length={20} />,
     },
   ];
   return (
     <PageHeaderLayout
+      key={id}
       title={breadcrumbList[breadcrumbList.length - 1].title}
       breadcrumbList={breadcrumbList}
       content={!isUnit && companyName}
     >
       <Spin spinning={loading}>
-        <Form ref={form} mode={mode} fields={fields} showOperation={false} params={detail} />
+        <Form
+          initialValues={initialValues}
+          mode={mode}
+          fields={fields}
+          showOperation={false}
+          params={detail}
+        />
         <Card className={styles.card} title="考核记录">
           <Table
             showCard={false}

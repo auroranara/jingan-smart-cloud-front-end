@@ -36,121 +36,57 @@ const FormSelect = ({
   initializeParams,
   searchParams,
   separator = ',',
-  extraList,
+  data: initialData,
   ...rest
 }) => {
-  const [data, setData] = useState(undefined);
-  const async = showSearch && !filterOption;
+  const [data, setData] = useState(initialData);
   const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
+  const async = showSearch && !filterOption;
+  const multiple = originalMode === 'multiple' || originalMode === 'tags';
   useEffect(() => {
-    if (
-      !async ||
-      labelInValue ||
-      !value ||
-      ((originalMode === 'multiple' || originalMode === 'tags') && !value.length)
-    ) {
+    if (!labelInValue && value && (!multiple || value.length) && !data) {
+      const callback = (success, list) => {
+        if (success) {
+          const data = (multiple ? value : [value]).map(key => {
+            const item = list.find(item => item[k] === key);
+            return item
+              ? {
+                  key,
+                  value: key,
+                  label: item[v],
+                }
+              : {
+                  key,
+                  value: key,
+                  label: key,
+                };
+          });
+          setData(multiple ? data : data[0]);
+        }
+      };
+      getList
+        ? getList(
+            async &&
+              (typeof initializeParams === 'function'
+                ? initializeParams(value)
+                : {
+                    [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
+                  }),
+            callback
+          )
+        : callback(true, list || []);
+      // 这里是否需要再调用一次是个问题
+      async && getList && getList();
+    } else {
       getList && getList();
     }
   }, []);
-  useEffect(
-    () => {
-      // 当开启后台筛选且labelInValue为false时，根据value进行初始化（需要区分模式是多选还是单选）
-      if (async && !labelInValue && value) {
-        if (originalMode === 'multiple' || originalMode === 'tags') {
-          if (
-            value.length &&
-            (!data || !data.length || value.some(vk => !data.find(({ key }) => key === vk)))
-          ) {
-            getList
-              ? getList(
-                  {
-                    pageSize: value.length,
-                    ...(typeof initializeParams === 'function'
-                      ? initializeParams(value)
-                      : {
-                          [initializeParams || `${k}s`]: value.join(','),
-                        }),
-                  },
-                  (success, list) => {
-                    if (success) {
-                      const array = list.concat(extraList || []);
-                      setData(
-                        value.map(vk => {
-                          const item = array.find(item => item[k] === vk);
-                          return item
-                            ? {
-                                key: item[k],
-                                value: item[k],
-                                label: item[v],
-                              }
-                            : {
-                                key: vk,
-                                value: vk,
-                                label: vk,
-                              };
-                        })
-                      );
-                    }
-                  }
-                )
-              : setData(
-                  value.map(vk => ({
-                    key: vk,
-                    value: vk,
-                    label: vk,
-                  }))
-                );
-            getList && getList();
-          }
-        } else if (!data || data.key !== value) {
-          getList
-            ? getList(
-                {
-                  pageSize: 1,
-                  ...(typeof initializeParams === 'function'
-                    ? initializeParams(value)
-                    : {
-                        [initializeParams || k]: value,
-                      }),
-                },
-                (success, list) => {
-                  if (success) {
-                    const array = list.concat(extraList || []);
-                    const item = array.find(item => item[k] === value);
-                    setData(
-                      item
-                        ? {
-                            key: item[k],
-                            value: item[k],
-                            label: item[v],
-                          }
-                        : {
-                            key: value,
-                            value,
-                            label: value,
-                          }
-                    );
-                  }
-                }
-              )
-            : setData({
-                key: value,
-                value,
-                label: value,
-              });
-          getList && getList();
-        }
-      }
-    },
-    [value]
-  );
   if (mode !== 'detail') {
-    const debouncedGetList = getList && debounce(getList, 300);
     // 根据输入值进行后台筛选
-    const handleSearch = searchValue => {
+    const handleSearch = debounce(searchValue => {
       const value = searchValue && searchValue.trim();
-      debouncedGetList &&
-        debouncedGetList(
+      getList &&
+        getList(
           typeof searchParams === 'function'
             ? searchParams(value)
             : {
@@ -158,49 +94,25 @@ const FormSelect = ({
               }
         );
       onSearch && onSearch(value);
-    };
-    // 当开启后台筛选且labelInValue为false时，对选中的源数据进行保存，并对value进行处理（需要区分模式是多选还是单选）
-    const handleChange = (nextValue, option) => {
-      if (originalMode === 'multiple' || originalMode === 'tags') {
-        if (nextValue && nextValue.length) {
-          if (nextValue.length > (value || []).length) {
-            const vk = nextValue[nextValue.length - 1].key;
-            const item = option[option.length - 1].data || { [k]: vk, [v]: vk };
-            setData((data = []) => data.concat({ key: item[k], value: item[k], label: item[v] }));
-            onChange && onChange(nextValue.map(({ key }) => key), option);
-          } else {
-            const values = nextValue.map(({ key }) => key);
-            setData((data = []) => data.filter(({ key }) => values.includes(key)));
-            onChange && onChange(values, option);
-          }
-        } else {
-          setData(undefined);
-          onChange && onChange(undefined, option);
-        }
-      } else {
-        if (nextValue) {
-          const item = option.data;
-          setData({ key: item[k], value: item[k], label: item[v] });
-          onChange && onChange(nextValue.key, option);
-        } else {
-          setData(undefined);
-          onChange && onChange(undefined, option);
-        }
-      }
+    }, 300);
+    // 当labelInValue为false时，对选中的源数据进行保存，并对value进行处理（需要区分模式是多选还是单选）
+    const handleChange = (value, option) => {
+      setData(value);
+      onChange && onChange(value && (multiple ? value.map(({ key }) => key) : value.key), option);
     };
     return (
       <Select
         className={classNames(styles.container, className)}
         placeholder={placeholder}
-        value={async && !labelInValue ? data : value}
+        value={!labelInValue ? data : value}
         showArrow={showArrow}
         showSearch={showSearch}
-        labelInValue={async || labelInValue}
+        labelInValue
         notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
         optionFilterProp={optionFilterProp}
         filterOption={filterOption}
         onSearch={async ? handleSearch : onSearch}
-        onChange={async && !labelInValue ? handleChange : onChange}
+        onChange={!labelInValue ? handleChange : onChange}
         mode={originalMode}
         {...rest}
       >
@@ -212,37 +124,9 @@ const FormSelect = ({
       </Select>
     );
   } else {
-    let label;
-    if (labelInValue) {
-      if (originalMode === 'multiple' || originalMode === 'tags') {
-        label = value && value.map(({ label }) => label).join(separator);
-      } else {
-        label = value && value.label;
-      }
-    } else {
-      if (async) {
-        if (originalMode === 'multiple' || originalMode === 'tags') {
-          label = data && data.map(({ label }) => label).join(separator);
-        } else {
-          label = data && data.label;
-        }
-      } else {
-        if (originalMode === 'multiple' || originalMode === 'tags') {
-          label =
-            value &&
-            value
-              .map(
-                vk =>
-                  ((list || []).concat(extraList || []).find(item => item[k] === vk) || {})[v] || vk
-              )
-              .join(separator);
-        } else {
-          label =
-            ((list || []).concat(extraList || []).find(item => item[k] === value) || {})[v] ||
-            value;
-        }
-      }
-    }
+    const values = labelInValue ? value : data;
+    const label =
+      values && (multiple ? values.map(({ label }) => label).join(separator) : values.label);
     return label ? (
       ellipsis ? (
         <Ellipsis lines={1} tooltip {...ellipsis}>

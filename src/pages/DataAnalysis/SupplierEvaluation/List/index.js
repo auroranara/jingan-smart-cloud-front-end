@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
+import { TextAreaEllipsis } from '@/jingan-components/View';
 import moment from 'moment';
 import { FORMAT } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
@@ -103,6 +104,7 @@ const SupplierEvaluationList = ({ route, match, location }) => {
       {
         dataIndex: 'assessResult',
         title: '考核结果',
+        render: value => <TextAreaEllipsis value={value} length={20} />,
       },
       {
         dataIndex: '操作',

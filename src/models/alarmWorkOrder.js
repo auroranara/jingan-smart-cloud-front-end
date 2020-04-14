@@ -4,6 +4,7 @@ import {
   getMessageList,
   getDeviceDetail,
   getMonitorTrend,
+  getHistoryCount,
 } from '@/services/alarmWorkOrder';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -17,6 +18,7 @@ export default {
     messageList: {},
     deviceDetail: {},
     monitorTrend: [],
+    historyCount: {},
   },
 
   effects: {
@@ -111,9 +113,26 @@ export default {
       const blob = '';
       fileDownload(blob, `报警工单_${moment().format('YYYYMMDD')}.xlsx`);
     },
+    // 获取历史统计
+    *getHistoryCount({ payload, callback }, { call, put }) {
+      const response = yield call(getHistoryCount, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const historyCount = data;
+        yield put({
+          type: 'save',
+          payload: {
+            historyCount,
+          },
+        });
+        callback && callback(true, historyCount);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
   },
 
   reducers: {
     save: (state, { payload }) => ({ ...state, ...payload }),
   },
-}
+};

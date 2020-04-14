@@ -136,12 +136,22 @@ const FormIndex = forwardRef(
       onFinish,
       submitting,
       showOperation = true,
+      initialValues,
       ...rest
     },
     ref
   ) => {
     // 创建form的引用
     const [form] = Form.useForm();
+    useEffect(
+      () => {
+        // 这么写是有问题的，等学会如何比较props以后再来改
+        if (initialValues) {
+          form.resetFields(); // 新版的reset似乎会让所有控件重新渲染
+        }
+      },
+      [initialValues]
+    );
     // 将form的引用暴露到父组件
     useImperativeHandle(ref, () => form);
     // 创建是否展开的变量
@@ -231,6 +241,7 @@ const FormIndex = forwardRef(
         }}
         form={form}
         scrollToFirstError
+        initialValues={initialValues}
         {...rest}
       >
         {list.map(({ key, title, fields, className, ...rest }, index) => {

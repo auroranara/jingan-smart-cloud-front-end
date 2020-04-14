@@ -4,6 +4,7 @@ import Ellipsis from '@/components/Ellipsis';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import { connect } from 'dva';
 import classNames from 'classnames';
+import debounce from 'lodash/debounce';
 import styles from './index.less';
 const { TreeNode } = TreeSelect;
 
@@ -18,15 +19,10 @@ const FIELDNAMES = {
   isLeaf: 'isLeaf',
 };
 
-/**
- * 多选
- * labelInValue
- * 异步加载
- */
-
 const FormTreeSelect = ({
   className,
   value,
+  onChange,
   mode = 'add',
   fieldNames,
   list = [],
@@ -44,10 +40,18 @@ const FormTreeSelect = ({
   loadData,
   loadParams,
   labelInValue,
+  data: initialData,
+  multiple: originalMultiple,
+  treeCheckable,
+  showCheckedStrategy,
+  onSearch,
+  initializeParams,
+  searchParams,
+  separator = ',',
   ...rest
 }) => {
   const [hackKey, setHackKey] = useState(1);
-  const [data, setData] = useState(undefined);
+  const [data, setData] = useState(initialData);
   const {
     key: k,
     value: v,
@@ -59,16 +63,85 @@ const FormTreeSelect = ({
     checkable,
   } = { ...FIELDNAMES, ...fieldNames };
   const async = showSearch && !filterTreeNode;
+  const multiple = originalMultiple || treeCheckable || false;
   useEffect(() => {
-    getList && getList();
+    if (!labelInValue && value && (!multiple || value.length) && !data) {
+      const callback = (success, list) => {
+        if (success) {
+          const getItemByKey = (list, key) => {
+            const length = (list && list.length) || 0;
+            for (let i = 0; i < length; i++) {
+              if (list[i][k] === key) {
+                return list[i];
+              } else {
+                const item = getItemByKey(list[i][c], key);
+                if (item) {
+                  return item;
+                }
+              }
+            }
+            return;
+          };
+          const data = (multiple ? value : [value]).map(key => {
+            const item = getItemByKey(list, key);
+            return item
+              ? {
+                  key,
+                  value: key,
+                  label: item[v],
+                }
+              : {
+                  key,
+                  value: key,
+                  label: key,
+                };
+          });
+          setData(multiple ? data : data[0]);
+        }
+      };
+      getList
+        ? getList(
+            async &&
+              (typeof initializeParams === 'function'
+                ? initializeParams(value)
+                : {
+                    [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
+                  }),
+            callback
+          )
+        : callback(true, list || []);
+      async && getList && getList();
+    } else {
+      getList && getList();
+    }
   }, []);
   useEffect(
     () => {
-      setHackKey(hackKey => hackKey + 1);
+      // 这样写是有问题的，以后改
+      if (list) {
+        setHackKey(hackKey => hackKey + 1);
+      }
     },
     [list]
   );
   if (mode !== 'detail') {
+    const handleChange = (value, label, extra) => {
+      setData(value);
+      onChange &&
+        onChange(value && (multiple ? value.map(({ key }) => key) : value.key), label, extra);
+    };
+    const handleSearch = debounce(searchValue => {
+      const value = searchValue && searchValue.trim();
+      getList &&
+        getList(
+          typeof searchParams === 'function'
+            ? searchParams(value)
+            : {
+                [searchParams || v]: value,
+              }
+        );
+      onSearch && onSearch(value);
+    }, 300);
     const handleLoadData = node => {
       return new Promise((resolve, reject) => {
         getList &&
@@ -116,8 +189,8 @@ const FormTreeSelect = ({
         key={hackKey}
         className={classNames(styles.container, className)}
         placeholder={placeholder}
-        value={async && !labelInValue ? data : value}
-        labelInValue={async || labelInValue}
+        value={!labelInValue ? data : value}
+        labelInValue
         notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
         treeNodeFilterProp={treeNodeFilterProp}
         filterTreeNode={filterTreeNode}
@@ -125,27 +198,18 @@ const FormTreeSelect = ({
         showArrow={showArrow}
         showSearch={showSearch}
         loadData={loadData ? handleLoadData : undefined}
+        onChange={!labelInValue ? handleChange : onChange}
+        onSearch={async ? handleSearch : onSearch}
+        showCheckedStrategy={TreeSelect[showCheckedStrategy]}
         {...rest}
       >
-        {renderTreeNodes(list)}
+        {renderTreeNodes(!loading && list ? list : [])}
       </TreeSelect>
     );
   } else {
-    const getValueByKey = (list, key) => {
-      const length = (list && list.length) || 0;
-      for (let i = 0; i < length; i++) {
-        if (list[i][k] === key) {
-          return list[i][v];
-        } else {
-          const value = getValueByKey(list[i][c], key);
-          if (value) {
-            return value;
-          }
-        }
-      }
-      return;
-    };
-    const label = getValueByKey(list, value);
+    const values = labelInValue ? value : data;
+    const label =
+      values && (multiple ? values.map(({ label }) => label).join(separator) : values.label);
     return label ? (
       ellipsis ? (
         <Ellipsis lines={1} tooltip {...ellipsis}>
@@ -160,13 +224,17 @@ const FormTreeSelect = ({
   }
 };
 
-FormTreeSelect.getRules = ({ label, labelInValue }) => [
-  {
-    type: labelInValue ? 'object' : 'string',
-    required: true,
-    message: `${label || ''}不能为空`,
-  },
-];
+FormTreeSelect.getRules = ({ label, labelInValue, multiple: originalMultiple, treeCheckable }) => {
+  const multiple = originalMultiple || treeCheckable || false;
+  return [
+    {
+      type: multiple ? 'array' : labelInValue ? 'object' : 'string',
+      min: multiple ? 1 : undefined,
+      required: true,
+      message: `${label || ''}不能为空`,
+    },
+  ];
+};
 
 export default connect(
   (state, { mapper, list, loading }) => {

@@ -7,8 +7,16 @@ import { CONTRACTOR_FIELDNAMES, CONTRACTOR_MAPPER } from '../../ContractorConstr
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
-const ContractorEvaluationForm = ({ route, match, location }) => {
+const ContractorEvaluationForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,
@@ -113,7 +121,7 @@ const ContractorEvaluationForm = ({ route, match, location }) => {
         label: '被考核承包商',
         component: 'Select',
         dependencies: ['companyId'],
-        props({ mode, isUnit, unitId, companyId, beAssessId, contractorName }) {
+        props({ mode, isUnit, unitId, companyId }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: CONTRACTOR_FIELDNAMES,
@@ -124,13 +132,6 @@ const ContractorEvaluationForm = ({ route, match, location }) => {
               companyId: key,
             },
             disabled: mode === 'edit',
-            extraList: [
-              // hack处理，防止选项被删除
-              {
-                id: beAssessId,
-                contractorName,
-              },
-            ],
             key,
           };
         },
@@ -164,7 +165,7 @@ const ContractorEvaluationForm = ({ route, match, location }) => {
         label: '考核部门',
         component: 'TreeSelect',
         dependencies: ['companyId'],
-        props({ isUnit, unitId, companyId }) {
+        props({ isUnit, unitId, companyId, assessDepartmentId, assessDepartmentName, mode }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: DEPARTMENT_FIELDNAMES,
@@ -173,6 +174,14 @@ const ContractorEvaluationForm = ({ route, match, location }) => {
               companyId: key,
             },
             key, // 注意这里很关键，由于Select和TreeSelect的限制，在params发生变化时不会触发更新，所以通过key来强制渲染
+            data:
+              mode !== 'add'
+                ? {
+                    key: assessDepartmentId,
+                    value: assessDepartmentId,
+                    label: assessDepartmentName,
+                  }
+                : undefined,
           };
         },
         hide({ isUnit, companyId }) {

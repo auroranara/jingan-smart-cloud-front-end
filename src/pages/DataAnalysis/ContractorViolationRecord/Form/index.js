@@ -6,8 +6,16 @@ import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 import { CONTRACTOR_FIELDNAMES, CONTRACTOR_MAPPER } from '../../ContractorConstruction/config';
 // import styles from './index.less';
 
-const ContractorViolationRecordForm = ({ route, match, location }) => {
+const ContractorViolationRecordForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,
@@ -82,7 +90,7 @@ const ContractorViolationRecordForm = ({ route, match, location }) => {
         label: '所属承包商',
         component: 'Select',
         dependencies: ['companyId'],
-        props({ mode, isUnit, unitId, companyId, contractorId, contractorName }) {
+        props({ mode, isUnit, unitId, companyId }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: CONTRACTOR_FIELDNAMES,
@@ -93,12 +101,6 @@ const ContractorViolationRecordForm = ({ route, match, location }) => {
               companyId: key,
             },
             disabled: mode === 'edit',
-            extraList: [
-              {
-                id: contractorId,
-                contractorName,
-              },
-            ],
             key,
           };
         },

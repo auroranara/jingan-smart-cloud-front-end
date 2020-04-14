@@ -3,7 +3,7 @@ import { Tooltip } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './index.less';
 
-export default function TextAreaEllipsis({ value, length }) {
+export default function TextAreaEllipsis({ value, length, emtpy = null }) {
   return value ? (
     <Tooltip
       title={
@@ -19,5 +19,7 @@ export default function TextAreaEllipsis({ value, length }) {
         {value}
       </div>
     </Tooltip>
-  ) : null;
+  ) : (
+    emtpy
+  );
 }

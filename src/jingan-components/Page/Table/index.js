@@ -114,7 +114,9 @@ const TablePage = props => {
                   }
                   disabled={!props.hasDeleteAuthority}
                 >
-                  <Link to="/">删除</Link>
+                  <Link to="/" disabled={!props.hasDeleteAuthority}>
+                    删除
+                  </Link>
                 </Popconfirm>
               ),
             }
@@ -354,5 +356,22 @@ export default connect(
         });
       },
     };
+  },
+  (stateProps, dispatchProps, ownProps) => ({
+    ...ownProps,
+    ...stateProps,
+    ...dispatchProps,
+  }),
+  {
+    areStatesEqual: () => false,
+    areOwnPropsEqual: () => false,
+    areStatePropsEqual: () => false,
+    areMergedPropsEqual: (props, nextProps) => {
+      return (
+        props.list === nextProps.list &&
+        props.loading === nextProps.loading &&
+        props.children === nextProps.children
+      );
+    },
   }
 )(TablePage);

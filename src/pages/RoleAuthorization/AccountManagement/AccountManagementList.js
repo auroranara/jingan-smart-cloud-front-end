@@ -611,76 +611,79 @@ export default class accountManagementList extends React.Component {
                 </FormItem>
               </Col>
             )}
-            {!isUnitUser && unitTypeChecked !== GOV && (
-              <Col {...defaultSpan}>
-                <FormItem label="所属单位">
-                  {getFieldDecorator('unitId', {
-                    rules: [
-                      {
-                        whitespace: true,
-                        transform: value => value && value.label,
-                      },
-                    ],
-                  })(
-                    // <AutoComplete
-                    //   allowClear
-                    //   labelInValue
-                    //   mode="combobox"
-                    //   optionLabelProp="children"
-                    //   placeholder="请选择所属单位"
-                    //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    //   onChange={this.handleUnitChange}
-                    //   onSelect={this.handleUnitSelect}
-                    //   onSearch={this.handleUnitSearch}
-                    //   onBlur={this.handleUnitIdBlur}
-                    //   filterOption={false}
-                    //   style={{ width: 230 }}
-                    // >
-                    //   {unitIds.map(item => (
-                    //     <Option value={item.id} key={item.id}>
-                    //       {item.name}
-                    //     </Option>
-                    //   ))}
-                    // </AutoComplete>
-                  <Select
-                    allowClear
-                    showSearch
-                    labelInValue
-                    showArrow={false}
-                    placeholder="请选择所属单位"
-                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    onChange={this.handleUnitChange}
-                    onSelect={this.handleUnitSelect}
-                    onSearch={this.handleUnitSearch}
-                    // onBlur={this.handleUnitIdBlur}
-                    // style={{ width: 230 }}
-                  >
-                    {unitIds.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.name}
-                      </Option>
-                    ))}
-                  </Select>
-                  )}
-                </FormItem>
-              </Col>
-            )}
-            {!isUnitUser && unitTypeChecked === GOV && (
-              <Col {...defaultSpan}>
-                <FormItem label="所属单位">
-                  {getFieldDecorator('unitId')(
-                    <TreeSelect
-                      allowClear
-                      placeholder="请选择所属单位"
-                      onChange={this.handleGovChange}
-                      // style={{ width: 230 }}
-                    >
-                      {this.generateTreeNode(unitIds)}
-                    </TreeSelect>
-                  )}
-                </FormItem>
-              </Col>
-            )}
+            {!isUnitUser &&
+              unitTypeChecked !== GOV && (
+                <Col {...defaultSpan}>
+                  <FormItem label="所属单位">
+                    {getFieldDecorator('unitId', {
+                      rules: [
+                        {
+                          whitespace: true,
+                          transform: value => value && value.label,
+                        },
+                      ],
+                    })(
+                      // <AutoComplete
+                      //   allowClear
+                      //   labelInValue
+                      //   mode="combobox"
+                      //   optionLabelProp="children"
+                      //   placeholder="请选择所属单位"
+                      //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      //   onChange={this.handleUnitChange}
+                      //   onSelect={this.handleUnitSelect}
+                      //   onSearch={this.handleUnitSearch}
+                      //   onBlur={this.handleUnitIdBlur}
+                      //   filterOption={false}
+                      //   style={{ width: 230 }}
+                      // >
+                      //   {unitIds.map(item => (
+                      //     <Option value={item.id} key={item.id}>
+                      //       {item.name}
+                      //     </Option>
+                      //   ))}
+                      // </AutoComplete>
+                      <Select
+                        allowClear
+                        showSearch
+                        labelInValue
+                        showArrow={false}
+                        filterOption={false}
+                        placeholder="请选择所属单位"
+                        notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                        onChange={this.handleUnitChange}
+                        onSelect={this.handleUnitSelect}
+                        onSearch={this.handleUnitSearch}
+                        // onBlur={this.handleUnitIdBlur}
+                        // style={{ width: 230 }}
+                      >
+                        {unitIds.map(item => (
+                          <Option value={item.id} key={item.id}>
+                            {item.name}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              )}
+            {!isUnitUser &&
+              unitTypeChecked === GOV && (
+                <Col {...defaultSpan}>
+                  <FormItem label="所属单位">
+                    {getFieldDecorator('unitId')(
+                      <TreeSelect
+                        allowClear
+                        placeholder="请选择所属单位"
+                        onChange={this.handleGovChange}
+                        // style={{ width: 230 }}
+                      >
+                        {this.generateTreeNode(unitIds)}
+                      </TreeSelect>
+                    )}
+                  </FormItem>
+                </Col>
+              )}
             <Col {...defaultSpan}>
               <FormItem label="角色">
                 {getFieldDecorator('roleId')(
@@ -719,7 +722,9 @@ export default class accountManagementList extends React.Component {
                 <Button type="primary" onClick={this.handleClickToQuery} className={styles.btn}>
                   查询
                 </Button>
-                <Button onClick={this.handleClickToReset} className={styles.btn}>重置</Button>
+                <Button onClick={this.handleClickToReset} className={styles.btn}>
+                  重置
+                </Button>
                 <AuthButton
                   code={codesMap.account.add}
                   type="primary"
@@ -864,7 +869,10 @@ export default class accountManagementList extends React.Component {
                           </Col>
                         )}
                         <Col span={2}>
-                          <LegacyIcon type="login" onClick={this.genHandleScreenModalOpen(users[0])} />
+                          <LegacyIcon
+                            type="login"
+                            onClick={this.genHandleScreenModalOpen(users[0])}
+                          />
                         </Col>
                       </Row>
                     ) : (

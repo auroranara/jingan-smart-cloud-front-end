@@ -7,8 +7,16 @@ import { phoneReg, postcodeReg } from '@/utils/validate';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
-const SupplierForm = ({ route, match, location }) => {
+const SupplierForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,
@@ -185,6 +193,7 @@ const SupplierForm = ({ route, match, location }) => {
         props: {
           list: YES_OR_NO,
         },
+        enableDefaultRules: true,
       },
       {
         name: 'certificateGetDate',
@@ -194,6 +203,7 @@ const SupplierForm = ({ route, match, location }) => {
         hide({ certificateExpireType }) {
           return certificateExpireType !== YES_OR_NO[0].key;
         },
+        enableDefaultRules: true,
       },
       {
         name: 'certificateExpireDate',
@@ -214,6 +224,7 @@ const SupplierForm = ({ route, match, location }) => {
         hide({ certificateExpireType }) {
           return certificateExpireType !== YES_OR_NO[0].key;
         },
+        enableDefaultRules: true,
       },
     ],
   };

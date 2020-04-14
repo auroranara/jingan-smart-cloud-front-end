@@ -203,6 +203,7 @@ export default class CustomForm extends PureComponent {
       mode,
       // 布局
       layout,
+      showButtons = true,
     } = this.props;
 
     return (
@@ -216,11 +217,11 @@ export default class CustomForm extends PureComponent {
               <Card className={styles.card} title={title} bordered={false} key={key || title}>
                 <Row gutter={gutter}>
                   {this.renderFields(list)}
-                  {fields.length === 1 && this.renderButtons()}
+                  {fields.length === 1 && showButtons && this.renderButtons()}
                 </Row>
               </Card>
             ))}
-            {fields.length > 1 && (
+            {fields.length > 1 && showButtons && (
               <Card className={styles.card} bordered={false}>
                 <Row gutter={gutter}>{this.renderButtons()}</Row>
               </Card>
@@ -229,7 +230,7 @@ export default class CustomForm extends PureComponent {
         ) : (
           <Row gutter={gutter}>
             {this.renderFields(fields)}
-            {this.renderButtons()}
+            {showButtons && this.renderButtons()}
           </Row>
         )}
       </Form>
