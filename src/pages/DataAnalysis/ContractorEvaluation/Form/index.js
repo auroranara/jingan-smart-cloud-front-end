@@ -175,7 +175,7 @@ const ContractorEvaluationForm = ({
             },
             key, // 注意这里很关键，由于Select和TreeSelect的限制，在params发生变化时不会触发更新，所以通过key来强制渲染
             data:
-              mode !== 'add'
+              mode !== 'add' && assessDepartmentId
                 ? {
                     key: assessDepartmentId,
                     value: assessDepartmentId,

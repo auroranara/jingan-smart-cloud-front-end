@@ -126,9 +126,25 @@ const FormTreeSelect = ({
   );
   if (mode !== 'detail') {
     const handleChange = (value, label, extra) => {
-      setData(value);
-      onChange &&
-        onChange(value && (multiple ? value.map(({ key }) => key) : value.key), label, extra);
+      if (labelInValue) {
+        onChange &&
+          onChange(
+            value &&
+              (multiple
+                ? value.map(item => ({ ...item, key: item.value }))
+                : { ...value, key: value.value }),
+            label,
+            extra
+          );
+      } else {
+        setData(value);
+        onChange &&
+          onChange(
+            value && (multiple ? value.map(({ value }) => value) : value.value),
+            label,
+            extra
+          );
+      }
     };
     const handleSearch = debounce(searchValue => {
       const value = searchValue && searchValue.trim();
@@ -198,7 +214,7 @@ const FormTreeSelect = ({
         showArrow={showArrow}
         showSearch={showSearch}
         loadData={loadData ? handleLoadData : undefined}
-        onChange={!labelInValue ? handleChange : onChange}
+        onChange={handleChange}
         onSearch={async ? handleSearch : onSearch}
         showCheckedStrategy={TreeSelect[showCheckedStrategy]}
         {...rest}

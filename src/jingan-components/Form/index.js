@@ -15,6 +15,7 @@ import Radio from './Radio';
 import Map from './Map';
 import AMap from './AMap';
 import InputNumber from './InputNumber';
+import PersonModal from './PersonModal';
 import classNames from 'classnames';
 import styles from './index.less';
 
@@ -109,6 +110,7 @@ const componentReference = {
   Map,
   AMap,
   InputNumber,
+  PersonModal,
 };
 
 /**
@@ -143,10 +145,12 @@ const FormIndex = forwardRef(
   ) => {
     // 创建form的引用
     const [form] = Form.useForm();
+    const [prevInitialValues, setPrevInitialValues] = useState(initialValues);
     useEffect(
       () => {
-        // 这么写是有问题的，等学会如何比较props以后再来改
-        if (initialValues) {
+        // 暂时直接比较，以后再来考虑字段比较
+        if (initialValues !== prevInitialValues) {
+          setPrevInitialValues(initialValues);
           form.resetFields(); // 新版的reset似乎会让所有控件重新渲染
         }
       },
@@ -594,4 +598,5 @@ export {
   Map,
   AMap,
   InputNumber,
+  PersonModal,
 };

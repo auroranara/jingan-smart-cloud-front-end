@@ -25,18 +25,18 @@ const ContractorDetail = props => {
     },
     breadcrumbList,
     mode,
-    isUnit,
+    unitId,
     getDetail,
     loading,
     detail,
     detail: { companyId, companyName },
     constructionList,
     getConstructionList,
-    // constructionDetail,
+    constructionDetail,
     getConstructionDetail,
     evaluationList,
     getEvaluationList,
-    // evaluationDetail,
+    evaluationDetail,
     getEvaluationDetail,
     violationRecordList,
     getViolationRecordList,
@@ -210,7 +210,7 @@ const ContractorDetail = props => {
       },
     },
   ];
-  let list, columns, drawerTitle, rows;
+  let list, columns, drawerTitle, rows, modalDetail;
   if (activeKey === TAB_LIST[0].key) {
     list = constructionList;
     columns = [
@@ -406,6 +406,7 @@ const ContractorDetail = props => {
         bordered: false,
       },
     ];
+    modalDetail = constructionDetail;
   } else if (activeKey === TAB_LIST[1].key) {
     list = evaluationList;
     columns = [
@@ -510,12 +511,26 @@ const ContractorDetail = props => {
             name: 'assessDepartmentId',
             label: '考核部门',
             component: 'TreeSelect',
-            props: {
-              fieldNames: DEPARTMENT_FIELDNAMES,
-              mapper: DEPARTMENT_MAPPER,
-              params: {
-                companyId,
-              },
+            props({ companyId, assessDepartmentId, assessDepartmentName, mode }) {
+              return {
+                fieldNames: DEPARTMENT_FIELDNAMES,
+                mapper: DEPARTMENT_MAPPER,
+                params: {
+                  companyId,
+                },
+                key: companyId,
+                data:
+                  mode !== 'add' && assessDepartmentId
+                    ? {
+                        key: assessDepartmentId,
+                        value: assessDepartmentId,
+                        label: assessDepartmentName,
+                      }
+                    : undefined,
+              };
+            },
+            hide({ companyId }) {
+              return !companyId;
             },
           },
           {
@@ -540,6 +555,7 @@ const ContractorDetail = props => {
         bordered: false,
       },
     ];
+    modalDetail = evaluationDetail;
   } else if (activeKey === TAB_LIST[2].key) {
     list = violationRecordList;
     columns = [
@@ -570,7 +586,7 @@ const ContractorDetail = props => {
       key={id}
       title={breadcrumbList[breadcrumbList.length - 1].title}
       breadcrumbList={breadcrumbList}
-      content={!isUnit && companyName}
+      content={unitId !== companyId && companyName}
     >
       <Spin spinning={loading}>
         <Form
@@ -642,11 +658,11 @@ const ContractorDetail = props => {
         <Spin spinning={loadingDetail}>
           {activeKey && (
             <Form
-              key={activeKey}
               initialValues={initialValues2}
               mode={mode}
               fields={rows}
               showOperation={false}
+              params={modalDetail}
             />
           )}
         </Spin>

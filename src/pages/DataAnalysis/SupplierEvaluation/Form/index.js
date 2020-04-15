@@ -129,7 +129,7 @@ const SupplierEvaluationForm = ({
             },
             key,
             data:
-              mode !== 'add'
+              mode !== 'add' && assessDepartmentId
                 ? {
                     key: assessDepartmentId,
                     value: assessDepartmentId,
