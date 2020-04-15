@@ -126,24 +126,21 @@ const FormTreeSelect = ({
   );
   if (mode !== 'detail') {
     const handleChange = (value, label, extra) => {
+      const values =
+        value &&
+        (multiple
+          ? value.map(item => ({
+              ...item,
+              key: item.key || item.value,
+              value: item.key || item.value,
+            }))
+          : { ...value, key: value.key || value.value, value: value.key || value.value });
       if (labelInValue) {
-        onChange &&
-          onChange(
-            value &&
-              (multiple
-                ? value.map(item => ({ ...item, key: item.value }))
-                : { ...value, key: value.value }),
-            label,
-            extra
-          );
+        onChange && onChange(values, label, extra);
       } else {
-        setData(value);
+        setData(values);
         onChange &&
-          onChange(
-            value && (multiple ? value.map(({ value }) => value) : value.value),
-            label,
-            extra
-          );
+          onChange(values && (multiple ? values.map(({ key }) => key) : values.key), label, extra);
       }
     };
     const handleSearch = debounce(searchValue => {
