@@ -701,6 +701,14 @@ export default {
       edit: 'majorHazardInfo.surroundingEnvironmentInfo.edit',
       delete: 'majorHazardInfo.surroundingEnvironmentInfo.delete',
     },
+    // 生产场所
+    workSite: {
+      list: 'majorHazardInfo.workSite.listView',
+      view: 'majorHazardInfo.workSite.view',
+      add: 'majorHazardInfo.workSite.add',
+      edit: 'majorHazardInfo.workSite.edit',
+      delete: 'majorHazardInfo.workSite.delete',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例

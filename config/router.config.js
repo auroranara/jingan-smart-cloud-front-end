@@ -1060,6 +1060,43 @@ module.exports = env => {
                 },
               ],
             },
+            // 生产场所
+            {
+              path: '/major-hazard-info/work-site',
+              code: 'majorHazardInfo.workSite',
+              name: 'workSite',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/major-hazard-info/work-site',
+                  redirect: '/major-hazard-info/work-site/list',
+                },
+                {
+                  name: 'list',
+                  path: '/major-hazard-info/work-site/list',
+                  code: 'majorHazardInfo.workSite.listView',
+                  component: './BaseInfo/WorkSite/List',
+                },
+                {
+                  name: 'add',
+                  path: '/major-hazard-info/work-site/add',
+                  code: 'majorHazardInfo.workSite.add',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+                {
+                  name: 'edit',
+                  path: '/major-hazard-info/work-site/edit/:id',
+                  code: 'majorHazardInfo.workSite.edit',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+                {
+                  name: 'view',
+                  path: '/major-hazard-info/work-site/view/:id',
+                  code: 'majorHazardInfo.workSite.view',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+              ],
+            },
           ],
         },
 
@@ -2899,6 +2936,67 @@ module.exports = env => {
                   name: 'detail',
                   code: 'facilityManagement.keyPart.view',
                   component: './KeyPart/Add',
+                },
+              ],
+            },
+            {
+              name: 'productionFacility', // 生产设施
+              code: 'facilityManagement.productionFacility',
+              path: '/facility-management/production-facility',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/facility-management/production-facility',
+                  redirect: '/facility-management/production-facility/list',
+                },
+                {
+                  name: 'list',
+                  code: 'facilityManagement.productionFacility.list',
+                  path: '/facility-management/production-facility/list',
+                  component: './FacilityManagement/ProductionFacility/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'facilityManagement.productionFacility.view',
+                  path: '/facility-management/production-facility/detail/:id',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'add',
+                  code: 'facilityManagement.productionFacility.add',
+                  path: '/facility-management/production-facility/add',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'facilityManagement.productionFacility.edit',
+                  path: '/facility-management/production-facility/edit/:id',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'checkList',
+                  code: 'facilityManagement.productionFacility.check.list',
+                  path: '/facility-management/production-facility/check/:id/list',
+                  component: './FacilityManagement/ProductionFacility/Check',
+                },
+                {
+                  name: 'checkDetail',
+                  code: 'facilityManagement.productionFacility.check.view',
+                  path: '/facility-management/production-facility/check/:id/detail/:checkId',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
+                },
+                {
+                  name: 'checkAdd',
+                  code: 'facilityManagement.productionFacility.check.add',
+                  path: '/facility-management/production-facility/check/:id/add',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
+                },
+                {
+                  name: 'checkEdit',
+                  code: 'facilityManagement.productionFacility.check.edit',
+                  path: '/facility-management/production-facility/check/:id/edit/:checkId',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
                 },
               ],
             },

@@ -27,6 +27,13 @@ import {
   editThreeSimultaneity,
   deleteThreeSimultaneity,
 } from '@/services/baseInfo/threeSimultaneity';
+import {
+  fetchWorkSite,
+  addWorkSite,
+  editWorkSite,
+  deleteWorkSite,
+  fetchWorkSiteDetail,
+} from '@/services/baseInfo/workSite';
 
 const defaultPagination = { total: 0, pageNum: 1, pageSize: 10 };
 
@@ -66,6 +73,11 @@ export default {
     },
     // 三同时审批
     threeSimultaneity: {
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 生产场所
+    workSite: {
       list: [],
       pagination: defaultPagination,
     },
@@ -228,6 +240,34 @@ export default {
         if (success) success()
       } else if (error) error(response)
     },
+    // 获取生产场所列表
+    *fetchWorkSite ({ payload }, { call, put }) {
+      const res = yield call(fetchWorkSite, payload);
+      yield put({
+        type: 'saveWorkSite',
+        payload: res && res.code === 200 && res.data ? res.data : { list: [], pagination: defaultPagination },
+      })
+    },
+    // 新增生产场所
+    *addWorkSite ({ payload, callback }, { call }) {
+      const res = yield call(addWorkSite, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 编辑生产场所
+    *editWorkSite ({ payload, callback }, { call }) {
+      const res = yield call(editWorkSite, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 删除生产场所
+    *deleteWorkSite ({ payload, callback }, { call }) {
+      const res = yield call(deleteWorkSite, payload);
+      callback && callback(res && res.code === 200, res.msg);
+    },
+    // 获取生产场所详情
+    *fetchWorkSiteDetail ({ payload, callback }, { call }) {
+      const res = yield call(fetchWorkSiteDetail, payload);
+      callback && callback(res && res.code === 200 && res.data ? res.data : {});
+    },
   },
   reducers: {
     save (state, { payload = {} }) {
@@ -265,6 +305,12 @@ export default {
       return {
         ...state,
         threeSimultaneity: { ...payload },
+      }
+    },
+    saveWorkSite (state, { payload = { list: [], pagination: defaultPagination } }) {
+      return {
+        ...state,
+        workSite: payload,
       }
     },
   },
