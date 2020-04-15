@@ -13,10 +13,11 @@ import {
   Tag,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { BREADCRUMBLIST, LIST_URL, ENV_FUNCTIONAL_AREA, PATH, generateChemicalLabels } from './List';
+import { BREADCRUMBLIST, LIST_URL, ENV_FUNCTIONAL_AREA, PATH, generateChemicalLabels, editCode } from './List';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import Map from '@/pages/RiskControl/FourColorImage/Map';
+import { AuthButton } from '@/utils/customAuth';
 import styles from './Add.less';
 
 const FormItem = Form.Item;
@@ -153,8 +154,8 @@ export default class StorageEdit extends PureComponent {
 
   onCompanyChange = company => {
     this.setState({ company });
-    if (company && company.key) {
-      this.fetchMap({ companyId: company.key }, mapInfo => {
+    if (company && company.value) {
+      this.fetchMap({ companyId: company.value }, mapInfo => {
         if (!mapInfo.mapId) return;
         this.childMap.initMap({ ...mapInfo });
       });
@@ -184,7 +185,7 @@ export default class StorageEdit extends PureComponent {
       } = values;
       let payload = {
         ...resValues,
-        companyId: company.key,
+        companyId: company.value,
         environmentFunction: Array.isArray(environmentFunction) ? environmentFunction.join(',') : undefined,
         areaCoordinate: {
           groupId,
@@ -413,7 +414,7 @@ export default class StorageEdit extends PureComponent {
             {!isCompany && (
               <FormItem {...formItemLayout} label="单位名称">
                 {getFieldDecorator('companyId', {
-                  rules: [{ required: true, message: '请输入单位名称' }],
+                  rules: isView ? [] : [{ required: true, message: '请输入单位名称' }],
                 })(
                   isView ? (<span>{companyId ? company.label : ''}</span>) : (
                     <CompanySelect onChange={this.onCompanyChange} {...itemStyles} placeholder="请输入" />
@@ -447,7 +448,7 @@ export default class StorageEdit extends PureComponent {
             </FormItem>
             <FormItem {...formItemLayout} label="所处环境功能区">
               {isView ? <span>{generateChemicalLabels(detail.environmentFunction)}</span> : getFieldDecorator('environmentFunction', {
-                rules: [{ required: true, message: '请输入所处环境功能区' }],
+                rules: [{ required: true, message: '请选择所处环境功能区' }],
               })(
                 <Checkbox.Group options={ENV_FUNCTIONAL_AREA} />
               )}
@@ -552,9 +553,9 @@ export default class StorageEdit extends PureComponent {
                 </Button>
               )}
               {isView && (
-                <Button type="primary" onClick={this.jumpToEdit}>
+                <AuthButton code={editCode} type="primary" onClick={this.jumpToEdit}>
                   编辑
-                </Button>
+                </AuthButton>
               )}
             </FormItem>
           </Form>

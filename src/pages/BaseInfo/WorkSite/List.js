@@ -32,7 +32,7 @@ export const BREADCRUMBLIST = [
 export const generateChemicalLabels = val => val ? val.split(',').map(item => item ? ENV_FUNCTIONAL_AREA[+item - 1].label : '').join('，') : '';
 
 // 权限
-const {
+export const {
   baseInfo: {
     workSite: {
       add: addCode,
