@@ -153,7 +153,7 @@ export default class TableList extends PureComponent {
       },
       {
         id: 'environmentFunction',
-        label: '周边环境类型',
+        label: '所处环境功能区',
         render: () => (
           <Select placeholder="请选择" mode="multiple" allowClear>
             {ENV_FUNCTIONAL_AREA.map(({ value, label }) => (
