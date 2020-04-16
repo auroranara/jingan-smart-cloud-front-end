@@ -188,7 +188,7 @@ const TablePage = props => {
             pageNum: pageSize !== prevPageSize ? 1 : current,
             pageSize,
           });
-          // values ? form.current.setFieldsValue(values) : form.current.resetFields();
+          values ? form.current.setFieldsValue(values) : form.current.resetFields();
           pageSize !== prevPageSize && setPageSize(pageSize);
         }}
         operation={(tableAction || []).reduce((result, { code: codeName, ...rest }) => {

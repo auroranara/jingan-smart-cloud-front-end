@@ -18,6 +18,19 @@ const FIELDNAMES = {
   checkable: 'checkable',
   isLeaf: 'isLeaf',
 };
+const PRESETS = {
+  department: {
+    fieldNames: {
+      key: 'id',
+      value: 'name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'departmentList',
+      getList: 'getDepartmentList',
+    },
+  },
+};
 
 const FormTreeSelect = ({
   className,
@@ -65,9 +78,25 @@ const FormTreeSelect = ({
   const async = showSearch && !filterTreeNode;
   const multiple = originalMultiple || treeCheckable || false;
   useEffect(() => {
-    if (!labelInValue && value && (!multiple || value.length) && !data) {
-      const callback = (success, list) => {
-        if (success) {
+    if (
+      labelInValue /* labelInValue为true */ ||
+      (!value || (multiple && !value.length)) /* value不存在 */ ||
+      (data &&
+        (multiple
+          ? data.length === value.length && value.every((key, index) => data[index].key === key)
+          : data.key === value)) /* value和data一一对应 */
+    ) {
+      console.log('初始化');
+      getList && getList();
+    }
+  }, []);
+  useEffect(
+    () => {
+      if (!labelInValue /* labelInValue为false */) {
+        console.log('value', value);
+        console.log('data', data);
+        console.log('initialData', initialData);
+        if (value && (!multiple || value.length) /* value存在时 */) {
           const getItemByKey = (list, key) => {
             const length = (list && list.length) || 0;
             for (let i = 0; i < length; i++) {
@@ -82,39 +111,69 @@ const FormTreeSelect = ({
             }
             return;
           };
-          const data = (multiple ? value : [value]).map(key => {
-            const item = getItemByKey(list, key);
-            return item
-              ? {
-                  key,
-                  value: key,
-                  label: item[v],
-                }
-              : {
-                  key,
-                  value: key,
-                  label: key,
-                };
-          });
-          setData(multiple ? data : data[0]);
-        }
-      };
-      getList
-        ? getList(
-            async &&
-              (typeof initializeParams === 'function'
-                ? initializeParams(value)
+          const callback = (success, list) => {
+            const data = (multiple ? value : [value]).map(key => {
+              const item = getItemByKey(list, key);
+              return item
+                ? {
+                    key,
+                    value: key,
+                    label: item[v],
+                  }
                 : {
-                    [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
-                  }),
-            callback
-          )
-        : callback(true, list || []);
-      async && getList && getList();
-    } else {
-      getList && getList();
-    }
-  }, []);
+                    key,
+                    value: key,
+                    label: key,
+                  };
+            });
+            setData(multiple ? data : data[0]);
+          };
+          if (
+            !data ||
+            (multiple
+              ? data.length !== value.length || value.some((key, index) => data[index].key !== key)
+              : data.key !== value) /* data不存在，或者value和data不一一对应时 */
+          ) {
+            if (
+              initialData &&
+              (multiple
+                ? initialData.length === value.length &&
+                  value.every((key, index) => initialData[index].key === key)
+                : initialData.key === value) /* value和initialData一一对应时 */
+            ) {
+              setData(initialData);
+              getList && getList();
+            } else if (
+              list &&
+              (multiple ? value : [value]).every(key =>
+                getItemByKey(list, key)
+              ) /* 本地列表中能找到所有选项时 */
+            ) {
+              callback(true, list);
+              getList && getList();
+            } else {
+              /* 从后台筛选 */
+              getList
+                ? getList(
+                    typeof initializeParams === 'function'
+                      ? initializeParams(value)
+                      : {
+                          [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
+                        },
+                    callback
+                  )
+                : callback(true, list);
+              getList && getList();
+            }
+          }
+        } else if (data && (!multiple || data.length) /* value不存在但data存在时 */) {
+          setData(undefined);
+          getList && getList();
+        }
+      }
+    },
+    [value]
+  );
   useEffect(
     () => {
       // 这样写是有问题的，以后改
@@ -250,15 +309,16 @@ FormTreeSelect.getRules = ({ label, labelInValue, multiple: originalMultiple, tr
 };
 
 export default connect(
-  (state, { mapper, list, loading }) => {
-    const { namespace, list: l, getList: gl } = mapper || {};
+  (state, { mapper, list, loading, preset, fieldNames }) => {
+    const { namespace, list: l, getList: gl } = mapper || (PRESETS[preset] || {}).mapper || {};
     return {
       list: namespace && l ? state[namespace][l] : list,
       loading: namespace && gl ? state.loading.effects[`${namespace}/${gl}`] : loading,
+      fieldNames: fieldNames || (PRESETS[preset] || {}).fieldNames,
     };
   },
-  (dispatch, { mapper, params, getList, callback }) => {
-    const { namespace, getList: gl } = mapper || {};
+  (dispatch, { mapper, params, getList, callback, preset }) => {
+    const { namespace, getList: gl } = mapper || (PRESETS[preset] || {}).mapper || {};
     return {
       getList:
         namespace && gl
@@ -281,7 +341,7 @@ export default connect(
   (
     stateProps,
     dispatchProps,
-    { mapper, params, list, loading, getList, callback, ...ownProps }
+    { mapper, params, list, loading, getList, callback, preset, fieldNames, ...ownProps }
   ) => ({
     ...ownProps,
     ...stateProps,

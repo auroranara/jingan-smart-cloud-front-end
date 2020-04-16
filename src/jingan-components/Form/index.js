@@ -49,34 +49,6 @@ const GET_SPAN = (col, size) => {
   }
   return 24;
 };
-// 获取控制显示的变量
-const GET_GRID = (fields, operationCol, payload, size, expand) => {
-  return (fields || []).concat(expand ? { col: operationCol } : []).reduce(
-    (result, { hide, col = COL }) => {
-      const hidden = hide ? hide(payload) : false;
-      const span = GET_SPAN(col, size);
-      if (!hidden) {
-        if (result.offset >= span) {
-          result.offset -= span;
-        } else {
-          if (expand) {
-            result.offset = 24 - span;
-          }
-          result.multiLine = true;
-        }
-      }
-      if (expand || !result.multiLine) {
-        result.length += 1;
-      }
-      return result;
-    },
-    {
-      length: 0,
-      offset: expand ? 24 : 24 - GET_SPAN(operationCol, size),
-      multiLine: false,
-    }
-  );
-};
 
 const componentReference = {
   Input,
@@ -188,56 +160,12 @@ const FormIndex = forwardRef((props, ref) => {
             dependency =>
               values[dependency] && values[dependency].some(({ status }) => status !== 'done')
           );
-          const { length = Infinity, offset = 0, multiLine = false } = !mode
-            ? GET_GRID(list[0].fields, operationCol, payload, size, expand)
-            : {};
-          const toolbar =
-            showOperation &&
-            (!mode ? (
-              <div className={styles.operationContainer}>
-                <div className={styles.operationWrapper}>
-                  <Button type="primary" htmlType="submit">
-                    查询
-                  </Button>
-                </div>
-                <div className={styles.operationWrapper}>
-                  <Button
-                    onClick={() => {
-                      form.resetFields();
-                      const values = form.getFieldsValue();
-                      onReset && onReset(values);
-                    }}
-                  >
-                    重置
-                  </Button>
-                </div>
-                {Array.isArray(operation) &&
-                  operation.map((item, index) => {
-                    return (
-                      <div key={index} className={styles.operationWrapper}>
-                        {item}
-                      </div>
-                    );
-                  })}
-                {expandable &&
-                  multiLine && (
-                    <div className={styles.operationWrapper}>
-                      <span
-                        className={styles.expandButton}
-                        onClick={() => {
-                          setExpand(expand => !expand);
-                        }}
-                      >
-                        {expand ? '收起' : '展开'}
-                        <LegacyIcon
-                          className={classNames(styles.expandButtonIcon, expand && styles.expanded)}
-                          type="down"
-                        />
-                      </span>
-                    </div>
-                  )}
-              </div>
-            ) : (
+          const operationSpan = GET_SPAN(operationCol, size);
+          let showItem = true;
+          let offset = expand ? 24 : 24 - operationSpan;
+          let multiLine = false;
+          const toolbar = showOperation &&
+            mode && (
               <div className={classNames(styles.operationContainer, styles.modeOperationContainer)}>
                 <div className={styles.operationWrapper}>
                   {mode === 'detail' ? (
@@ -262,7 +190,7 @@ const FormIndex = forwardRef((props, ref) => {
                     );
                   })}
               </div>
-            ));
+            );
           return (
             <Fragment>
               {list.map(({ key, title, fields, className, ...rest }, index) => {
@@ -288,7 +216,22 @@ const FormIndex = forwardRef((props, ref) => {
                         const Component = componentReference[component] || component;
                         const hidden = hide && hide(payload);
                         const properties = typeof props === 'function' ? props(payload) : props;
-                        return !hidden && index < length ? (
+                        if (!mode) {
+                          const span = GET_SPAN(col, size);
+                          if (!hidden) {
+                            if (offset >= span) {
+                              offset -= span;
+                            } else {
+                              if (expand) {
+                                offset = 24 - span;
+                              } else {
+                                showItem = false;
+                              }
+                              multiLine = true;
+                            }
+                          }
+                        }
+                        return !hidden && showItem ? (
                           <Col key={key || name} {...col}>
                             <Form.Item
                               name={name || key}
@@ -326,8 +269,64 @@ const FormIndex = forwardRef((props, ref) => {
                     {showOperation &&
                       list.length === 1 &&
                       (!mode ? (
-                        <Col {...operationCol} offset={offset}>
-                          <Form.Item>{toolbar}</Form.Item>
+                        <Col
+                          {...operationCol}
+                          offset={
+                            expand
+                              ? offset >= operationSpan
+                                ? offset - operationSpan
+                                : 24 - operationSpan
+                              : offset
+                          }
+                        >
+                          <Form.Item>
+                            <div className={styles.operationContainer}>
+                              <div className={styles.operationWrapper}>
+                                <Button type="primary" htmlType="submit">
+                                  查询
+                                </Button>
+                              </div>
+                              <div className={styles.operationWrapper}>
+                                <Button
+                                  onClick={() => {
+                                    form.resetFields();
+                                    const values = form.getFieldsValue();
+                                    onReset && onReset(values);
+                                  }}
+                                >
+                                  重置
+                                </Button>
+                              </div>
+                              {Array.isArray(operation) &&
+                                operation.map((item, index) => {
+                                  return (
+                                    <div key={index} className={styles.operationWrapper}>
+                                      {item}
+                                    </div>
+                                  );
+                                })}
+                              {expandable &&
+                                multiLine && (
+                                  <div className={styles.operationWrapper}>
+                                    <span
+                                      className={styles.expandButton}
+                                      onClick={() => {
+                                        setExpand(expand => !expand);
+                                      }}
+                                    >
+                                      {expand ? '收起' : '展开'}
+                                      <LegacyIcon
+                                        className={classNames(
+                                          styles.expandButtonIcon,
+                                          expand && styles.expanded
+                                        )}
+                                        type="down"
+                                      />
+                                    </span>
+                                  </div>
+                                )}
+                            </div>
+                          </Form.Item>
                         </Col>
                       ) : (
                         <Col {...operationCol}>

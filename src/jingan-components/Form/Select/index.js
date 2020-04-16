@@ -12,6 +12,19 @@ const FIELDNAMES = {
   key: 'key',
   value: 'value',
 };
+const PRESETS = {
+  company: {
+    fieldNames: {
+      key: 'id',
+      value: 'name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'unitList',
+      getList: 'getUnitList',
+    },
+  },
+};
 
 const FormSelect = ({
   className,
@@ -44,43 +57,84 @@ const FormSelect = ({
   const async = showSearch && !filterOption;
   const multiple = originalMode === 'multiple' || originalMode === 'tags';
   useEffect(() => {
-    if (!labelInValue && value && (!multiple || value.length) && !data) {
-      const callback = (success, list) => {
-        if (success) {
-          const data = (multiple ? value : [value]).map(key => {
-            const item = list.find(item => item[k] === key);
-            return item
-              ? {
-                  key,
-                  value: key,
-                  label: item[v],
-                }
-              : {
-                  key,
-                  value: key,
-                  label: key,
-                };
-          });
-          setData(multiple ? data : data[0]);
-        }
-      };
-      getList
-        ? getList(
-            async &&
-              (typeof initializeParams === 'function'
-                ? initializeParams(value)
-                : {
-                    [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
-                  }),
-            callback
-          )
-        : callback(true, list || []);
-      // 这里是否需要再调用一次是个问题
-      async && getList && getList();
-    } else {
+    if (
+      labelInValue /* labelInValue为true */ ||
+      (!value || (multiple && !value.length)) /* value不存在 */ ||
+      (data &&
+        (multiple
+          ? data.length === value.length && value.every((key, index) => data[index].key === key)
+          : data.key === value)) /* value和data一一对应 */
+    ) {
       getList && getList();
     }
   }, []);
+  useEffect(
+    () => {
+      if (!labelInValue /* labelInValue为false */) {
+        if (value && (!multiple || value.length) /* value存在时 */) {
+          const callback = (success, list) => {
+            const data = (multiple ? value : [value]).map(key => {
+              const item = (list || []).find(item => item[k] === key);
+              return item
+                ? {
+                    key,
+                    value: key,
+                    label: item[v],
+                  }
+                : {
+                    key,
+                    value: key,
+                    label: key,
+                  };
+            });
+            setData(multiple ? data : data[0]);
+          };
+          if (
+            !data ||
+            (multiple
+              ? data.length !== value.length || value.some((key, index) => data[index].key !== key)
+              : data.key !== value) /* data不存在，或者value和data不一一对应时 */
+          ) {
+            if (
+              initialData &&
+              (multiple
+                ? initialData.length === value.length &&
+                  value.every((key, index) => initialData[index].key === key)
+                : initialData.key === value) /* value和initialData一一对应时 */
+            ) {
+              setData(initialData);
+              getList && getList();
+            } else if (
+              list &&
+              (multiple ? value : [value]).every(key =>
+                list.find(item => item[k] === key)
+              ) /* 本地列表中能找到所有选项时 */
+            ) {
+              callback(true, list);
+              getList && getList();
+            } else {
+              /* 从后台筛选 */
+              getList
+                ? getList(
+                    typeof initializeParams === 'function'
+                      ? initializeParams(value)
+                      : {
+                          [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
+                        },
+                    callback
+                  )
+                : callback(true, list);
+              getList && getList();
+            }
+          }
+        } else if (data && (!multiple || data.length) /* value不存在但data存在时 */) {
+          setData(undefined);
+          getList && getList();
+        }
+      }
+    },
+    [value]
+  );
   if (mode !== 'detail') {
     // 根据输入值进行后台筛选
     const handleSearch = debounce(searchValue => {
@@ -154,15 +208,16 @@ FormSelect.getRules = ({ label, labelInValue, originalMode }) => {
 };
 
 export default connect(
-  (state, { mapper, list, loading }) => {
-    const { namespace, list: l, getList: gl } = mapper || {};
+  (state, { mapper, list, loading, preset, fieldNames }) => {
+    const { namespace, list: l, getList: gl } = mapper || (PRESETS[preset] || {}).mapper || {};
     return {
       list: namespace && l ? state[namespace][l] : list,
       loading: namespace && gl ? state.loading.effects[`${namespace}/${gl}`] : loading,
+      fieldNames: fieldNames || (PRESETS[preset] || {}).fieldNames,
     };
   },
-  (dispatch, { mapper, params, getList, callback }) => {
-    const { namespace, getList: gl } = mapper || {};
+  (dispatch, { mapper, params, getList, callback, preset }) => {
+    const { namespace, getList: gl } = mapper || (PRESETS[preset] || {}).mapper || {};
     return {
       getList:
         namespace && gl
@@ -187,7 +242,7 @@ export default connect(
   (
     stateProps,
     dispatchProps,
-    { mapper, params, list, loading, getList, callback, ...ownProps }
+    { mapper, params, list, loading, getList, callback, preset, fieldNames, ...ownProps }
   ) => ({
     ...ownProps,
     ...stateProps,
