@@ -220,61 +220,73 @@ export const EditModal = Form.create()(props => {
   );
 });
 
-export const RECORD_FIELDS = [
-  {
-    id: 'cardName',
-    label: '卡名称',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'icNumber',
-    label: 'IC卡号',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'snNumber',
-    label: 'SN卡号',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'name',
-    label: '使用人',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'operationPerson',
-    label: '操作人',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'telephone',
-    label: '手机号',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'registrationDate',
-    label: '创建时间',
-    span: 16,
-    labelCol: 3,
-    wrapperCol: 12,
-    render: () => (
-      <RangePicker
-        style={{ width: '100%' }}
-        showTime={{
-          hideDisabledOptions: true,
-          defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('00:00:00', 'HH:mm:ss')],
-        }}
-        format="YYYY-MM-DD HH:mm:ss"
-      />
-    ),
-  },
-];
+export function getRecordField(num) {
+  const fields = [
+    {
+      id: 'cardName',
+      label: '卡名称',
+      render: () => <Input placeholder="请输入" allowClear />,
+      transform: v => v.trim(),
+    },
+    ...(!num
+      ? [
+          {
+            id: 'icNumber',
+            label: 'IC卡号',
+            render: () => <Input placeholder="请输入" allowClear />,
+            transform: v => v.trim(),
+          },
+        ]
+      : []),
+    ...(!num
+      ? [
+          {
+            id: 'snNumber',
+            label: 'SN卡号',
+            render: () => <Input placeholder="请输入" allowClear />,
+            transform: v => v.trim(),
+          },
+        ]
+      : []),
+    {
+      id: 'name',
+      label: '使用人',
+      render: () => <Input placeholder="请输入" allowClear />,
+      transform: v => v.trim(),
+    },
+    {
+      id: 'operationPerson',
+      label: '操作人',
+      render: () => <Input placeholder="请输入" allowClear />,
+      transform: v => v.trim(),
+    },
+    {
+      id: 'telephone',
+      label: '手机号',
+      render: () => <Input placeholder="请输入" allowClear />,
+      transform: v => v.trim(),
+    },
+    {
+      id: 'registrationDate',
+      label: '创建时间',
+      span: 16,
+      labelCol: 3,
+      wrapperCol: 12,
+      render: () => (
+        <RangePicker
+          style={{ width: '100%' }}
+          showTime={{
+            hideDisabledOptions: true,
+            defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('00:00:00', 'HH:mm:ss')],
+          }}
+          format="YYYY-MM-DD HH:mm:ss"
+        />
+      ),
+    },
+  ];
+
+  return fields;
+}
 
 export function getRecordColumns() {
   const columns = [

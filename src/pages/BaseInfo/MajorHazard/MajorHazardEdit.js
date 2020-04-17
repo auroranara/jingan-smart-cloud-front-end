@@ -35,16 +35,6 @@ const {
   },
 } = codes;
 
-// function filterList(arr) {
-//   const newArr = arr.reduce(function(prev, element) {
-//     if (!prev.find(el => el.id === element.id)) {
-//       prev.push(element);
-//     }
-//     return prev;
-//   }, []);
-//   return newArr;
-// }
-
 @connect(
   ({
     reservoirRegion,
@@ -337,7 +327,7 @@ export default class MajorHazardEdit extends PureComponent {
   // 关闭企业弹框
   handleClose = () => {
     this.setState({ companyVisible: false }, () => {
-      this.childMap.handleDispose();
+      this.childMap && this.childMap.handleDispose();
     });
   };
 

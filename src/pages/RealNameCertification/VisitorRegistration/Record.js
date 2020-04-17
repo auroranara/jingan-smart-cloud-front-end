@@ -6,7 +6,7 @@ import { Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { BREADCRUMBLIST_OTHER, ROUTER, LIST_URL, RECORD_FIELDS, getRecordColumns } from './utils';
+import { BREADCRUMBLIST_OTHER, ROUTER, LIST_URL, getRecordField, getRecordColumns } from './utils';
 import styles from './Record.less';
 // import moment from 'moment';
 
@@ -53,7 +53,7 @@ export default class TableList extends PureComponent {
         pageSize,
         pageNum,
         companyId: id,
-        snNumber: num ? num : undefined,
+        snNumber: num ? num : params.snNumber,
       },
     });
   };
@@ -108,6 +108,9 @@ export default class TableList extends PureComponent {
           pagination: { total, pageNum, pageSize },
         },
       },
+      location: {
+        query: { num },
+      },
     } = this.props;
 
     const { expand, currentPage } = this.state;
@@ -118,7 +121,8 @@ export default class TableList extends PureComponent {
 
     const columns = getRecordColumns();
 
-    const fields = expand ? RECORD_FIELDS : RECORD_FIELDS.slice(0, 3);
+    const filterFields = getRecordField(num);
+    const fields = expand ? filterFields : filterFields.slice(0, 3);
 
     return (
       <PageHeaderLayout
