@@ -22,7 +22,9 @@ import InputOrSpan from '@/jingan-components/InputOrSpan';
 import { connect } from 'dva';
 import router from 'umi/router';
 import classNames from 'classnames';
+import { hasAuthority } from '@/utils/customAuth';
 import moment from 'moment';
+import Ellipsis from '@/components/Ellipsis';
 import { getPageSize, setPageSize } from '@/utils/utils';
 import { LIST_PATH } from '../List';
 import styles from './index.less';
@@ -131,6 +133,9 @@ export default class ProductionFacilityCheckList extends PureComponent {
         checkList: { list = [], pagination: { pageSize = 10, pageNum = 1, total = 0 } = {} } = {},
       },
       loading = false,
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
     const { showBtn } = this.state;
     const COLUMNS = [
@@ -155,15 +160,50 @@ export default class ProductionFacilityCheckList extends PureComponent {
       {
         title: '检测内容',
         dataIndex: 'checkReason',
+        width: 300,
+        render: text => (
+          <div
+            style={{
+              wordWrap: 'break-word',
+              wordBreak: 'break-word',
+              whiteSpace: 'normal',
+            }}
+          >
+            <Ellipsis lines={3} tooltip>
+              {text}
+            </Ellipsis>
+          </div>
+        ),
       },
       {
         title: '检测结果',
         dataIndex: 'checkResult',
+        width: 300,
+        render: text => (
+          <div
+            style={{
+              wordWrap: 'break-word',
+              wordBreak: 'break-word',
+              whiteSpace: 'normal',
+            }}
+          >
+            <Ellipsis lines={3} tooltip>
+              {text}
+            </Ellipsis>
+          </div>
+        ),
       },
       {
         title: '检测状态',
         dataIndex: 'checkStatus',
-        render: val => <SelectOrSpan list={STATUS} value={`${val}`} type="span" />,
+        render: val => (
+          <SelectOrSpan
+            list={STATUS}
+            value={`${val}`}
+            type="span"
+            style={{ color: val === '1' ? '#FF0000' : undefined }}
+          />
+        ),
       },
       {
         title: '检测报告',
@@ -192,11 +232,13 @@ export default class ProductionFacilityCheckList extends PureComponent {
       },
     ];
 
+    const hasAddAuthority = hasAuthority(ADD_CODE, permissionCodes);
+
     return (
       <Card className={styles.card} bordered={false}>
         {showBtn && (
           <div className={styles.btnWrapper}>
-            <Button type="primary" onClick={this.handleAddClick}>
+            <Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>
               新增检测记录
             </Button>
           </div>

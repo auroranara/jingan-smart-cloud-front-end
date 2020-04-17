@@ -621,7 +621,7 @@ export default class InjuryReportOther extends Component {
           },
           {
             id: 'useDate',
-            label: '投入日期',
+            label: '投用日期',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => (
@@ -629,7 +629,7 @@ export default class InjuryReportOther extends Component {
                 className={styles.item}
                 type={isNotDetail ? 'DatePicker' : 'span'}
                 format={DEFAULT_FORMAT}
-                placeholder="请选择投入日期"
+                placeholder="请选择投用日期"
                 allowClear={false}
                 unknown={NO_DATA}
               />
@@ -1049,6 +1049,7 @@ export default class InjuryReportOther extends Component {
       user: {
         currentUser: { permissionCodes },
       },
+      productionFacility: { detail: { status } = {} },
     } = this.props;
     const { submitting, uploading } = this.state;
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
@@ -1057,14 +1058,16 @@ export default class InjuryReportOther extends Component {
       <FooterToolbar>
         {this.renderErrorInfo()}
         {isDetail ? (
-          <Button
-            type="primary"
-            size="large"
-            onClick={e => router.push(`/facility-management/production-facility/edit/${id}`)}
-            disabled={!hasEditAuthority}
-          >
-            编辑
-          </Button>
+          status !== '1' && (
+            <Button
+              type="primary"
+              size="large"
+              onClick={e => router.push(`/facility-management/production-facility/edit/${id}`)}
+              disabled={!hasEditAuthority}
+            >
+              编辑
+            </Button>
+          )
         ) : (
           <Button
             type="primary"
