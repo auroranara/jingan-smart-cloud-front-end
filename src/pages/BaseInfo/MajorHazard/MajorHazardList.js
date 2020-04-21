@@ -189,24 +189,28 @@ export default class MajorHazardList extends PureComponent {
         align: 'center',
         width: 300,
         render: (val, text) => {
-          const { code, name, dangerLevel, recordDate } = text;
+          const { code, name, dangerLevel, recordDate, recordDateEnd } = text;
           return (
             <div style={{ textAlign: 'left' }}>
               <p>
-                统一编码:
+                统一编码：
                 {code}
               </p>
               <p>
-                重大危险源名称:
+                重大危险源名称：
                 {name}
               </p>
               <p>
-                重大危险源等级:
+                重大危险源等级：
                 {dangerList[dangerLevel]}
               </p>
               <p>
-                备案日期:
-                {recordDate ? moment(+recordDate).format('YYYY-MM-DD') : ''}
+                危险源备案期限：
+                {recordDate && recordDateEnd
+                  ? `${moment(recordDate).format('YYYY-MM-DD')}~${moment(recordDateEnd).format(
+                      'YYYY-MM-DD'
+                    )}`
+                  : ''}
               </p>
             </div>
           );

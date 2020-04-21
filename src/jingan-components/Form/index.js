@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect, Fragment } from 'react';
 import { Form, Button, Card, Row, Col } from 'antd';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import FooterToolbar from '@/components/FooterToolbar';
@@ -15,6 +15,7 @@ import Radio from './Radio';
 import Map from './Map';
 import AMap from './AMap';
 import InputNumber from './InputNumber';
+import PersonModal from './PersonModal';
 import classNames from 'classnames';
 import styles from './index.less';
 
@@ -35,70 +36,18 @@ const SIZE_MAPPER = {
   lg: 'md',
   md: 'sm',
 };
+// 获取当前栅格大小下所占格数
 const GET_SPAN = (col, size) => {
   if (col) {
-    if (col.span) {
-      return col.span;
-    } else if (col[size]) {
+    if (col[size]) {
       return col[size];
     } else if (SIZE_MAPPER[size]) {
       return GET_SPAN(col, SIZE_MAPPER[size]);
+    } else if (col.span) {
+      return col.span;
     }
   }
   return 24;
-};
-const GET_OFFSET = (expand, spanList, operationSpan) => {
-  if (expand) {
-    const restSpan = spanList.reduce((result, span) => {
-      return result >= span ? result - span : 24 - span;
-    }, 24);
-    return restSpan >= operationSpan ? restSpan - operationSpan : 24 - operationSpan;
-  } else {
-    let rest = 24 - operationSpan;
-    for (const span of spanList) {
-      if (rest >= span) {
-        rest = rest - span;
-      } else {
-        return rest;
-      }
-    }
-    return rest;
-  }
-};
-const GET_GRID = (fields, payload, gridSize, operationSpan, expandable, expand) => {
-  const { spanList, length } = fields.reduce(
-    (result, { hide, col = COL }) => {
-      const hidden = hide ? hide(payload) : false;
-      const span = GET_SPAN(col, gridSize);
-      if (!expandable || expand) {
-        if (!hidden) {
-          result.spanList.push(span);
-        }
-        result.length += 1;
-      } else {
-        if (!hidden) {
-          result.total += span;
-          if (result.total <= 24) {
-            result.spanList.push(span);
-          }
-        }
-        if (result.total <= 24) {
-          result.length += 1;
-        }
-      }
-      return result;
-    },
-    {
-      spanList: [],
-      length: 0,
-      total: operationSpan,
-    }
-  );
-  return {
-    length,
-    offset: GET_OFFSET(expand, spanList, operationSpan),
-    gridSize,
-  };
 };
 
 const componentReference = {
@@ -114,446 +63,304 @@ const componentReference = {
   Map,
   AMap,
   InputNumber,
+  PersonModal,
 };
 
-/**
- * 1.字段发生变化时，其他字段的显示隐藏
- * 2.字段发生变化时，其他字段值的变化
- */
-
-const FormIndex = forwardRef(
-  (
-    {
-      fields,
-      mode,
-      expandable = true,
-      operation,
-      operationCol = !mode ? COL : COL2,
-      onSearch,
-      onReset,
-      onValuesChange,
-      params,
-      hasEditAuthority,
-      editPath,
-      listPath,
-      onSubmit,
-      onFinish,
-      submitting,
-      showOperation = true,
-      ...rest
+const FormIndex = forwardRef((props, ref) => {
+  const {
+    className,
+    fields,
+    mode,
+    expandable = true,
+    operation,
+    operationCol = !mode ? COL : COL2,
+    onSearch,
+    onReset,
+    onValuesChange,
+    params,
+    hasEditAuthority,
+    editPath,
+    listPath,
+    onSubmit,
+    onFinish,
+    submitting,
+    showOperation = true,
+    initialValues,
+    dependencies: globalDependencies,
+    showCard = true,
+    ...rest
+  } = props;
+  // 创建form的引用
+  const [form] = Form.useForm();
+  // 将form的引用暴露到父组件
+  useImperativeHandle(ref, () => form);
+  // 创建初始值的保存
+  const [prevInitialValues, setPrevInitialValues] = useState(initialValues);
+  // 初始值发生变化时重置form组件（为了和3.0保持统一）
+  useEffect(
+    () => {
+      // 暂时直接比较，以后再来考虑字段比较
+      if (initialValues !== prevInitialValues) {
+        setPrevInitialValues(initialValues);
+        form.resetFields();
+      }
     },
-    ref
-  ) => {
-    const [form] = Form.useForm();
-    const [expand, setExpand] = useState(false);
-    const windowSize = useMediaQuery();
-    const [grid, setGrid] = useState({
-      length: Infinity,
-      offset: 0,
-      gridSize: windowSize,
-    });
-    let list = Array.isArray(fields)
-      ? fields[0].fields
-        ? fields
-        : [
-            {
-              fields,
-            },
-          ]
-      : [];
-    list = !mode ? list.slice(0, 1) : list;
-    useImperativeHandle(ref, () => form);
-    useEffect(
-      () => {
-        if (!mode) {
-          const fields = (list[0] && list[0].fields) || [];
-          const values = form.getFieldsValue();
-          const payload = { ...params, ...values };
-          const operationSpan = GET_SPAN(operationCol, windowSize);
-          const grid = GET_GRID(fields, payload, windowSize, operationSpan, expandable, expand);
-          setGrid(grid);
-        }
-      },
-      [windowSize, expand]
-    );
-    const dependencies = list.reduce((result, { fields }) => {
-      return fields.reduce((result, { name, component }) => {
+    [initialValues]
+  );
+  // 创建是否展开的变量
+  const [expand, setExpand] = useState(!mode && expandable ? false : true);
+  // 获取当前栅格大小
+  const size = useMediaQuery();
+  // 对fields做统一化处理
+  const list = (Array.isArray(fields) && fields[0] && fields[0].fields
+    ? fields
+    : [
+        {
+          fields: Array.isArray(fields) ? fields : [],
+        },
+      ]
+  ).slice(0, !mode ? 1 : undefined);
+  // 获取所有依赖字段（包括上传）和上传相关字段
+  const { dependencies, uploadDependencies } = list.reduce(
+    (result, { fields }) => {
+      return fields.reduce((result, { name, component, dependencies }) => {
         if (component === 'Upload') {
-          result.push(name);
+          result.dependencies.push(name);
+          result.uploadDependencies.push(name);
+        } else if (dependencies) {
+          result.dependencies = result.dependencies.concat(dependencies);
         }
         return result;
       }, result);
-    }, []);
-    return (
-      <Form
-        onValuesChange={
-          !mode
-            ? (changedValues, values) => {
-                const fields = (list[0] && list[0].fields) || [];
-                const dependency = Object.keys(changedValues)[0];
-                if (
-                  fields.some(
-                    ({ dependencies }) => dependencies && dependencies.includes(dependency)
-                  )
-                ) {
-                  const payload = { ...params, ...values };
-                  const operationSpan = GET_SPAN(operationCol, windowSize);
-                  const grid = GET_GRID(
-                    fields,
-                    payload,
-                    windowSize,
-                    operationSpan,
-                    expandable,
-                    expand
-                  );
-                  setGrid(grid);
-                }
-                onValuesChange && onValuesChange(changedValues, values);
-              }
-            : onValuesChange
+    },
+    {
+      dependencies: globalDependencies || [],
+      uploadDependencies: [],
+    }
+  );
+  return (
+    <Form
+      className={classNames(styles.form, className)}
+      onFinish={onSearch || onSubmit || onFinish}
+      form={form}
+      scrollToFirstError
+      initialValues={initialValues}
+      {...rest}
+    >
+      <Form.Item
+        noStyle
+        shouldUpdate={(prevValues, values) =>
+          dependencies.some(dependency => prevValues[dependency] !== values[dependency])
         }
-        onFinish={values => {
-          onSearch && onSearch(values);
-          onSubmit && onSubmit(values);
-          onFinish && onFinish(values);
-        }}
-        form={form}
-        scrollToFirstError
-        {...rest}
       >
-        {list.map(({ key, title, fields, className, ...rest }, index) => {
+        {({ getFieldsValue }) => {
+          const values = getFieldsValue();
+          const payload = { mode, ...params, ...values };
+          const uploading = uploadDependencies.some(
+            dependency =>
+              values[dependency] && values[dependency].some(({ status }) => status !== 'done')
+          );
+          const operationSpan = GET_SPAN(operationCol, size);
+          let showItem = true;
+          let offset = expand ? 24 : 24 - operationSpan;
+          let multiLine = false;
+          const toolbar = showOperation &&
+            mode && (
+              <div className={classNames(styles.operationContainer, styles.modeOperationContainer)}>
+                <div className={styles.operationWrapper}>
+                  {mode === 'detail' ? (
+                    <Button type="primary" href={`#${editPath}`} disabled={!hasEditAuthority}>
+                      编辑
+                    </Button>
+                  ) : (
+                    <Button type="primary" htmlType="submit" loading={submitting || uploading}>
+                      提交
+                    </Button>
+                  )}
+                </div>
+                <div className={styles.operationWrapper}>
+                  <Button href={`#${listPath}`}>返回</Button>
+                </div>
+                {Array.isArray(operation) &&
+                  operation.map((item, index) => {
+                    return (
+                      <div key={index} className={styles.operationWrapper}>
+                        {item}
+                      </div>
+                    );
+                  })}
+              </div>
+            );
           return (
-            <Card
-              className={classNames(styles.card, mode && styles.modeCard, className)}
-              key={key || title || index}
-              title={title}
-              {...rest}
-            >
-              <Row gutter={24}>
-                {fields.map(
-                  (
-                    {
-                      key,
-                      name,
-                      label,
-                      component,
-                      props,
-                      enableDefaultRules,
-                      rules,
-                      col = !mode ? COL : COL2,
-                      hide,
-                      render,
-                      dependencies,
-                      onChange,
-                      ...rest
-                    },
-                    index
-                  ) => {
-                    const Component = componentReference[component] || component;
-                    const properties =
-                      typeof props === 'function' ? props({ mode, ...params }) : props;
-                    return index < grid.length ? (
-                      (hide || typeof props === 'function') &&
-                      dependencies &&
-                      dependencies.length ? (
-                        <Form.Item
-                          key={key || name}
-                          noStyle
-                          shouldUpdate={(prevValues, values) =>
-                            dependencies.some(
-                              dependency => prevValues[dependency] !== values[dependency]
-                            )
-                          }
-                        >
-                          {({ getFieldsValue }) => {
-                            const values = getFieldsValue();
-                            const hidden = hide && hide({ mode, ...params, ...values });
-                            const properties =
-                              typeof props === 'function'
-                                ? props({ mode, ...params, ...values })
-                                : props;
-                            return !hidden ? (
-                              <Col
-                                {...col}
-                                {...!mode && {
-                                  span: GET_SPAN(col, grid.gridSize),
-                                  xxl: undefined,
-                                  xl: undefined,
-                                  lg: undefined,
-                                  md: undefined,
-                                  sm: undefined,
-                                  xs: undefined,
-                                }}
-                              >
-                                <Form.Item
-                                  name={name}
-                                  label={label}
-                                  rules={
-                                    mode !== 'detail'
-                                      ? enableDefaultRules && Component.getRules
-                                        ? Component.getRules({ label, ...properties }).concat(
-                                            rules || []
-                                          )
-                                        : rules
-                                      : undefined
-                                  }
-                                  dependencies={dependencies}
-                                  {...rest}
-                                >
-                                  <Component
-                                    mode={mode}
-                                    onChange={
-                                      onChange
-                                        ? (...args) => {
-                                            const values = onChange(...args);
-                                            if (values) {
-                                              form.setFieldsValue(values);
-                                            }
-                                          }
-                                        : undefined
-                                    }
-                                    {...properties}
-                                  />
-                                </Form.Item>
-                              </Col>
-                            ) : null;
-                          }}
-                        </Form.Item>
-                      ) : !hide || !hide({ mode, ...params }) ? (
-                        <Col
-                          key={key || name}
-                          {...col}
-                          {...!mode && {
-                            span: GET_SPAN(col, grid.gridSize),
-                            xxl: undefined,
-                            xl: undefined,
-                            lg: undefined,
-                            md: undefined,
-                            sm: undefined,
-                            xs: undefined,
-                          }}
-                        >
-                          <Form.Item
-                            name={name}
-                            label={label}
-                            rules={
-                              mode !== 'detail'
-                                ? enableDefaultRules && Component.getRules
-                                  ? Component.getRules({ label, ...properties }).concat(rules || [])
-                                  : rules
-                                : undefined
+            <Fragment>
+              {list.map(({ key, title, fields, className, ...rest }, index) => {
+                const item = (
+                  <Row key={key || title || index} gutter={24}>
+                    {fields.map(
+                      (
+                        {
+                          key,
+                          name,
+                          label,
+                          component,
+                          props,
+                          enableDefaultRules,
+                          rules,
+                          col = !mode ? COL : COL2,
+                          hide,
+                          onChange,
+                          ...rest
+                        },
+                        index
+                      ) => {
+                        const Component = componentReference[component] || component;
+                        const hidden = hide && hide(payload);
+                        const properties = typeof props === 'function' ? props(payload) : props;
+                        if (!mode) {
+                          const span = GET_SPAN(col, size);
+                          if (!hidden) {
+                            if (offset >= span) {
+                              offset -= span;
+                            } else {
+                              if (expand) {
+                                offset = 24 - span;
+                              } else {
+                                showItem = false;
+                              }
+                              multiLine = true;
                             }
-                            dependencies={dependencies}
-                            {...rest}
-                          >
-                            <Component
-                              mode={mode}
-                              onChange={
-                                onChange
-                                  ? (...args) => {
-                                      const values = onChange(...args);
-                                      if (values) {
-                                        form.setFieldsValue(values);
-                                      }
-                                    }
+                          }
+                        }
+                        return !hidden && showItem ? (
+                          <Col key={key || name} {...col}>
+                            <Form.Item
+                              name={name || key}
+                              label={label}
+                              rules={
+                                mode !== 'detail'
+                                  ? enableDefaultRules && Component.getRules
+                                    ? Component.getRules({ label, ...properties }).concat(
+                                        rules || []
+                                      )
+                                    : rules
                                   : undefined
                               }
-                              {...properties}
-                            />
-                          </Form.Item>
-                        </Col>
-                      ) : null
-                    ) : null;
-                  }
-                )}
-                {!mode ? (
-                  <Col
-                    {...operationCol}
-                    {...{
-                      offset: grid.offset,
-                      span: GET_SPAN(operationCol, grid.gridSize),
-                      xxl: undefined,
-                      xl: undefined,
-                      lg: undefined,
-                      md: undefined,
-                      sm: undefined,
-                      xs: undefined,
-                    }}
-                  >
-                    <Form.Item>
-                      <div className={styles.operationContainer}>
-                        <div className={styles.operationWrapper}>
-                          <Button type="primary" htmlType="submit">
-                            查询
-                          </Button>
-                        </div>
-                        <div className={styles.operationWrapper}>
-                          <Button
-                            onClick={() => {
-                              form.resetFields();
-                              const values = form.getFieldsValue();
-                              onReset && onReset(values);
-                            }}
-                          >
-                            重置
-                          </Button>
-                        </div>
-                        {Array.isArray(operation) &&
-                          operation.map((item, index) => {
-                            return (
-                              <div key={index} className={styles.operationWrapper}>
-                                {item}
-                              </div>
-                            );
-                          })}
-                        {expandable && (
-                          <div className={styles.operationWrapper}>
-                            <span
-                              className={styles.expandButton}
-                              onClick={() => {
-                                setExpand(expand => !expand);
-                              }}
+                              {...rest}
                             >
-                              {expand ? '收起' : '展开'}
-                              <LegacyIcon
-                                className={classNames(
-                                  styles.expandButtonIcon,
-                                  expand && styles.expanded
-                                )}
-                                type="down"
+                              <Component
+                                mode={mode}
+                                onChange={
+                                  onChange
+                                    ? (...args) => {
+                                        const values = onChange(...args);
+                                        if (values) {
+                                          form.setFieldsValue(values);
+                                        }
+                                      }
+                                    : undefined
+                                }
+                                {...properties}
                               />
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </Form.Item>
-                  </Col>
-                ) : (
-                  showOperation &&
-                  list.length === 1 && (
-                    <Form.Item
-                      noStyle
-                      shouldUpdate={(prevValues, values) =>
-                        dependencies.some(
-                          dependency => prevValues[dependency] !== values[dependency]
-                        )
-                      }
-                    >
-                      {({ getFieldsValue }) => {
-                        const values = getFieldsValue();
-                        const uploading = dependencies.some(
-                          dependency =>
-                            values[dependency] &&
-                            values[dependency].some(({ status }) => status !== 'done')
-                        );
-                        return (
-                          <Col {...operationCol}>
-                            <Form.Item
-                              label={<span className={styles.hidden}>操作</span>}
-                              colon={false}
-                            >
-                              <div
-                                className={classNames(
-                                  styles.operationContainer,
-                                  styles.modeOperationContainer
-                                )}
-                              >
-                                <div className={styles.operationWrapper}>
-                                  {mode === 'detail' ? (
-                                    <Button
-                                      type="primary"
-                                      href={`#${editPath}`}
-                                      disabled={!hasEditAuthority}
-                                    >
-                                      编辑
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      type="primary"
-                                      htmlType="submit"
-                                      loading={submitting || uploading}
-                                    >
-                                      提交
-                                    </Button>
-                                  )}
-                                </div>
-                                <div className={styles.operationWrapper}>
-                                  <Button href={`#${listPath}`}>返回</Button>
-                                </div>
-                                {Array.isArray(operation) &&
-                                  operation.map((item, index) => {
-                                    return (
-                                      <div key={index} className={styles.operationWrapper}>
-                                        {item}
-                                      </div>
-                                    );
-                                  })}
-                              </div>
                             </Form.Item>
                           </Col>
-                        );
-                      }}
-                    </Form.Item>
-                  )
-                )}
-              </Row>
-            </Card>
-          );
-        })}
-        {mode &&
-          showOperation &&
-          list.length > 1 && (
-            <Form.Item
-              noStyle
-              shouldUpdate={(prevValues, values) =>
-                dependencies.some(dependency => prevValues[dependency] !== values[dependency])
-              }
-            >
-              {({ getFieldsValue }) => {
-                const values = getFieldsValue();
-                const uploading = dependencies.some(
-                  dependency =>
-                    values[dependency] && values[dependency].some(({ status }) => status !== 'done')
-                );
-                return (
-                  <FooterToolbar>
-                    <div className={styles.operationContainer}>
-                      <div className={styles.operationWrapper}>
-                        {mode === 'detail' ? (
-                          <Button type="primary" href={`#${editPath}`} disabled={!hasEditAuthority}>
-                            编辑
-                          </Button>
-                        ) : (
-                          <Button
-                            type="primary"
-                            htmlType="submit"
-                            loading={submitting || uploading}
-                          >
-                            提交
-                          </Button>
-                        )}
-                      </div>
-                      <div className={styles.operationWrapper}>
-                        <Button href={`#${listPath}`}>返回</Button>
-                      </div>
-                      {Array.isArray(operation) &&
-                        operation.map((item, index) => {
-                          return (
-                            <div key={index} className={styles.operationWrapper}>
-                              {item}
+                        ) : null;
+                      }
+                    )}
+                    {showOperation &&
+                      list.length === 1 &&
+                      (!mode ? (
+                        <Col
+                          {...operationCol}
+                          offset={
+                            expand
+                              ? offset >= operationSpan
+                                ? offset - operationSpan
+                                : 24 - operationSpan
+                              : offset
+                          }
+                        >
+                          <Form.Item>
+                            <div className={styles.operationContainer}>
+                              <div className={styles.operationWrapper}>
+                                <Button type="primary" htmlType="submit">
+                                  查询
+                                </Button>
+                              </div>
+                              <div className={styles.operationWrapper}>
+                                <Button
+                                  onClick={() => {
+                                    form.resetFields();
+                                    const values = form.getFieldsValue();
+                                    onReset && onReset(values);
+                                  }}
+                                >
+                                  重置
+                                </Button>
+                              </div>
+                              {Array.isArray(operation) &&
+                                operation.map((item, index) => {
+                                  return (
+                                    <div key={index} className={styles.operationWrapper}>
+                                      {item}
+                                    </div>
+                                  );
+                                })}
+                              {expandable &&
+                                multiLine && (
+                                  <div className={styles.operationWrapper}>
+                                    <span
+                                      className={styles.expandButton}
+                                      onClick={() => {
+                                        setExpand(expand => !expand);
+                                      }}
+                                    >
+                                      {expand ? '收起' : '展开'}
+                                      <LegacyIcon
+                                        className={classNames(
+                                          styles.expandButtonIcon,
+                                          expand && styles.expanded
+                                        )}
+                                        type="down"
+                                      />
+                                    </span>
+                                  </div>
+                                )}
                             </div>
-                          );
-                        })}
-                    </div>
-                  </FooterToolbar>
+                          </Form.Item>
+                        </Col>
+                      ) : (
+                        <Col {...operationCol}>
+                          <Form.Item
+                            label={<span className={styles.hidden}>操作</span>}
+                            colon={false}
+                          >
+                            {toolbar}
+                          </Form.Item>
+                        </Col>
+                      ))}
+                  </Row>
                 );
-              }}
-            </Form.Item>
-          )}
-      </Form>
-    );
-  }
-);
+                return showCard ? (
+                  <Card
+                    className={classNames(styles.card, mode && styles.modeCard, className)}
+                    key={key || title || index}
+                    title={title}
+                    {...rest}
+                  >
+                    {item}
+                  </Card>
+                ) : (
+                  item
+                );
+              })}
+              {showOperation && list.length > 1 && <FooterToolbar>{toolbar}</FooterToolbar>}
+            </Fragment>
+          );
+        }}
+      </Form.Item>
+    </Form>
+  );
+});
 
 export default FormIndex;
 
@@ -570,4 +377,5 @@ export {
   Map,
   AMap,
   InputNumber,
+  PersonModal,
 };

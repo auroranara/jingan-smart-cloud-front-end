@@ -17,6 +17,7 @@ const TableIndex = ({
   scroll,
   operation,
   onReload,
+  showPagination = true,
   showAddButton = true,
   showExportButton,
   hasAddAuthority,
@@ -53,16 +54,18 @@ const TableIndex = ({
       scroll={{
         x: true,
       }}
-      pagination={{
-        total,
-        current: pageNum,
-        pageSize,
-        pageSizeOptions: PAGE_SIZE_OPTIONS,
-        showTotal: SHOW_TOTAL,
-        showQuickJumper: true,
-        showSizeChanger: true,
-        ...pagination,
-      }}
+      pagination={
+        showPagination && {
+          total,
+          current: pageNum,
+          pageSize,
+          pageSizeOptions: PAGE_SIZE_OPTIONS,
+          showTotal: SHOW_TOTAL,
+          showQuickJumper: true,
+          showSizeChanger: true,
+          ...pagination,
+        }
+      }
       {...rest}
     />
   );

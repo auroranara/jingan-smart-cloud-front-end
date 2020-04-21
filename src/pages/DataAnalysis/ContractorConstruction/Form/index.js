@@ -7,8 +7,16 @@ import { phoneReg, idReg } from '@/utils/validate';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
-const ContractorConstructionForm = ({ route, match, location }) => {
+const ContractorConstructionForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,
@@ -235,7 +243,7 @@ const ContractorConstructionForm = ({ route, match, location }) => {
       },
       {
         name: 'enteringDate',
-        label: '进场日期',
+        label: '进厂日期',
         component: 'DatePicker',
       },
       {

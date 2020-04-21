@@ -4,6 +4,7 @@ import TablePage from '@/jingan-components/Page/Table';
 import { Badge } from '@/jingan-components/View';
 import moment from 'moment';
 import { YES_OR_NO, FORMAT } from '../config';
+import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 // import styles from './index.less';
 
 const ContractorConstructionList = ({ route, match, location }) => {
@@ -11,10 +12,10 @@ const ContractorConstructionList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, contractorName, range, blacklistStatus }) {
+    transform({ isUnit, unitId, companyId, contractorName, range, blacklistStatus }) {
       const [enteringDateStart, enteringDateEnd] = range || [];
       return {
-        companyName: companyName && companyName.trim(),
+        companyId: isUnit ? unitId : companyId,
         contractorName: contractorName && contractorName.trim(),
         enteringDateStart: enteringDateStart && enteringDateStart.format(FORMAT),
         enteringDateEnd: enteringDateEnd && enteringDateEnd.format(FORMAT),
@@ -23,9 +24,16 @@ const ContractorConstructionList = ({ route, match, location }) => {
     },
     fields: [
       {
-        name: 'companyName',
+        name: 'companyId',
         label: '单位名称',
-        component: 'Input',
+        component: 'Select',
+        props: {
+          fieldNames: COMPANY_FIELDNAMES,
+          mapper: COMPANY_MAPPER,
+          showSearch: true,
+          filterOption: false,
+          allowClear: true,
+        },
         hide({ isUnit }) {
           return isUnit;
         },
@@ -37,7 +45,7 @@ const ContractorConstructionList = ({ route, match, location }) => {
       },
       {
         name: 'range',
-        label: '进场日期',
+        label: '进厂日期',
         component: 'RangePicker',
         props: {
           allowClear: true,
@@ -73,7 +81,7 @@ const ContractorConstructionList = ({ route, match, location }) => {
       },
       {
         dataIndex: 'enteringDate',
-        title: '进场日期',
+        title: '进厂日期',
         render: value => value && moment(value).format(FORMAT),
       },
       {

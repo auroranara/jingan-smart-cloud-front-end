@@ -7,7 +7,7 @@ import { connect } from 'dva';
 import locales from '@/locales/zh-CN';
 import { kebabCase } from 'lodash';
 import { getPageSize, setPageSize } from '@/utils/utils';
-import styles from './index.less';
+// import styles from './index.less';
 
 const TablePage = props => {
   const {
@@ -21,7 +21,7 @@ const TablePage = props => {
     transform,
     isUnit,
     unitId,
-    formOperation,
+    // formOperation,
     tableAction,
     tableOperation,
     formRef,
@@ -114,7 +114,9 @@ const TablePage = props => {
                   }
                   disabled={!props.hasDeleteAuthority}
                 >
-                  <Link to="/">删除</Link>
+                  <Link to="/" disabled={!props.hasDeleteAuthority}>
+                    删除
+                  </Link>
                 </Popconfirm>
               ),
             }
@@ -186,7 +188,7 @@ const TablePage = props => {
             pageNum: pageSize !== prevPageSize ? 1 : current,
             pageSize,
           });
-          // values ? form.current.setFieldsValue(values) : form.current.resetFields();
+          values ? form.current.setFieldsValue(values) : form.current.resetFields();
           pageSize !== prevPageSize && setPageSize(pageSize);
         }}
         operation={(tableAction || []).reduce((result, { code: codeName, ...rest }) => {
@@ -354,5 +356,22 @@ export default connect(
         });
       },
     };
+  },
+  (stateProps, dispatchProps, ownProps) => ({
+    ...ownProps,
+    ...stateProps,
+    ...dispatchProps,
+  }),
+  {
+    areStatesEqual: () => false,
+    areOwnPropsEqual: () => false,
+    areStatePropsEqual: () => false,
+    areMergedPropsEqual: (props, nextProps) => {
+      return (
+        props.list === nextProps.list &&
+        props.loading === nextProps.loading &&
+        props.children === nextProps.children
+      );
+    },
   }
 )(TablePage);

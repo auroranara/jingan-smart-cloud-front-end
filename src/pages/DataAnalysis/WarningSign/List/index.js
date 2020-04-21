@@ -4,6 +4,7 @@ import TablePage from '@/jingan-components/Page/Table';
 import { Select } from '@/jingan-components/Form';
 import { FileList } from '@/jingan-components/View';
 import { CATEGORIES } from '../config';
+import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
@@ -12,18 +13,25 @@ const WarningSignList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, name, category }) {
+    transform({ isUnit, unitId, companyId, name, category }) {
       return {
-        companyName: companyName && companyName.trim(),
+        companyId: isUnit ? unitId : companyId,
         name: name && name.trim(),
         category,
       };
     },
     fields: [
       {
-        name: 'companyName',
+        name: 'companyId',
         label: '单位名称',
-        component: 'Input',
+        component: 'Select',
+        props: {
+          fieldNames: COMPANY_FIELDNAMES,
+          mapper: COMPANY_MAPPER,
+          showSearch: true,
+          filterOption: false,
+          allowClear: true,
+        },
         hide({ isUnit }) {
           return isUnit;
         },
@@ -58,7 +66,7 @@ const WarningSignList = ({ route, match, location }) => {
       },
       {
         dataIndex: 'category',
-        title: '承包商类别',
+        title: '警示牌类别',
         render: value =>
           isNumber(value) && (
             <Select

@@ -1,15 +1,22 @@
 import React from 'react';
 import FormPage from '@/jingan-components/Page/Form';
 import moment from 'moment';
-import { FORMAT, STATUSES } from '../config';
+import { FORMAT, YES_OR_NO } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
-import { YES_OR_NO } from '../../ContractorConstruction/config';
 import { phoneReg, postcodeReg } from '@/utils/validate';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
-const SupplierForm = ({ route, match, location }) => {
+const SupplierForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,
@@ -186,6 +193,7 @@ const SupplierForm = ({ route, match, location }) => {
         props: {
           list: YES_OR_NO,
         },
+        enableDefaultRules: true,
       },
       {
         name: 'certificateGetDate',
@@ -195,6 +203,7 @@ const SupplierForm = ({ route, match, location }) => {
         hide({ certificateExpireType }) {
           return certificateExpireType !== YES_OR_NO[0].key;
         },
+        enableDefaultRules: true,
       },
       {
         name: 'certificateExpireDate',
@@ -215,6 +224,7 @@ const SupplierForm = ({ route, match, location }) => {
         hide({ certificateExpireType }) {
           return certificateExpireType !== YES_OR_NO[0].key;
         },
+        enableDefaultRules: true,
       },
     ],
   };

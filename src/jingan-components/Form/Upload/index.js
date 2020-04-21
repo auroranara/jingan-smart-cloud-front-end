@@ -127,6 +127,7 @@ const FormUpload = ({
           )}
         </Upload>
         <Modal
+          className={styles.modal}
           visible={preview.visible}
           footer={null}
           onCancel={() => setPreview(preview => ({ ...preview, visible: false }))}

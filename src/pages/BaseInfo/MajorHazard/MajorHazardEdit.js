@@ -10,6 +10,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import TableList from './TableList';
+import { RangePicker } from '@/jingan-components/Form';
 import { hasAuthority } from '@/utils/customAuth';
 import Map from '../../RiskControl/FourColorImage/Map';
 import codes from '@/utils/codes';
@@ -33,16 +34,6 @@ const {
     majorHazard: { edit: editAuth },
   },
 } = codes;
-
-// function filterList(arr) {
-//   const newArr = arr.reduce(function(prev, element) {
-//     if (!prev.find(el => el.id === element.id)) {
-//       prev.push(element);
-//     }
-//     return prev;
-//   }, []);
-//   return newArr;
-// }
 
 @connect(
   ({
@@ -267,7 +258,8 @@ export default class MajorHazardEdit extends PureComponent {
           buildingId,
         } = this.state;
 
-        const { useDate, recordDate, dangerSourceList, ...restVlaue } = values;
+        const { useDate, recordDate: range, dangerSourceList, ...restVlaue } = values;
+        const [recordDate, recordDateEnd] = range || [];
 
         const payload = {
           ...restVlaue,
@@ -275,6 +267,7 @@ export default class MajorHazardEdit extends PureComponent {
           dangerSourceList: dangerSourceList.length > 0 && undefined,
           useDate: useDate && useDate.format('YYYY-MM-DD'),
           recordDate: recordDate && recordDate.format('YYYY-MM-DD'),
+          recordDateEnd: recordDateEnd && recordDateEnd.format('YYYY-MM-DD'),
           tankIds,
           areaIds,
           gasometerIds,
@@ -334,7 +327,7 @@ export default class MajorHazardEdit extends PureComponent {
   // 关闭企业弹框
   handleClose = () => {
     this.setState({ companyVisible: false }, () => {
-      this.childMap.handleDispose();
+      this.childMap && this.childMap.handleDispose();
     });
   };
 
@@ -907,21 +900,18 @@ export default class MajorHazardEdit extends PureComponent {
               </Fragment>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="备案日期">
+          <FormItem {...formItemLayout} label="危险源备案期限">
             {getFieldDecorator('recordDate', {
-              initialValue: detailList.recordDate ? moment(+detailList.recordDate) : undefined,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择备案日期',
-                },
-              ],
+              initialValue:
+                detailList.recordDate && detailList.recordDateEnd
+                  ? [moment(detailList.recordDate), moment(detailList.recordDateEnd)]
+                  : undefined,
+              rules: RangePicker.getRules({ label: '危险源备案期限' }),
             })(
-              <DatePicker
+              <RangePicker
+                className={styles.recordDate}
                 {...itemStyles}
-                showToday={false}
-                format="YYYY-MM-DD"
-                placeholder="请选择备案日期"
+                placeholder={['开始日期', '结束日期']}
               />
             )}
           </FormItem>

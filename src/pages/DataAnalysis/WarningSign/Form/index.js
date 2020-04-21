@@ -5,8 +5,16 @@ import { CATEGORIES, FORMAT } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 // import styles from './index.less';
 
-const WarningSignForm = ({ route, match, location }) => {
+const WarningSignForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,

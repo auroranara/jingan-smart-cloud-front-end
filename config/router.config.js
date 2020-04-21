@@ -1060,6 +1060,43 @@ module.exports = env => {
                 },
               ],
             },
+            // 生产场所
+            {
+              path: '/major-hazard-info/work-site',
+              code: 'majorHazardInfo.workSite',
+              name: 'workSite',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/major-hazard-info/work-site',
+                  redirect: '/major-hazard-info/work-site/list',
+                },
+                {
+                  name: 'list',
+                  path: '/major-hazard-info/work-site/list',
+                  code: 'majorHazardInfo.workSite.listView',
+                  component: './BaseInfo/WorkSite/List',
+                },
+                {
+                  name: 'add',
+                  path: '/major-hazard-info/work-site/add',
+                  code: 'majorHazardInfo.workSite.add',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+                {
+                  name: 'edit',
+                  path: '/major-hazard-info/work-site/edit/:id',
+                  code: 'majorHazardInfo.workSite.edit',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+                {
+                  name: 'view',
+                  path: '/major-hazard-info/work-site/view/:id',
+                  code: 'majorHazardInfo.workSite.view',
+                  component: './BaseInfo/WorkSite/Add',
+                },
+              ],
+            },
           ],
         },
 
@@ -2902,6 +2939,67 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'productionFacility', // 生产设施
+              code: 'facilityManagement.productionFacility',
+              path: '/facility-management/production-facility',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/facility-management/production-facility',
+                  redirect: '/facility-management/production-facility/list',
+                },
+                {
+                  name: 'list',
+                  code: 'facilityManagement.productionFacility.list',
+                  path: '/facility-management/production-facility/list',
+                  component: './FacilityManagement/ProductionFacility/List',
+                },
+                {
+                  name: 'detail',
+                  code: 'facilityManagement.productionFacility.view',
+                  path: '/facility-management/production-facility/detail/:id',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'add',
+                  code: 'facilityManagement.productionFacility.add',
+                  path: '/facility-management/production-facility/add',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'edit',
+                  code: 'facilityManagement.productionFacility.edit',
+                  path: '/facility-management/production-facility/edit/:id',
+                  component: './FacilityManagement/ProductionFacility/Other',
+                },
+                {
+                  name: 'checkList',
+                  code: 'facilityManagement.productionFacility.check.list',
+                  path: '/facility-management/production-facility/check/:id/list',
+                  component: './FacilityManagement/ProductionFacility/Check',
+                },
+                {
+                  name: 'checkDetail',
+                  code: 'facilityManagement.productionFacility.check.view',
+                  path: '/facility-management/production-facility/check/:id/detail/:checkId',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
+                },
+                {
+                  name: 'checkAdd',
+                  code: 'facilityManagement.productionFacility.check.add',
+                  path: '/facility-management/production-facility/check/:id/add',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
+                },
+                {
+                  name: 'checkEdit',
+                  code: 'facilityManagement.productionFacility.check.edit',
+                  path: '/facility-management/production-facility/check/:id/edit/:checkId',
+                  component: './FacilityManagement/ProductionFacility/Check/Other',
+                },
+              ],
+            },
           ],
         },
         {
@@ -3045,6 +3143,80 @@ module.exports = env => {
                 },
               ],
             },
+            // // 绩效考核标准
+            // {
+            //   path: '/target-responsibility/performance-measurement',
+            //   code: 'targetResponsibility.performanceMeasurement',
+            //   name: 'performanceMeasurement',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/target-responsibility/performance-measurement',
+            //       redirect: '/target-responsibility/performance-measurement/list',
+            //     },
+            //     {
+            //       path: '/target-responsibility/performance-measurement/list',
+            //       code: 'targetResponsibility.performanceMeasurement.list',
+            //       name: 'list',
+            //       component: './TargetResponsibility/PerformanceMeasurement/List',
+            //     },
+            //     {
+            //       path: '/target-responsibility/performance-measurement/detail/:id',
+            //       code: 'targetResponsibility.performanceMeasurement.detail',
+            //       name: 'detail',
+            //       component: './TargetResponsibility/PerformanceMeasurement/Form',
+            //     },
+            //     {
+            //       path: '/target-responsibility/performance-measurement/add',
+            //       code: 'targetResponsibility.performanceMeasurement.add',
+            //       name: 'add',
+            //       component: './TargetResponsibility/PerformanceMeasurement/Form',
+            //     },
+            //     {
+            //       path: '/target-responsibility/performance-measurement/edit/:id',
+            //       code: 'targetResponsibility.performanceMeasurement.edit',
+            //       name: 'edit',
+            //       component: './TargetResponsibility/PerformanceMeasurement/Form',
+            //     },
+            //   ],
+            // },
+            // // 安全绩效管理
+            // {
+            //   path: '/target-responsibility/safety-performance',
+            //   code: 'targetResponsibility.safetyPerformance',
+            //   name: 'safetyPerformance',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/target-responsibility/safety-performance',
+            //       redirect: '/target-responsibility/safety-performance/list',
+            //     },
+            //     {
+            //       path: '/target-responsibility/safety-performance/list',
+            //       code: 'targetResponsibility.safetyPerformance.list',
+            //       name: 'list',
+            //       component: './TargetResponsibility/SafetyPerformance/List',
+            //     },
+            //     {
+            //       path: '/target-responsibility/safety-performance/detail/:id',
+            //       code: 'targetResponsibility.safetyPerformance.detail',
+            //       name: 'detail',
+            //       component: './TargetResponsibility/SafetyPerformance/Form',
+            //     },
+            //     {
+            //       path: '/target-responsibility/safety-performance/add',
+            //       code: 'targetResponsibility.safetyPerformance.add',
+            //       name: 'add',
+            //       component: './TargetResponsibility/SafetyPerformance/Form',
+            //     },
+            //     {
+            //       path: '/target-responsibility/safety-performance/edit/:id',
+            //       code: 'targetResponsibility.safetyPerformance.edit',
+            //       name: 'edit',
+            //       component: './TargetResponsibility/SafetyPerformance/Form',
+            //     },
+            //   ],
+            // },
           ],
         },
 

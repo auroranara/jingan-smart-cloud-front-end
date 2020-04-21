@@ -4,6 +4,7 @@ import TablePage from '@/jingan-components/Page/Table';
 import { Badge } from '@/jingan-components/View';
 import moment from 'moment';
 import { RESULTS, FORMAT } from '../config';
+import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 // import styles from './index.less';
 
 const ContractorEvaluationList = ({ route, match, location }) => {
@@ -11,10 +12,10 @@ const ContractorEvaluationList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, contractorName, range, assessResult }) {
+    transform({ isUnit, unitId, companyId, contractorName, range, assessResult }) {
       const [assessDateStart, assessDateEnd] = range || [];
       return {
-        companyName: companyName && companyName.trim(),
+        companyId: isUnit ? unitId : companyId,
         contractorName: contractorName && contractorName.trim(),
         assessDateStart: assessDateStart && assessDateStart.format(FORMAT),
         assessDateEnd: assessDateEnd && assessDateEnd.format(FORMAT),
@@ -24,9 +25,16 @@ const ContractorEvaluationList = ({ route, match, location }) => {
     },
     fields: [
       {
-        name: 'companyName',
+        name: 'companyId',
         label: '单位名称',
-        component: 'Input',
+        component: 'Select',
+        props: {
+          fieldNames: COMPANY_FIELDNAMES,
+          mapper: COMPANY_MAPPER,
+          showSearch: true,
+          filterOption: false,
+          allowClear: true,
+        },
         hide({ isUnit }) {
           return isUnit;
         },

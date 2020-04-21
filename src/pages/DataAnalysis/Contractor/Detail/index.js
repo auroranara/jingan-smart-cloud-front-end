@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { Spin, Card, Drawer } from 'antd';
 import Form from '@/jingan-components/Form';
-import { Table, Link, Badge } from '@/jingan-components/View';
+import { Table, Link, Badge, TextAreaEllipsis } from '@/jingan-components/View';
 import DueDate from '../components/DueDate';
 import { connect } from 'dva';
 import locales from '@/locales/zh-CN';
@@ -25,18 +25,18 @@ const ContractorDetail = props => {
     },
     breadcrumbList,
     mode,
-    isUnit,
+    unitId,
     getDetail,
     loading,
     detail,
     detail: { companyId, companyName },
     constructionList,
     getConstructionList,
-    // constructionDetail,
+    constructionDetail,
     getConstructionDetail,
     evaluationList,
     getEvaluationList,
-    // evaluationDetail,
+    evaluationDetail,
     getEvaluationDetail,
     violationRecordList,
     getViolationRecordList,
@@ -45,10 +45,10 @@ const ContractorDetail = props => {
     loadingList,
     loadingDetail,
   } = props;
-  const form = useRef(null);
-  const form2 = useRef(null);
   const [activeKey, setActiveKey] = useState(undefined);
   const [visible, setVisible] = useState(false);
+  const [initialValues, setInitialValues] = useState(undefined);
+  const [initialValues2, setInitialValues2] = useState(undefined);
   const handleTabChange = activeKey => {
     setActiveKey(activeKey);
     if (activeKey === TAB_LIST[0].key) {
@@ -77,7 +77,7 @@ const ContractorDetail = props => {
               certificateExpireDate,
               certificateFileList,
             } = data;
-            form.current.setFieldsValue({
+            setInitialValues({
               contractorName: contractorName || undefined,
               contractorNature: contractorNature || undefined,
               contractorCategory: contractorCategory ? `${contractorCategory}` : undefined,
@@ -210,7 +210,7 @@ const ContractorDetail = props => {
       },
     },
   ];
-  let list, columns, drawerTitle, rows;
+  let list, columns, drawerTitle, rows, modalDetail;
   if (activeKey === TAB_LIST[0].key) {
     list = constructionList;
     columns = [
@@ -221,6 +221,7 @@ const ContractorDetail = props => {
       {
         dataIndex: 'workCompanyDesc',
         title: '施工单位简介',
+        render: value => <TextAreaEllipsis value={value} length={20} />,
       },
       {
         dataIndex: '施工队伍',
@@ -287,8 +288,7 @@ const ContractorDetail = props => {
                     planAssessDate,
                     blacklistStatus,
                   } = data;
-                  console.log(data);
-                  form2.current.setFieldsValue({
+                  setInitialValues2({
                     teamBusinessGrade: teamBusinessGrade || undefined,
                     creditCode: creditCode || undefined,
                     businessLicenseCode: businessLicenseCode || undefined,
@@ -386,7 +386,7 @@ const ContractorDetail = props => {
           },
           {
             name: 'enteringDate',
-            label: '进场日期',
+            label: '进厂日期',
             component: 'DatePicker',
           },
           {
@@ -406,6 +406,7 @@ const ContractorDetail = props => {
         bordered: false,
       },
     ];
+    modalDetail = constructionDetail;
   } else if (activeKey === TAB_LIST[1].key) {
     list = evaluationList;
     columns = [
@@ -457,7 +458,7 @@ const ContractorDetail = props => {
                     assessScore,
                     assessResult,
                   } = data;
-                  form2.current.setFieldsValue({
+                  setInitialValues2({
                     assessTitle: assessTitle || undefined,
                     contractorPlant: contractorPlant || undefined,
                     contractorPlantStatus: contractorPlantStatus || undefined,
@@ -510,12 +511,26 @@ const ContractorDetail = props => {
             name: 'assessDepartmentId',
             label: '考核部门',
             component: 'TreeSelect',
-            props: {
-              fieldNames: DEPARTMENT_FIELDNAMES,
-              mapper: DEPARTMENT_MAPPER,
-              params: {
-                companyId,
-              },
+            props({ companyId, assessDepartmentId, assessDepartmentName, mode }) {
+              return {
+                fieldNames: DEPARTMENT_FIELDNAMES,
+                mapper: DEPARTMENT_MAPPER,
+                params: {
+                  companyId,
+                },
+                key: companyId,
+                data:
+                  mode !== 'add' && assessDepartmentId
+                    ? {
+                        key: assessDepartmentId,
+                        value: assessDepartmentId,
+                        label: assessDepartmentName,
+                      }
+                    : undefined,
+              };
+            },
+            hide({ companyId }) {
+              return !companyId;
             },
           },
           {
@@ -540,6 +555,7 @@ const ContractorDetail = props => {
         bordered: false,
       },
     ];
+    modalDetail = evaluationDetail;
   } else if (activeKey === TAB_LIST[2].key) {
     list = violationRecordList;
     columns = [
@@ -555,23 +571,31 @@ const ContractorDetail = props => {
       {
         dataIndex: 'violators',
         title: '违章人姓名',
-        render: value => value && value.replace(',', '、'),
+        render: value => value && value.split(',').join('、'),
       },
       {
         dataIndex: 'processingResult',
         title: '处理结果',
+        render: value => <TextAreaEllipsis value={value} length={20} />,
       },
     ];
     drawerTitle = '违章记录详情';
   }
   return (
     <PageHeaderLayout
+      key={id}
       title={breadcrumbList[breadcrumbList.length - 1].title}
       breadcrumbList={breadcrumbList}
-      content={!isUnit && companyName}
+      content={unitId !== companyId && companyName}
     >
       <Spin spinning={loading}>
-        <Form ref={form} mode={mode} fields={fields} showOperation={false} params={detail} />
+        <Form
+          initialValues={initialValues}
+          mode={mode}
+          fields={fields}
+          showOperation={false}
+          params={detail}
+        />
         <Card
           className={styles.card}
           tabList={TAB_LIST}
@@ -629,12 +653,17 @@ const ContractorDetail = props => {
         }}
         zIndex={1009}
         width="33%"
-        forceRender
         bodyStyle={{ padding: 0 }}
       >
         <Spin spinning={loadingDetail}>
           {activeKey && (
-            <Form key={activeKey} ref={form2} mode={mode} fields={rows} showOperation={false} />
+            <Form
+              initialValues={initialValues2}
+              mode={mode}
+              fields={rows}
+              showOperation={false}
+              params={modalDetail}
+            />
           )}
         </Spin>
       </Drawer>

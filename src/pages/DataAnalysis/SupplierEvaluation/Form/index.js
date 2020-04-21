@@ -6,8 +6,16 @@ import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 import { DEPARTMENT_FIELDNAMES, DEPARTMENT_MAPPER } from '../../ContractorEvaluation/config';
 // import styles from './index.less';
 
-const SupplierEvaluationForm = ({ route, match, location }) => {
+const SupplierEvaluationForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,
@@ -111,7 +119,7 @@ const SupplierEvaluationForm = ({ route, match, location }) => {
         label: '考核部门',
         component: 'TreeSelect',
         dependencies: ['companyId'],
-        props({ isUnit, unitId, companyId }) {
+        props({ isUnit, unitId, companyId, assessDepartmentId, assessDepartmentName, mode }) {
           const key = isUnit ? unitId : companyId;
           return {
             fieldNames: DEPARTMENT_FIELDNAMES,
@@ -120,6 +128,14 @@ const SupplierEvaluationForm = ({ route, match, location }) => {
               companyId: key,
             },
             key,
+            data:
+              mode !== 'add' && assessDepartmentId
+                ? {
+                    key: assessDepartmentId,
+                    value: assessDepartmentId,
+                    label: assessDepartmentName,
+                  }
+                : undefined,
           };
         },
         hide({ isUnit, companyId }) {

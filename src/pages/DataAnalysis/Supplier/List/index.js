@@ -4,6 +4,7 @@ import TablePage from '@/jingan-components/Page/Table';
 import DueDate from '../../Contractor/components/DueDate';
 import moment from 'moment';
 import { STATUSES, FORMAT } from '../config';
+import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 import styles from './index.less';
 
 const SupplierList = ({ route, match, location }) => {
@@ -11,18 +12,25 @@ const SupplierList = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ companyName, supplierName, certificateExpireStatus }) {
+    transform({ isUnit, unitId, companyId, supplierName, certificateExpireStatus }) {
       return {
-        companyName: companyName && companyName.trim(),
+        companyId: isUnit ? unitId : companyId,
         supplierName: supplierName && supplierName.trim(),
         certificateExpireStatus,
       };
     },
     fields: [
       {
-        name: 'companyName',
+        name: 'companyId',
         label: '单位名称',
-        component: 'Input',
+        component: 'Select',
+        props: {
+          fieldNames: COMPANY_FIELDNAMES,
+          mapper: COMPANY_MAPPER,
+          showSearch: true,
+          filterOption: false,
+          allowClear: true,
+        },
         hide({ isUnit }) {
           return isUnit;
         },

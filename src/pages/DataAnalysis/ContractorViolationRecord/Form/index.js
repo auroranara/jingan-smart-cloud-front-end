@@ -6,8 +6,16 @@ import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 import { CONTRACTOR_FIELDNAMES, CONTRACTOR_MAPPER } from '../../ContractorConstruction/config';
 // import styles from './index.less';
 
-const ContractorViolationRecordForm = ({ route, match, location }) => {
+const ContractorViolationRecordForm = ({
+  route,
+  match,
+  location,
+  match: {
+    params: { id },
+  },
+}) => {
   const props = {
+    key: id,
     route,
     match,
     location,
