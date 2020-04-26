@@ -108,7 +108,7 @@ export const filterBigPlatform = (array, model) => {
     // 处理路径path
     if (['electricityMonitor', 'gas', 'smoke'].includes(name)) {
       item.path = `${path}${grids.length ? grids[0].value : 'index'}`
-    } else if (['chemical'].includes(name)) {
+    } else if (['chemical', 'led'].includes(name)) {
       item.path = path + (companyId || 'DccBRhlrSiu9gMV7fmvizw'); // temp
     } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
       item.path = path + (companyId || 'index');
@@ -140,7 +140,7 @@ export const filterBigPlatform = (array, model) => {
       if (name === 'gasStation') return [...arr, item]
       if (name === 'chemical') return [...arr, item]
     }
-    // if (name === 'chemical') return [...arr, item]
+    if (name === 'led') return [...arr, item];
     return arr;
   }, [])
 }

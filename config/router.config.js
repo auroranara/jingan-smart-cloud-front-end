@@ -70,7 +70,7 @@ module.exports = env => {
       path: '/big-platform',
       component: '../layouts/BigPlatformAuthLayout',
       routes: [
-        // { path: '/big-platform', redirect: '/big-platform/safety/government/index' },
+        //{ path: '/big-platform', redirect: '/big-platform/safety/government/index' },
         {
           path: '/big-platform/chemical/:unitId',
           code: 'dashboard.chemical',
@@ -182,6 +182,12 @@ module.exports = env => {
           code: 'dashboard.process',
           name: 'process',
           component: './BigPlatform/Process',
+        },
+        {
+          path: '/big-platform/led/:companyId',
+          code: 'dashboard.led',
+          name: 'process',
+          component: './BigPlatform/LED',
         },
       ],
     },
