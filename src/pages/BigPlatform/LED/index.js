@@ -201,9 +201,7 @@ export default class Led extends PureComponent {
               今天我公司已经进行了安全风险研判，各项安全风险防控措施落实到位，我承诺所有生产装置处于安全运行状态，罐区、仓库等重大危险源安全风险得到有效控制。
             </div>
             <div className={styles.itemExtra}>负责人：周新</div>
-            <div className={styles.itemExtra}>
-              {createTime ? moment(+createTime).format('YYYY-MM-DD') : ''}
-            </div>
+            <div className={styles.itemExtra}>{moment().format('YYYY-MM-DD')}</div>
           </div>
         </div>
       </div>
