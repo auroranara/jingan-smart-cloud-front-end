@@ -1,5 +1,6 @@
 import React from 'react';
-import { Layout } from 'antd';
+import { Layout, ConfigProvider } from 'antd';
+import zhCN from 'antd/es/locale/zh_CN';
 import DocumentTitle from 'react-document-title';
 import isEqual from 'lodash/isEqual';
 import memoizeOne from 'memoize-one';
@@ -336,15 +337,17 @@ class BasicLayout extends React.PureComponent {
     );
     return (
       <React.Fragment>
-        <DocumentTitle title={this.getPageTitle(pathname)}>
-          <ContainerQuery query={query}>
-            {params => (
-              <Context.Provider value={this.getContext()}>
-                <div className={classNames(params)}>{layout}</div>
-              </Context.Provider>
-            )}
-          </ContainerQuery>
-        </DocumentTitle>
+        <ConfigProvider locale={zhCN}>
+          <DocumentTitle title={this.getPageTitle(pathname)}>
+            <ContainerQuery query={query}>
+              {params => (
+                <Context.Provider value={this.getContext()}>
+                  <div className={classNames(params)}>{layout}</div>
+                </Context.Provider>
+              )}
+            </ContainerQuery>
+          </DocumentTitle>
+        </ConfigProvider>
       </React.Fragment>
     );
   }
