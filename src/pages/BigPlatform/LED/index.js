@@ -33,15 +33,35 @@ export default class Led extends PureComponent {
 
   componentDidMount() {
     this.fetchCompanyMsg();
-    this.fetchSafetyPromise();
+    this.fetchLedData();
     this.myTimer = setInterval(() => {
       this.setCurrentTime();
     }, 1000);
     // 获取Socket
     this.initWebSocket();
+    // this.fetchSafetyPromise();
     // 轮询
     // this.pollTimer = setInterval(this.polling, DELAY);
   }
+
+  // 获取统计初始化数据
+  fetchLedData = () => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'bigPlatform/fetchLedData',
+      payload: {
+        companyId,
+      },
+      callback: res => {
+        this.setState({ personData: res });
+      },
+    });
+  };
 
   initWebSocket = () => {
     const {
@@ -119,14 +139,14 @@ export default class Led extends PureComponent {
         pageSize: 10,
         pageNum: 1,
       },
-      callback: ({ list }) => {
-        const [{ allContent, createTime }] = list;
-        // const arrayData = allContent.split(',');
-        this.setState({
-          // detailList: arrayData,
-          createTime: createTime,
-        });
-      },
+      // callback: ({ list }) => {
+      //   const [{ allContent, createTime }] = list;
+      //   const arrayData = allContent.split(',');
+      //   this.setState({
+      //     detailList: arrayData,
+      //     createTime: createTime,
+      //   });
+      // },
     });
   };
 
@@ -150,25 +170,7 @@ export default class Led extends PureComponent {
         },
       },
     } = this.props;
-
     const { personData, currentTime, createTime } = this.state;
-
-    // const personData = [
-    //   '生产区域人员统计公示',
-    //   '安全巡查人员 : 0',
-    //   '操作工 : 0',
-    //   '操作工1238 : 0',
-    //   '操作工1236 : 0',
-    //   '作业人员 : 0',
-    //   '操作人员 : 0',
-    //   '操作工1237 : 0',
-    //   '操作工1240 : 0',
-    //   '管理人员 : 0',
-    //   '操作工1239 : 0',
-    //   '操作工1241 : 0',
-    //   '外协人员 : 0',
-    //   '临时人员 : 0',
-    // ];
 
     const personList = personData.slice(1) || [];
     console.log('personList', personList);

@@ -48,10 +48,11 @@ import {
   getSelfCheckPointDataForPage,
   getCompanyInfo,
   getMapLocationByParent,
+  getLedData,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
-const getColorByRiskLevel = function (level) {
+const getColorByRiskLevel = function(level) {
   switch (+level) {
     case 1:
       return '红色';
@@ -108,7 +109,7 @@ const transformHiddenDangerFields = ({
     fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
     status: +status,
     background: background ? background.split(',')[0] : '',
-    backgrounds:background ? background.split(',') :[],
+    backgrounds: background ? background.split(',') : [],
     source:
       (source_type_name === '网格点上报' && '监督点') ||
       (source_type_name === '风险点上报' &&
@@ -305,6 +306,7 @@ export default {
     riskDetailNoOrder: [],
     // 手机号是否可见
     phoneVisible: false,
+    ledData: [],
   },
 
   effects: {
@@ -443,8 +445,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-              ({ id, webUrl }) => /^http/.test(webUrl) && id
-            )
+                ({ id, webUrl }) => /^http/.test(webUrl) && id
+              )
             : [],
       };
       // if (response.code === 200) {
@@ -1156,9 +1158,24 @@ export default {
         error();
       }
     },
+    // 获取led初始化数据
+    *fetchLedData({ payload, callback }, { call, put }) {
+      const response = yield call(getLedData, payload);
+      yield put({
+        type: 'saveLedData',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
   },
 
   reducers: {
+    saveLedData(state, { payload }) {
+      return {
+        ...state,
+        ledData: payload,
+      };
+    },
     itemList(state, { payload }) {
       return {
         ...state,

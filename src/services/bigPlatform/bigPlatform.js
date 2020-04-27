@@ -261,3 +261,8 @@ export async function getSelfCheckPointDataForPage(params) {
 export async function getCompanyInfo(params) {
   return request(`/acloud_new/v2/sfc/companyInfo.json?${stringify(params)}`);
 }
+
+// 获取led数据
+export async function getLedData(params) {
+  return request(`/acloud_new/v2/ci/HGFace/getJobCountInProductArea?${stringify(params)}`);
+}
