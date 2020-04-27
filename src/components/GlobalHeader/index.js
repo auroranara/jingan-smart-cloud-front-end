@@ -58,7 +58,8 @@ export default class GlobalHeader extends PureComponent {
           type={collapsed ? 'menu-unfold' : 'menu-fold'}
           onClick={this.toggle}
         />
-        <div className={styles.menuItem}><span onClick={() => router.push('/company-workbench/view')}>工作台</span></div>
+        {/* <div className={styles.menuItem}><span onClick={() => router.push('/company-workbench/view')}>工作台</span></div> */}
+        <div className={styles.menuItem}><span onClick={() => router.push('/role-authorization/account-management')}>工作台</span></div>
         <div className={styles.menuItem}><span onClick={() => router.push('/menu-reveal')}>系统菜单</span></div>
         {dropdown}
         <RightContent {...this.props} />

@@ -332,25 +332,25 @@ module.exports = env => {
         },
 
         // 工作台（企业）
-        {
-          path: '/company-workbench',
-          code: 'companyWorkbench',
-          name: 'companyWorkbench',
-          icon: 'bar-chart',
-          hideInMenu: true,
-          routes: [
-            {
-              path: '/company-workbench',
-              redirect: '/company-workbench/view',
-            },
-            {
-              path: '/company-workbench/view',
-              code: 'companyWorkbench.view',
-              name: 'view',
-              component: './CompanyWorkbench/Workbench/WorkbenchList',
-            },
-          ],
-        },
+        // {
+        //   path: '/company-workbench',
+        //   code: 'companyWorkbench',
+        //   name: 'companyWorkbench',
+        //   icon: 'bar-chart',
+        //   hideInMenu: true,
+        //   routes: [
+        //     {
+        //       path: '/company-workbench',
+        //       redirect: '/company-workbench/view',
+        //     },
+        //     {
+        //       path: '/company-workbench/view',
+        //       code: 'companyWorkbench.view',
+        //       name: 'view',
+        //       component: './CompanyWorkbench/Workbench/WorkbenchList',
+        //     },
+        //   ],
+        // },
         {
           name: 'exception',
           icon: 'warning',
@@ -1106,125 +1106,125 @@ module.exports = env => {
           ],
         },
 
-        {
-          path: '/iot', // 物联网监测
-          code: 'iot',
-          name: 'iot',
-          icon: 'wifi',
-          systemType: 0,
-          routes: [
-            {
-              path: '/iot/major-hazard', // 重大危险源监测及报表
-              code: 'iot.majorHazard',
-              name: 'majorHazard',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/iot/major-hazard',
-                  redirect: '/iot/major-hazard/index',
-                },
-                {
-                  path: '/iot/major-hazard/index',
-                  code: 'iot.majorHazard.index',
-                  name: 'index',
-                  component: './IoT/MajorHazard',
-                },
-                {
-                  path: '/iot/major-hazard/tank-area',
-                  code: 'iot.majorHazard.tankArea',
-                  name: 'tankArea',
-                  routes: [
-                    {
-                      path: '/iot/major-hazard/tank-area',
-                      redirect: '/iot/major-hazard/tank-area/real-time',
-                    },
-                    {
-                      path: '/iot/major-hazard/tank-area/real-time',
-                      code: 'iot.majorHazard.tankArea.realTime',
-                      name: 'realTime',
-                      component: './IoT/MajorHazard/TankArea/RealTime',
-                    },
-                    {
-                      path: '/iot/major-hazard/tank-area/detail/:id',
-                      code: 'iot.majorHazard.tankArea.detail',
-                      name: 'detail',
-                      component: './IoT/MajorHazard/TankArea/Detail',
-                    },
-                  ],
-                },
-                {
-                  path: '/iot/major-hazard/tank',
-                  code: 'iot.majorHazard.tank',
-                  name: 'tank',
-                  routes: [
-                    {
-                      path: '/iot/major-hazard/tank',
-                      redirect: '/iot/major-hazard/tank/real-time',
-                    },
-                    {
-                      path: '/iot/major-hazard/tank/real-time',
-                      code: 'iot.majorHazard.tank.realTime',
-                      name: 'realTime',
-                      component: './IoT/MajorHazard/Tank/RealTime',
-                    },
-                    {
-                      path: '/iot/major-hazard/tank/detail/:id',
-                      code: 'iot.majorHazard.tank.detail',
-                      name: 'detail',
-                      component: './IoT/MajorHazard/Tank/Detail',
-                    },
-                  ],
-                },
-                {
-                  path: '/iot/major-hazard/storage-area',
-                  code: 'iot.majorHazard.storageArea',
-                  name: 'storageArea',
-                  routes: [
-                    {
-                      path: '/iot/major-hazard/storage-area',
-                      redirect: '/iot/major-hazard/storage-area/real-time',
-                    },
-                    {
-                      path: '/iot/major-hazard/storage-area/real-time',
-                      code: 'iot.majorHazard.storageArea.realTime',
-                      name: 'realTime',
-                      component: './IoT/MajorHazard/StorageArea/RealTime',
-                    },
-                    {
-                      path: '/iot/major-hazard/storage-area/detail/:id',
-                      code: 'iot.majorHazard.storageArea.detail',
-                      name: 'detail',
-                      component: './IoT/MajorHazard/StorageArea/Detail',
-                    },
-                  ],
-                },
-                {
-                  path: '/iot/major-hazard/storage-house',
-                  code: 'iot.majorHazard.storageHouse',
-                  name: 'storageHouse',
-                  routes: [
-                    {
-                      path: '/iot/major-hazard/storage-house',
-                      redirect: '/iot/major-hazard/storage-house/real-time',
-                    },
-                    {
-                      path: '/iot/major-hazard/storage-house/real-time',
-                      code: 'iot.majorHazard.storageHouse.realTime',
-                      name: 'realTime',
-                      component: './IoT/MajorHazard/StorageHouse/RealTime',
-                    },
-                    {
-                      path: '/iot/major-hazard/storage-house/detail/:id',
-                      code: 'iot.majorHazard.storageHouse.detail',
-                      name: 'detail',
-                      component: './IoT/MajorHazard/StorageHouse/Detail',
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        // {
+        //   path: '/iot', // 物联网监测
+        //   code: 'iot',
+        //   name: 'iot',
+        //   icon: 'wifi',
+        //   systemType: 0,
+        //   routes: [
+        //     {
+        //       path: '/iot/major-hazard', // 重大危险源监测及报表
+        //       code: 'iot.majorHazard',
+        //       name: 'majorHazard',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/iot/major-hazard',
+        //           redirect: '/iot/major-hazard/index',
+        //         },
+        //         {
+        //           path: '/iot/major-hazard/index',
+        //           code: 'iot.majorHazard.index',
+        //           name: 'index',
+        //           component: './IoT/MajorHazard',
+        //         },
+        //         {
+        //           path: '/iot/major-hazard/tank-area',
+        //           code: 'iot.majorHazard.tankArea',
+        //           name: 'tankArea',
+        //           routes: [
+        //             {
+        //               path: '/iot/major-hazard/tank-area',
+        //               redirect: '/iot/major-hazard/tank-area/real-time',
+        //             },
+        //             {
+        //               path: '/iot/major-hazard/tank-area/real-time',
+        //               code: 'iot.majorHazard.tankArea.realTime',
+        //               name: 'realTime',
+        //               component: './IoT/MajorHazard/TankArea/RealTime',
+        //             },
+        //             {
+        //               path: '/iot/major-hazard/tank-area/detail/:id',
+        //               code: 'iot.majorHazard.tankArea.detail',
+        //               name: 'detail',
+        //               component: './IoT/MajorHazard/TankArea/Detail',
+        //             },
+        //           ],
+        //         },
+        //         {
+        //           path: '/iot/major-hazard/tank',
+        //           code: 'iot.majorHazard.tank',
+        //           name: 'tank',
+        //           routes: [
+        //             {
+        //               path: '/iot/major-hazard/tank',
+        //               redirect: '/iot/major-hazard/tank/real-time',
+        //             },
+        //             {
+        //               path: '/iot/major-hazard/tank/real-time',
+        //               code: 'iot.majorHazard.tank.realTime',
+        //               name: 'realTime',
+        //               component: './IoT/MajorHazard/Tank/RealTime',
+        //             },
+        //             {
+        //               path: '/iot/major-hazard/tank/detail/:id',
+        //               code: 'iot.majorHazard.tank.detail',
+        //               name: 'detail',
+        //               component: './IoT/MajorHazard/Tank/Detail',
+        //             },
+        //           ],
+        //         },
+        //         {
+        //           path: '/iot/major-hazard/storage-area',
+        //           code: 'iot.majorHazard.storageArea',
+        //           name: 'storageArea',
+        //           routes: [
+        //             {
+        //               path: '/iot/major-hazard/storage-area',
+        //               redirect: '/iot/major-hazard/storage-area/real-time',
+        //             },
+        //             {
+        //               path: '/iot/major-hazard/storage-area/real-time',
+        //               code: 'iot.majorHazard.storageArea.realTime',
+        //               name: 'realTime',
+        //               component: './IoT/MajorHazard/StorageArea/RealTime',
+        //             },
+        //             {
+        //               path: '/iot/major-hazard/storage-area/detail/:id',
+        //               code: 'iot.majorHazard.storageArea.detail',
+        //               name: 'detail',
+        //               component: './IoT/MajorHazard/StorageArea/Detail',
+        //             },
+        //           ],
+        //         },
+        //         {
+        //           path: '/iot/major-hazard/storage-house',
+        //           code: 'iot.majorHazard.storageHouse',
+        //           name: 'storageHouse',
+        //           routes: [
+        //             {
+        //               path: '/iot/major-hazard/storage-house',
+        //               redirect: '/iot/major-hazard/storage-house/real-time',
+        //             },
+        //             {
+        //               path: '/iot/major-hazard/storage-house/real-time',
+        //               code: 'iot.majorHazard.storageHouse.realTime',
+        //               name: 'realTime',
+        //               component: './IoT/MajorHazard/StorageHouse/RealTime',
+        //             },
+        //             {
+        //               path: '/iot/major-hazard/storage-house/detail/:id',
+        //               code: 'iot.majorHazard.storageHouse.detail',
+        //               name: 'detail',
+        //               component: './IoT/MajorHazard/StorageHouse/Detail',
+        //             },
+        //           ],
+        //         },
+        //       ],
+        //     },
+        //   ],
+        // },
 
         {
           path: '/safety-knowledge-base', // 安全生产知识库
