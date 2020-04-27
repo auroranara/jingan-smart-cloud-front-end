@@ -186,7 +186,7 @@ module.exports = env => {
         {
           path: '/big-platform/led/:companyId',
           code: 'dashboard.led',
-          name: 'process',
+          name: 'led',
           component: './BigPlatform/LED',
         },
       ],

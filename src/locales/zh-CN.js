@@ -24,6 +24,8 @@ export default {
   'menu.bigPlatform.threedgis': '3D-GIS驾驶舱',
   'menu.bigPlatform.gasStation': '加油站驾驶舱',
   'menu.bigPlatform.chemical': '化工安全生产驾驶舱',
+  'menu.bigPlatform.process': '重点监管危险化工工艺',
+  'menu.bigPlatform.led': 'LED',
   'menu.menuReveal': '五位一体信息化管理平台',
   'menu.menuReveal.system': '五位一体信息化管理平台',
   'menu.menuReveal.menus': '五位一体信息化管理平台',
