@@ -315,14 +315,14 @@ export default class PersonnelList extends PureComponent {
 
   handleImgBefore = file => {
     const { imgLoading } = this.state;
-    const isZip = file.type === 'application/x-zip-compressed';
+    // const isZip = file.type === 'application/x-zip-compressed';
     if (imgLoading) {
       message.error('尚未上传结束');
     }
-    if (!isZip) {
-      message.error('上传失败，请上传.zip格式');
-    }
-    return isZip && !imgLoading;
+    // if (!isZip) {
+    //   message.error('上传失败，请上传.zip格式');
+    // }
+    return !imgLoading;
   };
 
   // 跳转到批量导入记录页面
