@@ -72,6 +72,8 @@ export const filterBigPlatform = (array, model) => {
     },
     grids,
   } = model;
+
+  console.log('personnelPositioning', personnelPositioning);
   // const regulatoryClassification = ['1', '2'];
   const classification =
     (Array.isArray(regulatoryClassification) &&
@@ -120,7 +122,8 @@ export const filterBigPlatform = (array, model) => {
       // 维保企业
       if (name === 'companySafety' && safetyProduction) return [...arr, item];
       if (name === 'dynamicMonitor' && monitorService) return [...arr, item];
-      if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item];
+      // if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item];
+      if (name === 'personnelPositioning') return [...arr, item];
       if (name === 'operation') return [...arr, item];
     } else if (unitType === 2) {
       // 政府
@@ -136,7 +139,8 @@ export const filterBigPlatform = (array, model) => {
       if (name === 'fireControl' && fireService && clfcFireControlAuth) return [...arr, item]
       if (name === 'fireMaintenance' && fireService && clfcFireControlAuth) return [...arr, item]
       if (name === 'dynamicMonitor' && monitorService && clfcSafetyAuth) return [...arr, item]
-      if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
+      // if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
+      if (name === 'personnelPositioning') return [...arr, item]
       if (name === 'gasStation') return [...arr, item]
       if (name === 'chemical') return [...arr, item]
     }
