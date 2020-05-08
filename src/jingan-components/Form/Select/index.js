@@ -4,7 +4,8 @@ import Ellipsis from '@/components/Ellipsis';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import { connect } from 'dva';
 import classNames from 'classnames';
-import debounce from 'lodash/debounce';
+import { debounce, isEqual } from 'lodash';
+import { isObject } from '@/utils/utils';
 import styles from './index.less';
 const { Option } = Select;
 
@@ -24,6 +25,96 @@ const PRESETS = {
       getList: 'getUnitList',
     },
   },
+  gridPerson: {
+    fieldNames: {
+      key: 'id',
+      value: 'userName',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'gridPersonList',
+      getList: 'getGridPersonList',
+    },
+    showSearch: true,
+    filterOption: false,
+    // pagination: false,
+  },
+  businessType: {
+    fieldNames: {
+      key: 'id',
+      value: 'label',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'businessTypeList',
+      getList: 'getBusinessTypeList',
+    },
+  },
+  industry: {
+    fieldNames: {
+      key: 'value',
+      value: 'desc',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'industryList',
+      getList: 'getIndustryList',
+    },
+  },
+  specialRemediationSection: {
+    fieldNames: {
+      key: 'id',
+      value: 'teamName',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'specialRemediationSectionList',
+      getList: 'getSpecialRemediationSectionList',
+    },
+    showSearch: true,
+    filterOption: false,
+  },
+  safetyService: {
+    fieldNames: {
+      key: 'id',
+      value: 'name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'safetyServiceList',
+      getList: 'getSafetyServiceList',
+    },
+    showSearch: true,
+    filterOption: false,
+  },
+  account: {
+    fieldNames: {
+      key: 'id',
+      value: 'userName',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'accountList',
+      getList: 'getAccountList',
+    },
+    showSearch: true,
+    filterOption: false,
+    // pagination: false,
+  },
+  employee: {
+    fieldNames: {
+      key: 'studentId',
+      value: 'name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'employeeList',
+      getList: 'getEmployeeList',
+    },
+    showSearch: true,
+    filterOption: false,
+    // pagination: false,
+  },
 };
 
 const FormSelect = ({
@@ -32,7 +123,7 @@ const FormSelect = ({
   originalMode,
   mode,
   fieldNames,
-  list,
+  list: array,
   loading = false,
   placeholder = '请选择',
   showArrow = true,
@@ -50,12 +141,15 @@ const FormSelect = ({
   searchParams,
   separator = ',',
   data: initialData,
+  params,
   ...rest
 }) => {
   const [data, setData] = useState(initialData);
+  const [prevParams, setPrevParams] = useState(params);
   const { key: k, value: v } = { ...FIELDNAMES, ...fieldNames };
   const async = showSearch && !filterOption;
   const multiple = originalMode === 'multiple' || originalMode === 'tags';
+  const list = isObject(array) ? array.list : array;
   useEffect(() => {
     if (
       labelInValue /* labelInValue为true */ ||
@@ -72,7 +166,8 @@ const FormSelect = ({
     () => {
       if (!labelInValue /* labelInValue为false */) {
         if (value && (!multiple || value.length) /* value存在时 */) {
-          const callback = (success, list) => {
+          const callback = (success, array) => {
+            const list = isObject(array) ? array.list : array;
             const data = (multiple ? value : [value]).map(key => {
               const item = (list || []).find(item => item[k] === key);
               return item
@@ -110,7 +205,7 @@ const FormSelect = ({
                 list.find(item => item[k] === key)
               ) /* 本地列表中能找到所有选项时 */
             ) {
-              callback(true, list);
+              callback(true, array);
               getList && getList();
             } else {
               /* 从后台筛选 */
@@ -120,10 +215,11 @@ const FormSelect = ({
                       ? initializeParams(value)
                       : {
                           [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
+                          pageSize: multiple ? value.length : 1,
                         },
                     callback
                   )
-                : callback(true, list);
+                : callback(true, array);
               getList && getList();
             }
           }
@@ -134,6 +230,15 @@ const FormSelect = ({
       }
     },
     [value]
+  );
+  useEffect(
+    () => {
+      if (!isEqual(params, prevParams)) {
+        setPrevParams(params);
+        getList && getList();
+      }
+    },
+    [params]
   );
   if (mode !== 'detail') {
     // 根据输入值进行后台筛选
@@ -208,41 +313,52 @@ FormSelect.getRules = ({ label, labelInValue, originalMode }) => {
 };
 
 export default connect(
-  (state, { mapper, list, loading, preset, fieldNames }) => {
-    const { namespace, list: l, getList: gl } = mapper || (PRESETS[preset] || {}).mapper || {};
+  (state, { mapper, list, loading, preset, fieldNames, params }) => {
+    const { mapper: presetMapper, fieldNames: presetFieldNames, pagination, ...rest } =
+      PRESETS[preset] || {};
+    const { namespace, list: l, getList: gl } = mapper || presetMapper || {};
     return {
-      list: namespace && l ? state[namespace][l] : list,
+      list:
+        !params || Object.values(params).some(v => v)
+          ? namespace && l
+            ? state[namespace][l]
+            : list
+          : undefined,
       loading: namespace && gl ? state.loading.effects[`${namespace}/${gl}`] : loading,
-      fieldNames: fieldNames || (PRESETS[preset] || {}).fieldNames,
+      fieldNames: fieldNames || presetFieldNames,
+      ...rest,
     };
   },
-  (dispatch, { mapper, params, getList, callback, preset }) => {
-    const { namespace, getList: gl } = mapper || (PRESETS[preset] || {}).mapper || {};
+  (dispatch, { mapper, params, getList, callback, preset, pagination }) => {
+    const { mapper: presetMapper, pagination: presetPagination = true } = PRESETS[preset] || {};
+    const { namespace, getList: gl } = mapper || presetMapper || {};
     return {
       getList:
-        namespace && gl
-          ? (payload, cb) => {
-              dispatch({
-                type: `${namespace}/${gl}`,
-                payload: {
-                  pageNum: 1,
-                  pageSize: 10,
-                  ...params,
-                  ...payload,
-                },
-                callback(...args) {
-                  cb && cb(...args);
-                  callback && callback(...args);
-                },
-              });
-            }
-          : getList,
+        !params || Object.values(params).some(v => v)
+          ? namespace && gl
+            ? (payload, cb) => {
+                dispatch({
+                  type: `${namespace}/${gl}`,
+                  payload: {
+                    pageNum: 1,
+                    pageSize: (pagination !== undefined ? pagination : presetPagination) ? 10 : 0,
+                    ...params,
+                    ...payload,
+                  },
+                  callback(...args) {
+                    cb && cb(...args);
+                    callback && callback(...args);
+                  },
+                });
+              }
+            : getList
+          : undefined,
     };
   },
   (
     stateProps,
     dispatchProps,
-    { mapper, params, list, loading, getList, callback, preset, fieldNames, ...ownProps }
+    { mapper, list, loading, getList, callback, preset, fieldNames, pagination, ...ownProps }
   ) => ({
     ...ownProps,
     ...stateProps,
@@ -257,7 +373,8 @@ export default connect(
         props.value === nextProps.value &&
         props.list === nextProps.list &&
         props.loading === nextProps.loading &&
-        props.mode === nextProps.mode
+        props.mode === nextProps.mode &&
+        isEqual(props.params, nextProps.params)
       );
     },
   }

@@ -71,68 +71,66 @@ const TableIndex = ({
   );
   return showCard ? (
     <Card>
-      {operation && (
-        <div className={styles.operationContainer}>
-          {showAddButton && (
-            <div className={styles.operationWrapper}>
-              <Button type="primary" href={`#${addPath}`} disabled={!hasAddAuthority}>
-                新增
-              </Button>
-            </div>
-          )}
-          {showExportButton && (
-            <div className={styles.operationWrapper}>
-              <Button
-                onClick={() => {
-                  console.log('导出');
-                }}
-                disabled={!hasExportAuthority}
-              >
-                导出
-              </Button>
-            </div>
-          )}
-          {Array.isArray(operation) &&
-            operation.map((item, index) => {
-              return (
-                <div key={index} className={styles.operationWrapper}>
-                  {item}
-                </div>
-              );
-            })}
-          {(showAddButton ||
-            showExportButton ||
-            (Array.isArray(operation) && operation.length > 0)) && <Divider type="vertical" />}
+      <div className={styles.operationContainer}>
+        {showAddButton && (
           <div className={styles.operationWrapper}>
-            <div className={styles.actionContainer}>
-              <div className={styles.actionWrapper}>
-                {!isFullscreen ? (
-                  <Tooltip title="全屏">
-                    <LegacyIcon
-                      className={styles.action}
-                      type="fullscreen"
-                      onClick={fullscreenCallback}
-                    />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="退出全屏">
-                    <LegacyIcon
-                      className={styles.action}
-                      type="fullscreen-exit"
-                      onClick={fullscreenCallback}
-                    />
-                  </Tooltip>
-                )}
+            <Button type="primary" href={`#${addPath}`} disabled={!hasAddAuthority}>
+              新增
+            </Button>
+          </div>
+        )}
+        {showExportButton && (
+          <div className={styles.operationWrapper}>
+            <Button
+              onClick={() => {
+                console.log('导出');
+              }}
+              disabled={!hasExportAuthority}
+            >
+              导出
+            </Button>
+          </div>
+        )}
+        {Array.isArray(operation) &&
+          operation.map((item, index) => {
+            return (
+              <div key={index} className={styles.operationWrapper}>
+                {item}
               </div>
-              <div className={styles.actionWrapper}>
-                <Tooltip title="刷新">
-                  <LegacyIcon className={styles.action} type="reload" onClick={onReload} />
+            );
+          })}
+        {(showAddButton ||
+          showExportButton ||
+          (Array.isArray(operation) && operation.length > 0)) && <Divider type="vertical" />}
+        <div className={styles.operationWrapper}>
+          <div className={styles.actionContainer}>
+            <div className={styles.actionWrapper}>
+              {!isFullscreen ? (
+                <Tooltip title="全屏">
+                  <LegacyIcon
+                    className={styles.action}
+                    type="fullscreen"
+                    onClick={fullscreenCallback}
+                  />
                 </Tooltip>
-              </div>
+              ) : (
+                <Tooltip title="退出全屏">
+                  <LegacyIcon
+                    className={styles.action}
+                    type="fullscreen-exit"
+                    onClick={fullscreenCallback}
+                  />
+                </Tooltip>
+              )}
+            </div>
+            <div className={styles.actionWrapper}>
+              <Tooltip title="刷新">
+                <LegacyIcon className={styles.action} type="reload" onClick={onReload} />
+              </Tooltip>
             </div>
           </div>
         </div>
-      )}
+      </div>
       {table}
     </Card>
   ) : (

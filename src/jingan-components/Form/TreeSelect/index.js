@@ -4,7 +4,7 @@ import Ellipsis from '@/components/Ellipsis';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import { connect } from 'dva';
 import classNames from 'classnames';
-import debounce from 'lodash/debounce';
+import { debounce, isEqual } from 'lodash';
 import styles from './index.less';
 const { TreeNode } = TreeSelect;
 
@@ -30,6 +30,18 @@ const PRESETS = {
       getList: 'getDepartmentList',
     },
   },
+  grid: {
+    fieldNames: {
+      key: 'grid_id',
+      value: 'grid_name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'gridList',
+      getList: 'getGridList',
+    },
+    initializeParams: 'ids',
+  },
 };
 
 const FormTreeSelect = ({
@@ -38,7 +50,7 @@ const FormTreeSelect = ({
   onChange,
   mode = 'add',
   fieldNames,
-  list = [],
+  list,
   loading = false,
   placeholder = '请选择',
   treeNodeFilterProp = 'children',
@@ -61,10 +73,12 @@ const FormTreeSelect = ({
   initializeParams,
   searchParams,
   separator = ',',
+  params,
   ...rest
 }) => {
   const [hackKey, setHackKey] = useState(1);
   const [data, setData] = useState(initialData);
+  const [prevParams, setPrevParams] = useState(params);
   const {
     key: k,
     value: v,
@@ -86,16 +100,12 @@ const FormTreeSelect = ({
           ? data.length === value.length && value.every((key, index) => data[index].key === key)
           : data.key === value)) /* value和data一一对应 */
     ) {
-      console.log('初始化');
       getList && getList();
     }
   }, []);
   useEffect(
     () => {
       if (!labelInValue /* labelInValue为false */) {
-        console.log('value', value);
-        console.log('data', data);
-        console.log('initialData', initialData);
         if (value && (!multiple || value.length) /* value存在时 */) {
           const getItemByKey = (list, key) => {
             const length = (list && list.length) || 0;
@@ -159,6 +169,7 @@ const FormTreeSelect = ({
                       ? initializeParams(value)
                       : {
                           [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
+                          pageSize: multiple ? value.length : 1,
                         },
                     callback
                   )
@@ -182,6 +193,15 @@ const FormTreeSelect = ({
       }
     },
     [list]
+  );
+  useEffect(
+    () => {
+      if (!isEqual(params, prevParams)) {
+        setPrevParams(params);
+        getList && getList();
+      }
+    },
+    [params]
   );
   if (mode !== 'detail') {
     const handleChange = (value, label, extra) => {
@@ -309,39 +329,48 @@ FormTreeSelect.getRules = ({ label, labelInValue, multiple: originalMultiple, tr
 };
 
 export default connect(
-  (state, { mapper, list, loading, preset, fieldNames }) => {
-    const { namespace, list: l, getList: gl } = mapper || (PRESETS[preset] || {}).mapper || {};
+  (state, { mapper, list, loading, preset, fieldNames, params }) => {
+    const { mapper: presetMapper, fieldNames: presetFieldNames, ...rest } = PRESETS[preset] || {};
+    const { namespace, list: l, getList: gl } = mapper || presetMapper || {};
     return {
-      list: namespace && l ? state[namespace][l] : list,
+      list:
+        !params || Object.values(params).some(v => v)
+          ? namespace && l
+            ? state[namespace][l]
+            : list
+          : undefined,
       loading: namespace && gl ? state.loading.effects[`${namespace}/${gl}`] : loading,
-      fieldNames: fieldNames || (PRESETS[preset] || {}).fieldNames,
+      fieldNames: fieldNames || presetFieldNames,
+      ...rest,
     };
   },
   (dispatch, { mapper, params, getList, callback, preset }) => {
     const { namespace, getList: gl } = mapper || (PRESETS[preset] || {}).mapper || {};
     return {
       getList:
-        namespace && gl
-          ? (payload, cb) => {
-              dispatch({
-                type: `${namespace}/${gl}`,
-                payload: {
-                  ...params,
-                  ...payload,
-                },
-                callback(...args) {
-                  cb && cb(...args);
-                  callback && callback(...args);
-                },
-              });
-            }
-          : getList,
+        !params || Object.values(params).some(v => v)
+          ? namespace && gl
+            ? (payload, cb) => {
+                dispatch({
+                  type: `${namespace}/${gl}`,
+                  payload: {
+                    ...params,
+                    ...payload,
+                  },
+                  callback(...args) {
+                    cb && cb(...args);
+                    callback && callback(...args);
+                  },
+                });
+              }
+            : getList
+          : undefined,
     };
   },
   (
     stateProps,
     dispatchProps,
-    { mapper, params, list, loading, getList, callback, preset, fieldNames, ...ownProps }
+    { mapper, list, loading, getList, callback, preset, fieldNames, ...ownProps }
   ) => ({
     ...ownProps,
     ...stateProps,
@@ -356,7 +385,8 @@ export default connect(
         props.value === nextProps.value &&
         props.list === nextProps.list &&
         props.loading === nextProps.loading &&
-        props.mode === nextProps.mode
+        props.mode === nextProps.mode &&
+        isEqual(props.params, nextProps.params)
       );
     },
   }

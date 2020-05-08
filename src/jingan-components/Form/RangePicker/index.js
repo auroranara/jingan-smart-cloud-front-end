@@ -17,41 +17,81 @@ const GET_RANGES = (ranges = ['今天', '最近一周', '最近一个月']) => {
       result[item] = [
         moment()
           .startOf('day')
-          .subtract(7, 'day')
-          .add(1, 'day'),
+          .subtract(1, 'weeks')
+          .add(1, 'days'),
         moment().endOf('day'),
       ];
     } else if (item === '最近一个月') {
       result[item] = [
         moment()
           .startOf('day')
-          .subtract(1, 'month')
-          .add(1, 'day'),
+          .subtract(1, 'months')
+          .add(1, 'days'),
         moment().endOf('day'),
       ];
     } else if (item === '最近三个月') {
       result[item] = [
         moment()
           .startOf('day')
-          .subtract(3, 'month')
-          .add(1, 'day'),
+          .subtract(1, 'quarters')
+          .add(1, 'days'),
         moment().endOf('day'),
       ];
     } else if (item === '最近半年') {
       result[item] = [
         moment()
           .startOf('day')
-          .subtract(6, 'month')
-          .add(1, 'day'),
+          .subtract(6, 'months')
+          .add(1, 'days'),
         moment().endOf('day'),
       ];
     } else if (item === '最近一年') {
       result[item] = [
         moment()
           .startOf('day')
-          .subtract(1, 'year')
-          .add(1, 'day'),
+          .subtract(1, 'years')
+          .add(1, 'days'),
         moment().endOf('day'),
+      ];
+    } else if (item === '未来一周') {
+      result[item] = [
+        moment().startOf('day'),
+        moment()
+          .endOf('day')
+          .add(1, 'weeks')
+          .subtract(1, 'days'),
+      ];
+    } else if (item === '未来一个月') {
+      result[item] = [
+        moment().startOf('day'),
+        moment()
+          .endOf('day')
+          .add(1, 'months')
+          .subtract(1, 'days'),
+      ];
+    } else if (item === '未来三个月') {
+      result[item] = [
+        moment().startOf('day'),
+        moment()
+          .endOf('day')
+          .add(1, 'quarters')
+          .subtract(1, 'days'),
+      ];
+    } else if (item === '未来半年') {
+      result[item] = [
+        moment().startOf('day'),
+        moment()
+          .endOf('day')
+          .add(6, 'months')
+          .subtract(1, 'days'),
+      ];
+    } else if (item === '未来一年') {
+      result[item] = [
+        moment().startOf('day'),
+        moment()
+          .endOf('day')
+          .add(1, 'years')
+          .subtract(1, 'days'),
       ];
     }
     return result;

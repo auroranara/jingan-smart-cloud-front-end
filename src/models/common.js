@@ -9,24 +9,19 @@ import {
   getMapList,
   getContractorList,
   getSupplierList,
+  getGridList,
+  getGridPersonList,
+  getGridCompanyList,
+  getExaminationContentList,
+  getBusinessTypeList,
+  getIndustryList,
+  getFlowList,
+  getSpecialRemediationSectionList,
+  getSpecialRemediationSectionDetail,
+  getSafetyServiceList,
+  getAccountList,
+  getEmployeeList,
 } from '@/services/common';
-
-const transformMonitorTypeList = list => {
-  return list
-    ? list.reduce((result, { id, name: title, child: children }) => {
-        return [
-          ...result,
-          {
-            key: id,
-            value: id,
-            title,
-            children:
-              children && children.length > 0 ? transformMonitorTypeList(children) : undefined,
-          },
-        ];
-      }, [])
-    : [];
-};
 
 export default {
   namespace: 'common',
@@ -50,6 +45,18 @@ export default {
     mapList: [],
     contractorList: [],
     supplierList: [],
+    gridList: [],
+    gridPersonList: {},
+    gridCompanyList: {},
+    examinationContentList: {},
+    businessTypeList: [],
+    industryList: [],
+    flowList: {},
+    specialRemediationSectionList: {},
+    specialRemediationSectionDetail: {},
+    safetyServiceList: {},
+    accountList: {},
+    employeeList: {},
   },
 
   effects: {
@@ -260,6 +267,210 @@ export default {
           },
         });
         callback && callback(true, supplierList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取网格列表
+    *getGridList({ payload, callback }, { call, put }) {
+      const response = yield call(getGridList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const gridList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            gridList,
+          },
+        });
+        callback && callback(true, gridList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取网格人员列表
+    *getGridPersonList({ payload, callback }, { call, put }) {
+      const response = yield call(getGridPersonList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const gridPersonList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            gridPersonList,
+          },
+        });
+        callback && callback(true, gridPersonList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取网格企业列表
+    *getGridCompanyList({ payload, callback }, { call, put }) {
+      const response = yield call(getGridCompanyList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const gridCompanyList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            gridCompanyList,
+          },
+        });
+        callback && callback(true, gridCompanyList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取检查内容列表
+    *getExaminationContentList({ payload, callback }, { call, put }) {
+      const response = yield call(getExaminationContentList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const examinationContentList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            examinationContentList,
+          },
+        });
+        callback && callback(true, examinationContentList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取业务分类列表
+    *getBusinessTypeList({ payload, callback }, { call, put }) {
+      const response = yield call(getBusinessTypeList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.businessType) {
+        const businessTypeList = data.businessType;
+        yield put({
+          type: 'save',
+          payload: {
+            businessTypeList,
+          },
+        });
+        callback && callback(true, businessTypeList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取所属行业列表
+    *getIndustryList({ payload, callback }, { call, put }) {
+      const response = yield call(getIndustryList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const industryList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            industryList,
+          },
+        });
+        callback && callback(true, industryList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取流程列表
+    *getFlowList({ payload, callback }, { call, put }) {
+      const response = yield call(getFlowList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const flowList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            flowList,
+          },
+        });
+        callback && callback(true, flowList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取专项整治组列表
+    *getSpecialRemediationSectionList({ payload, callback }, { call, put }) {
+      const response = yield call(getSpecialRemediationSectionList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const specialRemediationSectionList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            specialRemediationSectionList,
+          },
+        });
+        callback && callback(true, specialRemediationSectionList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取专项整治组详情
+    *getSpecialRemediationSectionDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getSpecialRemediationSectionDetail, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const specialRemediationSectionDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            specialRemediationSectionDetail,
+          },
+        });
+        callback && callback(true, specialRemediationSectionDetail);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取安全服务机构列表
+    *getSafetyServiceList({ payload, callback }, { call, put }) {
+      const response = yield call(getSafetyServiceList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const safetyServiceList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            safetyServiceList,
+          },
+        });
+        callback && callback(true, safetyServiceList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取账号列表
+    *getAccountList({ payload, callback }, { call, put }) {
+      const response = yield call(getAccountList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const accountList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            accountList,
+          },
+        });
+        callback && callback(true, accountList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取员工列表
+    *getEmployeeList({ payload, callback }, { call, put }) {
+      const response = yield call(getEmployeeList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const employeeList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            employeeList,
+          },
+        });
+        callback && callback(true, employeeList);
       } else {
         callback && callback(false, msg);
       }

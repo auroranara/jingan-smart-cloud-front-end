@@ -38,7 +38,7 @@ const FormTextArea = ({
   } else {
     return value ? (
       ellipsis ? (
-        <TextAreaEllipsis value={value} {...ellipsis} />
+        <TextAreaEllipsis value={value} length={value.length} {...ellipsis} />
       ) : (
         <span>{value}</span>
       )

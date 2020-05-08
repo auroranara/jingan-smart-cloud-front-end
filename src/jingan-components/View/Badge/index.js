@@ -1,5 +1,6 @@
 import React from 'react';
 import { Badge } from 'antd';
+import EmptyText from '@/jingan-components/View/EmptyText';
 // import styles from './index.less';
 
 const FIELDNAMES = {
@@ -8,10 +9,10 @@ const FIELDNAMES = {
   status: 'status',
 };
 
-const BadgeView = ({ list, value, fieldNames, ...rest }) => {
+const BadgeView = ({ list, value, fieldNames, empty = <EmptyText />, ...rest }) => {
   const { key: k, value: v, status: s } = { ...FIELDNAMES, ...fieldNames };
   const item = (list || []).find(item => item[k] === value);
-  return item ? <Badge text={item[v]} status={item[s]} {...rest} /> : null;
+  return item ? <Badge text={item[v]} status={item[s]} {...rest} /> : empty;
 };
 
 export default BadgeView;

@@ -16,6 +16,7 @@ const FormUpload = ({
   listType,
   empty,
   ellipsis,
+  children,
   ...rest
 }) => {
   const [preview, setPreview] = useState({
@@ -113,18 +114,19 @@ const FormUpload = ({
           }
           {...rest}
         >
-          {!isPictureCard ? (
-            <Button>
-              <LegacyIcon type="upload" /> 上传文件
-            </Button>
-          ) : (
-            (!limitLength || fileList.length < limitLength) && (
-              <div>
-                <LegacyIcon type="plus" />
-                <div className={styles.uploadText}>上传文件</div>
-              </div>
-            )
-          )}
+          {children ||
+            (!isPictureCard ? (
+              <Button>
+                <LegacyIcon type="upload" /> 上传文件
+              </Button>
+            ) : (
+              (!limitLength || fileList.length < limitLength) && (
+                <div>
+                  <LegacyIcon type="plus" />
+                  <div className={styles.uploadText}>上传文件</div>
+                </div>
+              )
+            ))}
         </Upload>
         <Modal
           className={styles.modal}

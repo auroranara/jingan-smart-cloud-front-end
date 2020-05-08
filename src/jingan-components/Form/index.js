@@ -16,6 +16,9 @@ import Map from './Map';
 import AMap from './AMap';
 import InputNumber from './InputNumber';
 import PersonModal from './PersonModal';
+import GridCompanyTransfer from './GridCompanyTransfer';
+import ExaminationContentTransfer from './ExaminationContentTransfer';
+import FlowModalSelect from './FlowModalSelect';
 import classNames from 'classnames';
 import styles from './index.less';
 
@@ -64,6 +67,9 @@ const componentReference = {
   AMap,
   InputNumber,
   PersonModal,
+  GridCompanyTransfer,
+  ExaminationContentTransfer,
+  FlowModalSelect,
 };
 
 const FormIndex = forwardRef((props, ref) => {
@@ -155,7 +161,7 @@ const FormIndex = forwardRef((props, ref) => {
       >
         {({ getFieldsValue }) => {
           const values = getFieldsValue();
-          const payload = { mode, ...params, ...values };
+          const payload = { mode, ...params, ...initialValues, ...values };
           const uploading = uploadDependencies.some(
             dependency =>
               values[dependency] && values[dependency].some(({ status }) => status !== 'done')
@@ -197,22 +203,20 @@ const FormIndex = forwardRef((props, ref) => {
                 const item = (
                   <Row key={key || title || index} gutter={24}>
                     {fields.map(
-                      (
-                        {
-                          key,
-                          name,
-                          label,
-                          component,
-                          props,
-                          enableDefaultRules,
-                          rules,
-                          col = !mode ? COL : COL2,
-                          hide,
-                          onChange,
-                          ...rest
-                        },
-                        index
-                      ) => {
+                      ({
+                        key,
+                        name,
+                        label,
+                        component,
+                        props,
+                        enableDefaultRules,
+                        rules,
+                        col = !mode ? COL : COL2,
+                        hide,
+                        onChange,
+                        extra,
+                        ...rest
+                      }) => {
                         const Component = componentReference[component] || component;
                         const hidden = hide && hide(payload);
                         const properties = typeof props === 'function' ? props(payload) : props;
@@ -245,6 +249,7 @@ const FormIndex = forwardRef((props, ref) => {
                                     : rules
                                   : undefined
                               }
+                              extra={typeof extra === 'function' ? extra(payload) : extra}
                               {...rest}
                             >
                               <Component
@@ -306,7 +311,11 @@ const FormIndex = forwardRef((props, ref) => {
                                   );
                                 })}
                               {expandable &&
-                                multiLine && (
+                                (expand
+                                  ? offset >= operationSpan
+                                    ? multiLine
+                                    : true
+                                  : multiLine) && (
                                   <div className={styles.operationWrapper}>
                                     <span
                                       className={styles.expandButton}
@@ -378,4 +387,7 @@ export {
   AMap,
   InputNumber,
   PersonModal,
+  GridCompanyTransfer,
+  ExaminationContentTransfer,
+  FlowModalSelect,
 };

@@ -16,7 +16,9 @@ const FormPage = props => {
     mode,
     fields,
     isUnit,
+    isOperation,
     unitId,
+    unitType,
     formRef,
     hasEditAuthority,
     editPath,
@@ -60,7 +62,9 @@ const FormPage = props => {
           fields={fields}
           params={{
             isUnit,
+            isOperation,
             unitId,
+            unitType,
             ...detail,
           }}
           hasEditAuthority={hasEditAuthority}
@@ -72,7 +76,9 @@ const FormPage = props => {
                 ...(transform
                   ? transform({
                       isUnit,
+                      isOperation,
                       unitId,
+                      unitType,
                       ...values,
                     })
                   : values),
@@ -105,6 +111,7 @@ export default connect(
       },
       mapper,
       breadcrumbList: b,
+      loading: loading2,
     }
   ) => {
     const {
@@ -129,13 +136,16 @@ export default connect(
       },
     } = state;
     const isUnit = +unitType === 4;
+    const isOperation = +unitType === 3;
     const listPath = pathname.replace(new RegExp(`${name}.*`), 'list');
     if (b) {
       breadcrumbList =
         typeof b === 'function'
           ? b({
               isUnit,
+              isOperation,
               unitId,
+              unitType,
               title:
                 locales[
                   `menu.${code
@@ -166,10 +176,12 @@ export default connect(
     }
     return {
       isUnit,
+      isOperation,
       unitId,
+      unitType,
       breadcrumbList,
-      detail: name !== 'add' && detail ? detail : {},
-      loading: loading || false,
+      detail: name !== 'add' && detail ? detail : undefined,
+      loading: loading || loading2 || false,
       submitting: adding || editing || false,
       mode: name,
       hasEditAuthority: permissionCodes.includes(code.replace(/[^\.]+$/, 'edit')),

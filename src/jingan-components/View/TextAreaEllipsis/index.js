@@ -1,9 +1,10 @@
 import React from 'react';
 import { Tooltip } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
+import EmptyText from '@/jingan-components/View/EmptyText';
 import styles from './index.less';
 
-export default function TextAreaEllipsis({ value, length, emtpy = null }) {
+export default function TextAreaEllipsis({ value, length = 20, emtpy = <EmptyText /> }) {
   return value ? (
     <Tooltip
       title={
@@ -12,10 +13,7 @@ export default function TextAreaEllipsis({ value, length, emtpy = null }) {
         </Scrollbars>
       }
     >
-      <div
-        className={styles.ellipsis}
-        style={{ maxWidth: length ? `${length + 1}em` : `${value.length + 1}em` }}
-      >
+      <div className={styles.ellipsis} style={{ maxWidth: `${length + 1}em` }}>
         {value}
       </div>
     </Tooltip>
