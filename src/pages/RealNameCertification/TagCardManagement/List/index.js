@@ -46,7 +46,7 @@ export default class TableList extends PureComponent {
     this.pageSize = 10;
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchList();
   }
 
@@ -142,10 +142,10 @@ export default class TableList extends PureComponent {
         res.data.errorMasssge.length === 0
           ? message.error(res.msg)
           : Modal.error({
-              title: '错误信息',
-              content: res.data.errorMasssge,
-              okText: '确定',
-            });
+            title: '错误信息',
+            content: res.data.errorMasssge,
+            okText: '确定',
+          });
         this.setState({
           importLoading: false,
         });
@@ -167,19 +167,17 @@ export default class TableList extends PureComponent {
 
   handleBeforeUpload = file => {
     const { importLoading } = this.state;
-    const isExcel =
-      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-      file.type === 'application/vnd.ms-excel';
+    const isExcel = /xls|xlsx/.test(file.name);
     if (importLoading) {
       message.error('尚未上传结束');
     }
-    // if (!isExcel) {
-    //   message.error('上传失败，请上传.xls或者.xlsx格式');
-    // }
-    return !importLoading;
+    if (!isExcel) {
+      message.error('上传失败，请上传.xls或者.xlsx格式');
+    }
+    return !importLoading || isExcel;
   };
 
-  render() {
+  render () {
     const {
       loading,
       user: {
@@ -283,8 +281,8 @@ export default class TableList extends PureComponent {
               }}
             />
           ) : (
-            <Empty />
-          )}
+              <Empty />
+            )}
         </Card>
         <Modal
           title="导入"

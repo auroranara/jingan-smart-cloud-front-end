@@ -88,7 +88,7 @@ export default class PersonnelList extends PureComponent {
     expand: false,
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       location: {
         query: { companyName: routerCompanyName },
@@ -249,10 +249,10 @@ export default class PersonnelList extends PureComponent {
         res.data.errorMasssge.length === 0
           ? message.error(res.msg)
           : Modal.error({
-              title: '错误信息',
-              content: res.data.errorMasssge,
-              okText: '确定',
-            });
+            title: '错误信息',
+            content: res.data.errorMasssge,
+            okText: '确定',
+          });
         this.setState({
           personLoading: false,
         });
@@ -262,16 +262,14 @@ export default class PersonnelList extends PureComponent {
 
   handlePersonBefore = file => {
     const { personLoading } = this.state;
-    const isExcel =
-      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-      file.type === 'application/vnd.ms-excel';
+    const isExcel = /xls|xlsx/.test(file.name);
     if (personLoading) {
       message.error('尚未上传结束');
     }
-    // if (!isExcel) {
-    //   message.error('上传失败，请上传.xls或者.xlsx格式');
-    // }
-    return !personLoading;
+    if (!isExcel) {
+      message.error('上传失败，请上传.xls或者.xlsx格式');
+    }
+    return !personLoading || isExcel;
   };
 
   hanldleImgModal = () => {
@@ -588,8 +586,8 @@ export default class PersonnelList extends PureComponent {
                 ))}
             </div>
           ) : (
-            ''
-          ),
+              ''
+            ),
       },
       {
         title: '操作',
@@ -669,8 +667,8 @@ export default class PersonnelList extends PureComponent {
             {importAuth ? (
               <a onClick={this.hanldleImgRecord}>导入记录</a>
             ) : (
-              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>导入记录</span>
-            )}
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>导入记录</span>
+              )}
           </div>
         }
       >
@@ -698,13 +696,13 @@ export default class PersonnelList extends PureComponent {
             }}
           />
         ) : (
-          <Empty />
-        )}
+            <Empty />
+          )}
       </Card>
     );
   };
 
-  render() {
+  render () {
     const {
       user: { isCompany },
       match: {
@@ -740,12 +738,12 @@ export default class PersonnelList extends PureComponent {
       ...(isCompany
         ? []
         : [
-            {
-              title: '人员管理',
-              name: '人员管理',
-              href: '/real-name-certification/personnel-management/company-list',
-            },
-          ]),
+          {
+            title: '人员管理',
+            name: '人员管理',
+            href: '/real-name-certification/personnel-management/company-list',
+          },
+        ]),
       {
         title,
         name: title,
