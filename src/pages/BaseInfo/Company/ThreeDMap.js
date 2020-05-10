@@ -1,7 +1,8 @@
 import React, { Fragment, PureComponent } from 'react';
+import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Card, Empty, Input, Select, Slider, message } from 'antd';
+import { Button, Card, Empty, Input, Select, Slider, message, Radio } from 'antd';
 import router from 'umi/router';
 
 import styles from './FireControl.less';
@@ -10,10 +11,16 @@ const { Item: FormItem } = Form;
 const { Option } = Select;
 
 const FIELDS = [
-  { key: 'appName', label: '地图名称' },
+  // { key: 'appName', label: '地图名称' },
   { key: 'mapId', label: '地图ID' },
   { key: 'key', label: 'key值' },
   { key: 'theme', label: '主题' },
+];
+
+const JOYSUCH_FIELDS = [
+  // { key: 'appName', label: '地图名称' },
+  { key: 'mapId', label: '地图ID' },
+  { key: 'key', label: 'key值' },
 ];
 
 const fengMap = fengmap; // eslint-disable-line
@@ -33,16 +40,15 @@ const MODES = [
   { name: '3D', value: fengMap.FMViewMode.MODE_3D },
 ];
 
-function getDefaultViewCenter (center) {
-  if (!center)
-    return;
+function getDefaultViewCenter(center) {
+  if (!center) return;
 
   const c = center.split(',').map(s => Number.parseFloat(s.trim()));
-  if (c.length === 2 && c.every(n => !Number.isNaN(n)))
-    return { x: c[0], y: c[1] };
+  if (c.length === 2 && c.every(n => !Number.isNaN(n))) return { x: c[0], y: c[1] };
 }
 
 @Form.create()
+@connect(({ conmpany }) => ({ conmpany }))
 export default class ThreeDMap extends PureComponent {
   state = {
     mapVisible: false,
@@ -50,9 +56,11 @@ export default class ThreeDMap extends PureComponent {
     // scale: INIT_SCALE,
   };
 
-  componentDidMount () {
+  componentDidMount() {
     this.getMapList(list => {
-      const { form: { setFieldsValue } } = this.props;
+      const {
+        form: { setFieldsValue },
+      } = this.props;
       if (list.length) {
         const vals = list[0];
         const { theme, defaultViewMode, defaultMapScaleLevel, mapScaleLevelRangeList } = vals;
@@ -110,8 +118,7 @@ export default class ThreeDMap extends PureComponent {
         if (code === 200) {
           message.success(msg);
           router.push(prePath || '/base-info/company/list');
-        } else
-          message.error(msg);
+        } else message.error(msg);
       },
     });
   };
@@ -120,28 +127,21 @@ export default class ThreeDMap extends PureComponent {
   //   this.setState({ scaleRange: value });
   // };
 
-  renderBaseItems () {
+  renderBaseItems = fields => {
     const {
       form: { getFieldDecorator },
     } = this.props;
 
-    return FIELDS.map(({ key, label }) => (
-      <FormItem
-        key={key}
-        label={label}
-        labelCol={LABEL_COL}
-        wrapperCol={WRAPPER_COL}
-      >
+    return fields.map(({ key, label }) => (
+      <FormItem key={key} label={label} labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
         {getFieldDecorator(key, {
           rules: [{ required: true, message: `请输入${label}` }],
-        })(
-          <Input placeholder={`请输入${label}`} />
-        )}
+        })(<Input placeholder={`请输入${label}`} />)}
       </FormItem>
     ));
-  }
+  };
 
-  renderMoreItems () {
+  renderMoreItems() {
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -152,8 +152,7 @@ export default class ThreeDMap extends PureComponent {
       <Fragment>
         <p className={styles.tip}>默认中心位置请在地图上单击获取位置</p>
         <FormItem label="默认中心位置" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
-          {getFieldDecorator('defaultViewCenter', {
-          })(
+          {getFieldDecorator('defaultViewCenter', {})(
             <Input disabled placeholder="默认中心位置请在地图上单击获取位置" />
           )}
         </FormItem>
@@ -162,21 +161,31 @@ export default class ThreeDMap extends PureComponent {
             initialValue: INIT_MODE,
           })(
             <Select placeholder="请选择默认视图模式">
-              {MODES.map(({ name, value }) => <Option key={value} value={value}>{name}</Option>)}
+              {MODES.map(({ name, value }) => (
+                <Option key={value} value={value}>
+                  {name}
+                </Option>
+              ))}
             </Select>
           )}
         </FormItem>
         <FormItem label="倾斜角度" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('tiltAngle', {
             initialValue: INIT_TILT_ANGLE,
-            rules: [{ required: true, message: "请选择倾斜角度" }],
+            rules: [{ required: true, message: '请选择倾斜角度' }],
           })(<Slider min={0} max={90} marks={{ 0: 0, 90: 90 }} />)}
         </FormItem>
         <FormItem label="旋转角度" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('rotateAngle', {
             initialValue: INIT_ROTATE_ANGLE,
-            rules: [{ required: true, message: "请选择旋转角度" }],
-          })(<Slider min={MIN_ANGLE} max={MAX_ANGLE} marks={{ [MIN_ANGLE]: MIN_ANGLE, [MAX_ANGLE]: MAX_ANGLE }} />)}
+            rules: [{ required: true, message: '请选择旋转角度' }],
+          })(
+            <Slider
+              min={MIN_ANGLE}
+              max={MAX_ANGLE}
+              marks={{ [MIN_ANGLE]: MIN_ANGLE, [MAX_ANGLE]: MAX_ANGLE }}
+            />
+          )}
         </FormItem>
         {/* <FormItem label="缩放等级范围" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('mapScaleLevelRangeList', {
@@ -188,20 +197,113 @@ export default class ThreeDMap extends PureComponent {
         <FormItem label="默认缩放等级" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('defaultMapScaleLevel', {
             initialValue: INIT_SCALE,
-          })(
-            <Slider min={MIN} max={MAX} marks={{ [MIN]: MIN, [MAX]: MAX }} />
-          )}
+          })(<Slider min={MIN} max={MAX} marks={{ [MIN]: MIN, [MAX]: MAX }} />)}
         </FormItem>
       </Fragment>
     );
   }
 
-  initMap = ({ appName, key, mapId, theme, defaultMapScaleLevel, defaultViewMode, defaultViewCenter, tiltAngle, rotateAngle }) => {
+  renderFormItems() {
+    const {
+      form: { getFieldDecorator, getFieldValue },
+    } = this.props;
+    const mapType = getFieldValue('remarks');
+
+    return (
+      <Fragment>
+        <FormItem label={'地图名称'} labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('appName', {
+            rules: [{ required: true, message: `请输入地图名称` }],
+          })(<Input placeholder={`请输入地图名称`} />)}
+        </FormItem>
+        <FormItem label="地图类型" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('remarks', {
+            // initialValue: INIT_MODE,
+            rules: [{ required: true, message: `请选择地图类型` }],
+          })(
+            <Radio.Group buttonStyle="solid">
+              <Radio.Button value="1">蜂鸟云地图</Radio.Button>
+              <Radio.Button value="2">真趣地图</Radio.Button>
+            </Radio.Group>
+          )}
+        </FormItem>
+        {+mapType === 2 && this.renderBaseItems(JOYSUCH_FIELDS)}
+        {+mapType === 1 && (
+          <Fragment>
+            {this.renderBaseItems(FIELDS)}
+            <p className={styles.tip}>默认中心位置请在地图上单击获取位置</p>
+            <FormItem label="默认中心位置" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+              {getFieldDecorator('defaultViewCenter', {})(
+                <Input disabled placeholder="默认中心位置请在地图上单击获取位置" />
+              )}
+            </FormItem>
+            <FormItem label="默认视图模式" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+              {getFieldDecorator('defaultViewMode', {
+                initialValue: INIT_MODE,
+              })(
+                <Select placeholder="请选择默认视图模式">
+                  {MODES.map(({ name, value }) => (
+                    <Option key={value} value={value}>
+                      {name}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+            <FormItem label="倾斜角度" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+              {getFieldDecorator('tiltAngle', {
+                initialValue: INIT_TILT_ANGLE,
+                rules: [{ required: true, message: '请选择倾斜角度' }],
+              })(<Slider min={0} max={90} marks={{ 0: 0, 90: 90 }} />)}
+            </FormItem>
+            <FormItem label="旋转角度" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+              {getFieldDecorator('rotateAngle', {
+                initialValue: INIT_ROTATE_ANGLE,
+                rules: [{ required: true, message: '请选择旋转角度' }],
+              })(
+                <Slider
+                  min={MIN_ANGLE}
+                  max={MAX_ANGLE}
+                  marks={{ [MIN_ANGLE]: MIN_ANGLE, [MAX_ANGLE]: MAX_ANGLE }}
+                />
+              )}
+            </FormItem>
+            {/* <FormItem label="缩放等级范围" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+          {getFieldDecorator('mapScaleLevelRangeList', {
+            initialValue: INIT_RANGE,
+          })(
+            <Slider range min={16} max={23} onChange={this.handleRangeChange} marks={{ 16: 16, 23: 23 }} />
+          )}
+        </FormItem> */}
+            <FormItem label="默认缩放等级" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
+              {getFieldDecorator('defaultMapScaleLevel', {
+                initialValue: INIT_SCALE,
+              })(<Slider min={MIN} max={MAX} marks={{ [MIN]: MIN, [MAX]: MAX }} />)}
+            </FormItem>
+          </Fragment>
+        )}
+      </Fragment>
+    );
+  }
+
+  initMap = ({
+    appName,
+    key,
+    mapId,
+    theme,
+    defaultMapScaleLevel,
+    defaultViewMode,
+    defaultViewCenter,
+    tiltAngle,
+    rotateAngle,
+  }) => {
     this.map && this.map.dispose();
-    const { form: { setFieldsValue } } = this.props;
+    const {
+      form: { setFieldsValue },
+    } = this.props;
 
     if (!appName || !key || !mapId) {
-      this.setState({ mapVisible: false })
+      this.setState({ mapVisible: false });
       return;
     }
 
@@ -223,7 +325,7 @@ export default class ThreeDMap extends PureComponent {
     };
 
     //初始化地图对象
-    const map = this.map = new fengMap.FMMap(mapOptions);
+    const map = (this.map = new fengMap.FMMap(mapOptions));
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
     map.on('loadComplete', e => {
@@ -234,46 +336,49 @@ export default class ThreeDMap extends PureComponent {
       map.rotateAngle = rotateAngle;
       map.mapScaleLevel = defaultMapScaleLevel;
       // isFirst && this.handlePreview();
-    })
+    });
     // map.on('mapScaleLevelChanged', e => { // 有问题，不要用
     //   setFieldsValue({ defaultMapScaleLevel: e.mapScale });
     // });
     map.on('mapClickNode', e => {
       const { mapCoord } = e;
-      if (!mapCoord)
-        return;
+      if (!mapCoord) return;
       const { x, y } = mapCoord;
-      if (!x && !y)
-        return;
+      if (!x && !y) return;
       setFieldsValue({ defaultViewCenter: `${x}, ${y}` });
     });
     // map.gestureEnableController.enableMapPan = false;
-  }
+  };
 
   handlePreview = e => {
-    const { form: { getFieldsValue } } = this.props;
+    const {
+      form: { getFieldsValue },
+    } = this.props;
     this.initMap(getFieldsValue());
   };
 
-  render () {
+  initJoySuchMap = ({ mapId, key }) => {};
+
+  render() {
     const { mapVisible } = this.state;
 
     return (
       <Card className={styles.threedCard}>
-        <Form
-          onSubmit={this.handleSubmit}
-        >
-          {this.renderBaseItems()}
-          {this.renderMoreItems()}
+        <Form onSubmit={this.handleSubmit}>
+          {/* {this.renderBaseItems()}
+          {this.renderMoreItems()} */}
+          {this.renderFormItems()}
           <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 10 } }}>
-            <Button type="primary" onClick={this.handlePreview} style={{ marginRight: 20 }}>预览地图</Button>
+            {/* <Button type="primary" onClick={this.handlePreview} style={{ marginRight: 20 }}>
+              预览地图
+            </Button> */}
             <Button type="primary" htmlType="submit">
               提交
             </Button>
           </FormItem>
         </Form>
-        <div style={{ height: 600, display: mapVisible ? 'block' : 'none' }} id="bird-map" />
-        {!mapVisible && <Empty />}
+        {/* <div style={{ height: 600, display: mapVisible ? 'block' : 'none' }} id="bird-map" /> */}
+        {/* {!mapVisible && <Empty />} */}
       </Card>
     );
   }

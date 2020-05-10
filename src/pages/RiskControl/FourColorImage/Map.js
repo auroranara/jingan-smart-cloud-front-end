@@ -5,10 +5,10 @@ import { isPointInPolygon } from '@/utils/map';
 const fengMap = fengmap; // eslint-disable-line
 // const fmapID = '100';
 const COLORS = {
-  1: 'rgb(255, 72, 72)',
-  2: 'rgb(241, 122, 10)',
-  3: 'rgb(251, 247, 25)',
-  4: 'rgb(30, 96, 255)',
+  1: 'rgba(255, 72, 72, 0.6)',
+  2: 'rgba(241, 122, 10, 0.6)',
+  3: 'rgba(251, 247, 25, 0.6)',
+  4: 'rgba(30, 96, 255, 0.6)',
 };
 const selectedColor = 'rgb(245,245,245, 0.5)';
 
@@ -243,9 +243,10 @@ export default class Map extends React.Component {
   };
 
   // 重置地图
-  setRestMap = () => {
+  resetMap = () => {
     const { groupId } = this.props;
     const group = map.getFMGroup(groupId);
+    if (!group) return;
     const layerImg = group.getOrCreateLayer('imageMarker');
     group.removeLayer(layerImg);
     const layerPolygon = group.getOrCreateLayer('polygonMarker');

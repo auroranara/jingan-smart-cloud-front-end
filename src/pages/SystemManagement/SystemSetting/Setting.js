@@ -61,9 +61,8 @@ const tabList = [
   company,
 }))
 export default class SystemSetting extends PureComponent {
-
   state = {
-    tabActiveKey: tabList[0].key,
+    tabActiveKey: tabList[2].key,
   };
 
   /* tab列表点击变化 */
@@ -73,11 +72,13 @@ export default class SystemSetting extends PureComponent {
     });
   };
 
-  render () {
+  render() {
     const {
       loading = false,
       dispatch,
-      location: { query: { companyId } },
+      location: {
+        query: { companyId },
+      },
       route,
       location,
       match,
@@ -119,6 +120,6 @@ export default class SystemSetting extends PureComponent {
           </div>
         </Spin>
       </PageHeaderLayout>
-    )
+    );
   }
 }

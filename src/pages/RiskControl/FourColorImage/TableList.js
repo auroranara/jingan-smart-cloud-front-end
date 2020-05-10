@@ -11,6 +11,7 @@ import { hasAuthority } from '@/utils/customAuth';
 
 import styles from './TableList.less';
 import Map from './Map';
+import JoySuchMap from './JoySuchMap';
 
 const title = '风险四色图管理';
 
@@ -220,7 +221,7 @@ export default class TableList extends React.Component {
       user: {
         currentUser: { permissionCodes, unitType, companyId },
       },
-      // map: { mapInfo = {} },
+      map: { mapInfo: { remarks } = {} },
     } = this.props;
     const { isDrawing, company = {}, visible } = this.state;
     const addAuth = hasAuthority(addCode, permissionCodes);
@@ -316,7 +317,11 @@ export default class TableList extends React.Component {
             <Col span={12}>
               <Card title="地图" bordered={false}>
                 {/* {this.renderDrawButton()} */}
-                <Map isDrawing={isDrawing} onRef={this.onRef} pointList={list} init />
+                {+remarks === 1 ? (
+                  <Map isDrawing={isDrawing} onRef={this.onRef} pointList={list} init />
+                ) : (
+                  <JoySuchMap isDrawing={isDrawing} onRef={this.onRef} pointList={list} init />
+                )}
               </Card>
             </Col>
             <Col span={12}>
