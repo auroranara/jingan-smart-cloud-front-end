@@ -453,10 +453,9 @@ export default class FormMap extends Component {
   }
 
   // 图片覆盖物
-  renderImageMarker(layer, data) {
-    console.log('data', data);
-    return;
+  renderImageMarker(data) {
     const { map } = this.state;
+    return;
     const marker = new fengMap.FMImageMarker({
       ...data,
       callback: data.callback
