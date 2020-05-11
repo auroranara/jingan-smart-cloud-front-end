@@ -737,7 +737,7 @@ export default class StorageEdit extends PureComponent {
         designPressure: values.pressureVessel === '1' ? designPressure : '',
         cofferdamArea: values.cofferdam === '1' ? cofferdamArea : '',
       };
-      if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+      if (mapLocation && (mapLocation.groupId || mapLocation.groupId === 0) && mapLocation.coord) {
         const { coord, ...resMap } = mapLocation;
         payload.pointFixInfoList = [
           { imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },

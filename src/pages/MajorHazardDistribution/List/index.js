@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { message, Spin, List, Card, Row, Col, notification, Empty, Carousel, Skeleton } from 'antd';
 import Map from '@/jingan-components/Form/Map';
+import JoySuchMap from '@/jingan-components/Form/JoySuchMap';
 // import Radio from '@/jingan-components/Form/Radio';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import TextAreaEllipsis from '@/jingan-components/View/TextAreaEllipsis';
@@ -732,9 +733,37 @@ export default class MajorHazardDistributionList extends Component {
       [MAP_BUTTON_OPTIONS[1].label]: combustibleGasPointList,
       [MAP_BUTTON_OPTIONS[2].label]: toxicGasPointList,
     };
+    const { remarks } = options;
+    const btns = (
+      <div className={styles.mapButtonContainer}>
+        {MAP_BUTTON_OPTIONS.map(({ label, icon }) => {
+          if (mapper[label].length) {
+            const disabled = disabledMapButtonList.includes(label);
+            return (
+              <div
+                className={styles.mapButton}
+                key={label}
+                data-label={label}
+                onClick={this.handleMapButtonClick}
+              >
+                <img
+                  src={icon}
+                  alt=""
+                  style={{ filter: disabled ? 'grayscale(100%)' : undefined }}
+                />
+                <span style={disabled ? { color: 'gray' } : undefined}>{label}</span>
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
+    // const ThreeDMap = +remarks === 1 ? Map : JoySuchMap;
+    const ThreeDMap = +remarks === 1 ? Map : Map;
 
     return (
-      <Map
+      <ThreeDMap
         options={options}
         imageMarkerList={imageMarkerList}
         polygonMarkerList={polygonMarkerList}
@@ -742,30 +771,8 @@ export default class MajorHazardDistributionList extends Component {
         onLoadStart={this.handleMapLoadStart}
         onLoadEnd={this.handleMapLoadEnd}
       >
-        <div className={styles.mapButtonContainer}>
-          {MAP_BUTTON_OPTIONS.map(({ label, icon }) => {
-            if (mapper[label].length) {
-              const disabled = disabledMapButtonList.includes(label);
-              return (
-                <div
-                  className={styles.mapButton}
-                  key={label}
-                  data-label={label}
-                  onClick={this.handleMapButtonClick}
-                >
-                  <img
-                    src={icon}
-                    alt=""
-                    style={{ filter: disabled ? 'grayscale(100%)' : undefined }}
-                  />
-                  <span style={disabled ? { color: 'gray' } : undefined}>{label}</span>
-                </div>
-              );
-            }
-            return null;
-          })}
-        </div>
-      </Map>
+        {btns}
+      </ThreeDMap>
     );
   }
 
