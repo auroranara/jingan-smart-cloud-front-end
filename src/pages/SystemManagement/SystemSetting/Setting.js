@@ -62,7 +62,7 @@ const tabList = [
 }))
 export default class SystemSetting extends PureComponent {
   state = {
-    tabActiveKey: tabList[2].key,
+    tabActiveKey: tabList[0].key,
   };
 
   /* tab列表点击变化 */

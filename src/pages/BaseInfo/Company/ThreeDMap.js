@@ -74,7 +74,10 @@ export default class ThreeDMap extends PureComponent {
           rotateAngle: typeof rotateAngle === 'number' ? rotateAngle : INIT_ROTATE_ANGLE,
           // mapScaleLevelRangeList: mapScaleLevelRangeList || INIT_RANGE,
         };
-        setFieldsValue(fieldsValue);
+        setFieldsValue({ remarks: vals.remarks });
+        setTimeout(() => {
+          setFieldsValue(fieldsValue);
+        }, 0);
         // this.initMap(fieldsValue); // 初始化有问题，手动点击
       }
     });
