@@ -356,7 +356,11 @@ export default class RiskPointEdit extends PureComponent {
           itemFlowList: flow_id,
           pointFixInfoList: [],
         };
-        if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+        if (
+          mapLocation &&
+          (mapLocation.groupId || mapLocation.groupId === 0) &&
+          mapLocation.coord
+        ) {
           const { coord, ...resMap } = mapLocation;
           payload.pointFixInfoList = [
             { isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },

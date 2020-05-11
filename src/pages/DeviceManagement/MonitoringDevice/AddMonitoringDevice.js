@@ -28,6 +28,7 @@ import { getToken } from '@/utils/authority';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
+import JoySuchSelect from '@/components/JoySuchSelect';
 import styles from '@/pages/DeviceManagement/NewSensor/AddSensor.less';
 import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor.png';
 import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-monitor-gray.png';
@@ -82,10 +83,12 @@ export default class AddMonitoringDevice extends Component {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { setFieldsValue },
       user: { isCompany, currentUser = {} },
     } = this.props;
@@ -120,11 +123,11 @@ export default class AddMonitoringDevice extends Component {
               fileList:
                 fileList && fileList.length
                   ? fileList.map(item => ({
-                    ...item,
-                    uid: item.id,
-                    url: item.webUrl,
-                    name: item.fileName,
-                  }))
+                      ...item,
+                      uid: item.id,
+                      url: item.webUrl,
+                      name: item.fileName,
+                    }))
                   : [],
             },
             () => {
@@ -408,7 +411,7 @@ export default class AddMonitoringDevice extends Component {
         installPhotoList: fileList, // 安装图片列表
         pointFixInfoList: [], // 平面图标注列表
       };
-      if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+      if (mapLocation && (mapLocation.groupId || mapLocation.groupId === 0) && mapLocation.coord) {
         const { coord, ...resMap } = mapLocation;
         payload.pointFixInfoList = [
           { isShow, imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },
@@ -742,7 +745,7 @@ export default class AddMonitoringDevice extends Component {
     );
   };
 
-  render () {
+  render() {
     const {
       companyLoading,
       sensor: { companyModal },

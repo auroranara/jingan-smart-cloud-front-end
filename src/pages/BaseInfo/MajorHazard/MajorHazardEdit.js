@@ -13,6 +13,7 @@ import TableList from './TableList';
 import { RangePicker } from '@/jingan-components/Form';
 import { hasAuthority } from '@/utils/customAuth';
 import Map from '../../RiskControl/FourColorImage/Map';
+import JoySuchMap from '../../RiskControl/FourColorImage/JoySuchMap';
 import codes from '@/utils/codes';
 import styles from './MajorHazardEdit.less';
 
@@ -651,7 +652,7 @@ export default class MajorHazardEdit extends PureComponent {
 
   // 地图重置
   handleReset = () => {
-    this.childMap.setRestMap();
+    this.childMap.resetMap();
     this.setState({ buildingId: [] });
   };
 
@@ -715,6 +716,7 @@ export default class MajorHazardEdit extends PureComponent {
       user: {
         currentUser: { unitType },
       },
+      map: { mapInfo: { remarks } = {} },
     } = this.props;
 
     const isDet = this.isDetail();
@@ -738,6 +740,7 @@ export default class MajorHazardEdit extends PureComponent {
       wrapperCol: { span: 18 },
     };
     const itemStyles = { style: { width: '70%', marginRight: '10px' } };
+    const ThreeDMap = +remarks === 1 ? Map : JoySuchMap;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -1031,7 +1034,7 @@ export default class MajorHazardEdit extends PureComponent {
             {curCompanyId && (
               <div className={styles.mapStyle}>
                 {this.renderDrawButton()}
-                <Map
+                <ThreeDMap
                   isDrawing={isDrawing}
                   groupId={groupId}
                   onRef={this.onRef}

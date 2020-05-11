@@ -103,7 +103,9 @@ export default class SpecialEquipment extends PureComponent {
   componentDidMount() {
     const {
       form: { setFieldsValue },
-      location: { query: { unitId } },
+      location: {
+        query: { unitId },
+      },
       match: { params: { id = null } = {} },
       user: {
         currentUser: { companyId, unitType, companyName },
@@ -119,8 +121,7 @@ export default class SpecialEquipment extends PureComponent {
     }
     if (!id) return;
     this.fetchList(1, 10, { id, companyId: unitId }, res => {
-      if (!res || !res.data || !res.data.list || !res.data.list.length)
-        return;
+      if (!res || !res.data || !res.data.list || !res.data.list.length) return;
 
       const {
         list: [
@@ -279,7 +280,11 @@ export default class SpecialEquipment extends PureComponent {
             }))
           ),
         };
-        if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+        if (
+          mapLocation &&
+          (mapLocation.groupId || mapLocation.groupId === 0) &&
+          mapLocation.coord
+        ) {
           const { coord, ...resMap } = mapLocation;
           payload.pointFixInfoList = [
             { imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, isShow, ...resMap },

@@ -22,6 +22,7 @@ import debounce from 'lodash/debounce';
 import moment from 'moment';
 import styles from './TableList.less';
 import Map from './Map';
+import JoySuchMap from './JoySuchMap';
 
 const FormItem = Form.Item;
 
@@ -57,10 +58,10 @@ const itemStyles = {
 };
 
 const COLORS = {
-  1: 'rgb(255, 72, 72)',
-  2: 'rgb(241, 122, 10)',
-  3: 'rgb(251, 247, 25)',
-  4: 'rgb(30, 96, 255)',
+  1: 'rgba(255, 72, 72, 0.6)',
+  2: 'rgba(241, 122, 10, 0.6)',
+  3: 'rgba(251, 247, 25, 0.6)',
+  4: 'rgba(30, 96, 255, 0.6)',
 };
 
 @Form.create()
@@ -149,7 +150,7 @@ export default class TableList extends React.Component {
   };
 
   handleReset = () => {
-    this.childMap.setRestMap();
+    this.childMap.resetMap();
     this.setState({ buildingId: [] });
   };
 
@@ -340,10 +341,17 @@ export default class TableList extends React.Component {
 
   handleLevelChange = levelId => {
     const { groupId, points } = this.state;
+    const {
+      map: { mapInfo: { remarks } = {} },
+    } = this.props;
     this.setState({ levelId }, () => {
       if (points.length > 0) {
-        this.childMap.drawPolygon(groupId, points, COLORS[levelId]);
-        this.childMap.setModelColor(groupId, points, COLORS[levelId]);
+        if (+remarks === 1) {
+          this.childMap.drawPolygon(groupId, points, COLORS[levelId]);
+          this.childMap.setModelColor(groupId, points, COLORS[levelId]);
+        } else {
+          this.childMap.renderDrawedPolygon(groupId, points, COLORS[levelId]);
+        }
       }
     });
   };
@@ -357,6 +365,7 @@ export default class TableList extends React.Component {
           onClick={() => {
             // if (levelId === '') return message.warning('请先选择风险分级！');
             if (!!isDrawing && points.length <= 2) return message.error('区域至少三个坐标点！');
+            if (!isDrawing) this.childMap.resetMap();
             this.setState({ isDrawing: !isDrawing });
           }}
         >
@@ -410,6 +419,7 @@ export default class TableList extends React.Component {
       },
       form: { getFieldDecorator },
       account: { list: personList = [] },
+      map: { mapInfo: { remarks } = {} },
     } = this.props;
 
     const { isDrawing, groupId, detailList, pointList, modelIds, levelId } = this.state;
@@ -432,16 +442,29 @@ export default class TableList extends React.Component {
           <Col span={12}>
             <Card title="地图" bordered={false}>
               {this.renderDrawButton()}
-              <Map
-                isDrawing={isDrawing}
-                groupId={groupId}
-                onRef={this.onRef}
-                levelId={levelId}
-                getPoints={this.getPoints}
-                getBuilding={this.getBuilding}
-                pointList={pointList}
-                modelIds={modelIds}
-              />
+              {+remarks === 1 ? (
+                <Map
+                  isDrawing={isDrawing}
+                  groupId={groupId}
+                  onRef={this.onRef}
+                  levelId={levelId}
+                  getPoints={this.getPoints}
+                  getBuilding={this.getBuilding}
+                  pointList={pointList}
+                  modelIds={modelIds}
+                />
+              ) : (
+                <JoySuchMap
+                  isDrawing={isDrawing}
+                  groupId={groupId}
+                  onRef={this.onRef}
+                  levelId={levelId}
+                  getPoints={this.getPoints}
+                  getBuilding={this.getBuilding}
+                  pointList={pointList}
+                  modelIds={modelIds}
+                />
+              )}
             </Card>
           </Col>
           <Col span={12}>
@@ -468,7 +491,7 @@ export default class TableList extends React.Component {
                   <Select
                     placeholder="请选择"
                     {...itemStyles}
-                    allowClear
+                    // allowClear
                     onChange={this.handleLevelChange}
                   >
                     {['红', '橙', '黄', '蓝'].map((item, index) => (
@@ -579,9 +602,9 @@ export default class TableList extends React.Component {
                   rules: [{ required: true, message: '请输入' }],
                 })(<Input placeholder="请输入" {...itemStyles} />)}
               </FormItem> #555252*/}
-              <FormItem label="所选建筑物" {...formItemLayout}>
-                {this.renderBuildingId()}
-                {/* {buildingId.map(({ key, areaId, point, selected }) => (
+              {/* <FormItem label="所选建筑物" {...formItemLayout}>
+                {this.renderBuildingId()} */}
+              {/* {buildingId.map(({ key, areaId, point, selected }) => (
                   <Tag
                     color={!selected ? '' : '#555252'}
                     key={key}
@@ -590,7 +613,7 @@ export default class TableList extends React.Component {
                     {areaId}
                   </Tag>
                 ))} */}
-              </FormItem>
+              {/* </FormItem> */}
               <FormItem {...formItemLayout}>
                 <div style={{ textAlign: 'center' }}>
                   <Button style={{ marginRight: 10 }} type="primary" onClick={this.handleSubmit}>

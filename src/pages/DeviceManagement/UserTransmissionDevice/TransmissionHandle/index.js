@@ -19,88 +19,88 @@ const SPAN = { span: 24 };
 const LABEL_COL = { span: 4 };
 const DEFAULT_FORMAT = 'YYYY-MM-DD';
 
-@connect(({
-  gateway,
-  user,
-  loading,
-}) => ({
-  gateway,
-  user,
-  loading: loading.effects['gateway/fetchDetail'],
-  adding: loading.effects['gateway/add'],
-  editing: loading.effects['gateway/edit'],
-}), (dispatch) => ({
-  getDetail (payload, callback) {
-    dispatch({
-      type: 'gateway/fetchDetail',
-      payload,
-      callback,
-    });
-  },
-  getTypeList (payload, callback) {
-    dispatch({
-      type: 'gateway/fetchTypeList',
-      payload,
-      callback,
-    });
-  },
-  getProtocolList () {
-    dispatch({
-      type: 'gateway/fetchProtocolList',
-    });
-  },
-  getNetworkingList () {
-    dispatch({
-      type: 'gateway/fetchNetworkingList',
-    });
-  },
-  getBrandList (payload, callback) {
-    dispatch({
-      type: 'gateway/fetchBrandList',
-      payload,
-      callback,
-    });
-  },
-  getModelList (payload, callback) {
-    dispatch({
-      type: 'gateway/fetchModelList',
-      payload,
-      callback,
-    });
-  },
-  getOperatorList () {
-    dispatch({
-      type: 'gateway/fetchOperatorList',
-    });
-  },
-  setDetail () {
-    dispatch({
-      type: 'gateway/save',
-      payload: {
-        detail: {},
-      },
-    });
-  },
-  add (payload, callback) {
-    dispatch({
-      type: 'gateway/add',
-      payload,
-      callback,
-    });
-  },
-  edit (payload, callback) {
-    dispatch({
-      type: 'gateway/edit',
-      payload,
-      callback,
-    });
-  },
-}))
+@connect(
+  ({ gateway, user, loading }) => ({
+    gateway,
+    user,
+    loading: loading.effects['gateway/fetchDetail'],
+    adding: loading.effects['gateway/add'],
+    editing: loading.effects['gateway/edit'],
+  }),
+  dispatch => ({
+    getDetail(payload, callback) {
+      dispatch({
+        type: 'gateway/fetchDetail',
+        payload,
+        callback,
+      });
+    },
+    getTypeList(payload, callback) {
+      dispatch({
+        type: 'gateway/fetchTypeList',
+        payload,
+        callback,
+      });
+    },
+    getProtocolList() {
+      dispatch({
+        type: 'gateway/fetchProtocolList',
+      });
+    },
+    getNetworkingList() {
+      dispatch({
+        type: 'gateway/fetchNetworkingList',
+      });
+    },
+    getBrandList(payload, callback) {
+      dispatch({
+        type: 'gateway/fetchBrandList',
+        payload,
+        callback,
+      });
+    },
+    getModelList(payload, callback) {
+      dispatch({
+        type: 'gateway/fetchModelList',
+        payload,
+        callback,
+      });
+    },
+    getOperatorList() {
+      dispatch({
+        type: 'gateway/fetchOperatorList',
+      });
+    },
+    setDetail() {
+      dispatch({
+        type: 'gateway/save',
+        payload: {
+          detail: {},
+        },
+      });
+    },
+    add(payload, callback) {
+      dispatch({
+        type: 'gateway/add',
+        payload,
+        callback,
+      });
+    },
+    edit(payload, callback) {
+      dispatch({
+        type: 'gateway/edit',
+        payload,
+        callback,
+      });
+    },
+  })
+)
 export default class GatewayOther extends Component {
-
-  componentDidMount () {
+  componentDidMount() {
     const {
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       user: { isCompany },
       getDetail,
       getTypeList,
@@ -116,36 +116,45 @@ export default class GatewayOther extends Component {
     getProtocolList();
     getNetworkingList();
     getOperatorList();
-    if (!window.location.href.includes('add')) { // 不考虑id不存在的情况，由request来跳转到500
-      getDetail && getDetail({ id }, ({ equipmentType, brand, companyId, companyName, pointFixInfoList }) => {
-        isCompany && this.form.setFieldsValue({ company: { key: companyId, label: companyName } });
-        getBrandList({
-          equipmentType,
-        }, () => {
-          this.refresh();
+    if (!window.location.href.includes('add')) {
+      // 不考虑id不存在的情况，由request来跳转到500
+      getDetail &&
+        getDetail({ id }, ({ equipmentType, brand, companyId, companyName, pointFixInfoList }) => {
+          isCompany &&
+            this.form.setFieldsValue({ company: { key: companyId, label: companyName } });
+          getBrandList(
+            {
+              equipmentType,
+            },
+            () => {
+              this.refresh();
+            }
+          );
+          getModelList(
+            {
+              equipmentType,
+              brand,
+            },
+            () => {
+              this.refresh();
+            }
+          );
+          if (pointFixInfoList && pointFixInfoList.length) {
+            let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
+            const coord = { x: +xnum, y: +ynum, z: +znum };
+            groupId = +groupId;
+            setTimeout(() => {
+              this.form.setFieldsValue({ mapLocation: { groupId, coord, areaId } });
+            }, 0);
+          }
         });
-        getModelList({
-          equipmentType,
-          brand,
-        }, () => {
-          this.refresh();
-        });
-        if (pointFixInfoList && pointFixInfoList.length) {
-          let { xnum, ynum, znum, groupId, areaId } = pointFixInfoList[0];
-          const coord = { x: +xnum, y: +ynum, z: +znum };
-          groupId = +groupId;
-          setTimeout(() => {
-            this.form.setFieldsValue({ mapLocation: { groupId, coord, areaId } });
-          }, 0);
-        }
-      });
     } else {
       getBrandList();
       getModelList();
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     const { setDetail } = this.props;
     setDetail && setDetail({});
   }
@@ -153,8 +162,14 @@ export default class GatewayOther extends Component {
   getFields = () => {
     const {
       // 如果url中传递参数设备类型 equipmentType，则此选项不可编辑
-      location: { query: { equipmentType: initialEquipmentType }, query },
-      user: { currentUser: { unitType, unitId }, currentUser },
+      location: {
+        query: { equipmentType: initialEquipmentType },
+        query,
+      },
+      user: {
+        currentUser: { unitType, unitId },
+        currentUser,
+      },
       gateway: {
         detail: {
           companyId,
@@ -204,13 +219,19 @@ export default class GatewayOther extends Component {
     const href = window.location.href;
     const isNotCompany = +unitType !== 4;
     const isEdit = href.includes('edit');
-    const values = this.form && this.form.getFieldsValue() || {};
+    const values = (this.form && this.form.getFieldsValue()) || {};
     const isNotDetail = !href.includes('detail');
-    const showMoreNetworkingInfo = networkingList.filter(({ desc }) => ['2G/3G/4G/5G', 'GPRS', 'NB_IoT'].includes(desc)).map(({ value }) => `${value}`).includes(values.networkingType);
+    const showMoreNetworkingInfo = networkingList
+      .filter(({ desc }) => ['2G/3G/4G/5G', 'GPRS', 'NB_IoT'].includes(desc))
+      .map(({ value }) => `${value}`)
+      .includes(values.networkingType);
     const isBuildingFloorEntryForm = !values.locationType || values.locationType === '0';
-    const realCompanyId = values.company && values.company.key !== values.company.label ? values.company.key : undefined;
+    const realCompanyId =
+      values.company && values.company.key !== values.company.label
+        ? values.company.key
+        : undefined;
     // 设备类型 201 数据处理设备
-    const isDataProcessingType = values && values.equipmentType === '201'
+    const isDataProcessingType = values && values.equipmentType === '201';
 
     return [
       {
@@ -221,16 +242,30 @@ export default class GatewayOther extends Component {
             label: '单位名称',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CompanySelect disabled={isEdit || !!query.companyId || !isNotCompany} className={styles.item} /> : <span>{companyName}</span>,
+            render: () =>
+              isNotDetail ? (
+                <CompanySelect
+                  disabled={isEdit || !!query.companyId || !isNotCompany}
+                  className={styles.item}
+                />
+              ) : (
+                <span>{companyName}</span>
+              ),
             options: {
-              initialValue: (companyId && { key: companyId, label: companyName }) || (query.companyId && { key: query.companyId, label: query.companyName }) || (!isNotCompany && { key: currentUser.companyId, label: currentUser.companyName }) || undefined,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '单位名称不能为空',
-                  transform: value => value && value.label,
-                },
-              ] : undefined,
+              initialValue:
+                (companyId && { key: companyId, label: companyName }) ||
+                (query.companyId && { key: query.companyId, label: query.companyName }) ||
+                (!isNotCompany && { key: currentUser.companyId, label: currentUser.companyName }) ||
+                undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      message: '单位名称不能为空',
+                      transform: value => value && value.label,
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -238,19 +273,32 @@ export default class GatewayOther extends Component {
             label: '设备类型',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? (
-              <Select className={styles.item} placeholder="请选择设备类型" onChange={this.handleTypeChange} allowClear disabled={!!initialEquipmentType || isEdit}>
-                {typeList.map(({ id, name }) => <Option key={id}>{name}</Option>)}
-              </Select>
-            ) : <span>{equipmentTypeName}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Select
+                  className={styles.item}
+                  placeholder="请选择设备类型"
+                  onChange={this.handleTypeChange}
+                  allowClear
+                  disabled={!!initialEquipmentType || isEdit}
+                >
+                  {typeList.map(({ id, name }) => (
+                    <Option key={id}>{name}</Option>
+                  ))}
+                </Select>
+              ) : (
+                <span>{equipmentTypeName}</span>
+              ),
             options: {
               initialValue: initialEquipmentType || equipmentType,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '设备类型不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      message: '设备类型不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -258,19 +306,31 @@ export default class GatewayOther extends Component {
             label: '品牌',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? (
-              <Select className={styles.item} placeholder="请选择品牌" onChange={this.handleBrandChange} allowClear>
-                {brandList.map(({ id, name }) => <Option key={id}>{name}</Option>)}
-              </Select>
-            ) : <span>{brandName}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Select
+                  className={styles.item}
+                  placeholder="请选择品牌"
+                  onChange={this.handleBrandChange}
+                  allowClear
+                >
+                  {brandList.map(({ id, name }) => (
+                    <Option key={id}>{name}</Option>
+                  ))}
+                </Select>
+              ) : (
+                <span>{brandName}</span>
+              ),
             options: {
               initialValue: brand,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '品牌不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      message: '品牌不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -278,19 +338,33 @@ export default class GatewayOther extends Component {
             label: '型号',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? (
-              <Select className={styles.item} placeholder="请选择型号" onChange={this.handleModelChange} allowClear>
-                {modelList.map((data) => <Option key={data.id} data={data}>{data.name}</Option>)}
-              </Select>
-            ) : <span>{modelName}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Select
+                  className={styles.item}
+                  placeholder="请选择型号"
+                  onChange={this.handleModelChange}
+                  allowClear
+                >
+                  {modelList.map(data => (
+                    <Option key={data.id} data={data}>
+                      {data.name}
+                    </Option>
+                  ))}
+                </Select>
+              ) : (
+                <span>{modelName}</span>
+              ),
             options: {
               initialValue: model,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '型号不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      message: '型号不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -298,16 +372,23 @@ export default class GatewayOther extends Component {
             label: '设备名称',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入设备名称" maxLength={50} /> : <span>{name}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Input className={styles.item} placeholder="请输入设备名称" maxLength={50} />
+              ) : (
+                <span>{name}</span>
+              ),
             options: {
               initialValue: name,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '设备名称不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '设备名称不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
           {
@@ -315,17 +396,24 @@ export default class GatewayOther extends Component {
             label: '设备编号',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入设备编号" maxLength={50} /> : <span>{code}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Input className={styles.item} placeholder="请输入设备编号" maxLength={50} />
+              ) : (
+                <span>{code}</span>
+              ),
             options: {
               initialValue: code,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  whitespace: true,
-                  message: '设备编号不能为空',
-                },
-                isDataProcessingType ? { pattern: /^\d*$/, message: '请输入数字' } : {},
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '设备编号不能为空',
+                    },
+                    isDataProcessingType ? { pattern: /^\d*$/, message: '请输入数字' } : {},
+                  ]
+                : undefined,
             },
           },
         ],
@@ -338,11 +426,16 @@ export default class GatewayOther extends Component {
             label: '协议名称',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? (
-              <Select className={styles.item} placeholder="请选择协议名称" allowClear>
-                {protocolList.map(({ value, desc }) => <Option key={`${value}`}>{desc}</Option>)}
-              </Select>
-            ) : <span>{agreementTypeName}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Select className={styles.item} placeholder="请选择协议名称" allowClear>
+                  {protocolList.map(({ value, desc }) => (
+                    <Option key={`${value}`}>{desc}</Option>
+                  ))}
+                </Select>
+              ) : (
+                <span>{agreementTypeName}</span>
+              ),
             options: {
               initialValue: agreementType && `${agreementType}`,
             },
@@ -352,72 +445,107 @@ export default class GatewayOther extends Component {
             label: '联网方式',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? (
-              <Select className={styles.item} placeholder="请选择联网方式">
-                {networkingList.map(({ value, desc }) => <Option key={`${value}`}>{desc}</Option>)}
-              </Select>
-            ) : <span>{networkingTypeName}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Select className={styles.item} placeholder="请选择联网方式">
+                  {networkingList.map(({ value, desc }) => (
+                    <Option key={`${value}`}>{desc}</Option>
+                  ))}
+                </Select>
+              ) : (
+                <span>{networkingTypeName}</span>
+              ),
             options: {
               initialValue: networkingType && `${networkingType}`,
-              rules: isNotDetail ? [
-                {
-                  required: true,
-                  message: '联网方式不能为空',
-                },
-              ] : undefined,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      message: '联网方式不能为空',
+                    },
+                  ]
+                : undefined,
             },
           },
-          ...(showMoreNetworkingInfo ? [
-            {
-              id: 'operator',
-              label: '运营商',
-              span: SPAN,
-              labelCol: LABEL_COL,
-              render: () => isNotDetail ? (
-                <Select className={styles.item} placeholder="请选择运营商" allowClear>
-                  {operatorList.map(({ value, desc }) => <Option key={`${value}`}>{desc}</Option>)}
-                </Select>
-              ) : <span>{operatorName}</span>,
-              options: {
-                initialValue: operator && `${operator}`,
-              },
-            },
-            {
-              id: 'cardNum',
-              label: '上网卡卡号',
-              span: SPAN,
-              labelCol: LABEL_COL,
-              render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入上网卡卡号" maxLength={50} /> : <span>{cardNum}</span>,
-              options: {
-                initialValue: cardNum,
-              },
-            },
-            {
-              id: 'cardExpireDate',
-              label: '卡失效日期',
-              span: SPAN,
-              labelCol: LABEL_COL,
-              render: () => isNotDetail ? <DatePicker className={styles.item} placeholder="请选择卡失效日期" allowClear /> : <span>{cardExpireDate && moment(cardExpireDate).format(DEFAULT_FORMAT)}</span>,
-              options: {
-                initialValue: cardExpireDate && moment(cardExpireDate),
-              },
-            },
-            {
-              id: 'cardSfp',
-              label: '卡是否可插拔',
-              span: SPAN,
-              labelCol: LABEL_COL,
-              render: () => isNotDetail ? (
-                <Radio.Group>
-                  <Radio value="1">是</Radio>
-                  <Radio value="0">否</Radio>
-                </Radio.Group>
-              ) : <span>{['否', '是'][cardSfp]}</span>,
-              options: {
-                initialValue: cardSfp && `${cardSfp}`,
-              },
-            },
-          ] : []),
+          ...(showMoreNetworkingInfo
+            ? [
+                {
+                  id: 'operator',
+                  label: '运营商',
+                  span: SPAN,
+                  labelCol: LABEL_COL,
+                  render: () =>
+                    isNotDetail ? (
+                      <Select className={styles.item} placeholder="请选择运营商" allowClear>
+                        {operatorList.map(({ value, desc }) => (
+                          <Option key={`${value}`}>{desc}</Option>
+                        ))}
+                      </Select>
+                    ) : (
+                      <span>{operatorName}</span>
+                    ),
+                  options: {
+                    initialValue: operator && `${operator}`,
+                  },
+                },
+                {
+                  id: 'cardNum',
+                  label: '上网卡卡号',
+                  span: SPAN,
+                  labelCol: LABEL_COL,
+                  render: () =>
+                    isNotDetail ? (
+                      <Input
+                        className={styles.item}
+                        placeholder="请输入上网卡卡号"
+                        maxLength={50}
+                      />
+                    ) : (
+                      <span>{cardNum}</span>
+                    ),
+                  options: {
+                    initialValue: cardNum,
+                  },
+                },
+                {
+                  id: 'cardExpireDate',
+                  label: '卡失效日期',
+                  span: SPAN,
+                  labelCol: LABEL_COL,
+                  render: () =>
+                    isNotDetail ? (
+                      <DatePicker
+                        className={styles.item}
+                        placeholder="请选择卡失效日期"
+                        allowClear
+                      />
+                    ) : (
+                      <span>{cardExpireDate && moment(cardExpireDate).format(DEFAULT_FORMAT)}</span>
+                    ),
+                  options: {
+                    initialValue: cardExpireDate && moment(cardExpireDate),
+                  },
+                },
+                {
+                  id: 'cardSfp',
+                  label: '卡是否可插拔',
+                  span: SPAN,
+                  labelCol: LABEL_COL,
+                  render: () =>
+                    isNotDetail ? (
+                      <Radio.Group>
+                        <Radio value="1">是</Radio>
+                        <Radio value="0">否</Radio>
+                      </Radio.Group>
+                    ) : (
+                      <span>{['否', '是'][cardSfp]}</span>
+                    ),
+                  options: {
+                    initialValue: cardSfp && `${cardSfp}`,
+                  },
+                },
+              ]
+            : []),
         ],
       },
       {
@@ -428,7 +556,12 @@ export default class GatewayOther extends Component {
             label: '生产厂家',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入生产厂家" maxLength={50} /> : <span>{productCompany}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Input className={styles.item} placeholder="请输入生产厂家" maxLength={50} />
+              ) : (
+                <span>{productCompany}</span>
+              ),
             options: {
               initialValue: productCompany,
             },
@@ -438,7 +571,12 @@ export default class GatewayOther extends Component {
             label: '生产厂家电话',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入生产厂家电话" maxLength={50} /> : <span>{productCompanyPhone}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Input className={styles.item} placeholder="请输入生产厂家电话" maxLength={50} />
+              ) : (
+                <span>{productCompanyPhone}</span>
+              ),
             options: {
               initialValue: productCompanyPhone,
             },
@@ -448,7 +586,12 @@ export default class GatewayOther extends Component {
             label: '生产日期',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <DatePicker className={styles.item} placeholder="请选择生产日期" allowClear /> : <span>{productDate && moment(productDate).format(DEFAULT_FORMAT)}</span>,
+            render: () =>
+              isNotDetail ? (
+                <DatePicker className={styles.item} placeholder="请选择生产日期" allowClear />
+              ) : (
+                <span>{productDate && moment(productDate).format(DEFAULT_FORMAT)}</span>
+              ),
             options: {
               initialValue: productDate && moment(productDate),
             },
@@ -458,126 +601,191 @@ export default class GatewayOther extends Component {
             label: '使用期限（月）',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <InputNumber min={1} precision={0} className={styles.item} placeholder="请输入使用期限（月）" maxLength={50} /> : <span>{serviceLife}</span>,
+            render: () =>
+              isNotDetail ? (
+                <InputNumber
+                  min={1}
+                  precision={0}
+                  className={styles.item}
+                  placeholder="请输入使用期限（月）"
+                  maxLength={50}
+                />
+              ) : (
+                <span>{serviceLife}</span>
+              ),
             options: {
               initialValue: serviceLife,
             },
           },
         ],
       },
-      ...(realCompanyId ? [
-        {
-          title: '区域-位置',
-          fields: [
+      ...(realCompanyId
+        ? [
             {
-              id: 'locationType',
-              label: '录入方式',
-              extra: isNotDetail ? '（如果单位设备较多，且该设备在建筑物内，推荐选择建筑物-楼层）' : undefined,
-              span: SPAN,
-              labelCol: LABEL_COL,
-              render: () => isNotDetail ? (
-                <Radio.Group>
-                  <Radio value="0">选择建筑物-楼层</Radio>
-                  <Radio value="1">手填</Radio>
-                </Radio.Group>
-              ) : <span>{['选择建筑物-楼层', '手填'][locationType]}</span>,
-              options: {
-                initialValue: locationType && `${locationType}` || '0',
-                rules: isNotDetail ? [
-                  {
-                    required: true,
-                    message: '录入方式不能为空',
-                  },
-                ] : undefined,
-              },
-            },
-            ...(isBuildingFloorEntryForm ? [
-              {
-                id: 'buildingFloor',
-                label: '所属建筑物楼层',
-                span: SPAN,
-                labelCol: LABEL_COL,
-                render: () => isNotDetail ? <BuildingFloorSelect companyId={unitId || realCompanyId} marker={values.marker} /> : <span>{[buildingName, floorName].filter(v => v).join('')}</span>,
-                options: {
-                  initialValue: [buildingId, floorId],
-                  rules: isNotDetail ? [
-                    {
-                      required: true,
-                      validator: this.validateBuildingFloor,
-                    },
-                  ] : undefined,
-                },
-              },
-              {
-                id: 'location',
-                label: '详细位置',
-                span: SPAN,
-                labelCol: LABEL_COL,
-                render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入详细位置" maxLength={50} /> : <span>{location}</span>,
-                options: {
-                  initialValue: location,
-                },
-              },
-            ] : [
+              title: '区域-位置',
+              fields: [
                 {
-                  id: 'area',
-                  label: '所在区域',
+                  id: 'locationType',
+                  label: '录入方式',
+                  extra: isNotDetail
+                    ? '（如果单位设备较多，且该设备在建筑物内，推荐选择建筑物-楼层）'
+                    : undefined,
                   span: SPAN,
                   labelCol: LABEL_COL,
-                  render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入所在区域" maxLength={50} /> : <span>{area}</span>,
+                  render: () =>
+                    isNotDetail ? (
+                      <Radio.Group>
+                        <Radio value="0">选择建筑物-楼层</Radio>
+                        <Radio value="1">手填</Radio>
+                      </Radio.Group>
+                    ) : (
+                      <span>{['选择建筑物-楼层', '手填'][locationType]}</span>
+                    ),
                   options: {
-                    initialValue: area,
-                    rules: isNotDetail ? [
-                      {
-                        required: true,
-                        message: '所在区域不能为空',
-                      },
-                    ] : undefined,
+                    initialValue: (locationType && `${locationType}`) || '0',
+                    rules: isNotDetail
+                      ? [
+                          {
+                            required: true,
+                            message: '录入方式不能为空',
+                          },
+                        ]
+                      : undefined,
                   },
                 },
+                ...(isBuildingFloorEntryForm
+                  ? [
+                      {
+                        id: 'buildingFloor',
+                        label: '所属建筑物楼层',
+                        span: SPAN,
+                        labelCol: LABEL_COL,
+                        render: () =>
+                          isNotDetail ? (
+                            <BuildingFloorSelect
+                              companyId={unitId || realCompanyId}
+                              marker={values.marker}
+                            />
+                          ) : (
+                            <span>{[buildingName, floorName].filter(v => v).join('')}</span>
+                          ),
+                        options: {
+                          initialValue: [buildingId, floorId],
+                          rules: isNotDetail
+                            ? [
+                                {
+                                  required: true,
+                                  validator: this.validateBuildingFloor,
+                                },
+                              ]
+                            : undefined,
+                        },
+                      },
+                      {
+                        id: 'location',
+                        label: '详细位置',
+                        span: SPAN,
+                        labelCol: LABEL_COL,
+                        render: () =>
+                          isNotDetail ? (
+                            <Input
+                              className={styles.item}
+                              placeholder="请输入详细位置"
+                              maxLength={50}
+                            />
+                          ) : (
+                            <span>{location}</span>
+                          ),
+                        options: {
+                          initialValue: location,
+                        },
+                      },
+                    ]
+                  : [
+                      {
+                        id: 'area',
+                        label: '所在区域',
+                        span: SPAN,
+                        labelCol: LABEL_COL,
+                        render: () =>
+                          isNotDetail ? (
+                            <Input
+                              className={styles.item}
+                              placeholder="请输入所在区域"
+                              maxLength={50}
+                            />
+                          ) : (
+                            <span>{area}</span>
+                          ),
+                        options: {
+                          initialValue: area,
+                          rules: isNotDetail
+                            ? [
+                                {
+                                  required: true,
+                                  message: '所在区域不能为空',
+                                },
+                              ]
+                            : undefined,
+                        },
+                      },
+                      {
+                        id: 'location',
+                        label: '位置详情',
+                        span: SPAN,
+                        labelCol: LABEL_COL,
+                        render: () =>
+                          isNotDetail ? (
+                            <Input
+                              className={styles.item}
+                              placeholder="请输入位置详情"
+                              maxLength={50}
+                            />
+                          ) : (
+                            <span>{location}</span>
+                          ),
+                        options: {
+                          initialValue: location,
+                          rules: isNotDetail
+                            ? [
+                                {
+                                  required: true,
+                                  message: '位置详情不能为空',
+                                },
+                              ]
+                            : undefined,
+                        },
+                      },
+                    ]),
+              ],
+            },
+            {
+              title: '地图定位',
+              fields: [
                 {
-                  id: 'location',
-                  label: '位置详情',
+                  id: 'mapLocation',
+                  label: '地图定位',
+                  extra: isNotDetail ? '（用于在驾驶舱展示）' : undefined,
                   span: SPAN,
                   labelCol: LABEL_COL,
-                  render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入位置详情" maxLength={50} /> : <span>{location}</span>,
+                  // render: () => <MarkerSelect companyId={unitId || realCompanyId} isBuildingFloorEntryForm={isBuildingFloorEntryForm} buildingFloor={values.buildingFloor} readonly={!isNotDetail} />,
+                  render: () => <MapMarkerSelect companyId={unitId || realCompanyId} />,
                   options: {
-                    initialValue: location,
-                    rules: isNotDetail ? [
-                      {
-                        required: true,
-                        message: '位置详情不能为空',
-                      },
-                    ] : undefined,
+                    // initialValue: marker || [],
+                    rules: isNotDetail
+                      ? [
+                          {
+                            required: true,
+                            validator: this.validateMarker,
+                          },
+                        ]
+                      : undefined,
                   },
                 },
-              ]),
-          ],
-        },
-        {
-          title: '地图定位',
-          fields: [
-            {
-              id: 'mapLocation',
-              label: '地图定位',
-              extra: isNotDetail ? '（用于在驾驶舱展示）' : undefined,
-              span: SPAN,
-              labelCol: LABEL_COL,
-              // render: () => <MarkerSelect companyId={unitId || realCompanyId} isBuildingFloorEntryForm={isBuildingFloorEntryForm} buildingFloor={values.buildingFloor} readonly={!isNotDetail} />,
-              render: () => (<MapMarkerSelect companyId={unitId || realCompanyId} />),
-              options: {
-                // initialValue: marker || [],
-                rules: isNotDetail ? [
-                  {
-                    required: true,
-                    validator: this.validateMarker,
-                  },
-                ] : undefined,
-              },
+              ],
             },
-          ],
-        },
-      ] : []),
+          ]
+        : []),
       {
         title: '施工信息',
         fields: [
@@ -586,7 +794,12 @@ export default class GatewayOther extends Component {
             label: '安装人',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入安装人" maxLength={50} /> : <span>{installer}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Input className={styles.item} placeholder="请输入安装人" maxLength={50} />
+              ) : (
+                <span>{installer}</span>
+              ),
             options: {
               initialValue: installer,
             },
@@ -596,7 +809,12 @@ export default class GatewayOther extends Component {
             label: '安装人电话',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入安装人电话" maxLength={50} /> : <span>{installerPhone}</span>,
+            render: () =>
+              isNotDetail ? (
+                <Input className={styles.item} placeholder="请输入安装人电话" maxLength={50} />
+              ) : (
+                <span>{installerPhone}</span>
+              ),
             options: {
               initialValue: installerPhone,
             },
@@ -606,7 +824,12 @@ export default class GatewayOther extends Component {
             label: '安装日期',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <DatePicker className={styles.item} placeholder="请选择安装日期" allowClear /> : <span>{installDate && moment(installDate).format(DEFAULT_FORMAT)}</span>,
+            render: () =>
+              isNotDetail ? (
+                <DatePicker className={styles.item} placeholder="请选择安装日期" allowClear />
+              ) : (
+                <span>{installDate && moment(installDate).format(DEFAULT_FORMAT)}</span>
+              ),
             options: {
               initialValue: installDate && moment(installDate),
             },
@@ -617,15 +840,26 @@ export default class GatewayOther extends Component {
             extra: isNotDetail ? '（施工前后、进线位置等）' : undefined,
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CustomUpload folder="emergencyPlan" beforeUpload={this.handleBeforeUpload} /> : (
-              <div>
-                {installPhotoList && installPhotoList.map(({ webUrl, name }, index) => (
-                  <div key={index}>
-                    <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
-                  </div>
-                ))}
-              </div>
-            ),
+            render: () =>
+              isNotDetail ? (
+                <CustomUpload folder="emergencyPlan" beforeUpload={this.handleBeforeUpload} />
+              ) : (
+                <div>
+                  {installPhotoList &&
+                    installPhotoList.map(({ webUrl, name }, index) => (
+                      <div key={index}>
+                        <a
+                          className={styles.clickable}
+                          href={webUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {name}
+                        </a>
+                      </div>
+                    ))}
+                </div>
+              ),
             options: {
               initialValue: installPhotoList || [],
             },
@@ -633,17 +867,17 @@ export default class GatewayOther extends Component {
         ],
       },
     ];
-  }
+  };
 
   setFormReference = form => {
     this.form = form;
-  }
+  };
 
   refresh = () => {
     setTimeout(() => {
       this.forceUpdate();
     }, 0);
-  }
+  };
 
   validateBuildingFloor = (rule, value, callback) => {
     const [buildingId, floorId] = value || [];
@@ -658,7 +892,7 @@ export default class GatewayOther extends Component {
       return;
     }
     callback();
-  }
+  };
 
   // validateMarker = (rule, value, callback) => {
   //   if (!value || value.length === 0) {
@@ -689,60 +923,74 @@ export default class GatewayOther extends Component {
 
   validateMarker = (rule, value, callback) => {
     if (value && value.groupId && value.coord) {
-      callback()
-    } else callback('请标注地图定位')
-  }
+      callback();
+    } else callback('请标注地图定位');
+  };
 
-  handleTypeChange = (equipmentType) => {
+  handleTypeChange = equipmentType => {
     const { getModelList, getBrandList } = this.props;
     const { getFieldValue, setFieldsValue } = this.form;
     const brandId = getFieldValue('brand');
-    getBrandList({
-      equipmentType,
-    }, (list) => {
-      const brand = list.filter(({ id }) => id === brandId).length > 0 ? brandId : undefined;
-      setFieldsValue({
-        model: undefined,
-        brand,
-      });
-      getModelList({
+    getBrandList(
+      {
         equipmentType,
-        brand,
-      });
-    });
-  }
+      },
+      list => {
+        const brand = list.filter(({ id }) => id === brandId).length > 0 ? brandId : undefined;
+        setFieldsValue({
+          model: undefined,
+          brand,
+        });
+        getModelList({
+          equipmentType,
+          brand,
+        });
+      }
+    );
+  };
 
-  handleBrandChange = (brand) => {
+  handleBrandChange = brand => {
     const { getModelList, getTypeList } = this.props;
     const { getFieldValue, setFieldsValue } = this.form;
     const equipmentTypeId = getFieldValue('equipmentType');
-    getTypeList({
-      brand,
-    }, (list) => {
-      const equipmentType = list.findIndex(({ id }) => id === equipmentTypeId) > -1 ? equipmentTypeId : undefined;
-      setFieldsValue({
-        model: undefined,
-        equipmentType,
-      });
-      getModelList({
-        equipmentType,
+    getTypeList(
+      {
         brand,
-      });
-    });
-  }
+      },
+      list => {
+        const equipmentType =
+          list.findIndex(({ id }) => id === equipmentTypeId) > -1 ? equipmentTypeId : undefined;
+        setFieldsValue({
+          model: undefined,
+          equipmentType,
+        });
+        getModelList({
+          equipmentType,
+          brand,
+        });
+      }
+    );
+  };
 
-  handleModelChange = (value, { props: { data: { equipmentType, brand } } }) => {
+  handleModelChange = (
+    value,
+    {
+      props: {
+        data: { equipmentType, brand },
+      },
+    }
+  ) => {
     const { setFieldsValue } = this.form;
     setFieldsValue({
       equipmentType,
       brand,
     });
-  }
+  };
 
   // 返回按钮点击事件
   handleBackButtonClick = () => {
     router.goBack();
-  }
+  };
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -750,21 +998,23 @@ export default class GatewayOther extends Component {
       add,
       edit,
       user: {
-        currentUser: {
-          unitType,
-          unitId,
-        },
+        currentUser: { unitType, unitId },
       },
-      gateway: {
-        detail: {
-          id,
-        } = {},
-      },
+      gateway: { detail: { id } = {} },
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { company, marker, buildingFloor, installDate, cardExpireDate, productDate, mapLocation, ...rest } = values;
+        const {
+          company,
+          marker,
+          buildingFloor,
+          installDate,
+          cardExpireDate,
+          productDate,
+          mapLocation,
+          ...rest
+        } = values;
         // const [buildingId, floorId] = buildingFloor || marker.reduce((result, { ichnographyType, buildingId, floorId }) => {
         //   if (ichnographyType === '2') {
         //     result[0] = buildingId;
@@ -785,9 +1035,15 @@ export default class GatewayOther extends Component {
           // pointFixInfoList: marker.map(({ id: fixImgId, ichnographyType: imgType, xNum: xnum, yNum: ynum }) => ({ fixImgId, imgType, xnum, ynum })),
           pointFixInfoList: [],
         };
-        if (mapLocation && mapLocation.groupId && mapLocation.coord) {
+        if (
+          mapLocation &&
+          (mapLocation.groupId || mapLocation.groupId === 0) &&
+          mapLocation.coord
+        ) {
           const { coord, ...resMap } = mapLocation;
-          payload.pointFixInfoList = [{ imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap }];
+          payload.pointFixInfoList = [
+            { imgType: 5, xnum: coord.x, ynum: coord.y, znum: coord.z, ...resMap },
+          ];
         }
         (id ? edit : add)(payload, (isSuccess, res) => {
           if (isSuccess) {
@@ -801,9 +1057,9 @@ export default class GatewayOther extends Component {
         });
       }
     });
-  }
+  };
 
-  handleBeforeUpload = (file) => {
+  handleBeforeUpload = file => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
       message.error('文件上传只支持JPG/PNG格式!');
@@ -813,16 +1069,13 @@ export default class GatewayOther extends Component {
     //   message.error('文件上传最大支持2MB!');
     // }
     return isJpgOrPng;
-  }
+  };
 
-  render () {
-    const {
-      loading,
-      adding,
-      editing,
-    } = this.props;
+  render() {
+    const { loading, adding, editing } = this.props;
     const href = window.location.href;
-    const title = (href.includes('add') && '新增用户传输装置') || (href.includes('edit') && '编辑用户传输装置')
+    const title =
+      (href.includes('add') && '新增用户传输装置') || (href.includes('edit') && '编辑用户传输装置');
     const breadcrumbList = [
       {
         title: '首页',
@@ -846,10 +1099,7 @@ export default class GatewayOther extends Component {
     const fields = this.getFields();
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Spin spinning={loading || adding || editing || false}>
           <CustomForm
             mode="multiple"
@@ -861,7 +1111,9 @@ export default class GatewayOther extends Component {
             action={
               <Fragment>
                 <Button onClick={this.handleBackButtonClick}>返回</Button>
-                <Button type="primary" onClick={this.handleSubmitButtonClick}>提交</Button>
+                <Button type="primary" onClick={this.handleSubmitButtonClick}>
+                  提交
+                </Button>
               </Fragment>
             }
           />
