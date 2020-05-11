@@ -20,7 +20,7 @@ const FIELDS = [
 const JOYSUCH_FIELDS = [
   // { key: 'appName', label: '地图名称' },
   { key: 'mapId', label: '地图ID' },
-  { key: 'key', label: 'key值' },
+  { key: 'key', label: 'token值' },
 ];
 
 const fengMap = fengmap; // eslint-disable-line
@@ -214,6 +214,17 @@ export default class ThreeDMap extends PureComponent {
     );
   }
 
+  handleMapTypeChange = e => {
+    const {
+      form: { resetFields },
+    } = this.props;
+    const {
+      target: { value },
+    } = e;
+    this.setState({ mapType: value });
+    resetFields(['mapId', 'key']);
+  };
+
   renderFormItems() {
     const {
       form: { getFieldDecorator },
@@ -232,7 +243,7 @@ export default class ThreeDMap extends PureComponent {
             initialValue: INIT_MAP_TYPE,
             rules: [{ required: true, message: `请选择地图类型` }],
           })(
-            <Radio.Group buttonStyle="solid">
+            <Radio.Group buttonStyle="solid" onChange={this.handleMapTypeChange}>
               <Radio.Button value="1">蜂鸟云地图</Radio.Button>
               <Radio.Button value="2">真趣地图</Radio.Button>
             </Radio.Group>

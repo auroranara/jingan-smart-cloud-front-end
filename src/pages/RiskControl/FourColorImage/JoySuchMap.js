@@ -2,11 +2,18 @@ import React from 'react';
 import { isPointInPolygon } from '@/utils/map';
 import dotImg from './img/dot.png';
 
-const COLORS = {
-  1: 'rgba(255, 72, 72, 0.6)',
-  2: 'rgba(241, 122, 10, 0.6)',
-  3: 'rgba(251, 247, 25, 0.6)',
-  4: 'rgba(30, 96, 255, 0.6)',
+// 风险等级1红 2橙 3黄 4蓝
+const COLORS = [
+  'rgba(254, 0, 3, 0.5)',
+  'rgba(236, 106, 52, 0.5)',
+  'rgba(236, 242, 65, 0.5)',
+  'rgba(20, 35, 196, 0.5)',
+];
+const StrokeColors = {
+  'rgba(254, 0, 3, 0.5)': 'rgba(254, 0, 3, 1)',
+  'rgba(236, 106, 52, 0.5)': 'rgba(236, 106, 52, 1)',
+  'rgba(236, 242, 65, 0.5)': 'rgba(236, 242, 65, 1)',
+  'rgba(20, 35, 196, 0.5)': 'rgba(20, 35, 196, 1)',
 };
 const selectedColor = 'rgb(245,245,245, 0.5)';
 
@@ -38,21 +45,11 @@ export default class JoySuchMap extends React.Component {
     const newList = pointList.length > 0 ? pointList : [];
     newList.map(item => {
       const { zoneLevel, coordinateList, groupId, modelIds } = item;
-      // const modeIdList = modelIds ? modelIds.split(',') : [];
-      // const models = map.getDatasByAlias(groupId, 'model');
-      // if (modeIdList.length > 0) {
-      //   models.forEach(item => {
-      //     if (item.FID && modeIdList.includes(item.FID)) {
-      //       item.setColor(COLORS[zoneLevel], 1);
-      //     }
-      //   });
-      // }
-      // const cordList = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
-      // const arrayList = models
-      //   .filter(({ mapCoord }) => isPointInPolygon(mapCoord, cordList))
-      //   .map(item => ({ buildingId: item.FID, points: item.mapCoord }));
-      // getBuilding && getBuilding(arrayList, 0);
-      this.drawPolygon(groupId, coordinateList, COLORS[zoneLevel]);
+      this.drawPolygon({
+        floorId: +groupId,
+        points: coordinateList,
+        color: COLORS[zoneLevel - 1],
+      });
       return null;
     });
   };
@@ -123,7 +120,12 @@ export default class JoySuchMap extends React.Component {
   renderDrawedPolygon = (groupId, points, color) => {
     this.resetMap();
     console.log('color', color);
-    drawedPolygon = this.drawPolygon(groupId, points, color);
+
+    drawedPolygon = this.drawPolygon({
+      floorId: +groupId,
+      points,
+      color,
+    });
     points.map(item => {
       const pointMarker = this.addPoint(groupId, item);
       pointMarkers.push(pointMarker);
@@ -156,14 +158,17 @@ export default class JoySuchMap extends React.Component {
     return imageMarker;
   };
 
-  drawPolygon = (floorId, points, color = 'rgba(30, 96, 255, 0.6)') => {
+  drawPolygon = ({ floorId, points, color = 'rgba(20, 35, 196, 0.5)' }) => {
     // const { points, groupId, id, color } = props;
+    console.log('color', color);
+
+    const strokeColor = StrokeColors[color];
     const polygonMarker = new jsmap.JSPolygonMarker({
       // id,
       position: points.map(item => ({ ...item, x: +item.x, y: +item.y, z: 0 })),
       floorId,
       color,
-      strokeColor: color,
+      strokeColor,
       // properties: props,
       strokeWidth: 2, //边线宽度
       depthTest: false, //是否开启深度检测
@@ -320,9 +325,13 @@ export default class JoySuchMap extends React.Component {
     const { isDrawing, levelId, style } = this.props;
     if (!isDrawing && linePoints.length > 0) {
       const groupId = linePoints.map(item => item.floorId)[0];
-      const currColor = levelId ? COLORS[levelId] : COLORS[4];
+      const currColor = levelId ? COLORS[levelId - 1] : COLORS[4];
       // doDraw
-      drawedPolygon = this.drawPolygon(groupId, linePoints, currColor);
+      drawedPolygon = this.drawPolygon({
+        floorId: +groupId,
+        points: linePoints,
+        color: currColor,
+      });
       // 建筑物上色
       // this.setModelColor(groupId, linePoints, currColor);
       map.removeMarker(lineMarker);

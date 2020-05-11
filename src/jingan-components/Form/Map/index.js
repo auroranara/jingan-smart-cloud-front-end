@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import styles from './index.less';
 const fengMap = fengmap; // eslint-disable-line
-const MapContainer = 'joySuchMap';
 
 export default class FormMap extends Component {
   state = {
@@ -226,7 +225,6 @@ export default class FormMap extends Component {
     );
   }
 
-  /* eslint-disable */
   // 打开地图
   openMap = () => {
     const { options, onLoadStart, onLoadEnd } = this.props;
@@ -242,21 +240,34 @@ export default class FormMap extends Component {
       rotateAngle,
       defaultViewMode,
     } = options;
-    const mapOptions = {
-      mapType: jsmap.JSMapType.MAP_PSEUDO_3D,
-      container: MapContainer,
-      token: key,
-      mapServerURL: './data/map',
-    };
-    const map = new jsmap.JSMap(mapOptions);
-    map.openMapById(mapId);
-
+    const mapOptions = new fengMap.MapOptions({
+      key,
+      appName,
+      container: document.getElementById('mapContainer'),
+      mapServerURL: './data/' + mapId,
+      theme: theme || '2001',
+      defaultMapScaleLevel: defaultMapScaleLevel || undefined,
+      modelSelectedEffect: modelSelectedEffect || false,
+      defaultViewMode:
+        defaultViewMode === '2d' ? fengMap.FMViewMode.MODE_2D : fengMap.FMViewMode.MODE_3D,
+    });
+    const map = new fengMap.FMMap(mapOptions);
+    map.openMapById(mapId, error => {
+      console.log(error);
+    });
     map.on('loadComplete', () => {
+      if (typeof tiltAngle === 'number') {
+        map.tiltAngle = tiltAngle;
+      }
+      if (typeof rotateAngle === 'number') {
+        map.rotateAngle = rotateAngle;
+      }
       this.setState(
         {
           map,
         },
         () => {
+          this.renderToolControl();
           this.renderFloorContorl();
           this.renderList();
         }
@@ -270,8 +281,8 @@ export default class FormMap extends Component {
 
   // 关闭地图
   closeMap = () => {
-    // const { map } = this.state;
-    document.getElementById(MapContainer).innerHTML = '';
+    const { map } = this.state;
+    map.dispose();
     this.setState({
       map: undefined,
     });
@@ -430,32 +441,47 @@ export default class FormMap extends Component {
 
   renderList() {
     this.renderImageMarkerList();
-    // this.renderPolygonMarkerList();
-    // this.renderTextMarkerList();
-    // this.renderModelList();
+    this.renderPolygonMarkerList();
+    this.renderTextMarkerList();
+    this.renderModelList();
+  }
+
+  // 二维三维切换控件
+  renderToolControl() {
+    const { map } = this.state;
+    const options = new fengMap.controlOptions({
+      position: fengMap.controlPositon.LEFT_TOP,
+      offset: {
+        x: 0,
+        y: 0,
+      },
+      groupsButtonNeeded: false,
+    });
+    const toolControl = new fengMap.toolControl(map, options);
+    return toolControl;
   }
 
   // 楼层切换控件
   renderFloorContorl() {
     const { map } = this.state;
-    const floorControl = new jsmap.JSFloorControl({
-      position: jsmap.JSControlPosition.RIGHT_TOP, //控件在容器中的位置             ??????
-      showBtnCount: 6, //默认显示楼层的个数 TODO
-      allLayers: false, //初始是否是多层显示，默认单层显示
-      needAllLayerBtn: true, // 是否显示多层/单层切换按钮
+    const options = new fengMap.controlOptions({
+      position: fengMap.controlPositon.LEFT_TOP,
       offset: {
         x: 0,
-        y: 10,
-      }, //位置 x,y 的偏移量
+        y: 56,
+      },
     });
-    map.addControl(floorControl);
+    const floorControl = new fengMap.buttonGroupsControl(map, options);
+    floorControl.expand = true;
+    floorControl.onChange(() => {
+      this.renderList();
+    });
     return floorControl;
   }
 
   // 图片覆盖物
-  renderImageMarker(data) {
+  renderImageMarker(layer, data) {
     const { map } = this.state;
-    return;
     const marker = new fengMap.FMImageMarker({
       ...data,
       callback: data.callback
@@ -473,14 +499,13 @@ export default class FormMap extends Component {
   renderImageMarkerList() {
     const { map } = this.state;
     const { imageMarkerList } = this.props;
-    console.log('imageMarkerList', imageMarkerList);
-    // const groupId = map.focusGroupID;
-    // const list = (imageMarkerList || []).filter(item => item.groupId === groupId);
-    // const group = map.getFMGroup(groupId);
-    // const layer = group.getOrCreateLayer('imageMarker');
-    // layer.removeAll();
+    const groupId = map.focusGroupID;
+    const list = (imageMarkerList || []).filter(item => item.groupId === groupId);
+    const group = map.getFMGroup(groupId);
+    const layer = group.getOrCreateLayer('imageMarker');
+    layer.removeAll();
     this.imageMarkerMapper = new Map();
-    return imageMarkerList.every(this.renderImageMarker.bind(this));
+    return list.every(this.renderImageMarker.bind(this, layer));
   }
 
   // 多边形覆盖物
@@ -561,7 +586,7 @@ export default class FormMap extends Component {
 
     return (
       <div className={styles.container}>
-        <div className={styles.map} id={MapContainer} />
+        <div className={styles.map} id="mapContainer" />
         {map && children}
       </div>
     );
