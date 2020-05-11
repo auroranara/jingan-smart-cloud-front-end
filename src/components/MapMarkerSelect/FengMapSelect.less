@@ -47,3 +47,44 @@
     }
   }
 }
+
+.controlContainer {
+  position: absolute;
+  top: 15px;
+  left: calc(~'45% - 95px');
+  color: #676868;
+  cursor: pointer;
+  font-size: 12px;
+
+  .controlItem {
+    float: left;
+    background-color: #fff;
+    border-radius: 5px;
+    width: 110px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 3px;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    & + .controlItem {
+      margin-left: 20px;
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      margin-right: 6px;
+      position: relative;
+      top: 5px;
+    }
+  }
+
+  .active {
+    color: #116fda;
+  }
+}

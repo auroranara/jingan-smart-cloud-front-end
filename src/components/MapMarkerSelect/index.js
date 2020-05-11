@@ -28,13 +28,13 @@ export default class MapMarkerSelect extends PureComponent {
 
   render() {
     const {
-      map: { mapInfo: { remarks } = {} },
+      map: { mapInfo: { remarks } = {}, mapInfo },
       ...restProps
     } = this.props;
     let ThreeDMap;
     if (+remarks === 1) ThreeDMap = FengMapSelect;
     else if (+remarks === 2) ThreeDMap = JoySuchSelect;
     else return null;
-    return <ThreeDMap {...restProps} />;
+    return <ThreeDMap {...restProps} mapInfo={mapInfo} />;
   }
 }

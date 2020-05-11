@@ -67,6 +67,11 @@ export default class FengMapSelect extends PureComponent {
     }
   }
 
+  componentWillUnmount() {
+    this.map = null;
+    document.getElementById('fengMap').innerHTML = '';
+  }
+
   initData = () => {
     const { onChange } = this.props;
     this.map = null;
@@ -110,31 +115,31 @@ export default class FengMapSelect extends PureComponent {
    * @param {boolean} isInit 是否初始化
    **/
   handleUpdateMap = (isInit = false) => {
-    const { dispatch, companyId } = this.props;
+    const { dispatch, companyId, mapInfo } = this.props;
     // 获取地图列表
-    dispatch({
-      type: 'map/fetchMapList',
-      payload: { companyId },
-      callback: mapInfo => {
-        this.initMap({ ...mapInfo, isInit }, () => {
-          // 获取区域列表
-          dispatch({
-            type: 'map/fetchMapAreaList',
-            payload: { companyId, pageNum: 1, pageSize: 0 },
-            callback: ({ list }) => {
-              list.forEach(({ coordinateList, groupId, id, zoneLevel }) => {
-                this.drawPolygon({
-                  groupId,
-                  coords: coordinateList,
-                  id,
-                  color: levelColor[zoneLevel],
-                });
-              });
-            },
+    // dispatch({
+    //   type: 'map/fetchMapList',
+    //   payload: { companyId },
+    //   callback: mapInfo => {
+    this.initMap({ ...mapInfo, isInit }, () => {
+      // 获取区域列表
+      dispatch({
+        type: 'map/fetchMapAreaList',
+        payload: { companyId, pageNum: 1, pageSize: 0 },
+        callback: ({ list }) => {
+          list.forEach(({ coordinateList, groupId, id, zoneLevel }) => {
+            this.drawPolygon({
+              groupId,
+              coords: coordinateList,
+              id,
+              color: levelColor[zoneLevel],
+            });
           });
-        });
-      },
+        },
+      });
     });
+    //   },
+    // });
   };
 
   // 初始化地图定位
@@ -179,6 +184,7 @@ export default class FengMapSelect extends PureComponent {
 
     //地图加载完回调事件
     this.map.on('loadComplete', event => {
+      if (!this.map) return;
       const { value: { groupId, coord } = {}, markerOption = {}, markerList } = this.props;
       //加载按钮型楼层切换控件
       this.loadBtnFloorCtrl(isInit ? groupId : 1);
@@ -201,6 +207,7 @@ export default class FengMapSelect extends PureComponent {
 
   //加载按钮型楼层切换控件
   loadBtnFloorCtrl = (groupId = 1) => {
+    if (!this.map) return;
     //楼层控制控件配置参数
     const btnFloorCtlOpt = new fengMap.controlOptions({
       //默认在右下角
@@ -382,23 +389,24 @@ export default class FengMapSelect extends PureComponent {
 
     return show ? (
       <div style={{ display: 'flex' }}>
-        <div className={styles.mapLocation} id="fengMap" />
-        {legend &&
-          list.length > 0 && (
-            <div className={styles.controlContainer}>
-              <div className={itemStyles} onClick={() => this.handleClickControl()}>
-                <span
-                  className={styles.icon}
-                  style={{
-                    background: `url(${
-                      otherMarkersVisible ? activeIcon : icon
-                    }) center center / auto 100% no-repeat`,
-                  }}
-                />
-                {label}
+        <div className={styles.mapLocation} id="fengMap">
+          {legend &&
+            list.length > 0 && (
+              <div className={styles.controlContainer}>
+                <div className={itemStyles} onClick={() => this.handleClickControl()}>
+                  <span
+                    className={styles.icon}
+                    style={{
+                      background: `url(${
+                        otherMarkersVisible ? activeIcon : icon
+                      }) center center / auto 100% no-repeat`,
+                    }}
+                  />
+                  {label}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+        </div>
         {!readonly && (
           <Button type="primary" onClick={this.handleClickReset}>
             重置
