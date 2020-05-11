@@ -97,7 +97,7 @@ export default class ThreeDMap extends PureComponent {
         const detail = list[0] || {};
         const { tiltAngle, rotateAngle } = fieldsValue;
         const vals = { ...fieldsValue };
-        vals.mapScaleLevelRangeList = [tiltAngle, rotateAngle];
+        vals.mapScaleLevelRangeList = tiltAngle ? [tiltAngle, rotateAngle] : [0, 0];
         this.editMap(isPost, vals, detail.id);
       });
     });

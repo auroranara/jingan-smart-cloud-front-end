@@ -369,6 +369,7 @@ export default class Map extends PureComponent {
 
     // 地图加载完成事件
     map.on('loadComplete', () => {
+      if (!map) return;
       map.tiltAngle = typeof tiltAngle === 'number' ? tiltAngle : TiltAngle;
       map.rotateAngle = typeof rotateAngle === 'number' ? rotateAngle : RotateAngle;
       // map.mapScaleLevel = MapScaleLevel;

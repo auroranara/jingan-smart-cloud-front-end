@@ -30,7 +30,6 @@ import StorageTankAreaModal from './Components/StorageTankAreaModal';
 import StorageMediumModal from './Components/StorageMediumModal';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
-import JoySuchSelect from '@/components/JoySuchSelect';
 import codesMap from '@/utils/codes';
 import moment from 'moment';
 
@@ -1464,8 +1463,7 @@ export default class StorageEdit extends PureComponent {
             //   <FlatPic {...FlatPicProps} />
             // </FormItem>
             <FormItem label="地图定位" {...formItemLayout}>
-              {/* {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)} */}
-              {getFieldDecorator('mapLocation')(<JoySuchSelect companyId={companyId} />)}
+              {getFieldDecorator('mapLocation')(<MapMarkerSelect companyId={companyId} />)}
             </FormItem>
           )}
         </Form>

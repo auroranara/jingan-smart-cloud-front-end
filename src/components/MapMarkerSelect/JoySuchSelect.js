@@ -151,6 +151,11 @@ export default class JoySuchSelect extends PureComponent {
     }
   }
 
+  componentWillUnmount() {
+    this.map = null;
+    document.getElementById('joySuchMap').innerHTML = '';
+  }
+
   initData = () => {
     const { onChange } = this.props;
     this.map = null;
@@ -195,31 +200,31 @@ export default class JoySuchSelect extends PureComponent {
    * @param {boolean} isInit 是否初始化
    **/
   handleUpdateMap = (isInit = false) => {
-    const { dispatch, companyId } = this.props;
+    const { dispatch, companyId, mapInfo } = this.props;
     // 获取地图列表
-    dispatch({
-      type: 'map/fetchMapList',
-      payload: { companyId },
-      callback: mapInfo => {
-        this.initMap({ ...mapInfo, isInit }, () => {
-          // 获取区域列表
-          dispatch({
-            type: 'map/fetchMapAreaList',
-            payload: { companyId, pageNum: 1, pageSize: 0 },
-            callback: ({ list }) => {
-              list.forEach(({ coordinateList, groupId, id, zoneLevel }) => {
-                this.drawPolygon({
-                  groupId,
-                  coords: coordinateList,
-                  id,
-                  color: levelColor[zoneLevel],
-                });
-              });
-            },
+    // dispatch({
+    //   type: 'map/fetchMapList',
+    //   payload: { companyId },
+    //   callback: mapInfo => {
+    this.initMap({ ...mapInfo, isInit }, () => {
+      // 获取区域列表
+      dispatch({
+        type: 'map/fetchMapAreaList',
+        payload: { companyId, pageNum: 1, pageSize: 0 },
+        callback: ({ list }) => {
+          list.forEach(({ coordinateList, groupId, id, zoneLevel }) => {
+            this.drawPolygon({
+              groupId,
+              coords: coordinateList,
+              id,
+              color: levelColor[zoneLevel],
+            });
           });
-        });
-      },
+        },
+      });
     });
+    //   },
+    // });
   };
 
   /* eslint-disable */
@@ -280,6 +285,7 @@ export default class JoySuchSelect extends PureComponent {
 
     //地图加载完回调事件
     this.map.on('loadComplete', event => {
+      if (!this.map) return;
       const { value: { groupId, coord } = {}, markerOption = {}, markerList } = this.props;
       //加载按钮型楼层切换控件
       this.loadBtnFloorCtrl(isInit ? groupId : 1);
@@ -314,6 +320,7 @@ export default class JoySuchSelect extends PureComponent {
 
   //加载按钮型楼层切换控件
   loadBtnFloorCtrl = (groupId = 1) => {
+    if (!this.map) return;
     //楼层控制控件配置参数
     const floorControl = new jsmap.JSFloorControl({
       position: jsmap.JSControlPosition.RIGHT_TOP, //控件在容器中的位置             ??????

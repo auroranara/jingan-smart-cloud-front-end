@@ -326,6 +326,7 @@ export default class Map extends PureComponent {
 
     // 地图加载完成事件
     map.on('loadComplete', () => {
+      if (!map) return;
       this.loadBtnFloorCtrl();
       // 四色图
       fun && fun();

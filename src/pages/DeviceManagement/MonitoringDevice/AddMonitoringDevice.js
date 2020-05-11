@@ -28,7 +28,6 @@ import { getToken } from '@/utils/authority';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
-import JoySuchSelect from '@/components/JoySuchSelect';
 import styles from '@/pages/DeviceManagement/NewSensor/AddSensor.less';
 import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor.png';
 import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-monitor-gray.png';
