@@ -39,6 +39,7 @@ const MODES = [
   { name: '2D', value: fengMap.FMViewMode.MODE_2D },
   { name: '3D', value: fengMap.FMViewMode.MODE_3D },
 ];
+const INIT_MAP_TYPE = '1';
 
 function getDefaultViewCenter(center) {
   if (!center) return;
@@ -52,6 +53,7 @@ function getDefaultViewCenter(center) {
 export default class ThreeDMap extends PureComponent {
   state = {
     mapVisible: false,
+    mapType: 1,
     // scaleRange: INIT_RANGE,
     // scale: INIT_SCALE,
   };
@@ -63,7 +65,13 @@ export default class ThreeDMap extends PureComponent {
       } = this.props;
       if (list.length) {
         const vals = list[0];
-        const { theme, defaultViewMode, defaultMapScaleLevel, mapScaleLevelRangeList } = vals;
+        const {
+          theme,
+          defaultViewMode,
+          defaultMapScaleLevel,
+          mapScaleLevelRangeList,
+          remarks,
+        } = vals;
         const [tiltAngle, rotateAngle] = mapScaleLevelRangeList || [];
         const fieldsValue = {
           ...vals,
@@ -72,12 +80,12 @@ export default class ThreeDMap extends PureComponent {
           defaultMapScaleLevel: defaultMapScaleLevel || INIT_SCALE,
           tiltAngle: typeof tiltAngle === 'number' ? tiltAngle : INIT_TILT_ANGLE,
           rotateAngle: typeof rotateAngle === 'number' ? rotateAngle : INIT_ROTATE_ANGLE,
+          remarks: remarks || INIT_MAP_TYPE,
           // mapScaleLevelRangeList: mapScaleLevelRangeList || INIT_RANGE,
         };
-        setFieldsValue({ remarks: vals.remarks });
-        setTimeout(() => {
+        this.setState({ mapType: remarks || 1 }, () => {
           setFieldsValue(fieldsValue);
-        }, 0);
+        });
         // this.initMap(fieldsValue); // 初始化有问题，手动点击
       }
     });
@@ -208,9 +216,9 @@ export default class ThreeDMap extends PureComponent {
 
   renderFormItems() {
     const {
-      form: { getFieldDecorator, getFieldValue },
+      form: { getFieldDecorator },
     } = this.props;
-    const mapType = getFieldValue('remarks');
+    const { mapType } = this.state;
 
     return (
       <Fragment>
@@ -221,7 +229,7 @@ export default class ThreeDMap extends PureComponent {
         </FormItem>
         <FormItem label="地图类型" labelCol={LABEL_COL} wrapperCol={WRAPPER_COL}>
           {getFieldDecorator('remarks', {
-            // initialValue: INIT_MODE,
+            initialValue: INIT_MAP_TYPE,
             rules: [{ required: true, message: `请选择地图类型` }],
           })(
             <Radio.Group buttonStyle="solid">
