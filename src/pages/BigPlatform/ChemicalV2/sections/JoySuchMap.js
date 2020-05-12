@@ -610,9 +610,7 @@ export default class Map extends PureComponent {
   loadBtnFloorCtrl = () => {
     const {
       user: {
-        currentUser: {
-          companyBasicInfo: { mapIp },
-        },
+        currentUser: { permissionCodes },
       },
     } = this.props;
     const floorControl = new jsmap.JSFloorControl({
@@ -622,7 +620,7 @@ export default class Map extends PureComponent {
       needAllLayerBtn: true, // 是否显示多层/单层切换按钮
       offset: {
         x: 0,
-        y: mapIp ? 90 : 40,
+        y: permissionCodes.includes('dashboard.personnelPositioningView') ? 90 : 40,
       }, //位置 x,y 的偏移量
     });
     map.addControl(floorControl);
@@ -837,9 +835,7 @@ export default class Map extends PureComponent {
       },
       specialEquipment: { list: specialEquipmentList },
       user: {
-        currentUser: {
-          companyBasicInfo: { mapIp },
-        },
+        currentUser: { permissionCodes },
       },
       licensePlateRecognitionSystem: { abnormalRecordList },
     } = this.props;
@@ -937,7 +933,7 @@ export default class Map extends PureComponent {
             </div>
           </div>
 
-          {mapIp && (
+          {permissionCodes.includes('dashboard.personnelPositioningView') && (
             <div
               className={styles.positionBtnRight}
               style={{

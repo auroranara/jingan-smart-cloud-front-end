@@ -1089,9 +1089,7 @@ export default class Map extends PureComponent {
       },
       specialEquipment: { list: specialEquipmentList },
       user: {
-        currentUser: {
-          companyBasicInfo: { mapIp },
-        },
+        currentUser: { permissionCodes },
       },
       licensePlateRecognitionSystem: { abnormalRecordList },
     } = this.props;
@@ -1219,7 +1217,7 @@ export default class Map extends PureComponent {
             </div>
           </div>
 
-          {mapIp && (
+          {permissionCodes.includes('dashboard.personnelPositioningView') && (
             <div
               className={styles.positionBtn}
               style={{
