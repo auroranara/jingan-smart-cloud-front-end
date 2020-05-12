@@ -14,6 +14,7 @@ export default {
 
   state: {
     systemSetting: defaultData,
+    detail: {},
   },
 
   effects: {
@@ -36,19 +37,23 @@ export default {
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取设置详情
-    *fetchSettingDetail ({ payload, callback }, { call }) {
+    *fetchSettingDetail ({ payload, callback }, { call, put }) {
       const res = yield call(fetchSystemSetting, { ...payload, pageNum: 1, pageSize: 0 });
       const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
+      yield put({ type: 'saveDetail', payload: detail });
       callback && callback(detail);
     },
   },
 
   reducers: {
-    saveSetting (state, action) {
+    saveSetting(state, action) {
       return {
         ...state,
         systemSetting: action.payload || defaultData,
       }
+    },
+    saveDetail(state, action) {
+      return { ...state, detail: action.payload };
     },
   },
 }
