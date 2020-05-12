@@ -718,7 +718,7 @@ export default class MajorHazardDistributionList extends Component {
   };
 
   renderMap() {
-    const { mapList: [options] = [] } = this.props;
+    const { mapList: [options = {}] = [] } = this.props;
     const {
       disabledMapButtonList = [],
       imageMarkerList,
