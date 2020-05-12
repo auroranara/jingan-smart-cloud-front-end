@@ -132,7 +132,7 @@ export default class TableList extends PureComponent {
     });
     dispatch({
       type: 'visitorRegistration/fetchCardList',
-      payload: { pageNum: 1, pageSize: 10, companyId: company.id || companyId, status: 1 },
+      payload: { pageNum: 1, pageSize: 200, companyId: company.id || companyId, status: 1 },
     });
   };
 

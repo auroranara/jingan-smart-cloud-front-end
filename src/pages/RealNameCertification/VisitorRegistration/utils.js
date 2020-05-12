@@ -171,6 +171,8 @@ export const EditModal = Form.create()(props => {
     handleModalClose();
   };
 
+  const filterOption = (input, option) =>  option.children.includes(input.trim());
+
   const itemStyles = { style: { width: '75%', marginRight: '10px' } };
 
   return (
@@ -195,7 +197,14 @@ export const EditModal = Form.create()(props => {
         </Form.Item>
         <Form.Item {...formItemCol} label="选择卡：">
           {getFieldDecorator('labelId')(
-            <Select {...itemStyles} placeholder="请选择" allowClear>
+            <Select
+              {...itemStyles}
+              placeholder="请选择"
+              showSearch
+              allowClear
+              optionFilterProp="children"
+              filterOption={filterOption}
+            >
               {cardList.map(({ id, cardName }) => (
                 <Select.Option key={id} value={id}>
                   {cardName}
