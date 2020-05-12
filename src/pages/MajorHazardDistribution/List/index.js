@@ -761,9 +761,10 @@ export default class MajorHazardDistributionList extends Component {
     );
     // const ThreeDMap = +remarks === 1 ? Map : JoySuchMap;
     const ThreeDMap = +remarks === 1 ? Map : Map;
+    if (+remarks !== 1) return null;
 
     return (
-      <ThreeDMap
+      <Map
         options={options}
         imageMarkerList={imageMarkerList}
         polygonMarkerList={polygonMarkerList}
@@ -772,7 +773,7 @@ export default class MajorHazardDistributionList extends Component {
         onLoadEnd={this.handleMapLoadEnd}
       >
         {btns}
-      </ThreeDMap>
+      </Map>
     );
   }
 

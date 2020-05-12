@@ -15,8 +15,6 @@ const levelColor = {
   '4': 'rgba(30, 96, 255, 0.5)', // 蓝
 };
 
-const MapId = '0001';
-
 export const isPointInPolygon = (point, polygon) => {
   //下述代码来源：http://paulbourke.net/geometry/insidepoly/，进行了部分修改
   //基本思想是利用射线法，计算射线与多边形各边的交点，如果是偶数，则点在多边形外，否则
@@ -245,7 +243,7 @@ export default class JoySuchSelect extends PureComponent {
     //初始化地图对象
     this.map = new jsmap.JSMap(mapOptions);
     //打开Fengmap服务器的地图数据和主题
-    this.map.openMapById(MapId);
+    this.map.openMapById(mapId);
 
     // 监听点击
     this.map.on('mapClickNode', event => {
