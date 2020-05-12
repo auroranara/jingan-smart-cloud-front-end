@@ -431,6 +431,10 @@ export default class Chemical extends PureComponent {
         } = data;
         // 更新消息
         this.fetchScreenMessage(data);
+        // 更新监测对象各个类型的数量
+        this.fetchMonitorTargetCount({ companyId });
+        // 更新IoT监测各个类型的数量
+        this.fetchMonitorEquipCount({ companyId });
         if (+type === 100) {
           if (fireDeviceCode) {
             // 消防主机
@@ -441,9 +445,9 @@ export default class Chemical extends PureComponent {
           // 地图点位弹跳
           monitorEquipmentId && this.childMap.handleUpdateMap(monitorEquipmentId, statusType);
           // 更新监测对象各个类型的数量
-          this.fetchMonitorTargetCount({ companyId });
-          // 更新IoT监测各个类型的数量
-          this.fetchMonitorEquipCount({ companyId });
+          // this.fetchMonitorTargetCount({ companyId });
+          // // 更新IoT监测各个类型的数量
+          // this.fetchMonitorEquipCount({ companyId });
         } else if (+type === 101) {
           // 变更预警消息
           this.childMap.handleChangeWarning();
@@ -1445,13 +1449,13 @@ export default class Chemical extends PureComponent {
         headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
         contentStyle={CONTENT_STYLE}
-        other={
-          <div
-            className={styles.menuBtn}
-            style={{ background: `url(${menuIcon}) center center / 100% 100% no-repeat` }}
-            onClick={this.handleClickMenu}
-          />
-        }
+        // other={
+        //   <div
+        //     className={styles.menuBtn}
+        //     style={{ background: `url(${menuIcon}) center center / 100% 100% no-repeat` }}
+        //     onClick={this.handleClickMenu}
+        //   />
+        // }
       >
         <Tips noticeList={noticeList} />
         <div className={styles.container}>
