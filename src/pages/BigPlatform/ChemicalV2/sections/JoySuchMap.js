@@ -32,10 +32,16 @@ const RotateAngle = 60;
 const MapScaleLevel = 21;
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = [
-  'rgb(255, 72, 72, 0.5)',
-  'rgb(241, 122, 10, 0.5)',
-  'rgb(251, 247, 25, 0.5)',
-  'rgb(30, 96, 255, 0.5)',
+  'rgba(254, 0, 3, 0.5)',
+  'rgba(236, 106, 52, 0.5)',
+  'rgba(236, 242, 65, 0.5)',
+  'rgba(20, 35, 196, 0.5)',
+];
+const StrokeColor = [
+  'rgba(254, 0, 3, 1)',
+  'rgba(236, 106, 52, 1)',
+  'rgba(236, 242, 65, 1)',
+  'rgba(20, 35, 196, 1)',
 ];
 let map;
 let popInfoWindow;
@@ -205,7 +211,13 @@ export default class Map extends PureComponent {
         list.map(polygon => {
           const { zoneLevel, coordinateList, groupId, modelIds } = polygon;
           const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
-          const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
+          const polygonMarker = this.addPolygon({
+            floorId: +groupId,
+            points,
+            color: COLORS[zoneLevel - 1],
+            strokeColor: StrokeColor[zoneLevel - 1],
+            polygonProps: polygon,
+          });
           return null;
         });
         // 变更预警管理
@@ -285,6 +297,8 @@ export default class Map extends PureComponent {
         properties: { ...item, iconType },
         show: visibles[iconType],
       });
+      console.log('marker', marker);
+
       return null;
     });
   };
@@ -362,7 +376,7 @@ export default class Map extends PureComponent {
         switch (iconType) {
           case 0:
             // 风险点
-            const itemId = properties.get('iconType');
+            const itemId = properties.get('itemId');
             const status = properties.get('status');
             handleClickRiskPoint(itemId, status);
             break;
@@ -594,6 +608,13 @@ export default class Map extends PureComponent {
 
   //加载按钮型楼层切换控件
   loadBtnFloorCtrl = () => {
+    const {
+      user: {
+        currentUser: {
+          companyBasicInfo: { mapIp },
+        },
+      },
+    } = this.props;
     const floorControl = new jsmap.JSFloorControl({
       position: jsmap.JSControlPosition.RIGHT_TOP, //控件在容器中的位置             ??????
       showBtnCount: 6, //默认显示楼层的个数 TODO
@@ -601,7 +622,7 @@ export default class Map extends PureComponent {
       needAllLayerBtn: true, // 是否显示多层/单层切换按钮
       offset: {
         x: 0,
-        y: 50,
+        y: mapIp ? 90 : 40,
       }, //位置 x,y 的偏移量
     });
     map.addControl(floorControl);
@@ -686,13 +707,13 @@ export default class Map extends PureComponent {
     return imageMarker;
   };
 
-  addPolygon = (floorId, points, color, polygonProps = {}) => {
+  addPolygon = ({ floorId, points, color, strokeColor, polygonProps = {} }) => {
     const polygonMarker = new jsmap.JSPolygonMarker({
       id: polygonProps.id,
       position: points.map(item => ({ ...item, z: 0 })),
       floorId,
       color,
-      strokeColor: color,
+      strokeColor: strokeColor,
       properties: polygonProps,
       strokeWidth: 2, //边线宽度
       depthTest: false, //是否开启深度检测
@@ -722,6 +743,16 @@ export default class Map extends PureComponent {
     const copy = [...visibles];
     copy[index] = !visibles[index];
     this.setState({ visibles: copy });
+    if (index === 0) {
+      // setMarkerVisibleByFilter, iconType == 0不行    ?????????????
+      this.markerArray.map(item => {
+        const properties = item.getProperties();
+        const iconType = properties.get('iconType');
+        if (iconType === 0) item.show = copy[index];
+        return null;
+      });
+      return;
+    }
     map.setMarkerVisibleByFilter(
       jsmap.JSMarkerType.IMAGE_MARKER,
       copy[index],
@@ -908,7 +939,7 @@ export default class Map extends PureComponent {
 
           {mapIp && (
             <div
-              className={styles.positionBtn}
+              className={styles.positionBtnRight}
               style={{
                 background: `url(${position}) center center / auto 80% no-repeat #fff`,
               }}
