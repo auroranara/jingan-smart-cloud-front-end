@@ -608,6 +608,13 @@ export default class Map extends PureComponent {
 
   //加载按钮型楼层切换控件
   loadBtnFloorCtrl = () => {
+    const {
+      user: {
+        currentUser: {
+          companyBasicInfo: { mapIp },
+        },
+      },
+    } = this.props;
     const floorControl = new jsmap.JSFloorControl({
       position: jsmap.JSControlPosition.RIGHT_TOP, //控件在容器中的位置             ??????
       showBtnCount: 6, //默认显示楼层的个数 TODO
@@ -615,7 +622,7 @@ export default class Map extends PureComponent {
       needAllLayerBtn: true, // 是否显示多层/单层切换按钮
       offset: {
         x: 0,
-        y: 50,
+        y: mapIp ? 90 : 40,
       }, //位置 x,y 的偏移量
     });
     map.addControl(floorControl);
@@ -932,7 +939,7 @@ export default class Map extends PureComponent {
 
           {mapIp && (
             <div
-              className={styles.positionBtn}
+              className={styles.positionBtnRight}
               style={{
                 background: `url(${position}) center center / auto 80% no-repeat #fff`,
               }}
