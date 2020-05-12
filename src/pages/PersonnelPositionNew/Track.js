@@ -12,18 +12,31 @@ const BREADCRUMB_LIST = [
   { title: TITLE, name: TITLE },
 ];;
 
-@connect(({ user }) => ({
+@connect(({ user, systemManagement }) => ({
   user,
+  systemManagement,
 }))
 export default class Track extends PureComponent {
-  render() {
+  componentDidMount() {
     const {
+      dispatch,
       user: {
-        currentUser: { companyBasicInfo },
+        currentUser: { unitId: companyId },
       },
     } = this.props;
 
-    const { mapIp, mapBuildId, mapSecret, appId } = companyBasicInfo || {};
+    companyId && dispatch({
+      type: 'systemManagement/fetchSettingDetail',
+      payload: { companyId },
+    });
+  }
+
+  render() {
+    const {
+      systemManagement: { detail },
+    } = this.props;
+
+    const { url: mapIp, buildingId: mapBuildId, secret: mapSecret, userName: appId } = detail;
     const src = getSrc('trackSn', mapIp, mapBuildId, mapSecret, appId);
     return (
       <PageHeaderLayout

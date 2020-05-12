@@ -12,16 +12,25 @@ import { CONTENT_STYLE, HEADER_STYLE, IMGS, SRC_BASES } from './utils';
 
 const bgImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/bg.png';
 
-@connect(({ user }) => ({ user }))
+@connect(({ user, systemManagement }) => ({ user, systemManagement }))
 export default class PersonnelPosition extends PureComponent {
   state = { index: 0, mouseIndex: undefined };
 
-  componentDidMout() {
+  componentDidMount() {
+    const {
+      dispatch,
+      match: { params: { companyId } },
+    } = this.props;
     const imgs = Array.from(IMGS);
     imgs.shift();
     imgs.forEach(({ icon }) => {
       const img = new Image();
       img.src = `http://data.jingan-china.cn/v2/new-menu/${icon}1.png`;
+    });
+
+    companyId && companyId !== 'index' && dispatch({
+      type: 'systemManagement/fetchSettingDetail',
+      payload: { companyId },
     });
   }
 
@@ -75,13 +84,15 @@ export default class PersonnelPosition extends PureComponent {
 
   render() {
     const {
-      user: {
-        currentUser: { companyBasicInfo },
-      },
+      // user: {
+      //   currentUser: { companyBasicInfo },
+      // },
+      systemManagement: { detail },
     } = this.props;
     const { index } = this.state;
 
-    const { mapIp, mapBuildId, mapSecret, appId } = companyBasicInfo || {};
+    // const { mapIp, mapBuildId, mapSecret, appId } = companyBasicInfo || {};
+    const { url: mapIp, buildingId: mapBuildId, secret: mapSecret, userName: appId } = detail;
     const src = getSrc(SRC_BASES[index], mapIp, mapBuildId, mapSecret, appId);
     // const src = `http://chem2.joysuch.com/js/tunnel.html?to=${SRC_BASES[index]}&buildId=200647&wh=false&appid=yanshi&secret=4011a04a6615406a9bbe84fcf30533de`;
     return (
