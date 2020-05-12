@@ -376,7 +376,7 @@ export default class Map extends PureComponent {
         switch (iconType) {
           case 0:
             // 风险点
-            const itemId = properties.get('iconType');
+            const itemId = properties.get('itemId');
             const status = properties.get('status');
             handleClickRiskPoint(itemId, status);
             break;
