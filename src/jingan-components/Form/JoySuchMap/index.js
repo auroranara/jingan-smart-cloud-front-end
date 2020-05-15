@@ -51,14 +51,11 @@ export default class FormMap extends Component {
       // 楼层不变的情况下数据源发生变化
       if (imageMarkerList !== prevImageMarkerList) {
         // options没有发生变化但imageMarkerList发生变化时，重新渲染
-        const groupId = map.focusGroupID;
         const { list, mapper } = (imageMarkerList || []).reduce(
           (result, item) => {
-            if (item.groupId === groupId) {
-              result.list.push(item);
-              if (item.key) {
-                result.mapper[item.key] = item;
-              }
+            result.list.push(item);
+            if (item.key) {
+              result.mapper[item.key] = item;
             }
             return result;
           },
@@ -66,7 +63,7 @@ export default class FormMap extends Component {
         );
         const { deleteList, prevMapper } = (prevImageMarkerList || []).reduce(
           (result, prevItem) => {
-            if (prevItem.groupId === groupId && prevItem.key) {
+            if (prevItem.key) {
               if (!mapper[prevItem.key]) {
                 result.deleteList.push(prevItem.key || prevItem);
               }
@@ -84,15 +81,7 @@ export default class FormMap extends Component {
             if (!prevItem) {
               result.addList.push(item);
             } else if (item !== prevItem) {
-              const position = (item.x !== prevItem.x ||
-                item.y !== prevItem.y ||
-                item.height !== prevItem.height) && { x: item.x, y: item.y, height: item.height };
-              result.editList.push({
-                key: item.key,
-                position,
-                size: item.size !== prevItem.size ? item.size : undefined,
-                url: item.url !== prevItem.url ? item.url : undefined,
-              });
+              result.editList.push(item);
             }
             return result;
           },
@@ -104,14 +93,11 @@ export default class FormMap extends Component {
       }
       if (polygonMarkerList !== prevPolygonMarkerList) {
         // options没有发生变化但polygonMarkerList发生变化时，重新渲染
-        const groupId = map.focusGroupID;
         const { list, mapper } = (polygonMarkerList || []).reduce(
           (result, item) => {
-            if (item.groupId === groupId) {
-              result.list.push(item);
-              if (item.key) {
-                result.mapper[item.key] = item;
-              }
+            result.list.push(item);
+            if (item.key) {
+              result.mapper[item.key] = item;
             }
             return result;
           },
@@ -119,7 +105,7 @@ export default class FormMap extends Component {
         );
         const { deleteList, prevMapper } = (prevPolygonMarkerList || []).reduce(
           (result, prevItem) => {
-            if (prevItem.groupId === groupId && prevItem.key) {
+            if (prevItem.key) {
               if (!mapper[prevItem.key]) {
                 result.deleteList.push(prevItem.key || prevItem);
               }
@@ -137,13 +123,7 @@ export default class FormMap extends Component {
             if (!prevItem) {
               result.addList.push(item);
             } else if (item !== prevItem) {
-              result.editList.push({
-                key: item.key,
-                color: item.color !== prevItem.color ? item.color : undefined,
-                alpha: item.alpha !== prevItem.alpha ? item.alpha : undefined,
-                lineWidth: item.lineWidth !== prevItem.lineWidth ? item.lineWidth : undefined,
-                height: item.height !== prevItem.height ? item.height : undefined,
-              });
+              result.editList.push(item);
             }
             return result;
           },
@@ -250,6 +230,7 @@ export default class FormMap extends Component {
     };
     const map = new jsmap.JSMap(mapOptions);
     map.openMapById(mapId);
+    console.log('map', map);
 
     map.on('loadComplete', () => {
       this.setState(
@@ -258,7 +239,7 @@ export default class FormMap extends Component {
         },
         () => {
           this.renderFloorContorl();
-          // this.renderList();
+          this.renderList();
         }
       );
       onLoadEnd && onLoadEnd(map);
@@ -279,20 +260,12 @@ export default class FormMap extends Component {
 
   // 新增imageMarker
   addImageMarkerList = list => {
-    const { map } = this.state;
-    const groupId = map.focusGroupID;
-    const group = map.getFMGroup(groupId);
-    const layer = group.getOrCreateLayer('imageMarker');
-    return list.every(this.renderImageMarker.bind(this, layer));
+    return list.every(this.renderImageMarker.bind(this));
   };
 
   // 新增polygonMarker
   addPolygonMarkerList = list => {
-    const { map } = this.state;
-    const groupId = map.focusGroupID;
-    const group = map.getFMGroup(groupId);
-    const layer = group.getOrCreateLayer('polygonMarker');
-    return list.every(this.renderPolygonMarker.bind(this, layer));
+    return list.every(this.renderPolygonMarker.bind(this));
   };
 
   // 新增textMarker
@@ -306,23 +279,11 @@ export default class FormMap extends Component {
 
   // 编辑imageMarker
   editImageMarkerList = list => {
-    const { map } = this.state;
-    const groupId = map.focusGroupID;
     return list.every(item => {
       const marker = this.imageMarkerMapper.get(item.key);
-      if (marker) {
-        if (item.position) {
-          const { x, y, height } = item.position;
-          marker.setPosition(x, y, groupId, height);
-        }
-        if (item.size) {
-          marker.size = item.size;
-        }
-        if (item.url) {
-          marker.url = item.url;
-        }
-      }
-      return marker;
+      map.removeMarker(marker);
+      const newMarker = this.renderImageMarker(item);
+      return newMarker;
     });
   };
 
@@ -330,22 +291,9 @@ export default class FormMap extends Component {
   editPolygonMarkerList = list => {
     return list.every(item => {
       const marker = this.polygonMarkerMapper.get(item.key);
-      // 这里未完成，尤其是points属性
-      if (marker) {
-        if (item.color) {
-          marker.color = item.color;
-        }
-        if (item.alpha) {
-          marker.alpha = item.alpha;
-        }
-        if (item.lineWidth) {
-          marker.lineWidth = item.lineWidth;
-        }
-        if (item.height) {
-          marker.height = item.height;
-        }
-      }
-      return marker;
+      map.removeMarker(marker);
+      const newMarker = this.renderPolygonMarker(item);
+      return newMarker;
     });
   };
 
@@ -383,32 +331,26 @@ export default class FormMap extends Component {
   // 删除对应的imageMarker
   deleteImageMarkerList = list => {
     const { map } = this.state;
-    const groupId = map.focusGroupID;
-    const group = map.getFMGroup(groupId);
-    const layer = group.getOrCreateLayer('imageMarker');
     return list.every(key => {
       const marker = this.imageMarkerMapper.get(key);
       if (marker) {
-        layer.removeMarker(marker);
+        map.removeMarker(marker);
         this.imageMarkerMapper.delete(key);
       }
-      return layer;
+      return null;
     });
   };
 
   // 删除对应的polygonMarker
   deletePolygonMarkerList = list => {
     const { map } = this.state;
-    const groupId = map.focusGroupID;
-    const group = map.getFMGroup(groupId);
-    const layer = group.getOrCreateLayer('polygonMarker');
     return list.every(key => {
       const marker = this.polygonMarkerMapper.get(key);
       if (marker) {
-        layer.removeMarker(marker);
+        map.removeMarker(marker);
         this.polygonMarkerMapper.delete(key);
       }
-      return layer;
+      return null;
     });
   };
 
@@ -431,21 +373,21 @@ export default class FormMap extends Component {
   renderList() {
     this.renderImageMarkerList();
     this.renderPolygonMarkerList();
-    this.renderTextMarkerList();
-    this.renderModelList();
+    // this.renderTextMarkerList();
+    // this.renderModelList();
   }
 
   // 楼层切换控件
   renderFloorContorl() {
     const { map } = this.state;
     const floorControl = new jsmap.JSFloorControl({
-      position: jsmap.JSControlPosition.RIGHT_TOP, //控件在容器中的位置             ??????
+      position: jsmap.JSControlPosition.LEFT_TOP, //控件在容器中的位置             ??????
       showBtnCount: 6, //默认显示楼层的个数 TODO
       allLayers: false, //初始是否是多层显示，默认单层显示
       needAllLayerBtn: true, // 是否显示多层/单层切换按钮
       offset: {
         x: 0,
-        y: 10,
+        y: -5,
       }, //位置 x,y 的偏移量
     });
     map.addControl(floorControl);
@@ -453,57 +395,56 @@ export default class FormMap extends Component {
   }
 
   // 图片覆盖物
-  renderImageMarker(layer, data) {
+  renderImageMarker(data) {
+    console.log('data', data);
+
     const { map } = this.state;
-    const marker = new fengMap.FMImageMarker({
-      ...data,
-      callback: data.callback
-        ? () => {
-            data.callback(marker, map);
-          }
-        : undefined,
+    const { key, url, x, y, groupId, size } = data;
+    const marker = new jsmap.JSImageMarker({
+      id: key, //id
+      image: url, //图片路径
+      position: new jsmap.JSPoint(x, y, 0), //坐标位置
+      width: size, //尺寸-宽
+      height: size, //尺寸-高
+      floorId: groupId, //楼层 id
+      offset: jsmap.JSControlPosition.RIGHT_BOTTOM, //偏移位置
+      depthTest: false, //是否开启深度检测
     });
-    layer.addMarker(marker);
+    map.addMarker(marker);
     this.imageMarkerMapper.set(data.key || data, marker);
     return marker;
   }
 
   // 图片覆盖物列表（重新生成当前楼层所有的imageMarker）
   renderImageMarkerList() {
-    const { map } = this.state;
     const { imageMarkerList } = this.props;
-    const groupId = map.focusGroupID;
-    const list = (imageMarkerList || []).filter(item => item.groupId === groupId);
-    const group = map.getFMGroup(groupId);
-    const layer = group.getOrCreateLayer('imageMarker');
-    layer.removeAll();
     this.imageMarkerMapper = new Map();
-    return list.every(this.renderImageMarker.bind(this, layer));
+    return imageMarkerList.every(this.renderImageMarker.bind(this));
   }
 
   // 多边形覆盖物
-  renderPolygonMarker(layer, data) {
+  renderPolygonMarker(data) {
     const { map } = this.state;
-    const marker = new fengMap.FMPolygonMarker({
-      ...data,
+    const { color, groupId, key, lineWidth, points } = data;
+    const polygonMarker = new jsmap.JSPolygonMarker({
+      id: key,
+      position: points,
+      floorId: groupId,
+      color,
+      strokeColor: color,
+      strokeWidth: lineWidth, //边线宽度
+      depthTest: false, //是否开启深度检测
     });
-    layer.addMarker(marker);
-    data.callback && data.callback(marker, map);
-    this.polygonMarkerMapper.set(data.key || data, marker);
-    return marker;
+    map.addMarker(polygonMarker);
+    this.polygonMarkerMapper.set(data.key || data, polygonMarker);
+    return polygonMarker;
   }
 
   // 多边形覆盖物列表（重新生成当前楼层所有的polygonMarker）
   renderPolygonMarkerList() {
-    const { map } = this.state;
     const { polygonMarkerList } = this.props;
-    const groupId = map.focusGroupID;
-    const list = (polygonMarkerList || []).filter(item => item.groupId === groupId);
-    const group = map.getFMGroup(groupId);
-    const layer = group.getOrCreateLayer('polygonMarker');
-    layer.removeAll();
     this.polygonMarkerMapper = new Map();
-    return list.every(this.renderPolygonMarker.bind(this, layer));
+    return polygonMarkerList.every(this.renderPolygonMarker.bind(this));
   }
 
   // 文本覆盖物

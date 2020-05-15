@@ -10,7 +10,13 @@ export default class MapMarkerSelect extends PureComponent {
   state = {};
 
   componentDidMount() {
-    this.handleUpdateMap(true);
+    // this.handleUpdateMap(true);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { companyId: prevCompanyId } = prevProps;
+    const { companyId } = this.props;
+    if (companyId !== prevCompanyId) this.handleUpdateMap(true);
   }
 
   /**

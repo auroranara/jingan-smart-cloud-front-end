@@ -108,7 +108,7 @@ export default class JoySuchSelect extends PureComponent {
   };
 
   static propTypes = {
-    companyId: PropTypes.string.isRequired,
+    // companyId: PropTypes.string.isRequired,
     readonly: PropTypes.bool,
   };
 
@@ -199,6 +199,7 @@ export default class JoySuchSelect extends PureComponent {
    **/
   handleUpdateMap = (isInit = false) => {
     const { dispatch, companyId, mapInfo } = this.props;
+    if (!companyId) return;
     // 获取地图列表
     // dispatch({
     //   type: 'map/fetchMapList',
@@ -321,13 +322,13 @@ export default class JoySuchSelect extends PureComponent {
     if (!this.map) return;
     //楼层控制控件配置参数
     const floorControl = new jsmap.JSFloorControl({
-      position: jsmap.JSControlPosition.RIGHT_TOP, //控件在容器中的位置             ??????
+      position: jsmap.JSControlPosition.LEFT_TOP, //控件在容器中的位置             ??????
       showBtnCount: 6, //默认显示楼层的个数 TODO
       allLayers: false, //初始是否是多层显示，默认单层显示
       needAllLayerBtn: true, // 是否显示多层/单层切换按钮
       offset: {
         x: 0,
-        y: 10,
+        y: -5,
       }, //位置 x,y 的偏移量
     });
     this.map.addControl(floorControl);

@@ -342,7 +342,7 @@ export default class MajorHazardDistributionList extends Component {
               if (coordinateList && coordinateList.length) {
                 const points = coordinateList.map(({ x, y, z }) => ({ x: +x, y: +y, z: +z }));
                 // const color = COLORS[dangerLevel - 1];
-                const color = '#1571d9';
+                const color = 'rgba(21, 113, 217, 0.6)';
                 const polygonMarkerOptions = {
                   key: id,
                   groupId: +groupId,
@@ -759,12 +759,10 @@ export default class MajorHazardDistributionList extends Component {
         })}
       </div>
     );
-    // const ThreeDMap = +remarks === 1 ? Map : JoySuchMap;
-    const ThreeDMap = +remarks === 1 ? Map : Map;
-    if (+remarks !== 1) return null;
+    const ThreeDMap = +remarks === 1 ? Map : JoySuchMap;
 
     return (
-      <Map
+      <ThreeDMap
         options={options}
         imageMarkerList={imageMarkerList}
         polygonMarkerList={polygonMarkerList}
@@ -773,7 +771,7 @@ export default class MajorHazardDistributionList extends Component {
         onLoadEnd={this.handleMapLoadEnd}
       >
         {btns}
-      </Map>
+      </ThreeDMap>
     );
   }
 

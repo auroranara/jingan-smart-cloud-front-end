@@ -297,8 +297,6 @@ export default class Map extends PureComponent {
         properties: { ...item, iconType },
         show: visibles[iconType],
       });
-      console.log('marker', marker);
-
       return null;
     });
   };
@@ -333,6 +331,7 @@ export default class Map extends PureComponent {
       container: 'mapContainer',
       token: key,
       mapServerURL: './data/map',
+      backgroundColor: 'transparent',
     };
     map = new jsmap.JSMap(mapOptions);
     map.openMapById(mapId);
@@ -370,7 +369,7 @@ export default class Map extends PureComponent {
       }
       if (nodeType === jsmap.JSNodeType.IMAGE_MARKER) {
         // 点击图标
-        const { properties } = clickedObj;
+        const { properties, node } = clickedObj;
         const iconType = properties.get('iconType');
         const markerProps = mapChangeObj(properties);
         switch (iconType) {
@@ -398,16 +397,12 @@ export default class Map extends PureComponent {
             break;
           case 3:
             // 特种设备
-            this.handleShowSpecialInfo(
-              markerProps,
-              floorId,
-              new jsmap.JSPoint(coord.x, coord.y, 0)
-            );
+            this.handleShowSpecialInfo(markerProps, floorId, new jsmap.JSPoint(node.x, node.y, 0));
             break;
           case -1:
             // 变更预警
             const { zoneId } = markerProps;
-            this.handleShowChangeWarning(zoneId, floorId, new jsmap.JSPoint(coord.x, coord.y, 0));
+            this.handleShowChangeWarning(zoneId, floorId, new jsmap.JSPoint(node.x, node.y, 0));
             break;
           default:
             console.log('iconType', iconType);
@@ -453,7 +448,7 @@ export default class Map extends PureComponent {
         </div>`;
     popInfoWindow = new jsmap.JSPopInfoMarker({
       id: 'popInfoWindow',
-      floorId,
+      floorId: map.focusFloorId,
       content,
       position,
       properties: { zoneId },
@@ -593,14 +588,14 @@ export default class Map extends PureComponent {
     }
     popInfoWindow = new jsmap.JSPopInfoMarker({
       id: 'popInfoWindow',
-      floorId,
+      floorId: map.focusFloorId,
       content,
       position,
       // marginTop: 0,
       properties: info,
       showCloseButton: true,
-      // callback: (node) => {
-      // // console.log(node);
+      // callback: node => {
+      //   console.log('node', node);
       // },
     });
     map.addMarker(popInfoWindow);
@@ -614,13 +609,13 @@ export default class Map extends PureComponent {
       },
     } = this.props;
     const floorControl = new jsmap.JSFloorControl({
-      position: jsmap.JSControlPosition.RIGHT_TOP, //控件在容器中的位置             ??????
+      position: jsmap.JSControlPosition.LEFT_TOP, //控件在容器中的位置             ??????
       showBtnCount: 6, //默认显示楼层的个数 TODO
       allLayers: false, //初始是否是多层显示，默认单层显示
       needAllLayerBtn: true, // 是否显示多层/单层切换按钮
       offset: {
         x: 0,
-        y: permissionCodes.includes('dashboard.personnelPositioningView') ? 90 : 40,
+        y: permissionCodes.includes('dashboard.personnelPositioningView') ? 45 : -5,
       }, //位置 x,y 的偏移量
     });
     map.addControl(floorControl);
@@ -628,12 +623,12 @@ export default class Map extends PureComponent {
 
   removeMarkersByType = iconType => {
     if (!map) return;
-    map.removeMakerByFilter(jsmap.JSMarkerType.IMAGE_MARKER, `iconType == ${iconType}`);
+    map.removeMarkerByFilter(jsmap.JSMarkerType.IMAGE_MARKER, `iconType == ${iconType}`);
   };
 
   removeMarkerById = equipmentId => {
     if (!map) return;
-    map.removeMakerByFilter(jsmap.JSMarkerType.IMAGE_MARKER, `id == '${equipmentId}'`);
+    map.removeMarkerByFilter(jsmap.JSMarkerType.IMAGE_MARKER, `id == '${equipmentId}'`);
     return null;
   };
 
@@ -935,7 +930,7 @@ export default class Map extends PureComponent {
 
           {permissionCodes.includes('dashboard.personnelPositioningView') && (
             <div
-              className={styles.positionBtnRight}
+              className={styles.positionBtn}
               style={{
                 background: `url(${position}) center center / auto 80% no-repeat #fff`,
               }}

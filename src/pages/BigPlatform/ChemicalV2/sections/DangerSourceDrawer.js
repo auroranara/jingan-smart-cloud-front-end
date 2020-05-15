@@ -15,9 +15,12 @@ const fields = [
   },
   { label: '区域位置', value: 'location' },
   {
-    label: '备案时间',
+    label: '危险源备案期限',
     value: 'recordDate',
-    render: val => (val ? moment(val).format('YYYY-MM-DD') : NO_DATA),
+    render: (val, row) =>
+      val
+        ? moment(val).format('YYYY-MM-DD') + '~' + moment(row.recordDateEnd).format('YYYY-MM-DD')
+        : NO_DATA,
   },
   { label: '责任人', value: 'dutyPerson' },
 ];
