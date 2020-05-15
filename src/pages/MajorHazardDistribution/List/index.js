@@ -908,6 +908,7 @@ export default class MajorHazardDistributionList extends Component {
                         <div className={styles.alarmMessageItem} key={id}>
                           <TextAreaEllipsis
                             value={`${moment(happenTime).format(FORMAT)}\n${messageContent}`}
+                            length={null}
                           />
                         </div>
                       );
