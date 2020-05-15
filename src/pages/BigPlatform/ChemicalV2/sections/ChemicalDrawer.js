@@ -51,7 +51,14 @@ export default class ChemicalDrawer extends PureComponent {
         destroyOnClose={true}
         zIndex={1222}
         left={
-          <div>
+          <div
+            style={{
+              height: '100%',
+              overflowY: 'auto',
+              paddingRight: 15,
+              marginRight: -15,
+            }}
+          >
             {materialsList.map((item, index) => (
               <CardItem
                 key={index}
