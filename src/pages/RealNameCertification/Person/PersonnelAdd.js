@@ -50,7 +50,7 @@ const DEGREES = [
   { key: '6', label: '博士' },
 ];
 
-function treeData(data) {
+function treeData (data) {
   return data.map(item => {
     if (item.children) {
       return (
@@ -92,7 +92,7 @@ export default class PersonnelAdd extends PureComponent {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -124,9 +124,7 @@ export default class PersonnelAdd extends PureComponent {
           const educationCertificateDetails = detail.educationCertificateDetails || [];
           setFieldsValue({
             photoDetails: photoDetails.map(item => ({
-              dbUrl: item.dbUrl,
-              fileName: item.fileName,
-              id: item.id,
+              ...item,
               uid: item.id,
               url: item.webUrl,
             })),
@@ -450,7 +448,7 @@ export default class PersonnelAdd extends PureComponent {
     }
   };
 
-  render() {
+  render () {
     const {
       loading,
       submitting, // 提交状态
@@ -786,11 +784,11 @@ export default class PersonnelAdd extends PureComponent {
                             style={{ width: '86px', height: '86px', objectFit: 'contain' }}
                           />
                         ) : (
-                          <div>
-                            <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
-                            <div className="ant-upload-text">上传</div>
-                          </div>
-                        )}
+                            <div>
+                              <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
+                              <div className="ant-upload-text">上传</div>
+                            </div>
+                          )}
                       </Upload>
                     </Fragment>
                   )}
