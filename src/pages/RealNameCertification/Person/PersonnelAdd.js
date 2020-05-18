@@ -25,6 +25,9 @@ import styles1 from '@/components/ToolBar/index.less';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { getToken } from '@/utils/authority';
 import { phoneReg } from '@/utils/validate';
+import { AuthA } from '@/utils/customAuth';
+import { RedoOutlined } from '@ant-design/icons';
+import codes from '@/utils/codes';
 // import PIC from '@/assets/picExample.png';
 
 const { TreeNode: TreeSelectNode } = TreeSelect;
@@ -89,6 +92,7 @@ export default class PersonnelAdd extends PureComponent {
       perType: '1', // 人员选择类型
       curCompanyName: '', // 当前单位
       curLabelList: [],
+      postList: [], // 岗位列表
     };
   }
 
@@ -351,6 +355,9 @@ export default class PersonnelAdd extends PureComponent {
     dispatch({
       type: 'postManagement/fetchPostList',
       payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: (data) => {
+        this.setState({ postList: data && Array.isArray(data.list) ? data.list : [] });
+      },
     });
   };
 
@@ -464,16 +471,15 @@ export default class PersonnelAdd extends PureComponent {
       department: {
         data: { list: departmentList = [] },
       },
-      postManagement: { postData: { list: postList = [] } = {} },
       form: { getFieldDecorator, getFieldValue },
       realNameCertification: { personTypeDict },
     } = this.props;
     const treeList = treeData(departmentList);
 
-    const { photoLoading, sexValue, detail, diplomaLoading, curLabelList, perType } = this.state;
+    const { photoLoading, sexValue, detail, diplomaLoading, curLabelList, perType, postList } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
-    console.log('detail', detail);
+    // console.log('detail', detail);
     const title = id ? '编辑人员信息' : '新增人员信息';
     const hasCompanyName = perType === '1';
     const noCompanyName = perType === '2' || perType === '3';
@@ -585,7 +591,25 @@ export default class PersonnelAdd extends PureComponent {
                         initialValue: id ? detail.companyJob : undefined,
                         // rules: [{ required: true, message: '请选择岗位' }],
                       })(
-                        <Select placeholder="请选择岗位" allowClear>
+                        <Select
+                          placeholder="请选择岗位"
+                          allowClear
+                          notFoundContent={(
+                            <div>
+                              <span style={{ marginRight: '1em' }}>暂无数据</span>
+                              <AuthA
+                                style={{ marginRight: '1em' }}
+                                code={codes.personnelManagement.postManagement.view}
+                                onClick={() => { window.open(`${window.publicPath}#/personnel-management/post-management/${companyId}/list`, `_blank`) }}>
+                                去新增岗位
+                              </AuthA>
+                              <RedoOutlined
+                                onClick={() => { this.fetchPostList() }}
+                                style={{ color: '#1890ff', cursor: 'pointer' }}
+                              />
+                            </div>
+                          )}
+                        >
                           {postList.map(({ id, jobName }) => (
                             <Select.Option key={id} value={id}>
                               {jobName}
@@ -734,8 +758,8 @@ export default class PersonnelAdd extends PureComponent {
               <Col span={24} className={styles.lableLayout}>
                 <FormItem label="注册照片示例" style={{ marginLeft: '2%' }}>
                   <Fragment>
-                    <img src={PIC} width="50%" height="25%" alt="" />
-                    <div className={styles.labelColor}>
+                    <img src={PIC} width="450px" height="100px" alt="" />
+                    <div className={styles.labelColor} style={{ width: '450px', lineHeight: '2em', marginTop: '10px' }}>
                       照片要求：1.小于400K；2.面部区域像素不低于128x128，人脸大小占整张照片1/3以上；3.确保所有注册人员为同一人员，否则无法成功注册
                     </div>
                   </Fragment>
