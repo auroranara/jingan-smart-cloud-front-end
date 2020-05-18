@@ -10,8 +10,9 @@ import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import router from 'umi/router';
 import { connect } from 'dva';
-import { AuthButton } from '@/utils/customAuth';
+import { AuthButton, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import { RedoOutlined } from '@ant-design/icons';
 import styles from './Add.less';
 
 const SPAN = { span: 24 };
@@ -30,6 +31,8 @@ export default class AddOperatingProdures extends Component {
     deviceModalVisible: false, // 选择关联设备弹窗
     currentDevice: 0, // device下标
     selectedDeviceKeys: [], // modal选中设备的id数组
+    productionAreaList: [], // 所属区域列表
+    companyId: undefined,
   };
 
   componentDidMount () {
@@ -39,6 +42,7 @@ export default class AddOperatingProdures extends Component {
         params: { id },
       },
       realNameCertification: { channelSearchInfo: searchInfo = {} },
+      user: { isCompany, currentUser },
     } = this.props;
     if (id) {
       dispatch({
@@ -86,7 +90,7 @@ export default class AddOperatingProdures extends Component {
                 (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance, code: exitDeviceCode || entranceDeviceCode }]) ||
                 [];
               this.form && this.form.setFieldsValue({ device });
-              this.setState({ device });
+              this.setState({ device, companyId });
             }, 0);
           } else {
             message.error('获取详情失败，请稍后重试或联系管理人员！');
@@ -97,12 +101,16 @@ export default class AddOperatingProdures extends Component {
       const device = [{ direction: '1' }, { direction: '2' }];
       this.form && this.form.setFieldsValue({ type: '1', device });
       this.setState({ device });
-    }
-
-    if (searchInfo.company && searchInfo.company.id) {
-      // 如果列表页面选择了单位
-      const { id, name } = searchInfo.company;
-      this.form && this.form.setFieldsValue({ company: { key: id, label: name } });
+      if (isCompany) {
+        this.setState({ companyId: currentUser.companyId })
+        this.fetchProductionArea(currentUser.companyId);
+      } else if (searchInfo.company && searchInfo.company.id) {
+        // 如果列表页面选择了单位
+        const { id, name } = searchInfo.company;
+        this.form && this.form.setFieldsValue({ company: { key: id, label: name } });
+        this.setState({ companyId: id });
+        this.fetchProductionArea(searchInfo.company.id);
+      }
     }
   }
 
@@ -125,6 +133,7 @@ export default class AddOperatingProdures extends Component {
 
   handleChangeCompany = company => {
     this.fetchProductionArea(company.key);
+    this.setState({ companyId: company.key });
   };
 
   // 获取生产区域
@@ -137,6 +146,7 @@ export default class AddOperatingProdures extends Component {
         pageSize: 0,
         companyId,
       },
+      callback: ({ list }) => { this.setState({ productionAreaList: list || [] }) },
     });
   };
 
@@ -317,11 +327,8 @@ export default class AddOperatingProdures extends Component {
       submitting = false,
       user: { isCompany },
       realNameCertification: { channelDevice, channelTypeDict, directionDict },
-      electronicInspection: {
-        productionArea: { list: productionAreaList = [] },
-      },
     } = this.props;
-    const { deviceModalVisible, selectedDeviceKeys, device } = this.state;
+    const { deviceModalVisible, selectedDeviceKeys, device, productionAreaList, companyId } = this.state;
     const href = location.href;
     const isNotDetail = !href.includes('view');
     const isEdit = href.includes('edit');
@@ -469,7 +476,21 @@ export default class AddOperatingProdures extends Component {
                 placeholder="请选择所属区域"
                 type={isNotDetail ? 'Select' : 'span'}
                 list={productionAreaList.map(({ id, areaName }) => ({ key: id, value: areaName }))}
-                allowClear
+                notFoundContent={(
+                  <div>
+                    <span style={{ marginRight: '1em' }}>暂无数据</span>
+                    <AuthA
+                      style={{ marginRight: '1em' }}
+                      code={codes.electronicInspection.productionArea.list}
+                      onClick={() => { window.open(`${window.publicPath}#/electronic-inspection/production-area/list`, `_blank`) }}>
+                      去新增区域
+                    </AuthA>
+                    <RedoOutlined
+                      onClick={() => { this.fetchProductionArea(companyId) }}
+                      style={{ color: '#1890ff', cursor: 'pointer' }}
+                    />
+                  </div>
+                )}
               />
             ),
             options: {
