@@ -82,7 +82,7 @@ export default class AddMonitoringDevice extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -113,8 +113,7 @@ export default class AddMonitoringDevice extends Component {
           area,
           location,
         }) => {
-          setFieldsValue({ companyId });
-          setFieldsValue({ locationType });
+          setFieldsValue({ companyId, locationType });
           this.setState(
             {
               selectedCompany: { id: companyId, name: companyName },
@@ -122,11 +121,11 @@ export default class AddMonitoringDevice extends Component {
               fileList:
                 fileList && fileList.length
                   ? fileList.map(item => ({
-                      ...item,
-                      uid: item.id,
-                      url: item.webUrl,
-                      name: item.fileName,
-                    }))
+                    ...item,
+                    uid: item.id,
+                    url: item.webUrl,
+                    name: item.fileName,
+                  }))
                   : [],
             },
             () => {
@@ -595,103 +594,102 @@ export default class AddMonitoringDevice extends Component {
             </FormItem>
           </Form>
         </Card>
-        {companyId && (
-          <Fragment>
-            <Card title="区域-位置" className={styles.mt24}>
-              <Form>
-                <FormItem label="区域位置录入方式" {...formItemLayout}>
-                  {getFieldDecorator('locationType')(
-                    <Radio.Group onChange={e => this.handleRefreshBuilding()}>
-                      <Radio value={0}>选择建筑物-楼层</Radio>
-                      <Radio value={1}>手填</Radio>
-                    </Radio.Group>
-                  )}
-                </FormItem>
-                {(!locationType || locationType === 0) && (
-                  <Fragment>
-                    <FormItem label="所属建筑物楼层" {...formItemLayout}>
-                      {getFieldDecorator('buildingFloor')(
-                        <Row>
-                          <Col span={5} className={styles.mr10}>
-                            {getFieldDecorator('buildingId', {})(
-                              <Select
-                                placeholder="建筑物"
-                                style={{ width: '100%' }}
-                                onChange={this.handleBuildingChange}
-                                allowClear
-                              >
-                                {buildings.map((item, i) => (
-                                  <Select.Option key={i} value={item.id}>
-                                    {item.buildingName}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            )}
-                          </Col>
-                          <Col span={5} className={styles.mr10}>
-                            {getFieldDecorator('floorId', {})(
-                              <Select
-                                placeholder="楼层"
-                                style={{ width: '100%' }}
-                                onChange={this.handleFloorIdChange}
-                                allowClear
-                              >
-                                {floors.map((item, i) => (
-                                  <Select.Option key={i} value={item.id}>
-                                    {item.floorName}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            )}
-                          </Col>
-                          <Tooltip title="刷新建筑物楼层">
-                            <Button
-                              onClick={() => this.handleRefreshBuilding(true)}
-                              className={styles.mr10}
-                              style={{ marginTop: 4 }}
+        <div style={{ display: companyId ? 'block' : 'none' }}>
+          <Card title="区域-位置" className={styles.mt24}>
+            <Form>
+              <FormItem label="区域位置录入方式" {...formItemLayout}>
+                {getFieldDecorator('locationType')(
+                  <Radio.Group onChange={e => this.handleRefreshBuilding()}>
+                    <Radio value={0}>选择建筑物-楼层</Radio>
+                    <Radio value={1}>手填</Radio>
+                  </Radio.Group>
+                )}
+              </FormItem>
+              {(!locationType || locationType === 0) && (
+                <Fragment>
+                  <FormItem label="所属建筑物楼层" {...formItemLayout}>
+                    {getFieldDecorator('buildingFloor')(
+                      <Row>
+                        <Col span={5} className={styles.mr10}>
+                          {getFieldDecorator('buildingId', {})(
+                            <Select
+                              placeholder="建筑物"
+                              style={{ width: '100%' }}
+                              onChange={this.handleBuildingChange}
+                              allowClear
                             >
-                              <LegacyIcon type="reload" />
-                            </Button>
-                          </Tooltip>
-                          <AuthButton
-                            onClick={this.jumpToBuildingManagement}
-                            code={codesMap.company.buildingsInfo.add}
-                            type="primary"
+                              {buildings.map((item, i) => (
+                                <Select.Option key={i} value={item.id}>
+                                  {item.buildingName}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          )}
+                        </Col>
+                        <Col span={5} className={styles.mr10}>
+                          {getFieldDecorator('floorId', {})(
+                            <Select
+                              placeholder="楼层"
+                              style={{ width: '100%' }}
+                              onChange={this.handleFloorIdChange}
+                              allowClear
+                            >
+                              {floors.map((item, i) => (
+                                <Select.Option key={i} value={item.id}>
+                                  {item.floorName}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          )}
+                        </Col>
+                        <Tooltip title="刷新建筑物楼层">
+                          <Button
+                            onClick={() => this.handleRefreshBuilding(true)}
+                            className={styles.mr10}
                             style={{ marginTop: 4 }}
                           >
-                            新增建筑物楼层
+                            <LegacyIcon type="reload" />
+                          </Button>
+                        </Tooltip>
+                        <AuthButton
+                          onClick={this.jumpToBuildingManagement}
+                          code={codesMap.company.buildingsInfo.add}
+                          type="primary"
+                          style={{ marginTop: 4 }}
+                        >
+                          新增建筑物楼层
                           </AuthButton>
-                        </Row>
-                      )}
-                    </FormItem>
-                    <FormItem label="详细位置" {...formItemLayout}>
-                      {getFieldDecorator('location')(
-                        <Input placeholder="请输入" {...itemStyles} />
-                      )}
-                    </FormItem>
-                  </Fragment>
-                )}
-                {locationType === 1 && (
-                  <Fragment>
-                    <FormItem label="所在区域" {...formItemLayout}>
-                      {getFieldDecorator('area', {})(
-                        <Input placeholder="请输入" {...itemStyles} />
-                      )}
-                    </FormItem>
-                    <FormItem label="位置详情" {...formItemLayout}>
-                      {getFieldDecorator('location', {})(
-                        <Input placeholder="请输入" {...itemStyles} />
-                      )}
-                    </FormItem>
-                  </Fragment>
-                )}
-              </Form>
-            </Card>
+                      </Row>
+                    )}
+                  </FormItem>
+                  <FormItem label="详细位置" {...formItemLayout}>
+                    {getFieldDecorator('location')(
+                      <Input placeholder="请输入" {...itemStyles} />
+                    )}
+                  </FormItem>
+                </Fragment>
+              )}
+              {locationType === 1 && (
+                <Fragment>
+                  <FormItem label="所在区域" {...formItemLayout}>
+                    {getFieldDecorator('area', {})(
+                      <Input placeholder="请输入" {...itemStyles} />
+                    )}
+                  </FormItem>
+                  <FormItem label="位置详情" {...formItemLayout}>
+                    {getFieldDecorator('location', {})(
+                      <Input placeholder="请输入" {...itemStyles} />
+                    )}
+                  </FormItem>
+                </Fragment>
+              )}
+            </Form>
+          </Card>
 
-            <Card className={styles.mt24}>
-              <Form>
-                <FormItem label="地图定位" {...formItemLayout}>
-                  {/* <Button
+          <Card className={styles.mt24}>
+            <Form>
+              <FormItem label="地图定位" {...formItemLayout}>
+                {/* <Button
                     type="primary"
                     style={{ padding: '0 12px' }}
                     onClick={this.handleAddFlatGraphic}
@@ -700,33 +698,32 @@ export default class AddMonitoringDevice extends Component {
                     新增
                   </Button>
                   <FlatPic {...FlatPicProps} /> */}
-                  {getFieldDecorator('mapLocation')(
-                    <MapMarkerSelect
-                      companyId={companyId}
-                      markerList={monitorEquipment}
-                      otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
-                      markerOption={{ url: MarkerImg, size: 36 }}
-                      markerId={id}
-                      legend={{
-                        label: '其他设备',
-                        icon: MarkerGrayImg,
-                        activeIcon: MarkerActiveImg,
-                      }}
-                    />
-                  )}
-                </FormItem>
-                <FormItem label="该点位是否在化工安全生产驾驶舱显示" {...formItemLayout}>
-                  {getFieldDecorator('isShow')(
-                    <Radio.Group>
-                      <Radio value="1">显示</Radio>
-                      <Radio value="0">不显示</Radio>
-                    </Radio.Group>
-                  )}
-                </FormItem>
-              </Form>
-            </Card>
-          </Fragment>
-        )}
+                {getFieldDecorator('mapLocation')(
+                  <MapMarkerSelect
+                    companyId={companyId}
+                    markerList={monitorEquipment}
+                    otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
+                    markerOption={{ url: MarkerImg, size: 36 }}
+                    markerId={id}
+                    legend={{
+                      label: '其他设备',
+                      icon: MarkerGrayImg,
+                      activeIcon: MarkerActiveImg,
+                    }}
+                  />
+                )}
+              </FormItem>
+              <FormItem label="该点位是否在化工安全生产驾驶舱显示" {...formItemLayout}>
+                {getFieldDecorator('isShow')(
+                  <Radio.Group>
+                    <Radio value="1">显示</Radio>
+                    <Radio value="0">不显示</Radio>
+                  </Radio.Group>
+                )}
+              </FormItem>
+            </Form>
+          </Card>
+        </div>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button
             className={styles.mr10}
@@ -744,7 +741,7 @@ export default class AddMonitoringDevice extends Component {
     );
   };
 
-  render() {
+  render () {
     const {
       companyLoading,
       sensor: { companyModal },
