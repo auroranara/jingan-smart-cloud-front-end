@@ -115,6 +115,7 @@ export default class AddOperatingProdures extends Component {
       const {
         company,
         expireDate,
+        historyType,
         ...resValues
       } = values;
       const [startDate, endDate] = expireDate;

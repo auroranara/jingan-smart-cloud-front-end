@@ -65,6 +65,22 @@ function treeData (data) {
     return <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id} />;
   });
 }
+const EmptyContent = ({ onClickRefresh, onClickAdd }) => (
+  <div>
+    <span style={{ marginRight: '1em' }}>暂无数据</span>
+    <AuthA
+      style={{ marginRight: '1em' }}
+      code={codes.personnelManagement.postManagement.view}
+      onClick={onClickAdd}>
+      去新增岗位
+    </AuthA>
+    <RedoOutlined
+      onClick={onClickRefresh}
+      style={{ color: '#1890ff', cursor: 'pointer' }}
+    />
+  </div>
+)
+
 @Form.create()
 @connect(({ realNameCertification, user, department, postManagement, loading }) => ({
   realNameCertification,
@@ -455,6 +471,11 @@ export default class PersonnelAdd extends PureComponent {
     }
   };
 
+  jumpToPost = () => {
+    const { location: { query: { companyId } } } = this.props;
+    window.open(`${window.publicPath}#/personnel-management/post-management/${companyId}/list`, `_blank`)
+  }
+
   render () {
     const {
       loading,
@@ -594,21 +615,7 @@ export default class PersonnelAdd extends PureComponent {
                         <Select
                           placeholder="请选择岗位"
                           allowClear
-                          notFoundContent={(
-                            <div>
-                              <span style={{ marginRight: '1em' }}>暂无数据</span>
-                              <AuthA
-                                style={{ marginRight: '1em' }}
-                                code={codes.personnelManagement.postManagement.view}
-                                onClick={() => { window.open(`${window.publicPath}#/personnel-management/post-management/${companyId}/list`, `_blank`) }}>
-                                去新增岗位
-                              </AuthA>
-                              <RedoOutlined
-                                onClick={() => { this.fetchPostList() }}
-                                style={{ color: '#1890ff', cursor: 'pointer' }}
-                              />
-                            </div>
-                          )}
+                          notFoundContent={<EmptyContent onClickAdd={this.jumpToPost} onClickRefresh={this.fetchPostList} />}
                         >
                           {postList.map(({ id, jobName }) => (
                             <Select.Option key={id} value={id}>

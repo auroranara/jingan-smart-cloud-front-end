@@ -19,6 +19,22 @@ const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
 const LIST_PATH = '/real-name-certification/channel/list';
 
+const EmptyContent = ({ onClickRefresh, onClickAdd }) => (
+  <div>
+    <span style={{ marginRight: '1em' }}>暂无数据</span>
+    <AuthA
+      style={{ marginRight: '1em' }}
+      code={codes.electronicInspection.productionArea.list}
+      onClick={onClickAdd}>
+      去新增区域
+                    </AuthA>
+    <RedoOutlined
+      onClick={onClickRefresh}
+      style={{ color: '#1890ff', cursor: 'pointer' }}
+    />
+  </div>
+);
+
 @connect(({ realNameCertification, user, electronicInspection, loading }) => ({
   realNameCertification,
   electronicInspection,
@@ -321,6 +337,10 @@ export default class AddOperatingProdures extends Component {
     } else callback('关联设备不能为空');
   };
 
+  jumpToProductionArea = () => {
+    window.open(`${window.publicPath}#/electronic-inspection/production-area/list`, `_blank`)
+  }
+
   render () {
     const {
       deviceLoading,
@@ -476,21 +496,7 @@ export default class AddOperatingProdures extends Component {
                 placeholder="请选择所属区域"
                 type={isNotDetail ? 'Select' : 'span'}
                 list={productionAreaList.map(({ id, areaName }) => ({ key: id, value: areaName }))}
-                notFoundContent={(
-                  <div>
-                    <span style={{ marginRight: '1em' }}>暂无数据</span>
-                    <AuthA
-                      style={{ marginRight: '1em' }}
-                      code={codes.electronicInspection.productionArea.list}
-                      onClick={() => { window.open(`${window.publicPath}#/electronic-inspection/production-area/list`, `_blank`) }}>
-                      去新增区域
-                    </AuthA>
-                    <RedoOutlined
-                      onClick={() => { this.fetchProductionArea(companyId) }}
-                      style={{ color: '#1890ff', cursor: 'pointer' }}
-                    />
-                  </div>
-                )}
+                notFoundContent={<EmptyContent onClickRefresh={() => this.fetchProductionArea(companyId)} onClickAdd={this.jumpToProductionArea} />}
               />
             ),
             options: {
