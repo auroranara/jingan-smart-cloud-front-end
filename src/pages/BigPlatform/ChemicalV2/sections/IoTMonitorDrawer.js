@@ -1,6 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
-import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
+import DrawerContainer from '../components/DrawerContainer';
 import { EquipCard } from '../components/Components';
+import { DrawerIcons } from '../utils';
+
 import styles from './IoTMonitorDrawer.less';
 
 export default class IoTMonitorDrawer extends PureComponent {
@@ -16,7 +18,7 @@ export default class IoTMonitorDrawer extends PureComponent {
       list = [],
       handleShowVideo,
       handleClickShowMonitorDetail,
-      selectedEquip: { label },
+      selectedEquip: { label, type },
     } = this.props;
 
     return (
@@ -27,6 +29,7 @@ export default class IoTMonitorDrawer extends PureComponent {
         width={535}
         destroyOnClose={true}
         zIndex={1222}
+        icon={DrawerIcons[type]}
         left={
           <div className={styles.container}>
             {list.map((item, index) => (

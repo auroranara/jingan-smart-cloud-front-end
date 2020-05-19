@@ -29,6 +29,7 @@ import IoTMonitorDrawer from './IoTMonitorDrawer';
 import FireMonitorDrawer from './FireMonitorDrawer';
 import GasListDrawer from './GasListDrawer';
 import FireMonitorDetailDrawer from './FireMonitorDetailDrawer';
+import NewMonitorDrawer from './NewMonitorDrawer';
 
 export {
   Risk,
@@ -62,4 +63,5 @@ export {
   FireMonitorDrawer,
   GasListDrawer,
   FireMonitorDetailDrawer,
+  NewMonitorDrawer,
 };

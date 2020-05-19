@@ -1,6 +1,10 @@
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Tooltip } from 'antd';
 import Wave from '@/jingan-components/Wave';
 import Ellipsis from '@/components/Ellipsis';
+import { toFixed } from '@/utils/utils';
 import moment from 'moment';
+import { ParamList } from './components/Components';
 import styles from './sections/MonitorDrawer.less';
 import icon1 from './imgs/icon-1.png';
 import icon401 from './imgs/icon-401.png';
@@ -19,6 +23,23 @@ import icon413 from './imgs/icon-413.png';
 import icon414 from './imgs/icon-414.png';
 import icon415 from './imgs/icon-415.png';
 import icon416 from './imgs/icon-416.png';
+import warehouse from './imgs/warehouse.png';
+
+import drawer1 from './imgs/drawer/drawer-1.png';
+import drawer401 from './imgs/drawer/drawer-401.png';
+import drawer402 from './imgs/drawer/drawer-402.png';
+import drawer403 from './imgs/drawer/drawer-403.png';
+import drawer404 from './imgs/drawer/drawer-404.png';
+import drawer405 from './imgs/drawer/drawer-405.png';
+import drawer406 from './imgs/drawer/drawer-406.png';
+import drawer407 from './imgs/drawer/drawer-407.png';
+import drawer408 from './imgs/drawer/drawer-408.png';
+import drawer409 from './imgs/drawer/drawer-409.png';
+import drawer410 from './imgs/drawer/drawer-410.png';
+import drawer411 from './imgs/drawer/drawer-411.png';
+import drawer412 from './imgs/drawer/drawer-412.png';
+import drawer413 from './imgs/drawer/drawer-413.png';
+import drawer414 from './imgs/drawer/drawer-414.png';
 
 const storageAreaImg = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
 const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
@@ -31,6 +52,8 @@ const pipelineImg = 'http://data.jingan-china.cn/v2/chem/screen/pipeline.png';
 const iconFlamGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/gas.png';
 // 有毒气体图片
 const iconToxicGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/poison.png';
+
+const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 const transformCondition = condition => {
   if (condition === '>=') return '≥';
@@ -89,6 +112,7 @@ export const MonitorConfig = {
   '301': {
     // 储罐区
     title: '罐区监测',
+    detailUrl: 'major-hazard-info/storage-area-management/detail',
     icon: (
       <div
         className={styles.iconWrapper}
@@ -128,20 +152,32 @@ export const MonitorConfig = {
   '302': {
     // 储罐
     title: '储罐监测',
-    icon: ({ tankName }) => (
-      <div
-        className={styles.iconWrapper}
-        style={{
-          background: `url(${storageImg}) center center / 100% auto no-repeat`,
-        }}
-      >
-        <Wave
-          frontStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.8)' }}
-          backStyle={{ height: '30%', color: 'rgba(178, 237, 255, 0.3)' }}
-        />
-        <div className={styles.tankName}>{tankName}</div>
-      </div>
-    ),
+    iconStyle: {
+      width: '10em',
+      height: '11.8315em',
+    },
+    labelStyle: { width: '7em' },
+    btnStyles: { top: 30 },
+    moreStyle: { bottom: 25 },
+    detailUrl: 'major-hazard-info/storage-management/detail',
+    icon: ({ warnStatus, monitorParams, allMonitorParam }) => {
+      const isAlarm = +warnStatus === -1;
+      const paramList = allMonitorParam || monitorParams || {};
+      return (
+        <div
+          className={styles.iconWrapper}
+          style={{
+            background: `url(${
+              isAlarm
+                ? 'http://data.jingan-china.cn/v2/icons/icon-tank-alarm.png'
+                : 'http://data.jingan-china.cn/v2/icons/icon-tank-normal.png'
+            }) center center / auto 100% no-repeat`,
+          }}
+        >
+          <ParamList params={paramList} />
+        </div>
+      );
+    },
     fields: [
       {
         value: 'tankName',
@@ -149,15 +185,25 @@ export const MonitorConfig = {
           return <span style={{ fontSize: 16 }}>{val}</span>;
         },
       },
-      { label: '储罐编号', value: 'number' },
-      { label: '存储物质', value: 'chineName' },
       {
-        label: '区域位置',
+        label: '存储物质',
+        value: 'chineName',
+        extra: ({ id }) => (
+          <div className={styles.detail} style={{ right: 0, top: 0 }} onClick={() => {}}>
+            安防措施>>
+          </div>
+        ),
+      },
+      { label: '设计储量', value: 'designReserves', render: val => val + 't' },
+      { label: '是否高危储罐', value: 'highRiskTank', render: val => (+val === 1 ? '是' : '否') },
+      {
+        // label: '区域位置',
         value: 'buildingName',
         render: (val, row) => {
           const { buildingName, floorName, area, location } = row;
           return (
-            <span>
+            <span style={{ color: '#8198b4' }}>
+              <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
               {`${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` ||
                 '暂无数据'}
             </span>
@@ -169,6 +215,7 @@ export const MonitorConfig = {
   '303': {
     // 库区
     title: '库区监测',
+    detailUrl: 'major-hazard-info/reservoir-region-management/detail',
     icon: (
       <div
         className={styles.iconWrapper}
@@ -201,12 +248,30 @@ export const MonitorConfig = {
   '304': {
     // 库房
     title: '库房监测',
-    icon: (
-      <div
-        className={styles.iconWrapper}
-        style={{ background: `url(${warehouseImg}) center center / 100% auto no-repeat` }}
-      />
-    ),
+    detailUrl: 'major-hazard-info/storehouse/detail',
+    iconStyle: {
+      width: '12em',
+      height: '9.8315em',
+    },
+    // icon: (
+    //   <div
+    //     className={styles.iconWrapper}
+    //     style={{ background: `url(${warehouseImg}) center center / 100% auto no-repeat` }}
+    //   />
+    // ),
+    icon: ({ warnStatus, monitorParams, allMonitorParam }) => {
+      const paramList = allMonitorParam || monitorParams || {};
+      return (
+        <div
+          className={styles.iconWrapper}
+          style={{
+            background: `url(${warehouse}) center center / 100% 100% no-repeat`,
+          }}
+        >
+          <ParamList params={paramList} style={{ marginTop: 20, marginLeft: 10 }} />
+        </div>
+      );
+    },
     fields: [
       {
         value: 'name',
@@ -222,6 +287,7 @@ export const MonitorConfig = {
   '311': {
     // 生产装置
     title: '生产装置监测',
+    detailUrl: 'major-hazard-info/production-equipments/detail',
     icon: (
       <div
         className={styles.iconWrapper}
@@ -243,6 +309,7 @@ export const MonitorConfig = {
   '312': {
     // 气柜
     title: '气柜监测',
+    detailUrl: 'major-hazard-info/gasometer/detail',
     icon: (
       <div
         className={styles.iconWrapper}
@@ -264,6 +331,7 @@ export const MonitorConfig = {
   '314': {
     // 工业管道
     title: '工业管道监测',
+    detailUrl: 'major-hazard-info/pipeline/detail',
     icon: (
       <div
         className={styles.iconWrapper}
@@ -289,65 +357,106 @@ export const MonitorConfig = {
   '405': {
     // 可燃气体监测
     title: '可燃气体监测',
+    iconStyle: {
+      width: '7em',
+      height: '7.8315em',
+    },
+    // drawerIcon: drawerFlame,
+    filters: ({ name, areaLocation }, inputValue) =>
+      name.includes(inputValue) || areaLocation.includes(inputValue),
+    filtersPlaceholder: '输入监测设备名称 / 区域位置',
     icon: ({ allMonitorParam }) => {
-      const { realValueStr } = allMonitorParam[0] || {};
+      const {
+        paramUnit,
+        realValue,
+        status,
+        linkStatus,
+        linkStatusUpdateTime,
+        dataUpdateTime,
+        condition,
+        limitValue,
+      } = allMonitorParam[0] || {};
       return (
         <div
           className={styles.iconWrapper}
           style={{
-            background: `url(${iconFlamGas}) center center / 100% auto no-repeat`,
-            flexDirection: 'column',
-            lineHeight: '1em',
-            color: '#fff',
+            background: `url(${iconFlamGas}) center center / auto 100% no-repeat`,
           }}
         >
-          <div style={{ marginTop: '-1em' }}>LEL</div>
-          <div>{realValueStr || '--'}%</div>
+          <Tooltip
+            overlayStyle={{ zIndex: 9999 }}
+            title={
+              +linkStatus !== -1 ? (
+                status > 0 ? (
+                  <div>
+                    <div>{`${condition === '>=' ? '超过' : '低于'}${
+                      +status === 1 ? '预' : '告'
+                    }警阈值 ${toFixed(Math.abs(realValue - limitValue))} ${paramUnit || ''}`}</div>
+                    <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                  </div>
+                ) : (
+                  `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                )
+              ) : (
+                `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+              )
+            }
+          >
+            <div
+              style={{
+                color: status > 0 ? '#ff1225' : '#fff',
+                flex: 'none',
+                marginTop: '-16%',
+                fontSize: '18px',
+                fontWeight: 'bold',
+              }}
+            >
+              {+linkStatus !== -1 ? realValue : '--'}
+            </div>
+          </Tooltip>
         </div>
       );
     },
     fields: [
       {
-        value: 'name',
-        render: val => {
-          return <span style={{ fontSize: 16 }}>{val}</span>;
+        value: 'allMonitorParam',
+        render: (val = []) => {
+          const { paramDesc, paramUnit } = val[0] || {};
+          return <span style={{ color: '#8198b4' }}>{`${paramDesc}(${paramUnit})`}</span>;
         },
       },
       {
-        label: '编号',
-        value: 'code',
-      },
-      {
-        label: '浓度（%LEL）',
         value: 'allMonitorParam',
         render: (val = []) => {
-          const { realValueStr, status, condition, limitValueStr, fixType } = val[0] || {};
+          const { linkStatus, realValue, status } = val[0] || {};
           return (
-            <span>
-              <span style={{ color: +status !== 0 ? 'rgb(255, 72, 72)' : '#fff' }}>
-                {realValueStr || '--'}
-              </span>
-              {condition &&
-                limitValueStr &&
-                +fixType !== 5 && (
-                  <span style={{ display: 'inline-block', marginLeft: '20px' }}>
-                    (
-                    {condition && limitValueStr && +fixType !== 5
-                      ? transformCondition(condition) + limitValueStr
-                      : ''}
-                    )
-                  </span>
-                )}
+            <span
+              style={{
+                color: +status > 0 && +linkStatus !== -1 ? '#ff1225' : '#fff',
+                fontSize: '18px',
+                fontWeight: 'bold',
+              }}
+            >
+              {+linkStatus !== -1 ? realValue : '--'}
             </span>
           );
         },
       },
       {
-        label: '更新时间',
-        value: 'allMonitorParam',
-        render: (val = []) => {
-          const { dataUpdateTime } = val[0] || {};
-          return dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : '暂无数据';
+        value: 'name',
+        render: val => {
+          return <span>{val}</span>;
+        },
+      },
+      {
+        value: 'areaLocation',
+        render: val => {
+          return (
+            <span>
+              <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
+              {val}
+            </span>
+          );
         },
       },
     ],
@@ -355,65 +464,106 @@ export const MonitorConfig = {
   '406': {
     // 可燃气体监测
     title: '有毒气体监测',
+    iconStyle: {
+      width: '7em',
+      height: '7.8315em',
+    },
+    // drawerIcon: drawerToxic,
+    filters: ({ name, areaLocation }, inputValue) =>
+      name.includes(inputValue) || areaLocation.includes(inputValue),
+    filtersPlaceholder: '输入监测设备名称 / 区域位置',
     icon: ({ allMonitorParam }) => {
-      const { realValueStr } = allMonitorParam[0] || {};
+      const {
+        paramUnit,
+        realValue,
+        status,
+        linkStatus,
+        linkStatusUpdateTime,
+        dataUpdateTime,
+        condition,
+        limitValue,
+      } = allMonitorParam[0] || {};
       return (
         <div
           className={styles.iconWrapper}
           style={{
-            background: `url(${iconToxicGas}) center center / 100% auto no-repeat`,
-            flexDirection: 'column',
-            lineHeight: '1em',
-            color: '#fff',
+            background: `url(${iconToxicGas}) center center / auto 100% no-repeat`,
           }}
         >
-          <div style={{ marginTop: '-1em' }}>LEL</div>
-          <div>{realValueStr || '--'}%</div>
+          <Tooltip
+            overlayStyle={{ zIndex: 9999 }}
+            title={
+              +linkStatus !== -1 ? (
+                status > 0 ? (
+                  <div>
+                    <div>{`${condition === '>=' ? '超过' : '低于'}${
+                      +status === 1 ? '预' : '告'
+                    }警阈值 ${toFixed(Math.abs(realValue - limitValue))} ${paramUnit || ''}`}</div>
+                    <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                  </div>
+                ) : (
+                  `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                )
+              ) : (
+                `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+              )
+            }
+          >
+            <div
+              style={{
+                color: status > 0 ? '#ff1225' : '#fff',
+                flex: 'none',
+                marginTop: '-16%',
+                fontSize: '18px',
+                fontWeight: 'bold',
+              }}
+            >
+              {+linkStatus !== -1 ? realValue : '--'}
+            </div>
+          </Tooltip>
         </div>
       );
     },
     fields: [
       {
-        value: 'name',
-        render: val => {
-          return <span style={{ fontSize: 16 }}>{val}</span>;
+        value: 'allMonitorParam',
+        render: (val = []) => {
+          const { paramDesc, paramUnit } = val[0] || {};
+          return <span style={{ color: '#8198b4' }}>{`${paramDesc}(${paramUnit})`}</span>;
         },
       },
       {
-        label: '编号',
-        value: 'code',
-      },
-      {
-        label: '浓度（%LEL）',
         value: 'allMonitorParam',
         render: (val = []) => {
-          const { realValueStr, status, condition, limitValueStr, fixType } = val[0] || {};
+          const { linkStatus, realValue, status } = val[0] || {};
           return (
-            <span>
-              <span style={{ color: +status !== 0 ? 'rgb(255, 72, 72)' : '#fff' }}>
-                {realValueStr || '--'}
-              </span>
-              {condition &&
-                limitValueStr &&
-                +fixType !== 5 && (
-                  <span style={{ display: 'inline-block', marginLeft: '20px' }}>
-                    (
-                    {condition && limitValueStr && +fixType !== 5
-                      ? transformCondition(condition) + limitValueStr
-                      : ''}
-                    )
-                  </span>
-                )}
+            <span
+              style={{
+                color: +status > 0 && +linkStatus !== -1 ? '#ff1225' : '#fff',
+                fontSize: '18px',
+                fontWeight: 'bold',
+              }}
+            >
+              {+linkStatus !== -1 ? realValue : '--'}
             </span>
           );
         },
       },
       {
-        label: '更新时间',
-        value: 'allMonitorParam',
-        render: (val = []) => {
-          const { dataUpdateTime } = val[0] || {};
-          return dataUpdateTime ? moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss') : '暂无数据';
+        value: 'name',
+        render: val => {
+          return <span>{val}</span>;
+        },
+      },
+      {
+        value: 'areaLocation',
+        render: val => {
+          return (
+            <span>
+              <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
+              {val}
+            </span>
+          );
         },
       },
     ],
@@ -643,4 +793,22 @@ export const MonitorEquipmentIcons = {
   '414': icon414,
   '415': icon415,
   '416': icon416,
+};
+
+export const DrawerIcons = {
+  '1': drawer1,
+  '401': drawer401,
+  '402': drawer402,
+  '403': drawer403,
+  '404': drawer404,
+  '405': drawer405,
+  '406': drawer406,
+  '407': drawer407,
+  '408': drawer408,
+  '409': drawer409,
+  '410': drawer410,
+  '411': drawer411,
+  '412': drawer412,
+  '413': drawer413,
+  '414': drawer414,
 };

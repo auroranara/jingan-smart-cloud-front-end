@@ -845,7 +845,6 @@ export default class Map extends PureComponent {
       filterMarkerList(specialEquipmentList),
     ];
     const controlDataLength = controlDataList.filter(list => list.length > 0).length;
-    console.log('aaa', permissionCodes.includes('dashboard.personnelPositioningView'));
 
     return (
       <Fragment>

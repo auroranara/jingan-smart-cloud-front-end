@@ -1,7 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Tooltip } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import { CardItem } from '../components/Components';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import Ellipsis from 'components/Ellipsis';
 import styles from './ChemicalDetailDrawer.less';
 
 import detailImg from '../imgs/chemical-detail.png';
@@ -22,7 +24,17 @@ const fields = [
     label: '危险性类别',
     value: 'riskCateg',
     // render: val => RISK_CATEGORIES[val] || NO_DATA,
-    render: val => getRiskCategoryLabel(val, RISK_CATEGORIES) || NO_DATA,
+    render: val => (
+      <Tooltip
+        placement="top"
+        title={getRiskCategoryLabel(val, RISK_CATEGORIES) || NO_DATA}
+        overlayStyle={{ zIndex: 9999 }}
+      >
+        <span className={styles.riskCateg}>
+          {getRiskCategoryLabel(val, RISK_CATEGORIES) || NO_DATA}
+        </span>
+      </Tooltip>
+    ),
   },
 ];
 
@@ -51,14 +63,7 @@ export default class ChemicalDrawer extends PureComponent {
         destroyOnClose={true}
         zIndex={1222}
         left={
-          <div
-            style={{
-              height: '100%',
-              overflowY: 'auto',
-              paddingRight: 15,
-              marginRight: -15,
-            }}
-          >
+          <div>
             {materialsList.map((item, index) => (
               <CardItem
                 key={index}
@@ -66,20 +71,32 @@ export default class ChemicalDrawer extends PureComponent {
                 fields={fields}
                 extraBtn={
                   <div className={styles.btnWrapper}>
-                    <span
-                      className={styles.btnIcon}
-                      style={{
-                        background: `url(${detailImg}) center center / 100% 100% no-repeat`,
-                      }}
-                      onClick={() => handleShowChemicalDetail(item)}
-                    />
-                    <span
-                      className={styles.btnIcon}
-                      style={{
-                        background: `url(${locationImg}) center center / 100% 100% no-repeat`,
-                      }}
-                      onClick={() => handleShowChemicalStore(item)}
-                    />
+                    <Tooltip
+                      placement="top"
+                      title={'安全措施和应急处置措施'}
+                      overlayStyle={{ zIndex: 9999 }}
+                    >
+                      <span
+                        className={styles.btnIcon}
+                        style={{
+                          background: `url(${detailImg}) center center / 100% 100% no-repeat`,
+                        }}
+                        onClick={() => handleShowChemicalDetail(item)}
+                      />
+                    </Tooltip>
+                    <Tooltip
+                      placement="top"
+                      title={'存储/生产场所'}
+                      overlayStyle={{ zIndex: 9999 }}
+                    >
+                      <span
+                        className={styles.btnIcon}
+                        style={{
+                          background: `url(${locationImg}) center center / 100% 100% no-repeat`,
+                        }}
+                        onClick={() => handleShowChemicalStore(item)}
+                      />
+                    </Tooltip>
                   </div>
                 }
               />
