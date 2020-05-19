@@ -411,7 +411,7 @@ export default class MaintenanceCompanyList extends PureComponent {
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="id"
-          grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
+          grid={{ gutter: 24, column: 3, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list || []}
           renderItem={item => (
             <List.Item key={item.id}>

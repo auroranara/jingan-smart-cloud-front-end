@@ -15,26 +15,26 @@ const BREADCRUMB_LIST = [
   { title: '物联设备管理', name: '物联设备管理' },
   { title: '智能空开', name: '智能空开' },
 ];
-const GRID = { gutter: 24, sm: 2, xs: 1 };
+const GRID = { gutter: 24, column: 2, sm: 2, xs: 1 };
 const SPAN = { xl: 8, sm: 12, xs: 8 };
 const LIST_API = 'intelligentAirSwitch/getList';
 const SWITCH_API = 'intelligentAirSwitch/setSwitchStatus';
 const RELOAD_API = 'intelligentAirSwitch/reloadList';
 const EmptyData = () => <span className={styles.emtpyData}>暂无数据</span>;
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const GET_ICON_CLASSNAME = name => {
-  if (name.includes('功率')) {
-    return styles.power;
-  } else if (name.includes('漏电')) {
-    return styles.leakageCurrent;
-  } else if (name.includes('电流')) {
-    return styles.electricity;
-  } else if (name.includes('电压')) {
-    return styles.voltage;
-  } else if (name.includes('温度')) {
-    return styles.temperature;
-  }
-};
+// const GET_ICON_CLASSNAME = name => {
+//   if (name.includes('功率')) {
+//     return styles.power;
+//   } else if (name.includes('漏电')) {
+//     return styles.leakageCurrent;
+//   } else if (name.includes('电流')) {
+//     return styles.electricity;
+//   } else if (name.includes('电压')) {
+//     return styles.voltage;
+//   } else if (name.includes('温度')) {
+//     return styles.temperature;
+//   }
+// };
 const options = {
   pingTimeout: 30000,
   pongTimeout: 10000,

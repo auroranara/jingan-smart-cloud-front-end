@@ -12,7 +12,6 @@ import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-
 import styles from './index.less';
 import codesMap from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
@@ -234,7 +233,7 @@ export default class RiskPointManage extends PureComponent {
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="id"
-          grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
+          grid={{ gutter: 24, column: 3, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
             const {

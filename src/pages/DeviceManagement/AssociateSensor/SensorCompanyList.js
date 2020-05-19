@@ -229,7 +229,7 @@ export default class SensorCompanyList extends Component {
         <div className={styles.sensorCompanyList}>
           <List
             rowKey="id"
-            grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
+            grid={{ gutter: 24, column: 3, lg: 3, md: 2, sm: 1, xs: 1 }}
             dataSource={list}
             renderItem={item => {
               const {
