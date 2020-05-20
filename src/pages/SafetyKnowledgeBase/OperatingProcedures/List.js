@@ -442,7 +442,7 @@ export default class OperationProcedures extends Component {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: (pageNum, pageSize) => {
               this.handleQuery({ pageNum, pageSize });
             },
@@ -545,7 +545,7 @@ export default class OperationProcedures extends Component {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: (pageNum, pageSize) => {
               this.fetchHistory({ pageNum, pageSize });
             },

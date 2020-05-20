@@ -355,7 +355,7 @@ export default class SuppliesCheckList extends PureComponent {
               current: pageNum,
               pageSize,
               total,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               showTotal: total => `共 ${total} 条`,
               showQuickJumper: true,
               showSizeChanger: true,

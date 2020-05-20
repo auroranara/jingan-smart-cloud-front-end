@@ -549,7 +549,7 @@ export default class HighRiskProcessList extends PureComponent {
               // showTotal={false}
               showQuickJumper
               showSizeChanger
-              pageSizeOptions={['5', '10', '15', '20']}
+              // pageSizeOptions={['5', '10', '15', '20']}
               pageSize={pageSize}
               current={pageNum}
               total={total}

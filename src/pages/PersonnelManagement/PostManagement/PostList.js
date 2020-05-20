@@ -354,7 +354,7 @@ export default class PersonnelList extends PureComponent {
               style={{ marginTop: '20px', float: 'right' }}
               showQuickJumper
               showSizeChanger
-              pageSizeOptions={['5', '10', '15', '20']}
+              // pageSizeOptions={['5', '10', '15', '20']}
               pageSize={pageSize}
               current={pageNum}
               total={total}
