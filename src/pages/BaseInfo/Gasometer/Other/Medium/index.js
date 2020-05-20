@@ -219,7 +219,7 @@ export default class Medium extends Component {
             current: pageNum || 1,
             pageSize: pageSize || getPageSize(),
             total: total || 0,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             // showTotal: total => `共 ${total} 条`,
             showQuickJumper: true,
             showSizeChanger: true,

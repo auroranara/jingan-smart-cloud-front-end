@@ -290,7 +290,7 @@ export default class TrainingObjectSelect extends Component {
                 pageSize,
                 showQuickJumper: true,
                 showSizeChanger: true,
-                pageSizeOptions: PAGE_SIZE_LIST,
+                // pageSizeOptions: PAGE_SIZE_LIST,
                 onChange: this.handlePageChange,
                 onShowSizeChange: (_, pageSize) => this.handlePageChange(1, pageSize),
               }}

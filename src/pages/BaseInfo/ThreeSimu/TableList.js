@@ -287,7 +287,7 @@ export default class TableList extends PureComponent {
                 current: pageNum,
                 showQuickJumper: true,
                 showSizeChanger: true,
-                pageSizeOptions: ['5', '10', '15', '20'],
+                // pageSizeOptions: ['5', '10', '15', '20'],
                 onChange: (pageNum, pageSize) => this.handleQuery(pageNum, pageSize),
                 onShowSizeChange: (pageNum, pageSize) => this.handleQuery(1, pageSize),
               }}

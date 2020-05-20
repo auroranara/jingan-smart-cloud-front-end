@@ -269,7 +269,7 @@ export default class CompanyModal extends PureComponent {
                   showQuickJumper: true,
                   showSizeChanger: true,
                   showTotal: t => `共 ${t} 条记录`,
-                  pageSizeOptions: defaultPageSizeOptions,
+                  // pageSizeOptions: defaultPageSizeOptions,
                   ...pagination,
                 }
           }

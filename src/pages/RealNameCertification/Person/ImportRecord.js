@@ -161,7 +161,7 @@ export default class PersonnelList extends PureComponent {
             showQuickJumper: true,
             showSizeChanger: true,
             showTotal: t => `共 ${t} 条记录`,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: this.fetchList,
             onShowSizeChange: (num, size) => {
               this.fetchList(1, size);

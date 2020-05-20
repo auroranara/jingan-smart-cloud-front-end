@@ -555,7 +555,7 @@ export default class AddAuthorization extends PureComponent {
                         total: devicePagination.total,
                         showQuickJumper: true,
                         showSizeChanger: true,
-                        pageSizeOptions: ['5', '10', '15', '20'],
+                        // pageSizeOptions: ['5', '10', '15', '20'],
                         onChange: this.fetchDeviceList,
                         onShowSizeChange: (num, size) => {
                           this.fetchDeviceList(1, size);

@@ -473,7 +473,7 @@ export default class TablePage extends Component {
                 current: pageNum,
                 pageSize,
                 total,
-                pageSizeOptions: ['5', '10', '15', '20'],
+                // pageSizeOptions: ['5', '10', '15', '20'],
                 showTotal: showTotal ? total => `共 ${total} 条` : undefined,
                 showQuickJumper: true,
                 showSizeChanger: true,

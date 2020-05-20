@@ -215,17 +215,17 @@ export default class TableList extends PureComponent {
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
-        action={
-          <div>
-            <AuthA
-              code={cardCode}
-              href={'#/personnel-management/tag-card/visitor-card-list'}
-              style={{ float: 'right', marginRight: '10px', fontSize: '16px' }}
-            >
-              访客卡管理
-            </AuthA>
-          </div>
-        }
+        // action={
+        //   <div>
+        //     <AuthA
+        //       code={cardCode}
+        //       href={'#/personnel-management/tag-card/visitor-card-list'}
+        //       style={{ float: 'right', marginRight: '10px', fontSize: '16px' }}
+        //     >
+        //       访客卡管理
+        //     </AuthA>
+        //   </div>
+        // }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar fields={fields} onSearch={this.handleSearch} onReset={this.handleReset} />
@@ -273,7 +273,7 @@ export default class TableList extends PureComponent {
                 total,
                 showQuickJumper: true,
                 showSizeChanger: true,
-                pageSizeOptions: ['5', '10', '15', '20'],
+                // pageSizeOptions: ['5', '10', '15', '20'],
                 onChange: this.handlePageChange,
                 onShowSizeChange: (num, size) => {
                   this.handlePageChange(1, size);

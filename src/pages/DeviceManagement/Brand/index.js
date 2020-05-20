@@ -240,7 +240,7 @@ export default class Brand extends PureComponent {
               total,
               showQuickJumper: true,
               showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               onChange: this.handleQuery,
               onShowSizeChange: (num, size) => {
                 this.handleQuery(1, size);

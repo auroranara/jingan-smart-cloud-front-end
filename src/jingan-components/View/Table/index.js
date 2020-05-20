@@ -59,7 +59,7 @@ const TableIndex = ({
           total,
           current: pageNum,
           pageSize,
-          pageSizeOptions: PAGE_SIZE_OPTIONS,
+          // pageSizeOptions: PAGE_SIZE_OPTIONS,
           showTotal: SHOW_TOTAL,
           showQuickJumper: true,
           showSizeChanger: true,
