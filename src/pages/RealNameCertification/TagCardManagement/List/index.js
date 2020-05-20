@@ -20,6 +20,7 @@ const {
       import: importCode,
       export: exportCode,
       visitorCardList: cardCode,
+      delete: deleteCode,
     },
   },
 } = codes;
@@ -88,12 +89,12 @@ export default class TableList extends PureComponent {
     dispatch({
       type: 'realNameCertification/fetchTagCardDel',
       payload: { id: id },
-      callback: (success, msg) => {
+      callback: (success, res) => {
         if (success) {
           message.success(`删除成功`);
           this.fetchList();
         } else {
-          message.error(msg || `删除失败`);
+          message.error(res.data || `删除失败`);
         }
       },
     });
@@ -177,6 +178,29 @@ export default class TableList extends PureComponent {
     return !importLoading || isExcel;
   };
 
+  // 批量删除
+  handleBatchDelete = () => {
+    const { selectedRowKeys } = this.state;
+    const { dispatch } = this.props;
+    if (selectedRowKeys && selectedRowKeys.length) {
+      dispatch({
+        type: 'realNameCertification/fetchTagCardDel',
+        payload: { id: selectedRowKeys.join(',') },
+        callback: (success, res) => {
+          if (success) {
+            message.success(`删除成功`);
+            this.fetchList();
+          } else {
+            let msg = `${res.msg}。${Array.isArray(res.data) ? res.data.join('，') : ''}`
+            message.error(msg || `删除失败`);
+          }
+        },
+      });
+    } else {
+      message.warning('请选择标签卡');
+    }
+  }
+
   render () {
     const {
       loading,
@@ -215,17 +239,17 @@ export default class TableList extends PureComponent {
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
-        // action={
-        //   <div>
-        //     <AuthA
-        //       code={cardCode}
-        //       href={'#/personnel-management/tag-card/visitor-card-list'}
-        //       style={{ float: 'right', marginRight: '10px', fontSize: '16px' }}
-        //     >
-        //       访客卡管理
-        //     </AuthA>
-        //   </div>
-        // }
+      // action={
+      //   <div>
+      //     <AuthA
+      //       code={cardCode}
+      //       href={'#/personnel-management/tag-card/visitor-card-list'}
+      //       style={{ float: 'right', marginRight: '10px', fontSize: '16px' }}
+      //     >
+      //       访客卡管理
+      //     </AuthA>
+      //   </div>
+      // }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar fields={fields} onSearch={this.handleSearch} onReset={this.handleReset} />
@@ -253,6 +277,14 @@ export default class TableList extends PureComponent {
                 code={exportCode}
               >
                 批量导出
+              </AuthButton>
+              <AuthButton
+                onClick={this.handleBatchDelete}
+                style={{ marginLeft: '10px' }}
+                code={deleteCode}
+                type="primary"
+              >
+                批量删除
               </AuthButton>
             </div>
           }

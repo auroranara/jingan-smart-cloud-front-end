@@ -378,7 +378,6 @@ export default class PersonnelList extends PureComponent {
   handleBatchDelete = () => {
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length) {
-      console.log('selectedRowKeys', selectedRowKeys);
       const { dispatch } = this.props;
       dispatch({
         type: 'realNameCertification/deletePerson',
@@ -392,6 +391,8 @@ export default class PersonnelList extends PureComponent {
           }
         },
       });
+    } else {
+      message.warning('请选择人员');
     }
   }
 
