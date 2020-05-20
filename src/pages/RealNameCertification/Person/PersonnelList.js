@@ -374,6 +374,27 @@ export default class PersonnelList extends PureComponent {
     }
   };
 
+  // 批量删除
+  handleBatchDelete = () => {
+    const { selectedRowKeys } = this.state;
+    if (selectedRowKeys && selectedRowKeys.length) {
+      console.log('selectedRowKeys', selectedRowKeys);
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'realNameCertification/deletePerson',
+        payload: { id: selectedRowKeys.join(',') },
+        callback: success => {
+          if (success) {
+            message.success('删除人员成功');
+            this.handleQuery();
+          } else {
+            message.error('删除人员失败');
+          }
+        },
+      });
+    }
+  }
+
   // 渲染筛选栏
   renderFilter = () => {
     const {
@@ -664,6 +685,14 @@ export default class PersonnelList extends PureComponent {
                 </Select.Option>
               ))}
             </Select>
+            <AuthButton
+              style={{ marginRight: '10px' }}
+              type="primary"
+              code={deleteCode}
+              onClick={this.handleBatchDelete}
+            >
+              批量删除
+            </AuthButton>
             {importAuth ? (
               <a onClick={this.hanldleImgRecord}>导入记录</a>
             ) : (
