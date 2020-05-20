@@ -20,7 +20,7 @@ const LABEL_COL = { span: 6 };
 const LIST_PATH = '/real-name-certification/channel/list';
 
 const EmptyContent = ({ onClickRefresh, onClickAdd }) => (
-  <div>
+  <div style={{ padding: '5px 15px' }}>
     <span style={{ marginRight: '1em' }}>暂无数据</span>
     <AuthA
       style={{ marginRight: '1em' }}
@@ -496,7 +496,10 @@ export default class AddOperatingProdures extends Component {
                 placeholder="请选择所属区域"
                 type={isNotDetail ? 'Select' : 'span'}
                 list={productionAreaList.map(({ id, areaName }) => ({ key: id, value: areaName }))}
-                notFoundContent={<EmptyContent onClickRefresh={() => this.fetchProductionArea(companyId)} onClickAdd={this.jumpToProductionArea} />}
+                // notFoundContent={<EmptyContent onClickRefresh={() => this.fetchProductionArea(companyId)} onClickAdd={this.jumpToProductionArea} />}
+                dropdownRender={(originNode) => Array.isArray(productionAreaList) && productionAreaList.length ? originNode : (
+                  <EmptyContent onClickRefresh={() => this.fetchProductionArea(companyId)} onClickAdd={this.jumpToProductionArea} />
+                )}
               />
             ),
             options: {

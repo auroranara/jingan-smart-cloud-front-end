@@ -66,7 +66,7 @@ function treeData (data) {
   });
 }
 const EmptyContent = ({ onClickRefresh, onClickAdd }) => (
-  <div>
+  <div style={{ padding: '5px 15px' }}>
     <span style={{ marginRight: '1em' }}>暂无数据</span>
     <AuthA
       style={{ marginRight: '1em' }}
@@ -615,7 +615,8 @@ export default class PersonnelAdd extends PureComponent {
                         <Select
                           placeholder="请选择岗位"
                           allowClear
-                          notFoundContent={<EmptyContent onClickAdd={this.jumpToPost} onClickRefresh={this.fetchPostList} />}
+                          // notFoundContent={<EmptyContent onClickAdd={this.jumpToPost} onClickRefresh={this.fetchPostList} />}
+                          dropdownRender={(originNode) => Array.isArray(postList) && postList.length ? originNode : <EmptyContent onClickAdd={this.jumpToPost} onClickRefresh={this.fetchPostList} />}
                         >
                           {postList.map(({ id, jobName }) => (
                             <Select.Option key={id} value={id}>
