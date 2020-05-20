@@ -1,8 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceInfoDrawer.less';
-import { CardItem } from '../components/Components';
-import { MonitorConfig } from '../utils';
+import { CardItem } from '../../components/Components';
+import { MonitorConfig } from '../../utils';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import iconAlarm from '@/assets/icon-alarm.png';
 

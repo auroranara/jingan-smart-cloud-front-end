@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
-import { CardItem, MonitorBtns } from '../components/Components';
-import { MonitorConfig } from '../utils';
+import { CardItem, MonitorBtns } from '../../components/Components';
+import { MonitorConfig } from '../../utils';
 import styles from './MonitorDrawer.less';
 
 export default class NewMonitorDrawer extends PureComponent {

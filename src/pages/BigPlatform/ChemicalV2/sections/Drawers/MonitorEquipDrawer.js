@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-import { EquipCard } from '../components/Components';
-import DrawerContainer from '../components/DrawerContainer';
-import { DrawerIcons } from '../utils';
+import { EquipCard } from '../../components/Components';
+import DrawerContainer from '../../components/DrawerContainer';
+import { DrawerIcons } from '../../utils';
 
 import styles from './MonitorEquipDrawer.less';
 

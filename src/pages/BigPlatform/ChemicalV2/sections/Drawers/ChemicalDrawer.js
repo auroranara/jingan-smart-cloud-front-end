@@ -1,13 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Tooltip } from 'antd';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
-import { CardItem } from '../components/Components';
+import { CardItem } from '../../components/Components';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import Ellipsis from 'components/Ellipsis';
 import styles from './ChemicalDetailDrawer.less';
 
-import detailImg from '../imgs/chemical-detail.png';
-import locationImg from '../imgs/chemical-location.png';
+import detailImg from '../../imgs/chemical-detail.png';
+import locationImg from '../../imgs/chemical-location.png';
 
 const Types = ['生产原料', '中间产品', '最终产品'];
 const NO_DATA = '暂无数据';

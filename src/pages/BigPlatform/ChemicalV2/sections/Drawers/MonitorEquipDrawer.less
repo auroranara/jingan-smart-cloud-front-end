@@ -9,19 +9,20 @@
   line-height: 28px;
 
   .label {
-    color: #0ff;
+    color: #7c93b1;
     display: inline-block;
   }
 
   .locIcon {
     margin-right: 8px;
     font-size: 18px;
-    color: #0ff;
+    // color: #0ff;
     display: inline-block;
   }
 
   .name {
     position: relative;
+    font-size: 16px;
 
     .video {
       display: inline-block;
@@ -30,7 +31,7 @@
       left: 60%;
       width: 1.4em;
       height: 1em;
-      background: url('../imgs/icon-video.png') no-repeat center;
+      background: url('../../imgs/icon-video.png') no-repeat center;
       background-size: auto 1em;
       vertical-align: top;
       cursor: pointer;
@@ -51,7 +52,7 @@
     .more {
       position: absolute;
       right: 10px;
-      color: #0ff;
+      color: #1475ed;
       cursor: pointer;
       top: 16px;
     }
@@ -64,8 +65,8 @@
   }
 
   .updateTime {
-    color: #5b809a;
-    font-size: 0.875em;
+    color: #fff;
+    font-size: 1.4em;
   }
 
   .paramsWrapper {
@@ -99,17 +100,9 @@
       position: relative;
       flex: 1;
 
-      &:last-child {
-        margin-left: 1em;
-
-        .label {
-          color: #fff;
-        }
-      }
-
       .label {
         flex: none;
-        color: #0ff;
+        color: #7c93b1;
         white-space: nowrap;
         overflow: hidden;
       }
@@ -154,11 +147,11 @@
       box-sizing: content-box;
 
       &:first-child {
-        background-image: url('../imgs/icon-work-order.png');
+        background-image: url('../../imgs/icon-work-order.png');
       }
 
       &:nth-child(2) {
-        background-image: url('../imgs/icon-trend.png');
+        background-image: url('../../imgs/icon-trend.png');
       }
     }
   }

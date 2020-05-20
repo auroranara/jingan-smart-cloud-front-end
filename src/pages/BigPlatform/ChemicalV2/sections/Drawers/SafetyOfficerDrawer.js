@@ -5,8 +5,8 @@ import { connect } from 'dva';
 import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/SectionDrawer';
 import { getLabel, SEXES, DEGREES } from '@/pages/RoleAuthorization/AccountManagement/utils';
 import styles from './SafetyOfficerDrawer.less';
-import EduIcon from '../imgs/eduIcon.png';
-import RegisterEnginIcon from '../imgs/registerEnginIcon.png';
+import EduIcon from '../../imgs/eduIcon.png';
+import RegisterEnginIcon from '../../imgs/registerEnginIcon.png';
 import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
 
 // const borderColorList = ['#FF4848', '#C6C181', '#00A8FF', '#0967D3'];

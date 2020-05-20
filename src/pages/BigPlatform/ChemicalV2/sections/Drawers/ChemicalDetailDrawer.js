@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './ChemicalDetailDrawer.less';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { CardItem } from '../components/Components';
+import { CardItem } from '../../components/Components';
 
 const Types = ['生产原料', '中间产品', '最终产品'];
 const Forms = ['固态', '液态', '气态', '等离子态'];

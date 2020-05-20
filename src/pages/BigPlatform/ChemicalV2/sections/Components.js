@@ -1,46 +1,38 @@
-import Risk from './Risk';
 import KeyPoints from './KeyPoints';
-import SafetyOfficerDrawer from './SafetyOfficerDrawer';
-import Emergency from './Emergency';
+import SafetyOfficerDrawer from './Drawers/SafetyOfficerDrawer';
 import Remind from './Remind';
 import Tips from './Tips';
 import CompanyInfo from './CompanyInfo';
-import StorageAreaDrawer from './StorageAreaDrawer';
-import MonitorDetailDrawer from './MonitorDetailDrawer';
-import HiddenDanger from './HiddenDanger';
+import MonitorDetailDrawer from './Drawers/MonitorDetailDrawer';
 import Map from './Map';
-import DangerAreaDrawer from './DangerAreaDrawer';
+import DangerAreaDrawer from './Drawers/DangerAreaDrawer';
 import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
-import MonitorDrawer from './MonitorDrawer';
-import DangerSourceDrawer from './DangerSourceDrawer';
-import DangerSourceInfoDrawer from './DangerSourceInfoDrawer';
-import DangerSourceLvlDrawer from './DangerSourceLvlDrawer';
-import ChemicalDrawer from './ChemicalDrawer';
-import ChemicalDetailDrawer from './ChemicalDetailDrawer';
+import MonitorDrawer from './Drawers/MonitorDrawer';
+import DangerSourceDrawer from './Drawers/DangerSourceDrawer';
+import DangerSourceInfoDrawer from './Drawers/DangerSourceInfoDrawer';
+import DangerSourceLvlDrawer from './Drawers/DangerSourceLvlDrawer';
+import ChemicalDrawer from './Drawers/ChemicalDrawer';
+import ChemicalDetailDrawer from './Drawers/ChemicalDetailDrawer';
 import TechnologyDrawer from './TechnologyDrawer';
 import StorageDrawer from './StorageDrawer';
 import Messages from './Messages';
 import GasDrawer from './GasDrawer';
 import PoisonDrawer from './PoisonDrawer';
 import MHDrawer from './MHDrawer';
-import MonitorEquipDrawer from './MonitorEquipDrawer';
-import IoTMonitorDrawer from './IoTMonitorDrawer';
-import FireMonitorDrawer from './FireMonitorDrawer';
-import GasListDrawer from './GasListDrawer';
-import FireMonitorDetailDrawer from './FireMonitorDetailDrawer';
-import NewMonitorDrawer from './NewMonitorDrawer';
+import MonitorEquipDrawer from './Drawers/MonitorEquipDrawer';
+import IoTMonitorDrawer from './Drawers/IoTMonitorDrawer';
+import FireMonitorDrawer from './Drawers/FireMonitorDrawer';
+import GasListDrawer from './Drawers/GasListDrawer';
+import FireMonitorDetailDrawer from './Drawers/FireMonitorDetailDrawer';
+import NewMonitorDrawer from './Drawers/NewMonitorDrawer';
 
 export {
-  Risk,
   KeyPoints,
   SafetyOfficerDrawer,
-  Emergency,
   Remind,
   Tips,
   CompanyInfo,
-  StorageAreaDrawer,
-  HiddenDanger,
   Map,
   DangerAreaDrawer,
   SpecialEquipmentDrawer,

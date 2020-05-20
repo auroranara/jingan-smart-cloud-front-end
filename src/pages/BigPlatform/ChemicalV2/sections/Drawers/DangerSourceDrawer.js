@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 // import styles from './MonitorDrawer.less';
-import { CardItem } from '../components/Components';
+import { CardItem } from '../../components/Components';
 
 const NO_DATA = '暂无数据';
 const fields = [

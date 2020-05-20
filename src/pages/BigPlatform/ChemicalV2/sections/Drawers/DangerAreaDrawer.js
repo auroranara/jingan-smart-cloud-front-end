@@ -9,7 +9,7 @@ import {
   SafetyRiskColumns,
   AcceptCardFields,
   EmergencyCardFields,
-} from '../utils';
+} from '../../utils';
 import cameraImg from '@/pages/BigPlatform/Operation/imgs/camera.png';
 
 const dangerFactorsList = 'http://data.jingan-china.cn/v2/chem/chemScreen/danger-factors-list.png';

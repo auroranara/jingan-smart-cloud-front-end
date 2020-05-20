@@ -6,7 +6,7 @@ import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/D
 import styles from './FireMonitorDetailDrawer.less';
 import SignalAnime from '@/pages/BigPlatform/Monitor/components/SignalAnime';
 import fireHost from '@/pages/BigPlatform/NewUnitFireControl/imgs/fire-host.png';
-import iconVideo from '../imgs/icon-video.png';
+import iconVideo from '../../imgs/icon-video.png';
 
 const NO_DATA = '暂无数据';
 

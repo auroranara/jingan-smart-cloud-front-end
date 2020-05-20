@@ -4,7 +4,7 @@ import { Tooltip } from 'antd';
 import moment from 'moment';
 import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
 import styles from './DangerSourceLvlDrawer.less';
-import { CardItem } from '../components/Components';
+import { CardItem } from '../../components/Components';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 const uniqueByid = array => {

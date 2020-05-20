@@ -5,7 +5,7 @@ import Ellipsis from '@/components/Ellipsis';
 import { toFixed } from '@/utils/utils';
 import moment from 'moment';
 import { ParamList } from './components/Components';
-import styles from './sections/MonitorDrawer.less';
+import styles from './sections/Drawers/MonitorDrawer.less';
 import icon1 from './imgs/icon-1.png';
 import icon401 from './imgs/icon-401.png';
 import icon402 from './imgs/icon-402.png';

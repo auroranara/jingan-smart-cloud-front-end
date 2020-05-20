@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import classNames from 'classnames';
 import moment from 'moment';
-import styles from './TankMonitorDrawer/index.less';
-import { MonitorConfig } from '../utils';
+import styles from '../TankMonitorDrawer/index.less';
+import { MonitorConfig } from '../../utils';
 
 const NO_DATA = '暂无数据';
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';

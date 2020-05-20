@@ -36,7 +36,6 @@ import {
   Remind,
   Tips,
   CompanyInfo,
-  StorageAreaDrawer,
   MonitorDrawer,
   Map,
   DangerAreaDrawer,
@@ -1587,13 +1586,6 @@ export default class Chemical extends PureComponent {
           handleClickAreaDangerSource={this.handleClickAreaDangerSource}
           zoneEquip={zoneEquip}
           handleClickAreaGas={this.handleClickAreaGas}
-        />
-
-        <StorageAreaDrawer
-          visible={storageAreaDrawerVisible}
-          onClose={() => {
-            this.setDrawerVisible('storageArea');
-          }}
         />
 
         {/* 安全人员抽屉 */}
