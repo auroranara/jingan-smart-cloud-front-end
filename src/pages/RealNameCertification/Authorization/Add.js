@@ -376,9 +376,9 @@ export default class AddAuthorization extends PureComponent {
                         current: personPagination.pageNum,
                         pageSize: personPagination.pageSize,
                         total: personPagination.total,
-                        showQuickJumper: true,
-                        showSizeChanger: false,
-                        // pageSizeOptions: ['5', '10', '15', '20'],
+                        // showQuickJumper: true,
+                        showSizeChanger: true,
+                        pageSizeOptions: ['10', '20', '50', '100'],
                         onChange: this.fetchPersonList,
                         onShowSizeChange: (num, size) => {
                           this.fetchPersonList(1, size);
