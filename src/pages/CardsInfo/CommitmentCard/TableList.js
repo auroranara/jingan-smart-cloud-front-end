@@ -24,15 +24,16 @@ const {
   loading: loading.models.cardsInfo,
 }))
 export default class TableList extends PureComponent {
-  state = { companyTotal: '', current: 1, modalVisible: false, modalItem: {} };
+  state = { companyTotal: '', current: 1, pageSize: PAGE_SIZE, modalVisible: false, modalItem: {} };
   values = {};
 
   componentDidMount() {
-    this.getList();
+    this.getList(null, PAGE_SIZE);
   }
 
-  getList = pageNum => {
+  getList = (pageNum, pageSize=PAGE_SIZE) => {
     const { dispatch } = this.props;
+
     if (!pageNum) {
       // pageNum不存在，则为初始化
       pageNum = 1;
@@ -41,7 +42,7 @@ export default class TableList extends PureComponent {
 
     dispatch({
       type: 'cardsInfo/fetchCommitList',
-      payload: { pageNum, pageSize: PAGE_SIZE, ...this.values },
+      payload: { pageNum, pageSize, ...this.values },
       callback: (res, msg) => {
         this.setState({ companyTotal: msg });
       },
@@ -49,13 +50,15 @@ export default class TableList extends PureComponent {
   };
 
   handleSearch = values => {
+    const { pageSize } = this.state;
     this.values = values;
-    this.getList();
+    this.getList(null, pageSize);
   };
 
   handleReset = () => {
+    const { pageSize } = this.state;
     this.values = {};
-    this.getList();
+    this.getList(null, pageSize);
   };
 
   handleAdd = () => {
@@ -63,21 +66,21 @@ export default class TableList extends PureComponent {
   };
 
   onTableChange = (pagination, filters, sorter) => {
-    const { current } = pagination;
-    this.setState({ current });
-    this.getList(current);
+    const { current, pageSize } = pagination;
+    this.setState({ current, pageSize });
+    this.getList(current, pageSize);
   };
 
   handleDelete = id => {
     const { dispatch } = this.props;
-    const { current } = this.state;
+    const { current, pageSize } = this.state;
     dispatch({
       type: 'cardsInfo/deleteCommitCard',
       payload: id,
       callback: (code, msg) => {
         if (code === 200) {
           message.success('删除成功');
-          this.getList(current);
+          this.getList(current, pageSize);
         } else message.error(msg);
       },
     });
@@ -116,7 +119,7 @@ export default class TableList extends PureComponent {
       cardsInfo: { commitList, commitTotal },
     } = this.props;
 
-    const { current, companyTotal } = this.state;
+    const { current, pageSize, companyTotal } = this.state;
 
     const addAuth = hasAuthority(addCode, permissionCodes);
 
@@ -167,7 +170,7 @@ export default class TableList extends PureComponent {
               dataSource={list}
               onChange={this.onTableChange}
               scroll={{ x: 'max-content' }}
-              pagination={{ pageSize: PAGE_SIZE, total: commitTotal, current }}
+              pagination={{ pageSize, total: commitTotal, current, showSizeChanger: true }}
             />
           ) : (
             <Empty />

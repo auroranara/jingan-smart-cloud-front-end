@@ -10,7 +10,7 @@ import { AuthA, AuthPopConfirm, AuthLink } from '@/utils/customAuth';
 
 const MAX_LENGTH = 50;
 const DATE_FORMAT = 'YYYY-MM-DD';
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 10;
 export const ROUTER = '/cards-info/commitment-card'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 

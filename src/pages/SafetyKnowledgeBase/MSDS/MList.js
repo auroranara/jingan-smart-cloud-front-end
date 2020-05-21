@@ -21,7 +21,7 @@ const breadcrumbList = [
   { title: '列表', name: '列表' },
 ];
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 const SPAN = { md: 8, sm: 12, xs: 24 };
 const FIELDS = [
   {
@@ -256,7 +256,7 @@ export default class MList extends PureComponent {
             columns={getColumns(this.genHandleDelete)}
             dataSource={handleTableData(list, indexBase)}
             onChange={this.onTableChange}
-            pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}
+            pagination={{ pageSize: PAGE_SIZE, total, current: currentPage, showSizeChanger: true }}
           />
         </div>
       </PageHeaderLayout>

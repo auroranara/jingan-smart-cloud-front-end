@@ -16,7 +16,7 @@ const {
 } = codes;
 
 const MAX_LENGTH = 20;
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 10;
 export const ROUTER = '/cards-info/emergency-card'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 
