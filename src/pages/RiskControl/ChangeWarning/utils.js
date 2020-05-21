@@ -7,7 +7,7 @@ import { AuthSpan, AuthLink } from '@/utils/customAuth';
 
 const { Option } = Select;
 
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 10;
 export const CHANGE_TYPE_LIST = [
   { key: 'add', value: '添加' },
   { key: 'update', value: '修改' },

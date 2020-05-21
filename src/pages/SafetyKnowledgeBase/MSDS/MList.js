@@ -151,26 +151,29 @@ function getColumns(genHandleDelete) {
 export default class MList extends PureComponent {
   state = {
     currentPage: 1,
+    pageSize: PAGE_SIZE,
     formVals: null,
   };
 
   componentDidMount() {
-    this.fetchTableList(1);
+    this.fetchTableList(1, PAGE_SIZE);
   }
 
   handleSearch = values => {
+    const { pageSize } = this.state;
     this.setState({ formVals: values });
-    this.fetchTableList(1, values, (code, msg) => this.setPage(code, 1, msg));
+    this.fetchTableList(1, pageSize, values, (code, msg) => this.setPage(code, 1, pageSize, msg));
   };
 
   handleReset = () => {
+    const { pageSize } = this.state;
     this.setState({ formVals: {} });
-    this.fetchTableList(1, null, (code, msg) => this.setPage(code, 1, msg));
+    this.fetchTableList(1, pageSize, null, (code, msg) => this.setPage(code, 1, pageSize, msg));
   };
 
-  fetchTableList = (pageNum, values, callback) => {
+  fetchTableList = (pageNum, pageSize, values, callback) => {
     const { dispatch } = this.props;
-    let payload = { pageSize: PAGE_SIZE, pageNum };
+    let payload = { pageSize, pageNum };
     if (values) payload = { ...payload, ...deleteEmptyProps(values) };
     dispatch({
       type: 'msds/fetchTableList',
@@ -180,23 +183,23 @@ export default class MList extends PureComponent {
   };
 
   getCurrentList = () => {
-    const { currentPage, formVals } = this.state;
-    this.fetchTableList(currentPage, formVals);
+    const { currentPage, pageSize, formVals } = this.state;
+    this.fetchTableList(currentPage, pageSize, formVals);
   };
 
   handleAdd = () => {
     router.push(`/safety-knowledge-base/msds/add`);
   };
 
-  setPage = (code, current, msg) => {
-    if (code === 200) this.setState({ currentPage: current });
+  setPage = (code, current, pageSize, msg) => {
+    if (code === 200) this.setState({ currentPage: current, pageSize });
     else if (msg) message.error(msg);
   };
 
   onTableChange = (pagination, filters, sorter) => {
-    const { current } = pagination;
+    const { current, pageSize } = pagination;
     const { formVals } = this.state;
-    this.fetchTableList(current, formVals, (code, msg) => this.setPage(code, current, msg));
+    this.fetchTableList(current, pageSize, formVals, (code, msg) => this.setPage(code, current, pageSize, msg));
   };
 
   genHandleDelete = id => e => {
@@ -214,8 +217,8 @@ export default class MList extends PureComponent {
       msds: { total, list },
     } = this.props;
 
-    const { currentPage } = this.state;
-    const indexBase = (currentPage - 1) * PAGE_SIZE;
+    const { currentPage, pageSize } = this.state;
+    const indexBase = (currentPage - 1) * pageSize;
 
     const toolBarAction = (
       <AuthButton
@@ -256,7 +259,7 @@ export default class MList extends PureComponent {
             columns={getColumns(this.genHandleDelete)}
             dataSource={handleTableData(list, indexBase)}
             onChange={this.onTableChange}
-            pagination={{ pageSize: PAGE_SIZE, total, current: currentPage, showSizeChanger: true }}
+            pagination={{ pageSize, total, current: currentPage, showSizeChanger: true }}
           />
         </div>
       </PageHeaderLayout>
