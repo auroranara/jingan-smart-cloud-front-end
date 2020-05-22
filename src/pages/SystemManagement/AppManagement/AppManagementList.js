@@ -86,7 +86,7 @@ const CreateForm = Form.create()(props => {
 
   return (
     <Modal
-      title={operationUpdate ? '修改手机软件信息' : '新增手机软件信息'}
+      title={operationUpdate ? '修改APP版本信息' : '新增APP版本信息'}
       visible={modalVisible}
       confirmLoading={confirmLoading}
       onOk={okHandle}
@@ -465,7 +465,7 @@ export default class AppManagement extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="手机软件管理"
+        title="APP版本管理"
         content={
           <div>
             <span>

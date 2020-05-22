@@ -15,7 +15,7 @@ const { Option } = Select;
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '系统管理', name: '系统管理' },
-  { title: '页面权限配置', name: '页面权限配置', href: '/system-management/page-authority/index' },
+  { title: 'PC权限配置', name: 'PC权限配置', href: '/system-management/page-authority/index' },
   { title: '配置', name: '配置' },
 ];
 
@@ -164,7 +164,7 @@ export default class PageAuthorityAdd extends Component {
 
     return (
       <PageHeaderLayout
-          title={`${isAdd ? '新增' : '编辑'}页面权限`}
+          title={`${isAdd ? '新增' : '编辑'}PC权限`}
           breadcrumbList={breadcrumbList}
           // content={
           //   <div>

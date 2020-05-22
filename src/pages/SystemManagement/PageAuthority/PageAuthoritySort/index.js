@@ -17,12 +17,12 @@ const fieldMapping = {
 // 返回地址
 const backUrl = '/system-management/page-authority/index';
 // 标题
-const title = '页面权限排序';
+const title = 'PC权限排序';
 // 面包屑
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '系统管理', name: '系统管理' },
-  { title: '页面权限配置', name: '页面权限配置', href: backUrl },
+  { title: 'PC权限配置', name: 'PC权限配置', href: backUrl },
   { title, name: title },
 ];
 // 排序树（根据sort字段进行升序排序，sort可能重复，也可能不存在）

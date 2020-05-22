@@ -378,26 +378,7 @@ module.exports = env => {
           hideInMenu: false,
           routes: [
             {
-              path: '/system-management/app-management', // 手机软件管理
-              code: 'systemManagement.appManagement',
-              name: 'appManagement',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/system-management/app-management',
-                  name: 'appManagement',
-                  redirect: '/system-management/app-management/list',
-                },
-                {
-                  path: '/system-management/app-management/list',
-                  code: 'systemManagement.appManagement.listView',
-                  name: 'list',
-                  component: './SystemManagement/AppManagement/AppManagementList',
-                },
-              ],
-            },
-            {
-              path: '/system-management/page-authority', // 页面权限配置
+              path: '/system-management/page-authority', // PC权限配置
               code: 'systemManagement.pageAuthority',
               name: 'pageAuthority',
               hideChildrenInMenu: true,
@@ -424,6 +405,25 @@ module.exports = env => {
                   code: 'systemManagement.pageAuthority.edit',
                   name: 'sort',
                   component: './SystemManagement/PageAuthority/PageAuthoritySort',
+                },
+              ],
+            },
+            {
+              path: '/system-management/app-management', // APP版本管理
+              code: 'systemManagement.appManagement',
+              name: 'appManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/system-management/app-management',
+                  name: 'appManagement',
+                  redirect: '/system-management/app-management/list',
+                },
+                {
+                  path: '/system-management/app-management/list',
+                  code: 'systemManagement.appManagement.listView',
+                  name: 'list',
+                  component: './SystemManagement/AppManagement/AppManagementList',
                 },
               ],
             },
