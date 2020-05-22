@@ -7,7 +7,10 @@ import EquipCard from './EquipCard';
 import ParamList from './ParamList';
 import MonitorBtns from './MonitorBtns';
 import RadioBtns from './RadioBtns';
-// import FlameOrToxicGas from './FlameOrToxicGas';
+import Warehouse from './Warehouse';
+import FlameAndToxic from './FlameAndToxic';
+import WarehouseArea from './WarehouseArea';
+import TankArea from './TankArea';
 
 export {
   TabTitle,
@@ -19,5 +22,8 @@ export {
   ParamList,
   MonitorBtns,
   RadioBtns,
-  // FlameOrToxicGas,
+  Warehouse,
+  FlameAndToxic,
+  WarehouseArea,
+  TankArea,
 };

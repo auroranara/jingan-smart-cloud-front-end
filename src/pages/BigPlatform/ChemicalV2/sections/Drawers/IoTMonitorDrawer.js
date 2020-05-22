@@ -1,8 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Radio, Input } from 'antd';
 import DrawerContainer from '../../components/DrawerContainer';
-import { EquipCard } from '../../components/Components';
-import { DrawerIcons } from '../../utils';
+import { EquipCard, RadioBtns, NoData, CardItem, MonitorBtns } from '../../components/Components';
+import { DrawerIcons, MonitorConfig } from '../../utils';
 
 import styles from './IoTMonitorDrawer.less';
 
@@ -10,8 +10,25 @@ const { Search } = Input;
 export default class IoTMonitorDrawer extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      searchVisible: false,
+      inputValue: '',
+      statusIndex: 0,
+    };
   }
+
+  handleSearch = e => {
+    this.setState({ inputValue: e });
+  };
+
+  handleSearchClick = () => {
+    const { searchVisible } = this.state;
+    this.setState({ searchVisible: !searchVisible, inputValue: '' });
+  };
+
+  handleClickRadio = value => {
+    this.setState({ statusIndex: +value });
+  };
 
   render() {
     const {
@@ -20,33 +37,71 @@ export default class IoTMonitorDrawer extends PureComponent {
       list = [],
       handleShowVideo,
       handleClickShowMonitorDetail,
-      selectedEquip: { label, type },
+      selectedEquip: { label, type, warningCount, count },
     } = this.props;
+    const { searchVisible, inputValue, statusIndex } = this.state;
+    const filters = ({ name, areaLocation }) =>
+      name.includes(inputValue) || areaLocation.includes(inputValue);
+
+    const filterList = list
+      .filter(item => {
+        if (!filters) return true;
+        else return filters(item, inputValue);
+      })
+      .filter(item => {
+        switch (statusIndex) {
+          case 0:
+            return true;
+          case 1:
+            return item.warnStatus === -1;
+          case 2:
+            return item.warnStatus !== -1;
+          default:
+            return false;
+        }
+      });
+
+    const { fields, icon, iconStyle, labelStyle, btnStyles } = MonitorConfig[type] || {};
 
     return (
       <DrawerContainer
-        title={<div className={styles.titleWrapper}>{label}</div>}
+        title={label}
         visible={visible}
-        onClose={onClose}
+        onClose={() => {
+          setTimeout(() => {
+            this.setState({
+              searchVisible: false,
+              inputValue: '',
+              statusIndex: 0,
+            });
+          }, 300);
+          onClose();
+        }}
         width={535}
         destroyOnClose={true}
         zIndex={1222}
         icon={DrawerIcons[type]}
+        onSearchClick={this.handleSearchClick}
         left={
           <div className={styles.container}>
-            {/* <div className={styles.radioBtn}>
+            <div className={styles.radioBtn}>
               {!searchVisible ? (
-                <Radio.Group value={statusIndex} buttonStyle="solid" onChange={this.handleRadioChange}>
-                  <Radio.Button value={0}>全部 ({count})</Radio.Button>
-                  <Radio.Button value={1}>
-                    报警(
-                    {warningCount})
-                  </Radio.Button>
-                  <Radio.Button value={2}>
-                    正常(
-                    {count - warningCount})
-                  </Radio.Button>
-                </Radio.Group>
+                <RadioBtns
+                  value={statusIndex}
+                  onClick={this.handleClickRadio}
+                  fields={['全部', '报警', '正常'].map((item, index) => ({
+                    label: item,
+                    render: () => {
+                      const numbers = [count, warningCount, count - warningCount];
+                      return (
+                        <span key={index}>
+                          {item} ({numbers[index]})
+                        </span>
+                      );
+                    },
+                  }))}
+                  // onClick={this.handleRadioChange}
+                />
               ) : (
                 <div className={styles.input}>
                   <Search
@@ -57,15 +112,60 @@ export default class IoTMonitorDrawer extends PureComponent {
                   />
                 </div>
               )}
-            </div> */}
-            {list.map((item, index) => (
-              <EquipCard
-                key={index}
-                data={item}
-                handleShowVideo={handleShowVideo}
-                handleClickShowMonitorDetail={handleClickShowMonitorDetail}
+            </div>
+            {filterList.length > 0 ? (
+              filterList.map((item, index) => {
+                if (['405', '406'].includes(type)) {
+                  // 可燃气体监测/有毒气体监测
+                  const { noFinishWarningProcessId, id: monitorEquipmentId, videoList } = item;
+
+                  return (
+                    <CardItem
+                      key={index}
+                      data={{ ...item, icon: typeof icon === 'function' ? icon(item) : icon }}
+                      fields={fields}
+                      iconStyle={iconStyle}
+                      labelStyle={{ color: '#8198b4', ...labelStyle }}
+                      fieldsStyle={{ lineHeight: '32px' }}
+                      style={{ border: '1px solid #1C5D90' }}
+                      extraBtn={
+                        <Fragment>
+                          <MonitorBtns
+                            videoList={videoList}
+                            onVideoClick={handleShowVideo}
+                            noFinishWarningProcessId={noFinishWarningProcessId}
+                            monitorEquipmentId={monitorEquipmentId}
+                            style={{ top: 15, ...btnStyles }}
+                          />
+                        </Fragment>
+                      }
+                    />
+                  );
+                } else {
+                  return (
+                    <EquipCard
+                      key={index}
+                      data={item}
+                      handleShowVideo={handleShowVideo}
+                      handleClickShowMonitorDetail={handleClickShowMonitorDetail}
+                    />
+                  );
+                }
+              })
+            ) : (
+              <NoData
+                style={{
+                  height: '400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  textAlign: 'center',
+                  color: '#4f6793',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                }}
               />
-            ))}
+            )}
           </div>
         }
       />

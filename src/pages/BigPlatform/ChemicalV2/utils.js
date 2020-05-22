@@ -40,6 +40,8 @@ import drawer411 from './imgs/drawer/drawer-411.png';
 import drawer412 from './imgs/drawer/drawer-412.png';
 import drawer413 from './imgs/drawer/drawer-413.png';
 import drawer414 from './imgs/drawer/drawer-414.png';
+import drawer415 from './imgs/drawer/drawer-415.png';
+import drawer416 from './imgs/drawer/drawer-416.png';
 
 const storageAreaImg = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
 const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
@@ -162,7 +164,7 @@ export const MonitorConfig = {
     detailUrl: 'major-hazard-info/storage-management/detail',
     icon: ({ warnStatus, monitorParams, allMonitorParam }) => {
       const isAlarm = +warnStatus === -1;
-      const paramList = allMonitorParam || monitorParams || {};
+      const paramList = allMonitorParam || monitorParams || [];
       return (
         <div
           className={styles.iconWrapper}
@@ -259,8 +261,8 @@ export const MonitorConfig = {
     //     style={{ background: `url(${warehouseImg}) center center / 100% auto no-repeat` }}
     //   />
     // ),
-    icon: ({ warnStatus, monitorParams, allMonitorParam }) => {
-      const paramList = allMonitorParam || monitorParams || {};
+    icon: ({ monitorParams, allMonitorParam }) => {
+      const paramList = allMonitorParam || monitorParams || [];
       return (
         <div
           className={styles.iconWrapper}
@@ -389,9 +391,15 @@ export const MonitorConfig = {
               +linkStatus !== -1 ? (
                 status > 0 ? (
                   <div>
-                    <div>{`${condition === '>=' ? '超过' : '低于'}${
-                      +status === 1 ? '预' : '告'
-                    }警阈值 ${toFixed(Math.abs(realValue - limitValue))} ${paramUnit || ''}`}</div>
+                    <div>
+                      {`${condition === '>=' ? '超过' : '低于'}${
+                        +status === 1 ? '预' : '告'
+                      }警阈值 `}
+                      <span style={{ color: '#ff1325' }}>
+                        {toFixed(Math.abs(realValue - limitValue))}
+                      </span>
+                      {` ${paramUnit || ''}`}
+                    </div>
                     <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
                   </div>
                 ) : (
@@ -428,17 +436,52 @@ export const MonitorConfig = {
       {
         value: 'allMonitorParam',
         render: (val = []) => {
-          const { linkStatus, realValue, status } = val[0] || {};
+          const {
+            paramUnit,
+            realValue,
+            status,
+            linkStatus,
+            linkStatusUpdateTime,
+            dataUpdateTime,
+            condition,
+            limitValue,
+          } = val[0] || {};
           return (
-            <span
-              style={{
-                color: +status > 0 && +linkStatus !== -1 ? '#ff1225' : '#fff',
-                fontSize: '18px',
-                fontWeight: 'bold',
-              }}
+            <Tooltip
+              overlayStyle={{ zIndex: 9999 }}
+              title={
+                +linkStatus !== -1 ? (
+                  status > 0 ? (
+                    <div>
+                      <div>
+                        {`${condition === '>=' ? '超过' : '低于'}${
+                          +status === 1 ? '预' : '告'
+                        }警阈值 `}
+                        <span style={{ color: '#ff1325' }}>
+                          {toFixed(Math.abs(realValue - limitValue))}
+                        </span>
+                        {` ${paramUnit || ''}`}
+                      </div>
+                      <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                    </div>
+                  ) : (
+                    `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                  )
+                ) : (
+                  `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+                )
+              }
             >
-              {+linkStatus !== -1 ? realValue : '--'}
-            </span>
+              <span
+                style={{
+                  color: +status > 0 && +linkStatus !== -1 ? '#ff1225' : '#fff',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >
+                {+linkStatus !== -1 ? realValue : '--'}
+              </span>
+            </Tooltip>
           );
         },
       },
@@ -496,9 +539,15 @@ export const MonitorConfig = {
               +linkStatus !== -1 ? (
                 status > 0 ? (
                   <div>
-                    <div>{`${condition === '>=' ? '超过' : '低于'}${
-                      +status === 1 ? '预' : '告'
-                    }警阈值 ${toFixed(Math.abs(realValue - limitValue))} ${paramUnit || ''}`}</div>
+                    <div>
+                      {`${condition === '>=' ? '超过' : '低于'}${
+                        +status === 1 ? '预' : '告'
+                      }警阈值 `}
+                      <span style={{ color: '#ff1325' }}>
+                        {toFixed(Math.abs(realValue - limitValue))}
+                      </span>
+                      {` ${paramUnit || ''}`}
+                    </div>
                     <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
                   </div>
                 ) : (
@@ -535,17 +584,52 @@ export const MonitorConfig = {
       {
         value: 'allMonitorParam',
         render: (val = []) => {
-          const { linkStatus, realValue, status } = val[0] || {};
+          const {
+            paramUnit,
+            realValue,
+            status,
+            linkStatus,
+            linkStatusUpdateTime,
+            dataUpdateTime,
+            condition,
+            limitValue,
+          } = val[0] || {};
           return (
-            <span
-              style={{
-                color: +status > 0 && +linkStatus !== -1 ? '#ff1225' : '#fff',
-                fontSize: '18px',
-                fontWeight: 'bold',
-              }}
+            <Tooltip
+              overlayStyle={{ zIndex: 9999 }}
+              title={
+                +linkStatus !== -1 ? (
+                  status > 0 ? (
+                    <div>
+                      <div>
+                        {`${condition === '>=' ? '超过' : '低于'}${
+                          +status === 1 ? '预' : '告'
+                        }警阈值 `}
+                        <span style={{ color: '#ff1325' }}>
+                          {toFixed(Math.abs(realValue - limitValue))}
+                        </span>
+                        {` ${paramUnit || ''}`}
+                      </div>
+                      <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                    </div>
+                  ) : (
+                    `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                  )
+                ) : (
+                  `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+                )
+              }
             >
-              {+linkStatus !== -1 ? realValue : '--'}
-            </span>
+              <span
+                style={{
+                  color: +status > 0 && +linkStatus !== -1 ? '#ff1225' : '#fff',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >
+                {+linkStatus !== -1 ? realValue : '--'}
+              </span>
+            </Tooltip>
           );
         },
       },
@@ -561,7 +645,7 @@ export const MonitorConfig = {
           return (
             <span>
               <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
-              {val}
+              {val || '暂无位置'}
             </span>
           );
         },
@@ -811,4 +895,6 @@ export const DrawerIcons = {
   '412': drawer412,
   '413': drawer413,
   '414': drawer414,
+  '415': drawer415,
+  '416': drawer416,
 };

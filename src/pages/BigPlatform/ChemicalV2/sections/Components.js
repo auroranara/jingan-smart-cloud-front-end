@@ -26,6 +26,7 @@ import FireMonitorDrawer from './Drawers/FireMonitorDrawer';
 import GasListDrawer from './Drawers/GasListDrawer';
 import FireMonitorDetailDrawer from './Drawers/FireMonitorDetailDrawer';
 import NewMonitorDrawer from './Drawers/NewMonitorDrawer';
+import MonitorTabDrawer from './Drawers/MonitorTabDrawer';
 
 export {
   KeyPoints,
@@ -56,4 +57,5 @@ export {
   GasListDrawer,
   FireMonitorDetailDrawer,
   NewMonitorDrawer,
+  MonitorTabDrawer,
 };

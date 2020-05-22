@@ -17,7 +17,14 @@ export default class NewMonitorDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, monitorData, handleClickMonitorDetail, monitorType } = this.props;
+    const {
+      visible,
+      onClose,
+      monitorData,
+      handleClickMonitorDetail,
+      monitorType,
+      handleShowVideo,
+    } = this.props;
     const { title, fields, icon, iconStyle, labelStyle, btnStyles, moreStyle } =
       MonitorConfig[monitorType] || {};
     const list = monitorData[monitorType] || [];
@@ -54,6 +61,7 @@ export default class NewMonitorDrawer extends PureComponent {
                     <Fragment>
                       <MonitorBtns
                         videoList={videoList}
+                        onVideoClick={handleShowVideo}
                         noFinishWarningProcessId={noFinishWarningProcessId}
                         monitorEquipmentId={monitorEquipmentId}
                         style={{ top: 15, ...btnStyles }}

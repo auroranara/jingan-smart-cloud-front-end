@@ -11,7 +11,7 @@ export default class RadioBtns extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      // active: 0,
+      active: undefined,
       page: 1,
     };
   }
@@ -41,7 +41,7 @@ export default class RadioBtns extends PureComponent {
     } = v;
     const { onClick } = this.props;
     onClick && onClick(value);
-    // this.setState({ active: value });
+    this.setState({ active: value });
   };
 
   // handleMenuClick = ({ key }) => {
@@ -65,13 +65,16 @@ export default class RadioBtns extends PureComponent {
       fields,
       style = {},
       className,
-      otherIcon,
-      otherIconStyles = {},
+      preIcon,
+      nextIcon,
+      preIconStyles,
+      nextIconStyles,
       // showCount = DEFAULT_COUNT,
+      value,
       btnKey: propsKey,
       size = DEFAULT_SIZE,
     } = this.props;
-    const { page } = this.state;
+    const { page, active } = this.state;
     const total = fields.length;
     const lastPage = Math.ceil(total / size);
 
@@ -87,17 +90,14 @@ export default class RadioBtns extends PureComponent {
     return (
       <div className={classNames(styles.container, className)} style={{ ...style }}>
         {page !== 1 && (
-          <div
-            className={styles.pageWrapper}
-            style={otherIconStyles}
-            onClick={this.handleClickPrev}
-          >
-            {otherIcon ? otherIcon : <LeftOutlined />}
+          <div className={styles.pageWrapper} style={preIconStyles} onClick={this.handleClickPrev}>
+            {preIcon ? preIcon : <LeftOutlined />}
           </div>
         )}
         <div className={styles.radioBtns}>
           <Radio.Group
             defaultValue={propsKey || (fields[0] || {}).key || 0}
+            value={value || active}
             buttonStyle="solid"
             onChange={this.handleRadioChange}
             style={{
@@ -121,12 +121,8 @@ export default class RadioBtns extends PureComponent {
           </Radio.Group>
         </div>
         {page < lastPage && (
-          <div
-            className={styles.pageWrapper}
-            style={otherIconStyles}
-            onClick={this.handleClickNext}
-          >
-            {otherIcon ? otherIcon : <RightOutlined />}
+          <div className={styles.pageWrapper} style={nextIconStyles} onClick={this.handleClickNext}>
+            {nextIcon ? nextIcon : <RightOutlined />}
           </div>
         )}
         {/* {total > showCount && (

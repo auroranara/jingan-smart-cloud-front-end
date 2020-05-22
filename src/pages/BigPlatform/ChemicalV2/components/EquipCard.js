@@ -62,7 +62,7 @@ export default class EquipCard extends PureComponent {
               videoList={videoList}
               noFinishWarningProcessId={noFinishWarningProcessId}
               monitorEquipmentId={monitorEquipmentId}
-              onVideoClick={() => handleShowVideo(videoList)}
+              onVideoClick={handleShowVideo}
               style={{ top: 0, right: 0 }}
             />
           </div>

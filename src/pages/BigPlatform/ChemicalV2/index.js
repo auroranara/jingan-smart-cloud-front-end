@@ -57,6 +57,7 @@ import {
   GasListDrawer,
   FireMonitorDetailDrawer,
   NewMonitorDrawer,
+  MonitorTabDrawer,
 } from './sections/Components';
 
 const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
@@ -251,6 +252,7 @@ export default class Chemical extends PureComponent {
       fireMonitorDetailDrawerVisible: false,
       fireDetail: {},
       newMonitorDrawerVisible: false,
+      monitorTabDrawerVisible: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -985,6 +987,10 @@ export default class Chemical extends PureComponent {
       payload: { companyId, pageSize: 0, pageNum: 1, monitorType, hasMonitor: true },
     });
     // this.setState({ monitorType, monitorDrawerVisible: true });
+    if (['304', '303', '301'].includes(monitorType)) {
+      this.setState({ monitorType, monitorTabDrawerVisible: true });
+      return;
+    }
     this.setState({ monitorType, newMonitorDrawerVisible: true });
   };
 
@@ -1425,6 +1431,7 @@ export default class Chemical extends PureComponent {
       fireMonitorDetailDrawerVisible,
       fireDetail,
       newMonitorDrawerVisible,
+      monitorTabDrawerVisible,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1639,6 +1646,19 @@ export default class Chemical extends PureComponent {
           monitorData={monitorData}
           handleClickMonitorDetail={this.handleClickMonitorDetail}
           setDrawerVisible={this.setDrawerVisible}
+          handleShowVideo={this.handleShowVideo}
+        />
+
+        <MonitorTabDrawer
+          visible={monitorTabDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('monitorTab');
+          }}
+          monitorType={monitorType}
+          monitorData={monitorData}
+          handleClickMonitorDetail={this.handleClickMonitorDetail}
+          setDrawerVisible={this.setDrawerVisible}
+          handleShowVideo={this.handleShowVideo}
         />
 
         {/* <StorageDrawer
