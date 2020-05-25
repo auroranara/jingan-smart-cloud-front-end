@@ -989,9 +989,11 @@ export default class Chemical extends PureComponent {
     // this.setState({ monitorType, monitorDrawerVisible: true });
     if (['304', '303', '301'].includes(monitorType)) {
       this.setState({ monitorType, monitorTabDrawerVisible: true });
-      return;
+    } else if (['302'].includes(monitorType)) {
+      this.setState({ monitorType, newMonitorDrawerVisible: true });
+    } else {
+      this.setState({ monitorType, monitorDrawerVisible: true });
     }
-    this.setState({ monitorType, newMonitorDrawerVisible: true });
   };
 
   // 监测设备详情弹窗
@@ -1018,9 +1020,16 @@ export default class Chemical extends PureComponent {
           data: { list },
         } = res;
         const detail = list[0];
-        this.setState({ monitorType }, () => {
-          this.handleClickMonitorDetail(detail);
-        });
+        if (['304', '303', '301', '302'].includes(monitorType)) {
+          dispatch({ type: 'chemical/saveMonitorData', payload: { monitorType, list } });
+          if (['302'].includes(monitorType))
+            this.setState({ monitorType, newMonitorDrawerVisible: true });
+          else this.setState({ monitorType, monitorTabDrawerVisible: true });
+        } else {
+          this.setState({ monitorType }, () => {
+            this.handleClickMonitorDetail(detail);
+          });
+        }
       },
     });
   };
@@ -1644,7 +1653,6 @@ export default class Chemical extends PureComponent {
           }}
           monitorType={monitorType}
           monitorData={monitorData}
-          handleClickMonitorDetail={this.handleClickMonitorDetail}
           setDrawerVisible={this.setDrawerVisible}
           handleShowVideo={this.handleShowVideo}
         />

@@ -1,19 +1,33 @@
 import React, { PureComponent, Fragment } from 'react';
-import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
-import { CardItem, MonitorBtns } from '../../components/Components';
+import { Input } from 'antd';
+import DrawerContainer from '../../components/DrawerContainer';
+import { CardItem, MonitorBtns, NoData } from '../../components/Components';
 import { MonitorConfig } from '../../utils';
 import styles from './MonitorDrawer.less';
 
+const { Search } = Input;
 export default class NewMonitorDrawer extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      searchVisible: false,
+      inputValue: '',
+    };
   }
 
   handleClickMonitorDetail = id => {
     const { monitorType } = this.props;
     const { detailUrl } = MonitorConfig[monitorType] || {};
     detailUrl && id && window.open(`${window.publicPath}#/${detailUrl}/${id}`);
+  };
+
+  handleSearchClick = () => {
+    const { searchVisible } = this.state;
+    this.setState({ searchVisible: !searchVisible, inputValue: '' });
+  };
+
+  handleSearch = e => {
+    this.setState({ inputValue: e });
   };
 
   render() {
@@ -25,60 +39,121 @@ export default class NewMonitorDrawer extends PureComponent {
       monitorType,
       handleShowVideo,
     } = this.props;
-    const { title, fields, icon, iconStyle, labelStyle, btnStyles, moreStyle } =
-      MonitorConfig[monitorType] || {};
+    const { inputValue, searchVisible } = this.state;
+    const {
+      title,
+      fields,
+      icon,
+      iconStyle,
+      labelStyle,
+      btnStyles,
+      moreStyle,
+      drawerIcon,
+      filters,
+      filtersPlaceholder,
+    } = MonitorConfig[monitorType] || {};
     const list = monitorData[monitorType] || [];
+    const filterList = list.filter(item => {
+      if (!filters) return true;
+      else return filters(item, inputValue);
+    });
 
     return (
       <DrawerContainer
-        title={`${title} (${list.length})`}
+        title={`${title} (${filterList.length})`}
         visible={visible}
-        onClose={onClose}
+        onClose={() => {
+          setTimeout(() => {
+            this.setState({ searchVisible: false, inputValue: '' });
+          }, 300);
+          onClose();
+        }}
         width={535}
         destroyOnClose={true}
-        zIndex={1226}
+        zIndex={1299}
+        icon={drawerIcon}
+        onSearchClick={filters ? this.handleSearchClick : undefined}
         left={
           <div className={styles.container}>
-            {list.map((item, index) => {
-              const { monitorParams, allMonitorParam, videoList, meList } = item;
-              const newItem = {
-                ...item,
-                icon: typeof icon === 'function' ? icon(item) : icon,
-              };
-              const paramList = monitorParams || allMonitorParam || {};
-              const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
+            {searchVisible && (
+              <div className={styles.radioBtn}>
+                <div className={styles.input}>
+                  <Search
+                    style={{ width: '100%' }}
+                    placeholder={filtersPlaceholder}
+                    onSearch={this.handleSearch}
+                    enterButton
+                  />
+                </div>
+              </div>
+            )}
 
-              return (
-                <CardItem
-                  key={index}
-                  data={newItem}
-                  fields={fields}
-                  iconStyle={iconStyle}
-                  labelStyle={{ color: '#8198b4', ...labelStyle }}
-                  fieldsStyle={{ lineHeight: '32px' }}
-                  style={{ border: '1px solid #1C5D90' }}
-                  extraBtn={
-                    <Fragment>
-                      <MonitorBtns
-                        videoList={videoList}
-                        onVideoClick={handleShowVideo}
-                        noFinishWarningProcessId={noFinishWarningProcessId}
-                        monitorEquipmentId={monitorEquipmentId}
-                        style={{ top: 15, ...btnStyles }}
-                      />
-                      {/* <div className={styles.detail} onClick={() => handleClickMonitorDetail(item)}> */}
-                      <div
-                        className={styles.detail}
-                        onClick={() => this.handleClickMonitorDetail(item.id)}
-                        style={{ ...moreStyle }}
-                      >
-                        详情>>
-                      </div>
-                    </Fragment>
-                  }
-                />
-              );
-            })}
+            {filterList.length > 0 ? (
+              filterList.map((item, index) => {
+                const {
+                  monitorParams,
+                  allMonitorParam,
+                  videoList,
+                  meList,
+                  id,
+                  name,
+                  tankName,
+                } = item;
+                const newItem = {
+                  ...item,
+                  icon: typeof icon === 'function' ? icon(item) : icon,
+                };
+                const paramList = monitorParams || allMonitorParam || {};
+                const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
+
+                return (
+                  <CardItem
+                    key={index}
+                    data={newItem}
+                    fields={fields}
+                    iconStyle={iconStyle}
+                    labelStyle={{ color: '#8198b4', ...labelStyle }}
+                    fieldsStyle={{ lineHeight: '32px' }}
+                    style={{ border: '1px solid #1C5D90' }}
+                    extraBtn={
+                      <Fragment>
+                        <MonitorBtns
+                          videoList={videoList}
+                          onVideoClick={handleShowVideo}
+                          noFinishWarningProcessId={noFinishWarningProcessId}
+                          monitorEquipmentId={monitorEquipmentId}
+                          style={{ top: 15, ...btnStyles }}
+                          targetId={id}
+                          targetType={monitorType}
+                          targetName={monitorType === '302' ? tankName : name}
+                        />
+                        {/* <div className={styles.detail} onClick={() => handleClickMonitorDetail(item)}> */}
+                        <div
+                          className={styles.detail}
+                          onClick={() => this.handleClickMonitorDetail(item.id)}
+                          style={{ ...moreStyle }}
+                        >
+                          详情>>
+                        </div>
+                      </Fragment>
+                    }
+                  />
+                );
+              })
+            ) : (
+              <NoData
+                style={{
+                  height: '400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  textAlign: 'center',
+                  color: '#4f6793',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                }}
+              />
+            )}
           </div>
         }
       />

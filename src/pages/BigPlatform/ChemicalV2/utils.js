@@ -42,6 +42,10 @@ import drawer413 from './imgs/drawer/drawer-413.png';
 import drawer414 from './imgs/drawer/drawer-414.png';
 import drawer415 from './imgs/drawer/drawer-415.png';
 import drawer416 from './imgs/drawer/drawer-416.png';
+import drawer301 from './imgs/drawer/drawer-301.png';
+import drawer302 from './imgs/drawer/drawer-302.png';
+import drawer303 from './imgs/drawer/drawer-303.png';
+import drawer304 from './imgs/drawer/drawer-304.png';
 
 const storageAreaImg = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
 const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
@@ -115,6 +119,7 @@ export const MonitorConfig = {
     // 储罐区
     title: '罐区监测',
     detailUrl: 'major-hazard-info/storage-area-management/detail',
+    drawerIcon: drawer301,
     icon: (
       <div
         className={styles.iconWrapper}
@@ -158,10 +163,16 @@ export const MonitorConfig = {
       width: '10em',
       height: '11.8315em',
     },
+    drawerIcon: drawer302,
     labelStyle: { width: '7em' },
     btnStyles: { top: 30 },
     moreStyle: { bottom: 25 },
     detailUrl: 'major-hazard-info/storage-management/detail',
+    filters: ({ tankName, areaLocation, number }, inputValue) =>
+      tankName.includes(inputValue) ||
+      areaLocation.includes(inputValue) ||
+      number.includes(inputValue),
+    filtersPlaceholder: '请输入储罐编号/名称/区域位置',
     icon: ({ warnStatus, monitorParams, allMonitorParam }) => {
       const isAlarm = +warnStatus === -1;
       const paramList = allMonitorParam || monitorParams || [];
@@ -190,11 +201,11 @@ export const MonitorConfig = {
       {
         label: '存储物质',
         value: 'chineName',
-        extra: ({ id }) => (
-          <div className={styles.detail} style={{ right: 0, top: 0 }} onClick={() => {}}>
-            安防措施>>
-          </div>
-        ),
+        // extra: ({ id }) => (
+        //   <div className={styles.detail} style={{ right: 0, top: 0 }} onClick={() => {}}>
+        //     安防措施>>
+        //   </div>
+        // ),
       },
       { label: '设计储量', value: 'designReserves', render: val => val + 't' },
       { label: '是否高危储罐', value: 'highRiskTank', render: val => (+val === 1 ? '是' : '否') },
@@ -218,6 +229,7 @@ export const MonitorConfig = {
     // 库区
     title: '库区监测',
     detailUrl: 'major-hazard-info/reservoir-region-management/detail',
+    drawerIcon: drawer303,
     icon: (
       <div
         className={styles.iconWrapper}
@@ -255,6 +267,7 @@ export const MonitorConfig = {
       width: '12em',
       height: '9.8315em',
     },
+    drawerIcon: drawer304,
     // icon: (
     //   <div
     //     className={styles.iconWrapper}

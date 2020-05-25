@@ -39,7 +39,7 @@ export default class Warehouse extends PureComponent {
       },
     ];
     const { icon, iconStyle, labelStyle, btnStyles, moreStyle } = MonitorConfig[MonitorType] || {};
-    const { videoList = [], meList = [], name } = data;
+    const { videoList = [], meList = [], name, id } = data;
     // 筛选非有毒可燃的传感器
     const noFlameAndToxic = meList
       .filter(item => !['405', '406'].includes(item.equipmentType))
@@ -79,6 +79,9 @@ export default class Warehouse extends PureComponent {
                 noFinishWarningProcessId={noFinishWarningProcessId}
                 monitorEquipmentId={monitorEquipmentId}
                 style={{ ...btnStyles }}
+                targetId={id}
+                targetType={'304'}
+                targetName={name}
               />
               <div className={styles.name}>{name}</div>
               <div

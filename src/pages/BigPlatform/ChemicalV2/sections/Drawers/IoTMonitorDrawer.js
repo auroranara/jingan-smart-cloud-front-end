@@ -1,7 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Radio, Input } from 'antd';
 import DrawerContainer from '../../components/DrawerContainer';
-import { EquipCard, RadioBtns, NoData, CardItem, MonitorBtns } from '../../components/Components';
+import {
+  EquipCard,
+  RadioBtns,
+  NoData,
+  CardItem,
+  MonitorBtns,
+  FlameOrToxic,
+} from '../../components/Components';
 import { DrawerIcons, MonitorConfig } from '../../utils';
 
 import styles from './IoTMonitorDrawer.less';
@@ -61,8 +68,6 @@ export default class IoTMonitorDrawer extends PureComponent {
         }
       });
 
-    const { fields, icon, iconStyle, labelStyle, btnStyles } = MonitorConfig[type] || {};
-
     return (
       <DrawerContainer
         title={label}
@@ -117,28 +122,12 @@ export default class IoTMonitorDrawer extends PureComponent {
               filterList.map((item, index) => {
                 if (['405', '406'].includes(type)) {
                   // 可燃气体监测/有毒气体监测
-                  const { noFinishWarningProcessId, id: monitorEquipmentId, videoList } = item;
-
                   return (
-                    <CardItem
+                    <FlameOrToxic
                       key={index}
-                      data={{ ...item, icon: typeof icon === 'function' ? icon(item) : icon }}
-                      fields={fields}
-                      iconStyle={iconStyle}
-                      labelStyle={{ color: '#8198b4', ...labelStyle }}
-                      fieldsStyle={{ lineHeight: '32px' }}
-                      style={{ border: '1px solid #1C5D90' }}
-                      extraBtn={
-                        <Fragment>
-                          <MonitorBtns
-                            videoList={videoList}
-                            onVideoClick={handleShowVideo}
-                            noFinishWarningProcessId={noFinishWarningProcessId}
-                            monitorEquipmentId={monitorEquipmentId}
-                            style={{ top: 15, ...btnStyles }}
-                          />
-                        </Fragment>
-                      }
+                      data={item}
+                      handleShowVideo={handleShowVideo}
+                      handleClickShowMonitorDetail={handleClickShowMonitorDetail}
                     />
                   );
                 } else {

@@ -93,7 +93,7 @@ export default class TankArea extends PureComponent {
             tmList.map((item, index) => {
               const { fields, icon, iconStyle, labelStyle, btnStyles, moreStyle } =
                 MonitorConfig['302'] || {};
-              const { videoList, meList } = item;
+              const { videoList, meList, tankName, id } = item;
               const monitorParams = meList.reduce((res, cur) => {
                 const { allMonitorParam } = cur;
                 res = [...res, ...allMonitorParam];
@@ -123,11 +123,14 @@ export default class TankArea extends PureComponent {
                         noFinishWarningProcessId={noFinishWarningProcessId}
                         monitorEquipmentId={monitorEquipmentId}
                         style={{ top: 15, ...btnStyles }}
+                        targetId={id}
+                        targetType={'302'}
+                        targetName={tankName}
                       />
                       {/* <div className={styles.detail} onClick={() => handleClickMonitorDetail(item)}> */}
                       <div
                         className={styles.detail}
-                        onClick={() => this.handleClickMonitorDetail(item.id)}
+                        onClick={() => this.handleClickMonitorDetail(id)}
                         style={{ ...moreStyle }}
                       >
                         详情>>

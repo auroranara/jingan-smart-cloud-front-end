@@ -9,6 +9,16 @@ export default class MonitorBtns extends PureComponent {
   }
 
   handleWorkOrderIconClick = id => {
+    const { targetId, targetType, targetName } = this.props;
+    if (targetId) {
+      // 监测对象跳转到列表
+      window.open(
+        `${
+          window.publicPath
+        }#/company-iot/alarm-work-order/list?monitorObjectType=${targetType}&monitorObjectName=${targetName}&monitorObject=${targetId}&status=2`
+      );
+      return;
+    }
     // 工单id
     id && window.open(`${window.publicPath}#/company-iot/alarm-work-order/detail/${id}`);
   };

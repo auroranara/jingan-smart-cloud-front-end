@@ -15,7 +15,7 @@ export default class MonitorDrawer extends PureComponent {
   render() {
     const { visible, onClose, monitorData, handleClickMonitorDetail, monitorType } = this.props;
     // const {} = this.state;
-    const { title, fields, icon } = MonitorConfig[monitorType] || {};
+    const { title, fields, icon, labelStyle } = MonitorConfig[monitorType] || {};
     const list = monitorData[monitorType] || [];
 
     return (
@@ -40,6 +40,8 @@ export default class MonitorDrawer extends PureComponent {
                   key={index}
                   data={newItem}
                   fields={fields}
+                  labelStyle={{ color: '#8198b4', ...labelStyle }}
+                  style={{ border: '1px solid #1C5D90' }}
                   extraBtn={
                     <Fragment>
                       {+warnStatus === -1 && (

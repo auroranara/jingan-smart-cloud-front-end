@@ -74,7 +74,7 @@ export default class EquipCard extends PureComponent {
           </div>
         </div>
 
-        {beMonitorTargetType === '302' &&
+        {beMonitorTargetType &&
           targetId && (
             <div className={styles.wrapper}>
               <div className={styles.targetWrapper}>

@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { EquipCard, MonitorBtns, CardItem } from '../../components/Components';
+import { EquipCard, FlameOrToxic } from '../../components/Components';
 import DrawerContainer from '../../components/DrawerContainer';
 import { DrawerIcons, MonitorConfig } from '../../utils';
 
@@ -20,7 +20,6 @@ export default class MonitorEquipDrawer extends PureComponent {
       handleShowVideo,
       handleClickShowMonitorDetail,
     } = this.props;
-    const { fields, icon, iconStyle, labelStyle, btnStyles } = MonitorConfig[equipmentType] || {};
 
     return (
       <DrawerContainer
@@ -34,27 +33,11 @@ export default class MonitorEquipDrawer extends PureComponent {
         left={
           <div className={styles.container}>
             {['405', '406'].includes(equipmentType) ? (
-              <CardItem
-                data={{
-                  ...monitorMarker,
-                  icon: typeof icon === 'function' ? icon(monitorMarker) : icon,
-                }}
-                fields={fields}
-                iconStyle={iconStyle}
-                labelStyle={{ color: '#8198b4', ...labelStyle }}
-                fieldsStyle={{ lineHeight: '32px' }}
-                style={{ border: 'none' }}
-                extraBtn={
-                  <Fragment>
-                    <MonitorBtns
-                      videoList={monitorMarker.videoList}
-                      onVideoClick={handleShowVideo}
-                      noFinishWarningProcessId={monitorMarker.noFinishWarningProcessId}
-                      monitorEquipmentId={monitorMarker.id}
-                      style={{ top: 15, ...btnStyles }}
-                    />
-                  </Fragment>
-                }
+              <FlameOrToxic
+                data={monitorMarker}
+                handleShowVideo={handleShowVideo}
+                handleClickShowMonitorDetail={handleClickShowMonitorDetail}
+                noBorder
               />
             ) : (
               <EquipCard

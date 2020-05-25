@@ -51,13 +51,17 @@ export default class RadioBtns extends PureComponent {
   // };
 
   handleClickPrev = () => {
+    const { handlePageChange } = this.props;
     const { page } = this.state;
     this.setState({ page: page - 1 });
+    handlePageChange && handlePageChange(page - 1);
   };
 
   handleClickNext = () => {
+    const { handlePageChange } = this.props;
     const { page } = this.state;
     this.setState({ page: page + 1 });
+    handlePageChange && handlePageChange(page + 1);
   };
 
   render() {
@@ -65,7 +69,7 @@ export default class RadioBtns extends PureComponent {
       fields,
       style = {},
       className,
-      preIcon,
+      prevIcon,
       nextIcon,
       preIconStyles,
       nextIconStyles,
@@ -91,7 +95,7 @@ export default class RadioBtns extends PureComponent {
       <div className={classNames(styles.container, className)} style={{ ...style }}>
         {page !== 1 && (
           <div className={styles.pageWrapper} style={preIconStyles} onClick={this.handleClickPrev}>
-            {preIcon ? preIcon : <LeftOutlined />}
+            {prevIcon ? prevIcon : <LeftOutlined />}
           </div>
         )}
         <div className={styles.radioBtns}>
