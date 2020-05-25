@@ -1,0 +1,31 @@
+.container {
+  position: absolute;
+  text-align: right;
+  right: 15px;
+  top: 0;
+  overflow: hidden;
+
+  span {
+    display: block;
+    width: 1.6em;
+    height: 1.6em;
+    cursor: pointer;
+    float: left;
+
+    & + span {
+      margin-left: 8px;
+    }
+  }
+
+  .video {
+    background: url('../imgs/icon-video-new.png') center center / auto 100% no-repeat;
+  }
+
+  .workOrder {
+    background: url('../imgs/work-order.png') center center / auto 100% no-repeat;
+  }
+
+  .trend {
+    background: url('../imgs/icon-trend-new.png') center center / auto 100% no-repeat;
+  }
+}

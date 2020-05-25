@@ -1,14 +1,15 @@
 .container {
   position: relative;
-  border: 1px solid #1c5d90;
+  height: 100%;
+  overflow: auto;
+  margin-right: -15px;
+  padding-right: 15px;
   color: #fff;
-
-  & + .container {
-    margin-top: 15px;
-  }
+  font-size: 14px;
+  line-height: 28px;
 
   .label {
-    color: #1475ed;
+    color: #7c93b1;
     display: inline-block;
   }
 
@@ -23,36 +24,17 @@
     position: relative;
     font-size: 16px;
 
-    .iconsWrapper {
+    .video {
+      display: inline-block;
       position: absolute;
-      height: 100%;
-      right: 10px;
-      top: 0;
-
-      .icon {
-        display: inline-block;
-        width: 40px;
-        height: 100%;
-        vertical-align: top;
-        cursor: pointer;
-
-        & + .icon {
-          margin-left: 8px;
-        }
-      }
-
-      //   .video {
-      //     display: inline-block;
-      //     // position: absolute;
-      //     // top: 6px;
-      //     // left: 60%;
-      //     width: 1.4em;
-      //     height: 1em;
-      //     background: url('../imgs/icon-video.png') no-repeat center;
-      //     background-size: auto 1em;
-      //     vertical-align: top;
-      //     cursor: pointer;
-      //   }
+      top: 6px;
+      left: 60%;
+      width: 1.4em;
+      height: 1em;
+      background: url('../../imgs/icon-video.png') no-repeat center;
+      background-size: auto 1em;
+      vertical-align: top;
+      cursor: pointer;
     }
   }
 
@@ -61,9 +43,9 @@
     border-top: 1px solid #196092;
     padding: 16px 10px;
     padding-left: 25px;
-    margin: 0 10px;
 
     &:first-child {
+      padding-top: 0;
       border-top: none;
     }
 
@@ -79,7 +61,7 @@
   .targetWrapper {
     padding-left: 10px;
     margin-left: -10px;
-    border-left: 4px solid #1475ed;
+    border-left: 4px solid #0ff;
   }
 
   .updateTime {
@@ -165,11 +147,11 @@
       box-sizing: content-box;
 
       &:first-child {
-        background-image: url('../imgs/icon-work-order.png');
+        background-image: url('../../imgs/icon-work-order.png');
       }
 
       &:nth-child(2) {
-        background-image: url('../imgs/icon-trend.png');
+        background-image: url('../../imgs/icon-trend.png');
       }
     }
   }
