@@ -370,12 +370,14 @@ export default class NewMenuReveal extends Component {
           )}
         </div>
         <Modal
+          centered
+          destroyOnClose
           title="选择单位"
+          cancelText="取消"
+          okText="确定"
           visible={modalVisible}
           onCancel={() => this.setState({ modalVisible: false })}
           onOk={this.handleConfirmCompany}
-          destroyOnClose
-          centered
         >
           <Form ref={this.formRef}>
             <Form.Item
