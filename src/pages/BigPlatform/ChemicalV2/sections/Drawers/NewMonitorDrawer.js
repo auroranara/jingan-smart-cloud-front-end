@@ -1,9 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Input } from 'antd';
-import DrawerContainer from '../../components/DrawerContainer';
-import { CardItem, MonitorBtns, NoData } from '../../components/Components';
+// import DrawerContainer from '../../components/DrawerContainer';
+import { CardItem, MonitorBtns, NoData, DrawerContainer } from '../../components/Components';
 import { MonitorConfig } from '../../utils';
-import styles from './MonitorDrawer.less';
+import styles from './NewMonitorDrawer.less';
 
 const { Search } = Input;
 export default class NewMonitorDrawer extends PureComponent {
