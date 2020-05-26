@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
+// import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Col, Drawer, Row } from 'antd';
 
 import styles from './DrawerContainer.less';
@@ -52,8 +53,12 @@ export default class DrawerContainer extends PureComponent {
         {...restProps}
       >
         <div className={styles.container} id={id}>
-          {onSearchClick && <SearchOutlined style={ICON_STYLE_SERACH} onClick={onSearchClick} />}
-          <CloseOutlined style={ICON_STYLE_CLOSE} onClick={e => onClose()} />
+          {onSearchClick && (
+            <LegacyIcon type="search" style={ICON_STYLE_SERACH} onClick={onSearchClick} />
+          )}
+          {/* {onSearchClick && <SearchOutlined style={ICON_STYLE_SERACH} onClick={onSearchClick} />} */}
+          {/* <CloseOutlined style={ICON_STYLE_CLOSE} onClick={e => onClose()} /> */}
+          <LegacyIcon type="close" style={ICON_STYLE_CLOSE} onClick={e => onClose()} />
           {title && (
             <h3 className={styles.title}>
               {icon ? (

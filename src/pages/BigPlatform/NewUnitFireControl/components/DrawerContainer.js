@@ -1,25 +1,18 @@
 import React, { PureComponent } from 'react';
-import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Col, Drawer, Row } from 'antd';
 
 import styles from './DrawerContainer.less';
 
 const COL_STYLE = { height: '100%' };
-const ICON_STYLE_CLOSE = {
+const ICON_STYLE = {
   position: 'absolute',
-  right: 16,
-  top: 22,
-  fontSize: 20,
+  right: 10,
+  top: 10,
+  fontSize: 18,
   color: '#FFF',
   cursor: 'pointer',
-};
-const ICON_STYLE_SERACH = {
-  position: 'absolute',
-  right: 65,
-  top: 22,
-  fontSize: 20,
-  color: '#FFF',
-  cursor: 'pointer',
+  zIndex: 66,
 };
 const WIDTH = 960;
 
@@ -36,8 +29,6 @@ export default class DrawerContainer extends PureComponent {
       style,
       leftParStyle = {},
       rowStyle,
-      icon,
-      onSearchClick,
       ...restProps
     } = this.props;
     const hasTitle = !!title;
@@ -49,21 +40,14 @@ export default class DrawerContainer extends PureComponent {
         width={width || WIDTH}
         className={styles.drawer}
         style={{ padding: 0, height: '100%', ...style }}
+        // style={{ padding: '108px 0 0 1px' }}
         {...restProps}
       >
         <div className={styles.container} id={id}>
-          {onSearchClick && <SearchOutlined style={ICON_STYLE_SERACH} onClick={onSearchClick} />}
-          <CloseOutlined style={ICON_STYLE_CLOSE} onClick={e => onClose()} />
+          <LegacyIcon type="close" style={ICON_STYLE} onClick={e => onClose()} />
           {title && (
             <h3 className={styles.title}>
-              {icon ? (
-                <span
-                  className={styles.icon}
-                  style={{ background: `url(${icon}) center center / 100% 100% no-repeat` }}
-                />
-              ) : (
-                <span className={styles.rect} />
-              )}
+              <span className={styles.rect} />
               {title}
             </h3>
           )}
