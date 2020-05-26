@@ -1,6 +1,6 @@
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Tooltip } from 'antd';
-import Wave from '@/jingan-components/Wave';
+// import Wave from '@/jingan-components/Wave';
 import Ellipsis from '@/components/Ellipsis';
 import { toFixed } from '@/utils/utils';
 import moment from 'moment';
@@ -43,7 +43,8 @@ import drawer414 from './imgs/drawer/drawer-414.png';
 import drawer415 from './imgs/drawer/drawer-415.png';
 import drawer416 from './imgs/drawer/drawer-416.png';
 import drawer301 from './imgs/drawer/drawer-301.png';
-import drawer302 from './imgs/drawer/drawer-302.png';
+// import drawer302 from './imgs/drawer/drawer-302.png';
+import drawer302 from './imgs/drawer-302.png';
 import drawer303 from './imgs/drawer/drawer-303.png';
 import drawer304 from './imgs/drawer/drawer-304.png';
 
