@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
 import { Col, Drawer, Row } from 'antd';
 
-import styles from './index.less';
+import styles from './DrawerContainer.less';
 
 const COL_STYLE = { height: '100%' };
 const ICON_STYLE_CLOSE = {
@@ -54,17 +54,19 @@ export default class DrawerContainer extends PureComponent {
         <div className={styles.container} id={id}>
           {onSearchClick && <SearchOutlined style={ICON_STYLE_SERACH} onClick={onSearchClick} />}
           <CloseOutlined style={ICON_STYLE_CLOSE} onClick={e => onClose()} />
-          <h3 className={styles.title}>
-            {icon ? (
-              <span
-                className={styles.icon}
-                style={{ background: `url(${icon}) center center / 100% 100% no-repeat` }}
-              />
-            ) : (
-              <span className={styles.rect} />
-            )}
-            {title}
-          </h3>
+          {title && (
+            <h3 className={styles.title}>
+              {icon ? (
+                <span
+                  className={styles.icon}
+                  style={{ background: `url(${icon}) center center / 100% 100% no-repeat` }}
+                />
+              ) : (
+                <span className={styles.rect} />
+              )}
+              {title}
+            </h3>
+          )}
           <Row style={{ height: hasTitle ? 'calc(100% - 51px)' : '100%', ...rowStyle }}>
             <Col span={right ? 12 : 24} style={{ ...COL_STYLE, ...leftParStyle }}>
               {left}
