@@ -237,14 +237,10 @@ export default class PersonnelList extends PureComponent {
     if (info.file.status === undefined) {
       this.setState({ personLoading: false, personFileList: [] });
     }
-    if (res) {
+    if (info.file.status === 'done' && res) {
       if (res.code && res.code === 200) {
         message.success(res.msg);
         this.handlePersonClose();
-        this.handleQuery();
-        this.setState({
-          personLoading: false,
-        });
       } else {
         res.data.errorMasssge.length === 0
           ? message.error(res.msg)
@@ -253,10 +249,9 @@ export default class PersonnelList extends PureComponent {
             content: res.data.errorMasssge,
             okText: '确定',
           });
-        this.setState({
-          personLoading: false,
-        });
       }
+      this.handleQuery();
+      this.setState({ personLoading: false });
     }
   };
 
