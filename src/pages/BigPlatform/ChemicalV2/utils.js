@@ -43,8 +43,7 @@ import drawer414 from './imgs/drawer/drawer-414.png';
 import drawer415 from './imgs/drawer/drawer-415.png';
 import drawer416 from './imgs/drawer/drawer-416.png';
 import drawer301 from './imgs/drawer/drawer-301.png';
-// import drawer302 from './imgs/drawer/drawer-302.png';
-import drawer302 from './imgs/drawer-302.png';
+import drawer302 from './imgs/drawer/drawer-302.png';
 import drawer303 from './imgs/drawer/drawer-303.png';
 import drawer304 from './imgs/drawer/drawer-304.png';
 
@@ -112,6 +111,12 @@ export const MsgShowTypes = [
   100, // 监测设备
 ];
 
+const hasAlarm = list => {
+  return !list.every(({ status }) => {
+    return status <= 0;
+  });
+};
+
 // export const TypeClickList = [100, 14, 15, 16, 17];
 export const TypeClickList = [100];
 
@@ -175,8 +180,8 @@ export const MonitorConfig = {
       number.includes(inputValue),
     filtersPlaceholder: '请输入储罐编号/名称/区域位置',
     icon: ({ warnStatus, monitorParams, allMonitorParam }) => {
-      const isAlarm = +warnStatus === -1;
       const paramList = allMonitorParam || monitorParams || [];
+      const isAlarm = hasAlarm(paramList);
       return (
         <div
           className={styles.iconWrapper}

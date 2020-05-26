@@ -14,6 +14,7 @@ const uniqueByid = array => {
     return prev;
   }, []);
 };
+const Border = '1px solid #1C5D90';
 const NO_DATA = '暂无数据';
 
 const fields = [
@@ -62,7 +63,7 @@ export default class DangerSourceLvlDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title="重大危险源等级影响因素"
+        title="等级评估参考"
         visible={visible}
         onClose={onClose}
         width={535}
@@ -105,7 +106,15 @@ export default class DangerSourceLvlDrawer extends PureComponent {
               重大危险源存储物质
             </div> */}
                 {materials.map((item, index) => (
-                  <CardItem key={index} data={item} fields={fields} />
+                  <CardItem
+                    key={index}
+                    data={item}
+                    fields={fields}
+                    labelStyle={{ color: '#8198b4' }}
+                    style={{
+                      border: Border,
+                    }}
+                  />
                 ))}
               </div>
             )}

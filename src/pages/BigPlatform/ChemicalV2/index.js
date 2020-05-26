@@ -1235,7 +1235,7 @@ export default class Chemical extends PureComponent {
   // 重大危险源详情
   handleShowDangerSourceDetail = detail => {
     this.setState({ dangerSourceDetail: detail });
-    this.setDrawerVisible('dangerSourceInfo');
+    // this.setDrawerVisible('dangerSourceInfo');
     this.fetchDangerSourceMaterials({ id: detail.id });
   };
 
@@ -1712,6 +1712,8 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           dangerSourceList={dangerSourceList}
           handleShowDangerSourceDetail={this.handleShowDangerSourceDetail}
+          handleShowVideo={this.handleShowVideo}
+          companyId={companyId}
         />
 
         <DangerSourceInfoDrawer

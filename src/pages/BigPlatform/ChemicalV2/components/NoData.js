@@ -4,11 +4,11 @@ import React, { PureComponent } from 'react';
 const noData = 'http://data.jingan-china.cn/v2/chem/screen/noData.png';
 export default class NoData extends PureComponent {
   render() {
-    const { msg, ...restProps } = this.props;
+    const { msg, style, ...restProps } = this.props;
     return (
       <div
         style={{
-          height: '100%',
+          height: '400px',
           display: 'flex',
           flexDirection: 'column',
           textAlign: 'center',
@@ -16,6 +16,7 @@ export default class NoData extends PureComponent {
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: '14px',
+          ...style,
         }}
         {...restProps}
       >

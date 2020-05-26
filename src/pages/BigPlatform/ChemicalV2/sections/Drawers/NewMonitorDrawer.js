@@ -1,7 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Input } from 'antd';
-// import DrawerContainer from '../../components/DrawerContainer';
-import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
+import DrawerContainer from '../../components/DrawerContainer';
 import { CardItem, MonitorBtns, NoData } from '../../components/Components';
 import { MonitorConfig } from '../../utils';
 import styles from './NewMonitorDrawer.less';

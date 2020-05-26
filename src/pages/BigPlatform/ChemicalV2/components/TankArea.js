@@ -6,8 +6,10 @@ import { MonitorConfig } from '../utils';
 import styles from './WarehouseArea.less';
 
 const MonitorType = '301';
+const NO_DATA = '暂无数据';
+const Border = '1px solid #1C5D90';
 
-@connect(({ device }) => ({ device }))
+@connect(({ chemical }) => ({ chemical }))
 export default class TankArea extends PureComponent {
   constructor(props) {
     super(props);
@@ -30,7 +32,7 @@ export default class TankArea extends PureComponent {
       data: { companyId, id },
     } = this.props;
     dispatch({
-      type: 'device/fetchMonitoringDevice',
+      type: 'chemical/fetchMonitoringDevice',
       payload: {
         pageNum: 1,
         pageSize: 0,
@@ -45,18 +47,29 @@ export default class TankArea extends PureComponent {
     detailUrl && id && window.open(`${window.publicPath}#/${detailUrl}/${id}`);
   };
 
+  handleClickTankDetail = id => {
+    const { detailUrl } = MonitorConfig['302'] || {};
+    detailUrl && id && window.open(`${window.publicPath}#/${detailUrl}/${id}`);
+  };
+
   render() {
     const {
       data = {},
       handleShowVideo,
-      device: {
-        monitoringDevice: { list: meList },
-      },
+      chemical: { monitoringDevice },
+      bordered,
     } = this.props;
     const { areaName, location, tmList = [], videoList = [], id, chineNameList } = data;
+    const meList = monitoringDevice[id] || [];
 
     return (
-      <div className={styles.container}>
+      <div
+        className={styles.container}
+        style={{
+          border: bordered ? Border : undefined,
+          padding: bordered ? '10px 15px' : undefined,
+        }}
+      >
         <div className={styles.basic}>
           <div className={styles.name}>
             {areaName}
@@ -74,7 +87,7 @@ export default class TankArea extends PureComponent {
           </div>
           <div>
             <span className={styles.label}>存储物质：</span>
-            {chineNameList.join('、')}
+            {chineNameList ? chineNameList.join('、') : NO_DATA}
 
             {/* <div className={styles.extra}>安防措施>></div> */}
           </div>
@@ -87,7 +100,7 @@ export default class TankArea extends PureComponent {
           </div>
         </div>
 
-        <div className={styles.wrapper} style={{ borderTop: '1px solid #1C5D90' }}>
+        <div className={bordered ? styles.wrapper2 : styles.wrapper} style={{ borderTop: Border }}>
           <div className={styles.wrapperTitle}>储罐 ({tmList.length})</div>
           {tmList.length > 0 ? (
             tmList.map((item, index) => {
@@ -114,7 +127,11 @@ export default class TankArea extends PureComponent {
                   iconStyle={iconStyle}
                   labelStyle={{ color: '#8198b4', ...labelStyle }}
                   fieldsStyle={{ lineHeight: '32px' }}
-                  style={{ border: '1px solid #1C5D90' }}
+                  style={{
+                    border: bordered ? 'none' : Border,
+                    borderTop: bordered && index > 0 ? Border : bordered ? 'none' : Border,
+                    marginTop: bordered ? 0 : undefined,
+                  }}
                   extraBtn={
                     <Fragment>
                       <MonitorBtns
@@ -130,7 +147,7 @@ export default class TankArea extends PureComponent {
                       {/* <div className={styles.detail} onClick={() => handleClickMonitorDetail(item)}> */}
                       <div
                         className={styles.detail}
-                        onClick={() => this.handleClickMonitorDetail(id)}
+                        onClick={() => this.handleClickTankDetail(item.id)}
                         style={{ ...moreStyle }}
                       >
                         详情>>
@@ -157,7 +174,7 @@ export default class TankArea extends PureComponent {
           )}
         </div>
 
-        <FlameAndToxic handleShowVideo={handleShowVideo} meList={meList} />
+        <FlameAndToxic handleShowVideo={handleShowVideo} meList={meList} noBorder={bordered} />
       </div>
     );
   }
