@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Radio, Menu, Dropdown } from 'antd';
-import { RightOutlined, LeftOutlined } from '@ant-design/icons';
+// import { RightOutlined, LeftOutlined } from '@ant-design/icons';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import classNames from 'classnames';
 import styles from './RadioBtns.less';
 
@@ -95,7 +96,8 @@ export default class RadioBtns extends PureComponent {
       <div className={classNames(styles.container, className)} style={{ ...style }}>
         {page !== 1 && (
           <div className={styles.pageWrapper} style={preIconStyles} onClick={this.handleClickPrev}>
-            {prevIcon ? prevIcon : <LeftOutlined />}
+            {/* {prevIcon ? prevIcon : <LeftOutlined />} */}
+            {prevIcon ? prevIcon : <LegacyIcon type="left" />}
           </div>
         )}
         <div className={styles.radioBtns}>
@@ -126,7 +128,7 @@ export default class RadioBtns extends PureComponent {
         </div>
         {page < lastPage && (
           <div className={styles.pageWrapper} style={nextIconStyles} onClick={this.handleClickNext}>
-            {nextIcon ? nextIcon : <RightOutlined />}
+            {nextIcon ? nextIcon : <LegacyIcon type="right" />}
           </div>
         )}
         {/* {total > showCount && (
