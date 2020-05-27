@@ -56,6 +56,7 @@ export const TYPES = [{ key: '1', tab: '列表' }, { key: '2', tab: '地图' }];
 
 export const LIST_GRID = {
   gutter: 24,
+  column: 2,
   xl: 2,
   sm: 1,
   xs: 1,

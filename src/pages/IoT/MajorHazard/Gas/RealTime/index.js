@@ -27,7 +27,7 @@ const WARN_STATUS_MAPPER = {
   1: -1,
   2: 0,
 };
-const GRID = { gutter: 24, xl: 3, md: 2, sm: 1, xs: 1 };
+const GRID = { gutter: 24, column: 3, xl: 3, md: 2, sm: 1, xs: 1 };
 const options = {
   pingTimeout: 30000,
   pongTimeout: 10000,

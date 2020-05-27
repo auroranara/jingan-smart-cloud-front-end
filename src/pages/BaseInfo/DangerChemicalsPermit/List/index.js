@@ -513,7 +513,7 @@ export default class DangerChemicalList extends PureComponent {
         />
       </Card>
     ) : (
-      <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+      <div style={{ textAlign: 'center', padding: '70px' }}>暂无数据</div>
     );
   };
 
