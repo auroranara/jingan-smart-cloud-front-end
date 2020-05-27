@@ -27,6 +27,7 @@ import { getList } from '@/services/gasometer';
 import { getList as getPipelineList } from '@/services/pipeline';
 import { getDeviceDetail } from '@/services/alarmWorkOrder';
 import { getWarningNewList } from '@/services/changeWarning';
+import { fetchMonitoringDevice } from '@/services/device/monitoringDevice';
 
 export default {
   namespace: 'chemical',
@@ -68,6 +69,7 @@ export default {
     onDuty: {},
     truckCount: [],
     inOutRecordList: [],
+    monitoringDevice: {},
   },
 
   effects: {
@@ -470,6 +472,17 @@ export default {
       }
       callback && callback(response);
     },
+    // 获取监测设备列表（分页）
+    *fetchMonitoringDevice({ payload, callback }, { call, put }) {
+      const res = yield call(fetchMonitoringDevice, payload);
+      if (res && res.code === 200) {
+        yield put({
+          type: 'saveMonitoringDevice',
+          payload: { list: res.data.list || [], id: payload.selfTargetId },
+        });
+        callback && callback(res.data.list);
+      }
+    },
   },
 
   reducers: {
@@ -493,6 +506,13 @@ export default {
       zoneEquip: {
         ...state.zoneEquip,
         [equipmentType]: list,
+      },
+    }),
+    saveMonitoringDevice: (state, { payload: { list, id } }) => ({
+      ...state,
+      monitoringDevice: {
+        ...state.monitoringDevice,
+        [id]: list,
       },
     }),
   },

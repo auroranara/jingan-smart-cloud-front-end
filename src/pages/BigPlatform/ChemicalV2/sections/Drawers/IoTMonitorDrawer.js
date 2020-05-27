@@ -1,12 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Radio, Input } from 'antd';
-import DrawerContainer from '../../components/DrawerContainer';
+// import DrawerContainer from '../../components/DrawerContainer';
 import {
   EquipCard,
   RadioBtns,
   NoData,
   CardItem,
-  MonitorBtns,
+  DrawerContainer,
   FlameOrToxic,
 } from '../../components/Components';
 import { DrawerIcons, MonitorConfig } from '../../utils';

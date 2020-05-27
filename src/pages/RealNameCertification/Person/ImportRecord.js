@@ -7,14 +7,15 @@ import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import router from 'umi/router';
+import Ellipsis from '@/components/Ellipsis';
 
 const title = '批量导入照片记录';
 const defaultPageSize = 10;
-const DEFAULT_SPAN = {
-  md: 8,
-  sm: 12,
-  xs: 24,
-};
+// const DEFAULT_SPAN = {
+//   md: 8,
+//   sm: 12,
+//   xs: 24,
+// };
 // 上传结果选项
 const statusOptions = [
   { value: '1', label: '成功' },
@@ -151,6 +152,7 @@ export default class PersonnelList extends PureComponent {
         title: '序号',
         dataIndex: 'index',
         align: 'center',
+        width: 100,
       },
       {
         title: '照片',
@@ -178,20 +180,21 @@ export default class PersonnelList extends PureComponent {
                   />
                 ))}
             </div>
-          ) : (
-              ''
-            ),
+          ) : '',
       },
       {
         title: '文件名称',
         dataIndex: 'fileName',
         align: 'center',
+        render: (val) => <Ellipsis lines={1} tooltip>{val}</Ellipsis>,
+        width: 400,
       },
       {
         title: '上传结果',
         dataIndex: 'status',
         align: 'center',
         render: val => (+val === 1 ? '成功' : '失败'),
+        width: 150,
       },
       {
         title: '原因',
@@ -203,6 +206,7 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'createTime',
         align: 'center',
         render: val => moment(+val).format('YYYY-MM-DD HH:mm:ss'),
+        width: 200,
       },
     ];
     return list && list.length ? (

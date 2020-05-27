@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Tooltip } from 'antd';
-import { RightOutlined, LeftOutlined } from '@ant-design/icons';
+// import { RightOutlined, LeftOutlined } from '@ant-design/icons';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import DrawerContainer from '../../components/DrawerContainer';
 import { RadioBtns, NoData, Warehouse, WarehouseArea, TankArea } from '../../components/Components';
 import { MonitorConfig } from '../../utils';
@@ -42,14 +43,14 @@ export default class MonitorTabDrawer extends PureComponent {
     const next = list.slice(page * Size, (page + 1) * Size);
     const nextIcon = hasAlarm(next) && (
       <div className={styles.pageBtns}>
-        <RightOutlined />
+        <LegacyIcon type="right" />
         <div className={styles.dot} />
       </div>
     );
     const prev = list.slice((page - 2) * Size, (page - 1) * Size);
     const prevIcon = hasAlarm(prev) && (
       <div className={styles.pageBtns}>
-        <LeftOutlined />
+        <LegacyIcon type="left" />
         <div className={styles.dot} style={{ left: 2, right: 'auto' }} />
       </div>
     );

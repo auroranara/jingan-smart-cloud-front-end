@@ -12,6 +12,7 @@ import FlameAndToxic from './FlameAndToxic';
 import WarehouseArea from './WarehouseArea';
 import TankArea from './TankArea';
 import FlameOrToxic from './FlameOrToxic';
+import DrawerContainer from './DrawerContainer';
 
 export {
   TabTitle,
@@ -28,4 +29,5 @@ export {
   WarehouseArea,
   TankArea,
   FlameOrToxic,
+  DrawerContainer,
 };

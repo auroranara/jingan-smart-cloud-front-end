@@ -1,6 +1,6 @@
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Tooltip } from 'antd';
-import Wave from '@/jingan-components/Wave';
+// import Wave from '@/jingan-components/Wave';
 import Ellipsis from '@/components/Ellipsis';
 import { toFixed } from '@/utils/utils';
 import moment from 'moment';
@@ -111,6 +111,12 @@ export const MsgShowTypes = [
   100, // 监测设备
 ];
 
+const hasAlarm = list => {
+  return !list.every(({ status }) => {
+    return status <= 0;
+  });
+};
+
 // export const TypeClickList = [100, 14, 15, 16, 17];
 export const TypeClickList = [100];
 
@@ -174,8 +180,8 @@ export const MonitorConfig = {
       number.includes(inputValue),
     filtersPlaceholder: '请输入储罐编号/名称/区域位置',
     icon: ({ warnStatus, monitorParams, allMonitorParam }) => {
-      const isAlarm = +warnStatus === -1;
       const paramList = allMonitorParam || monitorParams || [];
+      const isAlarm = hasAlarm(paramList);
       return (
         <div
           className={styles.iconWrapper}

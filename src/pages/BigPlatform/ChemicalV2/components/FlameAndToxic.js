@@ -25,9 +25,9 @@ export default class FlameAndToxic extends PureComponent {
           return (
             list.length > 0 && (
               <div
-                className={styles.wrapper}
+                className={noBorder ? styles.wrapper2 : styles.wrapper}
                 key={index}
-                style={{ borderTop: noBorder ? '1px solid #1C5D90' : undefined }}
+                // style={{ borderTop: noBorder ? '1px solid #1C5D90' : undefined }}
               >
                 <div className={styles.wrapperTitle}>
                   {label} ({list.length})

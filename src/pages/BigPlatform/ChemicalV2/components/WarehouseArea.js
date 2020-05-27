@@ -7,7 +7,7 @@ import styles from './WarehouseArea.less';
 
 const MonitorType = '303';
 
-@connect(({ device }) => ({ device }))
+@connect(({ chemical }) => ({ chemical }))
 export default class WarehouseArea extends PureComponent {
   constructor(props) {
     super(props);
@@ -30,7 +30,7 @@ export default class WarehouseArea extends PureComponent {
       data: { companyId, id },
     } = this.props;
     dispatch({
-      type: 'device/fetchMonitoringDevice',
+      type: 'chemical/fetchMonitoringDevice',
       payload: {
         pageNum: 1,
         pageSize: 0,
@@ -49,12 +49,12 @@ export default class WarehouseArea extends PureComponent {
     const {
       data = {},
       handleShowVideo,
-      device: {
-        monitoringDevice: { list: meList },
-      },
+      chemical: { monitoringDevice },
     } = this.props;
 
     const { name, position, warehouseInfos = [], videoList = [], id } = data;
+    const meList = monitoringDevice[id] || [];
+
     // 存储物质并去重
     let hash = {};
     const materialList = warehouseInfos.reduce((res, cur) => {

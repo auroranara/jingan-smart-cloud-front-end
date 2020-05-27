@@ -33,7 +33,12 @@ export default class TableList extends PureComponent {
   }
 
   componentDidMount() {
-    this.fetchList();
+    const {
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    this.handleSearch({ companyId });
   }
 
   fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
