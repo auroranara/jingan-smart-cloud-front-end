@@ -2,10 +2,12 @@ import React, { PureComponent, Fragment } from 'react';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Tooltip } from 'antd';
 import moment from 'moment';
-import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
+import DrawerContainer from '../../components/DrawerContainer';
 import styles from './DangerSourceLvlDrawer.less';
 import { CardItem } from '../../components/Components';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+
+import dangerSourceIcon from '../../imgs/drawer/drawer-danger-source.png';
 
 const uniqueByid = array => {
   return array.reduce((prev, next) => {
@@ -69,6 +71,7 @@ export default class DangerSourceLvlDrawer extends PureComponent {
         width={535}
         destroyOnClose={true}
         zIndex={1422}
+        icon={dangerSourceIcon}
         left={
           <div className={styles.container}>
             <div className={styles.rlvl}>

@@ -15,7 +15,7 @@ export default class MonitorBtns extends PureComponent {
       window.open(
         `${
           window.publicPath
-        }#/company-iot/alarm-work-order/list?monitorObjectType=${targetType}&monitorObjectName=${targetName}&monitorObject=${targetId}&status=2`
+        }#/company-iot/alarm-work-order/list?monitorObjectType=${targetType}&monitorObjectName=${targetName}&monitorObject=${targetId}&status=2,0`
       );
       return;
     }

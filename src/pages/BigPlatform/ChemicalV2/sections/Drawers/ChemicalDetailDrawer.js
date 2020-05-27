@@ -1,8 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
-import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
+import DrawerContainer from '../../components/DrawerContainer';
 import styles from './ChemicalDetailDrawer.less';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { CardItem } from '../../components/Components';
+
+import chemicalImg from '../../imgs/drawer/drawer-chemical.png';
 
 const Types = ['生产原料', '中间产品', '最终产品'];
 const Forms = ['固态', '液态', '气态', '等离子态'];
@@ -52,6 +54,13 @@ export default class ChemicalDetailDrawer extends PureComponent {
     this.state = {};
   }
 
+  handleClickMSDS = () => {
+    const {
+      chemicalDetail: { msds },
+    } = this.props;
+    window.open(`${window.publicPath}#/safety-knowledge-base/msds/edit/${msds}`);
+  };
+
   render() {
     const { visible, onClose, chemicalDetail } = this.props;
     const { safetyMeasures, emergencyMeasure, type } = chemicalDetail;
@@ -66,11 +75,19 @@ export default class ChemicalDetailDrawer extends PureComponent {
         onClose={onClose}
         width={535}
         destroyOnClose={true}
-        zIndex={1322}
+        zIndex={1344}
+        icon={chemicalImg}
         left={
           <div className={styles.container}>
             <div className={styles.title} style={{ marginTop: 0 }}>
               基本信息：
+              <div
+                className={styles.extra}
+                onClick={this.handleClickMSDS}
+                style={{ fontSize: '14px' }}
+              >
+                化学品说明书>>
+              </div>
             </div>
             <CardItem data={chemicalDetail} fields={fields} />
             <div className={styles.title}>安全措施：</div>

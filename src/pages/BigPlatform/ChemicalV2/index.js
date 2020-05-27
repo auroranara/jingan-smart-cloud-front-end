@@ -1804,6 +1804,7 @@ export default class Chemical extends PureComponent {
           mhList={mhList}
           chemicalDetail={chemicalDetail}
           handleShowVideo={this.handleShowVideo}
+          handleShowChemicalDetail={this.handleShowChemicalDetail}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

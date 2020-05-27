@@ -19,7 +19,7 @@ import StorageDrawer from './StorageDrawer';
 import Messages from './Messages';
 import GasDrawer from './GasDrawer';
 import PoisonDrawer from './PoisonDrawer';
-import MHDrawer from './MHDrawer';
+import MHDrawer from './Drawers/MHDrawer';
 import MonitorEquipDrawer from './Drawers/MonitorEquipDrawer';
 import IoTMonitorDrawer from './Drawers/IoTMonitorDrawer';
 import FireMonitorDrawer from './Drawers/FireMonitorDrawer';

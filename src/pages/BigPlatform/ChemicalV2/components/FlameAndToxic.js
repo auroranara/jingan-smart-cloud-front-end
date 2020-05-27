@@ -10,7 +10,7 @@ export default class FlameAndToxic extends PureComponent {
   }
 
   render() {
-    const { meList = [], handleShowVideo, noBorder } = this.props;
+    const { meList = [], handleShowVideo, noBorder, borderFull } = this.props;
     const flameEquips = meList.filter(item => item.equipmentType === '405');
     const toxicEquips = meList.filter(item => item.equipmentType === '406');
     const flameAndToxic = [
@@ -25,7 +25,7 @@ export default class FlameAndToxic extends PureComponent {
           return (
             list.length > 0 && (
               <div
-                className={noBorder ? styles.wrapper2 : styles.wrapper}
+                className={borderFull ? styles.wrapper2 : styles.wrapper}
                 key={index}
                 // style={{ borderTop: noBorder ? '1px solid #1C5D90' : undefined }}
               >

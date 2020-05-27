@@ -174,7 +174,12 @@ export default class TankArea extends PureComponent {
           )}
         </div>
 
-        <FlameAndToxic handleShowVideo={handleShowVideo} meList={meList} noBorder={bordered} />
+        <FlameAndToxic
+          handleShowVideo={handleShowVideo}
+          meList={meList}
+          noBorder={bordered}
+          borderFull={bordered}
+        />
       </div>
     );
   }

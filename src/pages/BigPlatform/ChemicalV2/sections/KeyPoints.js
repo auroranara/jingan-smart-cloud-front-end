@@ -73,16 +73,18 @@ export default class KeyPoints extends PureComponent {
       };
     });
 
-    const monitorEquipData = monitorEquipList.filter(item => item.monitorCount).map(item => {
-      const { count, monitorCount, typeName, warningCount, webUrl } = item;
-      return {
-        ...item,
-        icon: webUrl || iconDangerSource,
-        label: typeName,
-        value: warningCount,
-        total: count,
-      };
-    });
+    const monitorEquipData = monitorEquipList
+      .filter(item => item.monitorCount && item.type !== '414') // 去掉高危工艺
+      .map(item => {
+        const { count, monitorCount, typeName, warningCount, webUrl } = item;
+        return {
+          ...item,
+          icon: webUrl || iconDangerSource,
+          label: typeName,
+          value: warningCount,
+          total: count,
+        };
+      });
 
     const keyPointsData = keyPointsList.map(item => ({
       ...item,

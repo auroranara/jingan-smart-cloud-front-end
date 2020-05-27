@@ -13,6 +13,7 @@ const ICON_STYLE_CLOSE = {
   fontSize: 20,
   color: '#FFF',
   cursor: 'pointer',
+  zIndex: 66,
 };
 const ICON_STYLE_SERACH = {
   position: 'absolute',
