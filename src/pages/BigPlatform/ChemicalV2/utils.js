@@ -123,7 +123,7 @@ export const TypeClickList = [100];
 export const MonitorConfig = {
   '301': {
     // 储罐区
-    title: '罐区监测',
+    title: '罐区',
     detailUrl: 'major-hazard-info/storage-area-management/detail',
     drawerIcon: drawer301,
     icon: (
@@ -164,7 +164,7 @@ export const MonitorConfig = {
   },
   '302': {
     // 储罐
-    title: '储罐监测',
+    title: '储罐',
     iconStyle: {
       width: '10em',
       height: '11.8315em',
@@ -233,7 +233,7 @@ export const MonitorConfig = {
   },
   '303': {
     // 库区
-    title: '库区监测',
+    title: '库区',
     detailUrl: 'major-hazard-info/reservoir-region-management/detail',
     drawerIcon: drawer303,
     icon: (
@@ -267,7 +267,7 @@ export const MonitorConfig = {
   },
   '304': {
     // 库房
-    title: '库房监测',
+    title: '库房',
     detailUrl: 'major-hazard-info/storehouse/detail',
     iconStyle: {
       width: '12em',
@@ -307,7 +307,7 @@ export const MonitorConfig = {
   },
   '311': {
     // 生产装置
-    title: '生产装置监测',
+    title: '生产装置',
     detailUrl: 'major-hazard-info/production-equipments/detail',
     icon: (
       <div
@@ -329,7 +329,7 @@ export const MonitorConfig = {
   },
   '312': {
     // 气柜
-    title: '气柜监测',
+    title: '气柜',
     detailUrl: 'major-hazard-info/gasometer/detail',
     icon: (
       <div
@@ -351,7 +351,7 @@ export const MonitorConfig = {
   },
   '314': {
     // 工业管道
-    title: '工业管道监测',
+    title: '工业管道',
     detailUrl: 'major-hazard-info/pipeline/detail',
     icon: (
       <div

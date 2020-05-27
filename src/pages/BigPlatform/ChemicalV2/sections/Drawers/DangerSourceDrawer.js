@@ -158,7 +158,7 @@ export default class DangerSourceDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title="重大危险源列表"
+        title="重大危险源"
         visible={visible}
         onClose={() => {
           setTimeout(() => {

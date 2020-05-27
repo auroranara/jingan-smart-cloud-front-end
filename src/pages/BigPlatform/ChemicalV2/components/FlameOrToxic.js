@@ -18,7 +18,8 @@ export default class FlameOrToxic extends PureComponent {
       handleClickShowMonitorDetail,
       noBorder,
     } = this.props;
-    const { fields, icon, iconStyle, labelStyle, btnStyles } = MonitorConfig[equipmentType] || {};
+    const { fields = [], icon, iconStyle, labelStyle, btnStyles } =
+      MonitorConfig[equipmentType] || {};
 
     return (
       <div className={styles.container} style={{ border: noBorder ? 'none' : undefined }}>

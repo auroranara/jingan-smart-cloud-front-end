@@ -62,19 +62,8 @@ export default class KeyPoints extends PureComponent {
   render() {
     const { monitorList, dangerSourceCount, monitorEquipList, handleShowMonitorList } = this.props;
     const { active } = this.state;
-    const monitorData = monitorList.filter(item => item.monitorCount).map(item => {
-      const { count, monitorCount, typeName, warningCount, webUrl } = item;
-      return {
-        ...item,
-        icon: webUrl || iconDangerSource,
-        label: typeName,
-        value: warningCount,
-        total: monitorCount,
-      };
-    });
-
-    const monitorEquipData = monitorEquipList
-      .filter(item => item.monitorCount && item.type !== '414') // 去掉高危工艺
+    const monitorData = monitorList
+      .filter(item => item.monitorCount && item.type !== '305') // 去掉高危工艺
       .map(item => {
         const { count, monitorCount, typeName, warningCount, webUrl } = item;
         return {
@@ -82,9 +71,20 @@ export default class KeyPoints extends PureComponent {
           icon: webUrl || iconDangerSource,
           label: typeName,
           value: warningCount,
-          total: count,
+          total: monitorCount,
         };
       });
+
+    const monitorEquipData = monitorEquipList.filter(item => item.monitorCount).map(item => {
+      const { count, monitorCount, typeName, warningCount, webUrl } = item;
+      return {
+        ...item,
+        icon: webUrl || iconDangerSource,
+        label: typeName,
+        value: warningCount,
+        total: count,
+      };
+    });
 
     const keyPointsData = keyPointsList.map(item => ({
       ...item,

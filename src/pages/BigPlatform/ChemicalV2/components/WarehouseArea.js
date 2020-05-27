@@ -6,6 +6,7 @@ import { MonitorConfig } from '../utils';
 import styles from './WarehouseArea.less';
 
 const MonitorType = '303';
+const NO_DATA = '暂无数据';
 
 @connect(({ chemical }) => ({ chemical }))
 export default class WarehouseArea extends PureComponent {
@@ -89,7 +90,7 @@ export default class WarehouseArea extends PureComponent {
           </div>
           <div>
             <span className={styles.label}>存储物质：</span>
-            {materialList.join('、')}
+            {materialList && materialList.length ? materialList.join('、') : NO_DATA}
 
             {/* <div className={styles.extra}>安防措施>></div> */}
           </div>
@@ -102,28 +103,30 @@ export default class WarehouseArea extends PureComponent {
           </div>
         </div>
 
-        <div className={styles.wrapper} style={{ borderTop: '1px solid #1C5D90' }}>
-          <div className={styles.wrapperTitle}>库房 ({warehouseInfos.length})</div>
-          {warehouseInfos.length > 0 ? (
-            warehouseInfos.map((item, index) => (
-              <Warehouse key={index} data={item} handleShowVideo={handleShowVideo} outBorder />
-            ))
-          ) : (
-            <NoData
-              msg="暂未绑定库房"
-              style={{
-                height: '400px',
-                display: 'flex',
-                flexDirection: 'column',
-                textAlign: 'center',
-                color: '#4f6793',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '14px',
-              }}
-            />
-          )}
-        </div>
+        {warehouseInfos.length > 0 && (
+          <div className={styles.wrapper} style={{ borderTop: '1px solid #1C5D90' }}>
+            <div className={styles.wrapperTitle}>库房 ({warehouseInfos.length})</div>
+            {warehouseInfos.length > 0 ? (
+              warehouseInfos.map((item, index) => (
+                <Warehouse key={index} data={item} handleShowVideo={handleShowVideo} outBorder />
+              ))
+            ) : (
+              <NoData
+                msg="暂未绑定库房"
+                style={{
+                  height: '400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  textAlign: 'center',
+                  color: '#4f6793',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                }}
+              />
+            )}
+          </div>
+        )}
 
         <FlameAndToxic handleShowVideo={handleShowVideo} meList={meList} />
       </div>
