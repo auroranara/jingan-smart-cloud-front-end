@@ -371,7 +371,7 @@ export default class AddAuthorization extends PureComponent {
                       loading={personLoading}
                       columns={personColumns}
                       dataSource={personList}
-                      // scroll={{ x: 'max-content' }}
+                      scroll={{ y: 430 }}
                       pagination={{
                         current: personPagination.pageNum,
                         pageSize: personPagination.pageSize,
