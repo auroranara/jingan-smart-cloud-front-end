@@ -46,6 +46,10 @@ export default class WarehouseArea extends PureComponent {
     detailUrl && id && window.open(`${window.publicPath}#/${detailUrl}/${id}`);
   };
 
+  handleClickSecurity = ({ unitId, targetId }) => {
+    window.open(`${window.publicPath}#/security/${unitId}/detail/${targetId}`);
+  };
+
   render() {
     const {
       data = {},
@@ -53,7 +57,7 @@ export default class WarehouseArea extends PureComponent {
       chemical: { monitoringDevice },
     } = this.props;
 
-    const { name, position, warehouseInfos = [], videoList = [], id } = data;
+    const { name, position, warehouseInfos = [], videoList = [], id, companyId } = data;
     const meList = monitoringDevice[id] || [];
 
     // 存储物质并去重
@@ -88,11 +92,20 @@ export default class WarehouseArea extends PureComponent {
               }}
             />
           </div>
-          <div>
+          <div style={{ paddingRight: '6em' }}>
             <span className={styles.label}>存储物质：</span>
             {materialList && materialList.length ? materialList.join('、') : NO_DATA}
 
-            {/* <div className={styles.extra}>安防措施>></div> */}
+            {materialList &&
+              materialList.length > 0 && (
+                <div
+                  className={styles.extra}
+                  onClick={() => this.handleClickSecurity({ unitId: companyId, targetId: id })}
+                  style={{ top: 0, bottom: 'auto' }}
+                >
+                  安防措施>>
+                </div>
+              )}
           </div>
           <div>
             <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />

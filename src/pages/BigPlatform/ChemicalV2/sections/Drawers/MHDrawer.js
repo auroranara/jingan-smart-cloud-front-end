@@ -76,7 +76,7 @@ export default class PoisonDrawer extends PureComponent {
                         <CardItem
                           key={index}
                           data={newItem}
-                          fields={fields}
+                          fields={fields.filter(item => item.value !== 'chineName')}
                           iconStyle={iconStyle}
                           labelStyle={{ ...labelStyle }}
                           fieldsStyle={{ lineHeight: '32px' }}
@@ -93,13 +93,13 @@ export default class PoisonDrawer extends PureComponent {
                                 targetType={monitorType}
                                 targetName={monitorType === '302' ? tankName : name}
                               />
-                              <div
+                              {/* <div
                                 className={styles.detail}
                                 onClick={() => this.handleClickTankDetail(target.id)}
                                 style={{ ...moreStyle }}
                               >
                                 详情>>
-                              </div>
+                              </div> */}
                             </Fragment>
                           }
                         />
@@ -114,6 +114,7 @@ export default class PoisonDrawer extends PureComponent {
                           style={{ margin: '15px 0' }}
                           handleShowVideo={handleShowVideo}
                           outBorder
+                          isChemical
                         />
                       );
                       break;

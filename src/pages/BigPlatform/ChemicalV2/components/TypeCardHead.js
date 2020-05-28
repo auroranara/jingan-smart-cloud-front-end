@@ -50,7 +50,7 @@ export default class TypeCardHead extends PureComponent {
 
   render() {
     const { labelList, alarming, data, type } = this.props;
-    const { meList, id: targetId, name } = data;
+    const { meList, id: targetId, name, gasholderName } = data;
     const { noFinishWarningProcessId, id } = meList[0] || {};
 
     return (
@@ -68,7 +68,7 @@ export default class TypeCardHead extends PureComponent {
             monitorEquipmentId={id}
             targetId={targetId}
             targetType={type}
-            targetName={name}
+            targetName={+type === 312 ? gasholderName : name}
             style={{ right: 10 }}
           />
           // <div className={styles.icons}>

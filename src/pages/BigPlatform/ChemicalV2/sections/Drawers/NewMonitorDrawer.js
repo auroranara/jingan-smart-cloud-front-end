@@ -128,13 +128,15 @@ export default class NewMonitorDrawer extends PureComponent {
                           targetName={monitorType === '302' ? tankName : name}
                         />
                         {/* <div className={styles.detail} onClick={() => handleClickMonitorDetail(item)}> */}
-                        <div
-                          className={styles.detail}
-                          onClick={() => this.handleClickMonitorDetail(item.id)}
-                          style={{ ...moreStyle }}
-                        >
-                          详情>>
-                        </div>
+                        {monitorType !== '302' && (
+                          <div
+                            className={styles.detail}
+                            onClick={() => this.handleClickMonitorDetail(item.id)}
+                            style={{ ...moreStyle }}
+                          >
+                            详情>>
+                          </div>
+                        )}
                       </Fragment>
                     }
                   />

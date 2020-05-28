@@ -122,6 +122,11 @@ const hasAlarm = list => {
 // export const TypeClickList = [100, 14, 15, 16, 17];
 export const TypeClickList = [100];
 
+const handleClickMonitorDetail = (id, monitorType) => {
+  const { detailUrl } = MonitorConfig[monitorType] || {};
+  detailUrl && id && window.open(`${window.publicPath}#/${detailUrl}/${id}`);
+};
+
 export const MonitorConfig = {
   '301': {
     // 储罐区
@@ -209,11 +214,17 @@ export const MonitorConfig = {
       {
         label: '存储物质',
         value: 'chineName',
-        // extra: ({ id }) => (
-        //   <div className={styles.detail} style={{ right: 0, top: 0 }} onClick={() => {}}>
-        //     安防措施>>
-        //   </div>
-        // ),
+        extra: ({ id, companyId }) => (
+          <div
+            className={styles.detail}
+            style={{ right: 0, top: 0 }}
+            onClick={() => {
+              window.open(`${window.publicPath}#/security/${companyId}/detail/${id}`);
+            }}
+          >
+            安防措施>>
+          </div>
+        ),
       },
       { label: '设计储量', value: 'designReserves', render: val => val + 't' },
       { label: '是否高危储罐', value: 'highRiskTank', render: val => (+val === 1 ? '是' : '否') },
@@ -227,6 +238,15 @@ export const MonitorConfig = {
             </span>
           );
         },
+        extra: ({ id }) => (
+          <div
+            className={styles.detail}
+            onClick={() => handleClickMonitorDetail(id, '302')}
+            style={{ right: 0, bottom: 0 }}
+          >
+            详情>>
+          </div>
+        ),
       },
       // {
       //   // label: '区域位置',

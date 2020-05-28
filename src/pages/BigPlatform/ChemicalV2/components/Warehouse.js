@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { CardItem, MonitorBtns, FlameAndToxic } from './Components';
 import { MonitorConfig } from '../utils';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './Warehouse.less';
 
 const MonitorType = '304';
@@ -17,13 +18,36 @@ export default class Warehouse extends PureComponent {
   };
 
   render() {
-    const { data = {}, handleShowVideo, outBorder, style = {} } = this.props;
+    const { data = {}, handleShowVideo, outBorder, style = {}, isChemical } = this.props;
     const fields = [
-      {
-        label: '存储物质',
-        value: 'unitChemiclaNumDetail',
-        render: val => (val || []).map(item => item.chineName).join('，'),
-      },
+      ...(isChemical
+        ? []
+        : [
+            {
+              label: '存储物质',
+              value: 'unitChemiclaNumDetail',
+              render: val => (
+                // <div style={{ width: 'calc(100% - 6em)' }}>
+                <Ellipsis tooltip length={outBorder ? 5 : 6} style={{ overflow: 'visible' }}>
+                  {(val || []).map(item => item.chineName).join('，')}
+                </Ellipsis>
+                // </div>
+              ),
+              // render: val => (val || []).map(item => item.chineName).join('，'),
+              extra: ({ id, companyId }) => (
+                <div
+                  className={styles.extra}
+                  // style={{ right: 0, top: 0 }}
+                  onClick={() => {
+                    window.open(`${window.publicPath}#/security/${companyId}/detail/${id}`);
+                  }}
+                >
+                  安防措施>>
+                </div>
+              ),
+              valueStyle: { display: 'inline-block', width: 'calc(100% - 6em)' },
+            },
+          ]),
       { label: '库房面积', value: 'area', render: val => val + '㎡' },
       { label: '危化品仓库', value: 'dangerWarehouse', render: val => (+val === 0 ? '否' : '是') },
       {
@@ -36,6 +60,15 @@ export default class Warehouse extends PureComponent {
             </span>
           );
         },
+        extra: ({ id }) => (
+          <div
+            className={styles.extra}
+            // style={{ right: 0 }}
+            onClick={() => this.handleClickMonitorDetail(id)}
+          >
+            详情>>
+          </div>
+        ),
       },
     ];
     const { icon, iconStyle, labelStyle, btnStyles, moreStyle } = MonitorConfig[MonitorType] || {};
@@ -84,13 +117,13 @@ export default class Warehouse extends PureComponent {
                 targetName={name}
               />
               <div className={styles.name}>{name}</div>
-              <div
+              {/* <div
                 className={styles.detail}
                 onClick={() => this.handleClickMonitorDetail(data.id)}
                 style={{ ...moreStyle }}
               >
                 详情>>
-              </div>
+              </div> */}
             </Fragment>
           }
         />

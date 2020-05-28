@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import classNames from 'classnames';
 import moment from 'moment';
+import { MonitorBtns } from '../../components/Components';
 import styles from '../TankMonitorDrawer/index.less';
 import { MonitorConfig } from '../../utils';
 
@@ -38,11 +39,19 @@ export default class MonitorDetailDrawer extends Component {
       loading = false,
       monitorType,
       monitorDetail,
-      monitorDetail: { emergencyMeasure, monitorParams = [], videoList = [], meList = [] } = {},
-      onVideoClick,
+      monitorDetail: {
+        emergencyMeasure,
+        monitorParams = [],
+        videoList = [],
+        meList = [],
+        id,
+        name,
+        gasholderName,
+      } = {},
+      handleShowVideo,
     } = this.props;
     const { title = '', fields = [], icon } = MonitorConfig[monitorType] || {};
-    const { noFinishWarningProcessId, id } = meList[0] || {};
+    const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
 
     return (
       <CustomDrawer
@@ -66,11 +75,11 @@ export default class MonitorDetailDrawer extends Component {
             </div>
             <div className={styles.value}>
               {fields[0] ? monitorDetail[fields[0].value] : ''}
-              {videoList &&
+              {/* {videoList &&
                 videoList.length > 0 && (
                   <span className={styles.video} onClick={() => onVideoClick(videoList)} />
-                )}
-              <div className={styles.jumperWrapper}>
+                )} */}
+              {/*  <div className={styles.jumperWrapper}>
                 <span
                   onClick={() => this.handleWorkOrderIconClick(noFinishWarningProcessId)}
                   style={{ display: noFinishWarningProcessId ? 'inline-block' : 'none' }}
@@ -78,8 +87,19 @@ export default class MonitorDetailDrawer extends Component {
                 <span
                   onClick={() => this.handleMonitorTrendIconClick(id)}
                   style={{ display: id ? 'inline-block' : 'none' }}
-                />
-              </div>
+                /> 
+                
+              </div>*/}
+              <MonitorBtns
+                videoList={videoList}
+                onVideoClick={handleShowVideo}
+                noFinishWarningProcessId={noFinishWarningProcessId}
+                monitorEquipmentId={monitorEquipmentId}
+                // style={{ top: 15, ...btnStyles }}
+                targetId={id}
+                targetType={monitorType}
+                targetName={monitorType === '312' ? gasholderName : name}
+              />
             </div>
           </div>
           {fields.slice(1, fields.length).map((field, index) => {

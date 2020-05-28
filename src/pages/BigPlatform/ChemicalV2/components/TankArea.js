@@ -52,6 +52,10 @@ export default class TankArea extends PureComponent {
     detailUrl && id && window.open(`${window.publicPath}#/${detailUrl}/${id}`);
   };
 
+  handleClickSecurity = ({ unitId, targetId }) => {
+    window.open(`${window.publicPath}#/security/${unitId}/detail/${targetId}`);
+  };
+
   render() {
     const {
       data = {},
@@ -59,7 +63,7 @@ export default class TankArea extends PureComponent {
       chemical: { monitoringDevice },
       bordered,
     } = this.props;
-    const { areaName, location, tmList = [], videoList = [], id, chineNameList } = data;
+    const { areaName, location, tmList = [], videoList = [], id, chineNameList, companyId } = data;
     const meList = monitoringDevice[id] || [];
 
     return (
@@ -85,11 +89,20 @@ export default class TankArea extends PureComponent {
               }}
             />
           </div>
-          <div>
+          <div style={{ paddingRight: '6em' }}>
             <span className={styles.label}>存储物质：</span>
             {chineNameList ? chineNameList.join('、') : NO_DATA}
 
-            {/* <div className={styles.extra}>安防措施>></div> */}
+            {chineNameList &&
+              chineNameList.length > 0 && (
+                <div
+                  className={styles.extra}
+                  onClick={() => this.handleClickSecurity({ unitId: companyId, targetId: id })}
+                  style={{ top: 0, bottom: 'auto' }}
+                >
+                  安防措施>>
+                </div>
+              )}
           </div>
           <div>
             <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />

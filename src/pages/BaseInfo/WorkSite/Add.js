@@ -3,20 +3,20 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import {
-  Input,
-  Button,
-  Card,
-  message,
-  Row,
-  Checkbox,
-  Tag,
-} from 'antd';
+import { Input, Button, Card, message, Row, Checkbox, Tag } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { BREADCRUMBLIST, LIST_URL, ENV_FUNCTIONAL_AREA, PATH, generateChemicalLabels, editCode } from './List';
+import {
+  BREADCRUMBLIST,
+  LIST_URL,
+  ENV_FUNCTIONAL_AREA,
+  PATH,
+  generateChemicalLabels,
+  editCode,
+} from './List';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import Map from '@/pages/RiskControl/FourColorImage/Map';
+import JoySuchMap from '@/pages/RiskControl/FourColorImage/JoySuchMap';
 import { AuthButton } from '@/utils/customAuth';
 import styles from './Add.less';
 
@@ -30,15 +30,15 @@ const formItemLayout = {
 const itemStyles = { style: { width: '70%', marginRight: '10px' } };
 const numberReg = /^\d*\.?\d*$/;
 
-@connect(({ baseInfo, user, materials, loading }) => ({
+@connect(({ baseInfo, user, materials, loading, map }) => ({
   baseInfo,
   user,
   materials,
   chemicalLoading: loading.effects['materials/fetchMaterialsList'],
+  map,
 }))
 @Form.create()
 export default class StorageEdit extends PureComponent {
-
   state = {
     company: undefined, // 当前单位 { value,label,key }
     detail: {}, // 详情
@@ -52,10 +52,12 @@ export default class StorageEdit extends PureComponent {
     expandId: false, // 所选建筑物是否展开
   };
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { setFieldsValue },
       user: { isCompany, currentUser },
     } = this.props;
@@ -63,7 +65,7 @@ export default class StorageEdit extends PureComponent {
       dispatch({
         type: 'baseInfo/fetchWorkSiteDetail',
         payload: { id },
-        callback: (detail) => {
+        callback: detail => {
           const {
             companyId,
             companyName,
@@ -76,46 +78,53 @@ export default class StorageEdit extends PureComponent {
             personNum,
             material,
             materialName,
-            areaCoordinate: {
-              coordinate,
-              groupId,
-              modelIds,
-            } = {},
+            areaCoordinate: { coordinate, groupId, modelIds } = {},
           } = detail;
           const materialLabels = materialName ? materialName.split(',') : undefined;
-          /edit/.test(window.location.href) && setFieldsValue({
-            companyId: { value: companyId, label: companyName },
-            spaceCode,
-            unitName,
-            location,
-            environmentFunction: environmentFunction ? environmentFunction.split(',') : undefined,
-            fixedAssets,
-            floorSpace,
-            personNum,
-            material,
-          });
-          const points = coordinate ? JSON.parse(coordinate).map(item => ({
-            x: +item.x,
-            y: +item.y,
-            z: +item.z,
-            groupID: groupId,
-          })) : [];
-          this.setState({
-            detail,
-            selectedChemical: material && materialLabels ? material.split(',').map((item, i) => ({ id: item, chineName: materialLabels[i] })) : [],
-            company: { value: companyId, label: companyName },
-            points,
-            pointList: [{ zoneLevel: '4', coordinateList: points, groupId, modelIds }],
-            groupId,
-            modelIds,
-          }, () => {
-            this.fetchMap({ companyId }, mapInfo => {
-              if (!mapInfo.mapId) return;
-              this.childMap.initMap({ ...mapInfo });
+          /edit/.test(window.location.href) &&
+            setFieldsValue({
+              companyId: { value: companyId, label: companyName },
+              spaceCode,
+              unitName,
+              location,
+              environmentFunction: environmentFunction ? environmentFunction.split(',') : undefined,
+              fixedAssets,
+              floorSpace,
+              personNum,
+              material,
             });
-          });
+          const points = coordinate
+            ? JSON.parse(coordinate).map(item => ({
+                x: +item.x,
+                y: +item.y,
+                z: +item.z,
+                groupID: groupId,
+              }))
+            : [];
+          this.setState(
+            {
+              detail,
+              selectedChemical:
+                material && materialLabels
+                  ? material
+                      .split(',')
+                      .map((item, i) => ({ id: item, chineName: materialLabels[i] }))
+                  : [],
+              company: { value: companyId, label: companyName },
+              points,
+              pointList: [{ zoneLevel: '4', coordinateList: points, groupId, modelIds }],
+              groupId,
+              modelIds,
+            },
+            () => {
+              this.fetchMap({ companyId }, mapInfo => {
+                if (!mapInfo.mapId) return;
+                this.childMap.initMap({ ...mapInfo });
+              });
+            }
+          );
         },
-      })
+      });
     } else if (isCompany) {
       // 如果是单位用户并且是新增
       const { companyId, companyName } = currentUser || {};
@@ -160,33 +169,28 @@ export default class StorageEdit extends PureComponent {
         this.childMap.initMap({ ...mapInfo });
       });
     }
-  }
+  };
 
   handleSubmit = e => {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { validateFields },
     } = this.props;
-    const {
-      company,
-      groupId,
-      points,
-      buildingId,
-    } = this.state;
+    const { company, groupId, points, buildingId } = this.state;
     e.preventDefault();
     if (/view/.test(location.href)) return;
     validateFields((err, values) => {
       if (err) return;
-      const {
-        environmentFunction,
-        areaCoordinate,
-        ...resValues
-      } = values;
+      const { environmentFunction, areaCoordinate, ...resValues } = values;
       let payload = {
         ...resValues,
         companyId: company.value,
-        environmentFunction: Array.isArray(environmentFunction) ? environmentFunction.join(',') : undefined,
+        environmentFunction: Array.isArray(environmentFunction)
+          ? environmentFunction.join(',')
+          : undefined,
         areaCoordinate: {
           groupId,
           coordinate:
@@ -208,24 +212,24 @@ export default class StorageEdit extends PureComponent {
         } else {
           message.error(msg || '操作失败！');
         }
-      }
+      };
       if (id) {
         // 编辑
         dispatch({
           type: 'baseInfo/editWorkSite',
           payload: { ...payload, id },
           callback,
-        })
+        });
       } else {
         // 新增
         dispatch({
           type: 'baseInfo/addWorkSite',
           payload,
           callback,
-        })
+        });
       }
-    })
-  }
+    });
+  };
 
   // 去除左右两边空白
   handleTrim = e => e.target.value.trim();
@@ -240,16 +244,18 @@ export default class StorageEdit extends PureComponent {
     } else {
       message.warning('请先选择单位！');
     }
-  }
+  };
 
   // 选择主要危险化学品
-  handleSelectChemical = (selectedChemical) => {
+  handleSelectChemical = selectedChemical => {
     if (Array.isArray(selectedChemical)) {
-      const { form: { setFieldsValue } } = this.props;
+      const {
+        form: { setFieldsValue },
+      } = this.props;
       this.setState({ selectedChemical, chemicalVisible: false });
-      setFieldsValue({ material: selectedChemical.map(item => item.id).join(',') })
+      setFieldsValue({ material: selectedChemical.map(item => item.id).join(',') });
     }
-  }
+  };
 
   // 地图重置
   handleReset = () => {
@@ -338,16 +344,21 @@ export default class StorageEdit extends PureComponent {
 
   // 跳转到编辑页面
   jumpToEdit = () => {
-    const { match: { params: { id } } } = this.props;
-    router.push(`${PATH}/edit/${id}`)
-  }
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    router.push(`${PATH}/edit/${id}`);
+  };
 
-  render () {
+  render() {
     const {
       chemicalLoading,
       form: { getFieldDecorator },
       user: { isCompany },
       materials,
+      map: { mapInfo: { remarks } = {} },
     } = this.props;
     const {
       company,
@@ -365,10 +376,7 @@ export default class StorageEdit extends PureComponent {
     const isEdit = /edit/.test(location.href);
     const isAdd = /add/.test(location.href);
     const tag = (isAdd && '新增') || (isEdit && '编辑') || (isView && '查看') || '';
-    const breadcrumbList = [
-      ...BREADCRUMBLIST,
-      { title: tag, name: tag },
-    ];
+    const breadcrumbList = [...BREADCRUMBLIST, { title: tag, name: tag }];
     const chemicalColumns = [
       {
         title: '统一编码',
@@ -389,19 +397,19 @@ export default class StorageEdit extends PureComponent {
     const chemicalFields = [
       {
         id: 'casNo',
-        render () {
+        render() {
           return <Input placeholder="CAS号" />;
         },
-        transform (value) {
+        transform(value) {
           return value.trim();
         },
       },
       {
         id: 'chineName',
-        render () {
+        render() {
           return <Input placeholder="品名" />;
         },
-        transform (value) {
+        transform(value) {
           return value.trim();
         },
       },
@@ -416,92 +424,116 @@ export default class StorageEdit extends PureComponent {
                 {getFieldDecorator('companyId', {
                   rules: isView ? [] : [{ required: true, message: '请输入单位名称' }],
                 })(
-                  isView ? (<span>{companyId ? company.label : ''}</span>) : (
-                    <CompanySelect onChange={this.onCompanyChange} {...itemStyles} placeholder="请输入" />
+                  isView ? (
+                    <span>{companyId ? company.label : ''}</span>
+                  ) : (
+                    <CompanySelect
+                      onChange={this.onCompanyChange}
+                      {...itemStyles}
+                      placeholder="请输入"
+                    />
                   )
                 )}
               </FormItem>
             )}
             <FormItem {...formItemLayout} label="场所编号">
-              {isView ? <span>{detail.spaceCode}</span> : getFieldDecorator('spaceCode', {
-                getValueFromEvent: this.handleTrim,
-                rules: [{ required: true, message: '请输入场所编号' }],
-              })(
-                <Input {...itemStyles} placeholder="请输入" />
+              {isView ? (
+                <span>{detail.spaceCode}</span>
+              ) : (
+                getFieldDecorator('spaceCode', {
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入场所编号' }],
+                })(<Input {...itemStyles} placeholder="请输入" />)
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="单元名称">
-              {isView ? <span>{detail.unitName}</span> : getFieldDecorator('unitName', {
-                getValueFromEvent: this.handleTrim,
-                rules: [{ required: true, message: '请输入单元名称' }],
-              })(
-                <Input {...itemStyles} placeholder="请输入" />
+              {isView ? (
+                <span>{detail.unitName}</span>
+              ) : (
+                getFieldDecorator('unitName', {
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入单元名称' }],
+                })(<Input {...itemStyles} placeholder="请输入" />)
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="区域位置">
-              {isView ? <span>{detail.location}</span> : getFieldDecorator('location', {
-                getValueFromEvent: this.handleTrim,
-                rules: [{ required: true, message: '请输入区域位置' }],
-              })(
-                <Input {...itemStyles} placeholder="请输入" />
+              {isView ? (
+                <span>{detail.location}</span>
+              ) : (
+                getFieldDecorator('location', {
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入区域位置' }],
+                })(<Input {...itemStyles} placeholder="请输入" />)
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="所处环境功能区">
-              {isView ? <span>{generateChemicalLabels(detail.environmentFunction)}</span> : getFieldDecorator('environmentFunction', {
-                rules: [{ required: true, message: '请选择所处环境功能区' }],
-              })(
-                <Checkbox.Group options={ENV_FUNCTIONAL_AREA} />
+              {isView ? (
+                <span>{generateChemicalLabels(detail.environmentFunction)}</span>
+              ) : (
+                getFieldDecorator('environmentFunction', {
+                  rules: [{ required: true, message: '请选择所处环境功能区' }],
+                })(<Checkbox.Group options={ENV_FUNCTIONAL_AREA} />)
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="固定资产总值（万元）">
-              {isView ? <span>{detail.fixedAssets}</span> : getFieldDecorator('fixedAssets', {
-                getValueFromEvent: this.handleTrim,
-                rules: [
-                  { required: true, message: '请输入固定资产总值' },
-                  { pattern: numberReg, message: '请输入数字' },
-                ],
-              })(
-                <Input {...itemStyles} placeholder="请输入" />
+              {isView ? (
+                <span>{detail.fixedAssets}</span>
+              ) : (
+                getFieldDecorator('fixedAssets', {
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入固定资产总值' },
+                    { pattern: numberReg, message: '请输入数字' },
+                  ],
+                })(<Input {...itemStyles} placeholder="请输入" />)
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="占地面积（㎡）">
-              {isView ? <span>{detail.floorSpace}</span> : getFieldDecorator('floorSpace', {
-                getValueFromEvent: this.handleTrim,
-                rules: [
-                  { required: true, message: '请输入占地面积' },
-                  { pattern: numberReg, message: '请输入数字' },
-                ],
-              })(
-                <Input {...itemStyles} placeholder="请输入" />
+              {isView ? (
+                <span>{detail.floorSpace}</span>
+              ) : (
+                getFieldDecorator('floorSpace', {
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入占地面积' },
+                    { pattern: numberReg, message: '请输入数字' },
+                  ],
+                })(<Input {...itemStyles} placeholder="请输入" />)
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="正常当班人数">
-              {isView ? <span>{detail.personNum}</span> : getFieldDecorator('personNum', {
-                getValueFromEvent: this.handleTrim,
-                rules: [
-                  { required: true, message: '请输入正常当班人数' },
-                  { pattern: numberReg, message: '请输入数字' },
-                ],
-              })(
-                <Input {...itemStyles} placeholder="请输入" />
+              {isView ? (
+                <span>{detail.personNum}</span>
+              ) : (
+                getFieldDecorator('personNum', {
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入正常当班人数' },
+                    { pattern: numberReg, message: '请输入数字' },
+                  ],
+                })(<Input {...itemStyles} placeholder="请输入" />)
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="涉及主要危险化学品">
-              {isView ? <span>{detail.materialName}</span> : getFieldDecorator('material', {
-                rules: [{ required: true, message: '请选择涉及主要危险化学品' }],
-              })(
-                <Fragment>
-                  <TextArea
-                    {...itemStyles}
-                    disabled
-                    rows={4}
-                    placeholder="请选择涉及主要危险化学品"
-                    value={selectedChemical.map(item => item.chineName).join('，')}
-                  />
-                  <Button type="primary" onClick={this.handleMaterialsModal}>
-                    选择
-                </Button>
-                </Fragment>
+              {isView ? (
+                <span>{detail.materialName}</span>
+              ) : (
+                getFieldDecorator('material', {
+                  rules: [{ required: true, message: '请选择涉及主要危险化学品' }],
+                })(
+                  <Fragment>
+                    <TextArea
+                      {...itemStyles}
+                      disabled
+                      rows={4}
+                      placeholder="请选择涉及主要危险化学品"
+                      value={selectedChemical.map(item => item.chineName).join('，')}
+                    />
+                    <Button type="primary" onClick={this.handleMaterialsModal}>
+                      选择
+                    </Button>
+                  </Fragment>
+                )
               )}
             </FormItem>
             {companyId && (
@@ -513,27 +545,46 @@ export default class StorageEdit extends PureComponent {
                         <Button
                           style={{ marginLeft: 40 }}
                           onClick={() => {
-                            if (!!isDrawing && points.length <= 2) return message.error('区域至少三个坐标点！');
+                            if (!!isDrawing && points.length <= 2)
+                              return message.error('区域至少三个坐标点！');
                             this.setState({ isDrawing: !isDrawing });
                           }}
                         >
                           {!isDrawing ? '开始画' : '结束画'}
                         </Button>
-                        <Button style={{ marginLeft: 10 }} disabled={!!isDrawing} onClick={this.handleReset}>
+                        <Button
+                          style={{ marginLeft: 10 }}
+                          disabled={!!isDrawing}
+                          onClick={this.handleReset}
+                        >
                           重置
-                      </Button>
+                        </Button>
                       </Row>
                     )}
-                    <Map
-                      isDrawing={isDrawing}
-                      groupId={groupId}
-                      onRef={this.onRef}
-                      getPoints={this.getPoints}
-                      getBuilding={this.getBuilding}
-                      pointList={pointList}
-                      modelIds={modelIds}
-                      style={{ height: '45vh', width: '65vh' }}
-                    />
+
+                    {+remarks === 1 ? (
+                      <Map
+                        isDrawing={isDrawing}
+                        groupId={groupId}
+                        onRef={this.onRef}
+                        getPoints={this.getPoints}
+                        getBuilding={this.getBuilding}
+                        pointList={pointList}
+                        modelIds={modelIds}
+                        style={{ height: '45vh', width: '65vh' }}
+                      />
+                    ) : (
+                      <JoySuchMap
+                        isDrawing={isDrawing}
+                        groupId={groupId}
+                        onRef={this.onRef}
+                        getPoints={this.getPoints}
+                        getBuilding={this.getBuilding}
+                        pointList={pointList}
+                        modelIds={modelIds}
+                        style={{ height: '45vh', width: '100%' }}
+                      />
+                    )}
                   </div>
                 )}
               </FormItem>
@@ -546,7 +597,7 @@ export default class StorageEdit extends PureComponent {
             <FormItem wrapperCol={{ span: 24, offset: 10 }}>
               <Button onClick={e => router.push(LIST_URL)} style={{ marginRight: 20 }}>
                 取消
-            </Button>
+              </Button>
               {(isEdit || isAdd) && (
                 <Button type="primary" htmlType="submit">
                   提交
@@ -579,6 +630,6 @@ export default class StorageEdit extends PureComponent {
           }}
         />
       </PageHeaderLayout>
-    )
+    );
   }
 }

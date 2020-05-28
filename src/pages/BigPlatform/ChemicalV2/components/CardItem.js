@@ -40,7 +40,7 @@ export default class CardItem extends PureComponent {
         )}
         <div className={styles.infoWrapper} style={{ ...fieldsStyle }}>
           {fields.map((item, index) => {
-            const { label, value, render, extra } = item;
+            const { label, value, render, extra, valueStyle } = item;
             return (
               <div className={styles.field} key={index}>
                 {label && (
@@ -48,7 +48,7 @@ export default class CardItem extends PureComponent {
                     {label}：
                   </span>
                 )}
-                <span className={styles.value}>
+                <span className={styles.value} style={valueStyle}>
                   {render ? render(data[value], data) : data[value] || NO_DATA}
                 </span>
                 {(typeof extra === 'function' ? extra(data) : extra) || null}

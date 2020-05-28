@@ -309,6 +309,24 @@ module.exports = env => {
             },
           ],
         },
+        // 安防措施
+        {
+          path: '/security',
+          name: 'security',
+          hideInMenu: true,
+          routes: [
+            {
+              path: '/security',
+              redirect: '/security/:unitId/detail/:targetId',
+            },
+            {
+              path: '/security/:unitId/detail/:targetId',
+              code: 'dashboard.chemical',
+              name: 'view',
+              component: './SafetyKnowledgeBase/Security',
+            },
+          ],
+        },
         // account
         {
           path: '/account',

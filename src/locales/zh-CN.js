@@ -10,6 +10,7 @@ export default {
   'menu.grid.view': '网格点',
   'menu.grid.map': '网格点地图',
   'menu.bigPlatform': '驾驶舱',
+  'menu.security.view': '化学品安防措施',
   'menu.bigPlatform.governmentSafety': '政府安全驾驶舱',
   'menu.bigPlatform.companySafety': '企业安全驾驶舱',
   'menu.bigPlatform.newFireControl': '消防主机联网驾驶舱',
