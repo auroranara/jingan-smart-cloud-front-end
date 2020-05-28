@@ -100,79 +100,84 @@ export default class TankArea extends PureComponent {
           </div>
         </div>
 
-        <div className={bordered ? styles.wrapper2 : styles.wrapper} style={{ borderTop: Border }}>
-          <div className={styles.wrapperTitle}>储罐 ({tmList.length})</div>
-          {tmList.length > 0 ? (
-            tmList.map((item, index) => {
-              const { fields, icon, iconStyle, labelStyle, btnStyles, moreStyle } =
-                MonitorConfig['302'] || {};
-              const { videoList, meList, tankName, id } = item;
-              const monitorParams = meList.reduce((res, cur) => {
-                const { allMonitorParam } = cur;
-                res = [...res, ...allMonitorParam];
-                return res;
-              }, []);
-              const newItem = {
-                ...item,
-                monitorParams,
-                icon: typeof icon === 'function' ? icon({ ...item, monitorParams }) : icon,
-              };
-              const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
+        {tmList.length > 0 && (
+          <div
+            className={bordered ? styles.wrapper2 : styles.wrapper}
+            style={{ borderTop: Border }}
+          >
+            <div className={styles.wrapperTitle}>储罐 ({tmList.length})</div>
+            {tmList.length > 0 ? (
+              tmList.map((item, index) => {
+                const { fields, icon, iconStyle, labelStyle, btnStyles, moreStyle } =
+                  MonitorConfig['302'] || {};
+                const { videoList, meList, tankName, id } = item;
+                const monitorParams = meList.reduce((res, cur) => {
+                  const { allMonitorParam } = cur;
+                  res = [...res, ...allMonitorParam];
+                  return res;
+                }, []);
+                const newItem = {
+                  ...item,
+                  monitorParams,
+                  icon: typeof icon === 'function' ? icon({ ...item, monitorParams }) : icon,
+                };
+                const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
 
-              return (
-                <CardItem
-                  key={index}
-                  data={newItem}
-                  fields={fields}
-                  iconStyle={iconStyle}
-                  labelStyle={{ color: '#8198b4', ...labelStyle }}
-                  fieldsStyle={{ lineHeight: '32px' }}
-                  style={{
-                    border: bordered ? 'none' : Border,
-                    borderTop: bordered && index > 0 ? Border : bordered ? 'none' : Border,
-                    marginTop: bordered ? 0 : undefined,
-                  }}
-                  extraBtn={
-                    <Fragment>
-                      <MonitorBtns
-                        videoList={videoList}
-                        onVideoClick={handleShowVideo}
-                        noFinishWarningProcessId={noFinishWarningProcessId}
-                        monitorEquipmentId={monitorEquipmentId}
-                        style={{ top: 15, ...btnStyles }}
-                        targetId={id}
-                        targetType={'302'}
-                        targetName={tankName}
-                      />
-                      {/* <div className={styles.detail} onClick={() => handleClickMonitorDetail(item)}> */}
-                      <div
-                        className={styles.detail}
-                        onClick={() => this.handleClickTankDetail(item.id)}
-                        style={{ ...moreStyle }}
-                      >
-                        详情>>
-                      </div>
-                    </Fragment>
-                  }
-                />
-              );
-            })
-          ) : (
-            <NoData
-              msg="暂未绑定储罐"
-              style={{
-                height: '400px',
-                display: 'flex',
-                flexDirection: 'column',
-                textAlign: 'center',
-                color: '#4f6793',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '14px',
-              }}
-            />
-          )}
-        </div>
+                return (
+                  <CardItem
+                    key={index}
+                    data={newItem}
+                    fields={fields}
+                    iconStyle={iconStyle}
+                    labelStyle={{ color: '#8198b4', ...labelStyle }}
+                    fieldsStyle={{ lineHeight: '32px' }}
+                    style={{
+                      border: bordered ? 'none' : Border,
+                      borderTop: bordered && index > 0 ? Border : bordered ? 'none' : Border,
+                      marginTop: bordered ? 0 : undefined,
+                    }}
+                    extraBtn={
+                      <Fragment>
+                        <MonitorBtns
+                          videoList={videoList}
+                          onVideoClick={handleShowVideo}
+                          noFinishWarningProcessId={noFinishWarningProcessId}
+                          monitorEquipmentId={monitorEquipmentId}
+                          style={{ top: 15, ...btnStyles }}
+                          targetId={id}
+                          targetType={'302'}
+                          targetName={tankName}
+                        />
+                        {/* <div className={styles.detail} onClick={() => handleClickMonitorDetail(item)}> */}
+                        <div
+                          className={styles.detail}
+                          onClick={() => this.handleClickTankDetail(item.id)}
+                          style={{ ...moreStyle }}
+                        >
+                          详情>>
+                        </div>
+                      </Fragment>
+                    }
+                  />
+                );
+              })
+            ) : (
+              <NoData
+                msg="暂未绑定储罐"
+                style={{
+                  height: '400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  textAlign: 'center',
+                  color: '#4f6793',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                }}
+              />
+            )}
+          </div>
+        )}
 
         <FlameAndToxic
           handleShowVideo={handleShowVideo}
