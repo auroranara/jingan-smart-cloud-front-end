@@ -132,7 +132,7 @@ class VideoPlay extends Component {
       // 列表为空直接return
       if (!(videoList && videoList.length)) return;
       // 如果keyId为空 默认获取video列表第一个
-      videoId = keyId || videoList[0].key_id;
+      videoId = keyId || videoList[0].key_id || videoList[0].keyId;
     } else {
       videoId = keyId;
     }
@@ -159,7 +159,7 @@ class VideoPlay extends Component {
       success: response => {
         if (videoId) {
           let index = videoList.findIndex(item => {
-            return item.key_id === videoId;
+            return item.key_id === videoId || item.keyId === videoId;
           });
           if (index > -1) {
             this.setState({

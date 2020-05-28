@@ -73,6 +73,8 @@ const renderEllipsis = val => (
   </Ellipsis>
 );
 
+const formatTime = time => (time ? moment(time).format(TIME_FORMAT) : '暂无数据');
+
 export const MsgShowTypes = [
   1, // 发生监管
   2, // 联动
@@ -216,19 +218,30 @@ export const MonitorConfig = {
       { label: '设计储量', value: 'designReserves', render: val => val + 't' },
       { label: '是否高危储罐', value: 'highRiskTank', render: val => (+val === 1 ? '是' : '否') },
       {
-        // label: '区域位置',
-        value: 'buildingName',
+        value: 'areaLocation',
         render: (val, row) => {
-          const { buildingName, floorName, area, location } = row;
           return (
-            <span style={{ color: '#8198b4' }}>
+            <span>
               <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
-              {`${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` ||
-                '暂无数据'}
+              {val || '暂无数据'}
             </span>
           );
         },
       },
+      // {
+      //   // label: '区域位置',
+      //   value: 'buildingName',
+      //   render: (val, row) => {
+      //     const { buildingName, floorName, area, location } = row;
+      //     return (
+      //       <span style={{ color: '#8198b4' }}>
+      //         <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
+      //         {`${buildingName || ''}${floorName || ''}${area || ''}${location || ''}` ||
+      //           '暂无数据'}
+      //       </span>
+      //     );
+      //   },
+      // },
     ],
   },
   '303': {
@@ -274,6 +287,7 @@ export const MonitorConfig = {
       height: '9.8315em',
     },
     drawerIcon: drawer304,
+    labelStyle: { width: '6em' },
     // icon: (
     //   <div
     //     className={styles.iconWrapper}
@@ -419,13 +433,13 @@ export const MonitorConfig = {
                       </span>
                       {` ${paramUnit || ''}`}
                     </div>
-                    <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                    <div>{`最近更新时间：${formatTime(dataUpdateTime)}`}</div>
                   </div>
                 ) : (
-                  `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                  `最近更新时间：${formatTime(dataUpdateTime)}`
                 )
               ) : (
-                `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+                `失联时间：${formatTime(linkStatusUpdateTime)}`
               )
             }
           >
@@ -481,13 +495,13 @@ export const MonitorConfig = {
                         </span>
                         {` ${paramUnit || ''}`}
                       </div>
-                      <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                      <div>{`最近更新时间：${formatTime(dataUpdateTime)}`}</div>
                     </div>
                   ) : (
-                    `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                    `最近更新时间：${formatTime(dataUpdateTime)}`
                   )
                 ) : (
-                  `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+                  `失联时间：${formatTime(linkStatusUpdateTime)}`
                 )
               }
             >
@@ -567,13 +581,13 @@ export const MonitorConfig = {
                       </span>
                       {` ${paramUnit || ''}`}
                     </div>
-                    <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                    <div>{`最近更新时间：${formatTime(dataUpdateTime)}`}</div>
                   </div>
                 ) : (
-                  `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                  `最近更新时间：${formatTime(dataUpdateTime)}`
                 )
               ) : (
-                `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+                `失联时间：${formatTime(linkStatusUpdateTime)}`
               )
             }
           >
@@ -629,13 +643,13 @@ export const MonitorConfig = {
                         </span>
                         {` ${paramUnit || ''}`}
                       </div>
-                      <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                      <div>{`最近更新时间：${formatTime(dataUpdateTime)}`}</div>
                     </div>
                   ) : (
-                    `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                    `最近更新时间：${formatTime(dataUpdateTime)}`
                   )
                 ) : (
-                  `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+                  `失联时间：${formatTime(linkStatusUpdateTime)}`
                 )
               }
             >

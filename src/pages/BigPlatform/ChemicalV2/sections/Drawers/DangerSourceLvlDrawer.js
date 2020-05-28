@@ -30,7 +30,7 @@ const fields = [
       return rc ? `${rc}${betaStr}` : NO_DATA;
     },
   },
-  // { label: '实时储量(q)', value: 'acture' },
+  { label: '累计设计储量（q）', value: 'acture', render: val => NO_DATA },
   { label: '临界量(Q)', value: 'ljl', render: val => (val || val === 0 ? `${val}t` : NO_DATA) },
 ];
 

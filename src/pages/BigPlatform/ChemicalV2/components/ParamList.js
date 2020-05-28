@@ -6,6 +6,7 @@ import moment from 'moment';
 import styles from './ParamList.less';
 
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const formatTime = time => (time ? moment(time).format(TIME_FORMAT) : '暂无数据');
 export default class ParamList extends PureComponent {
   constructor(props) {
     super(props);
@@ -50,13 +51,13 @@ export default class ParamList extends PureComponent {
                             </span>
                             {` ${paramUnit || ''}`}
                           </div>
-                          <div>{`最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`}</div>
+                          <div>{`最近更新时间：${formatTime(dataUpdateTime)}`}</div>
                         </div>
                       ) : (
-                        `最近更新时间：${moment(dataUpdateTime).format(TIME_FORMAT)}`
+                        `最近更新时间：${formatTime(dataUpdateTime)}`
                       )
                     ) : (
-                      `失联时间：${moment(linkStatusUpdateTime).format(TIME_FORMAT)}`
+                      `失联时间：${formatTime(linkStatusUpdateTime)}`
                     )
                   }
                 >
