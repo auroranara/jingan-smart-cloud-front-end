@@ -1137,12 +1137,12 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.sex}>
                 {getFieldDecorator('sex', {
                   initialValue: sex,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择性别',
-                    },
-                  ],
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     message: '请选择性别',
+                  //   },
+                  // ],
                 })(
                   <Select disabled placeholder="请选择性别" allowClear>
                     {SEXES.map(({ key, label }) => (
@@ -1189,12 +1189,12 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.degree}>
                 {getFieldDecorator('degree', {
                   initialValue: education,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择学历',
-                    },
-                  ],
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     message: '请选择学历',
+                  //   },
+                  // ],
                 })(
                   <Select disabled placeholder="请选择学历" allowClear>
                     {DEGREES.map(({ key, label }) => (
@@ -1211,14 +1211,14 @@ export default class AssociatedUnit extends PureComponent {
                 {getFieldDecorator('major', {
                   initialValue: major,
                   getValueFromEvent: this.handleClearSpace,
-                  rules: [
-                    {
-                      required: true,
-                      whitespace: true,
-                      type: 'string',
-                      message: '请输入专业名称',
-                    },
-                  ],
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     whitespace: true,
+                  //     type: 'string',
+                  //     message: '请输入专业名称',
+                  //   },
+                  // ],
                 })(<Input disabled placeholder="请输入专业名称" min={1} max={20} />)}
               </Form.Item>
             </Col>
@@ -1285,24 +1285,6 @@ export default class AssociatedUnit extends PureComponent {
                       },
                     ],
                   })(
-                    // <AutoComplete
-                    //   labelInValue
-                    //   mode="combobox"
-                    //   disabled={isUnitUser || isEditAndSelf}
-                    //   optionLabelProp="children"
-                    //   placeholder="请选择所属单位"
-                    //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    //   onSearch={this.handleUnitIdChange}
-                    //   onSelect={this.handleDataPermissions}
-                    //   onBlur={this.handleUnitIdBlur}
-                    //   filterOption={false}
-                    // >
-                    //   {unitIds.map(item => (
-                    //     <Option value={item.id} key={item.id}>
-                    //       {item.name}
-                    //     </Option>
-                    //   ))}
-                    // </AutoComplete>
                     <Select
                       allowClear
                       labelInValue
