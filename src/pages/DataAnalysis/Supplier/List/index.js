@@ -1,8 +1,10 @@
 import React, { Fragment } from 'react';
-import { Divider } from 'antd';
+import { Divider, Badge } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
+import { EmptyText } from '@/jingan-components/View';
 import DueDate from '../../Contractor/components/DueDate';
 import moment from 'moment';
+import { isNumber } from '@/utils/utils';
 import { STATUSES, FORMAT } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 import styles from './index.less';
@@ -56,12 +58,14 @@ const SupplierList = ({ route, match, location }) => {
             {
               dataIndex: 'companyName',
               title: '单位名称',
+              render: value => value || <EmptyText />,
             },
           ]
         : []),
       {
         dataIndex: 'supplierName',
         title: '供应商公司名称',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: '证书',
@@ -70,7 +74,7 @@ const SupplierList = ({ route, match, location }) => {
           <Fragment>
             <div className={styles.fieldWrapper}>
               <div>证书名称：</div>
-              <div>{certificateName}</div>
+              <div>{certificateName || <EmptyText />}</div>
             </div>
             {certificateExpireDate && (
               <Fragment>
@@ -94,17 +98,34 @@ const SupplierList = ({ route, match, location }) => {
         dataIndex: '最近考核',
         title: '最近考核',
         render: (_, { lastAssess }) =>
-          lastAssess && (
+          lastAssess ? (
             <Fragment>
               <div className={styles.fieldWrapper}>
                 <div>考核日期：</div>
-                <div>{lastAssess.assessDate && moment(lastAssess.assessDate).format(FORMAT)}</div>
+                <div>
+                  {lastAssess.assessDate ? (
+                    moment(lastAssess.assessDate).format(FORMAT)
+                  ) : (
+                    <EmptyText />
+                  )}
+                </div>
               </div>
               <div className={styles.fieldWrapper}>
                 <div>总分：</div>
-                <div>{lastAssess.assessScore}</div>
+                <div>
+                  {isNumber(lastAssess.assessScore) ? (
+                    <Badge
+                      text={`${lastAssess.assessScore}`}
+                      status={lastAssess.assessScore >= 60 ? 'success' : 'error'}
+                    />
+                  ) : (
+                    <EmptyText />
+                  )}
+                </div>
               </div>
             </Fragment>
+          ) : (
+            <EmptyText />
           ),
       },
       {

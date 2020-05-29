@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
-import { Badge } from '@/jingan-components/View';
+import { EmptyText, Badge } from '@/jingan-components/View';
 import moment from 'moment';
 import { RESULTS, FORMAT } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
@@ -68,21 +68,24 @@ const ContractorEvaluationList = ({ route, match, location }) => {
             {
               dataIndex: 'companyName',
               title: '单位名称',
+              render: value => value || <EmptyText />,
             },
           ]
         : []),
       {
         dataIndex: 'contractorName',
         title: '被考核承包商',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'assessTitle',
         title: '考核记录标题',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'assessDate',
         title: '考核日期',
-        render: value => value && moment(value).format(FORMAT),
+        render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
       },
       {
         dataIndex: 'assessResult',

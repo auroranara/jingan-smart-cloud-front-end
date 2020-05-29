@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
+import { EmptyText } from '@/jingan-components/View';
 import moment from 'moment';
 import { FORMAT } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
@@ -56,26 +57,29 @@ const ContractorViolationRecordList = ({ route, match, location }) => {
             {
               dataIndex: 'companyName',
               title: '单位名称',
+              render: value => value || <EmptyText />,
             },
           ]
         : []),
       {
         dataIndex: 'contractorName',
         title: '承包商单位名称',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'projectName',
         title: '项目名称',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'violationDate',
         title: '违章日期',
-        render: value => value && moment(value).format(FORMAT),
+        render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
       },
       {
         dataIndex: 'violators',
         title: '违章人姓名',
-        render: value => value && value.split(',').join('、'),
+        render: value => (value ? value.split(',').join('、') : <EmptyText />),
       },
       {
         dataIndex: '操作',

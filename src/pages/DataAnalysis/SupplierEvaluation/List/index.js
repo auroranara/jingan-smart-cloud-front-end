@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
-import { Divider } from 'antd';
+import { Divider, Badge } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
-import { TextAreaEllipsis } from '@/jingan-components/View';
+import { TextAreaEllipsis, EmptyText } from '@/jingan-components/View';
 import moment from 'moment';
+import { isNumber } from '@/utils/utils';
 import { FORMAT } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
 import { DEPARTMENT_FIELDNAMES, DEPARTMENT_MAPPER } from '../../ContractorEvaluation/config';
@@ -81,25 +82,34 @@ const SupplierEvaluationList = ({ route, match, location }) => {
             {
               dataIndex: 'companyName',
               title: '单位名称',
+              render: value => value || <EmptyText />,
             },
           ]
         : []),
       {
         dataIndex: 'supplierName',
         title: '供应商公司名称',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'assessDepartmentName',
         title: '考核部门',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'assessDate',
         title: '考核日期',
-        render: value => value && moment(value).format(FORMAT),
+        render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
       },
       {
         dataIndex: 'assessScore',
         title: '总分',
+        render: value =>
+          isNumber(value) ? (
+            <Badge text={`${value}`} status={value >= 60 ? 'success' : 'error'} />
+          ) : (
+            <EmptyText />
+          ),
       },
       {
         dataIndex: 'assessResult',

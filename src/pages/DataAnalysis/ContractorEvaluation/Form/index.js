@@ -197,7 +197,15 @@ const ContractorEvaluationForm = ({
       {
         name: 'assessScore',
         label: '总分',
-        component: 'Input',
+        component: 'InputNumber',
+        props: {
+          min: 0,
+          max: 100,
+          precision: 2,
+          status(value) {
+            return value >= 60 ? 'success' : 'error';
+          },
+        },
         enableDefaultRules: true,
       },
       {

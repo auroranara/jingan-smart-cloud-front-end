@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { Spin, Card } from 'antd';
+import { Spin, Card, Badge } from 'antd';
 import Form from '@/jingan-components/Form';
-import { Table, TextAreaEllipsis } from '@/jingan-components/View';
+import { Table, TextAreaEllipsis, EmptyText } from '@/jingan-components/View';
 import DueDate from '../../Contractor/components/DueDate';
 import { connect } from 'dva';
 import locales from '@/locales/zh-CN';
@@ -225,20 +225,27 @@ const SupplierDetail = props => {
     {
       dataIndex: 'createTime',
       title: '创建时间',
-      render: value => value && moment(value).format('YYYY-MM-DD HH:mm:ss'),
+      render: value => (value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : <EmptyText />),
     },
     {
       dataIndex: 'assessDepartmentName',
       title: '考核部门',
+      render: value => value || <EmptyText />,
     },
     {
       dataIndex: 'assessDate',
       title: '考核日期',
-      render: value => value && moment(value).format(FORMAT),
+      render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
     },
     {
       dataIndex: 'assessScore',
       title: '总分',
+      render: value =>
+        isNumber(value) ? (
+          <Badge text={`${value}`} status={value >= 60 ? 'success' : 'error'} />
+        ) : (
+          <EmptyText />
+        ),
     },
     {
       dataIndex: 'assessResult',

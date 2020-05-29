@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
-import { Badge } from '@/jingan-components/View';
+import { Badge, EmptyText } from '@/jingan-components/View';
 import moment from 'moment';
 import { YES_OR_NO, FORMAT } from '../config';
 import { COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../../Contractor/config';
@@ -67,22 +67,24 @@ const ContractorConstructionList = ({ route, match, location }) => {
             {
               dataIndex: 'companyName',
               title: '单位名称',
+              render: value => value || <EmptyText />,
             },
           ]
         : []),
       {
         dataIndex: 'contractorName',
         title: '承包商单位名称',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'expireDate',
         title: '责任书到期日期',
-        render: value => value && moment(value).format(FORMAT),
+        render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
       },
       {
         dataIndex: 'enteringDate',
         title: '进厂日期',
-        render: value => value && moment(value).format(FORMAT),
+        render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
       },
       {
         dataIndex: 'blacklistStatus',
