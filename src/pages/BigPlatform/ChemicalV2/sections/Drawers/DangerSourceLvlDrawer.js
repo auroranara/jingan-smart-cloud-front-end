@@ -8,6 +8,7 @@ import { CardItem } from '../../components/Components';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 
 import dangerSourceIcon from '../../imgs/drawer/drawer-danger-source.png';
+import rImg from '../../imgs/R.png';
 
 const uniqueByid = array => {
   return array.reduce((prev, next) => {
@@ -78,7 +79,16 @@ export default class DangerSourceLvlDrawer extends PureComponent {
               <span className={styles.label}>R值：</span>
               {r}
               <Tooltip
-                title="由专家根据公式评估算出，具体参照《GB 18218-2018 危险化学品重大危险源辨识》"
+                title={
+                  <div>
+                    <div>
+                      1、R值由专家根据公式评估算出，具体参照《GB 18218-2018
+                      危险化学品重大危险源辨识》
+                    </div>
+                    2、
+                    <img src={rImg} alt="R" style={{ width: 200 }} />
+                  </div>
+                }
                 overlayStyle={{ zIndex: 9999 }}
                 placement={'right'}
               >

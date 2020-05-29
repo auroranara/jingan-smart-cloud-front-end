@@ -7,6 +7,7 @@ import styles from './FireMonitorDetailDrawer.less';
 import SignalAnime from '@/pages/BigPlatform/Monitor/components/SignalAnime';
 import fireHost from '@/pages/BigPlatform/NewUnitFireControl/imgs/fire-host.png';
 import iconVideo from '../../imgs/icon-video.png';
+import drawerIcon from '../../imgs/drawer/drawer-1.png';
 
 const NO_DATA = '暂无数据';
 
@@ -52,6 +53,7 @@ export default class FireMonitorDetailDrawer extends PureComponent {
         width={535}
         destroyOnClose={true}
         zIndex={1225}
+        icon={drawerIcon}
         left={
           <div className={styles.container}>
             <div className={styles.item}>
