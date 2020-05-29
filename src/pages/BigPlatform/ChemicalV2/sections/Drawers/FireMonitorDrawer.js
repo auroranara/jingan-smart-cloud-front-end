@@ -2,11 +2,12 @@ import React, { PureComponent, Fragment } from 'react';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Row, Col } from 'antd';
 import moment from 'moment';
-import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
+import DrawerContainer from '../../components/DrawerContainer';
 import styles from './FireMonitorDrawer.less';
 import SignalAnime from '@/pages/BigPlatform/Monitor/components/SignalAnime';
 import fireHost from '@/pages/BigPlatform/NewUnitFireControl/imgs/fire-host.png';
 import iconVideo from '../../imgs/icon-video.png';
+import drawerIcon from '../../imgs/drawer/drawer-1.png';
 
 const NO_DATA = '暂无数据';
 
@@ -42,6 +43,7 @@ export default class FireMonitorDrawer extends PureComponent {
         width={535}
         destroyOnClose={true}
         zIndex={1222}
+        icon={drawerIcon}
         left={
           <div className={styles.container}>
             {list.map((item, index) => {
