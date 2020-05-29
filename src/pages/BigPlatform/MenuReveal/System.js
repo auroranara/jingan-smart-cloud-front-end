@@ -15,6 +15,7 @@ import styles from './NewMenu.less';
 // 每个模块标题左侧图
 import dividerPic from '@/assets/divider.png';
 import Select from '@/jingan-components/Form/Select';
+import { DoubleLeftOutlined, DoubleRightOutlined, AppstoreAddOutlined } from '@ant-design/icons';
 
 const userLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-user.png';
 const logoutLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-logout.png';
@@ -87,9 +88,24 @@ export default class NewMenuReveal extends Component {
       // currentBlockClassification属性控制显示系统还是子菜单，从原来的组件复制过来，分成了两个组件，所以只需要显示一个，这里显示的是系统，保持值为null
       currentBlockClassification: null, // 当前模块下标（数组blockClassification下标）
       modalVisible: false,
+      expand: false,
+      quickList: [
+        {
+          path: '/safety-knowledge-base/msds', // 化学品安全说明书
+          code: 'safetyKnowledgeBase.msds',
+          name: 'msds',
+          hideChildrenInMenu: true,
+        },
+        {
+          path: '/safety-knowledge-base/typical-accident-case', // 典型事故案例
+          code: 'safetyKnowledgeBase.typicalAccidentCase',
+          name: 'typicalAccidentCase',
+          hideChildrenInMenu: true,
+        },
+      ],
     };
   }
-  componentDidMount() {
+  componentDidMount () {
     const { dispatch } = this.props;
     const { routes } = config;
     setBlocks(blockClassification, routes);
@@ -216,7 +232,7 @@ export default class NewMenuReveal extends Component {
           window.open(`${window.publicPath}#/big-platform/chemical/${company.value}`, '_blank');
         });
       })
-      .catch(err => {});
+      .catch(err => { });
   };
 
   handleViewBigPlatform = () => {
@@ -236,6 +252,11 @@ export default class NewMenuReveal extends Component {
   };
 
   formRef = createRef();
+
+  // 点击展开/收起
+  handleChangeExpand = () => {
+    this.setState(({ expand }) => ({ expand: !expand }))
+  }
 
   renderBlocks = () => {
     return (
@@ -267,44 +288,44 @@ export default class NewMenuReveal extends Component {
       <div className={styles.innerContent}>
         {menuSys.length
           ? menuSys.map(block => (
-              <Row key={block.name}>
-                <div className={styles.blockTitle}>
-                  <Divider /> {block.title}
-                </div>
-                <Row className={styles.blockContent}>
-                  {block.routes && block.routes.length
-                    ? block.routes.map(item => (
-                        <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
-                          <div className={styles.item}>
-                            <div
-                              className={styles.itemInner}
-                              onClick={
-                                item.developing ? null : () => this.handleOpenMenu(item.path)
-                              }
-                            >
-                              <img src={this.generateSysUrl(item)} alt="logo" />
-                              <div>{item.title}</div>
-                              {item.developing ? <span className={styles.dot} /> : null}
-                            </div>
-                          </div>
-                        </Col>
-                      ))
-                    : null}
-                </Row>
+            <Row key={block.name}>
+              <div className={styles.blockTitle}>
+                <Divider /> {block.title}
+              </div>
+              <Row>
+                {block.routes && block.routes.length
+                  ? block.routes.map(item => (
+                    <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
+                      <div className={styles.item}>
+                        <div
+                          className={styles.itemInner}
+                          onClick={
+                            item.developing ? null : () => this.handleOpenMenu(item.path)
+                          }
+                        >
+                          <img src={this.generateSysUrl(item)} alt="logo" />
+                          <div>{item.title}</div>
+                          {item.developing ? <span className={styles.dot} /> : null}
+                        </div>
+                      </div>
+                    </Col>
+                  ))
+                  : null}
               </Row>
-            ))
+            </Row>
+          ))
           : null}
       </div>
     );
   };
 
-  render() {
+  render () {
     const {
       user: {
         currentUser: { userName, permissionCodes },
       },
     } = this.props;
-    const { currentBlockClassification, modalVisible } = this.state;
+    const { currentBlockClassification, modalVisible, expand, quickList } = this.state;
 
     // const showWorkbench = permissionCodes && permissionCodes.includes('companyWorkbench');
     const showChemical = permissionCodes && permissionCodes.includes('dashboard.chemical');
@@ -368,6 +389,29 @@ export default class NewMenuReveal extends Component {
               <div>驾驶舱</div>
             </div>
           )}
+          <div className={classNames(styles.unexpand, { [styles.hidden]: expand })} onClick={this.handleChangeExpand}><DoubleLeftOutlined /> 快捷操作</div>
+          <div className={classNames(styles.expand, { [styles.hidden]: !expand })}>
+            <AppstoreAddOutlined />
+            <DoubleRightOutlined onClick={this.handleChangeExpand} />
+          </div>
+          <div className={classNames(styles.expandList, { [styles.hidden]: !expand })}>
+            {quickList.slice(0, 3).map(item => (
+              <Col key={item.name} span={3} className={styles.itemOuter}>
+                <div className={styles.item}>
+                  <div
+                    className={styles.itemInner}
+                    onClick={
+                      item.developing ? null : () => this.handleOpenMenu(item.path)
+                    }
+                  >
+                    <img src={this.generateSysUrl(item)} alt="logo" />
+                    <div>{item.title}</div>
+                    {item.developing ? <span className={styles.dot} /> : null}
+                  </div>
+                </div>
+              </Col>
+            ))}
+          </div>
         </div>
         <Modal
           centered
