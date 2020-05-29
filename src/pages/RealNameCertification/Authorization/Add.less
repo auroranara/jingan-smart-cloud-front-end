@@ -3,13 +3,43 @@
     .ant-tabs-bar {
       display: none;
     }
+
+    .ant-table-body {
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #e9e9e9;
+        border-radius: 100px;
+      }
+
+      &::-webkit-scrollbar-track-piece {
+        background-color: #fff;
+        border-radius: 6px;
+      }
+    }
   }
 
   .outerLine {
-    min-height: 600px;
+    height: 600px;
     border: 1px solid #f0f0f0;
     border-radius: 4px;
     overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #e9e9e9;
+      border-radius: 100px;
+    }
+
+    &::-webkit-scrollbar-track-piece {
+      background-color: #fff;
+      border-radius: 6px;
+    }
   }
 
   .tag {

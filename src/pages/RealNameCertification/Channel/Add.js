@@ -149,7 +149,9 @@ export default class AddOperatingProdures extends Component {
 
   handleChangeCompany = company => {
     this.fetchProductionArea(company.key);
-    this.setState({ companyId: company.key });
+    this.setState({ companyId: company.key }, () => {
+      this.form && this.form.setFieldsValue({ productArea: undefined });
+    });
   };
 
   // 获取生产区域

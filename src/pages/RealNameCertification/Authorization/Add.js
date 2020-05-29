@@ -276,6 +276,7 @@ export default class AddAuthorization extends PureComponent {
       {
         title: '姓名',
         dataIndex: 'name',
+        width: 130,
       },
       {
         title: '卡号',
@@ -396,7 +397,7 @@ export default class AddAuthorization extends PureComponent {
                     <span>已选人员</span>
                     <span className={styles.statistics}>{personLen}/100</span>
                   </div>
-                  <Row gutter={16} style={{ padding: '10px', overflow: 'hidden', alignContent: 'flex-start' }} className={styles.outerLine}>
+                  <Row gutter={16} style={{ padding: '10px', alignContent: 'flex-start' }} className={styles.outerLine}>
                     {selectedPerson.map(({ id, name }) => (
                       <Col span={9} key={id} className={styles.tag}>{name}</Col>
                     ))}
