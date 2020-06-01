@@ -20,7 +20,7 @@ import {
   putDashboard,
 } from '../services/accountManagement.js';
 
-import { checkOldPass, changePass } from '../services/account.js';
+import { checkOldPass, changePass, sendVerifyCode, updatePwdNew } from '../services/account.js';
 import { queryMenus } from '../services/company/safety';
 
 export default {
@@ -79,7 +79,7 @@ export default {
 
   effects: {
     // 账号列表
-    *fetch ({ payload, success, error }, { call, put }) {
+    *fetch({ payload, success, error }, { call, put }) {
       const response = yield call(queryAccountList, payload);
       if (response && response.code === 200) {
         yield put({
@@ -95,7 +95,7 @@ export default {
     },
 
     // 查询账号列表
-    *appendfetch ({ payload }, { call, put }) {
+    *appendfetch({ payload }, { call, put }) {
       const response = yield call(queryAccountList, payload);
       if (response && response.code === 200) {
         yield put({
@@ -106,7 +106,7 @@ export default {
     },
 
     // 新增账号-初始化页面选项
-    *fetchOptions ({ success, error }, { call, put }) {
+    *fetchOptions({ success, error }, { call, put }) {
       const response = yield call(queryAddAccountOptions);
       if (response.code === 200) {
         yield put({
@@ -124,7 +124,7 @@ export default {
     },
 
     // 新增账号-根据单位类型和名称模糊搜索
-    *fetchUnitListFuzzy ({ payload, success, error }, { call, put }) {
+    *fetchUnitListFuzzy({ payload, success, error }, { call, put }) {
       const response = yield call(queryUnits, payload);
       if (response.code === 200) {
         yield put({
@@ -140,7 +140,7 @@ export default {
     },
 
     // 新增账号
-    *addAccount ({ payload, success, error }, { call }) {
+    *addAccount({ payload, success, error }, { call }) {
       const response = yield call(addAccount, payload);
       if (response.code === 200) {
         if (success) {
@@ -152,7 +152,7 @@ export default {
     },
 
     // 查看账号详情
-    *fetchAccountDetail ({ payload, success, error }, { call, put }) {
+    *fetchAccountDetail({ payload, success, error }, { call, put }) {
       const response = yield call(queryAccountDetail, payload);
       if (response.code === 200) {
         yield put({
@@ -168,7 +168,7 @@ export default {
     },
 
     // 修改账号
-    *updateAccountDetail ({ payload, success, error }, { call, put }) {
+    *updateAccountDetail({ payload, success, error }, { call, put }) {
       const response = yield call(updateAccountDetail, payload);
       if (response.code === 200) {
         yield put({
@@ -184,31 +184,31 @@ export default {
     },
 
     // 修改密码
-    *updateAccountPwd ({ payload, callback }, { call }) {
+    *updateAccountPwd({ payload, callback }, { call }) {
       const response = yield call(updatePassword, payload);
       if (callback) callback(response);
     },
 
     // 查询用户名和手机号是否唯一
-    *checkAccountOrPhone ({ payload, callback }, { call, put }) {
+    *checkAccountOrPhone({ payload, callback }, { call, put }) {
       const response = yield call(checkAccountOrPhone, payload);
       if (response.code && response.msg) {
         if (callback) callback(response);
       }
     },
     // 校验旧密码正确性
-    *checkOldPass ({ payload, callback }, { call, put }) {
+    *checkOldPass({ payload, callback }, { call, put }) {
       const response = yield call(checkOldPass, payload);
       if (callback && response.code) callback(response.code);
     },
     // 个人中心修改密码
-    *changePass ({ payload, callback }, { call }) {
+    *changePass({ payload, callback }, { call }) {
       const response = yield call(changePass, payload);
       if (callback) callback(response);
     },
 
     // 查询角色列表
-    *fetchRoles ({ payload, success, error }, { call, put }) {
+    *fetchRoles({ payload, success, error }, { call, put }) {
       const response = yield call(queryRoles, payload);
       const { code, data } = response || {};
       if (code === 200) {
@@ -221,7 +221,7 @@ export default {
     },
 
     // 查询执法证件种类
-    *fetchExecCertificateType ({ payload, callback }, { call, put }) {
+    *fetchExecCertificateType({ payload, callback }, { call, put }) {
       const response = yield call(queryExecCertificateType, payload);
       if (callback) callback(response);
       if (response.code === 200) {
@@ -233,7 +233,7 @@ export default {
     },
 
     // 查询用户角色
-    *fetchUserType ({ payload, callback }, { call, put }) {
+    *fetchUserType({ payload, callback }, { call, put }) {
       const response = yield call(queryUserType, payload);
       if (callback) callback(response);
       if (response.code === 200) {
@@ -245,7 +245,7 @@ export default {
     },
 
     // 查询部门列表
-    *fetchDepartmentList ({ payload, callback }, { call, put }) {
+    *fetchDepartmentList({ payload, callback }, { call, put }) {
       const response = yield call(queryDepartmentList, payload);
       if (response && response.code === 200) {
         yield put({
@@ -256,7 +256,7 @@ export default {
       }
     },
     // 获取用户详情（关联企业页面）
-    *fetchAssociatedUnitDetail ({ payload, success, error }, { call, put }) {
+    *fetchAssociatedUnitDetail({ payload, success, error }, { call, put }) {
       const response = yield call(fetchAssociatedUnitDetail, payload);
       if (response && response.code === 200) {
         yield put({
@@ -271,7 +271,7 @@ export default {
       }
     },
     // 添加关联企业
-    *addAssociatedUnit ({ payload, successCallback, errorCallback }, { call, put }) {
+    *addAssociatedUnit({ payload, successCallback, errorCallback }, { call, put }) {
       const response = yield call(addAssociatedUnit, payload);
       if (response && response.code === 200) {
         if (successCallback) successCallback();
@@ -280,7 +280,7 @@ export default {
       }
     },
     // 修改关联企业
-    *editAssociatedUnit ({ payload, successCallback, errorCallback }, { call }) {
+    *editAssociatedUnit({ payload, successCallback, errorCallback }, { call }) {
       const response = yield call(editAssociatedUnit, payload);
       if (response && response.code === 200) {
         if (successCallback) successCallback();
@@ -289,7 +289,7 @@ export default {
       }
     },
     // 绑定、解绑关联企业
-    *chnageAccountStatus ({ payload, success, error }, { call }) {
+    *chnageAccountStatus({ payload, success, error }, { call }) {
       const response = yield call(chnageAccountStatus, payload);
       if (response && response.code === 200) {
         if (success) success();
@@ -298,7 +298,7 @@ export default {
       }
     },
     // 维保权限树
-    *fetchMaintenanceTree ({ payload, callback }, { call, put }) {
+    *fetchMaintenanceTree({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceTree, payload);
       if (response && response.code === 200) {
         const list = response.data.list || [];
@@ -318,7 +318,7 @@ export default {
       }
     },
     // 获取网格点
-    *fetchGrids ({ payload, callback }, { call, put }) {
+    *fetchGrids({ payload, callback }, { call, put }) {
       const response = yield call(queryMenus, payload);
       const { code, data } = response || {};
       if (code === 200) {
@@ -327,21 +327,36 @@ export default {
         yield put({ type: 'saveGrids', payload: list });
       }
     },
-    *fetchDashboard ({ payload, callback }, { call }) {
+    *fetchDashboard({ payload, callback }, { call }) {
       const response = yield call(getDashboard, payload);
       const { code, data } = response || {};
-      if (code === 200)
-        callback && callback(data && Array.isArray(data.list) ? data.list : []);
+      if (code === 200) callback && callback(data && Array.isArray(data.list) ? data.list : []);
     },
-    *setDashboard ({ payload, callback }, { call }) {
+    *setDashboard({ payload, callback }, { call }) {
       const response = yield call(putDashboard, payload);
       const { code, msg } = response || {};
       callback && callback(code, msg);
     },
+    // 获取手机验证码
+    *sendVerifyCode({ payload, success, error }, { call }) {
+      const response = yield call(sendVerifyCode, payload);
+      if (response.code === 200) {
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    // 手机号修改密码
+    *updatePwdNew({ payload, callback }, { call }) {
+      const response = yield call(updatePwdNew, payload);
+      if (callback) callback(response);
+    },
   },
 
   reducers: {
-    saveAccountList (state, { payload }) {
+    saveAccountList(state, { payload }) {
       const {
         list,
         pagination: { pageNum, pageSize, total },
@@ -355,7 +370,7 @@ export default {
       };
     },
 
-    saveAccountLoadMoreList (
+    saveAccountLoadMoreList(
       state,
       {
         payload: {
@@ -371,7 +386,7 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    queryAddAccountOptions (
+    queryAddAccountOptions(
       state,
       {
         payload: {
@@ -387,14 +402,14 @@ export default {
       };
     },
 
-    queryUnits (state, { payload }) {
+    queryUnits(state, { payload }) {
       return {
         ...state,
         unitIds: payload,
       };
     },
 
-    queryAccountDetail (state, { payload }) {
+    queryAccountDetail(state, { payload }) {
       return {
         ...state,
         detail: {
@@ -404,7 +419,7 @@ export default {
       };
     },
 
-    updateDetail (state, { payload }) {
+    updateDetail(state, { payload }) {
       return {
         ...state,
         detail: {
@@ -413,7 +428,7 @@ export default {
         },
       };
     },
-    clearDetail (state) {
+    clearDetail(state) {
       return {
         ...state,
         detail: {
@@ -423,14 +438,14 @@ export default {
     },
 
     /* 获取角色列表 */
-    queryRoles (state, { payload: roles }) {
+    queryRoles(state, { payload: roles }) {
       return {
         ...state,
         roles,
       };
     },
 
-    saveTrees (state, action) {
+    saveTrees(state, action) {
       const { webPermissions, appPermissions, messagePermissions } = action.payload;
       return {
         ...state,
@@ -441,7 +456,7 @@ export default {
     },
 
     /* 查询执法证件种类 */
-    queryExecCertificateType (state, { payload }) {
+    queryExecCertificateType(state, { payload }) {
       return {
         ...state,
         documentTypeIds: payload,
@@ -449,7 +464,7 @@ export default {
     },
 
     /* 查询用户角色 */
-    queryUserType (state, { payload }) {
+    queryUserType(state, { payload }) {
       return {
         ...state,
         userTypes: payload,
@@ -457,7 +472,7 @@ export default {
     },
 
     // 查询部门列表
-    queryDepartment (state, { payload: departments }) {
+    queryDepartment(state, { payload: departments }) {
       return {
         ...state,
         departments,
@@ -465,7 +480,7 @@ export default {
     },
 
     // 关联企业初始化数据
-    initValue (state, { payload }) {
+    initValue(state, { payload }) {
       return {
         ...state,
         detail: {
@@ -486,25 +501,25 @@ export default {
         },
       };
     },
-    saveUserInfo (state, { payload }) {
+    saveUserInfo(state, { payload }) {
       return {
         ...state,
         user: payload,
       };
     },
-    saveAccounts (state, { payload }) {
+    saveAccounts(state, { payload }) {
       return {
         ...state,
         list: payload,
       };
     },
-    saveSearchInfo (state, { payload }) {
+    saveSearchInfo(state, { payload }) {
       return {
         ...state,
         searchInfo: payload || null,
       };
     },
-    saveMaintenanceTree (
+    saveMaintenanceTree(
       state,
       {
         payload: { list, maintenanceSerTree, maintenanceSubTree },
@@ -517,7 +532,7 @@ export default {
         maintenanceSubTree,
       };
     },
-    initPageNum (state, { payload }) {
+    initPageNum(state, { payload }) {
       return {
         ...state,
         pageNum: 1,
@@ -531,7 +546,7 @@ export default {
         },
       };
     },
-    saveGrids (state, action) {
+    saveGrids(state, action) {
       return { ...state, grids: action.payload };
     },
   },

@@ -108,7 +108,7 @@ export default class JoySuchSelect extends PureComponent {
   };
 
   static propTypes = {
-    companyId: PropTypes.string.isRequired,
+    // companyId: PropTypes.string.isRequired,
     readonly: PropTypes.bool,
   };
 
@@ -199,6 +199,7 @@ export default class JoySuchSelect extends PureComponent {
    **/
   handleUpdateMap = (isInit = false) => {
     const { dispatch, companyId, mapInfo } = this.props;
+    if (!companyId) return;
     // 获取地图列表
     // dispatch({
     //   type: 'map/fetchMapList',
@@ -244,7 +245,6 @@ export default class JoySuchSelect extends PureComponent {
     this.map = new jsmap.JSMap(mapOptions);
     //打开Fengmap服务器的地图数据和主题
     this.map.openMapById(mapId);
-
     // 监听点击
     this.map.on('mapClickNode', event => {
       const { onChange, readonly, markerOption = {} } = this.props;
