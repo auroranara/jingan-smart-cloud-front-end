@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
-import { Tooltip } from 'antd';
+import { Tooltip, Spin } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
 import DrawerContainer from '../../components/DrawerContainer';
@@ -92,6 +92,7 @@ export default class DangerSourceDrawer extends PureComponent {
           pagination: { total },
         },
       },
+      loading,
     } = this.props;
     const BasicFields = [
       {
@@ -172,72 +173,73 @@ export default class DangerSourceDrawer extends PureComponent {
         icon={dangerSourceIcon}
         left={
           <div className={styles.container}>
-            {list.length > 1 && (
-              <div className={styles.radioBtn}>
-                <RadioBtns
-                  value={active}
-                  onClick={this.handleClickRadio}
-                  fields={list.map((item, index) => ({
-                    label: item.name,
-                    render: () => {
-                      // const { monitorParams } = item;
-                      // const alarm = monitorParams.filter(item => +item.status > 0).length;
-                      const name = item.name;
-                      const len = 7;
-                      // const len = alarm > 0 ? 5 : 7;
-                      const nameContent =
-                        name && name.length > len ? (
-                          <Tooltip
-                            placement="bottom"
-                            title={name}
-                            overlayStyle={{ zIndex: 9999 }}
-                          >{`${name.substr(0, len)}...`}</Tooltip>
-                        ) : (
-                          name
+            <Spin spinning={loading} wrapperClassName={styles.spin}>
+              {list.length > 1 && (
+                <div className={styles.radioBtn}>
+                  <RadioBtns
+                    value={active}
+                    onClick={this.handleClickRadio}
+                    fields={list.map((item, index) => ({
+                      label: item.name,
+                      render: () => {
+                        // const { monitorParams } = item;
+                        // const alarm = monitorParams.filter(item => +item.status > 0).length;
+                        const name = item.name;
+                        const len = 7;
+                        // const len = alarm > 0 ? 5 : 7;
+                        const nameContent =
+                          name && name.length > len ? (
+                            <Tooltip
+                              placement="bottom"
+                              title={name}
+                              overlayStyle={{ zIndex: 9999 }}
+                            >{`${name.substr(0, len)}...`}</Tooltip>
+                          ) : (
+                            name
+                          );
+                        return (
+                          <span key={index} style={{ whiteSpace: 'nowrap' }}>
+                            {nameContent}
+                            {/* {alarm > 0 && <span className={styles.alarmNum}>{alarm}</span>} */}
+                          </span>
                         );
-                      return (
-                        <span key={index} style={{ whiteSpace: 'nowrap' }}>
-                          {nameContent}
-                          {/* {alarm > 0 && <span className={styles.alarmNum}>{alarm}</span>} */}
-                        </span>
-                      );
-                    },
-                  }))}
-                  handlePageChange={this.handlePageChange}
-                  // nextIcon={nextIcon}
-                  // prevIcon={prevIcon}
-                />
-              </div>
-            )}
-            {list.length > 0 ? (
-              <Fragment>
-                <div className={styles.basic}>
-                  <CardItem
-                    data={list[active]}
-                    fields={BasicFields}
-                    labelStyle={{ color: '#8198b4' }}
-                    fieldsStyle={{ lineHeight: '32px' }}
-                    style={{ border: 'none' }}
+                      },
+                    }))}
+                    handlePageChange={this.handlePageChange}
+                    // nextIcon={nextIcon}
+                    // prevIcon={prevIcon}
                   />
-                  <div className={styles.surround}>
-                    周边环境 ({total})
-                    <div
-                      className={styles.detail}
-                      style={{ right: 15, top: 10 }}
-                      onClick={this.handleClickSurround}
-                    >
-                      详情>>
+                </div>
+              )}
+              {list.length > 0 ? (
+                <Fragment>
+                  <div className={styles.basic}>
+                    <CardItem
+                      data={list[active]}
+                      fields={BasicFields}
+                      labelStyle={{ color: '#8198b4' }}
+                      fieldsStyle={{ lineHeight: '32px' }}
+                      style={{ border: 'none' }}
+                    />
+                    <div className={styles.surround}>
+                      周边环境 ({total})
+                      <div
+                        className={styles.detail}
+                        style={{ right: 15, top: 10 }}
+                        onClick={this.handleClickSurround}
+                      >
+                        详情>>
+                      </div>
                     </div>
                   </div>
-                </div>
-                {tankArea.map((item, index) => (
-                  <TankArea key={index} data={item} handleShowVideo={handleShowVideo} bordered />
-                ))}
-              </Fragment>
-            ) : (
-              <NoData />
-            )}
-            {/* {list.map((item, index) => (
+                  {tankArea.map((item, index) => (
+                    <TankArea key={index} data={item} handleShowVideo={handleShowVideo} bordered />
+                  ))}
+                </Fragment>
+              ) : (
+                <NoData />
+              )}
+              {/* {list.map((item, index) => (
               <CardItem
                 key={index}
                 data={item}
@@ -245,6 +247,7 @@ export default class DangerSourceDrawer extends PureComponent {
                 onClick={() => this.handleClick(item)}
               />
             ))} */}
+            </Spin>
           </div>
         }
       />

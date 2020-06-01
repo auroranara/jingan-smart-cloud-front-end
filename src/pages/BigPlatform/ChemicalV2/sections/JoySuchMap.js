@@ -431,8 +431,6 @@ export default class Map extends PureComponent {
 
   // 变更预警
   handleShowChangeWarning = (zoneId, floorId, position) => {
-    console.log('position', position);
-
     const { companyId } = this.props;
     if (popInfoWindow) {
       map.removeMarker(popInfoWindow);
@@ -451,7 +449,7 @@ export default class Map extends PureComponent {
         </div>`;
     popInfoWindow = new jsmap.JSPopInfoMarker({
       id: 'popInfoWindow',
-      floorId,
+      floorId: map.focusFloorId,
       content,
       position,
       properties: { zoneId },
@@ -591,7 +589,7 @@ export default class Map extends PureComponent {
     }
     popInfoWindow = new jsmap.JSPopInfoMarker({
       id: 'popInfoWindow',
-      floorId,
+      floorId: map.focusFloorId,
       content,
       position,
       // marginTop: 0,

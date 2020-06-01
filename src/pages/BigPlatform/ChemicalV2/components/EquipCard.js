@@ -20,6 +20,7 @@ const transformCondition = condition => {
 function toFixed(value, digit = 2) {
   return Number.parseFloat(value.toFixed(digit));
 }
+const formatTime = time => (time ? moment(time).format(DEFAULT_FORMAT) : NO_DATA);
 
 export default class EquipCard extends PureComponent {
   constructor(props) {
@@ -70,7 +71,7 @@ export default class EquipCard extends PureComponent {
             <span className={styles.locIcon} style={{ marginRight: '5px' }}>
               <LegacyIcon type="environment" />
             </span>
-            {areaLocation || '暂无位置数据'}
+            {areaLocation || '暂无数据'}
           </div>
         </div>
 
@@ -153,22 +154,20 @@ export default class EquipCard extends PureComponent {
                       style={{ color: status > 0 ? '#ff1325' : '#fff' }}
                     >
                       {/* 更新时间：
-                    {dataUpdateTime ? moment(dataUpdateTime).format(DEFAULT_FORMAT) : NO_DATA} */}
+                    {dataUpdateTime ? formatTime(dataUpdateTime) : NO_DATA} */}
                       {fixType === 5 && (
                         <Tooltip
                           title={
                             +linkStatus !== -1 ? (
                               status > 0 ? (
                                 <div>
-                                  <div>{`最近更新时间：${moment(dataUpdateTime).format(
-                                    DEFAULT_FORMAT
-                                  )}`}</div>
+                                  <div>{`最近更新时间：${formatTime(dataUpdateTime)}`}</div>
                                 </div>
                               ) : (
-                                `最近更新时间：${moment(dataUpdateTime).format(DEFAULT_FORMAT)}`
+                                `最近更新时间：${formatTime(dataUpdateTime)}`
                               )
                             ) : (
-                              `失联时间：${moment(linkStatusUpdateTime).format(DEFAULT_FORMAT)}`
+                              `失联时间：${formatTime(linkStatusUpdateTime)}`
                             )
                           }
                           overlayStyle={{ zIndex: 9999 }}
@@ -191,15 +190,13 @@ export default class EquipCard extends PureComponent {
                                     </span>
                                     {` ${paramUnit || ''}`}
                                   </div>
-                                  <div>{`最近更新时间：${moment(dataUpdateTime).format(
-                                    DEFAULT_FORMAT
-                                  )}`}</div>
+                                  <div>{`最近更新时间：${formatTime(dataUpdateTime)}`}</div>
                                 </div>
                               ) : (
-                                `最近更新时间：${moment(dataUpdateTime).format(DEFAULT_FORMAT)}`
+                                `最近更新时间：${formatTime(dataUpdateTime)}`
                               )
                             ) : (
-                              `失联时间：${moment(linkStatusUpdateTime).format(DEFAULT_FORMAT)}`
+                              `失联时间：${formatTime(linkStatusUpdateTime)}`
                             )
                           }
                           overlayStyle={{ zIndex: 9999 }}

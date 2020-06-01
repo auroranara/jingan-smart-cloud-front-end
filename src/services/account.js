@@ -50,7 +50,7 @@ export async function loginByPhone(params) {
 
 // 获取手机验证码
 export async function sendVerifyCode(params) {
-  return request(`/acloud_new/v2/login/sendVerifyCode?${stringify(params)}`);
+  return request(`/acloud_new/v2/login/sendLoginCode?${stringify(params)}`);
 }
 
 // 手机号修改密码
