@@ -13,9 +13,8 @@ import dangerSourceIcon from '../../imgs/drawer/drawer-danger-source.png';
 const NO_DATA = '暂无数据';
 const hasAlarm = list => {
   return !list.every(item => {
-    const { monitorParams } = item;
-    const alarm = monitorParams.filter(item => +item.status > 0).length;
-    return alarm === 0;
+    const { warnStatus } = item || {};
+    return warnStatus !== -1;
   });
 };
 const Size = 4;
@@ -142,20 +141,20 @@ export default class DangerSourceDrawer extends PureComponent {
         wareHouseArea = [],
       } = {},
     } = list[active] || {};
-    // const next = list.slice(page * Size, (page + 1) * Size);
-    // const nextIcon = hasAlarm(next) && (
-    //   <div className={styles.pageBtns}>
-    //     <LegacyIcon type="right" />
-    //     <div className={styles.dot} />
-    //   </div>
-    // );
-    // const prev = list.slice((page - 2) * Size, (page - 1) * Size);
-    // const prevIcon = hasAlarm(prev) && (
-    //   <div className={styles.pageBtns}>
-    //     <LegacyIcon type="left" />
-    //     <div className={styles.dot} style={{ left: 2, right: 'auto' }} />
-    //   </div>
-    // );
+    const next = list.slice(page * Size, (page + 1) * Size);
+    const nextIcon = hasAlarm(next) && (
+      <div className={styles.pageBtns}>
+        <LegacyIcon type="right" />
+        <div className={styles.dot} />
+      </div>
+    );
+    const prev = list.slice((page - 2) * Size, (page - 1) * Size);
+    const prevIcon = hasAlarm(prev) && (
+      <div className={styles.pageBtns}>
+        <LegacyIcon type="left" />
+        <div className={styles.dot} style={{ left: 2, right: 'auto' }} />
+      </div>
+    );
 
     return (
       <DrawerContainer
@@ -201,13 +200,16 @@ export default class DangerSourceDrawer extends PureComponent {
                           <span key={index} style={{ whiteSpace: 'nowrap' }}>
                             {nameContent}
                             {/* {alarm > 0 && <span className={styles.alarmNum}>{alarm}</span>} */}
+                            {hasAlarm([item]) && (
+                              <span className={styles.dot} style={{ right: 3, top: 3 }} />
+                            )}
                           </span>
                         );
                       },
                     }))}
                     handlePageChange={this.handlePageChange}
-                    // nextIcon={nextIcon}
-                    // prevIcon={prevIcon}
+                    nextIcon={nextIcon}
+                    prevIcon={prevIcon}
                   />
                 </div>
               )}
