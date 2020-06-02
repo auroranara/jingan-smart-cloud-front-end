@@ -7,6 +7,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 /* 去除两边空格 */
 const transform = value => value.trim();
+const NO_DATA = '暂无数据';
 
 @connect(({ company, user, loading }) => ({
   company,
@@ -122,19 +123,47 @@ export default class CompanyList extends PureComponent {
         title: '单位名称',
         dataIndex: 'name',
         key: 'name',
+        width: 500,
       },
       {
-        title: '社会信用代码',
-        dataIndex: 'code',
-        key: 'code',
-        width: 300,
+        title: '地址',
+        dataIndex: 'practicalAddressLabel',
+        key: 'practicalAddressLabel',
+        render: (val, row) => {
+          const {
+            practicalAddress,
+            practicalProvinceLabel,
+            practicalCityLabel,
+            practicalDistrictLabel,
+            practicalTownLabel,
+          } = row;
+          const practicalAddressLabel =
+            (practicalProvinceLabel || '') +
+            (practicalCityLabel || '') +
+            (practicalDistrictLabel || '') +
+            (practicalTownLabel || '') +
+            (practicalAddress || '');
+          return practicalAddressLabel || NO_DATA;
+        },
+      },
+      {
+        title: '安全管理员',
+        dataIndex: 'safetyName',
+        key: 'safetyName',
+        width: 200,
+      },
+      {
+        title: '联系电话',
+        dataIndex: 'safetyPhone',
+        key: 'safetyPhone',
+        width: 250,
       },
       {
         title: '操作',
         dataIndex: 'opration',
         key: 'opration',
-        width: 200,
-        render: (_, record) => <a onClick={() => this.goEdit(record.id)}>身份鉴别</a>,
+        width: 100,
+        render: (_, record) => <a onClick={() => this.goEdit(record.id)}>设置</a>,
       },
     ];
 
