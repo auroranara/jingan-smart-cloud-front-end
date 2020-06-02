@@ -1,7 +1,7 @@
 import { Component, createRef } from 'react';
 // import { Form } from '@ant-design/compatible';
 // import '@ant-design/compatible/assets/index.css';
-import { Form, Row, Col, Modal } from 'antd';
+import { Form, Row, Col, Modal, message } from 'antd';
 // import _ from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -15,7 +15,10 @@ import styles from './NewMenu.less';
 // 每个模块标题左侧图
 import dividerPic from '@/assets/divider.png';
 import Select from '@/jingan-components/Form/Select';
-import { DoubleLeftOutlined, DoubleRightOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import { DoubleLeftOutlined } from '@ant-design/icons';
+import logoAdd from '@/assets/logo-add.png';
+import logoDown from '@/assets/logo-down.png';
+import logoOut from '@/assets/logo-out.png';
 
 const userLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-user.png';
 const logoutLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-logout.png';
@@ -88,21 +91,8 @@ export default class NewMenuReveal extends Component {
       // currentBlockClassification属性控制显示系统还是子菜单，从原来的组件复制过来，分成了两个组件，所以只需要显示一个，这里显示的是系统，保持值为null
       currentBlockClassification: null, // 当前模块下标（数组blockClassification下标）
       modalVisible: false,
-      expand: false,
-      quickList: [
-        {
-          path: '/safety-knowledge-base/msds', // 化学品安全说明书
-          code: 'safetyKnowledgeBase.msds',
-          name: 'msds',
-          hideChildrenInMenu: true,
-        },
-        {
-          path: '/safety-knowledge-base/typical-accident-case', // 典型事故案例
-          code: 'safetyKnowledgeBase.typicalAccidentCase',
-          name: 'typicalAccidentCase',
-          hideChildrenInMenu: true,
-        },
-      ],
+      quickList: [], // 快捷菜单列表
+      quickMax: 8, // 快捷菜单最大数量
     };
   }
   componentDidMount () {
@@ -123,8 +113,23 @@ export default class NewMenuReveal extends Component {
         setMenuSys(blockClassification, menuSysAll);
         const blocks = blockClassification[0].blocks;
         const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
+        const menuSysAllFlat = menuSysAll.reduce((arr, val) => val.routes ? [...arr, ...val.routes] : arr, []);
         this.setState({ menuSys, menuSysAll });
-
+        // 获取快捷菜单
+        dispatch({
+          type: 'user/fetchQuickMenu',
+          payload: { id: data.userId },
+          callback: (code) => {
+            if (code) {
+              this.setState({
+                quickList: code ? code.split(',').reduce((arr, val) => {
+                  const target = menuSysAllFlat.find(item => item.code === val);
+                  return target ? [...arr, target] : arr;
+                }, []) : [],
+              });
+            }
+          },
+        });
         if (logined) dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
       },
     });
@@ -255,7 +260,44 @@ export default class NewMenuReveal extends Component {
 
   // 点击展开/收起
   handleChangeExpand = () => {
-    this.setState(({ expand }) => ({ expand: !expand }))
+    const { dispatch, user: { quickExpand } } = this.props;
+    dispatch({
+      type: 'user/saveQuickExpand',
+      payload: !quickExpand,
+    })
+  }
+
+  // 点击保存快捷菜单是否编辑的状态
+  handleChangeQuickEdit = () => {
+    const { dispatch, user: { quickEdit } } = this.props;
+    dispatch({
+      type: 'user/saveQuickEdit',
+      payload: !quickEdit,
+    })
+  }
+
+  // 点击快捷菜单
+  onClickQuickMenu = (item) => {
+    const { dispatch, user: { quickEdit, currentUser } } = this.props;
+    const { quickList } = this.state;
+    if (!item.code) return;
+    // 如果快捷菜单开启了编辑状态
+    if (!quickEdit) {
+      this.handleOpenMenu(item.path);
+    } else {
+      const newList = quickList.filter(val => val.code !== item.code);
+      dispatch({
+        type: 'user/addQuickMenu',
+        payload: { id: currentUser.userId, code: newList.map(val => val.code).join(',') },
+        callback: (success) => {
+          if (success) {
+            this.setState({ quickList: newList });
+          } else {
+            message.error('操作失败')
+          }
+        },
+      })
+    }
   }
 
   renderBlocks = () => {
@@ -323,9 +365,11 @@ export default class NewMenuReveal extends Component {
     const {
       user: {
         currentUser: { userName, permissionCodes },
+        quickExpand = false,
+        quickEdit,
       },
     } = this.props;
-    const { currentBlockClassification, modalVisible, expand, quickList } = this.state;
+    const { currentBlockClassification, modalVisible, quickList } = this.state;
 
     // const showWorkbench = permissionCodes && permissionCodes.includes('companyWorkbench');
     const showChemical = permissionCodes && permissionCodes.includes('dashboard.chemical');
@@ -389,28 +433,43 @@ export default class NewMenuReveal extends Component {
               <div>驾驶舱</div>
             </div>
           )}
-          <div className={classNames(styles.unexpand, { [styles.hidden]: expand })} onClick={this.handleChangeExpand}><DoubleLeftOutlined /> 快捷操作</div>
-          <div className={classNames(styles.expand, { [styles.hidden]: !expand })}>
-            <AppstoreAddOutlined />
-            <DoubleRightOutlined onClick={this.handleChangeExpand} />
+          {/* 快捷菜单 */}
+          <div className={classNames(styles.unexpand, { [styles.hidden]: quickExpand })} onClick={this.handleChangeExpand}>
+            <DoubleLeftOutlined style={{ transform: 'rotate(90deg)' }} /> 快捷操作
+            </div>
+          <div className={classNames(styles.expand, { [styles.hidden]: !quickExpand })}>
+            <img
+              src={quickEdit ? logoOut : logoAdd}
+              alt="管理快捷菜单"
+              className={styles.quickIcon}
+              onClick={this.handleChangeQuickEdit}
+            />
+            <img
+              src={logoDown}
+              className={styles.quickIcon}
+              alt="收起"
+              onClick={this.handleChangeExpand}
+            />
           </div>
-          <div className={classNames(styles.expandList, { [styles.hidden]: !expand })}>
-            {quickList.slice(0, 3).map(item => (
-              <Col key={item.name} span={3} className={styles.itemOuter}>
+          <div className={classNames(styles.expandList, { [styles.hidden]: !quickExpand })}>
+            <div className={styles.title}>快捷菜单</div>
+            {quickExpand ? quickList.map(item => (
+              <Col key={item.name} span={3} style={{ padding: '0.6em' }}>
                 <div className={styles.item}>
                   <div
                     className={styles.itemInner}
-                    onClick={
-                      item.developing ? null : () => this.handleOpenMenu(item.path)
-                    }
+                    onClick={() => this.onClickQuickMenu(item)}
                   >
                     <img src={this.generateSysUrl(item)} alt="logo" />
                     <div>{item.title}</div>
                     {item.developing ? <span className={styles.dot} /> : null}
+                    <div className={classNames(styles.close, {
+                      [styles.hidden]: !quickEdit,
+                    })}></div>
                   </div>
                 </div>
               </Col>
-            ))}
+            )) : null}
           </div>
         </div>
         <Modal
