@@ -85,7 +85,11 @@ export default class Warehouse extends PureComponent {
       ...data,
       icon: typeof icon === 'function' ? icon({ ...data, monitorParams: noFlameAndToxic }) : icon,
     };
-    const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
+    const { id: monitorEquipmentId } = meList[0] || {};
+    const noFinishWarningProcessId = !meList.every(item => {
+      const { noFinishWarningProcessId } = item;
+      return !noFinishWarningProcessId;
+    });
 
     return (
       <div

@@ -13,7 +13,7 @@ export default class RadioBtns extends PureComponent {
     super(props);
     this.state = {
       active: undefined,
-      page: 1,
+      page: 0,
     };
   }
 
@@ -26,7 +26,7 @@ export default class RadioBtns extends PureComponent {
     if (!btnKey) return;
     const keys = fields.map(item => item.key);
     const index = keys.indexOf(btnKey);
-    this.setState({ page: Math.ceil((index + 1) / size) });
+    this.setState({ page: Math.ceil((index + 1) / size) - 1 });
   };
 
   componentDidUpdate = prevProps => {
@@ -81,7 +81,7 @@ export default class RadioBtns extends PureComponent {
     } = this.props;
     const { page, active } = this.state;
     const total = fields.length;
-    const lastPage = Math.ceil(total / size);
+    const lastPage = Math.ceil(total / size) - 1;
 
     // const menu = (
     //   <Menu onClick={this.handleMenuClick}>
@@ -94,7 +94,7 @@ export default class RadioBtns extends PureComponent {
 
     return (
       <div className={classNames(styles.container, className)} style={{ ...style }}>
-        {page !== 1 && (
+        {page !== 0 && (
           <div className={styles.pageWrapper} style={preIconStyles} onClick={this.handleClickPrev}>
             {/* {prevIcon ? prevIcon : <LeftOutlined />} */}
             {prevIcon ? prevIcon : <LegacyIcon type="left" />}
@@ -107,7 +107,7 @@ export default class RadioBtns extends PureComponent {
             buttonStyle="solid"
             onChange={this.handleRadioChange}
             style={{
-              transform: `translate(-${(page - 1) * 100}%, 0)`,
+              transform: `translate(-${page * 100}%, 0)`,
               transition: 'transform 0.3s',
             }}
           >
@@ -118,7 +118,7 @@ export default class RadioBtns extends PureComponent {
                 <Radio.Button
                   value={key || index}
                   key={index}
-                  style={{ flex: 'none', width: `${lastPage > 1 ? 100 / size : 100 / total}%` }}
+                  style={{ flex: 'none', width: `${lastPage > 0 ? 100 / size : 100 / total}%` }}
                 >
                   {render ? render() : label}
                 </Radio.Button>

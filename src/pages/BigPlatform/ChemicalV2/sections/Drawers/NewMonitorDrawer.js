@@ -106,7 +106,11 @@ export default class NewMonitorDrawer extends PureComponent {
                     icon: typeof icon === 'function' ? icon(item) : icon,
                   };
                   const paramList = monitorParams || allMonitorParam || {};
-                  const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
+                  const { id: monitorEquipmentId } = meList[0] || {};
+                  const noFinishWarningProcessId = !meList.every(item => {
+                    const { noFinishWarningProcessId } = item;
+                    return !noFinishWarningProcessId;
+                  });
 
                   return (
                     <CardItem

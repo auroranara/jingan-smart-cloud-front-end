@@ -141,14 +141,14 @@ export default class DangerSourceDrawer extends PureComponent {
         wareHouseArea = [],
       } = {},
     } = list[active] || {};
-    const next = list.slice(page * Size, (page + 1) * Size);
+    const next = list.slice((page + 1) * Size, (page + 2) * Size);
     const nextIcon = hasAlarm(next) && (
       <div className={styles.pageBtns}>
         <LegacyIcon type="right" />
         <div className={styles.dot} />
       </div>
     );
-    const prev = list.slice((page - 2) * Size, (page - 1) * Size);
+    const prev = list.slice((page - 1) * Size, page * Size);
     const prevIcon = hasAlarm(prev) && (
       <div className={styles.pageBtns}>
         <LegacyIcon type="left" />
