@@ -10,7 +10,7 @@ export default class MapMarkerSelect extends PureComponent {
   state = {};
 
   componentDidMount() {
-    // this.handleUpdateMap(true);
+    this.handleUpdateMap(true);
   }
 
   componentDidUpdate(prevProps) {
