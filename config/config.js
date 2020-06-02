@@ -169,4 +169,5 @@ export default {
     mergeRules: false,
   },
   // devtool: 'none',
+  copy: [{ from: 'html/download.html', to: '' }],
 };
