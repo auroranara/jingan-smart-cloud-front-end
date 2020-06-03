@@ -232,7 +232,6 @@
       var logoUrl = config.logo;
       var projectName = config.projectName;
       var layerUrl = config.layer;
-      // var codeUrl = config.code;
 
       var logo = document.querySelector('.logo');
       logo.style.backgroundImage = 'url(' + logoUrl + ')';
@@ -242,9 +241,6 @@
 
       var img = document.querySelector('#img');
       img.src = layerUrl;
-
-      // var code = document.querySelector('.code');
-      // code.style.backgroundImage = 'url(' + codeUrl + ')';
 
       var btn = document.querySelector('.downloadButton');
       btn.addEventListener('click', downloadApp, false);
