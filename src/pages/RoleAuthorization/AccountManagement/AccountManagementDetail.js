@@ -40,8 +40,9 @@ const breadcrumbList = [
     name: '查看账号',
   },
 ];
-@connect(({ account, loading }) => ({
+@connect(({ account, company, loading }) => ({
   account,
+  company,
   loading: loading.models.account,
 }))
 @Form.create()
@@ -50,6 +51,7 @@ export default class accountManagementDetail extends PureComponent {
     companyType: false,
     gavType: false,
     visible: false,
+    passwordRule: 1,
   };
 
   /* 生命周期函数 */
@@ -67,11 +69,12 @@ export default class accountManagementDetail extends PureComponent {
       payload: {
         id,
       },
-      success: ({ unitType }) => {
+      success: ({ unitType, passwordRule }) => {
         this.setState({
           companyType: unitType === 4,
           gavType: unitType === 2,
         });
+        if (passwordRule) this.setState({ passwordRule: +passwordRule });
       },
       error() {
         dispatch(routerRedux.push('/exception/500'));
@@ -181,27 +184,77 @@ export default class accountManagementDetail extends PureComponent {
           </Description>
           <Description term={fieldLabels.userName}>{userName || '-'}</Description>
           <Description term={fieldLabels.sex}>{getLabel(sex, SEXES)}</Description>
-          <Description term={fieldLabels.birthday}>{birth ? moment(birth).format('YYYY-MM-DD') : '-'}</Description>
-          <Description term={fieldLabels.phoneNumber}>{(phoneNumber + '').trim() || '-'}</Description>
+          <Description term={fieldLabels.birthday}>
+            {birth ? moment(birth).format('YYYY-MM-DD') : '-'}
+          </Description>
+          <Description term={fieldLabels.phoneNumber}>
+            {(phoneNumber + '').trim() || '-'}
+          </Description>
           <Description term={fieldLabels.degree}>{getLabel(education, DEGREES)}</Description>
           <Description term={fieldLabels.major}>{major}</Description>
-
         </DescriptionList>
         <DescriptionList col={1} style={{ marginTop: 20 }}>
           <Description term={fieldLabels.avatar}>
-          {Array.isArray(avatarFileList) && avatarFileList.length
-            ? avatarFileList.map(({ id, fileName, webUrl }) => <p style={{ margin: 0 }}><a key={id} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></p>)
-            : '暂无头像'}
+            {Array.isArray(avatarFileList) && avatarFileList.length
+              ? avatarFileList.map(({ id, fileName, webUrl }) => (
+                  <p style={{ margin: 0 }}>
+                    <a key={id} href={webUrl} target="_blank" rel="noopener noreferrer">
+                      {fileName}
+                    </a>
+                  </p>
+                ))
+              : '暂无头像'}
           </Description>
           <Description term={fieldLabels.attached}>
             {Array.isArray(educationFileList) && educationFileList.length
-              ? educationFileList.map(({ id, fileName, webUrl }) => <a key={id} href={webUrl} style={{ marginRight: 20 }} target="_blank" rel="noopener noreferrer">{fileName}</a>)
+              ? educationFileList.map(({ id, fileName, webUrl }) => (
+                  <a
+                    key={id}
+                    href={webUrl}
+                    style={{ marginRight: 20 }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {fileName}
+                  </a>
+                ))
               : '暂无附件'}
           </Description>
         </DescriptionList>
       </Card>
     );
   }
+
+  // 验证密码
+  validatorPassword = (rule, value, callback) => {
+    const { passwordRule } = this.state;
+    let reg, text;
+    switch (passwordRule) {
+      case 1:
+        reg = /^(?=.*[a-zA-Z])(?=.*\d)[^]{6,16}$/;
+        text = '密码长度为6-16个字符，其中必须包含字母、数字';
+        break;
+      case 2:
+        reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{6,16}$/;
+        text = '密码长度为6-16个字符，其中必须包含大写字母、小写字母和数字';
+        break;
+      case 3:
+        reg = /^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\d]){1,})(?=(.*[\W]){1,})(?!.*\s).{6,16}$/;
+        text = '密码长度为6-16个字符，其中必须包含大写字母、小写字母、数字和特殊字符（除空格）';
+        break;
+      default:
+        reg = /^(?=.*[a-zA-Z])(?=.*\d)[^]{6,16}$/;
+        text = '密码长度为6-16个字符，其中必须包含字母、数字';
+        break;
+    }
+    if (value) {
+      if (reg.test(value)) {
+        callback();
+        return;
+      }
+    }
+    callback(text);
+  };
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
@@ -217,12 +270,12 @@ export default class accountManagementDetail extends PureComponent {
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 7 },
+        sm: { span: 5 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 12 },
-        md: { span: 10 },
+        sm: { span: 14 },
+        md: { span: 16 },
       },
     };
     return (
@@ -252,6 +305,7 @@ export default class accountManagementDetail extends PureComponent {
           onCancel={this.handleCancel}
           okText="确认"
           cancelText="取消"
+          width={650}
         >
           <Form.Item {...formItemLayout} label="密码">
             {getFieldDecorator('newPassword', {
@@ -261,8 +315,11 @@ export default class accountManagementDetail extends PureComponent {
                   whitespace: true,
                   message: '请输入密码',
                 },
+                {
+                  validator: this.validatorPassword,
+                },
               ],
-            })(<Input placeholder="请重新输入密码" type="password" />)}
+            })(<Input.Password placeholder="请重新输入密码" type="password" />)}
           </Form.Item>
           <Form.Item {...formItemLayout} label="确认密码">
             {getFieldDecorator('password', {
@@ -276,7 +333,7 @@ export default class accountManagementDetail extends PureComponent {
                   validator: this.checkConfirm,
                 },
               ],
-            })(<Input placeholder="请重新输入密码" type="password" />)}
+            })(<Input.Password placeholder="请重新输入密码" type="password" />)}
           </Form.Item>
         </Modal>
       </FooterToolbar>

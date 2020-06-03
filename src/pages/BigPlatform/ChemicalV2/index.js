@@ -185,6 +185,8 @@ const transformCondition = condition => {
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
     riskPointLoading: loading.effects['unitSafety/fetchPoints'],
     zoneLoading: loading.effects['chemical/fetchZoneContent'],
+    targetLoading: loading.effects['chemical/fetchMonitorData'],
+    dangerSourceLoading: loading.effects['chemical/fetchDangerSourceList'],
   })
 )
 export default class Chemical extends PureComponent {
@@ -1390,6 +1392,8 @@ export default class Chemical extends PureComponent {
       emergencyManagement: { specialEquipment: specialEquipDict = [] },
       gasMonitor: { realTimeList },
       zoneLoading,
+      targetLoading,
+      dangerSourceLoading,
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -1655,6 +1659,7 @@ export default class Chemical extends PureComponent {
           monitorData={monitorData}
           setDrawerVisible={this.setDrawerVisible}
           handleShowVideo={this.handleShowVideo}
+          loading={targetLoading}
         />
 
         <MonitorTabDrawer
@@ -1667,6 +1672,7 @@ export default class Chemical extends PureComponent {
           handleClickMonitorDetail={this.handleClickMonitorDetail}
           setDrawerVisible={this.setDrawerVisible}
           handleShowVideo={this.handleShowVideo}
+          loading={targetLoading}
         />
 
         {/* <StorageDrawer
@@ -1714,6 +1720,7 @@ export default class Chemical extends PureComponent {
           handleShowDangerSourceDetail={this.handleShowDangerSourceDetail}
           handleShowVideo={this.handleShowVideo}
           companyId={companyId}
+          loading={dangerSourceLoading}
         />
 
         <DangerSourceInfoDrawer

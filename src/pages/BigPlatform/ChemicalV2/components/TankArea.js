@@ -134,7 +134,11 @@ export default class TankArea extends PureComponent {
                   monitorParams,
                   icon: typeof icon === 'function' ? icon({ ...item, monitorParams }) : icon,
                 };
-                const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
+                const { id: monitorEquipmentId } = meList[0] || {};
+                const noFinishWarningProcessId = !meList.every(item => {
+                  const { noFinishWarningProcessId } = item;
+                  return !noFinishWarningProcessId;
+                });
 
                 return (
                   <CardItem

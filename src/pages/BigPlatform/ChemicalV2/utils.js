@@ -60,6 +60,7 @@ const iconFlamGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/gas.png';
 const iconToxicGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/poison.png';
 
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const NO_DATA = '暂无数据';
 
 const transformCondition = condition => {
   if (condition === '>=') return '≥';
@@ -73,7 +74,7 @@ const renderEllipsis = val => (
   </Ellipsis>
 );
 
-const formatTime = time => (time ? moment(time).format(TIME_FORMAT) : '暂无数据');
+const formatTime = time => (time ? moment(time).format(TIME_FORMAT) : NO_DATA);
 
 export const MsgShowTypes = [
   1, // 发生监管
@@ -234,7 +235,7 @@ export const MonitorConfig = {
           return (
             <span>
               <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
-              {val || '暂无数据'}
+              {val || NO_DATA}
             </span>
           );
         },
@@ -550,7 +551,7 @@ export const MonitorConfig = {
           return (
             <span>
               <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
-              {val}
+              {val || NO_DATA}
             </span>
           );
         },
@@ -698,7 +699,7 @@ export const MonitorConfig = {
           return (
             <span>
               <LegacyIcon type="environment" style={{ color: '#8198b4', marginRight: 5 }} />
-              {val || '暂无位置'}
+              {val || NO_DATA}
             </span>
           );
         },

@@ -51,7 +51,11 @@ export default class TypeCardHead extends PureComponent {
   render() {
     const { labelList, alarming, data, type } = this.props;
     const { meList, id: targetId, name, gasholderName } = data;
-    const { noFinishWarningProcessId, id } = meList[0] || {};
+    const { id } = meList[0] || {};
+    const noFinishWarningProcessId = !meList.every(item => {
+      const { noFinishWarningProcessId } = item;
+      return !noFinishWarningProcessId;
+    });
 
     return (
       <div className={styles.head}>

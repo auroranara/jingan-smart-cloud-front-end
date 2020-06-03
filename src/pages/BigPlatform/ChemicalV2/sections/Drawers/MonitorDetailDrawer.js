@@ -51,7 +51,11 @@ export default class MonitorDetailDrawer extends Component {
       handleShowVideo,
     } = this.props;
     const { title = '', fields = [], icon } = MonitorConfig[monitorType] || {};
-    const { noFinishWarningProcessId, id: monitorEquipmentId } = meList[0] || {};
+    const { id: monitorEquipmentId } = meList[0] || {};
+    const noFinishWarningProcessId = !meList.every(item => {
+      const { noFinishWarningProcessId } = item;
+      return !noFinishWarningProcessId;
+    });
 
     return (
       <CustomDrawer

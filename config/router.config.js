@@ -661,6 +661,24 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/role-authorization/authentication', // 身份鉴别
+              code: 'roleAuthorization.authentication',
+              name: 'authentication',
+              hideChildrenInMenu: true,
+              routes: [
+                // {
+                //   path: '/role-authorization/authentication',
+                //   redirect: '',
+                // },
+                {
+                  path: '/role-authorization/authentication',
+                  name: 'list',
+                  code: 'roleAuthorization.authentication.listView',
+                  component: './RoleAuthorization/Authentication',
+                },
+              ],
+            },
           ],
         },
 

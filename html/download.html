@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>晶安智慧云</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    .mobileContainer {
+      height: 100%;
+    }
+
+    .mobileContainer .content {
+      position: relative;
+      min-height: 100%;
+      background: url('http://data.jingan-china.cn/v2/login/nanxiao/nanxiao_download_background.png') no-repeat 25%;
+      background-size: auto 100%;
+      overflow: hidden;
+    }
+
+    .mobileContainer .content .titleWrapper {
+      height: 20.792vh;
+      line-height: 20.792vh;
+      font-size: 0;
+      text-align: center;
+    }
+
+    .mobileContainer .content .titleWrapper .logo {
+      display: inline-block;
+      margin-right: 1.98vh;
+      width: 5.94vh;
+      height: 5.94vh;
+      background: no-repeat center;
+      background-size: contain;
+      vertical-align: middle;
+    }
+
+    .mobileContainer .content .titleWrapper .title {
+      position: relative;
+      top: -1px;
+      display: inline-block;
+      height: 5.94vh;
+      line-height: 5.94vh;
+      font-size: 3.3416vh;
+      font-weight: bold;
+      color: #fff;
+      vertical-align: middle;
+    }
+
+    .mobileContainer .content .layer {
+      height: 32vh;
+      text-align: center;
+    }
+
+    .mobileContainer .content .layer img {
+      display: inline-block;
+      width: auto;
+      height: 100%;
+      vertical-align: top;
+    }
+
+    .mobileContainer .content .codeWrapper {
+      padding-top: 1.98vh;
+      padding-bottom: 2.599vh;
+    }
+
+    .mobileContainer .content .codeWrapper .code {
+      height: 13.98515vh;
+      background: no-repeat center;
+      background-size: auto 75.22124%;
+    }
+
+    .mobileContainer .content .codeWrapper .codeDescription {
+      font-size: 1.48515vh;
+      line-height: 2;
+      color: #fff;
+      text-align: center;
+    }
+
+    .mobileContainer .content .buttonWrapper {
+      padding: 4.08416vh 0;
+      text-align: center;
+    }
+
+    .mobileContainer .content .buttonWrapper .downloadButton, .mobileContainer .content .buttonWrapper .loginButton {
+      display: inline-block;
+      width: 9.5em;
+      height: 3em;
+      line-height: 3em;
+      font-size: 2.2277vh;
+      border-radius: 1vh;
+      vertical-align: top;
+      cursor: pointer;
+    }
+
+    .mobileContainer .content .buttonWrapper .downloadButton {
+      /* margin-right: 5%; */
+      color: #fff;
+      background-color: #1577E4;
+    }
+
+    .mobileContainer .content .buttonWrapper .downloadButton:active {
+      opacity: 0.9;
+    }
+
+    .mobileContainer .content .buttonWrapper .loginButton {
+      color: #1577E4;
+      background-color: #fff;
+    }
+
+    .mobileContainer .content .buttonWrapper .loginButton:active {
+      opacity: 0.9;
+    }
+  </style>
+  <script>
+    function isIOS() {
+      return /iPhone|iPad|iPod/.test(window.navigator.userAgent);
+    }
+    function isAndroid() {
+      return /Android/.test(window.navigator.userAgent);
+    }
+
+    function isWeChat() {
+      return /micromessenger/.test(window.navigator.userAgent.toLowerCase());
+    }
+
+    function getConfigJSON(name) {
+      var defaultLogo = 'http://data.jingan-china.cn/v2/login/logo/logo_jingan.svg';
+      var anzhenLogo = 'http://data.jingan-china.cn/v2/login/logo/logo_anzhen.png';
+      var defaultLayer = 'http://data.jingan-china.cn/v2/login/jingan_download_layer.png';
+
+      const configs = {
+        default: {
+          projectName: '晶安智慧云测试平台',
+          logo: defaultLogo,
+          layer: defaultLayer,
+        },
+        wuxi: {
+          projectName: '无锡晶安智慧云平台',
+          logo: defaultLogo,
+          layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
+          ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
+          android:'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+        },
+        anzhen: {
+          projectName: '城市安全云平台',
+          logo: anzhenLogo,
+          layer: 'http://data.jingan-china.cn/v2/login/anzhen_download_layer.png',
+          ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/AnZhen/official_version/AZInterSafe.plist&ran=',
+          android:'http://anzhen.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+        },
+        jiangxi: {
+          projectName: '智慧食安监管云平台',
+          logo: defaultLogo,
+          layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
+          ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
+          android:'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+        },
+        demo_anzhen: {
+          projectName: '城市安全云平台',
+          logo: anzhenLogo,
+          layer: 'http://data.jingan-china.cn/v2/login/anzhen_download_layer.png',
+          ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/AnZhen/official_version/AZInterSafe.plist&ran=',
+          android:'http://anzhen.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+        },
+        ehu: {
+          projectName: '鹅湖智慧云平台',
+          logo: defaultLogo,
+          layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
+          ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
+          android:'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+        },
+        show: {
+          projectName: '晶安智慧云演示平台',
+          logo: defaultLogo,
+          layer: 'http://data.jingan-china.cn/v2/login/show_download_layer.png',
+          ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/yanshi/official_version/yanshi.plist&ran=',
+          android:'http://58.215.178.100:12086/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+        },
+      };
+
+      if (!name || !(name in configs))
+        return configs.default;
+      return configs[name];
+    }
+
+    function getConfig() {
+      var search = window.location.search;
+      var configJSON = getConfigJSON();
+      var name = 'default';
+      if (search) {
+        var query = search.slice(1);
+        name = query.split('=')[1];
+      }
+      return getConfigJSON(name);
+    }
+
+    function downloadApp(e) {
+      var config = getConfig();
+      var ios = config.ios;
+      var android = config.android;
+      var browser = isIOS() ? 'Safari中' : '浏览器';
+
+      if (isWeChat()) {
+        alert('点击右上角按钮，然后在弹出的菜单中，点击在' + browser + '打开，即可安装。');
+        // e.preventDefault();
+        return;
+      }
+
+      if (isIOS() && ios) {
+        window.location.href = ios + Math.random();
+      } else if (isAndroid() && android) {
+        window.location.href = android + Math.random();
+      }
+    };
+
+    function onload() {
+      var config = getConfig();
+      var logoUrl = config.logo;
+      var projectName = config.projectName;
+      var layerUrl = config.layer;
+
+      var logo = document.querySelector('.logo');
+      logo.style.backgroundImage = 'url(' + logoUrl + ')';
+
+      var title = document.querySelector('.title');
+      title.innerHTML = projectName;
+
+      var img = document.querySelector('#img');
+      img.src = layerUrl;
+
+      var btn = document.querySelector('.downloadButton');
+      btn.addEventListener('click', downloadApp, false);
+    }
+
+    document.addEventListener('DOMContentLoaded', onload, false);
+  </script>
+</head>
+<body>
+  <div class="mobileContainer">
+    <div class="content">
+      <div class="contentInner">
+        <div class="titleWrapper">
+          <div class="logo"></div>
+          <div class="title"></div>
+        </div>
+        <div class="layer">
+          <img id="img" alt="layer" />
+        </div>
+        <div class="codeWrapper">
+          <div class="code"></div>
+        </div>
+        <div class="buttonWrapper">
+          <div class="downloadButton">APP下载</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
