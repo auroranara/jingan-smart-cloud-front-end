@@ -140,22 +140,17 @@
     function getConfigJSON(name) {
       var defaultLogo = 'http://data.jingan-china.cn/v2/login/logo/logo_jingan.svg';
       var anzhenLogo = 'http://data.jingan-china.cn/v2/login/logo/logo_anzhen.png';
-      var defaultCode = 'http://data.jingan-china.cn/v2/login/code/jingan_download_code.png';
-      var anzhenCode = 'http://data.jingan-china.cn/v2/login/code/anzhen_code.png';
-      var yanshiCode = 'http://data.jingan-china.cn/v2/login/code/yanshi_download_code.png';
       var defaultLayer = 'http://data.jingan-china.cn/v2/login/jingan_download_layer.png';
 
       const configs = {
         default: {
           projectName: '晶安智慧云测试平台',
           logo: defaultLogo,
-          code: defaultCode,
           layer: defaultLayer,
         },
         wuxi: {
           projectName: '无锡晶安智慧云平台',
           logo: defaultLogo,
-          code: defaultCode,
           layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
           ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
           android:'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
@@ -163,7 +158,6 @@
         anzhen: {
           projectName: '城市安全云平台',
           logo: anzhenLogo,
-          code: anzhenCode,
           layer: 'http://data.jingan-china.cn/v2/login/anzhen_download_layer.png',
           ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/AnZhen/official_version/AZInterSafe.plist&ran=',
           android:'http://anzhen.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
@@ -171,7 +165,6 @@
         jiangxi: {
           projectName: '智慧食安监管云平台',
           logo: defaultLogo,
-          code: defaultCode,
           layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
           ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
           android:'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
@@ -179,7 +172,6 @@
         demo_anzhen: {
           projectName: '城市安全云平台',
           logo: anzhenLogo,
-          code: anzhenCode,
           layer: 'http://data.jingan-china.cn/v2/login/anzhen_download_layer.png',
           ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/AnZhen/official_version/AZInterSafe.plist&ran=',
           android:'http://anzhen.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
@@ -187,7 +179,6 @@
         ehu: {
           projectName: '鹅湖智慧云平台',
           logo: defaultLogo,
-          code: defaultCode,
           layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
           ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
           android:'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
@@ -195,7 +186,6 @@
         show: {
           projectName: '晶安智慧云演示平台',
           logo: defaultLogo,
-          code: yanshiCode,
           layer: 'http://data.jingan-china.cn/v2/login/show_download_layer.png',
           ios:'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/yanshi/official_version/yanshi.plist&ran=',
           android:'http://58.215.178.100:12086/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
@@ -242,7 +232,7 @@
       var logoUrl = config.logo;
       var projectName = config.projectName;
       var layerUrl = config.layer;
-      var codeUrl = config.code;
+      // var codeUrl = config.code;
 
       var logo = document.querySelector('.logo');
       logo.style.backgroundImage = 'url(' + logoUrl + ')';
