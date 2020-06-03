@@ -1,21 +1,21 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
-import { Select } from '@/jingan-components/Form/';
+import { EmptyText } from '@/jingan-components/View';
 import moment from 'moment';
-import { COMPANY_FIELDNAMES, COMPANY_MAPPER, CLASSIFICATIONS, FORMAT } from '../config';
+import { CLASSIFICATIONS, FORMAT } from '../config';
 import { isNumber } from '@/utils/utils';
 import styles from './index.less';
 
-const List = ({ route, match, location }) => {
+export default ({ route, match, location }) => {
   const props = {
     route,
     match,
     location,
-    transform({ isUnit, unitId, companyId, title }) {
+    transform({ isUnit, unitId, companyId, standardTitle }) {
       return {
         companyId: isUnit ? unitId : companyId,
-        title: title && title.trim(),
+        standardTitle: standardTitle && standardTitle.trim(),
       };
     },
     fields: [
@@ -24,10 +24,7 @@ const List = ({ route, match, location }) => {
         label: '单位名称',
         component: 'Select',
         props: {
-          fieldNames: COMPANY_FIELDNAMES,
-          mapper: COMPANY_MAPPER,
-          showSearch: true,
-          filterOption: false,
+          preset: 'company',
           allowClear: true,
         },
         hide({ isUnit }) {
@@ -35,9 +32,12 @@ const List = ({ route, match, location }) => {
         },
       },
       {
-        name: 'title',
+        name: 'standardTitle',
         label: '标准标题',
         component: 'Input',
+        props: {
+          allowClear: true,
+        },
       },
     ],
     columns: ({ isUnit, renderDetailButton, renderEditButton, renderDeleteButton }) => [
@@ -46,59 +46,52 @@ const List = ({ route, match, location }) => {
             {
               dataIndex: 'companyName',
               title: '单位名称',
+              render: value => value || <EmptyText />,
             },
           ]
         : []),
       {
-        dataIndex: 'title',
+        dataIndex: 'standardTitle',
         title: '标准标题',
+        render: value => value || <EmptyText />,
       },
       {
-        dataIndex: 'scope',
+        dataIndex: 'applyScope',
         title: '适用范围',
+        render: value => value || <EmptyText />,
       },
       {
-        dataIndex: 'scope',
-        title: '适用范围',
-      },
-      {
-        dataIndex: 'classification',
+        dataIndex: 'standardType',
         title: '标准分类',
         render: value =>
-          isNumber(value) && (
-            <Select
-              list={CLASSIFICATIONS}
-              value={`${value}`}
-              mode="detail"
-              empty={null}
-              ellipsis={false}
-            />
-          ),
+          (CLASSIFICATIONS.find(item => item.key === `${value}`) || {}).value || <EmptyText />,
       },
       {
-        dataIndex: 'score',
+        dataIndex: 'passScore',
         title: '合格分数（分）',
+        render: value => (isNumber(value) ? value : <EmptyText />),
       },
       {
-        dataIndex: 'project',
+        dataIndex: 'examProject',
         title: '考核项目',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: '设定日志',
         title: '设定日志',
-        render: (_, { person, departmentName, date }) => (
+        render: (_, { createPerson, createPart, createTime }) => (
           <Fragment>
             <div className={styles.fieldWrapper}>
               <div>设定人：</div>
-              <div>{person}</div>
+              <div>{createPerson || <EmptyText />}</div>
             </div>
             <div className={styles.fieldWrapper}>
               <div>设定人部门：</div>
-              <div>{departmentName}</div>
+              <div>{createPart || <EmptyText />}</div>
             </div>
             <div className={styles.fieldWrapper}>
               <div>设定日期：</div>
-              <div>{date && moment(date).format(FORMAT)}</div>
+              <div>{createTime ? moment(createTime).format(FORMAT) : <EmptyText />}</div>
             </div>
           </Fragment>
         ),
@@ -122,5 +115,3 @@ const List = ({ route, match, location }) => {
   };
   return <TablePage {...props} />;
 };
-
-export default List;

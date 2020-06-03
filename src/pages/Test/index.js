@@ -1,24 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import Form from '@/jingan-components/Form';
 
-const list = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
-const A = () => {
-  useEffect(() => {
-    console.log('A');
-  }, []);
-  return <div>123</div>;
-};
-const B = ({ children }) => {
-  const [key, setKey] = useState(1);
-  useEffect(() => {
-    console.log('B');
-    setTimeout(() => {
-      setKey(2);
-    }, 2000);
-  }, []);
-  return <div key={key}>{children}</div>;
-};
-
 export default class Test extends Component {
   state = {
     key: 1,
@@ -37,9 +19,23 @@ export default class Test extends Component {
 
     return (
       <div>
-        <B>
-          <A />
-        </B>
+        <Form
+          mode="add"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
+          fields={[
+            {
+              name: '测试',
+              label: '测试',
+              component: 'SelectModalSelect',
+              props: {
+                preset: 'personListByCompany',
+                multiple: true,
+                title: '选择责任人',
+              },
+            },
+          ]}
+        />
       </div>
     );
   }

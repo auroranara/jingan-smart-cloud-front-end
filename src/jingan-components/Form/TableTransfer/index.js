@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Transfer, Button } from 'antd';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
-import { Input } from '@/jingan-components/Form';
-import { Table, EmptyText } from '@/jingan-components/View';
+import Input from '@/jingan-components/Form/Input';
+import Table from '@/jingan-components/View/Table';
+import EmptyText from '@/jingan-components/View/EmptyText';
 import { connect } from 'dva';
 import { isEqual } from 'lodash';
 import classNames from 'classnames';
@@ -15,6 +16,39 @@ const PRESETS = {
       list: 'gridCompanyList',
       getList: 'getGridCompanyList',
     },
+    columns: [
+      {
+        dataIndex: 'companyName',
+        title: '单位名称',
+        render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
+      },
+      {
+        dataIndex: 'address',
+        title: '地址',
+        render: value => <div style={{ minWidth: 28 }}>{value || <EmptyText />}</div>,
+      },
+    ],
+    rowKey: 'company_id',
+  },
+  gridCompanyByUser: {
+    mapper: {
+      namespace: 'common',
+      list: 'gridCompanyListByUser',
+      getList: 'getGridCompanyListByUser',
+    },
+    columns: [
+      {
+        dataIndex: 'companyName',
+        title: '单位名称',
+        render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
+      },
+      {
+        dataIndex: 'address',
+        title: '地址',
+        render: value => <div style={{ minWidth: 28 }}>{value || <EmptyText />}</div>,
+      },
+    ],
+    rowKey: 'companyId',
   },
   checkedCompany: {
     mapper: {
@@ -22,52 +56,59 @@ const PRESETS = {
       list: 'checkedCompanyList',
       getList: 'getCheckedCompanyList',
     },
+    columns: [
+      {
+        dataIndex: 'companyName',
+        title: '单位名称',
+        render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
+      },
+      {
+        dataIndex: 'address',
+        title: '地址',
+        render: value => <div style={{ minWidth: 28 }}>{value || <EmptyText />}</div>,
+      },
+    ],
+    rowKey: 'companyId',
+  },
+  safetyServiceWithCount: {
+    mapper: {
+      namespace: 'common',
+      list: 'safetyServiceListWithCount',
+      getList: 'getSafetyServiceListWithCount',
+    },
+    columns: [
+      {
+        dataIndex: 'companyName',
+        title: '单位名称',
+        render: (value, { count }) => `${value}（${count || 0}人）`,
+      },
+      {
+        dataIndex: 'address',
+        title: '地址',
+        render: value => <div style={{ minWidth: 28 }}>{value || <EmptyText />}</div>,
+      },
+    ],
+    rowKey: 'companyId',
   },
 };
 const PAGE_SIZE = 5;
-const COLUMNS = [
-  {
-    dataIndex: 'companyName',
-    title: '单位名称',
-    render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
-  },
-  {
-    dataIndex: 'address',
-    title: '地址',
-    render: value => <div style={{ minWidth: 28 }}>{value || <EmptyText />}</div>,
-  },
-];
-const FILTER_VALUES = {
-  companyName: {
-    value: undefined,
-    prevValue: undefined,
-    visible: false,
-  },
-  address: {
-    value: undefined,
-    prevValue: undefined,
-    visible: false,
-  },
-};
 const STATE = {
   data: [],
   filteredData: {},
-  sourceSelectedList: [],
-  targetSelectedList: [],
+  leftSelectedList: [],
+  rightSelectedList: [],
   length: 0,
-  leftFilter: {
-    ...FILTER_VALUES,
-  },
-  rightFilter: {
-    ...FILTER_VALUES,
-  },
+  leftFilter: {},
+  rightFilter: {},
 };
-const FILTER_DATA = (data, { companyName, address } = {}) => {
-  const list = (data || []).filter(
-    item =>
-      (!companyName || item.companyName.includes(companyName)) &&
-      (!address || item.address.includes(address))
-  );
+const FILTER_DATA = (data, rightFilter) => {
+  const rightFilterEntries = Object.entries(rightFilter || {});
+  let list = data || [];
+  if (rightFilterEntries.length) {
+    list = list.filter(item =>
+      rightFilterEntries.every(([key, value]) => !value || (item[key] && item[key].includes(value)))
+    );
+  }
   return {
     list,
     pagination: {
@@ -83,22 +124,23 @@ const PAGINATION = {
   showSizeChanger: false,
 };
 
-const GridCompanyTransfer = props => {
-  const {
-    className,
-    mode,
-    value,
-    onChange,
-    list: array,
-    list: { list } = {},
-    getList,
-    loading = false,
-    empty = <EmptyText />,
-    params,
-    initializeParams,
-    data: initialData,
-    ...rest
-  } = props;
+const TableTransfer = ({
+  className,
+  mode,
+  value,
+  onChange,
+  columns: COLUMNS,
+  rowKey,
+  list: array,
+  list: { list } = {},
+  loading,
+  getList,
+  params,
+  initializeParams,
+  data: initialData,
+  empty = <EmptyText />,
+  ...rest
+}) => {
   const [state, setState] = useState({
     ...STATE,
     data: initialData,
@@ -108,50 +150,86 @@ const GridCompanyTransfer = props => {
   const {
     data, // 右边的数据列表
     filteredData, // 筛选以后的右边数据列表（包含分页）
-    sourceSelectedList, // 左边选中的数据列表（不含固定的右边数据）
-    targetSelectedList, // 右边选中的数据列表
+    leftSelectedList, // 左边选中的数据列表（不含固定的右边数据）
+    rightSelectedList, // 右边选中的数据列表
     length, // 总数
     leftFilter, // 左边的筛选参数
     rightFilter, // 右边的筛选参数
   } = state;
+  // 左边选中的键值列表（含固定的右边键值） => 设给左边的table
   const leftSelectedRowKeys = useMemo(
     () => {
-      return (sourceSelectedList || []).concat(data || []).map(({ company_id }) => company_id);
+      return (leftSelectedList || []).concat(data || []).map(item => item[rowKey]);
     },
-    [sourceSelectedList, data]
-  ); // 左边选中的键值列表（含固定的右边键值）
+    [leftSelectedList, data]
+  );
+  // 右边选中的键值列表 => 设给右边的table
+  const rightSelectedRowKeys = useMemo(
+    () => {
+      return (rightSelectedList || []).map(item => item[rowKey]);
+    },
+    [rightSelectedList]
+  );
+  // 根据总数虚拟的源数据 => 设给transfer
   const dataSource = useMemo(
     () => {
-      return (sourceSelectedList || []).concat(data || []).concat(
-        [...Array(Math.max(0, (length || 0) - leftSelectedRowKeys.length)).keys()].map(
-          company_id => ({
-            company_id: `${company_id}`,
-          })
-        )
+      return (leftSelectedList || []).concat(data || []).concat(
+        [...Array(Math.max(0, (length || 0) - leftSelectedRowKeys.length)).keys()].map(key => ({
+          [rowKey]: `${key}`,
+        }))
       );
     },
     [leftSelectedRowKeys, length]
-  ); // 根据总数虚拟的transfer源数据
-  const rightSelectedRowKeys = useMemo(
-    () => {
-      return (targetSelectedList || []).map(({ company_id }) => company_id);
-    },
-    [targetSelectedList]
-  ); // 右边选中的键值列表
+  );
+  // 被选中的transfer所有键值列表 => 设给transfer
   const selectedKeys = useMemo(
     () => {
-      return (sourceSelectedList || [])
-        .concat(targetSelectedList || [])
-        .map(({ company_id }) => company_id);
+      return (leftSelectedList || []).concat(rightSelectedList || []).map(item => item[rowKey]);
     },
-    [sourceSelectedList, targetSelectedList]
-  ); // 被选中的transfer所有键值列表
+    [leftSelectedList, rightSelectedList]
+  );
+  // 被选中的transfer右边键值列表 => 设给transfer
   const targetKeys = useMemo(
     () => {
-      return (data || []).map(({ company_id }) => company_id);
+      return (data || []).map(item => item[rowKey]);
     },
     [data]
-  ); // 被选中的transfer右边键值列表
+  );
+  // 格式化后的左边筛选参数对象
+  const leftFilterParams = useMemo(
+    () => {
+      return Object.entries(leftFilter || {}).reduce(
+        (result, [key, { value } = {}]) => ({
+          ...result,
+          [key]: value && value.trim(),
+        }),
+        {}
+      );
+    },
+    [leftFilter]
+  );
+  // 格式化后的右边筛选参数对象
+  const rightFilterParams = useMemo(
+    () => {
+      return Object.entries(rightFilter || {}).reduce(
+        (result, [key, { value } = {}]) => ({
+          ...result,
+          [key]: value && value.trim(),
+        }),
+        {}
+      );
+    },
+    [rightFilter]
+  );
+  // console.log({
+  //   state,
+  //   leftSelectedRowKeys,
+  //   rightSelectedRowKeys,
+  //   dataSource,
+  //   selectedKeys,
+  //   targetKeys,
+  // });
+  // 设置总数的回调
   const setLength = useCallback((success, list) => {
     if (success) {
       const {
@@ -163,93 +241,52 @@ const GridCompanyTransfer = props => {
       }));
     }
   }, []);
-  const leftFilterParams = useMemo(
-    () => {
-      return Object.entries(leftFilter).reduce(
-        (result, [key, { value }]) => ({
-          ...result,
-          [key]: value && value.trim(),
-        }),
-        {}
-      );
-    },
-    [leftFilter]
-  ); // 格式化后的左边筛选参数对象
-  const rightFilterParams = useMemo(
-    () => {
-      return Object.entries(rightFilter).reduce(
-        (result, [key, { value }]) => ({
-          ...result,
-          [key]: value && value.trim(),
-        }),
-        {}
-      );
-    },
-    [rightFilter]
-  ); // 格式化后的右边筛选参数对象
-  // 初始化请求接口
+  const isDetail = mode === 'detail';
+  const isEdit = mode === 'edit';
+  const isAdd = !isDetail && !isEdit;
+  const hasValue = !!(value && value.length);
+  // 当mode不为detail时初始化获取全部数据
   useEffect(() => {
-    if (
-      !value ||
-      !value.length /* value不存在 */ ||
-      (data &&
-        data.length === value.length &&
-        value.every((key, index) => data[index].company_id === key)) /* value和data一一对应 */
-    ) {
+    if (!isDetail) {
       getList && getList(undefined, setLength);
     }
   }, []);
-  // value发生变化时
+  // 当mode不为add且value有值时初始化获取value对应数据
   useEffect(
     () => {
-      if (value && value.length /* value存在时 */) {
-        const callback = (success, array) => {
-          const list = array && array.list;
-          const data = value.map(key => {
-            const item = (list || []).find(item => item.company_id === key);
-            return (
-              item || {
-                company_id: key,
-              }
-            );
-          });
-          setState(state => ({
-            ...state,
-            ...STATE,
-            data,
-            filteredData: FILTER_DATA(data),
-          }));
-        };
+      if (!isAdd && hasValue) {
         if (
           !data ||
           data.length !== value.length ||
           value.some(
-            (key, index) => data[index].company_id !== key
+            (key, index) => data[index][rowKey] !== key
           ) /* data不存在，或者value和data不一一对应时 */
         ) {
-          if (
-            initialData &&
-            initialData.length === value.length &&
-            value.every(
-              (key, index) => initialData[index].company_id === key
-            ) /* value和initialData一一对应时 */
-          ) {
-            // setState(state => ({
-            //   ...state,
-            //   ...STATE,
-            //   data: initialData,
-            //   filteredData: FILTER_DATA(initialData),
-            // }));
+          const callback = (success, array) => {
+            const list = array && array.list;
+            const data = value.map(key => {
+              const item = (list || []).find(item => item[rowKey] === key);
+              return (
+                item || {
+                  [rowKey]: key,
+                }
+              );
+            });
+            setState(state => ({
+              ...state,
+              data,
+              filteredData: FILTER_DATA(data),
+            }));
+          };
+          if (initialData && initialData.length /* initialData存在时 */) {
             callback(true, { list: initialData });
-            getList && getList(undefined, setLength);
           } else if (
             list &&
             value.every(key =>
-              list.find(item => item.company_id === key)
+              list.find(item => item[rowKey] === key)
             ) /* 本地列表中能找到所有选项时 */
           ) {
             callback(true, array);
-            getList && getList(undefined, setLength);
           } else {
             /* 从后台筛选 */
             getList
@@ -266,63 +303,40 @@ const GridCompanyTransfer = props => {
                   true
                 )
               : callback(true, array);
-            getList && getList(undefined, setLength);
           }
         }
-      } else if (data && data.length /* value不存在但data存在时 */) {
-        setState(state => ({
-          ...state,
-          ...STATE,
-        }));
-        getList && getList(undefined, setLength);
       }
     },
     [value]
   );
-  // params发生变化时
+  // 当params发生变化时重新初始化
   useEffect(
     () => {
       if (!isEqual(params, prevParams)) {
         setPrevParams(params);
-        setState(state => ({
-          ...state,
-          ...STATE,
-        }));
-        getList && getList(undefined, setLength);
+        if (!isDetail) {
+          setState(STATE);
+          getList && getList(undefined, setLength);
+          if (hasValue) {
+            onChange && onChange();
+          }
+        }
       }
     },
     [params]
   );
-  // data发生变化时（这是setData时无法同步执行onChange而做的降级处理）
-  useEffect(
-    () => {
-      if (data !== initialData) {
-        const isDataExist = data && data.length;
-        const isValueExist = value && value.length;
-        if (
-          (!isDataExist && isValueExist) ||
-          (isDataExist &&
-            (!isValueExist ||
-              data.length !== value.length ||
-              value.some((key, index) => data[index].company_id !== key)))
-        ) {
-          onChange && onChange(data && data.map(({ company_id }) => company_id));
-        }
-      }
-    },
-    [data]
-  );
   const getColumnSearchProps = (direction, dataIndex) => {
-    const { value, prevValue, visible } = state[`${direction}Filter`][dataIndex];
+    const filterName = `${direction}Filter`;
+    const { value, prevValue, visible = false } = state[filterName][dataIndex] || {};
     const callback = () => {
       if (direction === 'left') {
         setState(state => ({
           ...state,
-          [`${direction}Filter`]: {
-            ...state[`${direction}Filter`],
+          [filterName]: {
+            ...state[filterName],
             [dataIndex]: {
-              ...state[`${direction}Filter`][dataIndex],
-              prevValue: state[`${direction}Filter`][dataIndex].value,
+              ...state[filterName][dataIndex],
+              prevValue: (state[filterName][dataIndex] || {}).value,
               visible: false,
             },
           },
@@ -332,11 +346,11 @@ const GridCompanyTransfer = props => {
         setState(state => ({
           ...state,
           filteredData: FILTER_DATA(state.data, rightFilterParams),
-          [`${direction}Filter`]: {
-            ...state[`${direction}Filter`],
+          [filterName]: {
+            ...state[filterName],
             [dataIndex]: {
-              ...state[`${direction}Filter`][dataIndex],
-              prevValue: state[`${direction}Filter`][dataIndex].value,
+              ...state[filterName][dataIndex],
+              prevValue: (state[filterName][dataIndex] || {}).value,
               visible: false,
             },
           },
@@ -345,7 +359,7 @@ const GridCompanyTransfer = props => {
     };
     return {
       filterDropdown: () => (
-        <div style={{ padding: 8 }}>
+        <div className={styles.inputContainer}>
           <div className={styles.inputWrapper}>
             <Input
               className={styles.input}
@@ -354,9 +368,9 @@ const GridCompanyTransfer = props => {
               onChange={({ target: { value } }) =>
                 setState(state => ({
                   ...state,
-                  [`${direction}Filter`]: {
-                    ...state[`${direction}Filter`],
-                    [dataIndex]: { ...state[`${direction}Filter`][dataIndex], value },
+                  [filterName]: {
+                    ...state[filterName],
+                    [dataIndex]: { ...state[filterName][dataIndex], value },
                   },
                 }))
               }
@@ -376,14 +390,9 @@ const GridCompanyTransfer = props => {
                   if (direction === 'left') {
                     setState(state => ({
                       ...state,
-                      [`${direction}Filter`]: {
-                        ...state[`${direction}Filter`],
-                        [dataIndex]: {
-                          ...state[`${direction}Filter`][dataIndex],
-                          value: undefined,
-                          prevValue: undefined,
-                          visible: false,
-                        },
+                      [filterName]: {
+                        ...state[filterName],
+                        [dataIndex]: undefined,
                       },
                     }));
                     getList && getList({ ...leftFilterParams, [dataIndex]: undefined });
@@ -394,14 +403,9 @@ const GridCompanyTransfer = props => {
                         ...rightFilterParams,
                         [dataIndex]: undefined,
                       }),
-                      [`${direction}Filter`]: {
-                        ...state[`${direction}Filter`],
-                        [dataIndex]: {
-                          ...state[`${direction}Filter`][dataIndex],
-                          value: undefined,
-                          prevValue: undefined,
-                          visible: false,
-                        },
+                      [filterName]: {
+                        ...state[filterName],
+                        [dataIndex]: undefined,
                       },
                     }));
                   }
@@ -418,18 +422,14 @@ const GridCompanyTransfer = props => {
                   if (direction === 'left') {
                     setState(state => ({
                       ...state,
-                      [`${direction}Filter`]: {
-                        ...FILTER_VALUES,
-                      },
+                      [filterName]: {},
                     }));
                     getList && getList();
                   } else {
                     setState(state => ({
                       ...state,
                       filteredData: FILTER_DATA(state.data),
-                      [`${direction}Filter`]: {
-                        ...FILTER_VALUES,
-                      },
+                      [filterName]: {},
                     }));
                   }
                 }}
@@ -449,20 +449,20 @@ const GridCompanyTransfer = props => {
         if (visible) {
           setState(state => ({
             ...state,
-            [`${direction}Filter`]: {
-              ...state[`${direction}Filter`],
-              [dataIndex]: { ...state[`${direction}Filter`][dataIndex], visible },
+            [filterName]: {
+              ...state[filterName],
+              [dataIndex]: { ...state[filterName][dataIndex], visible },
             },
           }));
           setTimeout(() => inputRef.current.select());
         } else {
           setState(state => ({
             ...state,
-            [`${direction}Filter`]: {
-              ...state[`${direction}Filter`],
+            [filterName]: {
+              ...state[filterName],
               [dataIndex]: {
-                ...state[`${direction}Filter`][dataIndex],
-                value: state[`${direction}Filter`][dataIndex].prevValue,
+                ...state[filterName][dataIndex],
+                value: (state[filterName][dataIndex] || {}).prevValue,
                 visible,
               },
             },
@@ -476,35 +476,31 @@ const GridCompanyTransfer = props => {
       <Transfer
         {...rest}
         className={classNames(styles.container, className)}
-        rowKey={({ company_id }) => company_id}
+        rowKey={record => record[rowKey]}
         showSelectAll={false}
         dataSource={dataSource}
         selectedKeys={selectedKeys}
         targetKeys={targetKeys}
         onChange={(targetKeys, direction) => {
-          setState(state => {
-            const data =
-              direction === 'left'
-                ? state.data.filter(
-                    ({ company_id }) =>
-                      !state.targetSelectedList.find(item => item.company_id === company_id)
-                  )
-                : (state.data || []).concat(state.sourceSelectedList);
-            return {
-              ...state,
-              ...(direction === 'left'
-                ? {
-                    targetSelectedList: [],
-                    data,
-                    filteredData: FILTER_DATA(data, rightFilterParams),
-                  }
-                : {
-                    sourceSelectedList: [],
-                    data,
-                    filteredData: FILTER_DATA(data, rightFilterParams),
-                  }),
-            };
-          });
+          const nextData =
+            direction === 'left'
+              ? data.filter(
+                  ({ [rowKey]: key }) => !rightSelectedList.find(item => item[rowKey] === key)
+                )
+              : (data || []).concat(leftSelectedList);
+          setState(state => ({
+            ...state,
+            data: nextData,
+            filteredData: FILTER_DATA(nextData, rightFilterParams),
+            ...(direction === 'left'
+              ? {
+                  rightSelectedList: [],
+                }
+              : {
+                  leftSelectedList: [],
+                }),
+          }));
+          onChange && onChange(nextData && nextData.map(item => item[rowKey]));
         }}
       >
         {({ direction, disabled }) => {
@@ -523,68 +519,61 @@ const GridCompanyTransfer = props => {
                 fixed: true,
                 ...(isLeft
                   ? {
-                      getCheckboxProps: ({ company_id }) => ({
-                        disabled:
-                          disabled || !!(data || []).find(item => item.company_id === company_id),
+                      getCheckboxProps: ({ [rowKey]: key }) => ({
+                        disabled: disabled || !!(data || []).find(item => item[rowKey] === key),
                       }),
                       selectedRowKeys: leftSelectedRowKeys,
                       onSelect: (record, selected) => {
                         setState(state => ({
                           ...state,
-                          sourceSelectedList: selected
-                            ? (state.sourceSelectedList || []).concat(record)
-                            : state.sourceSelectedList.filter(
-                                ({ company_id }) => company_id !== record.company_id
+                          leftSelectedList: selected
+                            ? (state.leftSelectedList || []).concat(record)
+                            : state.leftSelectedList.filter(
+                                item => item[rowKey] !== record[rowKey]
                               ),
                         }));
                       },
                       onSelectAll: (selected, selectedRows, changedRows) => {
                         setState(state => ({
                           ...state,
-                          sourceSelectedList: selected
-                            ? changedRows.reduce((result, item) => {
-                                if (
-                                  !result.find(({ company_id }) => item.company_id === company_id)
-                                ) {
-                                  result = result.concat(item);
+                          leftSelectedList: selected
+                            ? changedRows.reduce((result, record) => {
+                                if (!result.find(item => item[rowKey] === record[rowKey])) {
+                                  result = result.concat(record);
                                 }
                                 return result;
-                              }, state.sourceSelectedList || [])
-                            : state.sourceSelectedList.filter(
-                                ({ company_id }) =>
-                                  !changedRows.find(item => item.company_id === company_id)
+                              }, state.leftSelectedList || [])
+                            : state.leftSelectedList.filter(
+                                item => !changedRows.find(record => item[rowKey] === record[rowKey])
                               ),
                         }));
                       },
                     }
                   : {
-                      getCheckboxProps: () => ({ disabled: disabled }),
+                      getCheckboxProps: () => ({ disabled }),
                       selectedRowKeys: rightSelectedRowKeys,
                       onSelect: (record, selected) => {
                         setState(state => ({
                           ...state,
-                          targetSelectedList: selected
-                            ? (state.targetSelectedList || []).concat(record)
-                            : state.targetSelectedList.filter(
-                                ({ company_id }) => company_id !== record.company_id
+                          rightSelectedList: selected
+                            ? (state.rightSelectedList || []).concat(record)
+                            : state.rightSelectedList.filter(
+                                item => item[rowKey] !== record[rowKey]
                               ),
                         }));
                       },
                       onSelectAll: (selected, selectedRows, changedRows) => {
                         setState(state => ({
                           ...state,
-                          targetSelectedList: selected
-                            ? changedRows.reduce((result, item) => {
-                                if (
-                                  !result.find(({ company_id }) => item.company_id === company_id)
-                                ) {
-                                  result = result.concat(item);
+                          rightSelectedList: selected
+                            ? changedRows.reduce((result, record) => {
+                                if (!result.find(item => item[rowKey] === record[rowKey])) {
+                                  result = result.concat(record);
                                 }
                                 return result;
-                              }, state.targetSelectedList || [])
-                            : state.targetSelectedList.filter(
-                                ({ company_id }) =>
-                                  !changedRows.find(item => item.company_id === company_id)
+                              }, state.rightSelectedList || [])
+                            : state.rightSelectedList.filter(
+                                item => !changedRows.find(record => item[rowKey] === record[rowKey])
                               ),
                         }));
                       },
@@ -610,7 +599,7 @@ const GridCompanyTransfer = props => {
                   }));
                 }
               }}
-              rowKey="company_id"
+              rowKey={rowKey}
             />
           );
         }}
@@ -635,7 +624,7 @@ const GridCompanyTransfer = props => {
         //     },
         //   }));
         // }}
-        rowKey="company_id"
+        rowKey={rowKey}
         showCard={false}
         showPagination={false}
         scroll={
@@ -651,7 +640,7 @@ const GridCompanyTransfer = props => {
   }
 };
 
-GridCompanyTransfer.getRules = ({ label }) => {
+TableTransfer.getRules = ({ label }) => {
   return [
     {
       type: 'array',
@@ -665,11 +654,7 @@ GridCompanyTransfer.getRules = ({ label }) => {
 export default connect(
   state => state,
   null,
-  (
-    stateProps,
-    { dispatch },
-    { list, loading, getList, params, mapper, preset = 'gridCompany', ...ownProps }
-  ) => {
+  (stateProps, { dispatch }, { list, loading, getList, params, mapper, preset, ...ownProps }) => {
     const { list: presetList, mapper: presetMapper, ...rest } = PRESETS[preset] || {};
     const { namespace: n, list: l, getList: gl } = mapper || presetMapper || {};
     const valid = !params || Object.values(params).some(v => v);
@@ -685,16 +670,17 @@ export default connect(
         (valid &&
           n &&
           gl &&
-          ((payload, callback, ignoreParams) => {
+          ((payload, callback, ignore) => {
             dispatch({
               type,
               payload: {
                 pageNum: 1,
                 pageSize: PAGE_SIZE,
-                ...(!ignoreParams && params),
+                ...(!ignore && params),
                 ...payload,
               },
               callback,
+              ignore,
             });
           })) ||
         undefined,
@@ -714,4 +700,4 @@ export default connect(
       );
     },
   }
-)(GridCompanyTransfer);
+)(TableTransfer);

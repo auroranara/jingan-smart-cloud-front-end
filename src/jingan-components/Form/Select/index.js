@@ -24,7 +24,10 @@ const PRESETS = {
       list: 'unitList',
       getList: 'getUnitList',
     },
+    showSearch: true,
+    filterOption: false,
   },
+  // 网格人员
   gridPerson: {
     fieldNames: {
       key: 'id',
@@ -39,6 +42,7 @@ const PRESETS = {
     filterOption: false,
     // pagination: false,
   },
+  // 业务类型
   businessType: {
     fieldNames: {
       key: 'id',
@@ -50,6 +54,7 @@ const PRESETS = {
       getList: 'getBusinessTypeList',
     },
   },
+  // 行业
   industry: {
     fieldNames: {
       key: 'value',
@@ -61,6 +66,7 @@ const PRESETS = {
       getList: 'getIndustryList',
     },
   },
+  // 专项整治组
   specialRemediationSection: {
     fieldNames: {
       key: 'id',
@@ -74,6 +80,7 @@ const PRESETS = {
     showSearch: true,
     filterOption: false,
   },
+  // 安全服务机构
   safetyService: {
     fieldNames: {
       key: 'id',
@@ -83,6 +90,20 @@ const PRESETS = {
       namespace: 'common',
       list: 'safetyServiceList',
       getList: 'getSafetyServiceList',
+    },
+    showSearch: true,
+    filterOption: false,
+  },
+  // 安全服务机构
+  safetyService2: {
+    fieldNames: {
+      key: 'id',
+      value: 'name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'safetyServiceList2',
+      getList: 'getSafetyServiceList2',
     },
     showSearch: true,
     filterOption: false,
@@ -101,6 +122,7 @@ const PRESETS = {
     filterOption: false,
     // pagination: false,
   },
+  // 员工
   employee: {
     fieldNames: {
       key: 'studentId',
@@ -115,8 +137,35 @@ const PRESETS = {
     filterOption: false,
     // pagination: false,
   },
+  // 监测类型
+  monitorType: {
+    mapper: {
+      namespace: 'common',
+      list: 'monitorTypeList',
+      getList: 'getMonitorTypeList',
+    },
+    params: {
+      type: 4,
+    },
+    pagination: false,
+  },
+  // 根据用户权限获取网格树（吕旻）
+  gridTreeByUser: {
+    fieldNames: {
+      key: 'grid_id',
+      value: 'grid_name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'gridTreeByUser',
+      getList: 'getGridTreeByUser',
+    },
+    initializeParams: 'ids',
+    pagination: false,
+  },
 };
 
+// 整体思路：data随着value变化而变化，所以onChange时先设置data以防止value变化导致的一系列额外操作
 const FormSelect = ({
   className,
   value,
@@ -139,7 +188,7 @@ const FormSelect = ({
   notFoundContent,
   initializeParams,
   searchParams,
-  separator = ',',
+  separator = '，',
   data: initialData,
   params,
   ...rest
@@ -150,6 +199,7 @@ const FormSelect = ({
   const async = showSearch && !filterOption;
   const multiple = originalMode === 'multiple' || originalMode === 'tags';
   const list = isObject(array) ? array.list : array;
+  // 初始化请求接口
   useEffect(() => {
     if (
       labelInValue /* labelInValue为true */ ||
@@ -162,6 +212,7 @@ const FormSelect = ({
       getList && getList();
     }
   }, []);
+  // value发生变化时
   useEffect(
     () => {
       if (!labelInValue /* labelInValue为false */) {
@@ -211,13 +262,16 @@ const FormSelect = ({
               /* 从后台筛选 */
               getList
                 ? getList(
-                    typeof initializeParams === 'function'
-                      ? initializeParams(value)
-                      : {
-                          [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
-                          pageSize: multiple ? value.length : 1,
-                        },
-                    callback
+                    {
+                      ...(typeof initializeParams === 'function'
+                        ? initializeParams(value)
+                        : {
+                            [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
+                          }),
+                      pageSize: multiple ? value.length : 1,
+                    },
+                    callback,
+                    true
                   )
                 : callback(true, array);
               getList && getList();
@@ -231,11 +285,16 @@ const FormSelect = ({
     },
     [value]
   );
+  // 当params发生变化时重新请求接口
   useEffect(
     () => {
       if (!isEqual(params, prevParams)) {
         setPrevParams(params);
         getList && getList();
+        // 下面语句是否需要是个问题
+        if (value && (!multiple || value.length)) {
+          onChange && onChange();
+        }
       }
     },
     [params]
@@ -256,8 +315,22 @@ const FormSelect = ({
     }, 300);
     // 当labelInValue为false时，对选中的源数据进行保存，并对value进行处理（需要区分模式是多选还是单选）
     const handleChange = (value, option) => {
-      setData(value);
-      onChange && onChange(value && (multiple ? value.map(({ key }) => key) : value.key), option);
+      const values =
+        value &&
+        (multiple
+          ? value.map(item => ({
+              ...item,
+              key: item.key || item.value,
+              value: item.key || item.value,
+            }))
+          : { ...value, key: value.key || value.value, value: value.key || value.value });
+      if (labelInValue) {
+        onChange && onChange(values, option);
+      } else {
+        setData(values);
+        onChange &&
+          onChange(values && (multiple ? values.map(({ key }) => key) : values.key), option);
+      }
     };
     return (
       <Select
@@ -271,7 +344,7 @@ const FormSelect = ({
         optionFilterProp={optionFilterProp}
         filterOption={filterOption}
         onSearch={async ? handleSearch : onSearch}
-        onChange={!labelInValue ? handleChange : onChange}
+        onChange={handleChange}
         mode={originalMode}
         {...rest}
       >
@@ -336,13 +409,13 @@ export default connect(
       getList:
         !params || Object.values(params).some(v => v)
           ? namespace && gl
-            ? (payload, cb) => {
+            ? (payload, cb, ignoreParams) => {
                 dispatch({
                   type: `${namespace}/${gl}`,
                   payload: {
                     pageNum: 1,
                     pageSize: (pagination !== undefined ? pagination : presetPagination) ? 10 : 0,
-                    ...params,
+                    ...(!ignoreParams && params),
                     ...payload,
                   },
                   callback(...args) {

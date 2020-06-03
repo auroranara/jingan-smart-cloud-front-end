@@ -3167,80 +3167,80 @@ module.exports = env => {
                 },
               ],
             },
-            // // 绩效考核标准
-            // {
-            //   path: '/target-responsibility/performance-measurement',
-            //   code: 'targetResponsibility.performanceMeasurement',
-            //   name: 'performanceMeasurement',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/target-responsibility/performance-measurement',
-            //       redirect: '/target-responsibility/performance-measurement/list',
-            //     },
-            //     {
-            //       path: '/target-responsibility/performance-measurement/list',
-            //       code: 'targetResponsibility.performanceMeasurement.list',
-            //       name: 'list',
-            //       component: './TargetResponsibility/PerformanceMeasurement/List',
-            //     },
-            //     {
-            //       path: '/target-responsibility/performance-measurement/detail/:id',
-            //       code: 'targetResponsibility.performanceMeasurement.detail',
-            //       name: 'detail',
-            //       component: './TargetResponsibility/PerformanceMeasurement/Form',
-            //     },
-            //     {
-            //       path: '/target-responsibility/performance-measurement/add',
-            //       code: 'targetResponsibility.performanceMeasurement.add',
-            //       name: 'add',
-            //       component: './TargetResponsibility/PerformanceMeasurement/Form',
-            //     },
-            //     {
-            //       path: '/target-responsibility/performance-measurement/edit/:id',
-            //       code: 'targetResponsibility.performanceMeasurement.edit',
-            //       name: 'edit',
-            //       component: './TargetResponsibility/PerformanceMeasurement/Form',
-            //     },
-            //   ],
-            // },
-            // // 安全绩效管理
-            // {
-            //   path: '/target-responsibility/safety-performance',
-            //   code: 'targetResponsibility.safetyPerformance',
-            //   name: 'safetyPerformance',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/target-responsibility/safety-performance',
-            //       redirect: '/target-responsibility/safety-performance/list',
-            //     },
-            //     {
-            //       path: '/target-responsibility/safety-performance/list',
-            //       code: 'targetResponsibility.safetyPerformance.list',
-            //       name: 'list',
-            //       component: './TargetResponsibility/SafetyPerformance/List',
-            //     },
-            //     {
-            //       path: '/target-responsibility/safety-performance/detail/:id',
-            //       code: 'targetResponsibility.safetyPerformance.detail',
-            //       name: 'detail',
-            //       component: './TargetResponsibility/SafetyPerformance/Form',
-            //     },
-            //     {
-            //       path: '/target-responsibility/safety-performance/add',
-            //       code: 'targetResponsibility.safetyPerformance.add',
-            //       name: 'add',
-            //       component: './TargetResponsibility/SafetyPerformance/Form',
-            //     },
-            //     {
-            //       path: '/target-responsibility/safety-performance/edit/:id',
-            //       code: 'targetResponsibility.safetyPerformance.edit',
-            //       name: 'edit',
-            //       component: './TargetResponsibility/SafetyPerformance/Form',
-            //     },
-            //   ],
-            // },
+            // 绩效考核标准
+            {
+              path: '/target-responsibility/performance-measurement',
+              code: 'targetResponsibility.performanceMeasurement',
+              name: 'performanceMeasurement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/target-responsibility/performance-measurement',
+                  redirect: '/target-responsibility/performance-measurement/list',
+                },
+                {
+                  path: '/target-responsibility/performance-measurement/list',
+                  code: 'targetResponsibility.performanceMeasurement.list',
+                  name: 'list',
+                  component: './TargetResponsibility/PerformanceMeasurement/List',
+                },
+                {
+                  path: '/target-responsibility/performance-measurement/detail/:id',
+                  code: 'targetResponsibility.performanceMeasurement.detail',
+                  name: 'detail',
+                  component: './TargetResponsibility/PerformanceMeasurement/Form',
+                },
+                {
+                  path: '/target-responsibility/performance-measurement/add',
+                  code: 'targetResponsibility.performanceMeasurement.add',
+                  name: 'add',
+                  component: './TargetResponsibility/PerformanceMeasurement/Form',
+                },
+                {
+                  path: '/target-responsibility/performance-measurement/edit/:id',
+                  code: 'targetResponsibility.performanceMeasurement.edit',
+                  name: 'edit',
+                  component: './TargetResponsibility/PerformanceMeasurement/Form',
+                },
+              ],
+            },
+            // 安全绩效管理
+            {
+              path: '/target-responsibility/safety-performance',
+              code: 'targetResponsibility.safetyPerformance',
+              name: 'safetyPerformance',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/target-responsibility/safety-performance',
+                  redirect: '/target-responsibility/safety-performance/list',
+                },
+                {
+                  path: '/target-responsibility/safety-performance/list',
+                  code: 'targetResponsibility.safetyPerformance.list',
+                  name: 'list',
+                  component: './TargetResponsibility/SafetyPerformance/List',
+                },
+                {
+                  path: '/target-responsibility/safety-performance/detail/:id',
+                  code: 'targetResponsibility.safetyPerformance.detail',
+                  name: 'detail',
+                  component: './TargetResponsibility/SafetyPerformance/Form',
+                },
+                {
+                  path: '/target-responsibility/safety-performance/add',
+                  code: 'targetResponsibility.safetyPerformance.add',
+                  name: 'add',
+                  component: './TargetResponsibility/SafetyPerformance/Form',
+                },
+                {
+                  path: '/target-responsibility/safety-performance/edit/:id',
+                  code: 'targetResponsibility.safetyPerformance.edit',
+                  name: 'edit',
+                  component: './TargetResponsibility/SafetyPerformance/Form',
+                },
+              ],
+            },
           ],
         },
 

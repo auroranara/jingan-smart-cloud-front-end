@@ -15,7 +15,9 @@ export default function TextAreaEllipsis({ value, length = 20, emtpy = <EmptyTex
     >
       <div
         className={styles.ellipsis}
-        style={{ maxWidth: length && length < value.length ? `${length + 1}em` : `${value.length}em` }}
+        style={{
+          maxWidth: length && length < value.length ? `${length + 1}em` : `${value.length}em`,
+        }}
       >
         {value}
       </div>

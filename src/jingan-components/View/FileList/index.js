@@ -9,6 +9,7 @@ export default function FileList({
   style,
   value,
   type,
+  length = Infinity,
   empty = <EmptyText />,
   ellipsis = true,
 }) {
@@ -32,7 +33,7 @@ export default function FileList({
       </div>
     ) : (
       <div className={classNames(styles.pictureContainer, className)} style={style}>
-        {value.map(({ webUrl, fileName }, index) => (
+        {value.slice(0, length).map(({ webUrl, fileName }, index) => (
           <div className={styles.pictureWrapper} key={index}>
             <img
               className={styles.picture}
