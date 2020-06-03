@@ -118,7 +118,7 @@
 
   .content {
     height: 100%;
-    padding: 100px 0 200px 0;
+    padding: 100px 0 250px 0;
     overflow: hidden;
 
     .innerContent {
@@ -163,56 +163,6 @@
       align-items: center;
       line-height: 25px;
       padding: 0.6em;
-    }
-
-    .blockContent {
-      .itemOuter {
-        height: 160px;
-        padding: 0.6em;
-      }
-
-      .item {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all 0.3s;
-        background: url('http://data.jingan-china.cn/v2/menu/item-bg.png') no-repeat center center;
-        background-size: 100% 100%;
-
-        &:hover {
-          background: url(http://data.jingan-china.cn/v2/menu/item-bg-light.png) no-repeat center center;
-          background-size: 100% 100%;
-
-          .itemInner {
-            filter: brightness(2);
-          }
-        }
-      }
-
-      .itemInner {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #A9ACB1;
-        font-size: 17px;
-        font-weight: 500;
-        transition: all 0.3s;
-        position: relative;
-
-        &>img {
-          width: 50px;
-          height: 50px;
-          object-fit: contain;
-        }
-
-        &>div {
-          padding: 0.5em 0.5em 0 0.5em;
-        }
-      }
     }
 
     .blocks {
@@ -263,10 +213,11 @@
   }
 
   .footer {
+    padding-bottom: 155px;
     position: fixed;
     width: 100%;
     bottom: 0;
-    height: 200px;
+    height: 250px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -297,6 +248,67 @@
         font-size: 17px;
       }
     }
+
+    .unexpand {
+      padding: 10px 30px;
+      position: absolute;
+      right: 50px;
+      bottom: 60px;
+      cursor: pointer;
+      background: url('http://data.jingan-china.cn/v2/menu/item-bg.png') no-repeat center center;
+      background-size: 100% 100%;
+      border: 1px solid transparent;
+      font-size: 15px;
+
+      &:hover {
+        background: url(http://data.jingan-china.cn/v2/menu/item-bg-light.png) no-repeat center center;
+        border-color: #0673A0;
+      }
+    }
+
+    .expand {
+      padding: 25px 13px;
+      height: 140px;
+      font-size: 18px;
+      background-color: #053566;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      &>* {
+        cursor: pointer;
+
+        &:hover {
+          filter: brightness(2);
+        }
+      }
+    }
+
+    .expandList {
+      position: absolute;
+      right: 49px;
+      bottom: 0;
+      width: calc(100% - 38px);
+      height: 140px;
+      background-color: #03254ba6;
+      display: flex;
+      overflow: hidden;
+      padding-left: 80px;
+
+      .title {
+        width: 50px;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 35px;
+        writing-mode: vertical-lr;
+        text-align: center;
+        letter-spacing: 0.2em;
+      }
+    }
   }
 }
 
@@ -318,6 +330,127 @@
   position: absolute;
   right: 5px;
   bottom: 5px;
+}
+
+.itemOuter {
+  height: 160px;
+  padding: 0.6em;
+}
+
+.item {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: url('http://data.jingan-china.cn/v2/menu/item-bg.png') no-repeat center center;
+  background-size: 100% 100%;
+
+  &:hover {
+    background: url(http://data.jingan-china.cn/v2/menu/item-bg-light.png) no-repeat center center;
+    background-size: 100% 100%;
+
+    .itemInner {
+      filter: brightness(3);
+    }
+  }
+
+  .itemInner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #A9ACB1;
+    font-size: 17px;
+    font-weight: 500;
+    transition: all 0.3s;
+    position: relative;
+
+    &>img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+    }
+
+    &>div {
+      padding: 0.5em 0.5em 0 0.5em;
+    }
+
+    .checkBox {
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      padding: 0;
+      top: 0;
+      right: 0;
+      border: 1px solid #0074a3;
+    }
+
+    .checked {
+      background-color: #0074a3;
+
+      &::after {
+        content: '';
+        position: absolute;
+        width: 7px;
+        height: 12px;
+        border: 2px solid black;
+        transform: rotate(45deg);
+        border-top-width: 0;
+        border-left-width: 0;
+        left: 4px;
+        top: 0px;
+      }
+    }
+
+    .close {
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      padding: 0;
+      top: 0;
+      right: 0;
+      border: 1px solid #0074a3;
+      background-color: #0074a3;
+
+      &::after {
+        content: '';
+        width: 15px;
+        height: 1px;
+        background: black;
+        position: absolute;
+        top: 7px;
+        left: 0;
+        transform: rotate(45deg);
+      }
+
+      &::before {
+        content: '';
+        width: 15px;
+        height: 1px;
+        background: black;
+        position: absolute;
+        top: 7px;
+        left: 0;
+        transform: rotate(-45deg);
+      }
+    }
+  }
+}
+
+.quickIcon {
+  width: 23px;
+  height: 23px;
+}
+
+.active {
+  filter: brightness(3);
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 // @media screen and (max-width: @screen-xl) {
