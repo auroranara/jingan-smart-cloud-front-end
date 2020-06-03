@@ -218,7 +218,7 @@
       return getConfigJSON(name);
     }
 
-    function downloadApp() {
+    function downloadApp(e) {
       var config = getConfig();
       var ios = config.ios;
       var android = config.android;
@@ -226,6 +226,7 @@
 
       if (isWeChat()) {
         alert('点击右上角按钮，然后在弹出的菜单中，点击在' + browser + '打开，即可安装。');
+        e.preventDefault();
         return;
       }
 
@@ -252,8 +253,8 @@
       var img = document.querySelector('#img');
       img.src = layerUrl;
 
-      var code = document.querySelector('.code');
-      code.style.backgroundImage = 'url(' + codeUrl + ')';
+      // var code = document.querySelector('.code');
+      // code.style.backgroundImage = 'url(' + codeUrl + ')';
 
       var btn = document.querySelector('.downloadButton');
       btn.addEventListener('click', downloadApp, false);
@@ -275,7 +276,6 @@
         </div>
         <div class="codeWrapper">
           <div class="code"></div>
-          <div class="codeDescription">手机扫一扫，快速下载智慧安全APP</div>
         </div>
         <div class="buttonWrapper">
           <div class="downloadButton">APP下载</div>
