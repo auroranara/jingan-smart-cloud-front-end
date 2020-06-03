@@ -368,12 +368,12 @@ export default class InspectionReport extends PureComponent {
           return moment(+val).format('YYYY-MM-DD');
         },
       },
-      {
-        title: '上传人',
-        dataIndex: 'createPerson',
-        key: 'createPerson',
-        align: 'center',
-      },
+      // {
+      //   title: '上传人',
+      //   dataIndex: 'createPerson',
+      //   key: 'createPerson',
+      //   align: 'center',
+      // },
       {
         title: '检验报告',
         dataIndex: 'reportFileList',

@@ -1553,9 +1553,9 @@ export default class Chemical extends PureComponent {
                   </div>
                 )}
 
-                {href.indexOf('five.jinganyun.net') < 0 && (
+                {/* {href.indexOf('five.jinganyun.net') < 0 && (
                   <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
-                )}
+                )} */}
               </div>
             </Col>
           </Row>

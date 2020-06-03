@@ -297,8 +297,6 @@ export default class Map extends PureComponent {
         properties: { ...item, iconType },
         show: visibles[iconType],
       });
-      console.log('marker', marker);
-
       return null;
     });
   };
@@ -333,6 +331,7 @@ export default class Map extends PureComponent {
       container: 'mapContainer',
       token: key,
       mapServerURL: './data/map',
+      backgroundColor: 'transparent',
     };
     map = new jsmap.JSMap(mapOptions);
     map.openMapById(mapId);
@@ -595,8 +594,8 @@ export default class Map extends PureComponent {
       // marginTop: 0,
       properties: info,
       showCloseButton: true,
-      // callback: (node) => {
-      // // console.log(node);
+      // callback: node => {
+      //   console.log('node', node);
       // },
     });
     map.addMarker(popInfoWindow);
@@ -728,7 +727,8 @@ export default class Map extends PureComponent {
 
   // 跳转到人员定位
   handlePosition = () => {
-    window.open(`${window.publicPath}#/big-platform/personnel-position/index`, `_blank`);
+    const { companyId } = this.props;
+    window.open(`${window.publicPath}#/big-platform/personnel-position/${companyId}`, `_blank`);
   };
 
   // 切换图标是否显示

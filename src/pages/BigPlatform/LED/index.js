@@ -171,9 +171,8 @@ export default class Led extends PureComponent {
       },
     } = this.props;
     const { personData, currentTime, createTime } = this.state;
+    const personList = Array.isArray(personData) ? personData.slice(1) : [];
 
-    const personList = personData.slice(1) || [];
-    console.log('personList', personList);
     return (
       <div className={styles.content}>
         <div className={styles.nav}>
