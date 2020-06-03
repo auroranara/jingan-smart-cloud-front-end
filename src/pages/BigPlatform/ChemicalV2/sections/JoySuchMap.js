@@ -727,7 +727,8 @@ export default class Map extends PureComponent {
 
   // 跳转到人员定位
   handlePosition = () => {
-    window.open(`${window.publicPath}#/big-platform/personnel-position/index`, `_blank`);
+    const { companyId } = this.props;
+    window.open(`${window.publicPath}#/big-platform/personnel-position/${companyId}`, `_blank`);
   };
 
   // 切换图标是否显示
