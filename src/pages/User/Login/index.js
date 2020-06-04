@@ -307,6 +307,10 @@ export default class Login extends PureComponent {
       error: () => {
         this.setState({ notice: '密码已更换，请手动登录以更新本地账号！' });
       },
+      success: ({ isFirstLogin, ruleStatus }) => {
+        if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+        else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+      },
       handleMoreUser: () => {
         this.setState({
           isMoreUser: true,
