@@ -334,7 +334,7 @@ export default class TableList extends React.Component {
       }
       return [...res, item];
     }, []);
-    // console.log('buildingId', buildingId);
+    console.log('buildingId', buildingId);
 
     this.setState({
       buildingId: filterList,

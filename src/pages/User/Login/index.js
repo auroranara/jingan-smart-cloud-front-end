@@ -242,7 +242,7 @@ export default class Login extends PureComponent {
           dispatch({
             type: 'login/login',
             payload,
-            success: ({ isFirstLogin, ruleStatus }) => {
+            success: ({ isFirstLogin, ruleStatus, isMoreUser }) => {
               const { commonAccount } = this.state;
               const account = commonAccount.filter(
                 ({ username: userName }) => userName === username
@@ -257,8 +257,10 @@ export default class Login extends PureComponent {
                 commonAccount.push(payload);
                 this.setLocalStorage(commonAccount);
               }
-              if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
-              else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+              if (!isMoreUser) {
+                if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+                else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+              }
             },
             error: notice => {
               this.setState({ notice });
@@ -277,9 +279,11 @@ export default class Login extends PureComponent {
             error: notice => {
               this.setState({ notice });
             },
-            success: ({ isFirstLogin, ruleStatus }) => {
-              if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
-              else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+            success: ({ isFirstLogin, ruleStatus, isMoreUser }) => {
+              if (!isMoreUser) {
+                if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+                else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+              }
             },
             handleMoreUser: props => {
               this.setState({
@@ -307,9 +311,11 @@ export default class Login extends PureComponent {
       error: () => {
         this.setState({ notice: '密码已更换，请手动登录以更新本地账号！' });
       },
-      success: ({ isFirstLogin, ruleStatus }) => {
-        if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
-        else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+      success: ({ isFirstLogin, ruleStatus, isMoreUser }) => {
+        if (!isMoreUser) {
+          if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+          else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+        }
       },
       handleMoreUser: () => {
         this.setState({
