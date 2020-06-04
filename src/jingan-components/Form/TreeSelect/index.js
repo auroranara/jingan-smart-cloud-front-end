@@ -42,6 +42,30 @@ const PRESETS = {
     },
     initializeParams: 'ids',
   },
+  gridTreeByUser: {
+    fieldNames: {
+      key: 'grid_id',
+      value: 'grid_name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'gridTreeByUser',
+      getList: 'getGridTreeByUser',
+    },
+    initializeParams: 'ids',
+  },
+  // 根据企业获取部门树（陈涛）
+  departmentTreeByCompany: {
+    fieldNames: {
+      key: 'id',
+      value: 'name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'departmentTreeByCompany',
+      getList: 'getDepartmentTreeByCompany',
+    },
+  },
 };
 
 const FormTreeSelect = ({
@@ -72,7 +96,7 @@ const FormTreeSelect = ({
   onSearch,
   initializeParams,
   searchParams,
-  separator = ',',
+  separator = '，',
   params,
   ...rest
 }) => {
@@ -165,13 +189,16 @@ const FormTreeSelect = ({
               /* 从后台筛选 */
               getList
                 ? getList(
-                    typeof initializeParams === 'function'
-                      ? initializeParams(value)
-                      : {
-                          [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
-                          pageSize: multiple ? value.length : 1,
-                        },
-                    callback
+                    {
+                      ...(typeof initializeParams === 'function'
+                        ? initializeParams(value)
+                        : {
+                            [initializeParams || `${k}s`]: multiple ? value.join(',') : value,
+                          }),
+                      pageSize: multiple ? value.length : 1,
+                    },
+                    callback,
+                    true
                   )
                 : callback(true, list);
               getList && getList();
@@ -350,11 +377,11 @@ export default connect(
       getList:
         !params || Object.values(params).some(v => v)
           ? namespace && gl
-            ? (payload, cb) => {
+            ? (payload, cb, ignoreParams) => {
                 dispatch({
                   type: `${namespace}/${gl}`,
                   payload: {
-                    ...params,
+                    ...(!ignoreParams && params),
                     ...payload,
                   },
                   callback(...args) {

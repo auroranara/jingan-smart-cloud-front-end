@@ -1,9 +1,8 @@
 import React from 'react';
-import { InputNumber, Badge } from 'antd';
+import { InputNumber } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import classNames from 'classnames';
-import { isNumber } from '@/utils/utils';
 import styles from './index.less';
 
 const FormInputNumber = ({
@@ -15,8 +14,6 @@ const FormInputNumber = ({
   allowClear = false,
   empty = <EmptyText />,
   ellipsis = true,
-  status,
-  color,
   ...rest
 }) => {
   if (mode !== 'detail') {
@@ -31,14 +28,8 @@ const FormInputNumber = ({
       />
     );
   } else {
-    return isNumber(value) ? (
-      status || color ? (
-        <Badge
-          text={`${value}`}
-          status={status ? status(value) : undefined}
-          color={color ? color(value) : undefined}
-        />
-      ) : ellipsis ? (
+    return value ? (
+      ellipsis ? (
         <Ellipsis lines={1} tooltip {...ellipsis}>
           {value}
         </Ellipsis>

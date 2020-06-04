@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
+import router from 'umi/router';
 import { Button, Card, Input, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { connect } from 'dva';
@@ -13,7 +14,7 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '修改密码', name: '修改密码' },
 ];
-const CodeTime = 30;
+const CodeTime = 60;
 
 @connect(({ account, user, company, loading }) => ({
   user,
@@ -40,6 +41,10 @@ export default class ChangePassword extends PureComponent {
     } = this.props;
     this.handleResetForm();
     if (+unitType === 4) this.fetchPasswordRules();
+  }
+
+  componentWillUnmount() {
+    this.timer && clearTimeout(this.timer);
   }
 
   fetchPasswordRules = () => {
@@ -88,6 +93,9 @@ export default class ChangePassword extends PureComponent {
             if (response.code && response.code === 200) {
               this.handleResetForm();
               message.success('密码修改成功！');
+              dispatch({
+                type: 'login/logout',
+              });
             } else {
               message.error(response.msg || '密码修改失败!');
             }
@@ -191,17 +199,17 @@ export default class ChangePassword extends PureComponent {
       payload: { phone: phoneNumber },
       success: () => {
         message.success('验证码发送成功');
+        this.setState({ codeTime: CodeTime }, () => {
+          this.timer = setInterval(() => {
+            const { codeTime } = this.state;
+            if (codeTime === 0) clearInterval(this.timer);
+            else this.setState({ codeTime: codeTime - 1 });
+          }, 1000);
+        });
       },
       error: msg => {
         message.error(msg);
       },
-    });
-    this.setState({ codeTime: CodeTime }, () => {
-      this.timer = setInterval(() => {
-        const { codeTime } = this.state;
-        if (codeTime === 0) clearInterval(this.timer);
-        else this.setState({ codeTime: codeTime - 1 });
-      }, 1000);
     });
   };
 
@@ -228,6 +236,7 @@ export default class ChangePassword extends PureComponent {
       },
     };
     const isSendingCode = codeTime !== 0;
+    console.log(this.props);
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>

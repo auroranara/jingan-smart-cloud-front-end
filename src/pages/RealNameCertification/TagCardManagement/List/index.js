@@ -192,7 +192,8 @@ export default class TableList extends PureComponent {
             this.fetchList();
           } else {
             let msg = `${res.msg}。${Array.isArray(res.data) ? res.data.join('，') : ''}`
-            message.error(msg || `删除失败`);
+            message.error(msg);
+            this.fetchList();
           }
         },
       });

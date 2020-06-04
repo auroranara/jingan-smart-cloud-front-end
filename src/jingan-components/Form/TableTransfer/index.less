@@ -1,0 +1,45 @@
+.container {
+  width: 100% !important;
+
+  :global {
+    .ant-transfer-list {
+      flex: 1 !important;
+      width: 0 !important;
+    }
+  }
+}
+.inputContainer {
+  padding: 8px;
+}
+.inputWrapper {
+  margin-bottom: 8px;
+
+  .input {
+    width: 188px !important;
+  }
+}
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  margin: 0 -4px;
+
+  .buttonWrapper {
+    flex: none;
+    padding: 0 4px;
+
+    .button {
+      width: 50px;
+
+      &.resetAllButton {
+        width: 72px;
+      }
+    }
+  }
+}
+.table {
+  :global {
+    .ant-table-tbody > tr.ant-table-row-selected > td {
+      background-color: #fff;
+    }
+  }
+}

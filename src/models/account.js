@@ -20,7 +20,13 @@ import {
   putDashboard,
 } from '../services/accountManagement.js';
 
-import { checkOldPass, changePass, sendVerifyCode, updatePwdNew } from '../services/account.js';
+import {
+  checkOldPass,
+  changePass,
+  sendVerifyCode,
+  updatePwdNew,
+  updatePwdNewForForget,
+} from '../services/account.js';
 import { queryMenus } from '../services/company/safety';
 
 export default {
@@ -342,7 +348,7 @@ export default {
       const response = yield call(sendVerifyCode, payload);
       if (response.code === 200) {
         if (success) {
-          success();
+          success(response.data);
         }
       } else if (error) {
         error(response.msg);
@@ -351,6 +357,11 @@ export default {
     // 手机号修改密码
     *updatePwdNew({ payload, callback }, { call }) {
       const response = yield call(updatePwdNew, payload);
+      if (callback) callback(response);
+    },
+    // 手机号修改密码 忘记密码不需要token
+    *updatePwdNewForForget({ payload, callback }, { call }) {
+      const response = yield call(updatePwdNewForForget, payload);
       if (callback) callback(response);
     },
   },

@@ -105,6 +105,13 @@ export default class accountManagementDetail extends PureComponent {
     }
   };
 
+  handleRestForm = () => {
+    const {
+      form: { resetFields },
+    } = this.props;
+    resetFields();
+  };
+
   /* 点击提交按钮验证信息 */
   handleOk = () => {
     const {
@@ -119,7 +126,7 @@ export default class accountManagementDetail extends PureComponent {
         dispatch({
           type: 'account/updateAccountPwd',
           payload: {
-            id,
+            loginId: id,
             password: aesEncrypt(password),
           },
           callback: response => {
@@ -140,6 +147,7 @@ export default class accountManagementDetail extends PureComponent {
     this.setState({
       visible: false,
     });
+    this.handleRestForm();
   };
 
   /* 渲染基础信息 */

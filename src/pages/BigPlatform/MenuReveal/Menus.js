@@ -1,7 +1,7 @@
 import { Component, createRef } from 'react';
 // import { Form } from '@ant-design/compatible';
 // import '@ant-design/compatible/assets/index.css';
-import { Form, Row, Col, Modal, message } from 'antd';
+import { Form, Row, Col, Modal, message, Tooltip } from 'antd';
 // import _ from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -292,16 +292,15 @@ export default class NewMenuReveal extends Component {
   }
 
   // 点击菜单
-  onClickMenuItem = (item) => {
+  onClickMenuItem = (e, item) => {
+    e.stopPropagation();
     const { dispatch, user: { quickEdit, currentUser } } = this.props;
     const { quickList, quickMax } = this.state;
     // 当前点击是否在快捷菜单内
     const isExist = quickList && quickList.some(val => val.code === item.code);
-    if (item.developing || !item.code || (!isExist && quickList.length === quickMax)) return;
+    if (item.developing || !item.code || (quickEdit && !isExist && quickList.length === quickMax)) return;
     // 如果快捷菜单开启了编辑状态
-    if (!quickEdit) {
-      this.handleOpenMenu(item.path);
-    } else {
+    if (quickEdit) {
       const newList = isExist ? quickList.filter(val => val.code !== item.code) : [...quickList, item];
       dispatch({
         type: 'user/addQuickMenu',
@@ -318,14 +317,13 @@ export default class NewMenuReveal extends Component {
   }
 
   // 点击快捷菜单
-  onClickQuickMenu = (item) => {
+  onClickQuickMenu = (e, item) => {
+    e.stopPropagation();
     const { dispatch, user: { quickEdit, currentUser } } = this.props;
     const { quickList } = this.state;
     if (!item.code) return;
     // 如果快捷菜单开启了编辑状态
-    if (!quickEdit) {
-      this.handleOpenMenu(item.path);
-    } else {
+    if (quickEdit) {
       const newList = quickList.filter(val => val.code !== item.code);
       dispatch({
         type: 'user/addQuickMenu',
@@ -363,7 +361,7 @@ export default class NewMenuReveal extends Component {
 
   renderBlockMenus = () => {
     const { user: { quickEdit } } = this.props;
-    const { menuSys, quickList } = this.state;
+    const { menuSys, quickList, quickMax } = this.state;
     return (
       <div className={styles.innerContent}>
         {menuSys.length
@@ -379,18 +377,21 @@ export default class NewMenuReveal extends Component {
                       <div className={styles.item}>
                         <div
                           className={styles.itemInner}
-                          // onClick={
-                          //   item.developing ? null : () => this.handleOpenMenu(item.path)
-                          // }
-                          onClick={() => this.onClickMenuItem(item)}
+                          onClick={
+                            item.developing ? null : () => this.handleOpenMenu(item.path)
+                          }
                         >
                           <img src={this.generateSysUrl(item)} alt="logo" />
                           <div>{item.title}</div>
                           {item.developing ? <span className={styles.dot} /> : null}
-                          <div className={classNames(styles.checkBox, {
-                            [styles.checked]: quickList && quickList.some(val => val.code === item.code),
-                            [styles.hidden]: item.developing || !quickEdit,
-                          })}></div>
+                          <Tooltip
+                            title={quickList && quickList.length === quickMax && !quickList.some(val => val.code === item.code) ? '快捷操作栏已满，请删除后再添加。' : null}>
+                            <div className={classNames(styles.checkBox, {
+                              [styles.checked]: quickList && quickList.some(val => val.code === item.code),
+                              [styles.hidden]: item.developing || !quickEdit,
+                            })}
+                              onClick={e => this.onClickMenuItem(e, item)}></div>
+                          </Tooltip>
                         </div>
                       </div>
                     </Col>
@@ -502,14 +503,14 @@ export default class NewMenuReveal extends Component {
                 <div className={styles.item}>
                   <div
                     className={styles.itemInner}
-                    onClick={() => this.onClickQuickMenu(item)}
+                    onClick={item.developing ? null : () => this.handleOpenMenu(item.path)}
                   >
                     <img src={this.generateSysUrl(item)} alt="logo" />
                     <div>{item.title}</div>
                     {item.developing ? <span className={styles.dot} /> : null}
                     <div className={classNames(styles.close, {
                       [styles.hidden]: !quickEdit,
-                    })}></div>
+                    })} onClick={e => this.onClickQuickMenu(e, item)}></div>
                   </div>
                 </div>
               </Col>

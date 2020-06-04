@@ -334,6 +334,8 @@ export default class TableList extends React.Component {
       }
       return [...res, item];
     }, []);
+    console.log('buildingId', buildingId);
+
     this.setState({
       buildingId: filterList,
     });
@@ -602,9 +604,10 @@ export default class TableList extends React.Component {
                   rules: [{ required: true, message: '请输入' }],
                 })(<Input placeholder="请输入" {...itemStyles} />)}
               </FormItem> #555252*/}
-              {/* <FormItem label="所选建筑物" {...formItemLayout}>
-                {this.renderBuildingId()} */}
-              {/* {buildingId.map(({ key, areaId, point, selected }) => (
+              {+remarks === 1 && (
+                <FormItem label="所选建筑物" {...formItemLayout}>
+                  {this.renderBuildingId()}
+                  {/* {buildingId.map(({ key, areaId, point, selected }) => (
                   <Tag
                     color={!selected ? '' : '#555252'}
                     key={key}
@@ -613,7 +616,8 @@ export default class TableList extends React.Component {
                     {areaId}
                   </Tag>
                 ))} */}
-              {/* </FormItem> */}
+                </FormItem>
+              )}
               <FormItem {...formItemLayout}>
                 <div style={{ textAlign: 'center' }}>
                   <Button style={{ marginRight: 10 }} type="primary" onClick={this.handleSubmit}>

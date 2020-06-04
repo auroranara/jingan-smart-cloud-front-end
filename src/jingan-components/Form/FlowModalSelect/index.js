@@ -224,16 +224,19 @@ const FlowModalSelect = ({
     {
       dataIndex: 'object_title',
       title: '检查项名称',
+      render: value => <div style={{ minWidth: 70 }}>{value || <EmptyText />}</div>,
     },
     {
       dataIndex: 'industry',
       title: '所属行业',
+      render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
     },
     ...(type >= 3
       ? [
           {
             dataIndex: 'business_type',
             title: '业务分类',
+            render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
           },
         ]
       : []),
@@ -242,10 +245,12 @@ const FlowModalSelect = ({
     {
       dataIndex: 'flow_name',
       title: '检查内容',
+      render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
     },
     {
       dataIndex: 'danger_level',
       title: '隐患等级',
+      render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
     },
   ];
   const FIELDS = [
@@ -366,6 +371,13 @@ const FlowModalSelect = ({
           size="small"
           showPagination={false}
           showCard={false}
+          scroll={
+            data &&
+            data.length > 15 && {
+              y: 39 * 15,
+              scrollToFirstRowOnChange: true,
+            }
+          }
         />
         <Modal
           title="新增检查内容"
@@ -587,6 +599,12 @@ const FlowModalSelect = ({
         size="small"
         showPagination={false}
         showCard={false}
+        scroll={
+          data.length > 15 && {
+            y: 39 * 15,
+            scrollToFirstRowOnChange: true,
+          }
+        }
       />
     ) : (
       empty

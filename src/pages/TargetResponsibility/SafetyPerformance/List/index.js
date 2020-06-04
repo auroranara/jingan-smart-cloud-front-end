@@ -1,16 +1,9 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
-import { Select } from '@/jingan-components/Form/';
+import { EmptyText } from '@/jingan-components/View';
 import moment from 'moment';
-import {
-  COMPANY_FIELDNAMES,
-  COMPANY_MAPPER,
-  DEPARTMENT_FIELDNAMES,
-  DEPARTMENT_MAPPER,
-  RESULTS,
-  FORMAT,
-} from '../config';
+import { RESULTS, FORMAT } from '../config';
 import { isNumber } from '@/utils/utils';
 import styles from './index.less';
 
@@ -19,11 +12,11 @@ const List = ({ route, match, location }) => {
     route,
     match,
     location,
-    transform({ isUnit, unitId, companyId, departmentId, result }) {
+    transform({ isUnit, unitId, companyId, examedPart, examResult }) {
       return {
         companyId: isUnit ? unitId : companyId,
-        departmentId,
-        result,
+        examedPart,
+        examResult,
       };
     },
     fields: [
@@ -32,10 +25,7 @@ const List = ({ route, match, location }) => {
         label: '单位名称',
         component: 'Select',
         props: {
-          fieldNames: COMPANY_FIELDNAMES,
-          mapper: COMPANY_MAPPER,
-          showSearch: true,
-          filterOption: false,
+          preset: 'company',
           allowClear: true,
         },
         hide({ isUnit }) {
@@ -43,28 +33,22 @@ const List = ({ route, match, location }) => {
         },
       },
       {
-        name: 'departmentId',
+        name: 'examedPart',
         label: '被考核部门',
         component: 'TreeSelect',
         dependencies: ['companyId'],
         props({ isUnit, unitId, companyId }) {
-          const key = isUnit ? unitId : companyId;
           return {
-            fieldNames: DEPARTMENT_FIELDNAMES,
-            mapper: DEPARTMENT_MAPPER,
+            preset: 'departmentTreeByCompany',
             params: {
-              companyId: key,
+              companyId: isUnit ? unitId : companyId,
             },
             allowClear: true,
-            key,
           };
-        },
-        hide({ isUnit, companyId }) {
-          return !isUnit && !companyId;
         },
       },
       {
-        name: 'result',
+        name: 'examResult',
         label: '考核结果',
         component: 'Select',
         props: {
@@ -79,50 +63,75 @@ const List = ({ route, match, location }) => {
             {
               dataIndex: 'companyName',
               title: '单位名称',
+              render: value => value || <EmptyText />,
             },
           ]
         : []),
       {
-        dataIndex: 'title',
+        dataIndex: 'examTitle',
         title: '考核标题',
+        render: value => value || <EmptyText />,
       },
       {
-        dataIndex: 'date',
+        dataIndex: 'examDate',
         title: '考核日期',
-        render: value => value && moment(value).format(FORMAT),
+        render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
       },
       {
-        dataIndex: 'result',
+        dataIndex: 'examResult',
         title: '考核结果',
         render: value =>
-          isNumber(value) && (
-            <Select list={RESULTS} value={`${value}`} mode="detail" empty={null} ellipsis={false} />
-          ),
+          (RESULTS.find(item => item.key === `${value}`) || {}).value || <EmptyText />,
       },
       {
-        dataIndex: 'score',
+        dataIndex: '总分',
         title: '总分',
+        render: (_, { performanceExamList }) => {
+          const { hasScore, score } = (performanceExamList || []).reduce(
+            (result, { passScore, contentList }) => {
+              if (isNumber(passScore)) {
+                result.hasScore = true;
+              }
+              result.score +=
+                (passScore || 0) -
+                Math.max(
+                  Math.min(
+                    (contentList || []).reduce(
+                      (result, { pointCase }) => result + (+pointCase || 0),
+                      0
+                    ),
+                    passScore || 0
+                  ),
+                  0
+                );
+              return result;
+            },
+            { hasScore: false, score: 0 }
+          );
+          return hasScore ? score : <EmptyText />;
+        },
       },
       {
-        dataIndex: 'departmentName',
+        dataIndex: 'examedPartName',
         title: '被考核部门',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: '填报人',
         title: '填报人',
-        render: (_, { person, departmentName, date }) => (
+        render: (_, { writePersonName, writePersonPart, createTime }) => (
           <Fragment>
             <div className={styles.fieldWrapper}>
               <div>姓名：</div>
-              <div>{person}</div>
+              <div>{writePersonName || <EmptyText />}</div>
             </div>
             <div className={styles.fieldWrapper}>
               <div>部门：</div>
-              <div>{departmentName}</div>
+              <div>{writePersonPart || <EmptyText />}</div>
             </div>
             <div className={styles.fieldWrapper}>
               <div>填报日期：</div>
-              <div>{date && moment(date).format(FORMAT)}</div>
+              <div>{createTime ? moment(createTime).format(FORMAT) : <EmptyText />}</div>
             </div>
           </Fragment>
         ),

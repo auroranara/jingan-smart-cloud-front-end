@@ -99,26 +99,31 @@ const ExaminationContentTransfer = props => {
     {
       dataIndex: 'object_title',
       title: '检查项名称',
+      render: value => <div style={{ minWidth: 70 }}>{value || <EmptyText />}</div>,
     },
     {
       dataIndex: 'industry',
       title: '所属行业',
+      render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
     },
     ...(type >= 3
       ? [
           {
             dataIndex: 'business_type',
             title: '业务分类',
+            render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
           },
         ]
       : []),
     {
       dataIndex: 'flow_name',
       title: '检查内容',
+      render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
     },
     {
       dataIndex: 'danger_level',
       title: '隐患等级',
+      render: value => <div style={{ minWidth: 56 }}>{value || <EmptyText />}</div>,
     },
   ];
   const [state, setState] = useState({
@@ -460,13 +465,16 @@ const ExaminationContentTransfer = props => {
             /* 从后台筛选 */
             getList
               ? getList(
-                  typeof initializeParams === 'function'
-                    ? initializeParams(value)
-                    : {
-                        [initializeParams || 'ids']: value.join(','),
-                        pageSize: value.length,
-                      },
-                  callback
+                  {
+                    ...(typeof initializeParams === 'function'
+                      ? initializeParams(value)
+                      : {
+                          [initializeParams || 'ids']: value.join(','),
+                        }),
+                    pageSize: value.length,
+                  },
+                  callback,
+                  true
                 )
               : callback(true, array);
             getList && getList(undefined, setLength);
@@ -658,6 +666,12 @@ const ExaminationContentTransfer = props => {
         }}
         rowKey={({ flow_id, object_id }) => flow_id || object_id}
         showCard={false}
+        scroll={
+          filteredData.list.length > 15 && {
+            y: 39 * 15,
+            scrollToFirstRowOnChange: true,
+          }
+        }
       />
     ) : (
       empty
@@ -689,14 +703,14 @@ export default connect(
     };
   },
   (dispatch, { params, type }) => ({
-    getList(payload, callback) {
+    getList(payload, callback, ignoreParams) {
       dispatch({
         type: API,
         payload: {
           pageNum: 1,
           pageSize: PAGE_SIZE,
           type,
-          ...params,
+          ...(!ignoreParams && params),
           ...payload,
         },
         callback,

@@ -1,5 +1,3 @@
-export const COMPANY_FIELDNAMES = { key: 'id', value: 'name' };
-export const COMPANY_MAPPER = { namespace: 'common', list: 'unitList', getList: 'getUnitList' };
 export const CLASSIFICATIONS = [
   { key: '1', value: '目标责任管理' },
   { key: '2', value: '安全制度管理' },

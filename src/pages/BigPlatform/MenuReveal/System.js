@@ -277,14 +277,13 @@ export default class NewMenuReveal extends Component {
   }
 
   // 点击快捷菜单
-  onClickQuickMenu = (item) => {
+  onClickQuickMenu = (e, item) => {
+    e.stopPropagation();
     const { dispatch, user: { quickEdit, currentUser } } = this.props;
     const { quickList } = this.state;
     if (!item.code) return;
     // 如果快捷菜单开启了编辑状态
-    if (!quickEdit) {
-      this.handleOpenMenu(item.path);
-    } else {
+    if (quickEdit) {
       const newList = quickList.filter(val => val.code !== item.code);
       dispatch({
         type: 'user/addQuickMenu',
@@ -458,14 +457,14 @@ export default class NewMenuReveal extends Component {
                 <div className={styles.item}>
                   <div
                     className={styles.itemInner}
-                    onClick={() => this.onClickQuickMenu(item)}
+                    onClick={item.developing ? null : () => this.handleOpenMenu(item.path)}
                   >
                     <img src={this.generateSysUrl(item)} alt="logo" />
                     <div>{item.title}</div>
                     {item.developing ? <span className={styles.dot} /> : null}
                     <div className={classNames(styles.close, {
                       [styles.hidden]: !quickEdit,
-                    })}></div>
+                    })} onClick={e => this.onClickQuickMenu(e, item)}></div>
                   </div>
                 </div>
               </Col>

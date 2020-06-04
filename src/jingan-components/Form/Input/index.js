@@ -12,7 +12,7 @@ const FormInput = forwardRef(
       value,
       mode,
       placeholder = '请输入',
-      maxLength = 100,
+      maxLength = 50,
       allowClear = false,
       empty = <EmptyText />,
       ellipsis = true,
