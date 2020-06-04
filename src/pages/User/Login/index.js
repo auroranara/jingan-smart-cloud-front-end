@@ -242,7 +242,7 @@ export default class Login extends PureComponent {
           dispatch({
             type: 'login/login',
             payload,
-            success: () => {
+            success: ({ isFirstLogin }) => {
               const { commonAccount } = this.state;
               const account = commonAccount.filter(
                 ({ username: userName }) => userName === username
@@ -257,6 +257,7 @@ export default class Login extends PureComponent {
                 commonAccount.push(payload);
                 this.setLocalStorage(commonAccount);
               }
+              if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
             },
             error: notice => {
               this.setState({ notice });
@@ -407,6 +408,10 @@ export default class Login extends PureComponent {
     router.push(`/user/download${search}`);
   };
 
+  handleToForget = () => {
+    router.push(`/user/forget-password`);
+  };
+
   /**
    *
    */
@@ -548,6 +553,9 @@ export default class Login extends PureComponent {
               <LegacyIcon type="download" className={styles.downloadIcon} />
               APP下载
             </span>
+            <div onClick={this.handleToForget} className={styles.forget}>
+              忘记密码
+            </div>
           </div>
         </FormItem>
       </Form>

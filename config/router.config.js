@@ -35,30 +35,31 @@ module.exports = env => {
             },
           ],
         },
-        {
-          path: '/user/forget-password',
-          name: 'forgetPassword',
-          key: 'forgetPassword',
-          component: './User/Activation',
-          routes: [
-            {
-              path: '/user/forget-password',
-              redirect: '/user/forget-password/verification',
-            },
-            {
-              path: '/user/forget-password/verification',
-              component: './User/Activation/Verification',
-            },
-            {
-              path: '/user/forget-password/set-password',
-              component: './User/Activation/SetPassword',
-            },
-            {
-              path: '/user/forget-password/result',
-              component: './User/Activation/Result',
-            },
-          ],
-        },
+        { path: '/user/forget-password', component: './User/Login/ForgetPassword' },
+        // {
+        //   path: '/user/forget-password',
+        //   name: 'forgetPassword',
+        //   key: 'forgetPassword',
+        //   component: './User/Activation',
+        //   routes: [
+        //     {
+        //       path: '/user/forget-password',
+        //       redirect: '/user/forget-password/verification',
+        //     },
+        //     {
+        //       path: '/user/forget-password/verification',
+        //       component: './User/Activation/Verification',
+        //     },
+        //     {
+        //       path: '/user/forget-password/set-password',
+        //       component: './User/Activation/SetPassword',
+        //     },
+        //     {
+        //       path: '/user/forget-password/result',
+        //       component: './User/Activation/Result',
+        //     },
+        //   ],
+        // },
       ],
     },
     // {
