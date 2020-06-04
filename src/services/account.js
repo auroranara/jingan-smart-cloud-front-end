@@ -50,12 +50,20 @@ export async function loginByPhone(params) {
 
 // 获取手机验证码
 export async function sendVerifyCode(params) {
-  return request(`/acloud_new/v2/login/sendLoginCode?${stringify(params)}`);
+  return request(`/acloud_new/v2/login/sendLoginCodeForForget?${stringify(params)}`);
 }
 
 // 手机号修改密码
 export async function updatePwdNew(params) {
   return request('/acloud_new/v2/login/updatePwdNew', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 手机号修改密码
+export async function updatePwdNewForForget(params) {
+  return request('/acloud_new/v2/login/updatePwdNewForForget', {
     method: 'POST',
     body: params,
   });

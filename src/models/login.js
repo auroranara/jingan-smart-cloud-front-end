@@ -49,9 +49,12 @@ export default {
           // 登录1.0
           yield call(accountLoginGsafe, payload);
           reloadAuthorized();
-          router.replace('/');
+          // 第一次登陆 跳修改密码
+          if (+response.data.isFirstLogin === 1 || +response.data.ruleStatus === 1)
+            router.replace('/account/change-password');
+          else router.replace('/');
         }
-        success && success();
+        success && success(response.data);
         yield put({ type: 'saveLogined', payload: true });
       } else error(response.msg);
     },
@@ -79,7 +82,9 @@ export default {
           yield call(accountLoginGsafe, payload);
         }
         reloadAuthorized();
-        router.replace('/');
+        if (+response.data.isFirstLogin === 1 || +response.data.ruleStatus === 1)
+          router.replace('/account/change-password');
+        else router.replace('/');
       }
     },
 
@@ -123,7 +128,9 @@ export default {
         yield setToken(response.data.webToken);
         yield put({ type: 'user/saveCurrentUser' });
         reloadAuthorized();
-        router.replace('/');
+        if (+response.data.isFirstLogin === 1 || +response.data.ruleStatus === 1)
+          router.replace('/account/change-password');
+        else router.replace('/');
         if (success) success();
       } else if (error) error();
     },
@@ -151,7 +158,9 @@ export default {
             payload: { ...data },
           });
           reloadAuthorized();
-          router.replace('/');
+          if (+data.isFirstLogin === 1 || +data.ruleStatus === 1)
+            router.replace('/account/change-password');
+          else router.replace('/');
         }
         success && success();
         yield put({ type: 'saveLogined', payload: true });

@@ -80,6 +80,7 @@
     display: block;
     text-align: center;
     line-height: 22px;
+    position: relative;
 
     .download {
       color: #666;
@@ -93,6 +94,14 @@
       .downloadIcon {
         margin-right: 7px;
       }
+    }
+
+    .forget {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      color: #1890ff;
+      cursor: pointer;
     }
   }
   // 底部版权信息
@@ -291,6 +300,12 @@
       .downloadIcon {
         display: none;
       }
+    }
+
+    .forget {
+      color: #1890ff;
+      cursor: pointer;
+      text-align: right;
     }
   }
 
