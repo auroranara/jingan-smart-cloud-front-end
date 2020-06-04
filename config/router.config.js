@@ -958,7 +958,6 @@ module.exports = env => {
               path: '/major-hazard-info/high-risk-process', // 工艺流程
               code: 'majorHazardInfo.highRiskProcess',
               name: 'highRiskProcess',
-              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -1065,9 +1064,8 @@ module.exports = env => {
                 },
               ],
             },
-            // 周边环境信息
             {
-              path: '/major-hazard-info/surrounding-environment-info',
+              path: '/major-hazard-info/surrounding-environment-info', // 周边环境信息
               code: 'majorHazardInfo.surroundingEnvironmentInfo',
               name: 'surroundingEnvironmentInfo',
               hideChildrenInMenu: true,
@@ -1102,9 +1100,8 @@ module.exports = env => {
                 },
               ],
             },
-            // 生产场所
             {
-              path: '/major-hazard-info/work-site',
+              path: '/major-hazard-info/work-site', // 生产场所
               code: 'majorHazardInfo.workSite',
               name: 'workSite',
               hideChildrenInMenu: true,

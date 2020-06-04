@@ -14,6 +14,7 @@ import { AutoList, ROUTER } from './utils';
 import moment from 'moment';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -116,11 +117,13 @@ export default class Edit extends PureComponent {
         type: 'productionEquipments/clearDetail',
       });
     }
+
+    this.goBack = genGoBack(this.props, LIST_URL);
   }
 
-  goBack = () => {
-    router.push(`${LIST_URL}`);
-  };
+  // goBack = () => {
+  //   router.push(`${LIST_URL}`);
+  // };
 
   isDetail = () => {
     const {
@@ -344,7 +347,7 @@ export default class Edit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => { setTimeout(this.goBack, 1000); });
         };
 
         const error = () => {
@@ -409,233 +412,231 @@ export default class Edit extends PureComponent {
     const isDet = this.isDetail();
 
     return (
-      <Card>
-        <Form>
-          {unitType !== 4 && (
-            <FormItem label="单位名称" {...formItemLayout}>
-              {getFieldDecorator('companyId', {
-                initialValue: companyId ? { key: companyId, label: companyName } : undefined,
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择',
-                    transform: value => value && value.label,
-                  },
-                ],
-              })(
-                <CompanySelect
-                  {...itemStyles}
-                  placeholder="请选择"
-                  onChange={this.onChangeComapny}
-                />
-              )}
-            </FormItem>
+      <Form>
+        {unitType !== 4 && (
+          <FormItem label="单位名称" {...formItemLayout}>
+            {getFieldDecorator('companyId', {
+              initialValue: companyId ? { key: companyId, label: companyName } : undefined,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择',
+                  transform: value => value && value.label,
+                },
+              ],
+            })(
+              <CompanySelect
+                {...itemStyles}
+                placeholder="请选择"
+                onChange={this.onChangeComapny}
+              />
+            )}
+          </FormItem>
+        )}
+
+        <FormItem label="装置编号" {...formItemLayout}>
+          {getFieldDecorator('code', {
+            initialValue: code,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="装置名称" {...formItemLayout}>
+          {getFieldDecorator('name', {
+            initialValue: name,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="设备型号" {...formItemLayout}>
+          {getFieldDecorator('model', {
+            initialValue: model,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="装置位置" {...formItemLayout}>
+          {getFieldDecorator('location', {
+            initialValue: location,
+            rules: [{ required: true, message: '请输入' }],
+            getValueFromEvent: this.handleTrim,
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="是否关键装置" {...formItemLayout}>
+          {getFieldDecorator('keyDevice', {
+            initialValue: keyDevice ? +keyDevice : undefined,
+            rules: [{ required: true, message: '请选择' }],
+          })(
+            <Radio.Group {...itemStyles}>
+              <Radio value={1}>是</Radio>
+              <Radio value={2}>否</Radio>
+            </Radio.Group>
           )}
+          <div style={{ color: '#999999' }}>
+            关键装置的定义：在易燃、易爆、有毒、有害、易腐蚀、高温、高压、真空、深冷、等条件下进行工艺操作的生产装置。
+          </div>
+        </FormItem>
 
-          <FormItem label="装置编号" {...formItemLayout}>
-            {getFieldDecorator('code', {
-              initialValue: code,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
+        <FormItem label="设计压力（KPa）" {...formItemLayout}>
+          {getFieldDecorator('pressure', {
+            initialValue: pressure,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
 
-          <FormItem label="装置名称" {...formItemLayout}>
-            {getFieldDecorator('name', {
-              initialValue: name,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
+        <FormItem label="装置状态" {...formItemLayout}>
+          {getFieldDecorator('deviceStatus', {
+            initialValue: deviceStatus ? +deviceStatus : undefined,
+            rules: [{ required: true, message: '请选择' }],
+          })(
+            <Radio.Group>
+              <Radio value={1}>正常</Radio>
+              <Radio value={2}>维检</Radio>
+              <Radio value={3}>报废</Radio>
+            </Radio.Group>
+          )}
+        </FormItem>
 
-          <FormItem label="设备型号" {...formItemLayout}>
-            {getFieldDecorator('model', {
-              initialValue: model,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
+        <FormItem label="投用日期" {...formItemLayout}>
+          {getFieldDecorator('useDate', {
+            initialValue: typeof useDate === 'number' ? moment(+useDate) : undefined,
+            rules: [{ required: true, message: '请选择' }],
+          })(<DatePicker placeholder="请选择投用日期" format="YYYY-MM-DD" {...itemStyles} />)}
+        </FormItem>
 
-          <FormItem label="装置位置" {...formItemLayout}>
-            {getFieldDecorator('location', {
-              initialValue: location,
-              rules: [{ required: true, message: '请输入' }],
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
+        <FormItem label="所属危险化工工艺" {...formItemLayout}>
+          {getFieldDecorator('dangerTechnologyName', {
+            initialValue: dangerTechnologyList
+              ? dangerTechnologyList.map(item => item.processName).join(',')
+              : undefined,
+            rules: [{ required: true, message: '请选择' }],
+          })(<Input placeholder="请选择" disabled {...itemStyles} />)}
+          {!isDet && (
+            <Button type="primary" onClick={this.handleTechnologyModal}>
+              选择
+            </Button>
+          )}
+        </FormItem>
 
-          <FormItem label="是否关键装置" {...formItemLayout}>
-            {getFieldDecorator('keyDevice', {
-              initialValue: keyDevice ? +keyDevice : undefined,
-              rules: [{ required: true, message: '请选择' }],
-            })(
-              <Radio.Group {...itemStyles}>
-                <Radio value={1}>是</Radio>
-                <Radio value={2}>否</Radio>
-              </Radio.Group>
-            )}
-            <div style={{ color: '#999999' }}>
-              关键装置的定义：在易燃、易爆、有毒、有害、易腐蚀、高温、高压、真空、深冷、等条件下进行工艺操作的生产装置。
-            </div>
-          </FormItem>
-
-          <FormItem label="设计压力（KPa）" {...formItemLayout}>
-            {getFieldDecorator('pressure', {
-              initialValue: pressure,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="装置状态" {...formItemLayout}>
-            {getFieldDecorator('deviceStatus', {
-              initialValue: deviceStatus ? +deviceStatus : undefined,
-              rules: [{ required: true, message: '请选择' }],
-            })(
-              <Radio.Group>
-                <Radio value={1}>正常</Radio>
-                <Radio value={2}>维检</Radio>
-                <Radio value={3}>报废</Radio>
-              </Radio.Group>
-            )}
-          </FormItem>
-
-          <FormItem label="投用日期" {...formItemLayout}>
-            {getFieldDecorator('useDate', {
-              initialValue: typeof useDate === 'number' ? moment(+useDate) : undefined,
-              rules: [{ required: true, message: '请选择' }],
-            })(<DatePicker placeholder="请选择投用日期" format="YYYY-MM-DD" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="所属危险化工工艺" {...formItemLayout}>
-            {getFieldDecorator('dangerTechnologyName', {
-              initialValue: dangerTechnologyList
-                ? dangerTechnologyList.map(item => item.processName).join(',')
-                : undefined,
-              rules: [{ required: true, message: '请选择' }],
-            })(<Input placeholder="请选择" disabled {...itemStyles} />)}
-            {!isDet && (
-              <Button type="primary" onClick={this.handleTechnologyModal}>
-                选择
-              </Button>
-            )}
-          </FormItem>
-
-          <FormItem label="涉及主要危化品" {...formItemLayout}>
-            {getFieldDecorator('unitChemicla', {
-              initialValue: unitChemicla,
-              rules: [{ required: true, message: '请选择' }],
-            })(
-              <Fragment>
-                <TextArea
-                  {...itemStyles}
-                  rows={4}
-                  placeholder="请选择"
-                  value={selectedMaterials
-                    .map(
-                      item =>
-                        item.chineName + (materialsNum[item.id] ? materialsNum[item.id] + 't' : '')
-                    )
-                    .join('，')}
-                  disabled
-                />
-                {!isDet && (
-                  <Button type="primary" onClick={this.handleMaterialsModal}>
-                    选择
-                  </Button>
-                )}
-              </Fragment>
-            )}
-          </FormItem>
-
-          {/* <FormItem label="装置生产能力" {...formItemLayout}>
-            {getFieldDecorator('deviceProduct', {
-              initialValue: deviceProduct,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="装置能耗" {...formItemLayout}>
-            {getFieldDecorator('deviceEnergyConsumption', {
-              initialValue: deviceEnergyConsumption,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="装置技术条件" {...formItemLayout}>
-            {getFieldDecorator('deviceTechnology', {
-              initialValue: deviceTechnology,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem> */}
-
-          <FormItem label="自动化控制方式" {...formItemLayout}>
-            {getFieldDecorator('automaticControl', {
-              initialValue: automaticControl,
-            })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
-                {autoList.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-
-          <FormItem label="装置功能" {...formItemLayout}>
-            {getFieldDecorator('deviceFunction', {
-              initialValue: deviceFunction,
-              rules: [{ required: true, message: '请输入' }],
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="周围环境" {...formItemLayout}>
-            {getFieldDecorator('environment', {
-              initialValue: environment,
-              rules: [{ required: true, message: '请输入' }],
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="备注" {...formItemLayout}>
-            {getFieldDecorator('note', {
-              initialValue: note,
-              getValueFromEvent: this.handleTrim,
-            })(<TextArea placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-
-          <FormItem label="现场照片" {...formItemLayout}>
-            {getFieldDecorator('photo', {
-              // initialValue: photoUrl,
-            })(
-              <Upload
-                name="files"
-                accept=".jpg,.png" // 接受的文件格式
-                headers={{ 'JA-Token': getToken() }} // 上传的请求头部
-                data={{ folder }} // 附带参数
-                action={uploadAction} // 上传地址
-                fileList={photoUrl}
-                onChange={this.handleUploadChange}
-                beforeUpload={this.handleBeforeUpload}
-              >
-                <Button
-                  type="dashed"
-                  style={{ width: '96px', height: '96px' }}
-                  disabled={uploading}
-                >
-                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
-                  <div style={{ marginTop: '8px' }}>点击上传</div>
+        <FormItem label="涉及主要危化品" {...formItemLayout}>
+          {getFieldDecorator('unitChemicla', {
+            initialValue: unitChemicla,
+            rules: [{ required: true, message: '请选择' }],
+          })(
+            <Fragment>
+              <TextArea
+                {...itemStyles}
+                rows={4}
+                placeholder="请选择"
+                value={selectedMaterials
+                  .map(
+                    item =>
+                      item.chineName + (materialsNum[item.id] ? materialsNum[item.id] + 't' : '')
+                  )
+                  .join('，')}
+                disabled
+              />
+              {!isDet && (
+                <Button type="primary" onClick={this.handleMaterialsModal}>
+                  选择
                 </Button>
-              </Upload>
-            )}
-          </FormItem>
-        </Form>
-      </Card>
+              )}
+            </Fragment>
+          )}
+        </FormItem>
+
+        {/* <FormItem label="装置生产能力" {...formItemLayout}>
+          {getFieldDecorator('deviceProduct', {
+            initialValue: deviceProduct,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="装置能耗" {...formItemLayout}>
+          {getFieldDecorator('deviceEnergyConsumption', {
+            initialValue: deviceEnergyConsumption,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="装置技术条件" {...formItemLayout}>
+          {getFieldDecorator('deviceTechnology', {
+            initialValue: deviceTechnology,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem> */}
+
+        <FormItem label="自动化控制方式" {...formItemLayout}>
+          {getFieldDecorator('automaticControl', {
+            initialValue: automaticControl,
+          })(
+            <Select {...itemStyles} allowClear placeholder="请选择">
+              {autoList.map(({ key, value }) => (
+                <Option key={key} value={key}>
+                  {value}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+
+        <FormItem label="装置功能" {...formItemLayout}>
+          {getFieldDecorator('deviceFunction', {
+            initialValue: deviceFunction,
+            rules: [{ required: true, message: '请输入' }],
+            getValueFromEvent: this.handleTrim,
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="周围环境" {...formItemLayout}>
+          {getFieldDecorator('environment', {
+            initialValue: environment,
+            rules: [{ required: true, message: '请输入' }],
+            getValueFromEvent: this.handleTrim,
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="备注" {...formItemLayout}>
+          {getFieldDecorator('note', {
+            initialValue: note,
+            getValueFromEvent: this.handleTrim,
+          })(<TextArea placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+
+        <FormItem label="现场照片" {...formItemLayout}>
+          {getFieldDecorator('photo', {
+            // initialValue: photoUrl,
+          })(
+            <Upload
+              name="files"
+              accept=".jpg,.png" // 接受的文件格式
+              headers={{ 'JA-Token': getToken() }} // 上传的请求头部
+              data={{ folder }} // 附带参数
+              action={uploadAction} // 上传地址
+              fileList={photoUrl}
+              onChange={this.handleUploadChange}
+              beforeUpload={this.handleBeforeUpload}
+            >
+              <Button
+                type="dashed"
+                style={{ width: '96px', height: '96px' }}
+                disabled={uploading}
+              >
+                <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
+                <div style={{ marginTop: '8px' }}>点击上传</div>
+              </Button>
+            </Upload>
+          )}
+        </FormItem>
+      </Form>
     );
   };
 
@@ -795,42 +796,42 @@ export default class Edit extends PureComponent {
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        {this.renderForm()}
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <span>
-            {isDet ? (
-              <Button
-                type="primary"
-                size="large"
-                disabled={!editAuth}
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                onClick={e => router.push(`${ROUTER}/edit/${id}`)}
-              >
-                编辑
-              </Button>
-            ) : (
-              <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                type="primary"
-                size="large"
-                onClick={this.handleSubmit}
-                disabled={uploading}
-              >
-                提交
-              </Button>
-            )}
-          </span>
+        <Card>
+          {this.renderForm()}
+          <div style={{ display: 'flex', justifyContent: 'center', backgroundColor: '#FFF' }}>
+            <span>
+              {isDet ? (
+                <Button
+                  type="primary"
+                  disabled={!editAuth}
+                  style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                  onClick={e => router.push(`${ROUTER}/edit/${id}`)}
+                >
+                  编辑
+                </Button>
+              ) : (
+                <Button
+                  style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                  type="primary"
+                  onClick={this.handleSubmit}
+                  disabled={uploading}
+                >
+                  提交
+                </Button>
+              )}
+            </span>
 
-          <span style={{ marginLeft: 10 }}>
-            <Button
-              style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-              size="large"
-              href={`#${LIST_URL}`}
-            >
-              返回
-            </Button>
-          </span>
-        </div>
+            <span style={{ marginLeft: 10 }}>
+              <Button
+                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                // href={`#${LIST_URL}`}
+                onClick={this.goBack}
+              >
+                返回
+              </Button>
+            </span>
+          </div>
+        </Card>
 
         {/** 选择高危工艺 */}
         <CompanyModal

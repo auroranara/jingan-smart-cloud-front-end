@@ -410,14 +410,16 @@ export default class StorageList extends PureComponent {
           <Fragment>
             <AuthA
               code={detailCode}
-              onClick={() => router.push(`/major-hazard-info/storage-management/detail/${row.id}`)}
+              // onClick={() => router.push(`/major-hazard-info/storage-management/detail/${row.id}`)}
+              onClick={() => window.open(`${window.publicPath}#/major-hazard-info/storage-management/detail/${row.id}`)}
             >
               查看
             </AuthA>
             <Divider type="vertical" />
             <AuthA
               code={editCode}
-              onClick={() => router.push(`/major-hazard-info/storage-management/edit/${row.id}`)}
+              // onClick={() => router.push(`/major-hazard-info/storage-management/edit/${row.id}`)}
+              onClick={() => window.open(`${window.publicPath}#/major-hazard-info/storage-management/edit/${row.id}`)}
             >
               编辑
             </AuthA>

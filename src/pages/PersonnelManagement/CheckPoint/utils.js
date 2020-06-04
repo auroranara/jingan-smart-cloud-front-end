@@ -77,6 +77,20 @@ export function genOperateCallback(url, callback) {
   };
 }
 
+export function genOperateCallback1(url, callback, isAdd) { // 0 新增 1 编辑
+  return function (code, msg) {
+    if (code === 200) {
+      message.success('操作成功！');
+      callback && callback();
+      setTimeout(() => {
+        if (isAdd) router.push(url);
+        else window.close();
+      }, 1000);
+    } else
+    message.error(msg);
+  };
+}
+
 export function genListLink(dispatch, companyId, index, id) {
   const handleDelete = e => {
     dispatch({

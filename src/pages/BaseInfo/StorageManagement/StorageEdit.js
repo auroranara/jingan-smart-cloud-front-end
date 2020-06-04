@@ -333,7 +333,8 @@ export default class StorageEdit extends PureComponent {
 
   goBack = () => {
     // router.goBack();
-    router.push('/major-hazard-info/storage-management/list');
+    // router.push('/major-hazard-info/storage-management/list');
+    window.close();
   };
 
   /**
@@ -746,7 +747,10 @@ export default class StorageEdit extends PureComponent {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`);
-        router.push('/major-hazard-info/storage-management/list');
+        if (id)
+          setTimeout(() => window.close(), 1000);
+        else
+          router.push('/major-hazard-info/storage-management/list');
       };
       const error = res => {
         message.error(res ? res.msg : `${tag}失败`);

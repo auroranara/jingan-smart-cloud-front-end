@@ -401,8 +401,9 @@ export default class Edit extends PureComponent {
   handleTrim = e => e.target.value.trim();
 
   goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
+    // const { dispatch } = this.props;
+    // dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
+    window.close();
   };
 
   handleClickValidate = () => {
@@ -429,7 +430,10 @@ export default class Edit extends PureComponent {
         };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
+          if (id)
+            setTimeout(() => window.close(), 1000);
+          else
+            dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');

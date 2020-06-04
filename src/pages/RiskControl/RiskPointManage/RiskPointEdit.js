@@ -155,12 +155,17 @@ export default class RiskPointEdit extends PureComponent {
       location: {
         query: { companyId, companyName },
       },
+      match: {
+        params: { id },
+      },
     } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`
-      )
-    );
+    if (id) window.close();
+    else
+      dispatch(
+        routerRedux.push(
+          `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`
+        )
+      );
   };
 
   /* 去除左右两边空白 */
@@ -368,7 +373,7 @@ export default class RiskPointEdit extends PureComponent {
         }
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
         const error = () => {
           const msg = id ? '修改失败' : '新增失败';

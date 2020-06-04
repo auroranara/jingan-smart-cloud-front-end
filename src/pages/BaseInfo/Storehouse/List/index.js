@@ -188,11 +188,13 @@ export default class StorehouseList extends PureComponent {
   };
 
   goDetail = id => {
-    router.push(`/major-hazard-info/storehouse/detail/${id}`);
+    // router.push(`/major-hazard-info/storehouse/detail/${id}`);
+    window.open(`${window.publicPath}#/major-hazard-info/storehouse/detail/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/major-hazard-info/storehouse/edit/${id}`);
+    // router.push(`/major-hazard-info/storehouse/edit/${id}`);
+    window.open(`${window.publicPath}#/major-hazard-info/storehouse/edit/${id}`);
   };
 
   // 表格改变触发，包含分页变动

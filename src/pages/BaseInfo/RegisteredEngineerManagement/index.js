@@ -417,7 +417,7 @@ export default class RegSafetyEngList extends PureComponent {
         render: (val, record) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/base-info/registered-engineer-management/edit/${record.id}`}>编辑</Link>
+              <Link to={`/base-info/registered-engineer-management/edit/${record.id}`} target="_blank">编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}

@@ -137,7 +137,8 @@ export const TABLE_COLUMNS = [
       return safeProductGoalNumberList ? (
         <AuthA
           code={codesMap.targetResponsibility.targetSetting.result}
-          href={`#${ROUTER}/check-detail/${text.id}`}
+          // href={`#${ROUTER}/check-detail/${text.id}`}
+          onClick={e => window.open(`${window.publicPath}#${ROUTER}/check-detail/${text.id}`)}
         >
           填写考核结果
         </AuthA>

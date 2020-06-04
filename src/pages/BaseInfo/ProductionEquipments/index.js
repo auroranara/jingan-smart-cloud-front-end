@@ -282,11 +282,11 @@ export default class TableList extends PureComponent {
         width: 210,
         render: (val, row) => (
           <Fragment>
-            <AuthLink code={viewCode} to={`${ROUTER}/detail/${row.id}`}>
+            <AuthLink code={viewCode} to={`${ROUTER}/detail/${row.id}`} target="_blank">
               查看
             </AuthLink>
             <Divider type="vertical" />
-            <AuthLink to={`${ROUTER}/edit/${row.id}`} code={editCode}>
+            <AuthLink to={`${ROUTER}/edit/${row.id}`} code={editCode} target="_blank">
               编辑
             </AuthLink>
             <Divider type="vertical" />

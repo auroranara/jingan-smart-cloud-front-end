@@ -294,7 +294,7 @@ export default class CaseList extends PureComponent {
         render: (val, row) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/safety-knowledge-base/typical-accident-case/edit/${row.id}`}>编辑</Link>
+              <Link to={`/safety-knowledge-base/typical-accident-case/edit/${row.id}`}  target="_blank">编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}

@@ -146,11 +146,13 @@ export default class KeypartList extends Component {
   }
 
   handleEdit = id => {
-    router.push(`/facility-management/key-part/edit/${id}`)
+    // router.push(`/facility-management/key-part/edit/${id}`)
+    window.open(`${window.publicPath}#/facility-management/key-part/edit/${id}`);
   }
 
   handleView = id => {
-    router.push(`/facility-management/key-part/detail/${id}`)
+    // router.push(`/facility-management/key-part/detail/${id}`)
+    window.open(`${window.publicPath}#/facility-management/key-part/detail/${id}`);
   }
 
   // 企业发生变化

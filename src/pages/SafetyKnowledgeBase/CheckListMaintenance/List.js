@@ -174,12 +174,14 @@ export default class CheckListMaintenance extends Component {
 
   // 点击查看
   handleView = id => {
-    router.push(`/safety-production-regulation/check-list-maintenance/detail/${id}`)
+    // router.push(`/safety-production-regulation/check-list-maintenance/detail/${id}`)
+    window.open(`${window.publicPath}#/safety-production-regulation/check-list-maintenance/detail/${id}`);
   }
 
   // 点击编辑
   handleEdit = id => {
-    router.push(`/safety-production-regulation/check-list-maintenance/edit/${id}`)
+    // router.push(`/safety-production-regulation/check-list-maintenance/edit/${id}`)
+    window.open(`${window.publicPath}#/safety-production-regulation/check-list-maintenance/edit/${id}`);
   }
 
   // 点击打开审核弹窗
