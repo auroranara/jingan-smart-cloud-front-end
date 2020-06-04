@@ -242,7 +242,7 @@ export default class Login extends PureComponent {
           dispatch({
             type: 'login/login',
             payload,
-            success: ({ isFirstLogin }) => {
+            success: ({ isFirstLogin, ruleStatus }) => {
               const { commonAccount } = this.state;
               const account = commonAccount.filter(
                 ({ username: userName }) => userName === username
@@ -258,6 +258,7 @@ export default class Login extends PureComponent {
                 this.setLocalStorage(commonAccount);
               }
               if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+              else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
             },
             error: notice => {
               this.setState({ notice });
@@ -275,6 +276,10 @@ export default class Login extends PureComponent {
             payload: values,
             error: notice => {
               this.setState({ notice });
+            },
+            success: ({ isFirstLogin, ruleStatus }) => {
+              if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+              else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
             },
             handleMoreUser: props => {
               this.setState({
@@ -387,6 +392,10 @@ export default class Login extends PureComponent {
         type,
         userId,
         ...payload,
+      },
+      success: ({ isFirstLogin, ruleStatus }) => {
+        if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+        else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
       },
     });
   };

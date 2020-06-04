@@ -62,6 +62,7 @@ export default {
     *loginWithUserId(
       {
         payload: { type, ...payload },
+        success,
       },
       { call, put }
     ) {
@@ -85,6 +86,7 @@ export default {
         if (+response.data.isFirstLogin === 1 || +response.data.ruleStatus === 1)
           router.replace('/account/change-password');
         else router.replace('/');
+        success && success(response.data);
       }
     },
 
@@ -131,7 +133,7 @@ export default {
         if (+response.data.isFirstLogin === 1 || +response.data.ruleStatus === 1)
           router.replace('/account/change-password');
         else router.replace('/');
-        if (success) success();
+        if (success) success(response.data);
       } else if (error) error();
     },
     // 获取验证码
@@ -162,7 +164,7 @@ export default {
             router.replace('/account/change-password');
           else router.replace('/');
         }
-        success && success();
+        success && success(data);
         yield put({ type: 'saveLogined', payload: true });
       } else {
         error && error(msg);

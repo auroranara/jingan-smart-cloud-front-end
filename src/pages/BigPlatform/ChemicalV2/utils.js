@@ -528,7 +528,7 @@ export const MonitorConfig = {
             >
               <span
                 style={{
-                  color: +status > 0 && +linkStatus !== -1 ? '#ff1225' : '#fff',
+                  color: +status > 0 ? '#ff1225' : '#fff',
                   fontSize: '18px',
                   fontWeight: 'bold',
                 }}
@@ -676,7 +676,7 @@ export const MonitorConfig = {
             >
               <span
                 style={{
-                  color: +status > 0 && +linkStatus !== -1 ? '#ff1225' : '#fff',
+                  color: +status > 0 ? '#ff1225' : '#fff',
                   fontSize: '18px',
                   fontWeight: 'bold',
                 }}

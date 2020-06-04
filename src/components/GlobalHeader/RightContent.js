@@ -76,11 +76,13 @@ export default class GlobalHeaderRight extends PureComponent {
     dispatch({
       type: 'login/changerUser',
       payload: { id: userId },
-      success: () => {
+      success: ({ isFirstLogin, ruleStatus }) => {
         // message.success('切换成功！');
         // setTimeout(() => {
         window.location.reload(true);
         // }, 500);
+        if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+        else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
       },
       error: () => {
         message.error('切换失败！');

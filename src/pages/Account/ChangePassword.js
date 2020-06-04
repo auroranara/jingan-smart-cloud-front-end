@@ -14,7 +14,7 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '修改密码', name: '修改密码' },
 ];
-const CodeTime = 30;
+const CodeTime = 60;
 
 @connect(({ account, user, company, loading }) => ({
   user,
@@ -199,17 +199,17 @@ export default class ChangePassword extends PureComponent {
       payload: { phone: phoneNumber },
       success: () => {
         message.success('验证码发送成功');
+        this.setState({ codeTime: CodeTime }, () => {
+          this.timer = setInterval(() => {
+            const { codeTime } = this.state;
+            if (codeTime === 0) clearInterval(this.timer);
+            else this.setState({ codeTime: codeTime - 1 });
+          }, 1000);
+        });
       },
       error: msg => {
         message.error(msg);
       },
-    });
-    this.setState({ codeTime: CodeTime }, () => {
-      this.timer = setInterval(() => {
-        const { codeTime } = this.state;
-        if (codeTime === 0) clearInterval(this.timer);
-        else this.setState({ codeTime: codeTime - 1 });
-      }, 1000);
     });
   };
 

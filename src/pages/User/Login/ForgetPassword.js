@@ -8,7 +8,7 @@ import router from 'umi/router';
 import { aesEncrypt } from '@/utils/utils';
 import styles from './ForgetPassword.less';
 
-const CodeTime = 5;
+const CodeTime = 60;
 const InputGroup = Input.Group;
 const FormItem = Form.Item;
 
@@ -153,17 +153,18 @@ export default class ForgetPassword extends PureComponent {
       success: ({ passwordRule }) => {
         message.success('验证码发送成功');
         passwordRule && this.setState({ passwordRule: +passwordRule });
+
+        this.setState({ codeTime: CodeTime }, () => {
+          this.timer = setInterval(() => {
+            const { codeTime } = this.state;
+            if (codeTime === 0) clearInterval(this.timer);
+            else this.setState({ codeTime: codeTime - 1 });
+          }, 1000);
+        });
       },
       error: msg => {
         message.error(msg);
       },
-    });
-    this.setState({ codeTime: CodeTime }, () => {
-      this.timer = setInterval(() => {
-        const { codeTime } = this.state;
-        if (codeTime === 0) clearInterval(this.timer);
-        else this.setState({ codeTime: codeTime - 1 });
-      }, 1000);
     });
   };
 

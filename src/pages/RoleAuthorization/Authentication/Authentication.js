@@ -120,7 +120,7 @@ export default class Authentication extends PureComponent {
   render() {
     const {
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
       loading,
     } = this.props;
@@ -147,9 +147,11 @@ export default class Authentication extends PureComponent {
             pagination={false}
           />
           <div style={{ textAlign: 'center', marginTop: 20 }}>
-            <Button style={{ marginRight: editCode ? 10 : 0 }} onClick={this.handleClickCancle}>
-              取消
-            </Button>
+            {+unitType !== 4 && (
+              <Button style={{ marginRight: editCode ? 10 : 0 }} onClick={this.handleClickCancle}>
+                取消
+              </Button>
+            )}
             {editCode && (
               <Button type="primary" onClick={this.handleClickSubmit} loading={loading}>
                 提交
