@@ -3,13 +3,15 @@ import { connect } from 'dva';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Card, Button, Input, Radio, Cascader, Select, Upload, DatePicker, message } from 'antd';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
+
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -22,7 +24,7 @@ const formItemLayout = {
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const itemsStyle = { style: { width: 'calc(34.5%)', marginRight: '10px' } };
 // 获取根节点
-const getRootChild = () => document.querySelector('#root>div');
+// const getRootChild = () => document.querySelector('#root>div');
 
 // 上传文件夹
 const folder = 'dangerChemicalsInfo';
@@ -44,6 +46,11 @@ const {
   loading: loading.models.safeFacilities,
 }))
 export default class Edit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/facility-management/safety-facilities/list');
+  }
+
   state = {
     companyVisible: false, // 弹框是否显示
     uploading: false, // 上传是否加载
@@ -136,9 +143,9 @@ export default class Edit extends PureComponent {
     });
   };
 
-  goBack = () => {
-    router.push('/facility-management/safety-facilities/list');
-  };
+  // goBack = () => {
+  //   router.push('/facility-management/safety-facilities/list');
+  // };
 
   isDetail = () => {
     const {
@@ -211,7 +218,7 @@ export default class Edit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
@@ -452,195 +459,193 @@ export default class Edit extends PureComponent {
     } = detailList;
 
     return (
-      <Card>
-        <Form>
-          {unitType !== 4 && (
-            <FormItem label="单位名称" {...formItemLayout}>
-              {getFieldDecorator('companyId', {
-                initialValue: companyName,
-                rules: [{ required: true, message: '请选择单位名称' }],
-              })(
-                <Input
-                  {...itemStyles}
-                  ref={input => {
-                    this.CompanyIdInput = input;
-                  }}
-                  disabled
-                  placeholder="请选择"
-                />
-              )}
-              {!this.isDetail() && (
-                <Button type="primary" onClick={this.handleCompanyModal}>
-                  选择单位
-                </Button>
-              )}
-            </FormItem>
-          )}
-          <FormItem label="分类" {...formItemLayout}>
-            {getFieldDecorator('category', {
-              initialValue: category,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择分类',
-                },
-              ],
+      <Form>
+        {unitType !== 4 && (
+          <FormItem label="单位名称" {...formItemLayout}>
+            {getFieldDecorator('companyId', {
+              initialValue: companyName,
+              rules: [{ required: true, message: '请选择单位名称' }],
             })(
-              <Fragment>
-                <Select
-                  value={categoryOneName}
-                  placeholder="请选择"
-                  {...itemsStyle}
-                  onChange={this.handleCategoryOneChange}
-                  onSelect={this.handleCategoryOneSelect}
-                >
-                  {categoryOneList.map(({ id, label }) => (
-                    <Select.Option key={id} value={id}>
-                      {label}
-                    </Select.Option>
-                  ))}
-                </Select>
-                <Select
-                  value={categoryTwoName}
-                  placeholder="请选择"
-                  {...itemsStyle}
-                  onChange={this.handleCategoryTwoChange}
-                  onSelect={this.handleCategoryTwoSelect}
-                >
-                  {categoryTwoList.map(({ id, label }) => (
-                    <Select.Option key={id} value={id}>
-                      {label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Fragment>
+              <Input
+                {...itemStyles}
+                ref={input => {
+                  this.CompanyIdInput = input;
+                }}
+                disabled
+                placeholder="请选择"
+              />
+            )}
+            {!this.isDetail() && (
+              <Button type="primary" onClick={this.handleCompanyModal}>
+                选择单位
+              </Button>
             )}
           </FormItem>
-          <FormItem label="安全设施名称" {...formItemLayout}>
-            {getFieldDecorator('safeFacilitiesName', {
-              initialValue: safeFacilitiesLabel ? safeFacilitiesLabel : undefined,
-              rules: [{ required: true, message: '请选择安全设施名称' }],
-            })(
+        )}
+        <FormItem label="分类" {...formItemLayout}>
+          {getFieldDecorator('category', {
+            initialValue: category,
+            rules: [
+              {
+                required: true,
+                message: '请选择分类',
+              },
+            ],
+          })(
+            <Fragment>
               <Select
-                {...itemStyles}
-                allowClear
+                value={categoryOneName}
                 placeholder="请选择"
-                onChange={this.handleNameChange}
+                {...itemsStyle}
+                onChange={this.handleCategoryOneChange}
+                onSelect={this.handleCategoryOneSelect}
               >
-                {facilitiesNameList.map(({ id, label }) => (
+                {categoryOneList.map(({ id, label }) => (
                   <Select.Option key={id} value={id}>
                     {label}
                   </Select.Option>
                 ))}
               </Select>
-            )}
-          </FormItem>
-          <FormItem label="规格型号" {...formItemLayout}>
-            {getFieldDecorator('specifications', {
-              initialValue: specifications,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入规格型号' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="出厂编号" {...formItemLayout}>
-            {getFieldDecorator('leaveProductNumber', {
-              initialValue: leaveProductNumber,
-              getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入出厂编号' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="设备名称" {...formItemLayout}>
-            {getFieldDecorator('equipName', {
-              initialValue: equipName,
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="设备状态" {...formItemLayout}>
-            {getFieldDecorator('equipStatus', {
-              initialValue: equipStatus ? +equipStatus : undefined,
-              rules: [{ required: true, message: '请选择设备状态' }],
-            })(
-              <Radio.Group>
-                <Radio value={1}>正常</Radio>
-                <Radio value={2}>维检</Radio>
-                <Radio value={3}>报废</Radio>
-                <Radio value={4}>使用中</Radio>
-              </Radio.Group>
-            )}
-          </FormItem>
-          <FormItem label="安装部位" {...formItemLayout}>
-            {getFieldDecorator('installPart', {
-              initialValue: installPart,
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="涉及工艺设施" {...formItemLayout}>
-            {getFieldDecorator('processFacilitiesInvolved', {
-              initialValue: processFacilitiesInvolved,
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="生产厂家" {...formItemLayout}>
-            {getFieldDecorator('productFactory', {
-              initialValue: productFactory,
-              getValueFromEvent: this.handleTrim,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="出厂日期" {...formItemLayout}>
-            {getFieldDecorator('leaveFactoryDate', {
-              initialValue: leaveFactoryDate ? moment(+leaveFactoryDate) : undefined,
-            })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="投入使用日期" {...formItemLayout}>
-            {getFieldDecorator('useDate', {
-              initialValue: useDate ? moment(+useDate) : undefined,
-            })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="使用期限（月）" {...formItemLayout}>
-            {getFieldDecorator('useYear', {
-              initialValue: useYear === 0 ? '' : useYear,
-              getValueFromEvent: this.handleTrim,
-              rules: [
-                {
-                  message: '请输入使用年限，只能输入正整数',
-                  pattern: /^[1-9]\d*$/,
-                },
-              ],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="备注" {...formItemLayout}>
-            {getFieldDecorator('notes', {
-              initialValue: notes,
-              getValueFromEvent: this.handleTrim,
-            })(<TextArea {...itemStyles} placeholder="请输入" />)}
-          </FormItem>
-          <FormItem label="图片" {...formItemLayout}>
-            {getFieldDecorator('photo', {
-              initialValue: photoUrl,
-            })(
-              <Upload
-                name="files"
-                accept=".jpg,.png" // 接受的文件格式
-                headers={{ 'JA-Token': getToken() }} // 上传的请求头部
-                data={{ folder }} // 附带参数
-                action={uploadAction} // 上传地址
-                fileList={photoUrl}
-                onChange={this.handleUploadChange}
-                beforeUpload={this.handleBeforeUpload}
+              <Select
+                value={categoryTwoName}
+                placeholder="请选择"
+                {...itemsStyle}
+                onChange={this.handleCategoryTwoChange}
+                onSelect={this.handleCategoryTwoSelect}
               >
-                <Button
-                  type="dashed"
-                  style={{ width: '96px', height: '96px' }}
-                  disabled={uploading}
-                >
-                  <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
-                  <div style={{ marginTop: '8px' }}>点击上传</div>
-                </Button>
-              </Upload>
-            )}
-          </FormItem>
-        </Form>
-      </Card>
+                {categoryTwoList.map(({ id, label }) => (
+                  <Select.Option key={id} value={id}>
+                    {label}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Fragment>
+          )}
+        </FormItem>
+        <FormItem label="安全设施名称" {...formItemLayout}>
+          {getFieldDecorator('safeFacilitiesName', {
+            initialValue: safeFacilitiesLabel ? safeFacilitiesLabel : undefined,
+            rules: [{ required: true, message: '请选择安全设施名称' }],
+          })(
+            <Select
+              {...itemStyles}
+              allowClear
+              placeholder="请选择"
+              onChange={this.handleNameChange}
+            >
+              {facilitiesNameList.map(({ id, label }) => (
+                <Select.Option key={id} value={id}>
+                  {label}
+                </Select.Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+        <FormItem label="规格型号" {...formItemLayout}>
+          {getFieldDecorator('specifications', {
+            initialValue: specifications,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入规格型号' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="出厂编号" {...formItemLayout}>
+          {getFieldDecorator('leaveProductNumber', {
+            initialValue: leaveProductNumber,
+            getValueFromEvent: this.handleTrim,
+            rules: [{ required: true, message: '请输入出厂编号' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="设备名称" {...formItemLayout}>
+          {getFieldDecorator('equipName', {
+            initialValue: equipName,
+            getValueFromEvent: this.handleTrim,
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="设备状态" {...formItemLayout}>
+          {getFieldDecorator('equipStatus', {
+            initialValue: equipStatus ? +equipStatus : undefined,
+            rules: [{ required: true, message: '请选择设备状态' }],
+          })(
+            <Radio.Group>
+              <Radio value={1}>正常</Radio>
+              <Radio value={2}>维检</Radio>
+              <Radio value={3}>报废</Radio>
+              <Radio value={4}>使用中</Radio>
+            </Radio.Group>
+          )}
+        </FormItem>
+        <FormItem label="安装部位" {...formItemLayout}>
+          {getFieldDecorator('installPart', {
+            initialValue: installPart,
+            getValueFromEvent: this.handleTrim,
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="涉及工艺设施" {...formItemLayout}>
+          {getFieldDecorator('processFacilitiesInvolved', {
+            initialValue: processFacilitiesInvolved,
+            getValueFromEvent: this.handleTrim,
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="生产厂家" {...formItemLayout}>
+          {getFieldDecorator('productFactory', {
+            initialValue: productFactory,
+            getValueFromEvent: this.handleTrim,
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="出厂日期" {...formItemLayout}>
+          {getFieldDecorator('leaveFactoryDate', {
+            initialValue: leaveFactoryDate ? moment(+leaveFactoryDate) : undefined,
+          })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="投入使用日期" {...formItemLayout}>
+          {getFieldDecorator('useDate', {
+            initialValue: useDate ? moment(+useDate) : undefined,
+          })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="使用期限（月）" {...formItemLayout}>
+          {getFieldDecorator('useYear', {
+            initialValue: useYear === 0 ? '' : useYear,
+            getValueFromEvent: this.handleTrim,
+            rules: [
+              {
+                message: '请输入使用年限，只能输入正整数',
+                pattern: /^[1-9]\d*$/,
+              },
+            ],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="备注" {...formItemLayout}>
+          {getFieldDecorator('notes', {
+            initialValue: notes,
+            getValueFromEvent: this.handleTrim,
+          })(<TextArea {...itemStyles} placeholder="请输入" />)}
+        </FormItem>
+        <FormItem label="图片" {...formItemLayout}>
+          {getFieldDecorator('photo', {
+            initialValue: photoUrl,
+          })(
+            <Upload
+              name="files"
+              accept=".jpg,.png" // 接受的文件格式
+              headers={{ 'JA-Token': getToken() }} // 上传的请求头部
+              data={{ folder }} // 附带参数
+              action={uploadAction} // 上传地址
+              fileList={photoUrl}
+              onChange={this.handleUploadChange}
+              beforeUpload={this.handleBeforeUpload}
+            >
+              <Button
+                type="dashed"
+                style={{ width: '96px', height: '96px' }}
+                disabled={uploading}
+              >
+                <LegacyIcon type="plus" style={{ fontSize: '32px' }} />
+                <div style={{ marginTop: '8px' }}>点击上传</div>
+              </Button>
+            </Upload>
+          )}
+        </FormItem>
+      </Form>
     );
   };
 
@@ -678,59 +683,51 @@ export default class Edit extends PureComponent {
     ];
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        {this.renderForm()}
-        {!this.isDetail() && (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <span>
+        <Card>
+          {this.renderForm()}
+          {!this.isDetail() && (
+            <div style={{ textAlign: 'center' }}>
               <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                type="primary"
-                size="large"
-                onClick={this.handleSubmit}
+                // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                // href={`#/facility-management/safety-facilities/list`}
+                style={{ marginRight: 10 }}
+                onClick={this.goBack}
+              >
+                返回
+              </Button>
+              <Button
                 loading={uploading}
+                // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                type="primary"
+                onClick={this.handleSubmit}
               >
                 提交
               </Button>
-            </span>
-
-            <span style={{ marginLeft: 10 }}>
-              <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                size="large"
-                href={`#/facility-management/safety-facilities/list`}
-              >
-                返回
-              </Button>
-            </span>
-          </div>
-        )}
-
-        {this.isDetail() && (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <span>
-              <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                type="primary"
-                size="large"
-                disabled={!editCode}
-                href={`#/facility-management/safety-facilities/edit/${id}`}
-              >
-                编辑
-              </Button>
-            </span>
-
-            <span style={{ marginLeft: 10 }}>
-              <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                size="large"
-                href={`#/facility-management/safety-facilities/list`}
-              >
-                返回
-              </Button>
-            </span>
-          </div>
-        )}
-
+            </div>
+          )}
+          {this.isDetail() && (
+            <div style={{ textAlign: 'center' }}>
+                <Button
+                  // size="large"
+                  // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                  style={{ marginRight: 10 }}
+                  // href={`#/facility-management/safety-facilities/list`}
+                  onClick={this.goBack}
+                >
+                  返回
+                </Button>
+                <Button
+                  type="primary"
+                  // size="large"
+                  disabled={!editCode}
+                  // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                  href={`#/facility-management/safety-facilities/edit/${id}`}
+                >
+                  编辑
+                </Button>
+            </div>
+          )}
+        </Card>
         {this.renderModal()}
       </PageHeaderLayout>
     );

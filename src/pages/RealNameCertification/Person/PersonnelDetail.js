@@ -69,18 +69,19 @@ export default class PersonnelDetail extends Component {
   };
 
   handleBackButtonClick = () => {
-    const {
-      location: {
-        query: { companyName: routerCompanyName, companyId },
-      },
-      user: {
-        currentUser: { companyName },
-      },
-    } = this.props;
-    router.push(
-      `/real-name-certification/personnel-management/person-list/${companyId}?companyName=${routerCompanyName ||
-        companyName}`
-    );
+    // const {
+    //   location: {
+    //     query: { companyName: routerCompanyName, companyId },
+    //   },
+    //   user: {
+    //     currentUser: { companyName },
+    //   },
+    // } = this.props;
+    // router.push(
+    //   `/real-name-certification/personnel-management/person-list/${companyId}?companyName=${routerCompanyName ||
+    //     companyName}`
+    // );
+    window.close();
   };
 
   render() {
@@ -268,6 +269,7 @@ export default class PersonnelDetail extends Component {
               resetable={false}
               action={
                 <Fragment>
+                  <Button onClick={this.handleBackButtonClick}>返回</Button>
                   <Button
                     type="primary"
                     onClick={e =>
@@ -281,7 +283,6 @@ export default class PersonnelDetail extends Component {
                   >
                     编辑
                   </Button>
-                  <Button onClick={this.handleBackButtonClick}>返回</Button>
                 </Fragment>
               }
             />

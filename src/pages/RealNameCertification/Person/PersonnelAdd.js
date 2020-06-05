@@ -178,6 +178,23 @@ export default class PersonnelAdd extends PureComponent {
     }
   }
 
+  goBack = () => {
+    const {
+      match: {
+        params: { id },
+      },
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    const { curCompanyName } = this.state;
+
+    if (id) // 详情或编辑
+      window.close();
+    else // 新增
+      router.push(`/real-name-certification/personnel-management/person-list/${companyId}?companyName=${curCompanyName}`);
+  };
+
   // 提交
   handleSubmit = () => {
     const {
@@ -199,9 +216,10 @@ export default class PersonnelAdd extends PureComponent {
     const callback = (success, msg) => {
       if (success) {
         message.success(`${tag}人员成功`);
-        router.push(
-          `/real-name-certification/personnel-management/person-list/${companyId}?companyName=${curCompanyName}`
-        );
+        // router.push(
+        //   `/real-name-certification/personnel-management/person-list/${companyId}?companyName=${curCompanyName}`
+        // );
+        setTimeout(this.goBack, 1000);
       } else {
         message.error(msg || `${tag}人员失败`);
       }
@@ -830,10 +848,11 @@ export default class PersonnelAdd extends PureComponent {
           </Form>
           <div style={{ textAlign: 'center' }}>
             <Button
-              onClick={() => {
-                router.goBack();
-              }}
               style={{ marginRight: '24px' }}
+              // onClick={() => {
+              //   router.goBack();
+              // }}
+              onClick={this.goBack}
             >
               返回
             </Button>

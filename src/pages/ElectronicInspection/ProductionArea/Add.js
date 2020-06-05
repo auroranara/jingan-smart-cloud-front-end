@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { Button, Spin, message, Card, TreeSelect } from 'antd';
+import router from 'umi/router';
+import { connect } from 'dva';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
-import router from 'umi/router';
-import { connect } from 'dva';
 import { AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes'
 import { treeData } from './List.js';
 import PersonSelect from '../PersonSelect';
+import { genGoBack } from '@/utils/utils';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
@@ -22,6 +24,10 @@ const LIST_PATH = '/electronic-inspection/production-area/list';
   electronicInspection,
 }))
 export default class ProductionAreaAdd extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
 
   state = {
     selectedKeys: [],
@@ -159,12 +165,12 @@ export default class ProductionAreaAdd extends Component {
         companyId: isCompany ? currentUser.companyId : company.key,
         principal: Array.isArray(principal) && principal.length ? principal[0] : undefined,
       };
-      console.log('payload', payload);
 
       const callback = (success, msg) => {
         if (success) {
           message.success('操作成功');
-          router.push(LIST_PATH);
+          // router.push(LIST_PATH);
+          setTimeout(this.goBack, 1000);
         } else {
           message.error(msg || '操作失败');
         }
@@ -401,15 +407,21 @@ export default class ProductionAreaAdd extends Component {
               refresh={this.refresh}
               ref={this.setFormReference}
             />
-          </Card>
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <Button style={{ marginRight: '10px' }} onClick={() => { router.goBack() }}>返回</Button>
-            {isNotDetail ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
-            ) : (
+            <div style={{ textAlign: 'center' }}>
+              <Button
+                style={{ marginRight: '10px' }}
+                // onClick={() => { router.goBack() }}
+                onClick={this.goBack}
+              >
+                返回
+              </Button>
+              {isNotDetail ? (
+                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+              ) : (
                 <AuthButton code={codes.electronicInspection.productionArea.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
               )}
-          </div>
+            </div>
+          </Card>
         </Spin>
       </PageHeaderLayout>
     );

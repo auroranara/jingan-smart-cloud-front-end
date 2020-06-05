@@ -73,7 +73,7 @@ export default class FloorManagementList extends PureComponent {
   // 跳转到详情页面
   goFloorDetail = id => {
     const {
-      dispatch,
+      // dispatch,
       location: {
         query: { name, companyId },
       },
@@ -81,17 +81,18 @@ export default class FloorManagementList extends PureComponent {
         params: { id: buildingId },
       },
     } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/base-info/buildings-info/floor/detail/${id}?buildingId=${buildingId}&&companyId=${companyId}&&name=${name}`
-      )
-    );
+    // dispatch(
+    //   routerRedux.push(
+    //     `/base-info/buildings-info/floor/detail/${id}?buildingId=${buildingId}&&companyId=${companyId}&&name=${name}`
+    //   )
+    // );
+    window.open(`${window.publicPath}#/base-info/buildings-info/floor/detail/${id}?buildingId=${buildingId}&&companyId=${companyId}&&name=${name}`);
   };
 
   // 跳转到编辑页面
   goFloorEdit = id => {
     const {
-      dispatch,
+      // dispatch,
       match: {
         params: { id: buildingId },
       },
@@ -99,11 +100,12 @@ export default class FloorManagementList extends PureComponent {
         query: { name, companyId },
       },
     } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/base-info/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${name}&&companyId=${companyId}`
-      )
-    );
+    // dispatch(
+    //   routerRedux.push(
+    //     `/base-info/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${name}&&companyId=${companyId}`
+    //   )
+    // );
+    window.open(`${window.publicPath}#/base-info/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${name}&&companyId=${companyId}`);
   };
 
   // 查看附件

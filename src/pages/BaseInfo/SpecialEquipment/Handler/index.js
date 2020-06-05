@@ -31,6 +31,7 @@ import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment.png
 import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-special-equipment-gray.png';
 import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment-gray.png';
 import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/special-equipment-active.png';
+import { genGoBack } from '@/utils/utils';
 
 const { Group: RadioGroup } = Radio;
 
@@ -98,6 +99,7 @@ export default class SpecialEquipment extends PureComponent {
       userSettingVisible: false,
       fileList: [],
     };
+    this.goBack = genGoBack(props, listUrl);
   }
 
   componentDidMount() {
@@ -299,7 +301,8 @@ export default class SpecialEquipment extends PureComponent {
               id ? '编辑' : '新增'
             }成功！风险变更，请对相应的风险分区重新进行风险评价，并在变更预警管理中标记为已评价。`
           );
-          router.push(listUrl);
+          // router.push(listUrl);
+          setTimeout(this.goBack, 1000);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -1002,6 +1005,11 @@ export default class SpecialEquipment extends PureComponent {
           )}
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
+          <Button
+            onClick={this.goBack}
+          >
+            返回
+          </Button>
           {isDetail ? (
             <Button
               type="primary"

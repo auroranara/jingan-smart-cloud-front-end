@@ -2910,7 +2910,6 @@ module.exports = env => {
               name: 'operationRecord', // 设备设施运维记录
               code: 'facilityManagement.operationRecord',
               path: '/facility-management/operation-record',
-              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {

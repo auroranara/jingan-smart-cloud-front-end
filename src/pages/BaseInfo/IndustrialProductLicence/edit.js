@@ -10,8 +10,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
 
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
-
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -36,6 +36,11 @@ const addTitle = '新增许可证';
 }))
 @Form.create()
 export default class IndustriallicenceEdit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/unit-license/industrial-product-licence/list');
+  }
+
   state = {
     companyVisible: false,
     submitting: false,
@@ -86,10 +91,10 @@ export default class IndustriallicenceEdit extends PureComponent {
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
 
-  goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/unit-license/industrial-product-licence/list`));
-  };
+  // goBack = () => {
+  //   const { dispatch } = this.props;
+  //   dispatch(routerRedux.push(`/unit-license/industrial-product-licence/list`));
+  // };
 
   handleClickValidate = () => {
     const {
@@ -137,7 +142,7 @@ export default class IndustriallicenceEdit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
@@ -457,6 +462,9 @@ export default class IndustriallicenceEdit extends PureComponent {
     const { submitting, fileLoading } = this.state;
     return (
       <FooterToolbar>
+        <Button size="large" onClick={this.goBack}>
+          返回
+        </Button>
         <Button
           type="primary"
           size="large"
@@ -464,9 +472,6 @@ export default class IndustriallicenceEdit extends PureComponent {
           onClick={this.handleClickValidate}
         >
           提交
-        </Button>
-        <Button type="primary" size="large" onClick={this.goBack}>
-          返回
         </Button>
       </FooterToolbar>
     );

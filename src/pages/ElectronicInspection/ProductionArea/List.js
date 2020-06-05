@@ -275,9 +275,9 @@ export default class ProductionAreaList extends Component {
         width: 200,
         render: (val, { principalContent = {} }) => (
           <div style={{ textAlign: 'left' }}>
-            <p>姓名：{principalContent.userName || ''}</p>
-            <p>部门：{principalContent.departmentName || ''}</p>
-            <p>联系电话：{principalContent.phoneNumber || ''}</p>
+            <p style={{ margin: 0 }}>姓名：{principalContent.userName || ''}</p>
+            <p style={{ margin: 0 }}>部门：{principalContent.departmentName || ''}</p>
+            <p style={{ margin: 0 }}>联系电话：{principalContent.phoneNumber || ''}</p>
           </div>
         ),
       },

@@ -101,7 +101,10 @@ export default class Edit extends PureComponent {
       const callback = (success, msg) => {
         if (success) {
           message.success(`${tag}成功`);
-          router.push(LIST_URL);
+          setTimeout(() => {
+            if (id) window.close();
+            else router.push(LIST_URL);
+          }, 1000);
         } else {
           message.error(msg || `${tag}失败`);
         }
@@ -214,10 +217,14 @@ export default class Edit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, undefined, loading, !id)}
           {isDet ? (
-            <Button style={{ marginLeft: '45%' }} onClick={e => router.push(`${ROUTER}`)}>
-              取消
+            <Button
+              style={{ marginLeft: '45%' }}
+              // onClick={e => router.push(`${ROUTER}`)}
+              onClick={e => window.close()}
+            >
+              返回
             </Button>
           ) : null}
           {isDet ? (

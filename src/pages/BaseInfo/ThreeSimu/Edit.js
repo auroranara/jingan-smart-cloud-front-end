@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
+// import router from 'umi/router';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Button, Card, Upload, message } from 'antd';
@@ -12,6 +12,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST_URL, PROJECT, PROGRAM, TYPE, CONCLUSION } from './utils';
 import { handleFileList, getInitPhotoList, getSubmitPhotoList } from '@/pages/RoleAuthorization/AccountManagement/utils';
+import { genGoBack } from '@/utils/utils';
 
 const flatOption = list => Array.isArray(list) ? list.map((item, index) => ({ value: index + 1, label: item })) : [];
 const PROJECT_OPTION = flatOption(PROJECT);
@@ -27,6 +28,10 @@ const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
   user,
 }))
 export default class Edit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_URL);
+  }
 
   state = {
     detail: {},
@@ -156,7 +161,8 @@ export default class Edit extends PureComponent {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`)
-        router.push(LIST_URL);
+        // router.push(LIST_URL);
+        setTimeout(this.goBack, 1000);
       };
       const error = res => { message.error(res ? res.msg : `${tag}失败`) };
       if (id) {
@@ -294,7 +300,7 @@ export default class Edit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(EDIT_FORMITEMS, getFieldDecorator, handleSubmit, LIST_URL)}
+          {renderSections(EDIT_FORMITEMS, getFieldDecorator, handleSubmit, LIST_URL, undefined, undefined, !id)}
         </Card>
       </PageHeaderLayout>
     );

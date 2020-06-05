@@ -12,6 +12,7 @@ import {
 import { AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes'
 import styles from './Add.less';
+import { genGoBack } from '@/utils/utils';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
@@ -21,6 +22,10 @@ const LABEL_COL = { span: 6 };
   user,
 }))
 export default class ChannelDeviceAdd extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(this.props, LIST_PATH);
+  }
 
   componentDidMount () {
     const {
@@ -90,7 +95,8 @@ export default class ChannelDeviceAdd extends Component {
       const callback = (success, msg) => {
         if (success) {
           message.success('操作成功');
-          router.push(LIST_PATH);
+          // router.push(LIST_PATH);
+          setTimeout(this.goBack, 1000);
         } else {
           message.error(msg || '操作失败');
         }
@@ -283,15 +289,21 @@ export default class ChannelDeviceAdd extends Component {
               refresh={this.refresh}
               ref={this.setFormReference}
             />
+            <div style={{ textAlign: 'center' }}>
+              <Button
+                style={{ marginRight: '10px' }}
+                // onClick={() => { router.goBack() }}
+                onClick={this.goBack}
+              >
+                返回
+              </Button>
+              {isNotDetail ? (
+                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+              ) : (
+                  <AuthButton code={codes.realNameCertification.channelDevice.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
+                )}
+            </div>
           </Card>
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <Button style={{ marginRight: '10px' }} onClick={() => { router.goBack() }}>返回</Button>
-            {isNotDetail ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
-            ) : (
-                <AuthButton code={codes.realNameCertification.channelDevice.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
-              )}
-          </div>
         </Spin>
       </PageHeaderLayout>
     )

@@ -1,5 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Spin, message, Card } from 'antd';
+import router from 'umi/router';
+import { connect } from 'dva';
+import moment from 'moment';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -7,9 +11,6 @@ import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import Text from '@/jingan-components/Text';
-import router from 'umi/router';
-import { connect } from 'dva';
-import moment from 'moment';
 import {
   TITLE,
   LIST_PATH,
@@ -18,6 +19,7 @@ import {
   DEFAULT_FORMAT,
 } from '../List';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 const GET_DETAIL = 'safetySystem/getDetail';
 const ADD = 'safetySystem/add';
@@ -75,6 +77,11 @@ const VERSION_CODE_MAPPER = value => `V${value}`;
   },
 }))
 export default class SafetySystemOther extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
+
   state = {
     submitting: false,
   }
@@ -168,9 +175,9 @@ export default class SafetySystemOther extends Component {
   }
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
-  }
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // }
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -211,7 +218,8 @@ export default class SafetySystemOther extends Component {
         (id ? edit : add)(payload, (success) => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(LIST_PATH);
+            // router.push(LIST_PATH);
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
@@ -420,34 +428,40 @@ export default class SafetySystemOther extends Component {
               // )}
               ref={this.setFormReference}
             />
-          </Card>
-          {!isNotDetail && approveList && approveList.length > 0 && (
-            <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
-              {approveList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
-                <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
-                  <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
-                  <p>一级审批人：{firstApproveBy || ''}</p>
-                  <p>二级审批人：{secondApproveBy || ''}</p>
-                  <p>三级审批人：{threeApproveBy || ''}</p>
-                  <p>经办人：{approveBy || ''}</p>
-                  <div style={{ display: 'flex' }}>
-                    <span>附件：</span>
-                    <div>{otherFileList.map(({ id, fileName, webUrl }) => (
-                      <div key={id}><a href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></div>
-                    ))}</div>
-                  </div>
-                </Card>
-              ))}
-            </Card>
-          )}
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <Button style={{ marginRight: '10px' }} onClick={this.handleBackButtonClick}>返回</Button>
-            {isNotDetail ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
-            ) : (+status === 3 || +status === 4) && (
-              <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+            {!isNotDetail && approveList && approveList.length > 0 && (
+              <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
+                {approveList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
+                  <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
+                    <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
+                    <p>一级审批人：{firstApproveBy || ''}</p>
+                    <p>二级审批人：{secondApproveBy || ''}</p>
+                    <p>三级审批人：{threeApproveBy || ''}</p>
+                    <p>经办人：{approveBy || ''}</p>
+                    <div style={{ display: 'flex' }}>
+                      <span>附件：</span>
+                      <div>{otherFileList.map(({ id, fileName, webUrl }) => (
+                        <div key={id}><a href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></div>
+                      ))}</div>
+                    </div>
+                  </Card>
+                ))}
+              </Card>
             )}
-          </div>
+            <div style={{ textAlign: 'center' }}>
+              <Button
+                style={{ marginRight: '10px' }}
+                // onClick={this.handleBackButtonClick}
+                onClick={this.goBack}
+              >
+                返回
+              </Button>
+              {isNotDetail ? (
+                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+              ) : (+status === 3 || +status === 4) && (
+                <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+              )}
+            </div>
+          </Card>
         </Spin>
       </PageHeaderLayout>
     );

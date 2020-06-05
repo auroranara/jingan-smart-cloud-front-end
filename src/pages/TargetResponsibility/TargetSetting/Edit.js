@@ -13,19 +13,21 @@ import {
   Col,
   Popconfirm,
   DatePicker,
-  AutoComplete,
+  // AutoComplete,
   Spin,
 } from 'antd';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import debounce from 'lodash/debounce';
+import moment from 'moment';
 import router from 'umi/router';
+
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
-import debounce from 'lodash/debounce';
-import moment from 'moment';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { BREADCRUMBLIST, LIST_URL, ROUTER } from './utils';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -78,6 +80,7 @@ export default class Edit extends PureComponent {
       departmentId: undefined, // 部门id
       personId: undefined, // 个人id
     };
+    this.goBack = genGoBack(props, LIST_URL);
   }
 
   // 挂载后
@@ -154,9 +157,9 @@ export default class Edit extends PureComponent {
     }
   }
 
-  goBack = () => {
-    router.push(`${LIST_URL}`);
-  };
+  // goBack = () => {
+  //   router.push(`${LIST_URL}`);
+  // };
 
   // 当前页面是否为详情页面
   isDetail = () => {
@@ -218,7 +221,7 @@ export default class Edit extends PureComponent {
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
@@ -795,15 +798,23 @@ export default class Edit extends PureComponent {
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        {this.renderForm()}
-
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <span>
+        <Card>
+          {this.renderForm()}
+          <div style={{ textAlign: 'center' }}>
+            <Button
+              // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+              // size="large"
+              // href={`#${LIST_URL}`}
+              style={{ marginRight: 10 }}
+              onClick={this.goBack}
+            >
+              返回
+            </Button>
             {this.isDetail() ? (
               <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 type="primary"
-                size="large"
+                // size="large"
                 disabled={!editCode}
                 href={`#${ROUTER}/edit/${id}`}
               >
@@ -811,27 +822,17 @@ export default class Edit extends PureComponent {
               </Button>
             ) : (
               <Button
-                style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 type="primary"
-                size="large"
+                // size="large"
                 onClick={this.handleSubmit}
                 loading={uploading}
               >
                 提交
               </Button>
             )}
-          </span>
-
-          <span style={{ marginLeft: 10 }}>
-            <Button
-              style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-              size="large"
-              href={`#${LIST_URL}`}
-            >
-              返回
-            </Button>
-          </span>
-        </div>
+          </div>
+        </Card>
         {this.renderIndexModal()}
       </PageHeaderLayout>
     );
