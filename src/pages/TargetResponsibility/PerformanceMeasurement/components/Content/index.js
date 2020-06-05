@@ -19,12 +19,20 @@ const COLUMNS = [
   {
     dataIndex: 'examExplain',
     title: '考核说明',
-    render: value => <TextAreaEllipsis value={value} />,
+    render: value => (
+      <div style={{ minWidth: 56 }}>
+        <TextAreaEllipsis value={value} />
+      </div>
+    ),
   },
   {
     dataIndex: 'note',
     title: '备注',
-    render: value => <TextAreaEllipsis value={value} />,
+    render: value => (
+      <div style={{ minWidth: 28 }}>
+        <TextAreaEllipsis value={value} />
+      </div>
+    ),
   },
 ];
 const FIELDS = [
