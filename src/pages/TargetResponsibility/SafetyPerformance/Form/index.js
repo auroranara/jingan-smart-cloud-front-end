@@ -8,6 +8,31 @@ import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
 const Text = ({ score }) => (isNumber(score) ? <span>{score}</span> : <EmptyText />);
+const GET_SCORE = list => {
+  const { hasScore, score } = (list || []).reduce(
+    (result, { passScore, contentList }) => {
+      if (isNumber(passScore)) {
+        result.hasScore = true;
+      }
+      result.score +=
+        (passScore || 0) -
+        Math.max(
+          Math.min(
+            (contentList || []).reduce(
+              (result, { pointCase }) =>
+                isNumber(pointCase) ? result + Math.max(pointCase, 0) : result,
+              0
+            ),
+            passScore || 0
+          ),
+          0
+        );
+      return result;
+    },
+    { hasScore: false, score: 0 }
+  );
+  return hasScore ? score : undefined;
+};
 
 const ContractorForm = ({
   route,
@@ -103,6 +128,7 @@ const ContractorForm = ({
               ),
             []
           ),
+        totalScore: GET_SCORE(normList),
         examResult,
         fileList,
         note,
@@ -130,7 +156,7 @@ const ContractorForm = ({
         label: '考核标题',
         component: 'TextArea',
         props: {
-          maxLength: 100,
+          maxLength: 50,
         },
         enableDefaultRules: true,
       },
@@ -214,29 +240,8 @@ const ContractorForm = ({
         component: Text,
         dependencies: ['normList'],
         props({ normList }) {
-          const { hasScore, score } = (normList || []).reduce(
-            (result, { passScore, contentList }) => {
-              if (isNumber(passScore)) {
-                result.hasScore = true;
-              }
-              result.score +=
-                (passScore || 0) -
-                Math.max(
-                  Math.min(
-                    (contentList || []).reduce(
-                      (result, { pointCase }) => result + (+pointCase || 0),
-                      0
-                    ),
-                    passScore || 0
-                  ),
-                  0
-                );
-              return result;
-            },
-            { hasScore: false, score: 0 }
-          );
           return {
-            score: hasScore && score,
+            score: GET_SCORE(normList),
           };
         },
       },
@@ -259,7 +264,7 @@ const ContractorForm = ({
         label: '备注',
         component: 'TextArea',
         props: {
-          maxLength: 100,
+          maxLength: 50,
           allowClear: true,
         },
       },

@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useRef, useMemo } from 'react';
 import { Modal, Button, Popconfirm } from 'antd';
 import Form, { InputNumber } from '@/jingan-components/Form';
-import { EmptyText, Table } from '@/jingan-components/View';
+import { EmptyText, Table, TextAreaEllipsis } from '@/jingan-components/View';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
@@ -54,7 +54,7 @@ const COLUMNS = [
   {
     dataIndex: 'standardTitle',
     title: '标准标题',
-    render: value => value || <EmptyText />,
+    render: value => <TextAreaEllipsis value={value} />,
   },
   {
     dataIndex: 'standardType',
@@ -112,12 +112,12 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
       {
         dataIndex: 'standardTitle',
         title: '标准标题',
-        render: value => value || <EmptyText />,
+        render: value => <TextAreaEllipsis value={value} />,
       },
       {
         dataIndex: '考核项目',
         title: '考核项目',
-        render: (value, { examProject, passScore }) => (
+        render: (_, { examProject, passScore }) => (
           <Fragment>
             {examProject || <EmptyText />}
             {isNumber(passScore) ? `（${passScore}分）` : <EmptyText />}
@@ -132,7 +132,7 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
             <div className={styles.contentContainer}>
               {contentList.map(item => (
                 <div className={styles.contentWrapper} key={item.id}>
-                  {item.examContent || <EmptyText />}
+                  <TextAreaEllipsis value={item.examContent} />
                 </div>
               ))}
             </div>
@@ -148,7 +148,7 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
             <div className={styles.contentContainer}>
               {contentList.map(item => (
                 <div className={styles.contentWrapper} key={item.id}>
-                  {item.estimateNorm || <EmptyText />}
+                  <TextAreaEllipsis value={item.estimateNorm} />
                 </div>
               ))}
             </div>
@@ -163,7 +163,7 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
           contentList && contentList.length ? (
             <div className={styles.contentContainer}>
               {contentList.map((item, i) => {
-                // 非当前修改值应该不可能是负值或越界值
+                // 非当前修改值应该不可能是负值或越界值（然而现实往往打脸）
                 // 总值减去其他已填值以后的剩余值
                 const rest =
                   (passScore || 0) -
@@ -172,6 +172,7 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
                       i !== k && isNumber(pointCase) ? result + Math.max(pointCase, 0) : result,
                     0
                   );
+                const currentValue = isNumber(item.pointCase) ? Math.max(item.pointCase, 0) : 0;
                 return (
                   <div
                     className={classNames(styles.contentWrapper, styles.inputNumberWrapper)}
@@ -200,7 +201,15 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
                         )
                       }
                       min={0}
-                      max={item.changed ? rest : Math.max(rest, item.pointCase)}
+                      max={
+                        item.changed
+                          ? rest < 0
+                            ? currentValue > (passScore || 0)
+                              ? 0
+                              : currentValue
+                            : rest
+                          : Math.min(Math.max(rest, currentValue), passScore || 0)
+                      }
                       precision={0}
                     />
                   </div>
@@ -370,12 +379,12 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
       {
         dataIndex: 'standardTitle',
         title: '标准标题',
-        render: value => value || <EmptyText />,
+        render: value => <TextAreaEllipsis value={value} />,
       },
       {
         dataIndex: '考核项目',
         title: '考核项目',
-        render: (value, { examProject, passScore }) => (
+        render: (_, { examProject, passScore }) => (
           <Fragment>
             {examProject || <EmptyText />}
             {isNumber(passScore) ? `（${passScore}分）` : <EmptyText />}
@@ -390,7 +399,7 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
             <div className={styles.contentContainer}>
               {contentList.map(item => (
                 <div className={styles.contentWrapper} key={item.id}>
-                  {item.examContent || <EmptyText />}
+                  <TextAreaEllipsis value={item.examContent} />
                 </div>
               ))}
             </div>
@@ -406,7 +415,7 @@ const Standard = ({ mode, value, onChange, list, loading, getList, params, empty
             <div className={styles.contentContainer}>
               {contentList.map(item => (
                 <div className={styles.contentWrapper} key={item.id}>
-                  {item.estimateNorm || <EmptyText />}
+                  <TextAreaEllipsis value={item.estimateNorm} />
                 </div>
               ))}
             </div>
