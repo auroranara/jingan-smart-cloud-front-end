@@ -87,7 +87,7 @@ const ContractorForm = ({
         label: '标准标题',
         component: 'TextArea',
         props: {
-          maxLength: 100,
+          maxLength: 50,
         },
         enableDefaultRules: true,
       },
@@ -96,7 +96,7 @@ const ContractorForm = ({
         label: '适用范围',
         component: 'TextArea',
         props: {
-          maxLength: 100,
+          maxLength: 50,
         },
         enableDefaultRules: true,
       },
@@ -125,7 +125,7 @@ const ContractorForm = ({
         label: '考核项目',
         component: 'Input',
         props: {
-          maxLength: 50,
+          maxLength: 25,
         },
         enableDefaultRules: true,
       },

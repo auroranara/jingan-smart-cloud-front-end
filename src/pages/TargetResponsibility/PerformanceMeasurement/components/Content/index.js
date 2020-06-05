@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, memo } from 'react';
 import { Button, Modal, Popconfirm } from 'antd';
 import Form from '@/jingan-components/Form';
-import { Table, EmptyText } from '@/jingan-components/View';
+import { Table, EmptyText, TextAreaEllipsis } from '@/jingan-components/View';
 import styles from './index.less';
 
 const LENGTH = 10;
@@ -9,22 +9,30 @@ const COLUMNS = [
   {
     dataIndex: 'examContent',
     title: '考核内容',
-    render: value => value || <EmptyText />,
+    render: value => <TextAreaEllipsis value={value} />,
   },
   {
     dataIndex: 'estimateNorm',
     title: '评定标准',
-    render: value => value || <EmptyText />,
+    render: value => <TextAreaEllipsis value={value} />,
   },
   {
     dataIndex: 'examExplain',
     title: '考核说明',
-    render: value => value || <EmptyText />,
+    render: value => (
+      <div style={{ minWidth: 56 }}>
+        <TextAreaEllipsis value={value} />
+      </div>
+    ),
   },
   {
     dataIndex: 'note',
     title: '备注',
-    render: value => value || <EmptyText />,
+    render: value => (
+      <div style={{ minWidth: 28 }}>
+        <TextAreaEllipsis value={value} />
+      </div>
+    ),
   },
 ];
 const FIELDS = [
@@ -33,7 +41,7 @@ const FIELDS = [
     label: '考核内容',
     component: 'TextArea',
     props: {
-      maxLength: 500,
+      maxLength: 250,
     },
     enableDefaultRules: true,
   },
@@ -42,7 +50,7 @@ const FIELDS = [
     label: '评定标准',
     component: 'TextArea',
     props: {
-      maxLength: 500,
+      maxLength: 250,
     },
     enableDefaultRules: true,
   },
@@ -60,7 +68,7 @@ const FIELDS = [
     label: '备注',
     component: 'TextArea',
     props: {
-      maxLength: 100,
+      maxLength: 50,
       allowClear: true,
     },
   },

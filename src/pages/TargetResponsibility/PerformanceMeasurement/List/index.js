@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
-import { EmptyText } from '@/jingan-components/View';
+import { EmptyText, TextAreaEllipsis } from '@/jingan-components/View';
 import moment from 'moment';
 import { CLASSIFICATIONS, FORMAT } from '../config';
 import { isNumber } from '@/utils/utils';
@@ -53,12 +53,12 @@ export default ({ route, match, location }) => {
       {
         dataIndex: 'standardTitle',
         title: '标准标题',
-        render: value => value || <EmptyText />,
+        render: value => <TextAreaEllipsis value={value} />,
       },
       {
         dataIndex: 'applyScope',
         title: '适用范围',
-        render: value => value || <EmptyText />,
+        render: value => <TextAreaEllipsis value={value} />,
       },
       {
         dataIndex: 'standardType',

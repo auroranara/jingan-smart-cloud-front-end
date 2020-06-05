@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
-import { EmptyText } from '@/jingan-components/View';
+import { EmptyText, TextAreaEllipsis } from '@/jingan-components/View';
 import moment from 'moment';
 import { RESULTS, FORMAT } from '../config';
 import { isNumber } from '@/utils/utils';
@@ -70,7 +70,7 @@ const List = ({ route, match, location }) => {
       {
         dataIndex: 'examTitle',
         title: '考核标题',
-        render: value => value || <EmptyText />,
+        render: value => <TextAreaEllipsis value={value} />,
       },
       {
         dataIndex: 'examDate',
@@ -84,32 +84,9 @@ const List = ({ route, match, location }) => {
           (RESULTS.find(item => item.key === `${value}`) || {}).value || <EmptyText />,
       },
       {
-        dataIndex: '总分',
+        dataIndex: 'totalScore',
         title: '总分',
-        render: (_, { performanceExamList }) => {
-          const { hasScore, score } = (performanceExamList || []).reduce(
-            (result, { passScore, contentList }) => {
-              if (isNumber(passScore)) {
-                result.hasScore = true;
-              }
-              result.score +=
-                (passScore || 0) -
-                Math.max(
-                  Math.min(
-                    (contentList || []).reduce(
-                      (result, { pointCase }) => result + (+pointCase || 0),
-                      0
-                    ),
-                    passScore || 0
-                  ),
-                  0
-                );
-              return result;
-            },
-            { hasScore: false, score: 0 }
-          );
-          return hasScore ? score : <EmptyText />;
-        },
+        render: value => (isNumber(value) ? value : <EmptyText />),
       },
       {
         dataIndex: 'examedPartName',
