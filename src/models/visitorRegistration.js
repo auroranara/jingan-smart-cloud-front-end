@@ -7,6 +7,7 @@ import {
   queryVisitorList, // 获取访客登记列表
   queryHasVisitorList, // 获取已登记列表
   queryCancelCard, // 退卡
+  fetchCardOptions,
 } from '@/services/visitorRegistration';
 
 const defaultData = {
@@ -25,19 +26,19 @@ export default {
 
   effects: {
     // 新增访客卡
-    *fetchCardAdd({ payload, callback }, { call }) {
+    *fetchCardAdd ({ payload, callback }, { call }) {
       const res = yield call(queryCardAdd, payload);
       callback && callback(res && res.code === 200, res.msg, res.data);
     },
 
     // 编辑访客卡
-    *fetchCardEdit({ payload, callback }, { call }) {
+    *fetchCardEdit ({ payload, callback }, { call }) {
       const res = yield call(queryCardEdit, payload);
       if (callback) callback(res);
     },
 
     // 获取访客卡列表
-    *fetchCardList({ payload, callback }, { call, put }) {
+    *fetchCardList ({ payload, callback }, { call, put }) {
       const res = yield call(queryCardList, payload);
       if (res && res.code === 200) {
         yield put({
@@ -49,19 +50,19 @@ export default {
     },
 
     // 删除访客卡
-    *fetchCardDel({ payload, callback }, { call }) {
+    *fetchCardDel ({ payload, callback }, { call }) {
       const res = yield call(queryCardDel, payload);
       callback && callback(res && res.code === 200);
     },
 
     // 新增访客登记
-    *fetchVisitorAdd({ payload, callback }, { call }) {
+    *fetchVisitorAdd ({ payload, callback }, { call }) {
       const res = yield call(queryVisitorAdd, payload);
       if (callback) callback(res);
     },
 
     // 获取访客登记列表
-    *fetchVisitorList({ payload, callback }, { call, put }) {
+    *fetchVisitorList ({ payload, callback }, { call, put }) {
       const res = yield call(queryVisitorList, payload);
       if (res && res.code === 200) {
         yield put({
@@ -73,7 +74,7 @@ export default {
     },
 
     // 获取已访客登记列表
-    *fetchHasVisitorList({ payload, callback }, { call, put }) {
+    *fetchHasVisitorList ({ payload, callback }, { call, put }) {
       const res = yield call(queryHasVisitorList, payload);
       if (res && res.code === 200) {
         yield put({
@@ -85,14 +86,19 @@ export default {
     },
 
     // 退卡
-    *fetchCancelCard({ payload, callback }, { call }) {
+    *fetchCancelCard ({ payload, callback }, { call }) {
       const res = yield call(queryCancelCard, payload);
       callback && callback(res && res.code === 200);
+    },
+    // 获取选择卡选项
+    *fetchCardOptions ({ payload, callback }, { call }) {
+      const res = yield call(fetchCardOptions, payload);
+      callback && callback(res && res.data && res.data.list ? res.data.list : []);
     },
   },
 
   reducers: {
-    saveCardList(state, { payload = {} }) {
+    saveCardList (state, { payload = {} }) {
       const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
@@ -103,7 +109,7 @@ export default {
       };
     },
 
-    saveVisitorList(state, { payload = {} }) {
+    saveVisitorList (state, { payload = {} }) {
       const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,
@@ -114,7 +120,7 @@ export default {
       };
     },
 
-    saveHasVisitorList(state, { payload = {} }) {
+    saveHasVisitorList (state, { payload = {} }) {
       const { list = [], pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} } = payload;
       return {
         ...state,

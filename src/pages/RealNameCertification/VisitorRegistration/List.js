@@ -36,10 +36,11 @@ export default class TableList extends PureComponent {
       detail: {}, // 详情
       visible: false,
       company: {},
+      cardOptions: [],
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       user: {
@@ -130,9 +131,16 @@ export default class TableList extends PureComponent {
       modalTitle: status === 'add' && '访客登记',
       detail: { ...text },
     });
+    // dispatch({
+    //   type: 'visitorRegistration/fetchCardList',
+    //   payload: { pageNum: 1, pageSize: 200, companyId: company.id || companyId, status: 1 },
+    // });
     dispatch({
-      type: 'visitorRegistration/fetchCardList',
-      payload: { pageNum: 1, pageSize: 200, companyId: company.id || companyId, status: 1 },
+      type: 'visitorRegistration/fetchCardOptions',
+      payload: { companyId: company.id || companyId },
+      callback: (list) => {
+        this.setState({ cardOptions: list || [] })
+      },
     });
   };
 
@@ -200,7 +208,7 @@ export default class TableList extends PureComponent {
   };
 
   // 渲染企业模态框
-  renderModal() {
+  renderModal () {
     const {
       learning: { modal },
       loading,
@@ -218,7 +226,7 @@ export default class TableList extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       loading,
       user: {
@@ -229,10 +237,10 @@ export default class TableList extends PureComponent {
           list = [],
           pagination: { total, pageNum, pageSize },
         },
-        cardData: { list: cardList = [] },
+        // cardData: { list: cardList = [] },
       },
     } = this.props;
-    const { company } = this.state;
+    const { company, cardOptions } = this.state;
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
@@ -242,7 +250,7 @@ export default class TableList extends PureComponent {
     const modalData = {
       ...this.state,
       unitType,
-      cardList,
+      cardList: cardOptions,
       companyId: companyId || company.id,
       handleModalClose: this.handleModalClose,
       handleModalAdd: this.handleModalAdd,
@@ -331,13 +339,13 @@ export default class TableList extends PureComponent {
                   }}
                 />
               ) : (
-                <Empty />
-              )}
+                  <Empty />
+                )}
             </Card>
           </div>
         ) : (
-          <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
-        )}
+            <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
+          )}
         {unitType !== 4 && this.renderModal()}
         <EditModal {...modalData} />
       </PageHeaderLayout>

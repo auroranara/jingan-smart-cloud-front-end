@@ -57,7 +57,7 @@ export const SEARCH_FIELDS = [
   },
 ];
 
-export function getTableColumns(handleConfirmDelete, unitType) {
+export function getTableColumns (handleConfirmDelete, unitType) {
   const columns = [
     // modify
     {
@@ -171,7 +171,7 @@ export const EditModal = Form.create()(props => {
     handleModalClose();
   };
 
-  const filterOption = (input, option) =>  option.children.includes(input.trim());
+  const filterOption = (input, option) => option.children.includes(input.trim());
 
   const itemStyles = { style: { width: '75%', marginRight: '10px' } };
 
@@ -205,18 +205,18 @@ export const EditModal = Form.create()(props => {
               optionFilterProp="children"
               filterOption={filterOption}
             >
-              {cardList.map(({ id, cardName }) => (
-                <Select.Option key={id} value={id}>
-                  {cardName}
+              {cardList.map(({ name, entranceNumber }) => (
+                <Select.Option key={entranceNumber} value={entranceNumber}>
+                  {name}
                 </Select.Option>
               ))}
             </Select>
           )}
-          <span>
+          {/* <span>
             <AuthA code={addCode} onClick={hanldleCardAdd}>
               新增临时卡
             </AuthA>
-          </span>
+          </span> */}
         </Form.Item>
         <Form.Item {...formItemCol} label="来访事由：">
           {getFieldDecorator('reason')(<TextArea {...itemStyles} placeholder="请输入" rows={3} />)}
@@ -229,7 +229,7 @@ export const EditModal = Form.create()(props => {
   );
 });
 
-export function getRecordField(num) {
+export function getRecordField (num) {
   const fields = [
     {
       id: 'cardName',
@@ -239,23 +239,23 @@ export function getRecordField(num) {
     },
     ...(!num
       ? [
-          {
-            id: 'icNumber',
-            label: 'IC卡号',
-            render: () => <Input placeholder="请输入" allowClear />,
-            transform: v => v.trim(),
-          },
-        ]
+        {
+          id: 'icNumber',
+          label: 'IC卡号',
+          render: () => <Input placeholder="请输入" allowClear />,
+          transform: v => v.trim(),
+        },
+      ]
       : []),
     ...(!num
       ? [
-          {
-            id: 'snNumber',
-            label: 'SN卡号',
-            render: () => <Input placeholder="请输入" allowClear />,
-            transform: v => v.trim(),
-          },
-        ]
+        {
+          id: 'snNumber',
+          label: 'SN卡号',
+          render: () => <Input placeholder="请输入" allowClear />,
+          transform: v => v.trim(),
+        },
+      ]
       : []),
     {
       id: 'name',
@@ -297,7 +297,7 @@ export function getRecordField(num) {
   return fields;
 }
 
-export function getRecordColumns() {
+export function getRecordColumns () {
   const columns = [
     {
       title: '序号',
