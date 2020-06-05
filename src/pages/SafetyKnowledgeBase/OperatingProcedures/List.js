@@ -194,12 +194,14 @@ export default class OperationProcedures extends Component {
 
   // 点击查看
   handleView = id => {
-    router.push(`/safety-production-regulation/operating-procedures/detail/${id}`)
+    // router.push(`/safety-production-regulation/operating-procedures/detail/${id}`)
+    window.open(`${window.publicPath}#/safety-production-regulation/operating-procedures/detail/${id}`);
   }
 
   // 点击编辑
   handleEdit = id => {
-    router.push(`/safety-production-regulation/operating-procedures/edit/${id}`)
+    // router.push(`/safety-production-regulation/operating-procedures/edit/${id}`)
+    window.open(`${window.publicPath}#/safety-production-regulation/operating-procedures/edit/${id}`);
   }
 
   // 点击打开审核弹窗

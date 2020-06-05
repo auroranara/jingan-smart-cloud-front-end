@@ -233,7 +233,8 @@ export default class MaterialsList extends PureComponent {
   };
 
   goEdit = id => {
-    router.push(`/major-hazard-info/materials/edit/${id}`);
+    // router.push(`/major-hazard-info/materials/edit/${id}`);
+    window.open(`${window.publicPath}#/major-hazard-info/materials/edit/${id}`);
   };
 
   generateUnit = value =>

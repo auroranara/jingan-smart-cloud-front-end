@@ -132,11 +132,13 @@ export default class ProductionAreaList extends Component {
   }
 
   handleView = id => {
-    router.push(`/electronic-inspection/production-area/view/${id}`)
+    // router.push(`/electronic-inspection/production-area/view/${id}`)
+    window.open(`${window.publicPath}#/electronic-inspection/production-area/view/${id}`)
   }
 
   handleEdit = id => {
-    router.push(`/electronic-inspection/production-area/edit/${id}`)
+    // router.push(`/electronic-inspection/production-area/edit/${id}`)
+    window.open(`${window.publicPath}#/electronic-inspection/production-area/edit/${id}`);
   }
 
   // 获取部门列表

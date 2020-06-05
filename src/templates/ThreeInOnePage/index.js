@@ -138,7 +138,11 @@ const STYLE = {
           callback: (success, data) => {
             if (success) {
               message.success(`${id ? '编辑' : '新增'}成功！`);
-              router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
+              // router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
+              if (id)
+                setTimeout(() => window.close(), 1000);
+              else
+                router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
             } else if (error) {
               message.error(
                 `${id ? '编辑' : '新增'}失败，${error === 1 ? data : '请稍后重试或联系管理人员'}！`
@@ -149,9 +153,14 @@ const STYLE = {
         });
       },
       goBack() {
-        router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
+        // router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
         // router.goBack();
         // window.scrollTo(0, 0);
+
+        if (name === 'add')
+          router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
+        else
+          window.close();
       },
       goToEdit() {
         router.push(pathname.replace(new RegExp(`${name}.*`), `edit/${id}`));

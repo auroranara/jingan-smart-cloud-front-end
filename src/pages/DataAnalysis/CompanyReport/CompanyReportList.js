@@ -172,11 +172,12 @@ export default class App extends PureComponent {
               to={`/control-measures-follow-up/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${encodeURIComponent(
                 object_title
               )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+              target="_blank"
             >
               查看
             </Link>
           ) : (
-            <Link to={`/control-measures-follow-up/company-report/checkDetail/${_id}?newId=${_id}`}>查看</Link>
+            <Link to={`/control-measures-follow-up/company-report/checkDetail/${_id}?newId=${_id}`} target="_blank">查看</Link>
           );
         },
       },

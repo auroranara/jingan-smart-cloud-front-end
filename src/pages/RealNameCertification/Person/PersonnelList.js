@@ -188,9 +188,10 @@ export default class PersonnelList extends PureComponent {
       },
     } = this.props;
     const { curCompanyName } = this.state;
-    router.push(
-      `/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
-    );
+    // router.push(
+    //   `/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
+    // );
+    window.open(`${window.publicPath}#/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`);
   };
 
   handleToDetail = id => {
@@ -200,9 +201,10 @@ export default class PersonnelList extends PureComponent {
       },
     } = this.props;
     const { curCompanyName } = this.state;
-    router.push(
-      `/real-name-certification/personnel-management/detail/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
-    );
+    // router.push(
+    //   `/real-name-certification/personnel-management/detail/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
+    // );
+    window.open(`${window.publicPath}#/real-name-certification/personnel-management/detail/${id}?companyId=${companyId}&&companyName=${curCompanyName}`);
   };
 
   // 标签

@@ -19,6 +19,7 @@ import Map from '@/pages/RiskControl/FourColorImage/Map';
 import JoySuchMap from '@/pages/RiskControl/FourColorImage/JoySuchMap';
 import { AuthButton } from '@/utils/customAuth';
 import styles from './Add.less';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -61,6 +62,8 @@ export default class StorageEdit extends PureComponent {
       form: { setFieldsValue },
       user: { isCompany, currentUser },
     } = this.props;
+    this.goBack = genGoBack(this.props, LIST_URL);
+
     if (id) {
       dispatch({
         type: 'baseInfo/fetchWorkSiteDetail',
@@ -204,11 +207,11 @@ export default class StorageEdit extends PureComponent {
         },
       };
 
-      console.log('submit', payload);
+      // console.log('submit', payload);
       const callback = (success, msg) => {
         if (success) {
           message.success('操作成功！');
-          router.push(LIST_URL);
+          setTimeout(this.goBack, 1000);
         } else {
           message.error(msg || '操作失败！');
         }
@@ -415,6 +418,8 @@ export default class StorageEdit extends PureComponent {
       },
     ];
 
+    console.log(this.goBack);
+
     return (
       <PageHeaderLayout title={tag} breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
@@ -595,8 +600,8 @@ export default class StorageEdit extends PureComponent {
               </FormItem>
             )}
             <FormItem wrapperCol={{ span: 24, offset: 10 }}>
-              <Button onClick={e => router.push(LIST_URL)} style={{ marginRight: 20 }}>
-                取消
+              <Button onClick={this.goBack} style={{ marginRight: 20 }}>
+                返回
               </Button>
               {(isEdit || isAdd) && (
                 <Button type="primary" htmlType="submit">

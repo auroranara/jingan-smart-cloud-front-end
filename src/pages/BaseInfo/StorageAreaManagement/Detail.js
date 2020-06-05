@@ -108,7 +108,8 @@ export default class StorehouseDetail extends Component {
   };
 
   handleBackButtonClick = () => {
-    router.push(listUrl);
+    // router.push(listUrl);
+    window.close();
   };
 
   generateJudgeLabel = value => (+value === 1 ? '有' : '无');

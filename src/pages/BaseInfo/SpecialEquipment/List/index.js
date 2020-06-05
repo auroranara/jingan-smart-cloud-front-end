@@ -328,7 +328,8 @@ export default class SpecialEquipmentList extends PureComponent {
   };
 
   goEdit = (id, unitId) => {
-    router.push(`/facility-management/special-equipment/edit/${id}?unitId=${unitId}`);
+    // router.push(`/facility-management/special-equipment/edit/${id}?unitId=${unitId}`);
+    window.open(`${window.publicPath}#/facility-management/special-equipment/edit/${id}?unitId=${unitId}`);
   };
 
   handleDelete = id => {

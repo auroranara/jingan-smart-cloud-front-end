@@ -2,6 +2,7 @@ import moment from 'moment';
 import React from 'react';
 import CryptoJS from 'crypto-js';
 import { parse, stringify } from 'qs';
+import router from 'umi/router';
 
 export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
@@ -413,4 +414,14 @@ export function isNumber(value) {
 
 export function toFixed(value, digit = 2) {
   return Number.parseFloat(value.toFixed(digit));
+}
+
+export function genGoBack(props, path) {
+  return function() {
+    const { match: { params: { id } } } = props;
+    if (id) // 详情或编辑
+      window.close();
+    else // 新增
+      router.push(path);
+  };
 }

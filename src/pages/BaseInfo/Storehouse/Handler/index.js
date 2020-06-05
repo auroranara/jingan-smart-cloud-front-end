@@ -295,7 +295,7 @@ export default class StorehouseHandler extends PureComponent {
         const payload = { ...formData, companyId: unitType === 4 ? companyId : formData.companyId };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push(listUrl);
+          setTimeout(() => this.goBack(), 1000);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -465,6 +465,19 @@ export default class StorehouseHandler extends PureComponent {
   handleResetArea = () => {
     this.props.form.setFieldsValue({ areaId: '' });
     this.setState({ selectedRegion: {}, tempKeys: [] });
+  };
+
+  goBack = () => {
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
+
+    if (id)
+      window.close();
+    else
+      router.push(listUrl);
   };
 
   /**
@@ -727,7 +740,11 @@ export default class StorehouseHandler extends PureComponent {
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
           </Button>
-          <Button style={{ marginLeft: '10px' }} href={`#${listUrl}`}>
+          <Button
+            style={{ marginLeft: '10px' }}
+            // href={`#${listUrl}`}
+            onClick={this.goBack}
+          >
             返回
           </Button>
         </Row>

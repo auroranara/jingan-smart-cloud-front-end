@@ -137,12 +137,14 @@ export default class ChannelDeviceList extends Component {
 
   // 点击查看
   handleView = id => {
-    router.push(`/real-name-certification/channel-device/view/${id}`)
+    // router.push(`/real-name-certification/channel-device/view/${id}`)
+    window.open(`${window.publicPath}#/real-name-certification/channel-device/view/${id}`);
   }
 
   // 点击编辑
   handleEdit = id => {
-    router.push(`/real-name-certification/channel-device/edit/${id}`)
+    // router.push(`/real-name-certification/channel-device/edit/${id}`)
+    window.open(`${window.publicPath}#/real-name-certification/channel-device/edit/${id}`);
   }
 
   // 删除

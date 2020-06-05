@@ -350,6 +350,7 @@ export default class ReservoirRegionList extends PureComponent {
             <AuthLink
               to={`/major-hazard-info/storehouse/list?areaId=${row.id}`}
               code={reservoirListCode}
+              target="_blank"
             >
               {val}
             </AuthLink>
@@ -417,6 +418,7 @@ export default class ReservoirRegionList extends PureComponent {
             <AuthLink
               to={`/major-hazard-info/reservoir-region-management/detail/${row.id}`}
               code={detailCode}
+              target="_blank"
             >
               查看
             </AuthLink>
@@ -424,6 +426,7 @@ export default class ReservoirRegionList extends PureComponent {
             <AuthLink
               to={`/major-hazard-info/reservoir-region-management/edit/${row.id}`}
               code={editCode}
+              target="_blank"
             >
               编辑
             </AuthLink>

@@ -104,6 +104,7 @@ export default class Map extends React.Component {
     map.on('mapClickNode', event => {
       var clickedObj = event.target;
       if (!clickedObj || !clickedObj.eventInfo) return;
+      console.log('clickedObj', clickedObj);
 
       const { coord } = clickedObj.eventInfo;
       const groupId = clickedObj.groupID;

@@ -209,8 +209,14 @@ export default class MajorHazardEdit extends PureComponent {
   };
 
   goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
+    const {
+      dispatch,
+      match: { url },
+    } = this.props;
+    if (url.includes('add'))
+      dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
+    else
+      window.close();
   };
 
   // 去除左右两边空白
@@ -287,7 +293,7 @@ export default class MajorHazardEdit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(() => this.goBack(), 1000));
         };
 
         const error = res => {

@@ -143,11 +143,13 @@ export default class StorageAreaManagement extends PureComponent {
   };
 
   goDetail = id => {
-    router.push(`/major-hazard-info/storage-area-management/detail/${id}`);
+    // router.push(`/major-hazard-info/storage-area-management/detail/${id}`);
+    window.open(`${window.publicPath}#/major-hazard-info/storage-area-management/detail/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/major-hazard-info/storage-area-management/edit/${id}`);
+    // router.push(`/major-hazard-info/storage-area-management/edit/${id}`);
+    window.open(`${window.publicPath}#/major-hazard-info/storage-area-management/edit/${id}`);
   };
 
   handleDelete = id => {

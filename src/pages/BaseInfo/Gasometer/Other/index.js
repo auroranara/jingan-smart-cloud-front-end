@@ -218,8 +218,19 @@ export default class GasometerOther extends Component {
   }
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // };
+  goBack = () => {
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    if (id)
+      window.close();
+    else
+      router.push(LIST_PATH);
   };
 
   // 提交按钮点击事件
@@ -249,7 +260,7 @@ export default class GasometerOther extends Component {
         (id ? edit : add)(payload, success => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(LIST_PATH);
+            setTimeout(() => this.goBack(), 1000);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
@@ -735,7 +746,7 @@ export default class GasometerOther extends Component {
             refresh={this.refresh}
             action={
               <Fragment>
-                <Button onClick={this.handleBackButtonClick}>返回</Button>
+                <Button onClick={this.goBack}>返回</Button>
                 {isNotDetail ? (
                   <Button
                     type="primary"

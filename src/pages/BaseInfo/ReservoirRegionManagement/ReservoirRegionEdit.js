@@ -84,8 +84,16 @@ export default class ReservoirRegionEdit extends PureComponent {
   handleTrim = e => e.target.value.trim();
 
   goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/major-hazard-info/reservoir-region-management/list`));
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    if (id)
+      window.close();
+    else
+      dispatch(routerRedux.push(`/major-hazard-info/reservoir-region-management/list`));
   };
 
   handleClickValidate = () => {
@@ -134,7 +142,7 @@ export default class ReservoirRegionEdit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(() => this.goBack(), 1000));
         };
 
         const error = () => {

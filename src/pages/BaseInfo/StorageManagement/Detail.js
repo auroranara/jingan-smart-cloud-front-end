@@ -111,7 +111,8 @@ export default class StorageDetail extends Component {
   };
 
   handleBackButtonClick = () => {
-    router.push(listUrl);
+    // router.push(listUrl);
+    window.close();
   };
 
   generateJudgeLabel = value => (+value === 1 ? '有' : '无');
