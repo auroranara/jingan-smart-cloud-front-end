@@ -64,6 +64,13 @@ const COLORS = {
   4: 'rgba(20, 35, 196, 0.5)',
 };
 
+const FENG_COLORS = {
+  1: 'rgba(255, 72, 72, 0.6)',
+  2: 'rgba(241, 122, 10, 0.6)',
+  3: 'rgba(251, 247, 25, 0.6)',
+  4: 'rgba(30, 96, 255, 0.6)',
+};
+
 @Form.create()
 @connect(({ fourColorImage, user, map, account, loading }) => ({
   fourColorImage,
@@ -334,7 +341,6 @@ export default class TableList extends React.Component {
       }
       return [...res, item];
     }, []);
-    console.log('buildingId', buildingId);
 
     this.setState({
       buildingId: filterList,
@@ -342,20 +348,24 @@ export default class TableList extends React.Component {
   };
 
   handleLevelChange = levelId => {
-    const { groupId, points } = this.state;
+    const { groupId, points, pointList } = this.state;
     const {
       map: { mapInfo: { remarks } = {} },
     } = this.props;
-    this.setState({ levelId }, () => {
-      if (points.length > 0) {
-        if (+remarks === 1) {
-          this.childMap.drawPolygon(groupId, points, COLORS[levelId]);
-          this.childMap.setModelColor(groupId, points, COLORS[levelId]);
-        } else {
-          this.childMap.renderDrawedPolygon(groupId, points, COLORS[levelId]);
+    this.setState(
+      { levelId, pointList: pointList.map(item => ({ ...item, zoneLevel: levelId })) },
+      () => {
+        if (points.length > 0) {
+          if (+remarks === 1) {
+            this.childMap.resetMap();
+            this.childMap.drawPolygon(groupId, points, FENG_COLORS[levelId]);
+            this.childMap.setModelColor(groupId, points, FENG_COLORS[levelId]);
+          } else {
+            this.childMap.renderDrawedPolygon(groupId, points, COLORS[levelId]);
+          }
         }
       }
-    });
+    );
   };
 
   renderDrawButton = () => {
@@ -424,7 +434,7 @@ export default class TableList extends React.Component {
       map: { mapInfo: { remarks } = {} },
     } = this.props;
 
-    const { isDrawing, groupId, detailList, pointList, modelIds, levelId } = this.state;
+    const { isDrawing, groupId, detailList, pointList, modelIds, levelId, buildingId } = this.state;
 
     const editTitle = id ? '编辑' : '新增';
     const {
@@ -454,6 +464,8 @@ export default class TableList extends React.Component {
                   getBuilding={this.getBuilding}
                   pointList={pointList}
                   modelIds={modelIds}
+                  buildingId={buildingId}
+                  handleTagClick={this.handleTagClick}
                 />
               ) : (
                 <JoySuchMap
