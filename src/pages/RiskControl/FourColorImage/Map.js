@@ -97,7 +97,7 @@ export default class Map extends React.Component {
       offset: { x: 0, y: 40 },
       //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
       clickCallBack: function(type, value) {
-        console.log(type, value);
+        // console.log(type, value);
       },
     });
 
@@ -108,7 +108,8 @@ export default class Map extends React.Component {
 
       const { coord } = clickedObj.eventInfo;
       const groupId = clickedObj.groupID;
-
+      /* eslint-disable-next-line */
+      clickedObj.nodeType === fengmap.FMNodeType.MODEL && this.handleClickModel(clickedObj);
       if (this.props.isDrawing) {
         // 默认第一张地图
         this.addPoint(groupId, coord);
@@ -125,6 +126,16 @@ export default class Map extends React.Component {
       this.loadBtnFloorCtrl(init ? 1 : groupId);
       this.getPointList(pointList, getBuilding);
     });
+  };
+
+  handleClickModel = clickedObj => {
+    const { buildingId, handleTagClick } = this.props;
+    const { FID } = clickedObj;
+    const building = buildingId.find(item => item.areaId === FID);
+    // 建筑物上色
+    if (building) {
+      handleTagClick(FID, building.point, building.selected);
+    }
   };
 
   //加载按钮型楼层切换控件
