@@ -129,7 +129,8 @@ export default class Map extends React.Component {
   };
 
   handleClickModel = clickedObj => {
-    const { buildingId, handleTagClick } = this.props;
+    const { buildingId = [], handleTagClick } = this.props;
+    if (!buildingId || buildingId.length === 0) return;
     const { FID } = clickedObj;
     const building = buildingId.find(item => item.areaId === FID);
     // 建筑物上色
