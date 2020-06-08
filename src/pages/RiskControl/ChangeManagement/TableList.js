@@ -28,7 +28,7 @@ const { TextArea } =  Input;
 }))
 @Form.create()
 export default class TableList extends PureComponent {
-  state = { current: 1, approvalVisible: false, logVisible: false, itemId: undefined };
+  state = { current: 1, pageSize: PAGE_SIZE, approvalVisible: false, logVisible: false, itemId: undefined };
   values = {};
   empty = true;
 

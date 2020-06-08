@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import { Button, Spin, message, Card } from 'antd';
+import moment from 'moment';
+import router from 'umi/router';
+import { connect } from 'dva';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -7,8 +11,6 @@ import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import Text from '@/jingan-components/Text';
-import router from 'umi/router';
-import { connect } from 'dva';
 import {
   LIST_PATH,
   DEFAULT_FORMAT,
@@ -16,8 +18,8 @@ import {
 import { AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes'
 import { phoneReg } from '@/utils/validate';
-import moment from 'moment';
 import styles from './Add.less';
+import { genGoBack } from '@/utils/utils';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
@@ -37,6 +39,10 @@ const VERSION_CODE_MAPPER = value => `V${value}`;
   user,
 }))
 export default class AddOperatingProdures extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
 
   componentDidMount () {
     const {
@@ -128,7 +134,8 @@ export default class AddOperatingProdures extends Component {
       const callback = (success, msg) => {
         if (success) {
           message.success('操作成功');
-          router.push(LIST_PATH);
+          // router.push(LIST_PATH);
+          setTimeout(this.goBack, 1000);
         } else {
           message.error(msg || '操作失败');
         }
@@ -349,7 +356,13 @@ export default class AddOperatingProdures extends Component {
             </Card>
           )}
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <Button style={{ marginRight: '10px' }} onClick={() => { router.goBack() }}>返回</Button>
+            <Button
+              style={{ marginRight: '10px' }}
+              // onClick={() => { router.goBack() }}
+              onClick={this.goBack}
+            >
+              返回
+            </Button>
             {isNotDetail ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
             ) : (+status === 3 || +status === 4) && (

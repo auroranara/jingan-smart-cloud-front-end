@@ -1,13 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { routerRedux } from 'dva/router';
+// import { routerRedux } from 'dva/router';
+import moment from 'moment';
+import { Input, Button, Card, Select, message, DatePicker, Upload, Radio } from 'antd';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Input, Button, Card, Select, message, DatePicker, Upload, Radio } from 'antd';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
-import moment from 'moment';
 import styles from './LawDatabase.less';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -48,19 +50,24 @@ const formItemLayout = {
 }))
 @Form.create()
 export default class LawDatabaseEdit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/safety-production-regulation/laws/list');
+  }
+
   state = {
     fileList: [],
     uploading: false,
   };
 
   // 返回到列表页面
-  goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/safety-production-regulation/laws/list`));
-  };
+  // goBack = () => {
+  //   const { dispatch } = this.props;
+  //   dispatch(routerRedux.push(`/safety-production-regulation/laws/list`));
+  // };
 
   // 挂载后
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
       match: { params: { id } },
@@ -115,7 +122,8 @@ export default class LawDatabaseEdit extends PureComponent {
       const callback = (success, msg) => {
         if (success) {
           message.success(`${tag}法律法规成功`);
-          this.goBack();
+          // this.goBack();
+          setTimeout(this.goBack, 1000);
         } else {
           message.error(msg || `${tag}法律法规失败`)
         }
@@ -330,10 +338,16 @@ export default class LawDatabaseEdit extends PureComponent {
 
         <div style={{ textAlign: 'center' }}>
           <Button
+            style={{ marginRight: 10 }}
+            onClick={this.goBack}
+          >
+            返回
+          </Button>
+          <Button
             type="primary"
             loading={submitting}
             disabled={uploading}
-            size="large"
+            // size="large"
             onClick={this.handleClickValidate}
           >
             提交

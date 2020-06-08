@@ -1,5 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Spin, message } from 'antd';
+import { connect } from 'dva';
+import moment from 'moment';
+import router from 'umi/router';
+// import debounce from 'lodash-decorators/debounce';
+// import bind from 'lodash-decorators/bind';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -8,11 +14,6 @@ import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 import TrainingObjectSelect2 from './TrainingObjectSelect2';
-import { connect } from 'dva';
-import moment from 'moment';
-import router from 'umi/router';
-import debounce from 'lodash-decorators/debounce';
-import bind from 'lodash-decorators/bind';
 import {
   EDIT_CODE,
   ADD_CODE,
@@ -27,6 +28,7 @@ import {
   TrainingType,
 } from '../const';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 @connect(
   ({ trainingProgram, user, loading }) => ({
@@ -69,6 +71,11 @@ import styles from './index.less';
   })
 )
 export default class TrainingProgramOther extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
+
   componentDidMount() {
     const {
       match: {
@@ -146,9 +153,9 @@ export default class TrainingProgramOther extends Component {
   // }
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
-  };
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // };
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -178,7 +185,8 @@ export default class TrainingProgramOther extends Component {
         (id ? edit : add)(payload, isSuccess => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(LIST_PATH);
+            // router.push(LIST_PATH);
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
           }
@@ -699,7 +707,7 @@ export default class TrainingProgramOther extends Component {
         refresh={this.refresh}
         action={
           <Fragment>
-            <Button onClick={this.handleBackButtonClick}>返回</Button>
+            <Button onClick={this.goBack}>返回</Button>
             {type !== 'detail' ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
                 提交

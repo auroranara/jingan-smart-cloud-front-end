@@ -228,13 +228,13 @@ export default class TableList extends PureComponent {
           return (
             <Fragment>
               {viewCode ? (
-                <Link to={`${ROUTER}/view/${text.id}`}>查看</Link>
+                <Link to={`${ROUTER}/view/${text.id}`} target="_blank">查看</Link>
               ) : (
                 <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
               )}
               <Divider type="vertical" />
               {editCode ? (
-                <Link to={`${ROUTER}/edit/${text.id}`}>编辑</Link>
+                <Link to={`${ROUTER}/edit/${text.id}`} target="_blank">编辑</Link>
               ) : (
                 <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
               )}
