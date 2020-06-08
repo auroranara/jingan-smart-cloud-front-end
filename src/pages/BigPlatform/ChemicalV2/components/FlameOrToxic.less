@@ -1,0 +1,42 @@
+.container {
+  position: relative;
+  border: 1px solid #1c5d90;
+
+  & + .container {
+    margin-top: 15px;
+  }
+
+  .wrapper {
+    position: relative;
+    border-top: 1px solid #196092;
+    padding: 16px 10px;
+    padding-left: 25px;
+    margin: 0 10px;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    .more {
+      position: absolute;
+      right: 0;
+      color: #1890ff;
+      cursor: pointer;
+      top: 0;
+    }
+
+    .label {
+      color: #1890ff;
+      display: inline-block;
+    }
+  }
+
+  .targetWrapper {
+    padding-left: 10px;
+    margin: 10px 0;
+    margin-left: -10px;
+    border-left: 4px solid #1890ff;
+    line-height: 20px;
+    position: relative;
+  }
+}

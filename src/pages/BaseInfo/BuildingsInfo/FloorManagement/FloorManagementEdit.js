@@ -123,10 +123,14 @@ export default class FloorManagementEdit extends PureComponent {
 
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
-      router.push(
-        `/base-info/buildings-info/floor/list/${newbuildingId ||
-          buildingId}?companyId=${companyId}&&name=${name}`
-      );
+      setTimeout(() => {
+        if (id) window.close();
+        else
+          router.push(
+            `/base-info/buildings-info/floor/list/${newbuildingId ||
+              buildingId}?companyId=${companyId}&&name=${name}`
+          );
+      }, 1000);
     };
 
     const error = () => {
@@ -328,26 +332,27 @@ export default class FloorManagementEdit extends PureComponent {
         </Form>
 
         <div style={{ textAlign: 'center' }}>
-          <Button type="primary" loading={uploading} onClick={this.handleClickValidate}>
-            提交
-          </Button>
           {id ? (
             <Button
               loading={uploading}
-              href={`#/base-info/buildings-info/floor/list/${editBuilding}?companyId=${companyId}&&name=${name}`}
-              style={{ marginLeft: '10px' }}
+              style={{ marginRight: 10 }}
+              // href={`#/base-info/buildings-info/floor/list/${editBuilding}?companyId=${companyId}&&name=${name}`}
+              onClick={e => window.close()}
             >
               返回
             </Button>
           ) : (
             <Button
               loading={uploading}
+              style={{ marginRight: 10 }}
               href={`#/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
-              style={{ marginLeft: '10px' }}
             >
               返回
             </Button>
           )}
+          <Button type="primary" loading={uploading} onClick={this.handleClickValidate}>
+            提交
+          </Button>
         </div>
       </Card>
     );

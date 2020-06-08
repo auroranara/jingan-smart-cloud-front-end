@@ -6,7 +6,10 @@ import {
   forgetSendCode,
   verifyCode,
   updatePwd,
-} from '../services/user';
+  addQuickMenu,
+  editQuickMenu,
+  fetchQuickMenu,
+} from '@/services/user';
 import { getGrids } from '../services/bigPlatform/gridSelect';
 import { queryAccountList } from '@/services/accountManagement';
 import { getList } from '@/utils/service';
@@ -22,6 +25,8 @@ export default {
     menuData: [], // 放在model里是为了防菜单置空闪烁
     isCompany: false, // 是否企业账号
     userList: [], // 用户列表
+    quickExpand: false, // 快捷菜单是否展开
+    quickEdit: false, // 快捷菜单是否编辑
   },
 
   effects: {
@@ -82,11 +87,26 @@ export default {
         callback && callback(response);
       }
     },
-    *fetchUserList({ payload, callback }, { call, put }) {
+    *fetchUserList ({ payload, callback }, { call, put }) {
       const response = yield call(queryAccountList, payload);
       const { code, data } = response || {};
       if (code === 200)
         yield put({ type: 'saveUserList', payload: getList(data) });
+    },
+    // 添加快捷菜单
+    *addQuickMenu ({ payload, callback }, { call }) {
+      const res = yield call(addQuickMenu, payload);
+      callback && callback(res && res.code === 200);
+    },
+    // 编辑快捷菜单
+    *editQuickMenu ({ payload, callback }, { call }) {
+      const res = yield call(editQuickMenu, payload);
+      callback && callback(res && res.code === 200);
+    },
+    // 获取快捷菜单
+    *fetchQuickMenu ({ payload, callback }, { call }) {
+      const res = yield call(fetchQuickMenu, payload);
+      callback && callback(res && res.code === 200 && res.data ? res.data.code : '');
     },
   },
 
@@ -124,8 +144,17 @@ export default {
     saveIsCompany (state, action) {
       return { ...state, isCompany: action.payload || false }
     },
-    saveUserList(state, action) {
+    saveUserList (state, action) {
       return { ...state, userList: action.payload };
+    },
+    saveQuickList (state, action) {
+      return { ...state, quickList: action.payload || [] };
+    },
+    saveQuickExpand (state, action) {
+      return { ...state, quickExpand: action.payload || false };
+    },
+    saveQuickEdit (state, action) {
+      return { ...state, quickEdit: action.payload };
     },
   },
 };

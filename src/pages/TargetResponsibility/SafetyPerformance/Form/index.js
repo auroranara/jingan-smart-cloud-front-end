@@ -1,16 +1,38 @@
 import React from 'react';
 import FormPage from '@/jingan-components/Page/Form';
+import { EmptyText } from '@/jingan-components/View';
+import Standard from '../components/Standard';
 import moment from 'moment';
-import {
-  COMPANY_FIELDNAMES,
-  COMPANY_MAPPER,
-  DEPARTMENT_FIELDNAMES,
-  DEPARTMENT_MAPPER,
-  RESULTS,
-  FORMAT,
-} from '../config';
+import { RESULTS, FORMAT } from '../config';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
+
+const Text = ({ score }) => (isNumber(score) ? <span>{score}</span> : <EmptyText />);
+const GET_SCORE = list => {
+  const { hasScore, score } = (list || []).reduce(
+    (result, { passScore, contentList }) => {
+      if (isNumber(passScore)) {
+        result.hasScore = true;
+      }
+      result.score +=
+        (passScore || 0) -
+        Math.max(
+          Math.min(
+            (contentList || []).reduce(
+              (result, { pointCase }) =>
+                isNumber(pointCase) ? result + Math.max(pointCase, 0) : result,
+              0
+            ),
+            passScore || 0
+          ),
+          0
+        );
+      return result;
+    },
+    { hasScore: false, score: 0 }
+  );
+  return hasScore ? score : undefined;
+};
 
 const ContractorForm = ({
   route,
@@ -33,28 +55,33 @@ const ContractorForm = ({
     },
     initialize({
       companyId,
-      title,
-      date,
-      departmentId,
-      departmentId2,
-      person,
-      standard,
-      score,
-      result,
-      attachment,
-      remark,
+      companyName,
+      examTitle,
+      examDate,
+      examPart,
+      examPartName,
+      examedPart,
+      examedPartName,
+      writePerson,
+      writePersonName,
+      performanceExamList,
+      examResult,
+      fileList,
+      note,
     }) {
       return {
-        companyId: companyId || undefined,
-        title: title || undefined,
-        date: date ? moment(date) : undefined,
-        departmentId: departmentId || undefined,
-        departmentId2: departmentId2 || undefined,
-        person: person || undefined,
-        score: score || undefined,
-        result: isNumber(result) ? result : undefined,
-        attachment: attachment
-          ? attachment.map((item, index) => ({
+        company: companyId ? { key: companyId, value: companyId, label: companyName } : undefined,
+        examTitle: examTitle || undefined,
+        examDate: examDate ? moment(examDate) : undefined,
+        examPart: examPart ? { key: examPart, value: examPart, label: examPartName } : undefined,
+        examedPart: examedPart
+          ? { key: examedPart, value: examedPart, label: examedPartName }
+          : undefined,
+        writePerson: writePerson ? { id: writePerson, userName: writePersonName } : undefined,
+        normList: performanceExamList || [],
+        examResult: isNumber(examResult) ? examResult : undefined,
+        fileList: fileList
+          ? fileList.map((item, index) => ({
               ...item,
               uid: -1 - index,
               status: 'done',
@@ -62,49 +89,60 @@ const ContractorForm = ({
               url: item.webUrl,
             }))
           : undefined,
-        remark: remark || undefined,
+        note: note || undefined,
       };
     },
     transform({
       isUnit,
       unitId,
-      companyId,
-      title,
-      date,
-      departmentId,
-      departmentId2,
-      person,
-      standard,
-      score,
-      result,
-      attachment,
-      remark,
+      company,
+      examTitle,
+      examDate,
+      examPart,
+      examedPart,
+      writePerson,
+      normList,
+      examResult,
+      fileList,
+      note,
     }) {
       return {
-        companyId: isUnit ? unitId : companyId,
-        title,
-        date: date && date.format(FORMAT),
-        departmentId,
-        departmentId2,
-        person,
-        standard,
-        score,
-        result,
-        attachment,
-        remark,
+        companyId: isUnit ? unitId : company && company.key,
+        examTitle,
+        examDate: examDate && examDate.format(FORMAT),
+        examPart: examPart && examPart.key,
+        examedPart: examedPart && examedPart.key,
+        writePerson: writePerson && writePerson.id,
+        normList:
+          normList &&
+          normList.reduce(
+            (result, { id: performanceId, contentList }) =>
+              result.concat(
+                contentList
+                  ? contentList.map(({ id: contentId, pointCase }) => ({
+                      performanceId,
+                      contentId,
+                      pointCase,
+                    }))
+                  : []
+              ),
+            []
+          ),
+        totalScore: GET_SCORE(normList),
+        examResult,
+        fileList,
+        note,
       };
     },
     fields: [
       {
-        name: 'companyId',
+        name: 'company',
         label: '单位名称',
         component: 'Select',
         props({ mode }) {
           return {
-            fieldNames: COMPANY_FIELDNAMES,
-            mapper: COMPANY_MAPPER,
-            showSearch: true,
-            filterOption: false,
+            preset: 'company',
+            labelInValue: true,
             disabled: mode === 'edit',
           };
         },
@@ -114,92 +152,101 @@ const ContractorForm = ({
         enableDefaultRules: true,
       },
       {
-        name: 'title',
+        name: 'examTitle',
         label: '考核标题',
         component: 'TextArea',
+        props: {
+          maxLength: 50,
+        },
         enableDefaultRules: true,
       },
       {
-        name: 'date',
+        name: 'examDate',
         label: '考核日期',
         component: 'DatePicker',
         enableDefaultRules: true,
       },
       {
-        name: 'departmentId',
+        name: 'examPart',
         label: '考核部门',
         component: 'TreeSelect',
-        dependencies: ['companyId'],
-        props({ isUnit, unitId, companyId, departmentId, departmentName, mode }) {
-          const key = isUnit ? unitId : companyId;
+        dependencies: ['company'],
+        props({ isUnit, unitId, company }) {
+          const companyId = isUnit ? unitId : company && company.key;
           return {
-            fieldNames: DEPARTMENT_FIELDNAMES,
-            mapper: DEPARTMENT_MAPPER,
+            preset: 'departmentTreeByCompany',
             params: {
-              companyId: key,
+              companyId,
             },
-            key,
-            data:
-              mode !== 'add'
-                ? {
-                    key: departmentId,
-                    value: departmentId,
-                    label: departmentName,
-                  }
-                : undefined,
+            labelInValue: true,
           };
-        },
-        hide({ isUnit, companyId }) {
-          return !isUnit && !companyId;
         },
         enableDefaultRules: true,
       },
       {
-        name: 'departmentId2',
+        name: 'examedPart',
         label: '被考核部门',
         component: 'TreeSelect',
-        dependencies: ['companyId'],
-        props({ isUnit, unitId, companyId, departmentId2, departmentName, mode }) {
-          const key = isUnit ? unitId : companyId;
+        dependencies: ['company'],
+        props({ isUnit, unitId, company }) {
+          const companyId = isUnit ? unitId : company && company.key;
           return {
-            fieldNames: DEPARTMENT_FIELDNAMES,
-            mapper: DEPARTMENT_MAPPER,
+            preset: 'departmentTreeByCompany',
             params: {
-              companyId: key,
+              companyId,
             },
-            key,
-            data:
-              mode !== 'add'
-                ? {
-                    key: departmentId2,
-                    value: departmentId2,
-                    label: departmentName,
-                  }
-                : undefined,
+            labelInValue: true,
           };
         },
-        hide({ isUnit, companyId }) {
-          return !isUnit && !companyId;
-        },
         enableDefaultRules: true,
       },
       {
-        name: 'person',
+        name: 'writePerson',
         label: '填报人',
-        component: 'PersonModal',
-        props: {
-          title: '选择填报人',
+        component: 'SelectModalSelect',
+        dependencies: ['company'],
+        props({ isUnit, unitId, company }) {
+          const companyId = isUnit ? unitId : company && company.key;
+          return {
+            preset: 'personListByCompany',
+            title: '选择责任人',
+            params: {
+              companyId,
+            },
+          };
         },
         enableDefaultRules: true,
       },
       {
-        name: 'score',
-        label: '总分（分）',
-        component: 'InputNumber',
-        enableDefaultRules: true,
+        name: 'normList',
+        label: '考核标准',
+        component: Standard,
+        dependencies: ['company'],
+        props({ isUnit, unitId, company }) {
+          const companyId = isUnit ? unitId : company && company.key;
+          return {
+            params: {
+              companyId,
+            },
+          };
+        },
+        wrapperCol: {
+          span: 18,
+        },
       },
       {
-        name: 'result',
+        name: 'totalScore',
+        label: '总分（分）',
+        component: Text,
+        dependencies: ['normList'],
+        props({ normList }) {
+          return {
+            score: GET_SCORE(normList),
+          };
+        },
+      },
+      {
+        name: 'examResult',
         label: '考核结果',
         component: 'Radio',
         props: {
@@ -208,14 +255,18 @@ const ContractorForm = ({
         enableDefaultRules: true,
       },
       {
-        name: 'attachment',
+        name: 'fileList',
         label: '附件',
         component: 'Upload',
       },
       {
-        name: 'remark',
+        name: 'note',
         label: '备注',
         component: 'TextArea',
+        props: {
+          maxLength: 50,
+          allowClear: true,
+        },
       },
     ],
   };

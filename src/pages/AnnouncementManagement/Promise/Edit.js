@@ -1,15 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
 import { Card, message, Input, Button, DatePicker } from 'antd';
 import moment from 'moment';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-
 import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL } from './utils';
+import { genGoBack } from '@/utils/utils';
 
 @connect(({ loading, twoInformManagement, company, user }) => ({
   company,
@@ -25,6 +26,7 @@ export default class Edit extends PureComponent {
       selectedCompany: {},
       detailList: {},
     };
+    this.goBack = genGoBack(props, LIST_URL);
   }
 
   componentDidMount() {
@@ -106,9 +108,9 @@ export default class Edit extends PureComponent {
     });
   };
 
-  goBack = () => {
-    router.push(LIST_URL);
-  };
+  // goBack = () => {
+  //   router.push(LIST_URL);
+  // };
 
   handleSubmit = e => {
     const {
@@ -173,7 +175,7 @@ export default class Edit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
@@ -263,7 +265,10 @@ export default class Edit extends PureComponent {
               : [...COMPANYFORM, ...EDIT_FORMITEMS, ...dataColumns],
             getFieldDecorator,
             handleSubmit,
-            LIST_URL
+            LIST_URL,
+            undefined,
+            undefined,
+            !id,
           )}
         </Card>
         <CompanyModal

@@ -144,19 +144,22 @@ export default class ProductionFacilityList extends PureComponent {
   // 编辑按钮点击事件
   handleEditClick = e => {
     const { id } = e.currentTarget.dataset;
-    router.push(`${EDIT_PATH}/${id}`);
+    // router.push(`${EDIT_PATH}/${id}`);
+    window.open(`${window.publicPath}#${EDIT_PATH}/${id}`);
   };
 
   // 查看按钮点击事件
   handleViewClick = e => {
     const { id } = e.currentTarget.dataset;
-    router.push(`${DETAIL_PATH}/${id}`);
+    // router.push(`${DETAIL_PATH}/${id}`);
+    window.open(`${window.publicPath}#${DETAIL_PATH}/${id}`);
   };
 
   // 	检测记录点击事件
   handleCheckClick = e => {
     const { id } = e.currentTarget.dataset;
-    router.push(`${CHECK_PATH}/${id}/list`);
+    // router.push(`${CHECK_PATH}/${id}/list`);
+    window.open(`${window.publicPath}#${CHECK_PATH}/${id}/list`);
   };
 
   // 删除按钮点击事件
@@ -442,7 +445,7 @@ export default class ProductionFacilityList extends PureComponent {
               current: pageNum,
               pageSize,
               total,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               showTotal: total => `共 ${total} 条`,
               showQuickJumper: true,
               showSizeChanger: true,
@@ -599,7 +602,7 @@ export default class ProductionFacilityList extends PureComponent {
                   },
                 ],
               })(
-                
+
               )}
           </FormItem>
         </Form> */}

@@ -233,7 +233,8 @@ export default class MaterialsList extends PureComponent {
   };
 
   goEdit = id => {
-    router.push(`/major-hazard-info/materials/edit/${id}`);
+    // router.push(`/major-hazard-info/materials/edit/${id}`);
+    window.open(`${window.publicPath}#/major-hazard-info/materials/edit/${id}`);
   };
 
   generateUnit = value =>
@@ -454,7 +455,7 @@ export default class MaterialsList extends PureComponent {
               // showTotal={false}
               showQuickJumper
               showSizeChanger
-              pageSizeOptions={['5', '10', '15', '20']}
+              // pageSizeOptions={['5', '10', '15', '20']}
               pageSize={pageSize}
               current={pageNum}
               total={total}

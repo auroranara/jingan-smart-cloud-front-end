@@ -3,7 +3,7 @@ import { Spin, List } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 import styles from './index.less';
 
-const GRID = { gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 };
+const GRID = { gutter: 24, column: 3, lg: 3, md: 2, sm: 1, xs: 1 };
 
 export default class InfiniteList extends Component {
   state = {

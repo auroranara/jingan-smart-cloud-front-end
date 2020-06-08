@@ -276,6 +276,7 @@ export default class AddAuthorization extends PureComponent {
       {
         title: '姓名',
         dataIndex: 'name',
+        width: 130,
       },
       {
         title: '卡号',
@@ -371,14 +372,14 @@ export default class AddAuthorization extends PureComponent {
                       loading={personLoading}
                       columns={personColumns}
                       dataSource={personList}
-                      // scroll={{ x: 'max-content' }}
+                      scroll={{ y: 430 }}
                       pagination={{
                         current: personPagination.pageNum,
                         pageSize: personPagination.pageSize,
                         total: personPagination.total,
-                        showQuickJumper: true,
-                        showSizeChanger: false,
-                        // pageSizeOptions: ['5', '10', '15', '20'],
+                        // showQuickJumper: true,
+                        showSizeChanger: true,
+                        pageSizeOptions: ['10', '20', '50', '100'],
                         onChange: this.fetchPersonList,
                         onShowSizeChange: (num, size) => {
                           this.fetchPersonList(1, size);
@@ -396,7 +397,7 @@ export default class AddAuthorization extends PureComponent {
                     <span>已选人员</span>
                     <span className={styles.statistics}>{personLen}/100</span>
                   </div>
-                  <Row gutter={16} style={{ padding: '10px', overflow: 'hidden', alignContent: 'flex-start' }} className={styles.outerLine}>
+                  <Row gutter={16} style={{ padding: '10px', alignContent: 'flex-start' }} className={styles.outerLine}>
                     {selectedPerson.map(({ id, name }) => (
                       <Col span={9} key={id} className={styles.tag}>{name}</Col>
                     ))}
@@ -511,18 +512,18 @@ export default class AddAuthorization extends PureComponent {
             </TabPane>
             <TabPane tab="Tab 2" key="2">
               <Row gutter={16}>
-                <Col span={8}>
+                <Col span={7}>
                   <div className={styles.prompt}>
                     <span>已选人员</span>
                     <span className={styles.statistics}>{personLen}/100</span>
                   </div>
-                  <Row style={{ padding: '10px', overflow: 'hidden', alignContent: 'flex-start' }} className={styles.outerLine}>
+                  <Row style={{ padding: '10px', alignContent: 'flex-start' }} className={styles.outerLine}>
                     {selectedPerson.map(({ id, name }) => (
                       <Col span={8} key={id} className={styles.tag}>{name}</Col>
                     ))}
                   </Row>
                 </Col>
-                <Col span={8}>
+                <Col span={9}>
                   <div className={styles.prompt}>
                     <span>请选择设备</span>
                   </div>
@@ -555,7 +556,7 @@ export default class AddAuthorization extends PureComponent {
                         total: devicePagination.total,
                         showQuickJumper: true,
                         showSizeChanger: true,
-                        pageSizeOptions: ['5', '10', '15', '20'],
+                        // pageSizeOptions: ['5', '10', '15', '20'],
                         onChange: this.fetchDeviceList,
                         onShowSizeChange: (num, size) => {
                           this.fetchDeviceList(1, size);

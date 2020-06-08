@@ -208,7 +208,7 @@ export default class BrandModelModal extends PureComponent {
           total,
           showQuickJumper: true,
           showSizeChanger: true,
-          pageSizeOptions: ['5', '10', '15', '20'],
+          // pageSizeOptions: ['5', '10', '15', '20'],
           onChange: this.handleQueryBrands,
           onShowSizeChange: (num, size) => {
             this.handleQueryBrands(1, size);
@@ -336,7 +336,7 @@ export default class BrandModelModal extends PureComponent {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: this.handleQueryModels,
             onShowSizeChange: (num, size) => {
               this.handleQueryModels(1, size);

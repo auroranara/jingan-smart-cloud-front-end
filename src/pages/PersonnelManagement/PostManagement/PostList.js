@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import {
-  List,
+  // List,
   Card,
   Button,
   Table,
@@ -12,22 +12,22 @@ import {
   Row,
   Input,
   Popconfirm,
-  Select,
+  // Select,
   message,
   Pagination,
   Divider,
 } from 'antd';
-import { Link } from 'dva/router';
-import InfiniteScroll from 'react-infinite-scroller';
+// import { Link } from 'dva/router';
+// import InfiniteScroll from 'react-infinite-scroller';
 import { routerRedux } from 'dva/router';
-import Ellipsis from '@/components/Ellipsis';
+// import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 import styles from './PostList.less';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import moment from 'moment';
 
-const { Option } = Select;
+// const { Option } = Select;
 const FormItem = Form.Item;
 
 // 权限代码
@@ -38,12 +38,12 @@ const {
 } = codes;
 
 // 默认页面显示数量
-const pageSize = 10;
+// const pageSize = 10;
 
 /* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
+// const getEmptyData = () => {
+//   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+// };
 const NODATA = '--';
 
 @connect(({ postManagement, user, loading }) => ({
@@ -157,9 +157,10 @@ export default class PersonnelList extends PureComponent {
       match: {
         params: { unitId },
       },
-      dispatch,
+      // dispatch,
     } = this.props;
-    dispatch(routerRedux.push(`/personnel-management/post-management/${unitId}/edit/${id}`));
+    // dispatch(routerRedux.push(`/personnel-management/post-management/${unitId}/edit/${id}`));
+    window.open(`${window.publicPath}#/personnel-management/post-management/${unitId}/edit/${id}`);
   };
 
   // 删除
@@ -354,7 +355,7 @@ export default class PersonnelList extends PureComponent {
               style={{ marginTop: '20px', float: 'right' }}
               showQuickJumper
               showSizeChanger
-              pageSizeOptions={['5', '10', '15', '20']}
+              // pageSizeOptions={['5', '10', '15', '20']}
               pageSize={pageSize}
               current={pageNum}
               total={total}

@@ -1,0 +1,163 @@
+.container {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  margin-right: -15px;
+  padding-right: 15px;
+
+  .title {
+    font-size: 16px;
+    color: #fff;
+    margin: 10px 0;
+  }
+
+  // .detail {
+  //   display: inline-block;
+  //   margin-left: 30px;
+  //   color: #0ff;
+  //   cursor: pointer;
+  // }
+
+  .content {
+    position: relative;
+    padding: 10px 15px;
+    border: 1px solid #0ff;
+    color: #fff;
+    line-height: 26px;
+  }
+
+  .more {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    color: #0ff;
+    cursor: pointer;
+  }
+
+  .name {
+    position: absolute;
+    top: 80px;
+    left: 42px;
+    color: #3697b6;
+    cursor: pointer;
+  }
+
+  .label {
+    color: #0ff;
+  }
+
+  .alarm {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.iconWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  .tankName {
+    padding: 0 5px;
+    color: #3697b6;
+    text-align: center;
+  }
+}
+
+.detail {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  color: #1890ff;
+  cursor: pointer;
+}
+
+.radioBtn {
+  margin-bottom: 15px;
+  height: 34px;
+  border-radius: 5px;
+  overflow: hidden;
+
+  :global {
+    .ant-radio-group {
+      width: 100%;
+      display: flex;
+      border-radius: 5px;
+    }
+
+    .ant-radio-button-wrapper {
+      flex: 1;
+      height: 34px;
+      // color: #fff;
+      background: #033069;
+      text-align: center;
+      padding: 0;
+      font-size: 14px;
+      border: 1px solid #196092;
+      color: #8198b4;
+
+      & + .ant-radio-button-wrapper {
+        margin-left: 0;
+        font-size: 14px;
+      }
+    }
+
+    .ant-radio-button-wrapper-checked {
+      box-shadow: -1px 0 0 0 #0284c7;
+    }
+
+    .ant-radio-group-solid
+      .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+      font-size: 14px;
+      // color: #0284c7;
+      // background: #033069;
+      border: 1px solid #0284c7;
+      height: 34px;
+      color: #fff;
+      background: #0967d3;
+    }
+
+    .ant-radio-button-wrapper:not(:first-child)::before {
+      width: 0;
+      height: 0;
+    }
+  }
+}
+
+.input {
+  height: 100%;
+  :global {
+    .ant-input-search.ant-input-search-enter-button > .ant-input,
+    .ant-input {
+      color: #fff;
+      border: 1px solid #196092;
+      background-color: transparent;
+    }
+
+    .ant-btn-primary {
+      color: rgb(4, 253, 255);
+      border: 1px solid #196092;
+      background-color: rgb(4, 71, 134);
+    }
+  }
+}
+
+.spin {
+  height: 100%;
+
+  :global {
+    .ant-spin-container {
+      height: 100%;
+
+      &:after {
+        background-color: transparent;
+      }
+    }
+  }
+}

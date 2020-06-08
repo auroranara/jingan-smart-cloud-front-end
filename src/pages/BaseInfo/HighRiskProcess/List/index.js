@@ -30,7 +30,7 @@ const addUrl = '/major-hazard-info/high-risk-process/add';
 const editUrl = '/major-hazard-info/high-risk-process/edit/';
 const detailUrl = '/major-hazard-info/high-risk-process/detail';
 const { Option } = Select;
-const title = '高危工艺流程';
+const title = '工艺流程';
 const breadcrumbList = [
   {
     title: '首页',
@@ -120,7 +120,8 @@ export default class HighRiskProcessList extends PureComponent {
     //   cancelText: '取消',
     //   onOk () { router.push(editUrl + id); },
     // });
-    router.push(editUrl + id);
+    // router.push(editUrl + id);
+    window.open(`${window.publicPath}#${editUrl}${id}`);
   };
 
   /**
@@ -382,7 +383,7 @@ export default class HighRiskProcessList extends PureComponent {
         render: (val, { processName, unifiedCode, reactionType }) => (
           <div style={{ textAlign: 'left' }}>
             <div>
-              高危工艺名称：
+              工艺名称：
               {processName}
             </div>
             <div>
@@ -526,7 +527,7 @@ export default class HighRiskProcessList extends PureComponent {
             单位数量：
             {companyNum || 0}
             <span style={{ marginLeft: 15 }}>
-              高危工艺流程：
+              工艺流程：
               {total}
             </span>
             {/* <span style={{ marginLeft: 15 }}>已绑监测设备数：0</span> */}
@@ -549,7 +550,7 @@ export default class HighRiskProcessList extends PureComponent {
               // showTotal={false}
               showQuickJumper
               showSizeChanger
-              pageSizeOptions={['5', '10', '15', '20']}
+              // pageSizeOptions={['5', '10', '15', '20']}
               pageSize={pageSize}
               current={pageNum}
               total={total}

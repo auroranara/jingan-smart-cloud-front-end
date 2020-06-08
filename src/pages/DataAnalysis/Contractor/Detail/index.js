@@ -1,8 +1,8 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { Spin, Card, Drawer } from 'antd';
+import { Button, Spin, Card, Drawer, Badge as AntBadge } from 'antd';
 import Form from '@/jingan-components/Form';
-import { Table, Link, Badge, TextAreaEllipsis } from '@/jingan-components/View';
+import { Table, Link, Badge, TextAreaEllipsis, EmptyText } from '@/jingan-components/View';
 import DueDate from '../components/DueDate';
 import { connect } from 'dva';
 import locales from '@/locales/zh-CN';
@@ -217,6 +217,7 @@ const ContractorDetail = props => {
       {
         dataIndex: 'teamBusinessGrade',
         title: '施工队伍营业等级',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'workCompanyDesc',
@@ -230,11 +231,11 @@ const ContractorDetail = props => {
           <Fragment>
             <div className={styles.fieldWrapper}>
               <div>负责人：</div>
-              <div>{teamManager}</div>
+              <div>{teamManager || <EmptyText />}</div>
             </div>
             <div className={styles.fieldWrapper}>
               <div>联系电话：</div>
-              <div>{teamManagerPhone}</div>
+              <div>{teamManagerPhone || <EmptyText />}</div>
             </div>
           </Fragment>
         ),
@@ -246,11 +247,11 @@ const ContractorDetail = props => {
           <Fragment>
             <div className={styles.fieldWrapper}>
               <div>签订日期：</div>
-              <div>{signingDate && moment(signingDate).format(FORMAT)}</div>
+              <div>{signingDate ? moment(signingDate).format(FORMAT) : <EmptyText />}</div>
             </div>
             <div className={styles.fieldWrapper}>
               <div>到期日期：</div>
-              <div>{expireDate && moment(expireDate).format(FORMAT)}</div>
+              <div>{expireDate ? moment(expireDate).format(FORMAT) : <EmptyText />}</div>
             </div>
           </Fragment>
         ),
@@ -413,19 +414,27 @@ const ContractorDetail = props => {
       {
         dataIndex: 'assessTitle',
         title: '考核记录标题',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'assessDepartmentName',
         title: '考核部门',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'assessDate',
         title: '实际考核日期',
-        render: value => value && moment(value).format(FORMAT),
+        render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
       },
       {
         dataIndex: 'assessScore',
         title: '总分',
+        render: value =>
+          isNumber(value) ? (
+            <AntBadge text={`${value}`} status={value >= 60 ? 'success' : 'error'} />
+          ) : (
+            <EmptyText />
+          ),
       },
       {
         dataIndex: 'assessResult',
@@ -541,7 +550,12 @@ const ContractorDetail = props => {
           {
             name: 'assessScore',
             label: '总分',
-            component: 'Input',
+            component: 'InputNumber',
+            props: {
+              status(value) {
+                return value >= 60 ? 'success' : 'error';
+              },
+            },
           },
           {
             name: 'assessResult',
@@ -562,16 +576,17 @@ const ContractorDetail = props => {
       {
         dataIndex: 'projectName',
         title: '项目名称',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'violationDate',
         title: '违章日期',
-        render: value => value && moment(value).format(FORMAT),
+        render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
       },
       {
         dataIndex: 'violators',
         title: '违章人姓名',
-        render: value => value && value.split(',').join('、'),
+        render: value => (value ? value.split(',').join('、') : <EmptyText />),
       },
       {
         dataIndex: 'processingResult',
@@ -645,6 +660,11 @@ const ContractorDetail = props => {
           )}
         </Card>
       </Spin>
+      <div style={{ textAlign: 'center', marginTop: 24 }}>
+        <Button onClick={e => window.close()}>
+          返回
+        </Button>
+      </div>
       <Drawer
         title={drawerTitle}
         visible={visible}

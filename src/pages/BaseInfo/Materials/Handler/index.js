@@ -319,7 +319,10 @@ export default class MaterialsHandler extends PureComponent {
         const payload = { ...formData, companyId: unitType === 4 ? companyId : formData.companyId };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push(listUrl);
+          if (id)
+            setTimeout(() => window.close(), 1000);
+          else
+            router.push(listUrl);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');

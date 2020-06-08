@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Divider, Tooltip, message, Button } from 'antd';
+import { Card, Table, Divider, Tooltip, message, Button, Menu, Dropdown } from 'antd';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import classNames from 'classnames';
 import screenfull from 'screenfull';
@@ -7,25 +7,29 @@ import styles from './index.less';
 
 const SHOW_TOTAL = total => `共 ${total} 条记录`;
 
-const PAGE_SIZE_OPTIONS = ['5', '10', '15', '20'];
+// const PAGE_SIZE_OPTIONS = ['5', '10', '15', '20'];
 
 const TableIndex = ({
   showCard = true,
   className,
   list: { list = [], pagination: { total = 0, pageNum = 1, pageSize = 20 } = {} } = {},
   pagination,
+  rowSelection,
   scroll,
   operation,
   onReload,
+  onExport,
   showPagination = true,
   showAddButton = true,
   showExportButton,
   hasAddAuthority,
   addPath,
   hasExportAuthority,
+  banner,
   ...rest
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(screenfull.isFullscreen);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   useEffect(() => {
     const callback = () => {
       setIsFullscreen(screenfull.isFullscreen);
@@ -53,24 +57,38 @@ const TableIndex = ({
       dataSource={list}
       scroll={{
         x: true,
+        ...scroll,
       }}
       pagination={
         showPagination && {
           total,
           current: pageNum,
           pageSize,
-          pageSizeOptions: PAGE_SIZE_OPTIONS,
+          // pageSizeOptions: PAGE_SIZE_OPTIONS,
           showTotal: SHOW_TOTAL,
           showQuickJumper: true,
           showSizeChanger: true,
           ...pagination,
         }
       }
+      rowSelection={
+        rowSelection || showExportButton
+        ? {
+            ...rowSelection,
+            ...(showExportButton && {
+              selectedRowKeys,
+              onChange(selectedRowKeys) {
+                setSelectedRowKeys(selectedRowKeys);
+              },
+            }),
+          }
+        : undefined
+      }
       {...rest}
     />
   );
   return showCard ? (
-    <Card>
+    <Card {...showCard}>
       <div className={styles.operationContainer}>
         {showAddButton && (
           <div className={styles.operationWrapper}>
@@ -81,14 +99,27 @@ const TableIndex = ({
         )}
         {showExportButton && (
           <div className={styles.operationWrapper}>
-            <Button
-              onClick={() => {
-                console.log('导出');
-              }}
-              disabled={!hasExportAuthority}
+            <Dropdown
+              overlay={
+                <Menu
+                  onClick={({ key }) => {
+                    onExport && onExport(key, selectedRowKeys);
+                    setSelectedRowKeys([]);
+                  }}
+                >
+                  <Menu.Item key="1" disabled={!selectedRowKeys.length}>
+                    导出选中
+                  </Menu.Item>
+                  <Menu.Item key="2">导出搜索结果</Menu.Item>
+                  <Menu.Item key="3">导出全部</Menu.Item>
+                </Menu>
+              }
+              disabled={!(total && hasExportAuthority)}
             >
-              导出
-            </Button>
+              <Button>
+                导出 <LegacyIcon type="down" />
+              </Button>
+            </Dropdown>
           </div>
         )}
         {Array.isArray(operation) &&
@@ -131,6 +162,7 @@ const TableIndex = ({
           </div>
         </div>
       </div>
+      {banner}
       {table}
     </Card>
   ) : (

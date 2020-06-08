@@ -17,7 +17,7 @@ const {
 
 const MAX_LENGTH = 30;
 const DATE_FORMAT = 'YYYY-MM-DD';
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 10;
 export const ROUTER = '/cards-info/know-card'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 

@@ -11,6 +11,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanyModal from '../../../BaseInfo/Company/CompanyModal';
 // import urls from 'utils/urls';
 import { getToken } from 'utils/authority';
+import { genGoBack } from '@/utils/utils';
 
 const { TextArea } = Input;
 const { Item: FormItem } = Form;
@@ -237,11 +238,13 @@ export default class BuildingInfoEdit extends PureComponent {
     console.log('12', this.props);
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
-      router.push(
-        company_Id
-          ? `/base-info/buildings-info/detail/${company_Id}?name=${company_name}`
-          : '/base-info/buildings-info/list'
-      );
+      // router.push(
+      //   company_Id
+      //     ? `/base-info/buildings-info/detail/${company_Id}?name=${company_name}`
+      //     : '/base-info/buildings-info/list'
+      // );
+      const path = company_Id ? `/base-info/buildings-info/detail/${company_Id}?name=${company_name}` : '/base-info/buildings-info/list';
+      setTimeout(genGoBack(this.props, path), 1000);
     };
 
     const error = () => {
@@ -749,30 +752,30 @@ export default class BuildingInfoEdit extends PureComponent {
             <Row>
               {this.renderFormItems(formItems)}
               {this.renderMoreItems(moreForemItems)}
-              <Col span={24} style={{ marginTop: '40px' }}>
+              <Col span={24}>
                 <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
-                  <Button loading={uploading} type="primary" onClick={this.handleClickValidate}>
-                    确定
-                  </Button>
                   {company_Id ? (
                     <Button
                       loading={uploading}
-                      href={`#/base-info/buildings-info/detail/${company_Id}?name=${company_name}`}
-                      type="primary"
-                      style={{ marginLeft: '10px' }}
+                      style={{ marginRight: 10 }}
+                      // href={`#/base-info/buildings-info/detail/${company_Id}?name=${company_name}`}
+                      onClick={genGoBack(this.props, `/base-info/buildings-info/detail/${company_Id}?name=${company_name}`)}
                     >
                       返回
                     </Button>
                   ) : (
                     <Button
                       loading={uploading}
-                      href="#/base-info/buildings-info/list"
-                      type="primary"
-                      style={{ marginLeft: '10px' }}
+                      style={{ marginRight: 10 }}
+                      // href="#/base-info/buildings-info/list"
+                      onClick={genGoBack(this.props, "/base-info/buildings-info/list")}
                     >
                       返回
                     </Button>
                   )}
+                  <Button loading={uploading} type="primary" onClick={this.handleClickValidate}>
+                    提交
+                  </Button>
                 </FormItem>
               </Col>
             </Row>

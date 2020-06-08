@@ -1,13 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
 import { Card, Button } from 'antd';
+
+import '@ant-design/compatible/assets/index.css';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import styles from './detail.less';
-import moment from 'moment';
 import { BREADCRUMBLIST, LIST_URL, ROUTER } from './utils';
 
 // 权限
@@ -140,28 +141,25 @@ export default class Detail extends PureComponent {
             </div>
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <span>
-            <Button
-              style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-              type="primary"
-              size="large"
-              disabled={!editCode}
-              href={`#${ROUTER}/edit/${id}`}
-            >
-              编辑
-            </Button>
-          </span>
-
-          <span style={{ marginLeft: 10 }}>
-            <Button
-              style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-              size="large"
-              href={`#${LIST_URL}`}
-            >
-              返回
-            </Button>
-          </span>
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button
+            // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+            // size="large"
+            // href={`#${LIST_URL}`}
+            style={{ marginRight: 10 }}
+            onClick={e => window.close()}
+          >
+            返回
+          </Button>
+          <Button
+            // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+            type="primary"
+            // size="large"
+            disabled={!editCode}
+            href={`#${ROUTER}/edit/${id}`}
+          >
+            编辑
+          </Button>
         </div>
       </Card>
     );

@@ -36,7 +36,6 @@ import {
   Remind,
   Tips,
   CompanyInfo,
-  StorageAreaDrawer,
   MonitorDrawer,
   Map,
   DangerAreaDrawer,
@@ -57,6 +56,8 @@ import {
   FireMonitorDrawer,
   GasListDrawer,
   FireMonitorDetailDrawer,
+  NewMonitorDrawer,
+  MonitorTabDrawer,
 } from './sections/Components';
 
 const headerBg = 'http://data.jingan-china.cn/v2/chem/assets/new-header-bg.png';
@@ -184,6 +185,8 @@ const transformCondition = condition => {
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
     riskPointLoading: loading.effects['unitSafety/fetchPoints'],
     zoneLoading: loading.effects['chemical/fetchZoneContent'],
+    targetLoading: loading.effects['chemical/fetchMonitorData'],
+    dangerSourceLoading: loading.effects['chemical/fetchDangerSourceList'],
   })
 )
 export default class Chemical extends PureComponent {
@@ -250,6 +253,8 @@ export default class Chemical extends PureComponent {
       gasListDrawerVisible: false,
       fireMonitorDetailDrawerVisible: false,
       fireDetail: {},
+      newMonitorDrawerVisible: false,
+      monitorTabDrawerVisible: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -983,7 +988,14 @@ export default class Chemical extends PureComponent {
       type: 'chemical/fetchMonitorData',
       payload: { companyId, pageSize: 0, pageNum: 1, monitorType, hasMonitor: true },
     });
-    this.setState({ monitorType, monitorDrawerVisible: true });
+    // this.setState({ monitorType, monitorDrawerVisible: true });
+    if (['304', '303', '301'].includes(monitorType)) {
+      this.setState({ monitorType, monitorTabDrawerVisible: true });
+    } else if (['302'].includes(monitorType)) {
+      this.setState({ monitorType, newMonitorDrawerVisible: true });
+    } else {
+      this.setState({ monitorType, monitorDrawerVisible: true });
+    }
   };
 
   // 监测设备详情弹窗
@@ -1010,9 +1022,16 @@ export default class Chemical extends PureComponent {
           data: { list },
         } = res;
         const detail = list[0];
-        this.setState({ monitorType }, () => {
-          this.handleClickMonitorDetail(detail);
-        });
+        if (['304', '303', '301', '302'].includes(monitorType)) {
+          dispatch({ type: 'chemical/saveMonitorData', payload: { monitorType, list } });
+          if (['302'].includes(monitorType))
+            this.setState({ monitorType, newMonitorDrawerVisible: true });
+          else this.setState({ monitorType, monitorTabDrawerVisible: true });
+        } else {
+          this.setState({ monitorType }, () => {
+            this.handleClickMonitorDetail(detail);
+          });
+        }
       },
     });
   };
@@ -1218,7 +1237,7 @@ export default class Chemical extends PureComponent {
   // 重大危险源详情
   handleShowDangerSourceDetail = detail => {
     this.setState({ dangerSourceDetail: detail });
-    this.setDrawerVisible('dangerSourceInfo');
+    // this.setDrawerVisible('dangerSourceInfo');
     this.fetchDangerSourceMaterials({ id: detail.id });
   };
 
@@ -1373,6 +1392,8 @@ export default class Chemical extends PureComponent {
       emergencyManagement: { specialEquipment: specialEquipDict = [] },
       gasMonitor: { realTimeList },
       zoneLoading,
+      targetLoading,
+      dangerSourceLoading,
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -1422,6 +1443,8 @@ export default class Chemical extends PureComponent {
       gasListDrawerVisible,
       fireMonitorDetailDrawerVisible,
       fireDetail,
+      newMonitorDrawerVisible,
+      monitorTabDrawerVisible,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1585,13 +1608,6 @@ export default class Chemical extends PureComponent {
           handleClickAreaGas={this.handleClickAreaGas}
         />
 
-        <StorageAreaDrawer
-          visible={storageAreaDrawerVisible}
-          onClose={() => {
-            this.setDrawerVisible('storageArea');
-          }}
-        />
-
         {/* 安全人员抽屉 */}
         <SafetyOfficerDrawer
           visible={safetyOfficerDrawerVisible}
@@ -1632,6 +1648,31 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           // handleGasOpen={this.handleGasOpen}
           // handlePoisonOpen={this.handlePoisonOpen}
+        />
+
+        <NewMonitorDrawer
+          visible={newMonitorDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('newMonitor');
+          }}
+          monitorType={monitorType}
+          monitorData={monitorData}
+          setDrawerVisible={this.setDrawerVisible}
+          handleShowVideo={this.handleShowVideo}
+          loading={targetLoading}
+        />
+
+        <MonitorTabDrawer
+          visible={monitorTabDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('monitorTab');
+          }}
+          monitorType={monitorType}
+          monitorData={monitorData}
+          handleClickMonitorDetail={this.handleClickMonitorDetail}
+          setDrawerVisible={this.setDrawerVisible}
+          handleShowVideo={this.handleShowVideo}
+          loading={targetLoading}
         />
 
         {/* <StorageDrawer
@@ -1677,6 +1718,9 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           dangerSourceList={dangerSourceList}
           handleShowDangerSourceDetail={this.handleShowDangerSourceDetail}
+          handleShowVideo={this.handleShowVideo}
+          companyId={companyId}
+          loading={dangerSourceLoading}
         />
 
         <DangerSourceInfoDrawer
@@ -1767,6 +1811,7 @@ export default class Chemical extends PureComponent {
           mhList={mhList}
           chemicalDetail={chemicalDetail}
           handleShowVideo={this.handleShowVideo}
+          handleShowChemicalDetail={this.handleShowChemicalDetail}
         />
 
         <ImagePreview images={images} onClose={this.handleCloseImg} />

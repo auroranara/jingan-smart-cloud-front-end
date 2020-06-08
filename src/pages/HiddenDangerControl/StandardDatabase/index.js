@@ -246,10 +246,11 @@ export default class StandardDatabase extends Component {
 
   // 跳转到检查流程列表页面
   jumpToProcess = ({ objectId, objectTitle }) => {
-    router.push({
-      pathname: processUrl + objectId,
-      query: { checkItemTitle: objectTitle },
-    })
+    // router.push({
+    //   pathname: processUrl + objectId,
+    //   query: { checkItemTitle: objectTitle },
+    // })
+    window.open(`${window.publicPath}#${processUrl}${objectId}?checkItemTitle=${objectTitle}`);
   }
 
   /**
@@ -397,7 +398,7 @@ export default class StandardDatabase extends Component {
               total,
               showQuickJumper: true,
               showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               onChange: this.handleQuery,
               onShowSizeChange: (num, size) => {
                 this.handleQuery(1, size);

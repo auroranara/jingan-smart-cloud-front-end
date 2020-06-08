@@ -57,18 +57,20 @@ export default class ExamFileList extends PureComponent {
 
   // 跳转到考试详情页面
   goExamDetail = (id, name, startTime, endTime, examLimit, percentOfPass) => {
-    const { dispatch } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/training/generalFile/examDetailList/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
-      )
-    );
+    // const { dispatch } = this.props;
+    // dispatch(
+    //   routerRedux.push(
+    //     `/training/generalFile/examDetailList/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+    //   )
+    // );
+    window.open(`${window.publicPath}#/training/generalFile/examDetailList/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`);
   };
 
   // 跳转到考试成绩综合分析报告
   goExamReport = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/generalFile/examReport/${id}`));
+    // const { dispatch } = this.props;
+    // dispatch(routerRedux.push(`/training/generalFile/examReport/${id}`));
+    window.open(`${window.publicPath}#/training/generalFile/examReport/${id}`);
   };
 
   handleTableData = (list = [], indexBase) => {
@@ -326,7 +328,7 @@ export default class ExamFileList extends PureComponent {
                 total,
                 showQuickJumper: true,
                 showSizeChanger: true,
-                pageSizeOptions: ['5', '10', '15', '20'],
+                // pageSizeOptions: ['5', '10', '15', '20'],
                 onChange: this.handlePageChange,
                 onShowSizeChange: (num, size) => {
                   this.handlePageChange(1, size);

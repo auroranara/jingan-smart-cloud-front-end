@@ -89,33 +89,35 @@ export default class myFileList extends PureComponent {
   // 跳转到试卷页面
   goExamDetail = (id, studentId) => {
     const {
-      dispatch,
+      // dispatch,
       location: {
         query: { companyId },
       },
     } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/training/my-exam/result/${id}?studentId=${studentId}&&companyId=${companyId}`
-      )
-    );
+    // dispatch(
+    //   routerRedux.push(
+    //     `/training/my-exam/result/${id}?studentId=${studentId}&&companyId=${companyId}`
+    //   )
+    // );
+    window.open(`${window.publicPath}#/training/my-exam/result/${id}?studentId=${studentId}&&companyId=${companyId}`);
   };
 
   // 跳转到分析报告页面
   goAlaysisExam = (studentId, examId) => {
-    console.log('studentId', studentId);
-    console.log('examId', examId);
+    // console.log('studentId', studentId);
+    // console.log('examId', examId);
     const {
-      dispatch,
+      // dispatch,
       location: {
         query: { companyId },
       },
     } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/training/generalFile/myFile/myAnalysis/${examId}?studentId=${studentId}&&companyId=${companyId}`
-      )
-    );
+    // dispatch(
+    //   routerRedux.push(
+    //     `/training/generalFile/myFile/myAnalysis/${examId}?studentId=${studentId}&&companyId=${companyId}`
+    //   )
+    // );
+    window.open(`${window.publicPath}#/training/generalFile/myFile/myAnalysis/${examId}?studentId=${studentId}&&companyId=${companyId}`);
   };
 
   /* 查询按钮点击事件 */
@@ -387,7 +389,7 @@ export default class myFileList extends PureComponent {
               total,
               showQuickJumper: true,
               showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               onChange: this.handlePageChange,
               onShowSizeChange: (num, size) => {
                 this.handlePageChange(1, size);

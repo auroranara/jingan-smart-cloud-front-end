@@ -25,7 +25,7 @@ const PersonModal = ({
   multiple,
   placeholder = '请选择',
   disabled,
-  separator = ',',
+  separator = '，',
   empty,
   ellipsis,
   mode,

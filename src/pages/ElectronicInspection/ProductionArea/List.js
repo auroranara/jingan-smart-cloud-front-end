@@ -132,11 +132,13 @@ export default class ProductionAreaList extends Component {
   }
 
   handleView = id => {
-    router.push(`/electronic-inspection/production-area/view/${id}`)
+    // router.push(`/electronic-inspection/production-area/view/${id}`)
+    window.open(`${window.publicPath}#/electronic-inspection/production-area/view/${id}`)
   }
 
   handleEdit = id => {
-    router.push(`/electronic-inspection/production-area/edit/${id}`)
+    // router.push(`/electronic-inspection/production-area/edit/${id}`)
+    window.open(`${window.publicPath}#/electronic-inspection/production-area/edit/${id}`);
   }
 
   // 获取部门列表
@@ -273,9 +275,9 @@ export default class ProductionAreaList extends Component {
         width: 200,
         render: (val, { principalContent = {} }) => (
           <div style={{ textAlign: 'left' }}>
-            <p>姓名：{principalContent.userName || ''}</p>
-            <p>部门：{principalContent.departmentName || ''}</p>
-            <p>联系电话：{principalContent.phoneNumber || ''}</p>
+            <p style={{ margin: 0 }}>姓名：{principalContent.userName || ''}</p>
+            <p style={{ margin: 0 }}>部门：{principalContent.departmentName || ''}</p>
+            <p style={{ margin: 0 }}>联系电话：{principalContent.phoneNumber || ''}</p>
           </div>
         ),
       },
@@ -321,7 +323,7 @@ export default class ProductionAreaList extends Component {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: (pageNum, pageSize) => {
               this.handleQuery({ pageNum, pageSize });
             },

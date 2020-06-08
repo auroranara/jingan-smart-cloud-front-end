@@ -144,7 +144,10 @@ export default class Edit extends PureComponent {
         callback: (code, msg) => {
           if (code === 200) {
             message.success(id?'编辑成功':'新增成功');
-            router.push(LIST_URL);
+            setTimeout(() => {
+              if (id) window.close();
+              else router.push(LIST_URL);
+            }, 1000);
           } else message.error(id?'编辑失败':'新增失败');
         },
       });
@@ -399,16 +402,23 @@ export default class Edit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, loading)}
+          {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, undefined, loading, !id)}
           {isDet ? (
-            <Button
-              type="primary"
-              disabled={!editAuth}
-              style={{ marginLeft: '45%' }}
-              onClick={e => router.push(`/cards-info/emergency-card/edit/${id}`)}
-            >
-              编辑
-            </Button>
+            <div style={{ textAlign: 'center' }}>
+              <Button
+                style={{ marginRight: 10 }}
+                onClick={e => window.close()}
+              >
+                返回
+              </Button>
+              <Button
+                type="primary"
+                disabled={!editAuth}
+                onClick={e => router.push(`/cards-info/emergency-card/edit/${id}`)}
+              >
+                编辑
+              </Button>
+            </div>
           ) : null}
         </Card>
         {this.renderModal()}

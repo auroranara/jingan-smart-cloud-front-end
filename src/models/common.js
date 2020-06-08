@@ -10,8 +10,10 @@ import {
   getContractorList,
   getSupplierList,
   getGridList,
+  getGridListWithCount,
   getGridPersonList,
   getGridCompanyList,
+  getGridCompanyListByUser,
   getExaminationContentList,
   getBusinessTypeList,
   getIndustryList,
@@ -19,8 +21,15 @@ import {
   getSpecialRemediationSectionList,
   getSpecialRemediationSectionDetail,
   getSafetyServiceList,
+  getSafetyServiceList2,
+  getSafetyServiceListWithCount,
   getAccountList,
   getEmployeeList,
+  getCheckedCompanyList,
+  getGridTreeByUser,
+  getPersonListByCompany,
+  getDepartmentTreeByCompany,
+  getPerformanceMeasurementStandardList,
 } from '@/services/common';
 
 export default {
@@ -46,8 +55,10 @@ export default {
     contractorList: [],
     supplierList: [],
     gridList: [],
+    gridListWithCount: [],
     gridPersonList: {},
     gridCompanyList: {},
+    gridCompanyListByUser: {},
     examinationContentList: {},
     businessTypeList: [],
     industryList: [],
@@ -55,8 +66,16 @@ export default {
     specialRemediationSectionList: {},
     specialRemediationSectionDetail: {},
     safetyServiceList: {},
+    safetyServiceList2: {},
+    safetyServiceListWithCount: {},
     accountList: {},
     employeeList: {},
+    checkedCompanyList: {},
+    gridTreeByUser: [],
+    personListByCompany: {},
+    departmentTreeByCompany: [],
+    // 绩效考核标准列表
+    performanceMeasurementStandardList: {},
   },
 
   effects: {
@@ -288,6 +307,23 @@ export default {
         callback && callback(false, msg);
       }
     },
+    // 获取网格列表（含人员统计）
+    *getGridListWithCount({ payload, callback }, { call, put }) {
+      const response = yield call(getGridListWithCount, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const gridListWithCount = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            gridListWithCount,
+          },
+        });
+        callback && callback(true, gridListWithCount);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
     // 获取网格人员列表
     *getGridPersonList({ payload, callback }, { call, put }) {
       const response = yield call(getGridPersonList, payload);
@@ -306,18 +342,39 @@ export default {
       }
     },
     // 获取网格企业列表
-    *getGridCompanyList({ payload, callback }, { call, put }) {
+    *getGridCompanyList({ payload, callback, ignore }, { call, put }) {
       const response = yield call(getGridCompanyList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         const gridCompanyList = data;
-        yield put({
-          type: 'save',
-          payload: {
-            gridCompanyList,
-          },
-        });
+        if (!ignore) {
+          yield put({
+            type: 'save',
+            payload: {
+              gridCompanyList,
+            },
+          });
+        }
         callback && callback(true, gridCompanyList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 根据用户所在网格获取企业列表
+    *getGridCompanyListByUser({ payload, callback, ignore }, { call, put }) {
+      const response = yield call(getGridCompanyListByUser, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const gridCompanyListByUser = data;
+        if (!ignore) {
+          yield put({
+            type: 'save',
+            payload: {
+              gridCompanyListByUser,
+            },
+          });
+        }
+        callback && callback(true, gridCompanyListByUser);
       } else {
         callback && callback(false, msg);
       }
@@ -441,6 +498,42 @@ export default {
         callback && callback(false, msg);
       }
     },
+    // 获取安全服务机构列表（所有）
+    *getSafetyServiceList2({ payload, callback }, { call, put }) {
+      const response = yield call(getSafetyServiceList2, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const safetyServiceList2 = data;
+        yield put({
+          type: 'save',
+          payload: {
+            safetyServiceList2,
+          },
+        });
+        callback && callback(true, safetyServiceList2);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取安全服务机构列表（含人员统计）
+    *getSafetyServiceListWithCount({ payload, callback, ignore }, { call, put }) {
+      const response = yield call(getSafetyServiceListWithCount, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const safetyServiceListWithCount = data;
+        if (!ignore) {
+          yield put({
+            type: 'save',
+            payload: {
+              safetyServiceListWithCount,
+            },
+          });
+        }
+        callback && callback(true, safetyServiceListWithCount);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
     // 获取账号列表
     *getAccountList({ payload, callback }, { call, put }) {
       const response = yield call(getAccountList, payload);
@@ -471,6 +564,95 @@ export default {
           },
         });
         callback && callback(true, employeeList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 被检查单位列表
+    *getCheckedCompanyList({ payload, callback, ignore }, { call, put }) {
+      const response = yield call(getCheckedCompanyList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const checkedCompanyList = data;
+        if (!ignore) {
+          yield put({
+            type: 'save',
+            payload: {
+              checkedCompanyList,
+            },
+          });
+        }
+        callback && callback(true, checkedCompanyList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 根据用户权限获取网格树（吕旻）
+    *getGridTreeByUser({ payload, callback, ignore }, { call, put }) {
+      const response = yield call(getGridTreeByUser, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const gridTreeByUser = data.list;
+        if (!ignore) {
+          yield put({
+            type: 'save',
+            payload: {
+              gridTreeByUser,
+            },
+          });
+        }
+        callback && callback(true, gridTreeByUser);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 根据企业获取人员列表（汤归）
+    *getPersonListByCompany({ payload, callback }, { call, put }) {
+      const response = yield call(getPersonListByCompany, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const personListByCompany = data;
+        yield put({
+          type: 'save',
+          payload: {
+            personListByCompany,
+          },
+        });
+        callback && callback(true, personListByCompany);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 根据企业获取部门树（陈涛）
+    *getDepartmentTreeByCompany({ payload, callback }, { call, put }) {
+      const response = yield call(getDepartmentTreeByCompany, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const departmentTreeByCompany = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            departmentTreeByCompany,
+          },
+        });
+        callback && callback(true, departmentTreeByCompany);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取绩效考核标准列表（汤归）
+    *getPerformanceMeasurementStandardList({ payload, callback }, { call, put }) {
+      const response = yield call(getPerformanceMeasurementStandardList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const performanceMeasurementStandardList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            performanceMeasurementStandardList,
+          },
+        });
+        callback && callback(true, performanceMeasurementStandardList);
       } else {
         callback && callback(false, msg);
       }

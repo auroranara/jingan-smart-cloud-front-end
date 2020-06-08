@@ -1,0 +1,235 @@
+.container {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  margin-right: -15px;
+  padding-right: 15px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 28px;
+
+  .label {
+    color: #0ff;
+    display: inline-block;
+  }
+
+  .locIcon {
+    margin-right: 8px;
+    font-size: 18px;
+    color: #0ff;
+    display: inline-block;
+  }
+
+  .name {
+    position: relative;
+
+    .video {
+      display: inline-block;
+      position: absolute;
+      top: 6px;
+      left: 60%;
+      width: 1.4em;
+      height: 1em;
+      background: url('../../imgs/icon-video.png') no-repeat center;
+      background-size: auto 1em;
+      vertical-align: top;
+      cursor: pointer;
+    }
+  }
+
+  .wrapper {
+    position: relative;
+    border-top: 1px solid #196092;
+    padding: 16px 10px;
+    padding-left: 25px;
+
+    &:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .more {
+      position: absolute;
+      right: 10px;
+      color: #0ff;
+      cursor: pointer;
+      top: 16px;
+    }
+  }
+
+  .targetWrapper {
+    padding-left: 10px;
+    margin-left: -10px;
+    border-left: 4px solid #0ff;
+  }
+
+  .updateTime {
+    color: #5b809a;
+    font-size: 0.875em;
+  }
+
+  .paramsWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    & + .paramsWrapper {
+      margin-top: 15px;
+    }
+
+    .icon {
+      width: 60px;
+      height: 70px;
+      margin-right: 20px;
+    }
+
+    .params {
+      flex: 1;
+    }
+  }
+
+  .lineWrapper {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+
+    .line {
+      display: flex;
+      padding: 0.25em 0;
+      position: relative;
+      flex: 1;
+
+      &:last-child {
+        margin-left: 1em;
+
+        .label {
+          color: #fff;
+        }
+      }
+
+      .label {
+        flex: none;
+        color: #0ff;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .value {
+        flex: 1;
+        white-space: nowrap;
+      }
+
+      .number {
+        display: inline-block;
+        width: 4em;
+        letter-spacing: 2em;
+        white-space: nowrap;
+        overflow: hidden;
+        vertical-align: top;
+      }
+    }
+  }
+}
+
+.titleWrapper {
+  position: relative;
+  display: inline-block;
+  width: calc(~'100% - 140px');
+
+  .jumperWrapper {
+    position: absolute;
+    top: 0;
+    right: 2em;
+    margin: 0 -0.5em;
+
+    span {
+      display: inline-block;
+      padding: 0 0.5em;
+      width: 1.5em;
+      height: 1.5em;
+      background: no-repeat center;
+      background-size: auto 1.5em;
+      vertical-align: top;
+      cursor: pointer;
+      box-sizing: content-box;
+
+      &:first-child {
+        background-image: url('../../imgs/icon-work-order.png');
+      }
+
+      &:nth-child(2) {
+        background-image: url('../../imgs/icon-trend.png');
+      }
+    }
+  }
+}
+
+.radioBtn {
+  margin-bottom: 15px;
+  height: 34px;
+  border-radius: 5px;
+  overflow: hidden;
+
+  :global {
+    .ant-radio-group {
+      width: 100%;
+      display: flex;
+      border-radius: 5px;
+    }
+
+    .ant-radio-button-wrapper {
+      flex: 1;
+      height: 34px;
+      // color: #fff;
+      background: #033069;
+      text-align: center;
+      padding: 0;
+      font-size: 14px;
+      border: 1px solid #196092;
+      color: #8198b4;
+
+      & + .ant-radio-button-wrapper {
+        margin-left: 0;
+        font-size: 14px;
+      }
+    }
+
+    .ant-radio-button-wrapper-checked {
+      box-shadow: -1px 0 0 0 #0284c7;
+    }
+
+    .ant-radio-group-solid
+      .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+      font-size: 14px;
+      // color: #0284c7;
+      // background: #033069;
+      border: 1px solid #0284c7;
+      height: 34px;
+      color: #fff;
+      background: #0967d3;
+    }
+
+    .ant-radio-button-wrapper:not(:first-child)::before {
+      width: 0;
+      height: 0;
+    }
+  }
+}
+
+.input {
+  height: 100%;
+  :global {
+    .ant-input-search.ant-input-search-enter-button > .ant-input,
+    .ant-input {
+      color: #fff;
+      border: 1px solid #196092;
+      background-color: transparent;
+    }
+
+    .ant-btn-primary {
+      color: rgb(4, 253, 255);
+      border: 1px solid #196092;
+      background-color: rgb(4, 71, 134);
+    }
+  }
+}

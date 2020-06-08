@@ -588,7 +588,7 @@ export default class CompanyList extends PureComponent {
         <List
           rowKey="id"
           // loading={loading}
-          grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
+          grid={{ gutter: 24, column: 3, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
             const {

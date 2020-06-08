@@ -387,7 +387,7 @@ export default class RepairRecordList extends PureComponent {
               showSizeChanger
               current={pageNum}
               pageSize={pageSize}
-              pageSizeOptions={['5', '10', '15', '20']}
+              // pageSizeOptions={['5', '10', '15', '20']}
               total={total}
               onChange={this.onPageChange}
               onShowSizeChange={(num, size) => {

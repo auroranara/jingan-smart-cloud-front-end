@@ -473,7 +473,7 @@ export default class DangerChemicalList extends PureComponent {
         render: (val, record) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/unit-license/danger-chemicals-permit/edit/${record.id}`}>编辑</Link>
+              <Link to={`/unit-license/danger-chemicals-permit/edit/${record.id}`} target="_blank">编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -504,7 +504,7 @@ export default class DangerChemicalList extends PureComponent {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: this.handlePageChange,
             onShowSizeChange: (num, size) => {
               this.handlePageChange(1, size);
@@ -513,7 +513,7 @@ export default class DangerChemicalList extends PureComponent {
         />
       </Card>
     ) : (
-      <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+      <div style={{ textAlign: 'center', padding: '70px' }}>暂无数据</div>
     );
   };
 

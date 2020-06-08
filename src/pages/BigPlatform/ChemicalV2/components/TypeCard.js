@@ -28,7 +28,7 @@ function getLabelList(type, values) {
 
 export default class TypeCard extends PureComponent {
   render() {
-    const { data, handleShowVideo } = this.props;
+    const { data, handleShowVideo, style } = this.props;
     const { target, type = 404 } = data;
     const {
       tankName,
@@ -85,7 +85,7 @@ export default class TypeCard extends PureComponent {
     );
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} style={style}>
         <TypeCardHead
           alarming={+warnStatus === -1}
           labelList={getLabelList(type, TYPE_VALUES[type])}

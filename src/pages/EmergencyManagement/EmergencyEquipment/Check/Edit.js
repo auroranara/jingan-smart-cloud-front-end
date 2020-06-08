@@ -15,6 +15,7 @@ import debounce from 'lodash-decorators/debounce';
 import bind from 'lodash-decorators/bind';
 import { EDIT_CODE, ADD_CODE, DETAIL_CODE, ORGIN_PATH, CHECKINFO, PATH } from './index';
 import styles from './Edit.less';
+import { genGoBack } from '@/utils/utils';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 4 };
@@ -74,6 +75,12 @@ const defaultUploadProps = {
   })
 )
 export default class CheckEdit extends Component {
+  constructor(props) {
+    const { match: { params: { equipId } } } = props;
+    super(props);
+    this.goBack = genGoBack(props, `${PATH}/${equipId}/list`);
+  }
+
   state = {
     submitting: false,
     fileList: [],
@@ -178,9 +185,9 @@ export default class CheckEdit extends Component {
   }
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
-  };
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // };
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -212,7 +219,8 @@ export default class CheckEdit extends Component {
         (id ? edit : add)(payload, success => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(`${PATH}/${equipId}/list`);
+            // router.push(`${PATH}/${equipId}/list`);
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
@@ -405,7 +413,7 @@ export default class CheckEdit extends Component {
         refresh={this.refresh}
         action={
           <Fragment>
-            <Button onClick={this.handleBackButtonClick}>返回</Button>
+            <Button onClick={this.goBack}>返回</Button>
             {type !== 'checkDetail' ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
                 提交

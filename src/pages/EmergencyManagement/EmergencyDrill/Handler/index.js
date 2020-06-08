@@ -18,7 +18,8 @@ import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
+// import styles from './index.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -61,6 +62,7 @@ export default class EmergencyDrillHandler extends PureComponent {
       selectedCompany: {},
       typeCode: '',
     };
+    this.goBack = genGoBack(props, listUrl);
   }
 
   componentDidMount() {
@@ -167,7 +169,8 @@ export default class EmergencyDrillHandler extends PureComponent {
         };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push(listUrl);
+          // router.push(listUrl);
+          setTimeout(this.goBack, 1000);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -394,6 +397,9 @@ export default class EmergencyDrillHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
+          <Button style={{ marginRight: 10 }} onClick={this.goBack}>
+            返回
+          </Button>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
           </Button>

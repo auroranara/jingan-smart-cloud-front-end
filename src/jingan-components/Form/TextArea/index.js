@@ -16,7 +16,7 @@ const FormTextArea = ({
   value,
   mode,
   placeholder = '请输入',
-  maxLength = 500,
+  maxLength = 200,
   autoSize = AUTO_SIZE,
   allowClear = false,
   empty = <EmptyText />,

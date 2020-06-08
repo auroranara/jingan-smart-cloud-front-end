@@ -65,7 +65,7 @@ export function getColumns(genHandleDelete, handleClick) {
       render(id) {
         return (
           <Fragment>
-            <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
+            <Link to={`${ROUTER}/edit/${id}`} target="_blank">编辑</Link>
             <Popconfirm
               title="将从数据库永久删除当前项目，确定删除？"
               onConfirm={genHandleDelete(id)}

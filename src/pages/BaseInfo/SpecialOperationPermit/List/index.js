@@ -361,7 +361,13 @@ export default class specialOperationPermitList extends PureComponent {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={editCode} onClick={() => { router.push(`/operation-safety/special-operation-permit/edit/${row.id}`) }}>编辑</AuthA>
+            <AuthA
+              code={editCode}
+              // onClick={() => { router.push(`/operation-safety/special-operation-permit/edit/${row.id}`) }}
+              onClick={e => window.open(`${window.publicPath}#/operation-safety/special-operation-permit/edit/${row.id}`)}
+            >
+              编辑
+            </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
@@ -389,7 +395,7 @@ export default class specialOperationPermitList extends PureComponent {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: this.handleQuery,
             onShowSizeChange: (num, size) => {
               this.handleQuery(1, size);

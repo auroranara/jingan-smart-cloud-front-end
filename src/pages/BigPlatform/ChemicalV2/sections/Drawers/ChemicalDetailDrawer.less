@@ -1,0 +1,86 @@
+.container {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  color: #fff;
+  margin-right: -15px;
+  padding-right: 15px;
+
+  .title {
+    font-size: 16px;
+    color: #fff;
+    margin: 10px 0;
+    position: relative;
+  }
+
+  .detail {
+    display: inline-block;
+    margin-left: 30px;
+    color: #0ff;
+    cursor: pointer;
+  }
+
+  .extra {
+    position: absolute;
+    color: #1890ff;
+    cursor: pointer;
+    right: 0;
+    top: 0;
+  }
+
+  .content {
+    position: relative;
+    padding: 10px 15px;
+    border: 1px solid #1c5d90;
+    color: #fff;
+    line-height: 26px;
+
+    .subTitle {
+      color: #01dae1;
+    }
+  }
+
+  .more {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    color: #0ff;
+    cursor: pointer;
+  }
+
+  .name {
+    position: absolute;
+    top: 80px;
+    left: 42px;
+    color: #3697b6;
+    cursor: pointer;
+  }
+}
+
+.btnWrapper {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  color: #1890ff;
+  cursor: pointer;
+
+  .btnIcon {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+
+    & + .btnIcon {
+      margin-left: 12px;
+    }
+  }
+}
+
+.riskCateg {
+  display: inline-block;
+  max-width: 50%;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: bottom;
+}

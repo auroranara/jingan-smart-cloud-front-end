@@ -47,12 +47,12 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.five}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/gsafe': {
-      target: `http://${hosts.five}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -169,4 +169,5 @@ export default {
     mergeRules: false,
   },
   // devtool: 'none',
+  copy: [{ from: 'html/download.html', to: '' }],
 };

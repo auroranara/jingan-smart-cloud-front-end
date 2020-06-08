@@ -571,6 +571,13 @@ export default class CompanyDetail extends PureComponent {
     return (
       <FooterToolbar>
         <Button
+          size="large"
+          style={{ marginRight: 10 }}
+          onClick={e => window.close()}
+        >
+          返回
+        </Button>
+        <Button
           type="primary"
           size="large"
           disabled={!hasEditAuthority}

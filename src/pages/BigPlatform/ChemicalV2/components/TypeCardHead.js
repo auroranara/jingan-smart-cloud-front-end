@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-
+import { MonitorBtns } from './Components';
 import styles from './TypeCard.less';
 
 export default class TypeCardHead extends PureComponent {
@@ -49,9 +49,13 @@ export default class TypeCardHead extends PureComponent {
   };
 
   render() {
-    const { labelList, alarming, data } = this.props;
-    const { meList } = data;
-    const { noFinishWarningProcessId, id } = meList[0] || {};
+    const { labelList, alarming, data, type } = this.props;
+    const { meList, id: targetId, name, gasholderName } = data;
+    const { id } = meList[0] || {};
+    const noFinishWarningProcessId = !meList.every(item => {
+      const { noFinishWarningProcessId } = item;
+      return !noFinishWarningProcessId;
+    });
 
     return (
       <div className={styles.head}>
@@ -63,20 +67,28 @@ export default class TypeCardHead extends PureComponent {
           </p>
         ))}
         {meList.length > 0 && (
-          <div className={styles.icons}>
-            {noFinishWarningProcessId && (
-              <span
-                className={styles.sheet}
-                onClick={() => this.handleWorkOrderIconClick(noFinishWarningProcessId, id)}
-              />
-            )}
-            {id && (
-              <span className={styles.trend} onClick={() => this.handleMonitorTrendIconClick(id)} />
-            )}
-          </div>
+          <MonitorBtns
+            noFinishWarningProcessId={noFinishWarningProcessId}
+            monitorEquipmentId={id}
+            targetId={targetId}
+            targetType={type}
+            targetName={+type === 312 ? gasholderName : name}
+            style={{ right: 10 }}
+          />
+          // <div className={styles.icons}>
+          //   {noFinishWarningProcessId && (
+          //     <span
+          //       className={styles.sheet}
+          //       onClick={() => this.handleWorkOrderIconClick(noFinishWarningProcessId, id)}
+          //     />
+          //   )}
+          //   {id && (
+          //     <span className={styles.trend} onClick={() => this.handleMonitorTrendIconClick(id)} />
+          //   )}
+          // </div>
         )}
         <span className={styles.detail} onClick={this.handleClickDetail}>
-          详情信息>
+          详情>>
         </span>
       </div>
     );

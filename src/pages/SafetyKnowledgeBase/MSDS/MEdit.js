@@ -2,13 +2,13 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-// import router from 'umi/router';
+import router from 'umi/router';
 import { Button, Card, Popover } from 'antd';
 
 import styles1 from '@/pages/BaseInfo/Company/Company.less';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
+import { genOperateCallback1 as genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
 import {
   getFieldLabels,
   convertSections,
@@ -16,6 +16,7 @@ import {
   LIST_URL,
   RISK_CATEGORIES,
 } from './utils';
+import { genGoBack } from '@/utils/utils';
 
 @Form.create()
 @connect(({ msds, loading }) => ({ msds, loading: loading.models.msds }))
@@ -28,6 +29,8 @@ export default class MEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
+    this.goBack = genGoBack(this.props, LIST_URL);
+
     const sections = [
       {
         title: '第一部分：化学品名称',
@@ -277,13 +280,23 @@ export default class MEdit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { loading } = this.props;
+    const {
+      loading,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        {/* <Button onClick={e => router.push(LIST_URL)}>返回</Button> */}
-        {!this.isDetail() && (
-          <Button type="primary" size="large" onClick={this.handleClickValidate} loading={loading}>
+        <Button onClick={this.goBack}>返回</Button>
+        {this.isDetail() ?(
+          <Button type="primary" onClick={e => router.push(`/safety-knowledge-base/msds/edit/${id}`)} loading={loading}>
+            编辑
+          </Button>
+        ) : (
+          <Button type="primary" onClick={this.handleClickValidate} loading={loading}>
             提交
           </Button>
         )}
@@ -296,7 +309,7 @@ export default class MEdit extends PureComponent {
     dispatch({
       type: 'msds/addMSDS',
       payload: values,
-      callback: genOperateCallback(LIST_URL),
+      callback: genOperateCallback(LIST_URL, null, true),
     });
   };
 
@@ -310,7 +323,7 @@ export default class MEdit extends PureComponent {
     dispatch({
       type: 'msds/editMSDS',
       payload: { ...values, id },
-      callback: genOperateCallback(LIST_URL),
+      callback: genOperateCallback(LIST_URL, null, false),
     });
   };
 
@@ -358,7 +371,7 @@ export default class MEdit extends PureComponent {
     return (
       <PageHeaderLayout title={`MSDS${title}`} breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>{renderSections(sections, getFieldDecorator)}</Card>
-        {!isDetail && this.renderFooterToolbar()}
+        {this.renderFooterToolbar()}
       </PageHeaderLayout>
     );
   }

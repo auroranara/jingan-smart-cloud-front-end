@@ -344,7 +344,7 @@ export default class IndustriallicenceList extends PureComponent {
         render: (val, row) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/unit-license/industrial-product-licence/edit/${row.id}`}>编辑</Link>
+              <Link to={`/unit-license/industrial-product-licence/edit/${row.id}`} target="_blank">编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -375,7 +375,7 @@ export default class IndustriallicenceList extends PureComponent {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: this.handlePageChange,
             onShowSizeChange: (num, size) => {
               this.handlePageChange(1, size);

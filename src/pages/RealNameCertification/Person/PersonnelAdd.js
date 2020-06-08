@@ -25,6 +25,9 @@ import styles1 from '@/components/ToolBar/index.less';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { getToken } from '@/utils/authority';
 import { phoneReg } from '@/utils/validate';
+import { AuthA } from '@/utils/customAuth';
+import { RedoOutlined } from '@ant-design/icons';
+import codes from '@/utils/codes';
 // import PIC from '@/assets/picExample.png';
 
 const { TreeNode: TreeSelectNode } = TreeSelect;
@@ -50,7 +53,7 @@ const DEGREES = [
   { key: '6', label: '博士' },
 ];
 
-function treeData(data) {
+function treeData (data) {
   return data.map(item => {
     if (item.children) {
       return (
@@ -62,6 +65,22 @@ function treeData(data) {
     return <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id} />;
   });
 }
+const EmptyContent = ({ onClickRefresh, onClickAdd }) => (
+  <div style={{ padding: '5px 15px' }}>
+    <span style={{ marginRight: '1em' }}>暂无数据</span>
+    <AuthA
+      style={{ marginRight: '1em' }}
+      code={codes.personnelManagement.postManagement.view}
+      onClick={onClickAdd}>
+      去新增岗位
+    </AuthA>
+    <RedoOutlined
+      onClick={onClickRefresh}
+      style={{ color: '#1890ff', cursor: 'pointer' }}
+    />
+  </div>
+)
+
 @Form.create()
 @connect(({ realNameCertification, user, department, postManagement, loading }) => ({
   realNameCertification,
@@ -89,10 +108,11 @@ export default class PersonnelAdd extends PureComponent {
       perType: '1', // 人员选择类型
       curCompanyName: '', // 当前单位
       curLabelList: [],
+      postList: [], // 岗位列表
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -124,9 +144,7 @@ export default class PersonnelAdd extends PureComponent {
           const educationCertificateDetails = detail.educationCertificateDetails || [];
           setFieldsValue({
             photoDetails: photoDetails.map(item => ({
-              dbUrl: item.dbUrl,
-              fileName: item.fileName,
-              id: item.id,
+              ...item,
               uid: item.id,
               url: item.webUrl,
             })),
@@ -160,6 +178,23 @@ export default class PersonnelAdd extends PureComponent {
     }
   }
 
+  goBack = () => {
+    const {
+      match: {
+        params: { id },
+      },
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    const { curCompanyName } = this.state;
+
+    if (id) // 详情或编辑
+      window.close();
+    else // 新增
+      router.push(`/real-name-certification/personnel-management/person-list/${companyId}?companyName=${curCompanyName}`);
+  };
+
   // 提交
   handleSubmit = () => {
     const {
@@ -181,9 +216,10 @@ export default class PersonnelAdd extends PureComponent {
     const callback = (success, msg) => {
       if (success) {
         message.success(`${tag}人员成功`);
-        router.push(
-          `/real-name-certification/personnel-management/person-list/${companyId}?companyName=${curCompanyName}`
-        );
+        // router.push(
+        //   `/real-name-certification/personnel-management/person-list/${companyId}?companyName=${curCompanyName}`
+        // );
+        setTimeout(this.goBack, 1000);
       } else {
         message.error(msg || `${tag}人员失败`);
       }
@@ -353,6 +389,9 @@ export default class PersonnelAdd extends PureComponent {
     dispatch({
       type: 'postManagement/fetchPostList',
       payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: (data) => {
+        this.setState({ postList: data && Array.isArray(data.list) ? data.list : [] });
+      },
     });
   };
 
@@ -450,7 +489,12 @@ export default class PersonnelAdd extends PureComponent {
     }
   };
 
-  render() {
+  jumpToPost = () => {
+    const { location: { query: { companyId } } } = this.props;
+    window.open(`${window.publicPath}#/personnel-management/post-management/${companyId}/list`, `_blank`)
+  }
+
+  render () {
     const {
       loading,
       submitting, // 提交状态
@@ -466,16 +510,15 @@ export default class PersonnelAdd extends PureComponent {
       department: {
         data: { list: departmentList = [] },
       },
-      postManagement: { postData: { list: postList = [] } = {} },
       form: { getFieldDecorator, getFieldValue },
       realNameCertification: { personTypeDict },
     } = this.props;
     const treeList = treeData(departmentList);
 
-    const { photoLoading, sexValue, detail, diplomaLoading, curLabelList, perType } = this.state;
+    const { photoLoading, sexValue, detail, diplomaLoading, curLabelList, perType, postList } = this.state;
     const educationCertificateDetails = getFieldValue('educationCertificateDetails') || [];
     const photoDetails = getFieldValue('photoDetails') || [];
-    console.log('detail', detail);
+    // console.log('detail', detail);
     const title = id ? '编辑人员信息' : '新增人员信息';
     const hasCompanyName = perType === '1';
     const noCompanyName = perType === '2' || perType === '3';
@@ -587,7 +630,12 @@ export default class PersonnelAdd extends PureComponent {
                         initialValue: id ? detail.companyJob : undefined,
                         // rules: [{ required: true, message: '请选择岗位' }],
                       })(
-                        <Select placeholder="请选择岗位" allowClear>
+                        <Select
+                          placeholder="请选择岗位"
+                          allowClear
+                          // notFoundContent={<EmptyContent onClickAdd={this.jumpToPost} onClickRefresh={this.fetchPostList} />}
+                          dropdownRender={(originNode) => Array.isArray(postList) && postList.length ? originNode : <EmptyContent onClickAdd={this.jumpToPost} onClickRefresh={this.fetchPostList} />}
+                        >
                           {postList.map(({ id, jobName }) => (
                             <Select.Option key={id} value={id}>
                               {jobName}
@@ -736,8 +784,8 @@ export default class PersonnelAdd extends PureComponent {
               <Col span={24} className={styles.lableLayout}>
                 <FormItem label="注册照片示例" style={{ marginLeft: '2%' }}>
                   <Fragment>
-                    <img src={PIC} width="50%" height="25%" alt="" />
-                    <div className={styles.labelColor}>
+                    <img src={PIC} width="450px" height="100px" alt="" />
+                    <div className={styles.labelColor} style={{ width: '450px', lineHeight: '2em', marginTop: '10px' }}>
                       照片要求：1.小于400K；2.面部区域像素不低于128x128，人脸大小占整张照片1/3以上；3.确保所有注册人员为同一人员，否则无法成功注册
                     </div>
                   </Fragment>
@@ -786,11 +834,11 @@ export default class PersonnelAdd extends PureComponent {
                             style={{ width: '86px', height: '86px', objectFit: 'contain' }}
                           />
                         ) : (
-                          <div>
-                            <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
-                            <div className="ant-upload-text">上传</div>
-                          </div>
-                        )}
+                            <div>
+                              <LegacyIcon type={diplomaLoading ? 'loading' : 'plus'} />
+                              <div className="ant-upload-text">上传</div>
+                            </div>
+                          )}
                       </Upload>
                     </Fragment>
                   )}
@@ -800,10 +848,11 @@ export default class PersonnelAdd extends PureComponent {
           </Form>
           <div style={{ textAlign: 'center' }}>
             <Button
-              onClick={() => {
-                router.goBack();
-              }}
               style={{ marginRight: '24px' }}
+              // onClick={() => {
+              //   router.goBack();
+              // }}
+              onClick={this.goBack}
             >
               返回
             </Button>

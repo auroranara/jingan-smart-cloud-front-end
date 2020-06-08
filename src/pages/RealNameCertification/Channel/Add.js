@@ -10,13 +10,31 @@ import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import router from 'umi/router';
 import { connect } from 'dva';
-import { AuthButton } from '@/utils/customAuth';
+import { AuthButton, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import { RedoOutlined } from '@ant-design/icons';
 import styles from './Add.less';
+import { genGoBack } from '@/utils/utils';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 6 };
 const LIST_PATH = '/real-name-certification/channel/list';
+
+const EmptyContent = ({ onClickRefresh, onClickAdd }) => (
+  <div style={{ padding: '5px 15px' }}>
+    <span style={{ marginRight: '1em' }}>暂无数据</span>
+    <AuthA
+      style={{ marginRight: '1em' }}
+      code={codes.electronicInspection.productionArea.list}
+      onClick={onClickAdd}>
+      去新增区域
+                    </AuthA>
+    <RedoOutlined
+      onClick={onClickRefresh}
+      style={{ color: '#1890ff', cursor: 'pointer' }}
+    />
+  </div>
+);
 
 @connect(({ realNameCertification, user, electronicInspection, loading }) => ({
   realNameCertification,
@@ -30,7 +48,14 @@ export default class AddOperatingProdures extends Component {
     deviceModalVisible: false, // 选择关联设备弹窗
     currentDevice: 0, // device下标
     selectedDeviceKeys: [], // modal选中设备的id数组
+    productionAreaList: [], // 所属区域列表
+    companyId: undefined,
   };
+
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
 
   componentDidMount () {
     const {
@@ -39,6 +64,7 @@ export default class AddOperatingProdures extends Component {
         params: { id },
       },
       realNameCertification: { channelSearchInfo: searchInfo = {} },
+      user: { isCompany, currentUser },
     } = this.props;
     if (id) {
       dispatch({
@@ -86,7 +112,7 @@ export default class AddOperatingProdures extends Component {
                 (+type === 2 && [{ direction: exit ? '1' : '2', id: exit || entrance, code: exitDeviceCode || entranceDeviceCode }]) ||
                 [];
               this.form && this.form.setFieldsValue({ device });
-              this.setState({ device });
+              this.setState({ device, companyId });
             }, 0);
           } else {
             message.error('获取详情失败，请稍后重试或联系管理人员！');
@@ -97,12 +123,16 @@ export default class AddOperatingProdures extends Component {
       const device = [{ direction: '1' }, { direction: '2' }];
       this.form && this.form.setFieldsValue({ type: '1', device });
       this.setState({ device });
-    }
-
-    if (searchInfo.company && searchInfo.company.id) {
-      // 如果列表页面选择了单位
-      const { id, name } = searchInfo.company;
-      this.form && this.form.setFieldsValue({ company: { key: id, label: name } });
+      if (isCompany) {
+        this.setState({ companyId: currentUser.companyId })
+        this.fetchProductionArea(currentUser.companyId);
+      } else if (searchInfo.company && searchInfo.company.id) {
+        // 如果列表页面选择了单位
+        const { id, name } = searchInfo.company;
+        this.form && this.form.setFieldsValue({ company: { key: id, label: name } });
+        this.setState({ companyId: id });
+        this.fetchProductionArea(searchInfo.company.id);
+      }
     }
   }
 
@@ -125,6 +155,9 @@ export default class AddOperatingProdures extends Component {
 
   handleChangeCompany = company => {
     this.fetchProductionArea(company.key);
+    this.setState({ companyId: company.key }, () => {
+      this.form && this.form.setFieldsValue({ productArea: undefined });
+    });
   };
 
   // 获取生产区域
@@ -137,6 +170,7 @@ export default class AddOperatingProdures extends Component {
         pageSize: 0,
         companyId,
       },
+      callback: ({ list }) => { this.setState({ productionAreaList: list || [] }) },
     });
   };
 
@@ -279,7 +313,8 @@ export default class AddOperatingProdures extends Component {
       const callback = (success, msg) => {
         if (success) {
           message.success('操作成功');
-          router.push(LIST_PATH);
+          // router.push(LIST_PATH);
+          setTimeout(this.goBack, 1000);
         } else {
           message.error(msg || '操作失败');
         }
@@ -311,17 +346,18 @@ export default class AddOperatingProdures extends Component {
     } else callback('关联设备不能为空');
   };
 
+  jumpToProductionArea = () => {
+    window.open(`${window.publicPath}#/electronic-inspection/production-area/list`, `_blank`)
+  }
+
   render () {
     const {
       deviceLoading,
       submitting = false,
       user: { isCompany },
       realNameCertification: { channelDevice, channelTypeDict, directionDict },
-      electronicInspection: {
-        productionArea: { list: productionAreaList = [] },
-      },
     } = this.props;
-    const { deviceModalVisible, selectedDeviceKeys, device } = this.state;
+    const { deviceModalVisible, selectedDeviceKeys, device, productionAreaList, companyId } = this.state;
     const href = location.href;
     const isNotDetail = !href.includes('view');
     const isEdit = href.includes('edit');
@@ -469,7 +505,10 @@ export default class AddOperatingProdures extends Component {
                 placeholder="请选择所属区域"
                 type={isNotDetail ? 'Select' : 'span'}
                 list={productionAreaList.map(({ id, areaName }) => ({ key: id, value: areaName }))}
-                allowClear
+                // notFoundContent={<EmptyContent onClickRefresh={() => this.fetchProductionArea(companyId)} onClickAdd={this.jumpToProductionArea} />}
+                dropdownRender={(originNode) => Array.isArray(productionAreaList) && productionAreaList.length ? originNode : (
+                  <EmptyContent onClickRefresh={() => this.fetchProductionArea(companyId)} onClickAdd={this.jumpToProductionArea} />
+                )}
               />
             ),
             options: {
@@ -569,30 +608,32 @@ export default class AddOperatingProdures extends Component {
               refresh={this.refresh}
               ref={this.setFormReference}
             />
-          </Card>
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <Button
-              style={{ marginRight: '10px' }}
-              onClick={() => {
-                router.goBack();
-              }}
-            >
-              返回
-            </Button>
-            {isNotDetail ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>
-                提交
+
+            <div style={{ marginTop: '24px', textAlign: 'center' }}>
+              <Button
+                style={{ marginRight: '10px' }}
+                // onClick={() => {
+                //   router.goBack();
+                // }}
+                onClick={this.goBack}
+              >
+                返回
               </Button>
-            ) : (
-                <AuthButton
-                  code={codes.realNameCertification.channel.edit}
-                  type="primary"
-                  onClick={this.handleEditButtonClick}
-                >
-                  编辑
-                </AuthButton>
-              )}
-          </div>
+              {isNotDetail ? (
+                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>
+                  提交
+                </Button>
+              ) : (
+                  <AuthButton
+                    code={codes.realNameCertification.channel.edit}
+                    type="primary"
+                    onClick={this.handleEditButtonClick}
+                  >
+                    编辑
+                  </AuthButton>
+                )}
+            </div>
+          </Card>
         </Spin>
         <CompanyModal
           title="选择设备"

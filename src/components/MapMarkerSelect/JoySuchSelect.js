@@ -245,7 +245,6 @@ export default class JoySuchSelect extends PureComponent {
     this.map = new jsmap.JSMap(mapOptions);
     //打开Fengmap服务器的地图数据和主题
     this.map.openMapById(mapId);
-
     // 监听点击
     this.map.on('mapClickNode', event => {
       const { onChange, readonly, markerOption = {} } = this.props;

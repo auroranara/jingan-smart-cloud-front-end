@@ -1,7 +1,7 @@
 import { Component, createRef } from 'react';
 // import { Form } from '@ant-design/compatible';
 // import '@ant-design/compatible/assets/index.css';
-import { Form, Row, Col, Modal } from 'antd';
+import { Form, Row, Col, Modal, message } from 'antd';
 // import _ from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -15,6 +15,10 @@ import styles from './NewMenu.less';
 // 每个模块标题左侧图
 import dividerPic from '@/assets/divider.png';
 import Select from '@/jingan-components/Form/Select';
+import { DoubleLeftOutlined } from '@ant-design/icons';
+import logoAdd from '@/assets/logo-add.png';
+import logoDown from '@/assets/logo-down.png';
+import logoOut from '@/assets/logo-out.png';
 
 const userLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-user.png';
 const logoutLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-logout.png';
@@ -87,9 +91,11 @@ export default class NewMenuReveal extends Component {
       // currentBlockClassification属性控制显示系统还是子菜单，从原来的组件复制过来，分成了两个组件，所以只需要显示一个，这里显示的是系统，保持值为null
       currentBlockClassification: null, // 当前模块下标（数组blockClassification下标）
       modalVisible: false,
+      quickList: [], // 快捷菜单列表
+      quickMax: 8, // 快捷菜单最大数量
     };
   }
-  componentDidMount() {
+  componentDidMount () {
     const { dispatch } = this.props;
     const { routes } = config;
     setBlocks(blockClassification, routes);
@@ -107,8 +113,23 @@ export default class NewMenuReveal extends Component {
         setMenuSys(blockClassification, menuSysAll);
         const blocks = blockClassification[0].blocks;
         const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
+        const menuSysAllFlat = menuSysAll.reduce((arr, val) => val.routes ? [...arr, ...val.routes] : arr, []);
         this.setState({ menuSys, menuSysAll });
-
+        // 获取快捷菜单
+        dispatch({
+          type: 'user/fetchQuickMenu',
+          payload: { id: data.userId },
+          callback: (code) => {
+            if (code) {
+              this.setState({
+                quickList: code ? code.split(',').reduce((arr, val) => {
+                  const target = menuSysAllFlat.find(item => item.code === val);
+                  return target ? [...arr, target] : arr;
+                }, []) : [],
+              });
+            }
+          },
+        });
         if (logined) dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
       },
     });
@@ -216,7 +237,7 @@ export default class NewMenuReveal extends Component {
           window.open(`${window.publicPath}#/big-platform/chemical/${company.value}`, '_blank');
         });
       })
-      .catch(err => {});
+      .catch(err => { });
   };
 
   handleViewBigPlatform = () => {
@@ -236,6 +257,47 @@ export default class NewMenuReveal extends Component {
   };
 
   formRef = createRef();
+
+  // 点击展开/收起
+  handleChangeExpand = () => {
+    const { dispatch, user: { quickExpand } } = this.props;
+    dispatch({
+      type: 'user/saveQuickExpand',
+      payload: !quickExpand,
+    })
+  }
+
+  // 点击保存快捷菜单是否编辑的状态
+  handleChangeQuickEdit = () => {
+    const { dispatch, user: { quickEdit } } = this.props;
+    dispatch({
+      type: 'user/saveQuickEdit',
+      payload: !quickEdit,
+    })
+  }
+
+  // 点击快捷菜单
+  onClickQuickMenu = (e, item) => {
+    e.stopPropagation();
+    const { dispatch, user: { quickEdit, currentUser } } = this.props;
+    const { quickList } = this.state;
+    if (!item.code) return;
+    // 如果快捷菜单开启了编辑状态
+    if (quickEdit) {
+      const newList = quickList.filter(val => val.code !== item.code);
+      dispatch({
+        type: 'user/addQuickMenu',
+        payload: { id: currentUser.userId, code: newList.map(val => val.code).join(',') },
+        callback: (success) => {
+          if (success) {
+            this.setState({ quickList: newList });
+          } else {
+            message.error('操作失败')
+          }
+        },
+      })
+    }
+  }
 
   renderBlocks = () => {
     return (
@@ -267,44 +329,46 @@ export default class NewMenuReveal extends Component {
       <div className={styles.innerContent}>
         {menuSys.length
           ? menuSys.map(block => (
-              <Row key={block.name}>
-                <div className={styles.blockTitle}>
-                  <Divider /> {block.title}
-                </div>
-                <Row className={styles.blockContent}>
-                  {block.routes && block.routes.length
-                    ? block.routes.map(item => (
-                        <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
-                          <div className={styles.item}>
-                            <div
-                              className={styles.itemInner}
-                              onClick={
-                                item.developing ? null : () => this.handleOpenMenu(item.path)
-                              }
-                            >
-                              <img src={this.generateSysUrl(item)} alt="logo" />
-                              <div>{item.title}</div>
-                              {item.developing ? <span className={styles.dot} /> : null}
-                            </div>
-                          </div>
-                        </Col>
-                      ))
-                    : null}
-                </Row>
+            <Row key={block.name}>
+              <div className={styles.blockTitle}>
+                <Divider /> {block.title}
+              </div>
+              <Row>
+                {block.routes && block.routes.length
+                  ? block.routes.map(item => (
+                    <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
+                      <div className={styles.item}>
+                        <div
+                          className={styles.itemInner}
+                          onClick={
+                            item.developing ? null : () => this.handleOpenMenu(item.path)
+                          }
+                        >
+                          <img src={this.generateSysUrl(item)} alt="logo" />
+                          <div>{item.title}</div>
+                          {item.developing ? <span className={styles.dot} /> : null}
+                        </div>
+                      </div>
+                    </Col>
+                  ))
+                  : null}
               </Row>
-            ))
+            </Row>
+          ))
           : null}
       </div>
     );
   };
 
-  render() {
+  render () {
     const {
       user: {
         currentUser: { userName, permissionCodes },
+        quickExpand = false,
+        quickEdit,
       },
     } = this.props;
-    const { currentBlockClassification, modalVisible } = this.state;
+    const { currentBlockClassification, modalVisible, quickList } = this.state;
 
     // const showWorkbench = permissionCodes && permissionCodes.includes('companyWorkbench');
     const showChemical = permissionCodes && permissionCodes.includes('dashboard.chemical');
@@ -368,14 +432,54 @@ export default class NewMenuReveal extends Component {
               <div>驾驶舱</div>
             </div>
           )}
+          {/* 快捷菜单 */}
+          <div className={classNames(styles.unexpand, { [styles.hidden]: quickExpand })} onClick={this.handleChangeExpand}>
+            <DoubleLeftOutlined style={{ transform: 'rotate(90deg)' }} /> 快捷操作
+            </div>
+          <div className={classNames(styles.expand, { [styles.hidden]: !quickExpand })}>
+            <img
+              src={quickEdit ? logoOut : logoAdd}
+              alt="管理快捷菜单"
+              className={styles.quickIcon}
+              onClick={this.handleChangeQuickEdit}
+            />
+            <img
+              src={logoDown}
+              className={styles.quickIcon}
+              alt="收起"
+              onClick={this.handleChangeExpand}
+            />
+          </div>
+          <div className={classNames(styles.expandList, { [styles.hidden]: !quickExpand })}>
+            <div className={styles.title}>快捷菜单</div>
+            {quickExpand ? quickList.map(item => (
+              <Col key={item.name} span={3} style={{ padding: '0.6em' }}>
+                <div className={styles.item}>
+                  <div
+                    className={styles.itemInner}
+                    onClick={item.developing ? null : () => this.handleOpenMenu(item.path)}
+                  >
+                    <img src={this.generateSysUrl(item)} alt="logo" />
+                    <div>{item.title}</div>
+                    {item.developing ? <span className={styles.dot} /> : null}
+                    <div className={classNames(styles.close, {
+                      [styles.hidden]: !quickEdit,
+                    })} onClick={e => this.onClickQuickMenu(e, item)}></div>
+                  </div>
+                </div>
+              </Col>
+            )) : null}
+          </div>
         </div>
         <Modal
+          centered
+          destroyOnClose
           title="选择单位"
+          cancelText="取消"
+          okText="确定"
           visible={modalVisible}
           onCancel={() => this.setState({ modalVisible: false })}
           onOk={this.handleConfirmCompany}
-          destroyOnClose
-          centered
         >
           <Form ref={this.formRef}>
             <Form.Item

@@ -414,13 +414,13 @@ export default class TableList extends PureComponent {
         render: (val, row) => (
           <Fragment>
             {viewCode ? (
-              <Link to={`${ROUTER}/view/${row.id}`}>查看</Link>
+              <Link to={`${ROUTER}/view/${row.id}`} target="_blank">查看</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
             )}
             <Divider type="vertical" />
             {editCode ? (
-              <Link to={`${ROUTER}/edit/${row.id}`}>编辑</Link>
+              <Link to={`${ROUTER}/edit/${row.id}`} target="_blank">编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -452,7 +452,7 @@ export default class TableList extends PureComponent {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: this.handlePageChange,
             onShowSizeChange: (num, size) => {
               this.handlePageChange(1, size);

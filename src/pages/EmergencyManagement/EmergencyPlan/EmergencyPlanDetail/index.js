@@ -67,9 +67,9 @@ export default class EmergencyPlanDetail extends Component {
   }
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
-  }
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // }
 
   render () {
     const {
@@ -318,7 +318,13 @@ export default class EmergencyPlanDetail extends Component {
             </Card>
           )}
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <Button style={{ marginRight: '10px' }} onClick={this.handleBackButtonClick}>返回</Button>
+            <Button
+              style={{ marginRight: '10px' }}
+              // onClick={this.handleBackButtonClick}
+              onClick={e => window.close()}
+            >
+              返回
+            </Button>
             {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>}
           </div>
         </Spin>

@@ -575,7 +575,7 @@ export default class PointManagement extends Component {
                   total,
                   showQuickJumper: true,
                   showSizeChanger: true,
-                  pageSizeOptions: ['5', '10', '15', '20'],
+                  // pageSizeOptions: ['5', '10', '15', '20'],
                   onChange: this.handleSearch,
                   onShowSizeChange: (num, size) => {
                     this.handleSearch(1, size);

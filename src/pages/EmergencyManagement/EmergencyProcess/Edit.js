@@ -166,9 +166,9 @@ export default class Edit extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    this.setState({ selectedCompany, companyModalVisible: false });
+    this.setState({ selectedCompany, companyModalVisible: false, selectedDrill: {} });
     // setFieldsValue({ companyId: selectedCompany.id });
-    setTimeout(() => setFieldsValue({ companyId: selectedCompany.id }), 0.3);
+    setTimeout(() => setFieldsValue({ companyId: selectedCompany.id, treatName: undefined }), 0.3);
   };
 
   handleViewCompanyModal = () => {

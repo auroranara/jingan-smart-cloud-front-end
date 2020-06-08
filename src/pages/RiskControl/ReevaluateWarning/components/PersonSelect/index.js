@@ -120,7 +120,7 @@ export default class PersonSelectModal extends PureComponent {
               total,
               showQuickJumper: true,
               showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               onChange: this.handleQuery,
               onShowSizeChange: (pageNum, pageSize) => {
                 this.handleQuery(pageNum, pageSize)

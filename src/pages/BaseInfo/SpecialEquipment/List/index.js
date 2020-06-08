@@ -328,7 +328,8 @@ export default class SpecialEquipmentList extends PureComponent {
   };
 
   goEdit = (id, unitId) => {
-    router.push(`/facility-management/special-equipment/edit/${id}?unitId=${unitId}`);
+    // router.push(`/facility-management/special-equipment/edit/${id}?unitId=${unitId}`);
+    window.open(`${window.publicPath}#/facility-management/special-equipment/edit/${id}?unitId=${unitId}`);
   };
 
   handleDelete = id => {
@@ -589,7 +590,7 @@ export default class SpecialEquipmentList extends PureComponent {
               style={{ marginTop: '20px', float: 'right' }}
               showQuickJumper
               showSizeChanger
-              pageSizeOptions={['5', '10', '15', '20']}
+              // pageSizeOptions={['5', '10', '15', '20']}
               pageSize={pageSize}
               current={pageNum}
               total={total}

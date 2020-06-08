@@ -565,7 +565,7 @@ export default class AlarmWorkOrderDetail extends Component {
                 total={total}
                 current={pageNum}
                 pageSize={pageSize}
-                pageSizeOptions={['5', '10', '15', '20']}
+                // pageSizeOptions={['5', '10', '15', '20']}
                 showQuickJumper
                 showSizeChanger
                 onChange={this.handlePaginationChange}

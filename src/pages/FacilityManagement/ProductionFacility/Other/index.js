@@ -1,6 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Button, Spin, message, TreeSelect, Upload, Popover } from 'antd';
+import { connect } from 'dva';
+import moment from 'moment';
+import router from 'umi/router';
+import debounce from 'lodash-decorators/debounce';
+import bind from 'lodash-decorators/bind';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -11,11 +17,6 @@ import RadioOrSpan from '@/jingan-components/RadioOrSpan';
 import FooterToolbar from '@/components/FooterToolbar';
 import { getToken } from 'utils/authority';
 import { getFileList } from '@/pages/BaseInfo/utils';
-import { connect } from 'dva';
-import moment from 'moment';
-import router from 'umi/router';
-import debounce from 'lodash-decorators/debounce';
-import bind from 'lodash-decorators/bind';
 import { isNumber } from '@/utils/utils';
 import {
   EDIT_CODE,
@@ -28,6 +29,7 @@ import {
   LIFE_CYCLE,
 } from '../List';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 const { TreeNode } = TreeSelect;
 const SPAN = { span: 24 };
@@ -106,6 +108,11 @@ const fieldLabels = {};
   })
 )
 export default class InjuryReportOther extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
+
   state = {
     submitting: false,
     fileList: [],
@@ -300,9 +307,9 @@ export default class InjuryReportOther extends Component {
   }
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
-  };
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // };
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -335,7 +342,8 @@ export default class InjuryReportOther extends Component {
         (id ? edit : add)(payload, success => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(LIST_PATH);
+            // router.push(LIST_PATH);
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
@@ -1057,6 +1065,13 @@ export default class InjuryReportOther extends Component {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
+        <Button
+          size="large"
+          // onClick={this.handleBackButtonClick}
+          onClick={this.goBack}
+        >
+          返回
+        </Button>
         {isDetail ? (
           status !== '1' && (
             <Button
@@ -1078,9 +1093,6 @@ export default class InjuryReportOther extends Component {
             提交
           </Button>
         )}
-        <Button size="large" onClick={this.handleBackButtonClick}>
-          返回
-        </Button>
       </FooterToolbar>
     );
   }

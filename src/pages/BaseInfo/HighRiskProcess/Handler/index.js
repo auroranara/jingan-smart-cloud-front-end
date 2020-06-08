@@ -210,7 +210,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
       // console.log('提交', payload)
       const success = () => {
         message.success(id ? '编辑成功！' : '新增成功！');
-        router.push('/major-hazard-info/high-risk-process/list');
+        setTimeout(this.goBack, 1000);
       };
       const error = () => {
         message.error(id ? '编辑失败' : '新增失败！');
@@ -231,6 +231,14 @@ export default class EmergencySuppliesHandler extends PureComponent {
         });
       }
     });
+  };
+
+  goBack = () => {
+    const { match: { params: { id } } } = this.props;
+    if (id)
+      window.close();
+    else
+      router.push('/major-hazard-info/high-risk-process/list');
   };
 
   /**
@@ -825,7 +833,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button style={{ marginRight: '10px' }} onClick={() => { router.push('/major-hazard-info/high-risk-process/list') }}>返回</Button>
+          <Button style={{ marginRight: '10px' }} onClick={this.goBack}>返回</Button>
           {isDetail ? (
             <Button type="primary" onClick={e => router.push(`/major-hazard-info/high-risk-process/edit/${id}`)}>
               编辑
@@ -861,11 +869,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
 
     const { monitorModal } = materials;
     const isDetail = /detail/i.test(window.location.href); // 是否是详情
-    const title = id ? isDetail ? '高危工艺流程详情' : '编辑高危工艺流程' : '新增高危工艺流程';
+    const title = id ? isDetail ? '工艺流程详情' : '编辑工艺流程' : '新增工艺流程';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '基本信息', name: '基本信息' },
-      { title: '高危工艺流程', name: '高危工艺流程', href: '/major-hazard-info/high-risk-process/list' },
+      { title: '工艺流程', name: '工艺流程', href: '/major-hazard-info/high-risk-process/list' },
       { title, name: title },
     ];
     const materialsColumns = [

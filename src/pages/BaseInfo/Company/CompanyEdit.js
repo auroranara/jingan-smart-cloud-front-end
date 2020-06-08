@@ -35,6 +35,7 @@ import styles from './Company.less';
 import Safety from './Safety';
 import FireControl from './FireControl';
 import ThreeDMap from './ThreeDMap';
+import { genGoBack } from '@/utils/utils';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -230,6 +231,11 @@ export const PLACE_OWN = [
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
+  // constructor(props) {
+  //   super(props);
+  //   this.goBack = genGoBack(props, listUrl);
+  // }
+
   state = {
     ichnographyList: [],
     firePictureList: [],
@@ -1874,6 +1880,12 @@ export default class CompanyDetail extends PureComponent {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
+        {/* <Button
+          style={{ marginRight: 10 }}
+          onClick={this.goBack}
+        >
+          返回
+        </Button> */}
         <Button
           type="primary"
           size="large"

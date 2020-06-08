@@ -252,7 +252,8 @@ export default class WorkApprovalList extends PureComponent {
       match: { params: { companyId, type } },
       location: { query: { companyName } },
     } = this.props
-    router.push(`/operation-safety/work-approval-report/company/${companyId}/${type}/detail/${id}?companyName=${companyName}`)
+    // router.push(`/operation-safety/work-approval-report/company/${companyId}/${type}/detail/${id}?companyName=${companyName}`)
+    window.open(`${window.publicPath}#/operation-safety/work-approval-report/company/${companyId}/${type}/detail/${id}?companyName=${companyName}`);
   }
 
   /**
@@ -745,7 +746,7 @@ export default class WorkApprovalList extends PureComponent {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['10', '15', '20', '30'],
+            // pageSizeOptions: ['10', '15', '20', '30'],
             onChange: this.handleFetch,
             onShowSizeChange: (num, size) => {
               this.handleFetch(1, size);

@@ -1022,6 +1022,8 @@ export default class AccountManagementEdit extends PureComponent {
     const isUnitUser = this.isUnitUser();
     const unitIdInitValue =
       userUnitId && userUnitName ? { key: userUnitId, label: userUnitName } : undefined;
+    const unitIdInitValue1 =
+      userUnitId && userUnitName ? { value: userUnitId, label: userUnitName } : undefined;
     const isValidateLoginName = id ? [] : [{ validator: this.validateUserName }];
     const treeList = treeData(departments);
     const gridList = treeData(grids);
@@ -1123,12 +1125,12 @@ export default class AccountManagementEdit extends PureComponent {
               <Form.Item label={fieldLabels.sex}>
                 {getFieldDecorator('sex', {
                   initialValue: id ? sex : undefined,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择性别',
-                    },
-                  ],
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     message: '请选择性别',
+                  //   },
+                  // ],
                 })(
                   <Select placeholder="请选择性别" allowClear>
                     {SEXES.map(({ key, label }) => (
@@ -1165,7 +1167,7 @@ export default class AccountManagementEdit extends PureComponent {
                     {
                       required: true,
                       whitespace: true,
-                      type: 'string',
+                      // type: 'string',
                       message: '请输入手机号',
                     },
                   ],
@@ -1176,12 +1178,12 @@ export default class AccountManagementEdit extends PureComponent {
               <Form.Item label={fieldLabels.degree}>
                 {getFieldDecorator('degree', {
                   initialValue: id ? education : undefined,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择学历',
-                    },
-                  ],
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     message: '请选择学历',
+                  //   },
+                  // ],
                 })(
                   <Select placeholder="请选择学历" allowClear>
                     {DEGREES.map(({ key, label }) => (
@@ -1198,14 +1200,14 @@ export default class AccountManagementEdit extends PureComponent {
                 {getFieldDecorator('major', {
                   initialValue: id ? major : undefined,
                   getValueFromEvent: this.handleClearSpace,
-                  rules: [
-                    {
-                      required: true,
-                      whitespace: true,
-                      type: 'string',
-                      message: '请输入专业名称',
-                    },
-                  ],
+                  // rules: [
+                  //   {
+                  //     required: true,
+                  //     whitespace: true,
+                  //     type: 'string',
+                  //     message: '请输入专业名称',
+                  //   },
+                  // ],
                 })(<Input placeholder="请输入专业名称" min={1} max={20} />)}
               </Form.Item>
             </Col>
@@ -1294,24 +1296,6 @@ export default class AccountManagementEdit extends PureComponent {
                         },
                       ],
                     })(
-                      // <AutoComplete
-                      //   labelInValue
-                      //   mode="combobox"
-                      //   disabled={isUnitUser}
-                      //   optionLabelProp="children"
-                      //   placeholder="请选择所属单位"
-                      //   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                      //   onSearch={this.handleUnitIdChange}
-                      //   onSelect={this.handleDataPermissions}
-                      //   onBlur={this.handleUnitIdBlur}
-                      //   filterOption={false}
-                      // >
-                      //   {unitIds.map(item => (
-                      //     <Option value={item.id} key={item.id}>
-                      //       {item.name}
-                      //     </Option>
-                      //   ))}
-                      // </AutoComplete>
                       <Select
                         allowClear
                         labelInValue
@@ -1339,7 +1323,7 @@ export default class AccountManagementEdit extends PureComponent {
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.unitId}>
                     {getFieldDecorator('unitId', {
-                      initialValue: unitIdInitValue,
+                      initialValue: unitIdInitValue1,
                       rules: [
                         {
                           required: true, // 如果是平台管理 不需要必填,

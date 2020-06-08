@@ -1,0 +1,45 @@
+.container {
+  position: relative;
+  color: #fff;
+
+  & + .container {
+    margin-top: 15px;
+  }
+
+  .name {
+    position: absolute;
+    top: -4px;
+    left: 15px;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .detail {
+    position: absolute;
+    bottom: 32px;
+    right: 15px;
+    color: #1890ff;
+    cursor: pointer;
+  }
+
+  .extra {
+    .detail;
+    bottom: 0;
+    right: 0;
+  }
+
+  .wrapper {
+    padding-top: 15px;
+
+    &:first-child {
+      border-top: 1px solid #1c5d90;
+    }
+
+    .wrapperTitle {
+      padding-left: 10px;
+      border-left: 4px solid #0ff;
+      line-height: 18px;
+      margin-bottom: 15px;
+    }
+  }
+}

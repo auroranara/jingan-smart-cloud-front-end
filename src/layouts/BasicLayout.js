@@ -33,7 +33,13 @@ const { check } = Authorized;
 const { projectShortName, logo } = global.PROJECT_CONFIG;
 
 const INIT_ROUTE = '/menu-reveal';
-const SYSTEMS = ['重大危险源监测预警系统', '可燃有毒气体监测预警系统', '安全风险分区管理系统', '人员在岗在位管理系统', '企业生产全流程管理系统'];
+const SYSTEMS = [
+  '重大危险源监测预警系统',
+  '可燃有毒气体监测预警系统',
+  '安全风险分区管理系统',
+  '人员在岗在位管理系统',
+  '企业生产全流程管理系统',
+];
 SYSTEMS[-1] = '工作台';
 
 // Conversion router to menu.
@@ -98,11 +104,15 @@ class BasicLayout extends React.PureComponent {
   state = {
     rendering: true,
     isMobile: false,
-    menuBigPlatform: [],// 驾驶舱列表
+    menuBigPlatform: [], // 驾驶舱列表
   };
 
   componentDidMount() {
-    const { dispatch, location: { pathname }, route } = this.props;
+    const {
+      dispatch,
+      location: { pathname },
+      route,
+    } = this.props;
     const menuAll = JSON.parse(JSON.stringify(config['routes']));
 
     this.setMenuSystemType();
@@ -120,7 +130,7 @@ class BasicLayout extends React.PureComponent {
         const path = INIT_ROUTE;
         // console.log(logined, path);
         if (logined && path) {
-          router.push(path);
+          // router.push(path);
           dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
         }
 
@@ -149,10 +159,15 @@ class BasicLayout extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { location: { pathname: prevPathname } } = prevProps;
-    const { location: { pathname } } = this.props;
+    const {
+      location: { pathname: prevPathname },
+    } = prevProps;
+    const {
+      location: { pathname },
+    } = this.props;
 
-    if (prevPathname !== pathname && !pathname.includes('exception')) // 跳到exception页面保持原来的菜单类型
+    if (prevPathname !== pathname && !pathname.includes('exception'))
+      // 跳到exception页面保持原来的菜单类型
       this.setMenuSystemType();
     this.breadcrumbNameMap = this.getBreadcrumbNameMap();
   }
@@ -162,10 +177,14 @@ class BasicLayout extends React.PureComponent {
     unenquireScreen(this.enquireHandler);
   }
 
- setMenuSystemType() {
-    const { dispatch, location: { pathname }, route } = this.props;
+  setMenuSystemType() {
+    const {
+      dispatch,
+      location: { pathname },
+      route,
+    } = this.props;
     dispatch({ type: 'user/saveSystemType', payload: getSystemType(pathname, route) });
- }
+  }
 
   getContext() {
     const { location } = this.props;
@@ -327,8 +346,8 @@ class BasicLayout extends React.PureComponent {
                 {children}
               </Authorized>
             ) : (
-                <Spin size="large" className={styles.globalSpin} />
-              )}
+              <Spin size="large" className={styles.globalSpin} />
+            )}
             <BackTop />
           </Content>
           <Footer />

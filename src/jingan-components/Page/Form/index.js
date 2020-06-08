@@ -5,6 +5,7 @@ import Form from '@/jingan-components/Form';
 import { connect } from 'dva';
 import router from 'umi/router';
 import locales from '@/locales/zh-CN';
+import { isEqual } from 'lodash';
 // import styles from './index.less';
 
 const FormPage = props => {
@@ -19,6 +20,7 @@ const FormPage = props => {
     isOperation,
     unitId,
     unitType,
+    currentUser,
     formRef,
     hasEditAuthority,
     editPath,
@@ -33,6 +35,8 @@ const FormPage = props => {
     wrapperCol,
     initialValues,
     detail,
+    showEditButton,
+    params,
   } = props;
   const form = useRef(null);
   useImperativeHandle(formRef, () => form.current);
@@ -65,7 +69,10 @@ const FormPage = props => {
             isOperation,
             unitId,
             unitType,
+            currentUser,
             ...detail,
+            ...(detail && initialize && initialize(detail)),
+            ...params,
           }}
           hasEditAuthority={hasEditAuthority}
           editPath={editPath}
@@ -79,6 +86,8 @@ const FormPage = props => {
                       isOperation,
                       unitId,
                       unitType,
+                      currentUser,
+                      mode,
                       ...values,
                     })
                   : values),
@@ -94,6 +103,7 @@ const FormPage = props => {
           labelCol={labelCol}
           wrapperCol={wrapperCol}
           initialValues={values}
+          showEditButton={showEditButton}
         />
       </Spin>
     </PageHeaderLayout>
@@ -124,6 +134,7 @@ export default connect(
     let breadcrumbList;
     const {
       user: {
+        currentUser,
         currentUser: { unitType, unitId, permissionCodes },
       },
       [namespace]: { [d]: detail },
@@ -179,6 +190,7 @@ export default connect(
       isOperation,
       unitId,
       unitType,
+      currentUser,
       breadcrumbList,
       detail: name !== 'add' && detail ? detail : undefined,
       loading: loading || loading2 || false,
@@ -243,7 +255,9 @@ export default connect(
         props.loading === nextProps.loading &&
         props.submitting === nextProps.submitting &&
         props.mode === nextProps.mode &&
-        props.children === nextProps.children
+        props.children === nextProps.children &&
+        props.hack === nextProps.hack &&
+        isEqual(props.params, nextProps.params)
       );
     },
   }

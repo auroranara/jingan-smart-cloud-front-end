@@ -219,13 +219,18 @@ export default class TableList extends PureComponent {
         render: (id) => {
           return (
             <Fragment>
-              <AuthA code={viewCode} onClick={() => { router.push(`${PATH}/view/${id}`) }}>
+              <AuthA
+                code={viewCode}
+                // onClick={() => { router.push(`${PATH}/view/${id}`) }}
+                onClick={() => { window.open(`${window.publicPath}#${PATH}/view/${id}`) }}
+              >
                 查看
               </AuthA>
               <Divider type="vertical" />
               <AuthA
                 code={editCode}
-                onClick={() => { router.push(`${PATH}/edit/${id}`) }}
+                // onClick={() => { router.push(`${PATH}/edit/${id}`) }}
+                onClick={() => { window.open(`${window.publicPath}#${PATH}/edit/${id}`) }}
               >
                 编辑
               </AuthA>
@@ -280,7 +285,7 @@ export default class TableList extends PureComponent {
                 total,
                 showQuickJumper: true,
                 showSizeChanger: true,
-                pageSizeOptions: ['5', '10', '15', '20'],
+                // pageSizeOptions: ['5', '10', '15', '20'],
                 onChange: this.handlePageChange,
                 onShowSizeChange: (num, size) => {
                   this.handlePageChange(1, size);

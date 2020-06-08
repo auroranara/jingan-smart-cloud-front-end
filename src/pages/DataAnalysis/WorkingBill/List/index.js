@@ -345,6 +345,7 @@ export default class WorkingBillTablePage extends Component {
         className={styles.operation}
         disabled={!hasDetailAuthority}
         onClick={hasDetailAuthority ? undefined : this.preventDefault}
+        target="_blank"
       >
         查看
       </Link>
@@ -361,6 +362,7 @@ export default class WorkingBillTablePage extends Component {
         className={styles.operation}
         disabled={!hasEditAuthority}
         onClick={hasEditAuthority ? undefined : this.preventDefault}
+        target="_blank"
       >
         编辑
       </Link>
@@ -377,6 +379,7 @@ export default class WorkingBillTablePage extends Component {
         className={styles.operation}
         disabled={!hasAddAuthority}
         onClick={hasAddAuthority ? undefined : this.preventDefault}
+        target="_blank"
       >
         重新申请
       </Link>
@@ -868,7 +871,7 @@ export default class WorkingBillTablePage extends Component {
                   current: pageNum,
                   pageSize,
                   total,
-                  pageSizeOptions: ['5', '10', '15', '20'],
+                  // pageSizeOptions: ['5', '10', '15', '20'],
                   showTotal: total => `共 ${total} 条`,
                   showQuickJumper: true,
                   showSizeChanger: true,

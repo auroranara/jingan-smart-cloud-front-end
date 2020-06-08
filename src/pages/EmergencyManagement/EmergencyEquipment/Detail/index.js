@@ -99,7 +99,8 @@ export default class EmergencyEquipmentDetail extends Component {
   };
 
   handleBackButtonClick = () => {
-    router.push(listUrl);
+    // router.push(listUrl);
+    window.close();
   };
 
   render() {
@@ -112,6 +113,11 @@ export default class EmergencyEquipmentDetail extends Component {
         currentUser: { unitType },
       },
       loading,
+      match: {
+        params: {
+          id,
+        },
+      },
     } = this.props;
     const detail = list[0] || {};
     const fields = dspItems.map(item => {
@@ -183,7 +189,13 @@ export default class EmergencyEquipmentDetail extends Component {
               resetable={false}
               action={
                 <Fragment>
-                  <Button onClick={this.handleBackButtonClick}>返回</Button>
+                  <Button style={{ marginRight: 10 }} onClick={this.handleBackButtonClick}>返回</Button>
+                  <Button
+                    type="primary"
+                    onClick={e => router.push(`/emergency-management/emergency-plan/edit/${id}`)}
+                  >
+                    编辑
+                  </Button>
                 </Fragment>
               }
             />

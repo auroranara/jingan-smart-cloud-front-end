@@ -45,7 +45,6 @@ const FormInputNumber = ({
 FormInputNumber.getRules = ({ label }) => [
   {
     required: true,
-    whitespace: true,
     message: `${label || ''}不能为空`,
   },
 ];

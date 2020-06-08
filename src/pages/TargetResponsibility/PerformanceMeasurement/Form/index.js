@@ -1,7 +1,7 @@
 import React from 'react';
 import FormPage from '@/jingan-components/Page/Form';
 import Content from '../components/Content';
-import { COMPANY_FIELDNAMES, COMPANY_MAPPER, CLASSIFICATIONS } from '../config';
+import { CLASSIFICATIONS } from '../config';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
 
@@ -24,49 +24,56 @@ const ContractorForm = ({
     wrapperCol: {
       span: 12,
     },
-    initialize({ companyId, title, scope, classification, score, project, content }) {
+    initialize({
+      companyId,
+      companyName,
+      standardTitle,
+      applyScope,
+      standardType,
+      passScore,
+      examProject,
+      contentList,
+    }) {
       return {
-        companyId: companyId || undefined,
-        title: title || undefined,
-        scope: scope || undefined,
-        classification: isNumber(classification) ? `${classification}` : undefined,
-        score: score || undefined,
-        project: project || undefined,
-        content: content ? JSON.parse(content) : undefined,
+        company: companyId ? { key: companyId, value: companyId, label: companyName } : undefined,
+        standardTitle: standardTitle || undefined,
+        applyScope: applyScope || undefined,
+        standardType: isNumber(standardType) ? `${standardType}` : undefined,
+        passScore: passScore || undefined,
+        examProject: examProject || undefined,
+        contentList: contentList || undefined,
       };
     },
     transform({
       isUnit,
       unitId,
-      companyId,
-      title,
-      scope,
-      classification,
-      score,
-      project,
-      content,
+      company,
+      standardTitle,
+      applyScope,
+      standardType,
+      passScore,
+      examProject,
+      contentList,
     }) {
       return {
-        companyId: isUnit ? unitId : companyId,
-        title,
-        scope,
-        classification,
-        score,
-        project,
-        content: content && JSON.stringify(content),
+        companyId: isUnit ? unitId : company && company.key,
+        standardTitle,
+        applyScope,
+        standardType,
+        passScore,
+        examProject,
+        contentList,
       };
     },
     fields: [
       {
-        name: 'companyId',
+        name: 'company',
         label: '单位名称',
         component: 'Select',
         props({ mode }) {
           return {
-            fieldNames: COMPANY_FIELDNAMES,
-            mapper: COMPANY_MAPPER,
-            showSearch: true,
-            filterOption: false,
+            preset: 'company',
+            labelInValue: true,
             disabled: mode === 'edit',
           };
         },
@@ -76,45 +83,57 @@ const ContractorForm = ({
         enableDefaultRules: true,
       },
       {
-        name: 'title',
+        name: 'standardTitle',
         label: '标准标题',
         component: 'TextArea',
+        props: {
+          maxLength: 50,
+        },
         enableDefaultRules: true,
       },
       {
-        name: 'scope',
+        name: 'applyScope',
         label: '适用范围',
         component: 'TextArea',
+        props: {
+          maxLength: 50,
+        },
         enableDefaultRules: true,
       },
       {
-        name: 'classification',
+        name: 'standardType',
         label: '标准分类',
         component: 'Select',
         props: {
           list: CLASSIFICATIONS,
         },
-        hide({ isUnit }) {
-          return isUnit;
+        enableDefaultRules: true,
+      },
+      {
+        name: 'passScore',
+        label: '合格分数（分）',
+        component: 'InputNumber',
+        props: {
+          min: 0,
+          max: 100,
+          precision: 0,
         },
         enableDefaultRules: true,
       },
       {
-        name: 'score',
-        label: '分值（分）',
-        component: 'Input',
-        enableDefaultRules: true,
-      },
-      {
-        name: 'project',
+        name: 'examProject',
         label: '考核项目',
         component: 'Input',
+        props: {
+          maxLength: 25,
+        },
         enableDefaultRules: true,
       },
       {
-        name: 'content',
+        name: 'contentList',
         label: '考核内容',
         component: Content,
+        wrapperCol: { span: 18 },
       },
     ],
   };

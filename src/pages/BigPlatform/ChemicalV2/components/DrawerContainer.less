@@ -1,0 +1,74 @@
+@color: rgb(4, 253, 255);
+
+.drawer {
+  :global {
+    // 关闭按钮被修改到header里面了，为了不显示header，直接将其不显示，但要自定义close按钮
+    .ant-drawer-header {
+      display: none;
+    }
+
+    .ant-drawer-body {
+      padding: 0;
+      height: 100%;
+    }
+
+    .ant-drawer-content {
+      background-color: #033069;
+    }
+
+    .ant-drawer-close {
+      color: #fff;
+    }
+
+    .ant-drawer-header-no-title {
+      display: none;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    // background: rgba(9, 103, 211, 0.5);
+    background: rgba(0, 87, 169, 1);
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 4px;
+    // background: rgba(2, 28, 64, 1);
+
+    background: rgba(2, 28, 64, 0.6);
+  }
+}
+
+.container {
+  padding: 16px;
+  height: 100%;
+  border: 1px solid @color;
+}
+
+.title {
+  color: #fff;
+  font-size: 18px;
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.icon {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+}
+
+.rect {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: @color;
+  margin-right: 15px;
+  position: relative;
+  top: 3px;
+}

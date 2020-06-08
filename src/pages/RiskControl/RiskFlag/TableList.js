@@ -20,25 +20,28 @@ export default class TableList extends PureComponent {
     currentPage: 1,
     formVals: null,
     imgs: [],
+    pageSize: PAGE_SIZE,
   };
 
   componentDidMount() {
-    this.fetchTableList(1);
+    this.fetchTableList(1, PAGE_SIZE);
   }
 
   handleSearch = values => {
+    const { pageSize } = this.state;
     this.setState({ formVals: values });
-    this.fetchTableList(1, values, (code, msg) => this.setPage(code, 1, msg));
+    this.fetchTableList(1, values, (code, msg) => this.setPage(code, 1, pageSize, msg));
   };
 
   handleReset = () => {
+    const { pageSize } = this.state;
     this.setState({ formVals: {} });
-    this.fetchTableList(1, null, (code, msg) => this.setPage(code, 1, msg));
+    this.fetchTableList(1, null, (code, msg) => this.setPage(code, 1, pageSize, msg));
   };
 
-  fetchTableList = (pageNum, values, callback) => {
+  fetchTableList = (pageNum, pageSize, values, callback) => {
     const { dispatch } = this.props;
-    let payload = { pageSize: PAGE_SIZE, pageNum };
+    let payload = { pageSize, pageNum };
     if (values) payload = { ...payload, ...values };
     dispatch({
       type: 'riskFlags/fetchList',
@@ -48,23 +51,23 @@ export default class TableList extends PureComponent {
   };
 
   getCurrentList = () => {
-    const { currentPage, formVals } = this.state;
-    this.fetchTableList(currentPage, formVals);
+    const { currentPage, pageSize, formVals } = this.state;
+    this.fetchTableList(currentPage, pageSize, formVals);
   };
 
   handleAdd = () => {
     router.push(`${ROUTER}/add`);
   };
 
-  setPage = (code, current, msg) => {
-    if (code === 200) this.setState({ currentPage: current });
+  setPage = (code, current, pageSize, msg) => {
+    if (code === 200) this.setState({ currentPage: current, pageSize });
     else if (msg) message.error(msg);
   };
 
   onTableChange = (pagination, filters, sorter) => {
-    const { current } = pagination;
+    const { current, pageSize } = pagination;
     const { formVals } = this.state;
-    this.fetchTableList(current, formVals, (code, msg) => this.setPage(code, current, msg));
+    this.fetchTableList(current, pageSize, formVals, (code, msg) => this.setPage(code, current, pageSize, msg));
   };
 
   genHandleDelete = id => e => {
@@ -86,7 +89,7 @@ export default class TableList extends PureComponent {
       riskFlags: { total, list },
     } = this.props;
 
-    const { currentPage, imgs } = this.state;
+    const { currentPage, pageSize, imgs } = this.state;
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
@@ -123,7 +126,7 @@ export default class TableList extends PureComponent {
             columns={getColumns(this.genHandleDelete, this.handleClick)}
             dataSource={list}
             onChange={this.onTableChange}
-            pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}
+            pagination={{ pageSize, total, current: currentPage }}
           />
         </div>
         <ImagePreview images={imgs} />

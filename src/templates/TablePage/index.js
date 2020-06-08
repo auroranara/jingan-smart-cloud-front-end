@@ -155,12 +155,12 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
         router.push(pathname.replace(new RegExp(`${name}.*`), 'add'));
       },
       goToEdit(data) {
-        router.push(pathname.replace(new RegExp(`${name}.*`), `edit/${(data && data.id) || data}`));
+        // router.push(pathname.replace(new RegExp(`${name}.*`), `edit/${(data && data.id) || data}`));
+        window.open(`${window.publicPath}#` + pathname.replace(new RegExp(`${name}.*`), `edit/${(data && data.id) || data}`));
       },
       goToDetail(data) {
-        router.push(
-          pathname.replace(new RegExp(`${name}.*`), `detail/${(data && data.id) || data}`)
-        );
+        // router.push(pathname.replace(new RegExp(`${name}.*`), `detail/${(data && data.id) || data}`));
+        window.open(`${window.publicPath}#` + pathname.replace(new RegExp(`${name}.*`), `detail/${(data && data.id) || data}`));
       },
       ...(otherOperation &&
         otherOperation.reduce((result, { code: codeName, onClick }) => {
@@ -170,12 +170,8 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
                 ...result,
                 [`goTo${codeName[0].toUpperCase()}${codeName.slice(1)}`](data) {
                   const id = (data && data.id) || data;
-                  router.push(
-                    pathname.replace(
-                      new RegExp(`${name}.*`),
-                      `${kebabCase(codeName)}${id ? `/${id}` : ''}`
-                    )
-                  );
+                  // router.push(pathname.replace(new RegExp(`${name}.*`),`${kebabCase(codeName)}${id ? `/${id}` : ''}`));
+                  window.open(`${window.publicPath}#` + pathname.replace(new RegExp(`${name}.*`),`${kebabCase(codeName)}${id ? `/${id}` : ''}`));
                 },
               };
         }, {})),
@@ -473,7 +469,7 @@ export default class TablePage extends Component {
                 current: pageNum,
                 pageSize,
                 total,
-                pageSizeOptions: ['5', '10', '15', '20'],
+                // pageSizeOptions: ['5', '10', '15', '20'],
                 showTotal: showTotal ? total => `共 ${total} 条` : undefined,
                 showQuickJumper: true,
                 showSizeChanger: true,

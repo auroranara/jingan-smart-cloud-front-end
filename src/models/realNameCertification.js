@@ -443,7 +443,7 @@ export default {
       if (response.code === 200) {
         yield put({ type: 'saveTagCardDel', payload: payload.id });
       }
-      if (callback) callback(response && response.code === 200, response.msg);
+      if (callback) callback(response && response.code === 200, response);
     },
 
     // 导出标签卡

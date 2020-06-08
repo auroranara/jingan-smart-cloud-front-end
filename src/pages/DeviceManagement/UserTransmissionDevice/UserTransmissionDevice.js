@@ -5,9 +5,7 @@ import { Card, Button, Input, List, Row, Col } from 'antd';
 // import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
-
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-
 import styles from './UserTransmissionDevice.less';
 import { AuthButton, AuthLink, ERROR_MSG } from '@/utils/customAuth';
 import buttonCodes from '@/utils/codes';
@@ -243,7 +241,7 @@ export default class UserTransmissionDevice extends PureComponent {
         <List
           rowKey="id"
           loading={loading}
-          grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
+          grid={{ gutter: 24, column: 3, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
             const {

@@ -432,7 +432,7 @@ export default class App extends PureComponent {
         locale={hideList ? { emptyText: '请先选择单位' } : undefined}
         className={styles.cardList}
         rowKey="id"
-        grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
+        grid={{ gutter: 24, column: 3, lg: 3, md: 2, sm: 1, xs: 1 }}
         dataSource={hideList ? [] : list}
         renderItem={({ id, name, ruleTypeName, createTimeStr, useNum, status }) => {
           const isUsed = !!+status;

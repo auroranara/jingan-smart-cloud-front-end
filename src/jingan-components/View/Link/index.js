@@ -6,6 +6,7 @@ import styles from './index.less';
 const ViewLink = props => {
   return (
     <Link
+      to="/"
       {...props}
       className={classNames(styles.link, props.className)}
       onClick={e => {

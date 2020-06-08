@@ -1,17 +1,18 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import router from 'umi/router';
+import moment from 'moment';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Card, Button, Input, Select, Upload, DatePicker, Cascader, message } from 'antd';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
 import { getToken } from '@/utils/authority';
 import titles from '@/utils/titles';
-import router from 'umi/router';
-import moment from 'moment';
 import { phoneReg } from '@/utils/validate';
-// 选择单位弹窗
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -47,6 +48,11 @@ const BUTTON_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginT
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 export default class specialOperationPermitHandle extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, listUrl);
+  }
+
   state = {
     frontPhotoList: [], // 操作证正面
     backPhotoList: [], // 操作证反面
@@ -271,7 +277,8 @@ export default class specialOperationPermitHandle extends PureComponent {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`);
-        router.push(listUrl);
+        // router.push(listUrl);
+        setTimeout(this.goBack, 1000);
       };
       const error = res => { message.error(res ? res.msg : `${tag}失败`) };
       if (id) {
@@ -329,163 +336,161 @@ export default class specialOperationPermitHandle extends PureComponent {
       detail,
     } = this.state;
     return (
-      <Card>
-        <Form>
-          {!isCompany && (
-            <FormItem label="单位名称" {...formItemLayout}>
-              {getFieldDecorator('companyId', {
-                rules: [{ required: true, message: '请选择单位' }],
-              })(
-                <Fragment>
-                  <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择单位" />
-                  <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
-                </Fragment>
-              )}
-            </FormItem>
+      <Form>
+        {!isCompany && (
+          <FormItem label="单位名称" {...formItemLayout}>
+            {getFieldDecorator('companyId', {
+              rules: [{ required: true, message: '请选择单位' }],
+            })(
+              <Fragment>
+                <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择单位" />
+                <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
+              </Fragment>
+            )}
+          </FormItem>
+        )}
+        <FormItem label="姓名" {...formItemLayout}>
+          {getFieldDecorator('name', {
+            initialValue: id ? detail.name : undefined,
+            rules: [{ required: true, message: '请输入' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="性别" {...formItemLayout}>
+          {getFieldDecorator('sex', {
+            initialValue: id ? detail.sex : undefined,
+            rules: [{ required: true, message: '请输入性别' }],
+          })(
+            <Select placeholder="请选择" {...itemStyles}>
+              {[{ key: '1', label: '男' }, { key: '2', label: '女' }].map(({ key, label }) => (
+                <Select.Option key={key} label={label}>
+                  {label}
+                </Select.Option>
+              ))}
+            </Select>
           )}
-          <FormItem label="姓名" {...formItemLayout}>
-            {getFieldDecorator('name', {
-              initialValue: id ? detail.name : undefined,
-              rules: [{ required: true, message: '请输入' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="性别" {...formItemLayout}>
-            {getFieldDecorator('sex', {
-              initialValue: id ? detail.sex : undefined,
-              rules: [{ required: true, message: '请输入性别' }],
-            })(
-              <Select placeholder="请选择" {...itemStyles}>
-                {[{ key: '1', label: '男' }, { key: '2', label: '女' }].map(({ key, label }) => (
-                  <Select.Option key={key} label={label}>
-                    {label}
-                  </Select.Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="出生年月" {...formItemLayout}>
-            {getFieldDecorator('birthday', {
-              initialValue: id && detail.birthday ? moment(detail.birthday) : undefined,
-              // rules: [{ required: true, message: '请选择出生年月' }],
-            })(
-              <DatePicker
-                placeholder="请选择"
-                getCalendarContainer={getRootChild}
-              />
-            )}
-          </FormItem>
-          <FormItem label="联系电话" {...formItemLayout}>
-            {getFieldDecorator('telephone', {
-              initialValue: id ? detail.telephone : undefined,
-              rules: [
-                // { required: true, message: '请输入联系电话' },
-                { pattern: phoneReg, message: '联系电话格式不正确' },
-              ],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="作业类别" {...formItemLayout}>
-            {getFieldDecorator('workType', {
-              initialValue: id && detail.workType ? detail.workType.split(',') : undefined,
-              rules: [{ required: true, message: '请选择作业类别' }],
-            })(
-              <Cascader
-                placeholder="作业类别"
-                options={operationCategory}
-                loadData={this.loadOperationCategory}
-                changeOnSelect
-                {...itemStyles}
-              />
-            )}
-          </FormItem>
-          <FormItem label="连续从事本工作时间" {...formItemLayout}>
-            {getFieldDecorator('continueWorkTime', {
-              initialValue: id ? detail.continueWorkTime : undefined,
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="准操项目" {...formItemLayout}>
-            {getFieldDecorator('mustholdProject', {
-              initialValue: id ? detail.mustholdProject : undefined,
-              rules: [{ required: true, message: '请选输入准操项目' }],
-            })(<TextArea rows={5} placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="操作证证号" {...formItemLayout}>
-            {getFieldDecorator('certificateNumber', {
-              initialValue: id ? detail.certificateNumber : undefined,
-              rules: [{ required: true, message: '请输入操作证证号' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="初领日期" {...formItemLayout}>
-            {getFieldDecorator('firstDate', {
-              initialValue: id && detail.firstDate ? moment(detail.firstDate) : undefined,
-            })(
-              <DatePicker
-                placeholder="请选择"
-                getCalendarContainer={getRootChild}
-              />
-            )}
-          </FormItem>
-          <FormItem label="有效日期" {...formItemLayout}>
-            {getFieldDecorator('effectiveDate', {
-              initialValue: id ? [moment(detail.startDate), moment(detail.endDate)] : undefined,
-              rules: [{ required: true, message: '请选择有效日期' }],
-            })(
-              <RangePicker
-                getCalendarContainer={getRootChild}
-              />
-            )}
-          </FormItem>
-          <FormItem label="复审日期" {...formItemLayout}>
-            {getFieldDecorator('reviewDate', {
-              initialValue: id && detail.reviewDate ? moment(detail.reviewDate) : undefined,
-            })(
-              <DatePicker
-                placeholder="请选择"
-                getCalendarContainer={getRootChild}
-              />
-            )}
-          </FormItem>
-          <FormItem label="操作证正面扫描件" {...formItemLayout}>
-            {getFieldDecorator('certificatePositiveFile')(
-              <Fragment>
-                <Upload
-                  name="files"
-                  headers={{ 'JA-Token': getToken() }}
-                  accept="image/*" // 接收的文件格式
-                  data={{ folder: 'securityManageInfo' }} // 附带的参数
-                  action={uploadAction}
-                  fileList={frontPhotoList}
-                  onChange={this.handleFrontChange}
-                >
-                  <Button>
-                    <LegacyIcon type={frontLoading ? 'loading' : "upload"} />
-                    点击上传
-                </Button>
-                </Upload>
-              </Fragment>
-            )}
-          </FormItem>
-          <FormItem label="操作证反面扫描件" {...formItemLayout}>
-            {getFieldDecorator('certificateReverseFile')(
-              <Fragment>
-                <Upload
-                  name="files"
-                  headers={{ 'JA-Token': getToken() }}
-                  accept="image/*" // 接收的文件格式
-                  data={{ folder: 'securityManageInfo' }} // 附带的参数
-                  action={uploadAction}
-                  fileList={backPhotoList}
-                  onChange={this.handleBackChange}
-                >
-                  <Button>
-                    <LegacyIcon type={backLoading ? 'loading' : "upload"} />
-                    点击上传
-                </Button>
-                </Upload>
-              </Fragment>
-            )}
-          </FormItem>
-        </Form>
-      </Card>
+        </FormItem>
+        <FormItem label="出生年月" {...formItemLayout}>
+          {getFieldDecorator('birthday', {
+            initialValue: id && detail.birthday ? moment(detail.birthday) : undefined,
+            // rules: [{ required: true, message: '请选择出生年月' }],
+          })(
+            <DatePicker
+              placeholder="请选择"
+              getCalendarContainer={getRootChild}
+            />
+          )}
+        </FormItem>
+        <FormItem label="联系电话" {...formItemLayout}>
+          {getFieldDecorator('telephone', {
+            initialValue: id ? detail.telephone : undefined,
+            rules: [
+              // { required: true, message: '请输入联系电话' },
+              { pattern: phoneReg, message: '联系电话格式不正确' },
+            ],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="作业类别" {...formItemLayout}>
+          {getFieldDecorator('workType', {
+            initialValue: id && detail.workType ? detail.workType.split(',') : undefined,
+            rules: [{ required: true, message: '请选择作业类别' }],
+          })(
+            <Cascader
+              placeholder="作业类别"
+              options={operationCategory}
+              loadData={this.loadOperationCategory}
+              changeOnSelect
+              {...itemStyles}
+            />
+          )}
+        </FormItem>
+        <FormItem label="连续从事本工作时间" {...formItemLayout}>
+          {getFieldDecorator('continueWorkTime', {
+            initialValue: id ? detail.continueWorkTime : undefined,
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="准操项目" {...formItemLayout}>
+          {getFieldDecorator('mustholdProject', {
+            initialValue: id ? detail.mustholdProject : undefined,
+            rules: [{ required: true, message: '请选输入准操项目' }],
+          })(<TextArea rows={5} placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="操作证证号" {...formItemLayout}>
+          {getFieldDecorator('certificateNumber', {
+            initialValue: id ? detail.certificateNumber : undefined,
+            rules: [{ required: true, message: '请输入操作证证号' }],
+          })(<Input placeholder="请输入" {...itemStyles} />)}
+        </FormItem>
+        <FormItem label="初领日期" {...formItemLayout}>
+          {getFieldDecorator('firstDate', {
+            initialValue: id && detail.firstDate ? moment(detail.firstDate) : undefined,
+          })(
+            <DatePicker
+              placeholder="请选择"
+              getCalendarContainer={getRootChild}
+            />
+          )}
+        </FormItem>
+        <FormItem label="有效日期" {...formItemLayout}>
+          {getFieldDecorator('effectiveDate', {
+            initialValue: id ? [moment(detail.startDate), moment(detail.endDate)] : undefined,
+            rules: [{ required: true, message: '请选择有效日期' }],
+          })(
+            <RangePicker
+              getCalendarContainer={getRootChild}
+            />
+          )}
+        </FormItem>
+        <FormItem label="复审日期" {...formItemLayout}>
+          {getFieldDecorator('reviewDate', {
+            initialValue: id && detail.reviewDate ? moment(detail.reviewDate) : undefined,
+          })(
+            <DatePicker
+              placeholder="请选择"
+              getCalendarContainer={getRootChild}
+            />
+          )}
+        </FormItem>
+        <FormItem label="操作证正面扫描件" {...formItemLayout}>
+          {getFieldDecorator('certificatePositiveFile')(
+            <Fragment>
+              <Upload
+                name="files"
+                headers={{ 'JA-Token': getToken() }}
+                accept="image/*" // 接收的文件格式
+                data={{ folder: 'securityManageInfo' }} // 附带的参数
+                action={uploadAction}
+                fileList={frontPhotoList}
+                onChange={this.handleFrontChange}
+              >
+                <Button>
+                  <LegacyIcon type={frontLoading ? 'loading' : "upload"} />
+                  点击上传
+              </Button>
+              </Upload>
+            </Fragment>
+          )}
+        </FormItem>
+        <FormItem label="操作证反面扫描件" {...formItemLayout}>
+          {getFieldDecorator('certificateReverseFile')(
+            <Fragment>
+              <Upload
+                name="files"
+                headers={{ 'JA-Token': getToken() }}
+                accept="image/*" // 接收的文件格式
+                data={{ folder: 'securityManageInfo' }} // 附带的参数
+                action={uploadAction}
+                fileList={backPhotoList}
+                onChange={this.handleBackChange}
+              >
+                <Button>
+                  <LegacyIcon type={backLoading ? 'loading' : "upload"} />
+                  点击上传
+              </Button>
+              </Upload>
+            </Fragment>
+          )}
+        </FormItem>
+      </Form>
     );
   };
 
@@ -522,24 +527,36 @@ export default class specialOperationPermitHandle extends PureComponent {
     ];
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        {this.renderForm()}
-        {isDetail ? (
-          <Button
-            style={BUTTON_STYLE}
-            type="primary"
-            onClick={e => router.push(`/operation-safety/special-operation-permit/edit/${id}`)}
-          >
-            编辑
-          </Button>
-        ) : (
+        <Card>
+          {this.renderForm()}
+          <div style={{ textAlign: 'center' }}>
             <Button
-              style={BUTTON_STYLE}
-              type="primary"
-              onClick={this.handleSubmit}
+              style={{ marginRight: 10 }}
+              onClick={this.goBack}
             >
-              提交
-          </Button>
-          )}
+              返回
+            </Button>
+            {isDetail ? (
+              <Button
+                style={BUTTON_STYLE}
+                type="primary"
+                onClick={e => router.push(`/operation-safety/special-operation-permit/edit/${id}`)}
+              >
+                编辑
+              </Button>
+            ) : (
+                <Button
+                  // style={BUTTON_STYLE}
+                  type="primary"
+                  onClick={this.handleSubmit}
+                >
+                  提交
+              </Button>
+            )}
+          </div>
+        </Card>
+
+
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"

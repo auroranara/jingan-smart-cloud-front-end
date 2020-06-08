@@ -1,25 +1,27 @@
 .container {
   position: relative;
-  border: 1px solid #0ff;
+  border: 1px solid #1c5d90;
+  color: #fff;
 
-  &+.container {
+  & + .container {
     margin-top: 15px;
   }
 
   .label {
-    color: #0ff;
+    color: #1890ff;
     display: inline-block;
   }
 
   .locIcon {
     margin-right: 8px;
     font-size: 18px;
-    color: #0ff;
+    // color: #0ff;
     display: inline-block;
   }
 
   .name {
     position: relative;
+    font-size: 16px;
 
     .iconsWrapper {
       position: absolute;
@@ -34,7 +36,7 @@
         vertical-align: top;
         cursor: pointer;
 
-        &+.icon {
+        & + .icon {
           margin-left: 8px;
         }
       }
@@ -59,6 +61,7 @@
     border-top: 1px solid #196092;
     padding: 16px 10px;
     padding-left: 25px;
+    margin: 0 10px;
 
     &:first-child {
       border-top: none;
@@ -67,7 +70,7 @@
     .more {
       position: absolute;
       right: 10px;
-      color: #0ff;
+      color: #1890ff;
       cursor: pointer;
       top: 16px;
     }
@@ -76,12 +79,12 @@
   .targetWrapper {
     padding-left: 10px;
     margin-left: -10px;
-    border-left: 4px solid #0ff;
+    border-left: 4px solid #1890ff;
   }
 
   .updateTime {
-    color: #5b809a;
-    font-size: 0.875em;
+    color: #fff;
+    font-size: 1.4em;
   }
 
   .paramsWrapper {
@@ -89,7 +92,7 @@
     align-items: center;
     justify-content: center;
 
-    &+.paramsWrapper {
+    & + .paramsWrapper {
       margin-top: 15px;
     }
 
@@ -115,17 +118,9 @@
       position: relative;
       flex: 1;
 
-      &:last-child {
-        margin-left: 1em;
-
-        .label {
-          color: #fff;
-        }
-      }
-
       .label {
         flex: none;
-        color: #0ff;
+        color: #7c93b1;
         white-space: nowrap;
         overflow: hidden;
       }

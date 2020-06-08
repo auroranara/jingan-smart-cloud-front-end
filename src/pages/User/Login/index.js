@@ -242,7 +242,7 @@ export default class Login extends PureComponent {
           dispatch({
             type: 'login/login',
             payload,
-            success: () => {
+            success: ({ isFirstLogin, ruleStatus, isMoreUser }) => {
               const { commonAccount } = this.state;
               const account = commonAccount.filter(
                 ({ username: userName }) => userName === username
@@ -256,6 +256,10 @@ export default class Login extends PureComponent {
               else if (!account && remember) {
                 commonAccount.push(payload);
                 this.setLocalStorage(commonAccount);
+              }
+              if (!isMoreUser) {
+                if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+                else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
               }
             },
             error: notice => {
@@ -274,6 +278,12 @@ export default class Login extends PureComponent {
             payload: values,
             error: notice => {
               this.setState({ notice });
+            },
+            success: ({ isFirstLogin, ruleStatus, isMoreUser }) => {
+              if (!isMoreUser) {
+                if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+                else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+              }
             },
             handleMoreUser: props => {
               this.setState({
@@ -300,6 +310,12 @@ export default class Login extends PureComponent {
       payload,
       error: () => {
         this.setState({ notice: '密码已更换，请手动登录以更新本地账号！' });
+      },
+      success: ({ isFirstLogin, ruleStatus, isMoreUser }) => {
+        if (!isMoreUser) {
+          if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+          else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+        }
       },
       handleMoreUser: () => {
         this.setState({
@@ -387,6 +403,10 @@ export default class Login extends PureComponent {
         userId,
         ...payload,
       },
+      success: ({ isFirstLogin, ruleStatus }) => {
+        if (+isFirstLogin === 1) message.warn('首次登录，请修改密码');
+        else if (+ruleStatus === 1) message.warn('密码规则已改变，请修改密码');
+      },
     });
   };
 
@@ -405,6 +425,10 @@ export default class Login extends PureComponent {
       location: { search },
     } = this.props;
     router.push(`/user/download${search}`);
+  };
+
+  handleToForget = () => {
+    router.push(`/user/forget-password`);
   };
 
   /**
@@ -548,6 +572,9 @@ export default class Login extends PureComponent {
               <LegacyIcon type="download" className={styles.downloadIcon} />
               APP下载
             </span>
+            <div onClick={this.handleToForget} className={styles.forget}>
+              忘记密码
+            </div>
           </div>
         </FormItem>
       </Form>

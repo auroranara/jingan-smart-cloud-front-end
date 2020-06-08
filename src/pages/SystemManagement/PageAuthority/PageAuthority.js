@@ -326,7 +326,7 @@ export default class PageAuthority extends Component {
 
     return (
       <PageHeaderLayout
-        title="页面权限树"
+        title="PC权限树"
         // breadcrumbList={breadcrumbList}
         // content={
         //   <div>

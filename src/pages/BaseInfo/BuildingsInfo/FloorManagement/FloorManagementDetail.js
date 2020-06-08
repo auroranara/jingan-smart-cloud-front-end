@@ -159,22 +159,23 @@ export default class FloorManagementDetail extends PureComponent {
           <Description term={fieldLabels.floorUrl} style={{ width: '100%' }}>
             {imgs}
           </Description>
-          <div style={{ textAlign: 'right' }}>
-            <Button
-              href={`#/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${companyName}`}
-              style={{ marginLeft: '10px' }}
-            >
-              返回
-            </Button>
-            <Button
-              type="primary"
-              href={`#/base-info/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${companyName}&&companyId=${companyId}`}
-              style={{ marginLeft: '10px' }}
-            >
-              编辑
-            </Button>
-          </div>
         </DescriptionList>
+        <div style={{ textAlign: 'center' }}>
+          <Button
+            // style={{ marginLeft: '10px' }}
+            // href={`#/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${companyName}`}
+            onClick={e => window.close()}
+          >
+            返回
+          </Button>
+          <Button
+            type="primary"
+            style={{ marginLeft: '10px' }}
+            href={`#/base-info/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${companyName}&&companyId=${companyId}`}
+          >
+            编辑
+          </Button>
+        </div>
 
         <Lightbox
           images={imgUrl}

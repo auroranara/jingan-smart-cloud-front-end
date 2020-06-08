@@ -87,14 +87,16 @@ export default class myFileList extends PureComponent {
 
   // 跳转到试卷页面
   goExamDetail = (id, examId) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/my-exam/result/${id}?examId=${examId}`));
+    // const { dispatch } = this.props;
+    // dispatch(routerRedux.push(`/training/my-exam/result/${id}?examId=${examId}`));
+    window.open(`${window.publicPath}#/training/my-exam/result/${id}?examId=${examId}`);
   };
 
   // 跳转到分析报告页面
   goAlaysisExam = (studentId, examId) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
+    // const { dispatch } = this.props;
+    // dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
+    window.open(`${window.publicPath}#/training/myFile/myAnalysis/${examId}?studentId=${studentId}`);
   };
 
   /* 查询按钮点击事件 */
@@ -350,7 +352,7 @@ export default class myFileList extends PureComponent {
               total,
               showQuickJumper: true,
               showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               onChange: this.handlePageChange,
               onShowSizeChange: (num, size) => {
                 this.handlePageChange(1, size);

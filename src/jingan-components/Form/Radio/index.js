@@ -9,6 +9,7 @@ const FIELDNAMES = {
   key: 'key',
   value: 'value',
   status: 'status',
+  color: 'color',
 };
 
 const FormRadio = ({
@@ -24,7 +25,7 @@ const FormRadio = ({
   ...rest
 }) => {
   const map = { ...FIELDNAMES, ...fieldNames };
-  const { key: k, value: v, status: s } = map;
+  const { key: k, value: v, status: s, color: c } = map;
   useEffect(() => {
     getList && getList();
   }, []);
@@ -46,7 +47,7 @@ const FormRadio = ({
   } else {
     const item = (list || []).find(item => item[k] === value);
     return item ? (
-      item[s] ? (
+      item[s] || item[c] ? (
         <Badge fieldNames={map} list={list} value={value} />
       ) : ellipsis ? (
         <Ellipsis lines={1} tooltip {...ellipsis}>

@@ -27,12 +27,14 @@ export default {
 
   effects: {
     // 获取生产区域列表
-    *fetchProductionArea ({ payload }, { call, put }) {
+    *fetchProductionArea ({ payload, callback }, { call, put }) {
       const res = yield call(fetchProductionArea, payload);
+      const data = res && res.code === 200 && res.data ? res.data : defaultData;
       yield put({
         type: 'saveProductionArea',
-        payload: res && res.code === 200 && res.data ? res.data : defaultData,
-      })
+        payload: data,
+      });
+      callback && callback(data);
     },
     // 新增生产区域
     *addProductionArea ({ payload, callback }, { call }) {

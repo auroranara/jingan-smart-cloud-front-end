@@ -12,6 +12,7 @@ import { getPageSize, setPageSize } from '@/utils/utils';
 const TablePage = props => {
   const {
     breadcrumbList,
+    content,
     children,
     list,
     loading,
@@ -23,14 +24,16 @@ const TablePage = props => {
     isOperation,
     unitId,
     unitType,
+    currentUser,
     formRef,
     tableRef,
     showAddButton = true,
     showExportButton,
     initialValues,
     codes,
+    banner,
   } = props;
-  const [values, setValues] = useState(undefined);
+  const [values, setValues] = useState(initialValues);
   const form = useRef(null);
   useImperativeHandle(formRef, () => form.current);
   const reload = () => {
@@ -42,6 +45,7 @@ const TablePage = props => {
             isOperation,
             unitId,
             unitType,
+            currentUser,
             ...values,
           })
         : values),
@@ -59,6 +63,7 @@ const TablePage = props => {
             isOperation,
             unitId,
             unitType,
+            currentUser,
             ...values,
           })
         : values),
@@ -71,10 +76,13 @@ const TablePage = props => {
           isOperation,
           unitId,
           unitType,
+          currentUser,
+          list,
           renderEditButton: (data, { children, disabled, ...rest } = {}) => (
             <Link
               to={`${props.editPath}/${data.id || data}`}
               disabled={!props.hasEditAuthority || disabled}
+              target="_blank"
               {...rest}
             >
               {children || '编辑'}
@@ -84,6 +92,7 @@ const TablePage = props => {
             <Link
               to={`${props.detailPath}/${data.id || data}`}
               disabled={!props.hasDetailAuthority || disabled}
+              target="_blank"
               {...rest}
             >
               {children || '查看'}
@@ -163,6 +172,7 @@ const TablePage = props => {
     <PageHeaderLayout
       title={breadcrumbList[breadcrumbList.length - 1].title}
       breadcrumbList={breadcrumbList}
+      content={typeof content === 'function' ? content({ list }) : content}
     >
       <Form
         ref={form}
@@ -172,6 +182,7 @@ const TablePage = props => {
           isOperation,
           unitId,
           unitType,
+          currentUser,
         }}
         onSearch={values => {
           const { pagination: { pageSize = getPageSize() } = {} } = list || {};
@@ -183,6 +194,7 @@ const TablePage = props => {
                   isOperation,
                   unitId,
                   unitType,
+                  currentUser,
                   ...values,
                 })
               : values),
@@ -199,6 +211,7 @@ const TablePage = props => {
                   isOperation,
                   unitId,
                   unitType,
+                  currentUser,
                   ...values,
                 })
               : values),
@@ -211,7 +224,7 @@ const TablePage = props => {
         list={list}
         loading={loading}
         columns={columnList}
-        onChange={({ current, pageSize }) => {
+        onChange={({ current, pageSize }, _, sorter) => {
           const { pagination: { pageSize: prevPageSize } = {} } = list || {};
           getList({
             ...(transform
@@ -220,10 +233,12 @@ const TablePage = props => {
                   isOperation,
                   unitId,
                   unitType,
+                  currentUser,
+                  sorter,
                   ...values,
                 })
               : values),
-            pageNum: pageSize !== prevPageSize ? 1 : current,
+            pageNum: pageSize !== prevPageSize || sorter.field ? 1 : current,
             pageSize,
           });
           values ? form.current.setFieldsValue(values) : form.current.resetFields();
@@ -234,6 +249,7 @@ const TablePage = props => {
         showExportButton={showExportButton}
         addPath={props.addPath}
         hasAddAuthority={props.hasAddAuthority}
+        banner={typeof banner === 'function' ? banner({ list }) : banner}
       />
       {children}
     </PageHeaderLayout>
@@ -252,6 +268,7 @@ export default connect(
     let breadcrumbList;
     const {
       user: {
+        currentUser,
         currentUser: { unitType, unitId, permissionCodes },
       },
       [namespace]: { [l]: list },
@@ -330,6 +347,7 @@ export default connect(
       isOperation,
       unitId,
       unitType,
+      currentUser,
       breadcrumbList,
       list,
       loading: loading || deleting || exporting || codesLoading || false,
@@ -357,7 +375,7 @@ export default connect(
         }, {}),
     };
   },
-  (dispatch, { route: { code }, match: { params }, location: { query }, mapper, codes }) => {
+  (dispatch, { route: { code }, match: { params }, mapper, codes }) => {
     const {
       namespace = code.split('.').slice(-2)[0],
       getList: gl = 'getList',
@@ -372,7 +390,6 @@ export default connect(
             pageNum: 1,
             pageSize: getPageSize(),
             ...params,
-            ...query,
             ...payload,
           },
           callback,

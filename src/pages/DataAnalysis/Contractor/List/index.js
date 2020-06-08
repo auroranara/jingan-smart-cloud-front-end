@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Divider } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
 import { Select } from '@/jingan-components/Form';
-import { Badge } from '@/jingan-components/View';
+import { Badge, EmptyText } from '@/jingan-components/View';
 import { CATEGORIES, TYPES, STATUSES, COMPANY_FIELDNAMES, COMPANY_MAPPER } from '../config';
 import { isNumber } from '@/utils/utils';
 // import styles from './index.less';
@@ -84,33 +84,33 @@ const ContractorList = ({ route, match, location }) => {
             {
               dataIndex: 'companyName',
               title: '单位名称',
+              render: value => value || <EmptyText />,
             },
           ]
         : []),
       {
         dataIndex: 'contractorName',
         title: '承包商单位名称',
+        render: value => value || <EmptyText />,
       },
       {
         dataIndex: 'contractorCategory',
         title: '承包商类别',
         render: value =>
-          isNumber(value) && (
-            <Select
-              list={CATEGORIES}
-              value={`${value}`}
-              mode="detail"
-              empty={null}
-              ellipsis={false}
-            />
+          isNumber(value) ? (
+            <Select list={CATEGORIES} value={`${value}`} mode="detail" ellipsis={false} />
+          ) : (
+            <EmptyText />
           ),
       },
       {
         dataIndex: 'contractorType',
         title: '承包商类型',
         render: value =>
-          isNumber(value) && (
-            <Select list={TYPES} value={`${value}`} mode="detail" empty={null} ellipsis={false} />
+          isNumber(value) ? (
+            <Select list={TYPES} value={`${value}`} mode="detail" ellipsis={false} />
+          ) : (
+            <EmptyText />
           ),
       },
       {

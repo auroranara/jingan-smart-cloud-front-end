@@ -14,6 +14,7 @@ import helmet3 from './imgs/helmet-3.png';
 import helmet4 from './imgs/helmet-4.png';
 import helmet5 from './imgs/helmet-5.png';
 import helmet6 from './imgs/helmet-6.png';
+import { genGoBack } from '@/utils/utils';
 
 // 标题
 const addTitle = '新增岗位';
@@ -42,6 +43,12 @@ const mapIcons = [
 @Form.create()
 export default class PostEdit extends PureComponent {
   constructor(props) {
+    const {
+      match: {
+        params: { unitId },
+      },
+    } = props;
+
     super(props);
     this.state = {
       submitting: false,
@@ -49,6 +56,7 @@ export default class PostEdit extends PureComponent {
       startTime: undefined,
       endTime: undefined,
     };
+    this.goBack = genGoBack(props, `/personnel-management/post-management/${unitId}/list`);
   }
 
   // 挂载后
@@ -56,10 +64,11 @@ export default class PostEdit extends PureComponent {
     const {
       dispatch,
       match: {
-        params: { id },
+        params: { id, unitId },
       },
       form: { setFieldsValue },
     } = this.props;
+
     if (id) {
       // 获取岗位列表
       dispatch({
@@ -84,17 +93,18 @@ export default class PostEdit extends PureComponent {
   }
 
   // 返回
-  goBack = () => {
-    router.goBack();
-  };
+  // goBack = () => {
+  //   router.goBack();
+  // };
 
   goPostList = () => {
-    const {
-      match: {
-        params: { unitId },
-      },
-    } = this.props;
-    router.push(`/personnel-management/post-management/${unitId}/list`);
+    // const {
+    //   match: {
+    //     params: { unitId },
+    //   },
+    // } = this.props;
+    // router.push(`/personnel-management/post-management/${unitId}/list`);
+    setTimeout(this.goBack, 1000);
   };
 
   // 去除左右两边空白
@@ -134,12 +144,12 @@ export default class PostEdit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goPostList());
+          message.success(msg, 1, this.goPostList);
           this.setState({ submitting: false });
         };
 
         const error = () => {
-          message.success(id ? '编辑失败' : '新增失败');
+          message.error(id ? '编辑失败' : '新增失败');
           this.setState({ submitting: false });
         };
 
@@ -197,6 +207,7 @@ export default class PostEdit extends PureComponent {
     } = this.props;
 
     const { submitting, startTime, endTime } = this.state;
+    console.log(this.goBack);
 
     return (
       <Card bordered={false}>

@@ -755,7 +755,7 @@ export default class accountManagementList extends React.Component {
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="loginId"
-          grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
+          grid={{ gutter: 24, column: 3, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={filteredList}
           renderItem={item => {
             const { loginId, loginName, userName, phoneNumber, isBindWechat, status, users } = item;

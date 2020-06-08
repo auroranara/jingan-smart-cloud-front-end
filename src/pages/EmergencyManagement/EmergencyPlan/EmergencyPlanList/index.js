@@ -156,13 +156,15 @@ export default class EmergencyPlanList extends Component {
   // 编辑按钮点击事件
   handleEditClick = (e) => {
     const { id } = e.currentTarget.dataset;
-    router.push(`/emergency-management/emergency-plan/edit/${id}`);
+    // router.push(`/emergency-management/emergency-plan/edit/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-plan/edit/${id}`);
   }
 
   // 查看按钮点击事件
   handleViewClick = (e) => {
     const { id } = e.currentTarget.dataset;
-    router.push(`/emergency-management/emergency-plan/detail/${id}`);
+    // router.push(`/emergency-management/emergency-plan/detail/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-plan/detail/${id}`);
   }
 
   // 确认发布
@@ -553,7 +555,7 @@ export default class EmergencyPlanList extends Component {
                 current: pageNum,
                 pageSize,
                 total,
-                pageSizeOptions: ['5', '10', '15', '20'],
+                // pageSizeOptions: ['5', '10', '15', '20'],
                 // showTotal: total => `共 ${total} 条`,
                 showQuickJumper: true,
                 showSizeChanger: true,
@@ -682,7 +684,7 @@ export default class EmergencyPlanList extends Component {
               current: pageNum,
               pageSize,
               total,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               // showTotal: total => `共 ${total} 条`,
               showQuickJumper: true,
               showSizeChanger: true,

@@ -188,9 +188,10 @@ export default class PersonnelList extends PureComponent {
       },
     } = this.props;
     const { curCompanyName } = this.state;
-    router.push(
-      `/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
-    );
+    // router.push(
+    //   `/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
+    // );
+    window.open(`${window.publicPath}#/real-name-certification/personnel-management/edit/${id}?companyId=${companyId}&&companyName=${curCompanyName}`);
   };
 
   handleToDetail = id => {
@@ -200,9 +201,10 @@ export default class PersonnelList extends PureComponent {
       },
     } = this.props;
     const { curCompanyName } = this.state;
-    router.push(
-      `/real-name-certification/personnel-management/detail/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
-    );
+    // router.push(
+    //   `/real-name-certification/personnel-management/detail/${id}?companyId=${companyId}&&companyName=${curCompanyName}`
+    // );
+    window.open(`${window.publicPath}#/real-name-certification/personnel-management/detail/${id}?companyId=${companyId}&&companyName=${curCompanyName}`);
   };
 
   // 标签
@@ -237,14 +239,10 @@ export default class PersonnelList extends PureComponent {
     if (info.file.status === undefined) {
       this.setState({ personLoading: false, personFileList: [] });
     }
-    if (res) {
+    if (info.file.status === 'done' && res) {
       if (res.code && res.code === 200) {
         message.success(res.msg);
         this.handlePersonClose();
-        this.handleQuery();
-        this.setState({
-          personLoading: false,
-        });
       } else {
         res.data.errorMasssge.length === 0
           ? message.error(res.msg)
@@ -253,10 +251,9 @@ export default class PersonnelList extends PureComponent {
             content: res.data.errorMasssge,
             okText: '确定',
           });
-        this.setState({
-          personLoading: false,
-        });
       }
+      this.handleQuery();
+      this.setState({ personLoading: false });
     }
   };
 
@@ -373,6 +370,28 @@ export default class PersonnelList extends PureComponent {
       });
     }
   };
+
+  // 批量删除
+  handleBatchDelete = () => {
+    const { selectedRowKeys } = this.state;
+    if (selectedRowKeys && selectedRowKeys.length) {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'realNameCertification/deletePerson',
+        payload: { id: selectedRowKeys.join(',') },
+        callback: success => {
+          if (success) {
+            message.success('删除人员成功');
+            this.handleQuery();
+          } else {
+            message.error('删除人员失败');
+          }
+        },
+      });
+    } else {
+      message.warning('请选择人员');
+    }
+  }
 
   // 渲染筛选栏
   renderFilter = () => {
@@ -664,6 +683,14 @@ export default class PersonnelList extends PureComponent {
                 </Select.Option>
               ))}
             </Select>
+            <AuthButton
+              style={{ marginRight: '10px' }}
+              type="primary"
+              code={deleteCode}
+              onClick={this.handleBatchDelete}
+            >
+              批量删除
+            </AuthButton>
             {importAuth ? (
               <a onClick={this.hanldleImgRecord}>导入记录</a>
             ) : (
@@ -688,7 +715,7 @@ export default class PersonnelList extends PureComponent {
               showQuickJumper: true,
               showSizeChanger: true,
               showTotal: t => `共 ${t} 条记录`,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               onChange: this.handlePageChange,
               onShowSizeChange: (num, size) => {
                 this.handlePageChange(1, size);

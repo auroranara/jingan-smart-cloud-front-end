@@ -6,10 +6,11 @@ import { Card, Button, Input, Select, Upload, DatePicker, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
-import router from 'umi/router';
+// import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -49,6 +50,11 @@ const uploadAction = '/acloud_new/v2/uploadFile';
   loading: loading.models.reservoirRegion,
 }))
 export default class DangerChemicalsHandle extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, listUrl);
+  }
+
   state = {
     companyVisible: false, // 弹框是否显示
     uploading: false, // 上传是否加载
@@ -95,9 +101,9 @@ export default class DangerChemicalsHandle extends PureComponent {
     }
   }
 
-  goBack = () => {
-    router.push(listUrl);
-  };
+  // goBack = () => {
+  //   router.push(listUrl);
+  // };
 
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
@@ -146,7 +152,7 @@ export default class DangerChemicalsHandle extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
@@ -302,7 +308,7 @@ export default class DangerChemicalsHandle extends PureComponent {
     } = detailList;
 
     return (
-      <Card>
+
         <Form>
           {unitType !== 4 && (
             <FormItem label="单位名称" {...formItemLayout}>
@@ -419,7 +425,6 @@ export default class DangerChemicalsHandle extends PureComponent {
             )}
           </FormItem>
         </Form>
-      </Card>
     );
   };
 
@@ -453,16 +458,23 @@ export default class DangerChemicalsHandle extends PureComponent {
     ];
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        {this.renderForm()}
-        <Button
-          style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-          type="primary"
-          onClick={this.handleSubmit}
-          loading={uploading}
-        >
-          提交
-        </Button>
-        {this.renderModal()}
+        <Card>
+          {this.renderForm()}
+          <div style={{ textAlign: 'center' }}>
+            <Button onClick={this.goBack}>
+              返回
+            </Button>
+            <Button
+              style={{ marginLeft: 10 }}
+              type="primary"
+              onClick={this.handleSubmit}
+              loading={uploading}
+            >
+              提交
+            </Button>
+          {this.renderModal()}
+          </div>
+        </Card>
       </PageHeaderLayout>
     );
   }

@@ -2,14 +2,25 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Card, Button, BackTop, Table } from 'antd';
+import { Card, Button, BackTop, Table, Row, Col, Select } from 'antd';
 import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import ImagePreview from '@/jingan-components/ImagePreview';
 import router from 'umi/router';
+import Ellipsis from '@/components/Ellipsis';
 
 const title = '批量导入照片记录';
 const defaultPageSize = 10;
+// const DEFAULT_SPAN = {
+//   md: 8,
+//   sm: 12,
+//   xs: 24,
+// };
+// 上传结果选项
+const statusOptions = [
+  { value: '1', label: '成功' },
+  { value: '0', label: '失败' },
+];
 
 @connect(({ realNameCertification, user, loading }) => ({
   realNameCertification,
@@ -27,7 +38,7 @@ export default class PersonnelList extends PureComponent {
     currentPage: 1,
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchList();
   }
 
@@ -35,15 +46,21 @@ export default class PersonnelList extends PureComponent {
   fetchList = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
+      match: { params: { id } },
+      form: { getFieldsValue },
     } = this.props;
+    const values = getFieldsValue();
     dispatch({
       type: 'realNameCertification/fetchRecordList',
-      payload: { pageNum, pageSize, companyId: id },
+      payload: { pageNum, pageSize, companyId: id, ...values },
     });
   };
+
+  handleReset = () => {
+    const { form: { resetFields } } = this.props;
+    resetFields();
+    this.fetchList();
+  }
 
   hanldleImgModal = () => {
     this.setState({ imgVisible: true });
@@ -76,6 +93,45 @@ export default class PersonnelList extends PureComponent {
     );
   };
 
+  renderFilter = () => {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
+    return (
+      <Card>
+        <Form>
+          <Row gutter={16}>
+            <Col lg={8} md={12} sm={24} xs={24}>
+              <Form.Item style={{ margin: '0', padding: '4px 0' }}>
+                {getFieldDecorator('status')(
+                  <Select placeholder="上传结果">
+                    {statusOptions.map(({ value, label }) => (
+                      <Select.Option value={value} key={value}>{label}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24} xs={24}>
+              <Form.Item style={{ margin: '0', padding: '4px 0' }}>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.fetchList()}
+                >
+                  查询
+                </Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
+                  重置
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    );
+  }
+
   // 渲染列表
   renderList = () => {
     const {
@@ -96,6 +152,7 @@ export default class PersonnelList extends PureComponent {
         title: '序号',
         dataIndex: 'index',
         align: 'center',
+        width: 100,
       },
       {
         title: '照片',
@@ -123,15 +180,21 @@ export default class PersonnelList extends PureComponent {
                   />
                 ))}
             </div>
-          ) : (
-            ''
-          ),
+          ) : '',
+      },
+      {
+        title: '文件名称',
+        dataIndex: 'fileName',
+        align: 'center',
+        render: (val) => <Ellipsis lines={1} tooltip>{val}</Ellipsis>,
+        width: 400,
       },
       {
         title: '上传结果',
         dataIndex: 'status',
         align: 'center',
         render: val => (+val === 1 ? '成功' : '失败'),
+        width: 150,
       },
       {
         title: '原因',
@@ -143,6 +206,7 @@ export default class PersonnelList extends PureComponent {
         dataIndex: 'createTime',
         align: 'center',
         render: val => moment(+val).format('YYYY-MM-DD HH:mm:ss'),
+        width: 200,
       },
     ];
     return list && list.length ? (
@@ -161,7 +225,7 @@ export default class PersonnelList extends PureComponent {
             showQuickJumper: true,
             showSizeChanger: true,
             showTotal: t => `共 ${t} 条记录`,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: this.fetchList,
             onShowSizeChange: (num, size) => {
               this.fetchList(1, size);
@@ -170,11 +234,11 @@ export default class PersonnelList extends PureComponent {
         />
       </Card>
     ) : (
-      <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
-    );
+        <div style={{ marginTop: '16px', textAlign: 'center' }}>暂无数据</div>
+      );
   };
 
-  render() {
+  render () {
     const {
       match: {
         params: { id },
@@ -219,6 +283,7 @@ export default class PersonnelList extends PureComponent {
         }
       >
         <BackTop />
+        {this.renderFilter()}
         {this.renderList()}
         <ImagePreview images={images} currentImage={currentImage} />
       </PageHeaderLayout>

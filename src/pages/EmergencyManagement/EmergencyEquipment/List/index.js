@@ -334,19 +334,23 @@ export default class EmergencyEquipmentList extends PureComponent {
   };
 
   goDetail = id => {
-    router.push(`/emergency-management/emergency-equipment/detail/${id}`);
+    // router.push(`/emergency-management/emergency-equipment/detail/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-equipment/detail/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/emergency-management/emergency-equipment/edit/${id}`);
+    // router.push(`/emergency-management/emergency-equipment/edit/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-equipment/edit/${id}`);
   };
 
   goCheck = id => {
-    router.push(`/emergency-management/emergency-equipment/check/${id}/list`);
+    // router.push(`/emergency-management/emergency-equipment/check/${id}/list`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-equipment/check/${id}/list`);
   };
 
   goMaint = id => {
-    router.push(`/emergency-management/emergency-equipment/maint/${id}/list`);
+    // router.push(`/emergency-management/emergency-equipment/maint/${id}/list`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-equipment/maint/${id}/list`);
   };
 
   // 表格改变触发，包含分页变动
@@ -632,7 +636,7 @@ export default class EmergencyEquipmentList extends PureComponent {
               // showTotal={false}
               showQuickJumper
               showSizeChanger
-              pageSizeOptions={['5', '10', '15', '20']}
+              // pageSizeOptions={['5', '10', '15', '20']}
               pageSize={pageSize}
               current={pageNum}
               total={total}

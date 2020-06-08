@@ -1099,7 +1099,7 @@ export default class GasHistory extends Component {
                   current: pageNum,
                   pageSize,
                   total,
-                  pageSizeOptions: ['5', '10', '15', '20'],
+                  // pageSizeOptions: ['5', '10', '15', '20'],
                   showTotal: total => `共计 ${total} 条数据`,
                   showQuickJumper: true,
                   showSizeChanger: true,

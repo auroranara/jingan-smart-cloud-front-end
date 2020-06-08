@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-
+import { Tooltip } from 'antd';
 import styles from './TypeCard.less';
 import InfoBar from './InfoBar';
 
@@ -18,7 +18,9 @@ export default class TypeCardBody extends PureComponent {
           <span className={styles.label}>监测设备：</span>
           {name}
           {videoList.length > 0 && (
-            <span className={styles.camera} onClick={() => handleShowVideo(videoList)} />
+            <Tooltip placement="bottom" title={'摄像头'} overlayStyle={{ zIndex: 9999 }}>
+              <span className={styles.camera} onClick={() => handleShowVideo(videoList)} />
+            </Tooltip>
           )}
         </h4>
         <div className={styles.bodyInner}>

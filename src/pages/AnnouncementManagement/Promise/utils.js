@@ -31,7 +31,7 @@ export const BREADCRUMBLIST = [
   // modify
   { title: '首页', name: '首页', href: '/' },
   { title: '安全风险管控', name: '安全风险管控' },
-  { title: '安全承诺公告', name: '安全承诺公告', href: LIST_URL },
+  { title: '风险研判与承诺公告', name: '风险研判与承诺公告', href: LIST_URL },
 ];
 
 const DEVICES = ['总：', '运行：', '停产：', '检修：'];

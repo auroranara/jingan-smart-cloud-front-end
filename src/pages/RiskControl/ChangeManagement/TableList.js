@@ -28,15 +28,15 @@ const { TextArea } =  Input;
 }))
 @Form.create()
 export default class TableList extends PureComponent {
-  state = { current: 1, approvalVisible: false, logVisible: false, itemId: undefined };
+  state = { current: 1, pageSize: PAGE_SIZE, approvalVisible: false, logVisible: false, itemId: undefined };
   values = {};
   empty = true;
 
   componentDidMount() {
-    this.getList();
+    this.getList(null, PAGE_SIZE);
   }
 
-  getList = pageNum => {
+  getList = (pageNum, pageSize) => {
     const { dispatch } = this.props;
     const { companyId } = this.values;
     const vals = { ...this.values };
@@ -51,24 +51,26 @@ export default class TableList extends PureComponent {
 
     dispatch({
       type: 'changeManagement/fetchChangeList',
-      payload: { pageNum, pageSize: PAGE_SIZE, ...vals },
+      payload: { pageNum, pageSize, ...vals },
     });
   };
 
   handleSearch = values => {
+    const { pageSize } = this.state;
     this.values = values;
-    this.getList();
+    this.getList(null, pageSize);
   };
 
   handleReset = () => {
+    const { pageSize } = this.state;
     this.values = {};
-    this.getList();
+    this.getList(null, pageSize);
   };
 
   onTableChange = (pagination, filters, sorter) => {
-    const { current } = pagination;
-    this.setState({ current });
-    this.getList(current);
+    const { current, pageSize } = pagination;
+    this.setState({ current, pageSize });
+    this.getList(current, pageSize);
   };
 
   changeVisible = (prop, bool) => {
@@ -105,13 +107,13 @@ export default class TableList extends PureComponent {
 
   handleEvaluate = id => {
     const { dispatch } = this.props;
-    const { current } = this.state;
+    const { current, pageSize } = this.state;
     dispatch({
       type: 'changeManagement/postEvaluate',
       payload: { id, status: '1' },
       callback: (code, msg) => {
         if (code === 200)
-          this.getList(current);
+          this.getList(current, pageSize);
         else
           message.error(msg);
       },
@@ -120,7 +122,7 @@ export default class TableList extends PureComponent {
 
   handleApproveOk = () => {
     const { dispatch, form: { validateFields } } = this.props;
-    const { current, itemId } = this.state;
+    const { current, pageSize, itemId } = this.state;
 
     validateFields((err, values) => {
       if (!err)
@@ -129,7 +131,7 @@ export default class TableList extends PureComponent {
           payload: { id: itemId, ...values },
           callback: (code, msg) => {
             if (code === 200) {
-              this.getList(current);
+              this.getList(current, pageSize);
               this.changeVisible('approval', false);
             }
             else
@@ -333,7 +335,7 @@ export default class TableList extends PureComponent {
       user: { currentUser: { unitType } },
       changeManagement: { total, list, zoneList },
     } = this.props;
-    const { current } = this.state;
+    const { current, pageSize } = this.state;
     const isComUser = isCompanyUser(unitType);
     const fields = getSearchFields(isComUser, zoneList, this.handleCompanyChange);
     const cols = this.getColumns();
@@ -374,7 +376,7 @@ export default class TableList extends PureComponent {
               dataSource={list}
               onChange={this.onTableChange}
               scroll={{ x: 1400 }} // 项目不多时注掉
-              pagination={{ pageSize: PAGE_SIZE, total: total, current }}
+              pagination={{ pageSize, total: total, current, showSizeChanger: true }}
             />
           ) : <Empty />}
         </div>

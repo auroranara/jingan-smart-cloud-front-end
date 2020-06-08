@@ -101,10 +101,12 @@ export default class EmergencyDrillList extends Component {
 
   goDetail = id => {
     router.push(`/emergency-management/emergency-drill/detail/${id}`);
+    // window.open(`${window.publicPath}#/emergency-management/emergency-drill/detail/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/emergency-management/emergency-drill/edit/${id}`);
+    // router.push(`/emergency-management/emergency-drill/edit/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-drill/edit/${id}`);
   };
 
   /**
@@ -401,7 +403,7 @@ export default class EmergencyDrillList extends Component {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            // pageSizeOptions: ['5', '10', '15', '20'],
             onChange: this.handleTableChange,
             onShowSizeChange: this.handleTableChange,
           }}

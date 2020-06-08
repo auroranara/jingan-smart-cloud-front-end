@@ -249,17 +249,30 @@ export function renderSections(
   handleSubmit,
   listUrl,
   fileLoading = false,
-  loading = false
+  loading = false,
+  isAdd,
 ) {
   const secs = getSections(sections);
   const props = {};
 
+  const goBack = () => {
+    if (isAdd) router.push(listUrl);
+    else window.close();
+  };
   const submitBtn = handleSubmit ? (
     <FormItem wrapperCol={{ span: 24, offset: 10 }}>
-      <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>
-        取消
+      <Button
+        style={{ marginRight: 20 }}
+        // onClick={e => router.push(listUrl)}
+        onClick={goBack}
+      >
+        返回
       </Button>
-      <Button type="primary" htmlType="submit" loading={fileLoading || loading}>
+      <Button
+        type="primary"
+        htmlType="submit"
+        loading={fileLoading || loading}
+      >
         提交
       </Button>
     </FormItem>

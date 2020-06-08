@@ -90,8 +90,9 @@ export default class lawDatabaseList extends PureComponent {
 
   // 跳转到编辑页面
   goLawsEdit = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/safety-production-regulation/laws/edit/${id}`));
+    // const { dispatch } = this.props;
+    // dispatch(routerRedux.push(`/safety-production-regulation/laws/edit/${id}`));
+    window.open(`${window.publicPath}#/safety-production-regulation/laws/edit/${id}`);
   };
 
   /* 重置按钮点击事件 */
@@ -351,7 +352,7 @@ export default class lawDatabaseList extends PureComponent {
               total,
               showQuickJumper: true,
               showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15', '20'],
+              // pageSizeOptions: ['5', '10', '15', '20'],
               onChange: this.handleQuery,
               onShowSizeChange: (num, size) => {
                 this.handleQuery(1, size);

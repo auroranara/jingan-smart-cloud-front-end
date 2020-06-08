@@ -25,6 +25,7 @@ export default class MapMarkerSelect extends PureComponent {
    **/
   handleUpdateMap = (isInit = false) => {
     const { dispatch, companyId } = this.props;
+    if (!companyId) return;
     // 获取地图列表
     dispatch({
       type: 'map/fetchMapList',

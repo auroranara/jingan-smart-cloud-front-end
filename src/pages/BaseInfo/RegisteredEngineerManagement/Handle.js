@@ -15,6 +15,7 @@ import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import { SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -47,6 +48,11 @@ const COMPANY_LIST_FIELDNAMES = { key: 'loginId', value: 'userName' };
   listLoading: loading.effects['user/fetchUserList'],
 }))
 export default class RegSafetyEngEdit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/base-info/registered-engineer-management/list');
+  }
+
   state = {
     companyVisible: false, // 弹框是否显示
     requireFilesList: [],
@@ -113,9 +119,9 @@ export default class RegSafetyEngEdit extends PureComponent {
     }
   }
 
-  goBack = () => {
-    router.push('/base-info/registered-engineer-management/list');
-  };
+  // goBack = () => {
+  //   router.push('/base-info/registered-engineer-management/list');
+  // };
 
   handleSubmit = () => {
     const {
@@ -171,7 +177,7 @@ export default class RegSafetyEngEdit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
@@ -622,6 +628,12 @@ export default class RegSafetyEngEdit extends PureComponent {
     const { regUploading, reqUploading } = this.state;
     return (
       <FooterToolbar>
+        <Button
+          size="large"
+          onClick={this.goBack}
+        >
+          返回
+        </Button>
         {isDetail ? null : (
           <Button
             type="primary"
@@ -632,9 +644,6 @@ export default class RegSafetyEngEdit extends PureComponent {
             提交
           </Button>
         )}
-        <Button type="primary" size="large" onClick={this.goBack}>
-          返回
-        </Button>
       </FooterToolbar>
     );
   }

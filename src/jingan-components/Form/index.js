@@ -15,10 +15,14 @@ import Radio from './Radio';
 import Map from './Map';
 import AMap from './AMap';
 import InputNumber from './InputNumber';
+import Checkbox from './Checkbox';
+import Tree from './Tree';
 import PersonModal from './PersonModal';
 import GridCompanyTransfer from './GridCompanyTransfer';
 import ExaminationContentTransfer from './ExaminationContentTransfer';
 import FlowModalSelect from './FlowModalSelect';
+import TableTransfer from './TableTransfer';
+import SelectModalSelect from './SelectModalSelect';
 import classNames from 'classnames';
 import styles from './index.less';
 
@@ -66,10 +70,14 @@ const componentReference = {
   Map,
   AMap,
   InputNumber,
+  Checkbox,
+  Tree,
   PersonModal,
   GridCompanyTransfer,
   ExaminationContentTransfer,
   FlowModalSelect,
+  TableTransfer,
+  SelectModalSelect,
 };
 
 const FormIndex = forwardRef((props, ref) => {
@@ -94,6 +102,7 @@ const FormIndex = forwardRef((props, ref) => {
     initialValues,
     dependencies: globalDependencies,
     showCard = true,
+    showEditButton = true,
     ...rest
   } = props;
   // 创建form的引用
@@ -173,17 +182,23 @@ const FormIndex = forwardRef((props, ref) => {
           const toolbar = showOperation &&
             mode && (
               <div className={classNames(styles.operationContainer, styles.modeOperationContainer)}>
-                <div className={styles.operationWrapper}>
-                  {mode === 'detail' ? (
-                    <Button type="primary" href={`#${editPath}`} disabled={!hasEditAuthority}>
-                      编辑
-                    </Button>
-                  ) : (
+                {mode === 'detail' ? (
+                  (typeof showEditButton === 'function'
+                    ? showEditButton(payload)
+                    : showEditButton) && (
+                    <div className={styles.operationWrapper}>
+                      <Button type="primary" href={`#${editPath}`} disabled={!hasEditAuthority}>
+                        编辑
+                      </Button>
+                    </div>
+                  )
+                ) : (
+                  <div className={styles.operationWrapper}>
                     <Button type="primary" htmlType="submit" loading={submitting || uploading}>
                       提交
                     </Button>
-                  )}
-                </div>
+                  </div>
+                )}
                 <div className={styles.operationWrapper}>
                   <Button href={`#${listPath}`}>返回</Button>
                 </div>
@@ -386,8 +401,12 @@ export {
   Map,
   AMap,
   InputNumber,
+  Checkbox,
+  Tree,
   PersonModal,
   GridCompanyTransfer,
   ExaminationContentTransfer,
   FlowModalSelect,
+  TableTransfer,
+  SelectModalSelect,
 };

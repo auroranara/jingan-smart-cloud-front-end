@@ -69,7 +69,7 @@ const fixedOperationColumn = {
   key: 'operation',
   fixed: 'right',
   width: 64,
-  render: (text, { id }) => <Link to={`${detailUrl}${id}`}>查看</Link>,
+  render: (text, { id }) => <Link to={`${detailUrl}${id}`} target="_blank">查看</Link>,
 };
 /* 非固定操作列 */
 const operationColumn = {
@@ -77,7 +77,7 @@ const operationColumn = {
   dataIndex: '',
   key: 'operation',
   width: 64,
-  render: (text, { id }) => <Link to={`${detailUrl}${id}`}>查看</Link>,
+  render: (text, { id }) => <Link to={`${detailUrl}${id}`} target="_blank">查看</Link>,
 };
 /* 筛选表单label */
 const fieldLabels = {
@@ -1152,7 +1152,7 @@ export default class App extends PureComponent {
           current: pageNum,
           pageSize,
           total,
-          pageSizeOptions: ['5', '10', '15', '20'],
+          // pageSizeOptions: ['5', '10', '15', '20'],
           // showTotal: (total) => `共 ${total} 条`,
           showQuickJumper: true,
           showSizeChanger: true,
