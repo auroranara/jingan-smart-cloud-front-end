@@ -80,8 +80,9 @@ export default class MonitorTabDrawer extends PureComponent {
                     fields={list.map((item, index) => ({
                       label: item.name,
                       render: () => {
-                        const { monitorParams } = item;
-                        const alarm = monitorParams.filter(item => +item.status > 0).length;
+                        const { monitorParams, meList } = item;
+                        // const alarm = monitorParams.filter(item => +item.status > 0).length;
+                        const alarm = (meList || []).filter(me => +me.warnStatus === -1).length;
                         const name = monitorType === '301' ? item.areaName : item.name;
                         const len = alarm > 0 ? 5 : 7;
                         const nameContent =

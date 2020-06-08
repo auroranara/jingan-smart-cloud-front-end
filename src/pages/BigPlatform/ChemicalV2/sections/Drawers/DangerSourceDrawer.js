@@ -181,11 +181,27 @@ export default class DangerSourceDrawer extends PureComponent {
                     fields={list.map((item, index) => ({
                       label: item.name,
                       render: () => {
-                        // const { monitorParams } = item;
-                        // const alarm = monitorParams.filter(item => +item.status > 0).length;
+                        const {
+                          dangerSourceList: {
+                            gasHolderManage = [],
+                            industryPipeline = [],
+                            productDevice = [],
+                            tankArea = [],
+                            wareHouseArea = [],
+                          } = {},
+                        } = item || {};
+                        const meLists = [tankArea].reduce((res, cur) => {
+                          let lists = [];
+                          cur.map(item => {
+                            lists = [...lists, ...(item.meList || [])];
+                            return null;
+                          });
+                          res = [...res, ...lists];
+                          return res;
+                        }, []);
+                        const alarm = meLists.filter(item => +item.warnStatus === -1).length;
                         const name = item.name;
-                        const len = 7;
-                        // const len = alarm > 0 ? 5 : 7;
+                        const len = alarm > 0 ? 5 : 7;
                         const nameContent =
                           name && name.length > len ? (
                             <Tooltip
@@ -199,10 +215,10 @@ export default class DangerSourceDrawer extends PureComponent {
                         return (
                           <span key={index} style={{ whiteSpace: 'nowrap' }}>
                             {nameContent}
-                            {/* {alarm > 0 && <span className={styles.alarmNum}>{alarm}</span>} */}
-                            {hasAlarm([item]) && (
+                            {alarm > 0 && <span className={styles.alarmNum}>{alarm}</span>}
+                            {/* {hasAlarm([item]) && (
                               <span className={styles.dot} style={{ right: 3, top: 3 }} />
-                            )}
+                            )} */}
                           </span>
                         );
                       },
