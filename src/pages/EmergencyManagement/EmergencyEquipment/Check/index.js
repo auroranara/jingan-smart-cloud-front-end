@@ -132,7 +132,8 @@ export default class EquipCheckList extends PureComponent {
       },
     } = this.props;
     const { id } = e.currentTarget.dataset;
-    router.push(`${PATH}/${equipId}/edit/${id}`);
+    // router.push(`${PATH}/${equipId}/edit/${id}`);
+    window.open(`${window.publicPath}#${PATH}/${equipId}/edit/${id}`);
   };
 
   // 查看按钮点击事件
@@ -143,7 +144,8 @@ export default class EquipCheckList extends PureComponent {
       },
     } = this.props;
     const { id } = e.currentTarget.dataset;
-    router.push(`${PATH}/${equipId}/detail/${id}`);
+    // router.push(`${PATH}/${equipId}/detail/${id}`);
+    window.open(`${window.publicPath}#${PATH}/${equipId}/detail/${id}`);
   };
 
   // 删除按钮点击事件

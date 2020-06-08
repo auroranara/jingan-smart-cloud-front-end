@@ -246,10 +246,11 @@ export default class StandardDatabase extends Component {
 
   // 跳转到检查流程列表页面
   jumpToProcess = ({ objectId, objectTitle }) => {
-    router.push({
-      pathname: processUrl + objectId,
-      query: { checkItemTitle: objectTitle },
-    })
+    // router.push({
+    //   pathname: processUrl + objectId,
+    //   query: { checkItemTitle: objectTitle },
+    // })
+    window.open(`${window.publicPath}#${processUrl}${objectId}?checkItemTitle=${objectTitle}`);
   }
 
   /**

@@ -1,13 +1,14 @@
 import { PureComponent, Fragment } from 'react';
+import Lightbox from 'react-images';
+import moment from 'moment';
+import { Button, Card, Steps, Spin } from 'antd';
+import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Card, Steps, Spin } from 'antd';
-import { connect } from 'dva';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import DescriptionList from '@/components/DescriptionList';
 import Ellipsis from '@/components/Ellipsis';
-import Lightbox from 'react-images';
-import moment from 'moment';
 import hiddenIcon from '@/assets/hiddenIcon.png';
 
 const { Step } = Steps
@@ -528,6 +529,11 @@ export default class WorkApprovalDetail extends PureComponent {
           {this.renderApprovalInfo()}
           {this.renderImageDetail()}
         </Spin>
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
       </PageHeaderLayout>
     )
   }

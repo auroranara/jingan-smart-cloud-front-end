@@ -252,7 +252,8 @@ export default class WorkApprovalList extends PureComponent {
       match: { params: { companyId, type } },
       location: { query: { companyName } },
     } = this.props
-    router.push(`/operation-safety/work-approval-report/company/${companyId}/${type}/detail/${id}?companyName=${companyName}`)
+    // router.push(`/operation-safety/work-approval-report/company/${companyId}/${type}/detail/${id}?companyName=${companyName}`)
+    window.open(`${window.publicPath}#/operation-safety/work-approval-report/company/${companyId}/${type}/detail/${id}?companyName=${companyName}`);
   }
 
   /**

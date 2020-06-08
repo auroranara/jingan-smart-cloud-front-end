@@ -96,6 +96,7 @@ export default class EmergencyDrillDetail extends Component {
 
   handleBackButtonClick = () => {
     router.push(listUrl);
+    // window.close();
   };
 
   render() {

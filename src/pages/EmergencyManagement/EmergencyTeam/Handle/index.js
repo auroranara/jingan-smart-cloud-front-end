@@ -15,6 +15,7 @@ import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import style from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 // 权限
 const {
@@ -34,6 +35,11 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 }))
 @Form.create()
 export default class Edit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_URL);
+  }
+
   state = {
     areaCode: '', // 区号
     fixedPhone: '', // 固定电话
@@ -141,7 +147,8 @@ export default class Edit extends PureComponent {
       const success = () => {
         const msg = id ? '编辑成功' : '新增成功';
         message.success(msg, 1);
-        router.push(LIST_URL);
+        // router.push(LIST_URL);
+        setTimeout(this.goBack, 1000);
       };
 
       const error = () => {
@@ -322,17 +329,23 @@ export default class Edit extends PureComponent {
             handleSubmit,
             LIST_URL,
             fileLoading,
-            loading
+            loading,
+            !id,
           )}
           {isDet ? (
-            <Button
-              type="primary"
-              disabled={!editAuth}
-              style={{ marginLeft: '45%' }}
-              onClick={e => router.push(`${ROUTER}/edit/${id}`)}
-            >
-              编辑
-            </Button>
+            <div style={{ textAlign: 'center' }}>
+              <Button style={{ marginRight: 10 }} onClick={e => window.close()}>
+                返回
+              </Button>
+              <Button
+                type="primary"
+                disabled={!editAuth}
+                // style={{ marginLeft: '45%' }}
+                onClick={e => router.push(`${ROUTER}/edit/${id}`)}
+              >
+                编辑
+              </Button>
+            </div>
           ) : null}
         </Card>
       </PageHeaderLayout>

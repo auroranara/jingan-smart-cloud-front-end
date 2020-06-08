@@ -44,6 +44,7 @@ import {
   APPROVE_STATUSES,
 } from '../config';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 @connect(
   ({
@@ -86,9 +87,10 @@ import styles from './index.less';
       edit: '编辑作业票',
       reapply: '重新申请作业票',
     }[name];
-    const goBack = () => {
-      router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
-    };
+    // const goBack = () => {
+    //   router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
+    // };
+    const goBack = genGoBack({ match: { params: { id } } }, pathname.replace(new RegExp(`${name}.*`), 'list'));
     const type = TYPES.find(({ key }) => key === t) ? t : TYPES[0].key;
     return {
       ...stateProps,
@@ -136,7 +138,8 @@ import styles from './index.less';
           callback: (success, data) => {
             if (success) {
               message.success('新增成功！');
-              goBack();
+              // goBack();
+              setTimeout(goBack, 1000);
             } else {
               message.error(`新增失败，${data}！`);
             }
@@ -154,7 +157,8 @@ import styles from './index.less';
           callback: (success, data) => {
             if (success) {
               message.success('编辑成功！');
-              goBack();
+              // goBack();
+              setTimeout(goBack, 1000);
             } else {
               message.error(`编辑失败，${data}！`);
             }
@@ -172,7 +176,8 @@ import styles from './index.less';
           callback: (success, data) => {
             if (success) {
               message.success('重新申请成功！');
-              goBack();
+              // goBack();
+              setTimeout(goBack, 1000);
             } else {
               message.error(`重新申请失败，${data}！`);
             }

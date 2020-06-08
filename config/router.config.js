@@ -4074,9 +4074,8 @@ module.exports = env => {
                 },
               ],
             },
-            // 作业票管理
             {
-              path: '/operation-safety/working-bill', // 作业许可管理(危险作业管理)
+              path: '/operation-safety/working-bill', // 作业票管理(作业许可管理/危险作业管理)
               code: 'operationSafety.workingBill',
               name: 'workingBill',
               hideChildrenInMenu: true,

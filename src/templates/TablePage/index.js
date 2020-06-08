@@ -170,12 +170,8 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
                 ...result,
                 [`goTo${codeName[0].toUpperCase()}${codeName.slice(1)}`](data) {
                   const id = (data && data.id) || data;
-                  router.push(
-                    pathname.replace(
-                      new RegExp(`${name}.*`),
-                      `${kebabCase(codeName)}${id ? `/${id}` : ''}`
-                    )
-                  );
+                  // router.push(pathname.replace(new RegExp(`${name}.*`),`${kebabCase(codeName)}${id ? `/${id}` : ''}`));
+                  window.open(`${window.publicPath}#` + pathname.replace(new RegExp(`${name}.*`),`${kebabCase(codeName)}${id ? `/${id}` : ''}`));
                 },
               };
         }, {})),

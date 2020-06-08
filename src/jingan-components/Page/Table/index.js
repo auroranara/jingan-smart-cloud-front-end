@@ -82,6 +82,7 @@ const TablePage = props => {
             <Link
               to={`${props.editPath}/${data.id || data}`}
               disabled={!props.hasEditAuthority || disabled}
+              target="_blank"
               {...rest}
             >
               {children || '编辑'}
@@ -91,6 +92,7 @@ const TablePage = props => {
             <Link
               to={`${props.detailPath}/${data.id || data}`}
               disabled={!props.hasDetailAuthority || disabled}
+              target="_blank"
               {...rest}
             >
               {children || '查看'}

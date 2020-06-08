@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Steps, Spin, Table } from 'antd';
+import { Button, Card, Steps, Spin, Table } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import moment from 'moment';
@@ -789,6 +789,11 @@ export default class App extends PureComponent {
           )}
           {tab === '2' && this.renderDocumentList()}
           {this.renderImageDetail()}
+          <div style={{ textAlign: 'center' }}>
+            <Button onClick={e => window.close()}>
+              返回
+            </Button>
+          </div>
         </Spin>
       </PageHeaderLayout>
     );

@@ -24,6 +24,7 @@ import {
   RECORD_STATUSES,
 } from '../EmergencyPlanList/config';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -34,6 +35,11 @@ const { RangePicker } = DatePicker;
   loading: loading.effects['emergencyPlan/fetchDetail'],
 }))
 export default class EmergencyPlanHandler extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/emergency-management/emergency-plan/list');
+  }
+
   state = {
     submitting: false,
     currentRecordStatus: DEFAULT_RECORD_STATUS,
@@ -128,7 +134,8 @@ export default class EmergencyPlanHandler extends Component {
         const callback = (isSuccess) => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`, () => {
-              router.push('/emergency-management/emergency-plan/list');
+              // router.push('/emergency-management/emergency-plan/list');
+              setTimeout(this.goBack, 1000);
             });
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`, () => {
@@ -538,7 +545,12 @@ export default class EmergencyPlanHandler extends Component {
               ref={this.setFormReference}
               action={
                 <Fragment>
-                  <Button onClick={this.handleBackButtonClick}>返回</Button>
+                  <Button
+                    // onClick={this.handleBackButtonClick}
+                    onClick={this.goBack}
+                  >
+                    返回
+                  </Button>
                   <Button type="primary" onClick={this.handleSubmitButtonClick}>提交审核</Button>
                 </Fragment>
               }

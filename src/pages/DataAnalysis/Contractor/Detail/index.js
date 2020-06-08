@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { Spin, Card, Drawer, Badge as AntBadge } from 'antd';
+import { Button, Spin, Card, Drawer, Badge as AntBadge } from 'antd';
 import Form from '@/jingan-components/Form';
 import { Table, Link, Badge, TextAreaEllipsis, EmptyText } from '@/jingan-components/View';
 import DueDate from '../components/DueDate';
@@ -660,6 +660,11 @@ const ContractorDetail = props => {
           )}
         </Card>
       </Spin>
+      <div style={{ textAlign: 'center', marginTop: 24 }}>
+        <Button onClick={e => window.close()}>
+          返回
+        </Button>
+      </div>
       <Drawer
         title={drawerTitle}
         visible={visible}
