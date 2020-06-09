@@ -69,11 +69,13 @@ export default class TableList extends PureComponent {
   };
 
   goDetail = id => {
-    router.push(`/emergency-management/emergency-process/view/${id}`);
+    // router.push(`/emergency-management/emergency-process/view/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-process/view/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/emergency-management/emergency-process/edit/${id}`);
+    // router.push(`/emergency-management/emergency-process/edit/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-process/edit/${id}`);
   };
 
   // 查询
@@ -230,7 +232,7 @@ export default class TableList extends PureComponent {
         render(_, row) {
           const { projectName, treatType, startTime, endTime, place } = row;
           let treeData = emergencyDrill;
-          console.log('emergencyDrill', emergencyDrill);
+          // console.log('emergencyDrill', emergencyDrill);
 
           const string = treatType
             .split(',')

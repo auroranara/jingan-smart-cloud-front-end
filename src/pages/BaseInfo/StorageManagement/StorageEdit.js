@@ -32,6 +32,7 @@ import StorageMediumModal from './Components/StorageMediumModal';
 import MapMarkerSelect from '@/components/MapMarkerSelect';
 import codesMap from '@/utils/codes';
 import moment from 'moment';
+import { genGoBack } from '@/utils/utils';
 
 import styles from './StorageEdit.less';
 
@@ -125,6 +126,11 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 )
 @Form.create()
 export default class StorageEdit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/major-hazard-info/storage-management/list');
+  }
+
   state = {
     selectedCompany: {}, // 选中的单位 { id, name }
     companyModalVisible: false, // 选择单位弹窗是否可见
@@ -331,11 +337,11 @@ export default class StorageEdit extends PureComponent {
   // 去除左右两边空白
   handleTrim = e => e.target.value.trim();
 
-  goBack = () => {
-    // router.goBack();
-    router.push('/major-hazard-info/storage-management/list');
-    // window.close();
-  };
+  // goBack = () => {
+  //   // router.goBack();
+  //   router.push('/major-hazard-info/storage-management/list');
+  //   // window.close();
+  // };
 
   /**
    * 选择储罐区
@@ -747,8 +753,9 @@ export default class StorageEdit extends PureComponent {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`);
-        if (id) setTimeout(() => window.close(), 1000);
-        else router.push('/major-hazard-info/storage-management/list');
+        // if (id) setTimeout(() => window.close(), 1000);
+        // else router.push('/major-hazard-info/storage-management/list');
+        setTimeout(this.goBack, 1000);
       };
       const error = res => {
         message.error(res ? res.msg : `${tag}失败`);

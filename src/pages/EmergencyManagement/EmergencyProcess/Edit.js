@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
+// import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
@@ -11,6 +11,7 @@ import { getFileList, getImageSize } from '@/pages/BaseInfo/utils';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import { BREADCRUMBLIST, LIST, LIST_URL } from './utils';
+import { genGoBack } from '@/utils/utils';
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -66,6 +67,7 @@ export default class Edit extends PureComponent {
       selectedDrill: {},
       fileList: [],
     };
+    this.goBack = genGoBack(props, LIST_URL);
   }
 
   componentDidMount() {
@@ -260,12 +262,13 @@ export default class Edit extends PureComponent {
             }))
           ),
         };
-        console.log('payload', payload);
-        console.log('JSON.stringify(payload)', JSON.stringify(payload));
+        // console.log('payload', payload);
+        // console.log('JSON.stringify(payload)', JSON.stringify(payload));
         // return;
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push(LIST_URL);
+          // router.push(LIST_URL);
+          setTimeout(this.goBack, 1000);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -513,7 +516,10 @@ export default class Edit extends PureComponent {
             unitType === 4 ? EDIT_FORMITEMS.slice(1, EDIT_FORMITEMS.length) : EDIT_FORMITEMS,
             getFieldDecorator,
             handleSubmit,
-            LIST_URL
+            LIST_URL,
+            undefined,
+            undefined,
+            !id
           )}
         </Card>
         {/* 选择企业弹窗 */}

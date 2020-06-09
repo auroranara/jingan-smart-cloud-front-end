@@ -100,8 +100,8 @@ export default class EmergencyDrillList extends Component {
   };
 
   goDetail = id => {
-    router.push(`/emergency-management/emergency-drill/detail/${id}`);
-    // window.open(`${window.publicPath}#/emergency-management/emergency-drill/detail/${id}`);
+    // router.push(`/emergency-management/emergency-drill/detail/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-drill/detail/${id}`);
   };
 
   goEdit = id => {

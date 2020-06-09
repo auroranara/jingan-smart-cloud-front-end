@@ -95,8 +95,8 @@ export default class EmergencyDrillDetail extends Component {
   };
 
   handleBackButtonClick = () => {
-    router.push(listUrl);
-    // window.close();
+    // router.push(listUrl);
+    window.close();
   };
 
   render() {
@@ -121,14 +121,14 @@ export default class EmergencyDrillDetail extends Component {
         renderItem = <span>{data ? moment(data).format('YYYY-MM-DD') : NO_DATA}</span>;
       } else if (id === 'planType') {
         let treeData = emergencyDrill;
-        const string = data
+        const string = data ? data
           .split(',')
           .map(id => {
             const val = treeData.find(item => item.id === id) || {};
             treeData = val.children || [];
             return val.label;
           })
-          .join('/');
+          .join('/') : '';
         renderItem = <span>{string || NO_DATA}</span>;
       }
       return {

@@ -12,7 +12,8 @@ import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBa
 import TankSelectModal from './Sections/TankSelectModal';
 // 选择装卸危险化学品种类弹窗
 import ChemicalsSelectModal from './Sections/ChemicalsSelectModal';
-import router from 'umi/router';
+import { genGoBack } from '@/utils/utils';
+// import router from 'umi/router';
 
 import styles from './Edit.less';
 
@@ -147,6 +148,11 @@ const materialsFields = [
 }))
 @Form.create()
 export default class Edit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/major-hazard-info/storage-area-management/list');
+  }
+
   state = {
     companyModalVisible: false,
     selectedCompany: {},
@@ -401,11 +407,11 @@ export default class Edit extends PureComponent {
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
 
-  goBack = () => {
-    // const { dispatch } = this.props;
-    router.push('/major-hazard-info/storage-area-management/list');
-    // window.close();
-  };
+  // goBack = () => {
+  //   // const { dispatch } = this.props;
+  //   router.push('/major-hazard-info/storage-area-management/list');
+  //   // window.close();
+  // };
 
   handleClickValidate = () => {
     const {
@@ -431,8 +437,9 @@ export default class Edit extends PureComponent {
         };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          if (id) setTimeout(() => window.close(), 1000);
-          else dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
+          // if (id) setTimeout(() => window.close(), 1000);
+          // else dispatch(routerRedux.push(`/major-hazard-info/storage-area-management/list`));
+          setTimeout(this.goBack, 1000);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -933,7 +940,7 @@ export default class Edit extends PureComponent {
         <Button type="primary" size="large" onClick={this.handleClickValidate}>
           提交
         </Button>
-        <Button type="primary" size="large" onClick={this.goBack}>
+        <Button size="large" onClick={this.goBack}>
           返回
         </Button>
       </FooterToolbar>
