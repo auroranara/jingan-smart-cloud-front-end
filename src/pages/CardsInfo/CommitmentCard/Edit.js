@@ -256,18 +256,18 @@ export default class Edit extends PureComponent {
           {renderSections(formItems, getFieldDecorator, handleSubmit, LIST_URL, undefined, loading, !id)}
           {isDet ? (
             <div style={{ textAlign: 'center' }}>
-              <Button
-                style={{ marginRight: 10 }}
-                onClick={e => window.close()}
-              >
-                返回
-              </Button>
-              <Button
+              {/* <Button
                 type="primary"
                 disabled={!editAuth}
                 onClick={e => router.push(`/cards-info/commitment-card/edit/${id}`)}
               >
                 编辑
+              </Button> */}
+              <Button
+                // style={{ marginRight: 10 }}
+                onClick={e => window.close()}
+              >
+                返回
               </Button>
             </div>
           ) : null}

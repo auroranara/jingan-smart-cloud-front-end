@@ -546,13 +546,14 @@ export default class ReservoirRegionEdit extends PureComponent {
       <FooterToolbar>
         {this.renderErrorInfo()}
         {isDetail ? (
-          <Button
-            type="primary"
-            size="large"
-            onClick={e => router.push(`/major-hazard-info/reservoir-region-management/edit/${id}`)}
-          >
-            编辑
-          </Button>
+          // <Button
+          //   type="primary"
+          //   size="large"
+          //   onClick={e => router.push(`/major-hazard-info/reservoir-region-management/edit/${id}`)}
+          // >
+          //   编辑
+          // </Button>
+          null
         ) : (
           <Button
             type="primary"

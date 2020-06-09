@@ -448,18 +448,19 @@ export default class SafetySystemOther extends Component {
               </Card>
             )}
             <div style={{ textAlign: 'center' }}>
+              {isNotDetail ? (
+                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+              ) : (+status === 3 || +status === 4) && (
+                // <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+                null
+              )}
               <Button
-                style={{ marginRight: '10px' }}
+                style={{ marginLeft: 20 }}
                 // onClick={this.handleBackButtonClick}
                 onClick={this.goBack}
               >
                 返回
               </Button>
-              {isNotDetail ? (
-                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
-              ) : (+status === 3 || +status === 4) && (
-                <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
-              )}
             </div>
           </Card>
         </Spin>

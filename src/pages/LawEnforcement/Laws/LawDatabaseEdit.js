@@ -338,12 +338,6 @@ export default class LawDatabaseEdit extends PureComponent {
 
         <div style={{ textAlign: 'center' }}>
           <Button
-            style={{ marginRight: 10 }}
-            onClick={this.goBack}
-          >
-            返回
-          </Button>
-          <Button
             type="primary"
             loading={submitting}
             disabled={uploading}
@@ -351,6 +345,12 @@ export default class LawDatabaseEdit extends PureComponent {
             onClick={this.handleClickValidate}
           >
             提交
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            onClick={this.goBack}
+          >
+            返回
           </Button>
         </div>
       </Card>

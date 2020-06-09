@@ -521,6 +521,13 @@ export default class Edit extends PureComponent {
             undefined,
             !id
           )}
+          {isDet && (
+            <div style={{ textAlign: 'center' }}>
+              <Button onClick={e => window.close()}>
+                返回
+              </Button>
+            </div>
+          )}
         </Card>
         {/* 选择企业弹窗 */}
         <CompanyModal

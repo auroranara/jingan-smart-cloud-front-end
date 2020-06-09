@@ -8,6 +8,7 @@ import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 // import { KEYSUPERVISION } from '../utils.js';
 import { RISK_CATEGORIES, getRiskCategoryLabel } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+import { genGoBack } from '@/utils/utils';
 
 import styles from './index.less';
 
@@ -142,6 +143,7 @@ export default class MaterialsHandler extends PureComponent {
       msdsModalVisible: false,
       dangerSources: [], // 重大危险源
     };
+    this.goBack = genGoBack(props, listUrl);
   }
 
   componentDidMount() {
@@ -319,10 +321,11 @@ export default class MaterialsHandler extends PureComponent {
         const payload = { ...formData, companyId: unitType === 4 ? companyId : formData.companyId };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          if (id)
-            setTimeout(() => window.close(), 1000);
-          else
-            router.push(listUrl);
+          // if (id)
+          //   setTimeout(() => window.close(), 1000);
+          // else
+          //   router.push(listUrl);
+          setTimeout(this.goBack, 1000);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -848,8 +851,11 @@ export default class MaterialsHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+          <Button type="primary" style={{ marginRight: 20 }} onClick={this.handleSubmit}>
             提交
+          </Button>
+          <Button onClick={this.goBack}>
+            返回
           </Button>
         </Row>
       </Card>

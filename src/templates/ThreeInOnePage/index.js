@@ -497,7 +497,6 @@ export default class ThreeInOnePage extends Component {
             resetable={false}
             action={
               <Fragment>
-                <Button onClick={this.handleBackButtonClick}>返回</Button>
                 {isNotDetail ? (
                   <Button
                     type="primary"
@@ -508,16 +507,18 @@ export default class ThreeInOnePage extends Component {
                   </Button>
                 ) : (
                   showEdit && (
-                    <Button
-                      type="primary"
-                      onClick={this.handleEditButtonClick}
-                      disabled={!hasEditAuthority}
-                      loading={submitting || uploading || (getLoading && getLoading(values))}
-                    >
-                      编辑
-                    </Button>
+                    // <Button
+                    //   type="primary"
+                    //   onClick={this.handleEditButtonClick}
+                    //   disabled={!hasEditAuthority}
+                    //   loading={submitting || uploading || (getLoading && getLoading(values))}
+                    // >
+                    //   编辑
+                    // </Button>
+                    null
                   )
                 )}
+                <Button onClick={this.handleBackButtonClick}>返回</Button>
               </Fragment>
             }
             ref={this.setFormReference}

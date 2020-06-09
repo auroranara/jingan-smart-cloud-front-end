@@ -61,17 +61,18 @@ export default class RiskCard extends PureComponent {
   }
 
   goBack = () => {
-    const {
-      location: {
-        query: { companyName, companyId },
-      },
-      dispatch,
-    } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`
-      )
-    );
+    // const {
+    //   location: {
+    //     query: { companyName, companyId },
+    //   },
+    //   dispatch,
+    // } = this.props;
+    // dispatch(
+    //   routerRedux.push(
+    //     `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`
+    //   )
+    // );
+    window.close();
   };
 
   goRiskCardEdit = id => {

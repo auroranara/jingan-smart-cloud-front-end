@@ -92,6 +92,11 @@ export default class RepairRecordDetail extends PureComponent {
                 {students.map(s => s.name).join(' , ') || getEmptyData()}
               </Description>
             </DescriptionList>
+            <div style={{ textAlign: 'center' }}>
+              <Button onClick={e => window.close()}>
+                返回
+              </Button>
+            </div>
           </Card>
         </Spin>
       </PageHeaderLayout>

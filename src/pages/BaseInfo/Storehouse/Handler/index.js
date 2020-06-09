@@ -737,11 +737,11 @@ export default class StorehouseHandler extends PureComponent {
           )} */}
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+          <Button type="primary" onClick={this.handleSubmit}>
             提交
           </Button>
           <Button
-            style={{ marginLeft: '10px' }}
+            style={{ marginLeft: 20 }}
             // href={`#${listUrl}`}
             onClick={this.goBack}
           >

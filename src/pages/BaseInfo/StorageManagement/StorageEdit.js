@@ -1538,19 +1538,20 @@ export default class StorageEdit extends PureComponent {
       <FooterToolbar>
         {this.renderErrorInfo()}
         {isDetail ? (
-          <Button
-            type="primary"
-            size="large"
-            onClick={e => router.push(`/major-hazard-info/storage-management/edit/${id}`)}
-          >
-            编辑
-          </Button>
+          // <Button
+          //   type="primary"
+          //   size="large"
+          //   onClick={e => router.push(`/major-hazard-info/storage-management/edit/${id}`)}
+          // >
+          //   编辑
+          // </Button>
+          null
         ) : (
           <Button type="primary" size="large" onClick={this.handleSubmit}>
             提交
           </Button>
         )}
-        <Button type="primary" size="large" onClick={this.goBack}>
+        <Button size="large" onClick={this.goBack}>
           返回
         </Button>
       </FooterToolbar>

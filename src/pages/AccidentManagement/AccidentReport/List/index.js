@@ -115,13 +115,15 @@ export default class ReportList extends PureComponent {
   // 编辑按钮点击事件
   handleEditClick = e => {
     const { id } = e.currentTarget.dataset;
-    router.push(`${EDIT_PATH}/${id}`);
+    // router.push(`${EDIT_PATH}/${id}`);
+    window.open(`${window.publicPath}#${EDIT_PATH}/${id}`);
   };
 
   // 查看按钮点击事件
   handleViewClick = e => {
     const { id } = e.currentTarget.dataset;
-    router.push(`${DETAIL_PATH}/${id}`);
+    // router.push(`${DETAIL_PATH}/${id}`);
+    window.open(`${window.publicPath}#${DETAIL_PATH}/${id}`);
   };
 
   // 删除按钮点击事件

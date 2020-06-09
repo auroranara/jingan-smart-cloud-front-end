@@ -530,20 +530,15 @@ export default class specialOperationPermitHandle extends PureComponent {
         <Card>
           {this.renderForm()}
           <div style={{ textAlign: 'center' }}>
-            <Button
-              style={{ marginRight: 10 }}
-              onClick={this.goBack}
-            >
-              返回
-            </Button>
             {isDetail ? (
-              <Button
-                style={BUTTON_STYLE}
-                type="primary"
-                onClick={e => router.push(`/operation-safety/special-operation-permit/edit/${id}`)}
-              >
-                编辑
-              </Button>
+              // <Button
+              //   style={BUTTON_STYLE}
+              //   type="primary"
+              //   onClick={e => router.push(`/operation-safety/special-operation-permit/edit/${id}`)}
+              // >
+              //   编辑
+              // </Button>
+              null
             ) : (
                 <Button
                   // style={BUTTON_STYLE}
@@ -553,6 +548,12 @@ export default class specialOperationPermitHandle extends PureComponent {
                   提交
               </Button>
             )}
+            <Button
+              style={{ marginLeft: 20 }}
+              onClick={this.goBack}
+            >
+              返回
+            </Button>
           </div>
         </Card>
 

@@ -95,7 +95,8 @@ export default class EmergencySuppliesDetail extends Component {
   };
 
   handleBackButtonClick = () => {
-    router.push(listUrl);
+    // router.push(listUrl);
+    window.close();
   };
 
   render() {
@@ -121,14 +122,14 @@ export default class EmergencySuppliesDetail extends Component {
         renderItem = <span>{LvlCodes[data - 1] || NO_DATA}</span>;
       } else if (id === 'materialType') {
         let treeData = emergencyEquip;
-        const string = data
+        const string = data ? data
           .split(',')
           .map(id => {
             const val = treeData.find(item => item.id === id) || {};
             treeData = val.children || [];
             return val.label;
           })
-          .join('/');
+          .join('/') : '';
         renderItem = <span>{string || NO_DATA}</span>;
       }
       return {

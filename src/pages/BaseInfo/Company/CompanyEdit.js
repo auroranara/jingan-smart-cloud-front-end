@@ -200,9 +200,9 @@ export const PLACE_OWN = [
       });
     },
     // 返回
-    goBack () {
-      dispatch(routerRedux.push(listUrl));
-    },
+    // goBack () {
+    //   dispatch(routerRedux.push(listUrl));
+    // },
     // 获取行政区域
     fetchArea (action) {
       dispatch({
@@ -231,10 +231,10 @@ export const PLACE_OWN = [
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
-  // constructor(props) {
-  //   super(props);
-  //   this.goBack = genGoBack(props, listUrl);
-  // }
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, listUrl);
+  }
 
   state = {
     ichnographyList: [],
@@ -1880,12 +1880,7 @@ export default class CompanyDetail extends PureComponent {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        {/* <Button
-          style={{ marginRight: 10 }}
-          onClick={this.goBack}
-        >
-          返回
-        </Button> */}
+
         <Button
           type="primary"
           size="large"
@@ -1893,6 +1888,13 @@ export default class CompanyDetail extends PureComponent {
           loading={loading || submitting}
         >
           提交
+        </Button>
+        <Button
+          size="large"
+          style={{ marginLeft: 20 }}
+          onClick={this.goBack}
+        >
+          返回
         </Button>
       </FooterToolbar>
     );

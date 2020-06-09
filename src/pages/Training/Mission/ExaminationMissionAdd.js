@@ -21,6 +21,7 @@ import {
   Tag,
 } from 'antd';
 import styles from './ExaminationMissionAdd.less';
+import { genGoBack } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -58,8 +59,8 @@ const paperColumns = [
   user,
 }))
 export default class ExaminationMissionAdd extends PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       paperModalVisible: false, // 控制选择试卷弹窗可见
       studentsModalVisible: false, // 控制选择考生弹窗可见
@@ -72,6 +73,7 @@ export default class ExaminationMissionAdd extends PureComponent {
       disableOk: true,
       // rangeOpen: false,
     };
+    this.goBack = genGoBack(props, '/training/mission/list');
   }
 
   paperId = null;
@@ -163,9 +165,9 @@ export default class ExaminationMissionAdd extends PureComponent {
   };
 
   // 点击返回
-  handleToBack = () => {
-    router.push('/training/mission/list');
-  };
+  // handleToBack = () => {
+  //   router.push('/training/mission/list');
+  // };
 
   //点击提交
   handleSubmit = () => {
@@ -217,7 +219,8 @@ export default class ExaminationMissionAdd extends PureComponent {
             payload,
             success: () => {
               message.success('编辑成功');
-              router.push('/training/mission/list');
+              // router.push('/training/mission/list');
+              setTimeout(this.goBack, 1000);
             },
             error: () => {
               message.error('编辑失败');
@@ -653,11 +656,11 @@ export default class ExaminationMissionAdd extends PureComponent {
               )}
             </Form.Item>
             <div style={{ textAlign: 'center' }}>
-              <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>
-                取消
-              </Button>
               <Button type="primary" onClick={this.handleSubmit}>
-                保存
+                提交
+              </Button>
+              <Button style={{ marginLeft: 20 }} onClick={this.goBack}>
+                返回
               </Button>
             </div>
           </Form>

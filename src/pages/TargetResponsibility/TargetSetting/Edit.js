@@ -800,26 +800,18 @@ export default class Edit extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card>
           {this.renderForm()}
-          <div style={{ textAlign: 'center' }}>
-            <Button
-              // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-              // size="large"
-              // href={`#${LIST_URL}`}
-              style={{ marginRight: 10 }}
-              onClick={this.goBack}
-            >
-              返回
-            </Button>
+          <div style={{ textAlign: 'center', marginTop: 24 }}>
             {this.isDetail() ? (
-              <Button
-                // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                type="primary"
-                // size="large"
-                disabled={!editCode}
-                href={`#${ROUTER}/edit/${id}`}
-              >
-                编辑
-              </Button>
+              // <Button
+              //   // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+              //   type="primary"
+              //   // size="large"
+              //   disabled={!editCode}
+              //   href={`#${ROUTER}/edit/${id}`}
+              // >
+              //   编辑
+              // </Button>
+              null
             ) : (
               <Button
                 // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
@@ -831,6 +823,15 @@ export default class Edit extends PureComponent {
                 提交
               </Button>
             )}
+            <Button
+              // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+              // size="large"
+              // href={`#${LIST_URL}`}
+              style={{ marginLeft: 20 }}
+              onClick={this.goBack}
+            >
+              返回
+            </Button>
           </div>
         </Card>
         {this.renderIndexModal()}

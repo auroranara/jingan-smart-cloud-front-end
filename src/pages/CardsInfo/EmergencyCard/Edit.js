@@ -406,18 +406,18 @@ export default class Edit extends PureComponent {
           {isDet ? (
             <div style={{ textAlign: 'center' }}>
               <Button
-                style={{ marginRight: 10 }}
+                // style={{ marginRight: 10 }}
                 onClick={e => window.close()}
               >
                 返回
               </Button>
-              <Button
+              {/* <Button
                 type="primary"
                 disabled={!editAuth}
                 onClick={e => router.push(`/cards-info/emergency-card/edit/${id}`)}
               >
                 编辑
-              </Button>
+              </Button> */}
             </div>
           ) : null}
         </Card>

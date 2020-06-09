@@ -90,7 +90,8 @@ export default class TableList extends PureComponent {
 
   // 跳转到人员列表
   handlePesonListClick = id => {
-    router.push(`${ROUTER}/person-list/${id}`);
+    // router.push(`${ROUTER}/person-list/${id}`);
+    window.open(`${window.publicPath}#${ROUTER}/person-list/${id}`);
   };
 
   render() {

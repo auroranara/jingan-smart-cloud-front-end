@@ -4,11 +4,12 @@ import { routerRedux } from 'dva/router';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Input, Button, Card, Popover, Cascader, Upload, message } from 'antd';
+
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
-
 import styles from '../TypicalAccidentCase/TEdit.less';
+import { genGoBack } from '@/utils/utils';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
@@ -35,6 +36,11 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 }))
 @Form.create()
 export default class TEdit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/safety-knowledge-base/typical-accident-case/list');
+  }
+
   state = {
     accidentPicList: [],
     accidentLoading: false,
@@ -115,10 +121,10 @@ export default class TEdit extends PureComponent {
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
 
-  goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/safety-knowledge-base/typical-accident-case/list`));
-  };
+  // goBack = () => {
+  //   const { dispatch } = this.props;
+  //   dispatch(routerRedux.push(`/safety-knowledge-base/typical-accident-case/list`));
+  // };
 
   // 事故经过上传照片处理
   handleAccidentChange = ({ fileList, file }) => {
@@ -356,7 +362,7 @@ export default class TEdit extends PureComponent {
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
@@ -657,7 +663,7 @@ export default class TEdit extends PureComponent {
         >
           提交
         </Button>
-        <Button type="primary" size="large" onClick={this.goBack}>
+        <Button size="large" onClick={this.goBack}>
           返回
         </Button>
       </FooterToolbar>

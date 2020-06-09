@@ -603,26 +603,27 @@ export default class InjuryReportOther extends Component {
         refresh={this.refresh}
         action={
           <Fragment>
+            {type !== 'detail' ? (
+              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
+                提交
+              </Button>
+            ) : (
+              // <Button
+              //   type="primary"
+              //   onClick={this.handleEditButtonClick}
+              //   disabled={!hasEditAuthority}
+              //   loading={uploading}
+              // >
+              //   编辑
+              // </Button>
+              null
+            )}
             <Button
               // onClick={this.handleBackButtonClick}
               onClick={this.goBack}
             >
               返回
             </Button>
-            {type !== 'detail' ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
-                提交
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                onClick={this.handleEditButtonClick}
-                disabled={!hasEditAuthority}
-                loading={uploading}
-              >
-                编辑
-              </Button>
-            )}
           </Fragment>
         }
       />

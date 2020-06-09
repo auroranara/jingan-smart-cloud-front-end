@@ -15,7 +15,7 @@ import {
   message,
 } from 'antd';
 import moment from 'moment';
-import { routerRedux } from 'dva/router';
+// import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 
 import { hasAuthority, AuthA } from '@/utils/customAuth';
@@ -161,11 +161,13 @@ export default class EmergencyEstimateList extends PureComponent {
   };
 
   goDetail = id => {
-    router.push(`/emergency-management/emergency-estimate/detail/${id}`);
+    // router.push(`/emergency-management/emergency-estimate/detail/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-estimate/detail/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/emergency-management/emergency-estimate/edit/${id}`);
+    // router.push(`/emergency-management/emergency-estimate/edit/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-estimate/edit/${id}`);
   };
 
   // 表格改变触发，包含分页变动
@@ -205,7 +207,7 @@ export default class EmergencyEstimateList extends PureComponent {
         currentUser: { unitType },
       },
     } = this.props;
-    const { currentPage, scrollX } = this.state;
+    // const { currentPage, scrollX } = this.state;
 
     const columns = [
       {

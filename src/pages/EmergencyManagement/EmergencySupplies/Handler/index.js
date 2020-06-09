@@ -15,12 +15,13 @@ import {
   Cascader,
 } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
+// import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import { getToken } from 'utils/authority';
-import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
+// import { getToken } from 'utils/authority';
+// import styles from './index.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -63,6 +64,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
       // 选中的企业
       selectedCompany: {},
     };
+    this.goBack = genGoBack(props, listUrl);
   }
 
   componentDidMount() {
@@ -150,7 +152,8 @@ export default class EmergencySuppliesHandler extends PureComponent {
         };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push(listUrl);
+          // router.push(listUrl);
+          setTimeout(this.goBack, 1000);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -347,8 +350,11 @@ export default class EmergencySuppliesHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+          <Button type="primary" style={{ marginRight: 20 }} onClick={this.handleSubmit}>
             提交
+          </Button>
+          <Button onClick={this.goBack}>
+            返回
           </Button>
         </Row>
       </Card>

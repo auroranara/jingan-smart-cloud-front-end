@@ -270,7 +270,7 @@ export default class PersonnelDetail extends Component {
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
-                  <Button
+                  {/* <Button
                     type="primary"
                     onClick={e =>
                       router.push(
@@ -282,7 +282,7 @@ export default class PersonnelDetail extends Component {
                     disabled={!hasEditAuthority}
                   >
                     编辑
-                  </Button>
+                  </Button> */}
                 </Fragment>
               }
             />

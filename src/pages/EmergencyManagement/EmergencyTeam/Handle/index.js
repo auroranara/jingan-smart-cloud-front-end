@@ -337,14 +337,14 @@ export default class Edit extends PureComponent {
               <Button style={{ marginRight: 10 }} onClick={e => window.close()}>
                 返回
               </Button>
-              <Button
+              {/* <Button
                 type="primary"
                 disabled={!editAuth}
                 // style={{ marginLeft: '45%' }}
                 onClick={e => router.push(`${ROUTER}/edit/${id}`)}
               >
                 编辑
-              </Button>
+              </Button> */}
             </div>
           ) : null}
         </Card>

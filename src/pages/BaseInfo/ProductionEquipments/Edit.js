@@ -801,14 +801,15 @@ export default class Edit extends PureComponent {
           <div style={{ display: 'flex', justifyContent: 'center', backgroundColor: '#FFF' }}>
             <span>
               {isDet ? (
-                <Button
-                  type="primary"
-                  disabled={!editAuth}
-                  style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                  onClick={e => router.push(`${ROUTER}/edit/${id}`)}
-                >
-                  编辑
-                </Button>
+                // <Button
+                //   type="primary"
+                //   disabled={!editAuth}
+                //   style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                //   onClick={e => router.push(`${ROUTER}/edit/${id}`)}
+                // >
+                //   编辑
+                // </Button>
+                null
               ) : (
                 <Button
                   style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
@@ -820,8 +821,7 @@ export default class Edit extends PureComponent {
                 </Button>
               )}
             </span>
-
-            <span style={{ marginLeft: 10 }}>
+            <span style={{ marginLeft: 20 }}>
               <Button
                 style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 // href={`#${LIST_URL}`}

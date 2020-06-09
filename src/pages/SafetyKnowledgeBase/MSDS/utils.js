@@ -262,18 +262,18 @@ export function renderSections(
   const submitBtn = handleSubmit ? (
     <FormItem wrapperCol={{ span: 24, offset: 10 }}>
       <Button
-        style={{ marginRight: 20 }}
-        // onClick={e => router.push(listUrl)}
-        onClick={goBack}
-      >
-        返回
-      </Button>
-      <Button
         type="primary"
         htmlType="submit"
         loading={fileLoading || loading}
       >
         提交
+      </Button>
+      <Button
+        style={{ marginLeft: 20 }}
+        // onClick={e => router.push(listUrl)}
+        onClick={goBack}
+      >
+        返回
       </Button>
     </FormItem>
   ) : null;

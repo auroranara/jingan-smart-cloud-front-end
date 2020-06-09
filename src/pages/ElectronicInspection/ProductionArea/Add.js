@@ -408,18 +408,19 @@ export default class ProductionAreaAdd extends Component {
               ref={this.setFormReference}
             />
             <div style={{ textAlign: 'center' }}>
+              {isNotDetail ? (
+                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+              ) : (
+                // <AuthButton code={codes.electronicInspection.productionArea.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
+                null
+              )}
               <Button
-                style={{ marginRight: '10px' }}
+                style={{ marginLeft: 20 }}
                 // onClick={() => { router.goBack() }}
                 onClick={this.goBack}
               >
                 返回
               </Button>
-              {isNotDetail ? (
-                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
-              ) : (
-                <AuthButton code={codes.electronicInspection.productionArea.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
-              )}
             </div>
           </Card>
         </Spin>

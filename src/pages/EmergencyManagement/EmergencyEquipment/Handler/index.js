@@ -513,11 +513,11 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button style={{ marginRight: 10 }} onClick={this.goBack}>
-            返回
-          </Button>
           <Button type="primary" onClick={this.handleSubmit}>
             提交
+          </Button>
+          <Button style={{ marginLeft: 20 }} onClick={this.goBack}>
+            返回
           </Button>
         </Row>
       </Card>

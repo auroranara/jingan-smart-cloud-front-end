@@ -461,19 +461,20 @@ export default class DangerChemicalsHandle extends PureComponent {
         <Card>
           {this.renderForm()}
           <div style={{ textAlign: 'center' }}>
-            <Button onClick={this.goBack}>
-              返回
-            </Button>
+
             <Button
-              style={{ marginLeft: 10 }}
+              style={{ marginRight: 20 }}
               type="primary"
               onClick={this.handleSubmit}
               loading={uploading}
             >
               提交
             </Button>
-          {this.renderModal()}
+            <Button onClick={this.goBack}>
+              返回
+            </Button>
           </div>
+          {this.renderModal()}
         </Card>
       </PageHeaderLayout>
     );

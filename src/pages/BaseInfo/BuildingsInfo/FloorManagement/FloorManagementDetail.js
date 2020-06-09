@@ -168,13 +168,13 @@ export default class FloorManagementDetail extends PureComponent {
           >
             返回
           </Button>
-          <Button
+          {/* <Button
             type="primary"
             style={{ marginLeft: '10px' }}
             href={`#/base-info/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${companyName}&&companyId=${companyId}`}
           >
             编辑
-          </Button>
+          </Button> */}
         </div>
 
         <Lightbox

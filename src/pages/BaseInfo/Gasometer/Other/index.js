@@ -746,7 +746,6 @@ export default class GasometerOther extends Component {
             refresh={this.refresh}
             action={
               <Fragment>
-                <Button onClick={this.goBack}>返回</Button>
                 {isNotDetail ? (
                   <Button
                     type="primary"
@@ -756,14 +755,16 @@ export default class GasometerOther extends Component {
                     提交
                   </Button>
                 ) : (
-                  <Button
-                    type="primary"
-                    onClick={this.handleEditButtonClick}
-                    disabled={!hasEditAuthority}
-                  >
-                    编辑
-                  </Button>
+                  // <Button
+                  //   type="primary"
+                  //   onClick={this.handleEditButtonClick}
+                  //   disabled={!hasEditAuthority}
+                  // >
+                  //   编辑
+                  // </Button>
+                  null
                 )}
+                <Button onClick={this.goBack}>返回</Button>
               </Fragment>
             }
             ref={this.setFormReference}

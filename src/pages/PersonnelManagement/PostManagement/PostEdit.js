@@ -258,11 +258,11 @@ export default class PostEdit extends PureComponent {
           </Form.Item>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Button onClick={this.goBack} style={{ marginRight: '24px' }}>
-            返回
-          </Button>
           <Button type="primary" onClick={this.handleSubmit} loading={submitting}>
-            确定
+            提交
+          </Button>
+          <Button onClick={this.goBack} style={{ marginLeft: 20 }}>
+            返回
           </Button>
         </div>
       </Card>

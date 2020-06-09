@@ -1005,24 +1005,25 @@ export default class SpecialEquipment extends PureComponent {
           )}
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
+          {isDetail ? (
+            // <Button
+            //   type="primary"
+            //   style={{ marginLeft: '10px' }}
+            //   onClick={e => router.push(`/facility-management/special-equipment/edit/${id}`)}
+            // >
+            //   编辑
+            // </Button>
+            null
+          ) : (
+            <Button type="primary" style={{ marginRight: 20 }} onClick={this.handleSubmit}>
+              提交
+            </Button>
+          )}
           <Button
             onClick={this.goBack}
           >
             返回
           </Button>
-          {isDetail ? (
-            <Button
-              type="primary"
-              style={{ marginLeft: '10px' }}
-              onClick={e => router.push(`/facility-management/special-equipment/edit/${id}`)}
-            >
-              编辑
-            </Button>
-          ) : (
-            <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
-              提交
-            </Button>
-          )}
         </Row>
       </Card>
     );

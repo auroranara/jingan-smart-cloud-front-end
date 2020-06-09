@@ -227,7 +227,7 @@ export default class Edit extends PureComponent {
               返回
             </Button>
           ) : null}
-          {isDet ? (
+          {/* {isDet ? (
             <Button
               type="primary"
               disabled={!editAuth}
@@ -236,7 +236,7 @@ export default class Edit extends PureComponent {
             >
               编辑
             </Button>
-          ) : null}
+          ) : null} */}
         </Card>
       </PageHeaderLayout>
     );

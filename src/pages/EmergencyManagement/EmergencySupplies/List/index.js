@@ -14,7 +14,7 @@ import {
   message,
 } from 'antd';
 import moment from 'moment';
-import { routerRedux } from 'dva/router';
+// import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 
 import { hasAuthority, AuthA } from '@/utils/customAuth';
@@ -303,19 +303,23 @@ export default class EmergencySuppliesList extends PureComponent {
   };
 
   goDetail = id => {
-    router.push(`/emergency-management/emergency-supplies/detail/${id}`);
+    // router.push(`/emergency-management/emergency-supplies/detail/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-supplies/detail/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/emergency-management/emergency-supplies/edit/${id}`);
+    // router.push(`/emergency-management/emergency-supplies/edit/${id}`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-supplies/edit/${id}`);
   };
 
   goCheck = id => {
-    router.push(`/emergency-management/emergency-supplies/check/${id}/list`);
+    // router.push(`/emergency-management/emergency-supplies/check/${id}/list`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-supplies/check/${id}/list`);
   };
 
   goMaint = id => {
-    router.push(`/emergency-management/emergency-supplies/maint/${id}/list`);
+    // router.push(`/emergency-management/emergency-supplies/maint/${id}/list`);
+    window.open(`${window.publicPath}#/emergency-management/emergency-supplies/maint/${id}/list`);
   };
 
   // 表格改变触发，包含分页变动

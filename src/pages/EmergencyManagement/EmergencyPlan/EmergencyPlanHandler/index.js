@@ -545,13 +545,13 @@ export default class EmergencyPlanHandler extends Component {
               ref={this.setFormReference}
               action={
                 <Fragment>
+                  <Button type="primary" onClick={this.handleSubmitButtonClick}>提交审核</Button>
                   <Button
                     // onClick={this.handleBackButtonClick}
                     onClick={this.goBack}
                   >
                     返回
                   </Button>
-                  <Button type="primary" onClick={this.handleSubmitButtonClick}>提交审核</Button>
                 </Fragment>
               }
             />

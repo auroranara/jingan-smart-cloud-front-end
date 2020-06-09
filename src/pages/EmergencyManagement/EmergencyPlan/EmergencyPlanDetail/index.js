@@ -325,7 +325,7 @@ export default class EmergencyPlanDetail extends Component {
             >
               返回
             </Button>
-            {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>}
+            {/* {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>} */}
           </div>
         </Spin>
       </PageHeaderLayout>

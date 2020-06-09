@@ -754,10 +754,13 @@ export default class BuildingInfoEdit extends PureComponent {
               {this.renderMoreItems(moreForemItems)}
               <Col span={24}>
                 <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
+                  <Button loading={uploading} type="primary" onClick={this.handleClickValidate}>
+                    提交
+                  </Button>
                   {company_Id ? (
                     <Button
                       loading={uploading}
-                      style={{ marginRight: 10 }}
+                      style={{ marginLeft: 10 }}
                       // href={`#/base-info/buildings-info/detail/${company_Id}?name=${company_name}`}
                       onClick={genGoBack(this.props, `/base-info/buildings-info/detail/${company_Id}?name=${company_name}`)}
                     >
@@ -766,16 +769,13 @@ export default class BuildingInfoEdit extends PureComponent {
                   ) : (
                     <Button
                       loading={uploading}
-                      style={{ marginRight: 10 }}
+                      style={{ marginLeft: 10 }}
                       // href="#/base-info/buildings-info/list"
                       onClick={genGoBack(this.props, "/base-info/buildings-info/list")}
                     >
                       返回
                     </Button>
                   )}
-                  <Button loading={uploading} type="primary" onClick={this.handleClickValidate}>
-                    提交
-                  </Button>
                 </FormItem>
               </Col>
             </Row>

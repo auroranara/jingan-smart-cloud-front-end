@@ -76,7 +76,8 @@ export default class StorehouseDetail extends Component {
   };
 
   handleBackButtonClick = () => {
-    router.push(listUrl);
+    // router.push(listUrl);
+    window.close();
   };
 
   render() {
@@ -164,13 +165,13 @@ export default class StorehouseDetail extends Component {
               resetable={false}
               action={
                 <Fragment>
-                  <Button
+                  {/* <Button
                     onClick={e => router.push(`/major-hazard-info/storehouse/edit/${detail.id}`)}
                     type="primary"
                     disabled={!hasEditAuthority}
                   >
                     编辑
-                  </Button>
+                  </Button> */}
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
                 </Fragment>
               }

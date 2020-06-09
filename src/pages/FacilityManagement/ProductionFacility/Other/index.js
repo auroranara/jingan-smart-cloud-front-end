@@ -1065,23 +1065,17 @@ export default class InjuryReportOther extends Component {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button
-          size="large"
-          // onClick={this.handleBackButtonClick}
-          onClick={this.goBack}
-        >
-          返回
-        </Button>
         {isDetail ? (
           status !== '1' && (
-            <Button
-              type="primary"
-              size="large"
-              onClick={e => router.push(`/facility-management/production-facility/edit/${id}`)}
-              disabled={!hasEditAuthority}
-            >
-              编辑
-            </Button>
+            // <Button
+            //   type="primary"
+            //   size="large"
+            //   onClick={e => router.push(`/facility-management/production-facility/edit/${id}`)}
+            //   disabled={!hasEditAuthority}
+            // >
+            //   编辑
+            // </Button>
+            null
           )
         ) : (
           <Button
@@ -1093,6 +1087,13 @@ export default class InjuryReportOther extends Component {
             提交
           </Button>
         )}
+        <Button
+          size="large"
+          // onClick={this.handleBackButtonClick}
+          onClick={this.goBack}
+        >
+          返回
+        </Button>
       </FooterToolbar>
     );
   }

@@ -332,10 +332,13 @@ export default class FloorManagementEdit extends PureComponent {
         </Form>
 
         <div style={{ textAlign: 'center' }}>
+          <Button type="primary" loading={uploading} onClick={this.handleClickValidate}>
+            提交
+          </Button>
           {id ? (
             <Button
               loading={uploading}
-              style={{ marginRight: 10 }}
+              style={{ marginLeft: 10 }}
               // href={`#/base-info/buildings-info/floor/list/${editBuilding}?companyId=${companyId}&&name=${name}`}
               onClick={e => window.close()}
             >
@@ -344,15 +347,12 @@ export default class FloorManagementEdit extends PureComponent {
           ) : (
             <Button
               loading={uploading}
-              style={{ marginRight: 10 }}
+              style={{ marginLeft: 10 }}
               href={`#/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
             >
               返回
             </Button>
           )}
-          <Button type="primary" loading={uploading} onClick={this.handleClickValidate}>
-            提交
-          </Button>
         </div>
       </Card>
     );

@@ -833,16 +833,17 @@ export default class EmergencySuppliesHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button style={{ marginRight: '10px' }} onClick={this.goBack}>返回</Button>
           {isDetail ? (
-            <Button type="primary" onClick={e => router.push(`/major-hazard-info/high-risk-process/edit/${id}`)}>
-              编辑
-            </Button>
+            // <Button type="primary" onClick={e => router.push(`/major-hazard-info/high-risk-process/edit/${id}`)}>
+            //   编辑
+            // </Button>
+            null
           ) : (
-              <Button type="primary" onClick={this.handleSubmit}>
-                提交
-            </Button>
-            )}
+            <Button type="primary" onClick={this.handleSubmit}>
+              提交
+          </Button>
+          )}
+          <Button style={{ marginLeft: 20 }} onClick={this.goBack}>返回</Button>
         </Row>
       </Card>
     );

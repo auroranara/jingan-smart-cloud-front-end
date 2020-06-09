@@ -462,9 +462,6 @@ export default class IndustriallicenceEdit extends PureComponent {
     const { submitting, fileLoading } = this.state;
     return (
       <FooterToolbar>
-        <Button size="large" onClick={this.goBack}>
-          返回
-        </Button>
         <Button
           type="primary"
           size="large"
@@ -472,6 +469,9 @@ export default class IndustriallicenceEdit extends PureComponent {
           onClick={this.handleClickValidate}
         >
           提交
+        </Button>
+        <Button size="large" onClick={this.goBack}>
+          返回
         </Button>
       </FooterToolbar>
     );

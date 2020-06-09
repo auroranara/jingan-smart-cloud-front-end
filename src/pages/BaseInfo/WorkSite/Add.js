@@ -600,19 +600,19 @@ export default class StorageEdit extends PureComponent {
               </FormItem>
             )}
             <FormItem wrapperCol={{ span: 24, offset: 10 }}>
-              <Button onClick={this.goBack} style={{ marginRight: 20 }}>
-                返回
-              </Button>
               {(isEdit || isAdd) && (
                 <Button type="primary" htmlType="submit">
                   提交
                 </Button>
               )}
-              {isView && (
+              {/* {isView && (
                 <AuthButton code={editCode} type="primary" onClick={this.jumpToEdit}>
                   编辑
                 </AuthButton>
-              )}
+              )} */}
+              <Button onClick={this.goBack} style={{ marginLeft: 20 }}>
+                返回
+              </Button>
             </FormItem>
           </Form>
         </Card>

@@ -76,7 +76,8 @@ export default class EmergencyEstimateDetail extends Component {
   };
 
   handleBackButtonClick = () => {
-    router.push(listUrl);
+    // router.push(listUrl);
+    window.close();
   };
 
   render() {

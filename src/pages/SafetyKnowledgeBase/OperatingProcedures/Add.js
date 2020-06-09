@@ -356,18 +356,19 @@ export default class AddOperatingProdures extends Component {
             </Card>
           )}
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            {isNotDetail ? (
+              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+            ) : (+status === 3 || +status === 4) && (
+              // <AuthButton code={codes.operatingProcedures.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
+              null
+            )}
             <Button
-              style={{ marginRight: '10px' }}
+              style={{ marginLeft: 20 }}
               // onClick={() => { router.goBack() }}
               onClick={this.goBack}
             >
               返回
             </Button>
-            {isNotDetail ? (
-              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
-            ) : (+status === 3 || +status === 4) && (
-              <AuthButton code={codes.operatingProcedures.edit} type="primary" onClick={this.handleEditButtonClick}>编辑</AuthButton>
-            )}
           </div>
         </Spin>
       </PageHeaderLayout>

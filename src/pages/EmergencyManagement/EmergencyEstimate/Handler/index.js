@@ -9,7 +9,8 @@ import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { getToken } from 'utils/authority';
 import { getFileList, getImageSize } from '../../../BaseInfo/utils';
-import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
+// import styles from './index.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -103,6 +104,7 @@ export default class EmergencyEstimateHandler extends PureComponent {
       drillModalVisible: false,
       selectedDrill: {},
     };
+    this.goBack = genGoBack(props, listUrl);
   }
 
   componentDidMount() {
@@ -220,7 +222,8 @@ export default class EmergencyEstimateHandler extends PureComponent {
         };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push(listUrl);
+          // router.push(listUrl);
+          setTimeout(this.goBack, 1000);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -424,8 +427,11 @@ export default class EmergencyEstimateHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button type="primary" onClick={this.handleSubmit}>
+          <Button type="primary" style={{ marginRight: 20 }} onClick={this.handleSubmit}>
             提交
+          </Button>
+          <Button onClick={this.goBack}>
+            返回
           </Button>
         </Row>
       </Card>

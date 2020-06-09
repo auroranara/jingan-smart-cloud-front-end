@@ -189,13 +189,13 @@ export default class EmergencyEquipmentDetail extends Component {
               resetable={false}
               action={
                 <Fragment>
-                  <Button style={{ marginRight: 10 }} onClick={this.handleBackButtonClick}>返回</Button>
-                  <Button
+                  {/* <Button
                     type="primary"
                     onClick={e => router.push(`/emergency-management/emergency-plan/edit/${id}`)}
                   >
                     编辑
-                  </Button>
+                  </Button> */}
+                  <Button style={{ marginRight: 10 }} onClick={this.handleBackButtonClick}>返回</Button>
                 </Fragment>
               }
             />

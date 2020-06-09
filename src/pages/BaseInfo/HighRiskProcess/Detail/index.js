@@ -56,7 +56,7 @@ export default class HighRiskProcessDetail extends Component {
         <Card style={{ marginBottom: 15 }}>
           {renderSections(fields, getFieldDecorator)}
           <div style={{ textAlign: 'center' }}>
-            <Button type="primary" style={{ marginRight: 10 }} onClick={this.handleEdit}>编辑</Button>
+            {/* <Button type="primary" style={{ marginRight: 10 }} onClick={this.handleEdit}>编辑</Button> */}
             <Button onClick={this.goBack}>返回</Button>
           </div>
         </Card>

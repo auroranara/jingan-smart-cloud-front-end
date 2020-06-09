@@ -138,7 +138,7 @@ export default class StorehouseDetail extends Component {
               resetable={false}
               action={
                 <Fragment>
-                  <Button
+                  {/* <Button
                     onClick={e =>
                       router.push(
                         `/major-hazard-info/reservoir-region-management/edit/${detail.id}`
@@ -148,7 +148,7 @@ export default class StorehouseDetail extends Component {
                     disabled={!hasEditAuthority}
                   >
                     编辑
-                  </Button>
+                  </Button> */}
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
                 </Fragment>
               }

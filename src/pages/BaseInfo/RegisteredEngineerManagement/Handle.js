@@ -628,12 +628,6 @@ export default class RegSafetyEngEdit extends PureComponent {
     const { regUploading, reqUploading } = this.state;
     return (
       <FooterToolbar>
-        <Button
-          size="large"
-          onClick={this.goBack}
-        >
-          返回
-        </Button>
         {isDetail ? null : (
           <Button
             type="primary"
@@ -644,6 +638,12 @@ export default class RegSafetyEngEdit extends PureComponent {
             提交
           </Button>
         )}
+        <Button
+          size="large"
+          onClick={this.goBack}
+        >
+          返回
+        </Button>
       </FooterToolbar>
     );
   }

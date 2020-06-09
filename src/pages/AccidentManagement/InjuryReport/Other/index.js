@@ -19,6 +19,7 @@ import bind from 'lodash-decorators/bind';
 import { isNumber } from '@/utils/utils';
 import { EDIT_CODE, ADD_CODE, DETAIL_CODE, LIST_PATH, EDIT_PATH, INJURY_TYPES, SEX } from '../List';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 const { TreeNode } = TreeSelect;
 const SPAN = { span: 24 };
@@ -98,6 +99,11 @@ const ISALL = [{ key: '0', value: '否' }, { key: '1', value: '是' }];
   })
 )
 export default class InjuryReportOther extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
+
   state = {
     submitting: false,
     selectedAccidentName: '',
@@ -231,9 +237,9 @@ export default class InjuryReportOther extends Component {
   }
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
-  };
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // };
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -265,7 +271,8 @@ export default class InjuryReportOther extends Component {
         (id ? edit : add)(payload, success => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(LIST_PATH);
+            // router.push(LIST_PATH);
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
@@ -722,21 +729,22 @@ export default class InjuryReportOther extends Component {
         refresh={this.refresh}
         action={
           <Fragment>
-            <Button onClick={this.handleBackButtonClick}>返回</Button>
             {type !== 'detail' ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
                 提交
               </Button>
             ) : (
-              <Button
-                type="primary"
-                onClick={this.handleEditButtonClick}
-                disabled={!hasEditAuthority}
-                loading={uploading}
-              >
-                编辑
-              </Button>
+              // <Button
+              //   type="primary"
+              //   onClick={this.handleEditButtonClick}
+              //   disabled={!hasEditAuthority}
+              //   loading={uploading}
+              // >
+              //   编辑
+              // </Button>
+              null
             )}
+            <Button onClick={this.goBack}>返回</Button>
           </Fragment>
         }
       />

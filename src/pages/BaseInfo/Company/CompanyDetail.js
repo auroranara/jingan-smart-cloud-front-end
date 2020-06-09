@@ -572,12 +572,12 @@ export default class CompanyDetail extends PureComponent {
       <FooterToolbar>
         <Button
           size="large"
-          style={{ marginRight: 10 }}
+          // style={{ marginRight: 10 }}
           onClick={e => window.close()}
         >
           返回
         </Button>
-        <Button
+        {/* <Button
           type="primary"
           size="large"
           disabled={!hasEditAuthority}
@@ -586,7 +586,7 @@ export default class CompanyDetail extends PureComponent {
           }}
         >
           编辑
-        </Button>
+        </Button> */}
       </FooterToolbar>
     );
   }

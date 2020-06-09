@@ -1080,15 +1080,16 @@ export default class MajorHazardEdit extends PureComponent {
     return (
       <FooterToolbar>
         {isDet ? (
-          <Button
-            type="primary"
-            size="large"
-            style={{ marginRight: 10 }}
-            disabled={!editCode}
-            href={`#/major-hazard-info/major-hazard/edit/${id}`}
-          >
-            编辑
-          </Button>
+          // <Button
+          //   type="primary"
+          //   size="large"
+          //   style={{ marginRight: 10 }}
+          //   disabled={!editCode}
+          //   href={`#/major-hazard-info/major-hazard/edit/${id}`}
+          // >
+          //   编辑
+          // </Button>
+          null
         ) : (
           <Button
             type="primary"
@@ -1099,7 +1100,6 @@ export default class MajorHazardEdit extends PureComponent {
             提交
           </Button>
         )}
-
         <Button size="large" onClick={this.goBack}>
           返回
         </Button>

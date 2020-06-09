@@ -688,20 +688,20 @@ export default class Edit extends PureComponent {
           {!this.isDetail() && (
             <div style={{ textAlign: 'center' }}>
               <Button
-                // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                // href={`#/facility-management/safety-facilities/list`}
-                style={{ marginRight: 10 }}
-                onClick={this.goBack}
-              >
-                返回
-              </Button>
-              <Button
                 loading={uploading}
                 // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 type="primary"
                 onClick={this.handleSubmit}
               >
                 提交
+              </Button>
+              <Button
+                // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+                // href={`#/facility-management/safety-facilities/list`}
+                style={{ marginLeft: 20 }}
+                onClick={this.goBack}
+              >
+                返回
               </Button>
             </div>
           )}
@@ -710,13 +710,13 @@ export default class Edit extends PureComponent {
                 <Button
                   // size="large"
                   // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                  style={{ marginRight: 10 }}
+                  // style={{ marginLeft: 20 }}
                   // href={`#/facility-management/safety-facilities/list`}
                   onClick={this.goBack}
                 >
                   返回
                 </Button>
-                <Button
+                {/* <Button
                   type="primary"
                   // size="large"
                   disabled={!editCode}
@@ -724,7 +724,7 @@ export default class Edit extends PureComponent {
                   href={`#/facility-management/safety-facilities/edit/${id}`}
                 >
                   编辑
-                </Button>
+                </Button> */}
             </div>
           )}
         </Card>

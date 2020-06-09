@@ -290,16 +290,17 @@ export default class MEdit extends PureComponent {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button onClick={this.goBack}>返回</Button>
         {this.isDetail() ?(
-          <Button type="primary" onClick={e => router.push(`/safety-knowledge-base/msds/edit/${id}`)} loading={loading}>
-            编辑
-          </Button>
+          // <Button type="primary" onClick={e => router.push(`/safety-knowledge-base/msds/edit/${id}`)} loading={loading}>
+          //   编辑
+          // </Button>
+          null
         ) : (
-          <Button type="primary" onClick={this.handleClickValidate} loading={loading}>
+          <Button type="primary" size="large" onClick={this.handleClickValidate} loading={loading}>
             提交
           </Button>
         )}
+        <Button size="large" onClick={this.goBack}>返回</Button>
       </FooterToolbar>
     );
   }

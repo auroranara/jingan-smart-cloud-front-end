@@ -30,6 +30,7 @@ import {
   REPORT_STATUSES,
 } from '../List';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 const SPAN = { span: 24 };
 const LABEL_COL = { span: 4 };
@@ -95,6 +96,11 @@ const GET_COMPANY_TYPE_LIST = 'accidentReport/getCompanyTypeList';
   })
 )
 export default class ReportOther extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
+
   state = {
     submitting: false,
   };
@@ -300,7 +306,8 @@ export default class ReportOther extends Component {
         (id ? edit : add)(payload, success => {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(LIST_PATH);
+            // router.push(LIST_PATH);
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
@@ -1053,20 +1060,21 @@ export default class ReportOther extends Component {
         refresh={this.refresh}
         action={
           <Fragment>
-            <Button onClick={this.handleBackButtonClick}>返回</Button>
             {type !== 'detail' ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick}>
                 提交
               </Button>
             ) : (
-              <Button
-                type="primary"
-                onClick={this.handleEditButtonClick}
-                disabled={!hasEditAuthority}
-              >
-                编辑
-              </Button>
+              // <Button
+              //   type="primary"
+              //   onClick={this.handleEditButtonClick}
+              //   disabled={!hasEditAuthority}
+              // >
+              //   编辑
+              // </Button>
+              null
             )}
+            <Button onClick={this.goBack}>返回</Button>
           </Fragment>
         }
       />

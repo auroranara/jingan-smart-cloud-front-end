@@ -173,8 +173,13 @@ export default class CheckDetail extends PureComponent {
               <span>暂无数据</span>
             </Card>
           )}
-          <div style={{ textAlign: 'right', marginTop: 20 }}>
-            <Button href={`#${LIST_URL}`}>返回</Button>
+          <div style={{ textAlign: 'center', marginTop: 20 }}>
+            <Button
+              // href={`#${LIST_URL}`}
+              onClick={e => window.close()}
+            >
+              返回
+            </Button>
           </div>
         </div>
         <ExamModal {...modalData} />

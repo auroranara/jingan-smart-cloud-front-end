@@ -847,18 +847,18 @@ export default class PersonnelAdd extends PureComponent {
             </Row>
           </Form>
           <div style={{ textAlign: 'center' }}>
+            <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
+              {submitting && <LegacyIcon type="loading" />}
+              提交
+            </Button>
             <Button
-              style={{ marginRight: '24px' }}
+              style={{ marginLeft: 20 }}
               // onClick={() => {
               //   router.goBack();
               // }}
               onClick={this.goBack}
             >
               返回
-            </Button>
-            <Button disabled={submitting} type="primary" onClick={this.handleSubmit}>
-              {submitting && <LegacyIcon type="loading" />}
-              提交
             </Button>
           </div>
         </Card>
