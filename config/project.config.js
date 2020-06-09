@@ -50,6 +50,9 @@ const configs = {
   five: {
     projectKey: 'huagong_pro',
   },
+  cmw: {
+    projectKey: 'cmw_pro',
+  },
 };
 
 export default class Config {
