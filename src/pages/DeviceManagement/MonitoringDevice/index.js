@@ -334,7 +334,8 @@ export default class MonitoringDevice extends Component {
             <Divider type="vertical" />
             <AuthA
               code={editCode}
-              onClick={() => router.push(`/device-management/monitoring-device/edit/${row.id}`)}
+              // onClick={() => router.push(`/device-management/monitoring-device/edit/${row.id}`)}
+              onClick={e => window.open(`${window.publicPath}#/device-management/monitoring-device/edit/${row.id}`)}
             >
               编辑
             </AuthA>

@@ -180,7 +180,8 @@ export default class DeviceDetailCard extends Component {
                 code={buttonCodes.deviceManagement.transmission.point.listView}
                 style={hostTableAStyle}
                 onClick={() => {
-                  router.push(`/device-management/user-transmission-device/${companyId}/point-managament/${record.id}?deviceCode=${record.deviceCode}`)
+                  // router.push(`/device-management/user-transmission-device/${companyId}/point-managament/${record.id}?deviceCode=${record.deviceCode}`)
+                  window.open(`${window.publicPath}#/device-management/user-transmission-device/${companyId}/point-managament/${record.id}?deviceCode=${record.deviceCode}`);
                 }}
               >
                 点位管理
@@ -209,6 +210,7 @@ export default class DeviceDetailCard extends Component {
                 style={{ marginLeft: 10 }}
                 code={buttonCodes.deviceManagement.transmission.host.import}
                 to={`/device-management/user-transmission-device/${companyId}/import-point-position/${record.id}`}
+                target="_blank"
               >
                 导入点位
               </AuthLink>

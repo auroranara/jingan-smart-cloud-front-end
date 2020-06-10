@@ -61,6 +61,7 @@ export default class AddEquipment extends Component {
         params: { type },
       },
       location: {
+        pathname,
         query: { companyId, companyName },
       },
     } = props;
@@ -78,7 +79,10 @@ export default class AddEquipment extends Component {
     };
 
     const query = { companyId, companyName };
-    this.goBack = genGoBack(props, `/device-management/data-processing/list/${type}?${stringify(query)}`);
+    const listPath = pathname.includes('user-transmission-device')
+      ? `/device-management/user-transmission-device/${companyId}/detail`
+      : `/device-management/data-processing/list/${type}?${stringify(query)}`;
+    this.goBack = genGoBack(props, listPath);
   }
 
   componentDidMount() {

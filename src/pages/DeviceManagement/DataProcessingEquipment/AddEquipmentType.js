@@ -5,7 +5,7 @@ import { Card, Button, Input, Row, Col, Select, message, Checkbox } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import router from 'umi/router';
+// import router from 'umi/router';
 import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;

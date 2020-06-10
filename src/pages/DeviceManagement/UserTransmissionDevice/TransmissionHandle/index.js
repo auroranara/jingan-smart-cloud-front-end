@@ -12,6 +12,7 @@ import BuildingFloorSelect from '@/pages/DeviceManagement/Gateway/Other/Building
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '@/pages/DeviceManagement/Gateway/Other/index.less';
+import { genGoBack } from '@/utils/utils';
 
 const { Option } = Select;
 const LIST_PATH = '/device-management/user-transmission-device/list';
@@ -96,6 +97,12 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
   })
 )
 export default class GatewayOther extends Component {
+  constructor(props) {
+    const { location: { query: { companyId } } } = props;
+    super(props);
+    this.goBack = genGoBack(props, `/device-management/user-transmission-device/${companyId}/detail`);
+  }
+
   componentDidMount() {
     const {
       match: {
@@ -988,9 +995,9 @@ export default class GatewayOther extends Component {
   };
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
-  };
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // };
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -1048,9 +1055,10 @@ export default class GatewayOther extends Component {
         (id ? edit : add)(payload, (isSuccess, res) => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            if (window.history.length > 1) {
-              router.goBack();
-            } else router.push(LIST_PATH);
+            // if (window.history.length > 1) {
+            //   router.goBack();
+            // } else router.push(LIST_PATH);
+
           } else {
             message.error(res ? res.msg : `${id ? '编辑' : '新增'}失败，请稍后重试！`);
           }
@@ -1110,10 +1118,10 @@ export default class GatewayOther extends Component {
             refresh={this.refresh}
             action={
               <Fragment>
-                <Button onClick={this.handleBackButtonClick}>返回</Button>
                 <Button type="primary" onClick={this.handleSubmitButtonClick}>
                   提交
                 </Button>
+                <Button onClick={this.goBack}>返回</Button>
               </Fragment>
             }
           />

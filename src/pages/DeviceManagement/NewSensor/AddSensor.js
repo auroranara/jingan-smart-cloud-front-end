@@ -16,22 +16,23 @@ import {
   Tooltip,
 } from 'antd';
 import { connect } from 'dva';
-import { getToken } from '@/utils/authority';
+// import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 // 选择品牌型号弹窗
 import BrandModelModal from '@/pages/DeviceManagement/Components/BrandModelModal';
 // 监测参数表格
 import MonitoringParameterTable from '@/pages/DeviceManagement/Components/MonitoringParameterTable';
-import { AuthButton } from '@/utils/customAuth';
-import codesMap from '@/utils/codes';
+// import { AuthButton } from '@/utils/customAuth';
+// import codesMap from '@/utils/codes';
 import moment from 'moment';
-import { phoneReg } from '@/utils/validate';
+// import { phoneReg } from '@/utils/validate';
 // 片面图标注
-import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
+// import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 // 选择企业弹窗
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import styles from './AddSensor.less';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TreeNode } = TreeSelect;
@@ -41,8 +42,8 @@ const formItemLayout = {
   wrapperCol: { span: 18 },
 };
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
-const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
-const FOLDER = 'monitor';
+// const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
+// const FOLDER = 'monitor';
 /* 渲染树节点 */
 const renderTreeNodes = data => {
   return data.map(item => {
@@ -71,7 +72,7 @@ const renderTreeNodes = data => {
 }))
 export default class AddNewSensor extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       pointFixInfoList: [],  // 平面图标志
       editingIndex: undefined, // 当前编辑的平面图标志下标
@@ -87,10 +88,11 @@ export default class AddNewSensor extends Component {
       isImgSelect: true,
       selectedCompany: {}, // 当前选择的企业
       companyModalVisible: false, // 企业弹窗是否可见
-    }
+    };
+    this.goBack = genGoBack(props, '/device-management/new-sensor/list');
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
       match: { params: { id } },
@@ -301,7 +303,8 @@ export default class AddNewSensor extends Component {
       const tag = id ? '编辑' : '新增'
       const success = () => {
         message.success(`${tag}成功`)
-        router.push('/device-management/new-sensor/list')
+        // router.push('/device-management/new-sensor/list')
+        setTimeout(this.goBack, 1000);
       }
       const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
       // 如果编辑
@@ -821,8 +824,14 @@ export default class AddNewSensor extends Component {
           )}
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button onClick={() => { router.push('/device-management/new-sensor/list') }}>取消</Button>
-          <Button type="primary" className={styles.ml10} onClick={this.handleSubmit}>确定</Button>
+          <Button type="primary" className={styles.ml10} onClick={this.handleSubmit}>提交</Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            // onClick={() => { router.push('/device-management/new-sensor/list') }}
+            onClick={this.goBack}
+          >
+            返回
+          </Button>
         </Row>
       </Card>
     )

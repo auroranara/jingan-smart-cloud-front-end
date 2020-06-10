@@ -10,6 +10,7 @@ import codesMap from '@/utils/codes';
 // import moment from 'moment';
 // import { phoneReg } from '@/utils/validate';
 import CompanySelect from '@/jingan-components/CompanySelect';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -24,6 +25,10 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
   personnelPosition,
 }))
 export default class HandleVirtualMonitoringDevice extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/device-management/virtual-monitoring-device/list');
+  }
 
   componentDidMount () {
     const {
@@ -184,7 +189,8 @@ export default class HandleVirtualMonitoringDevice extends Component {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`);
-        router.push('/device-management/virtual-monitoring-device/list');
+        // router.push('/device-management/virtual-monitoring-device/list');
+        setTimeout(this.goBack, 1000);
       };
       const error = res => { message.error(res ? res.msg : `${tag}失败`) };
       if (id) {
@@ -351,20 +357,18 @@ export default class HandleVirtualMonitoringDevice extends Component {
               </FormItem>
             </Fragment>
           )}
+          <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
+            <Button type="primary" onClick={this.handleSubmit}>
+              提交
+            </Button>
+            <Button
+              style={{ marginLeft: 20 }}
+              onClick={this.goBack}
+            >
+              返回
+            </Button>
+          </Row>
         </Card>
-        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button
-            style={{ marginRight: '10px' }}
-            onClick={() => {
-              router.goBack();
-            }}
-          >
-            取消
-          </Button>
-          <Button type="primary" onClick={this.handleSubmit}>
-            确定
-          </Button>
-        </Row>
       </Fragment>
     );
   }

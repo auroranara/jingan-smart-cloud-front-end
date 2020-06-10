@@ -182,7 +182,8 @@ export default class Brand extends PureComponent {
   }
 
   jumpToModel = (brandId) => {
-    router.push(`/device-management/brand/${brandId}/model`)
+    // router.push(`/device-management/brand/${brandId}/model`)
+    window.open(`${window.publicPath}#/device-management/brand/${brandId}/model`);
   }
 
   /**

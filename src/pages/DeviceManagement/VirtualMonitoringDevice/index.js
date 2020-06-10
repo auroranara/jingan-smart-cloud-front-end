@@ -344,7 +344,8 @@ export default class VirtualMonitoringDevice extends Component {
             <Divider type="vertical" />
             <a
               onClick={() =>
-                router.push(`/device-management/virtual-monitoring-device/edit/${row.id}`)
+                // router.push(`/device-management/virtual-monitoring-device/edit/${row.id}`)
+                window.open(`${window.publicPath}#/device-management/virtual-monitoring-device/edit/${row.id}`)
               }
             >
               编辑

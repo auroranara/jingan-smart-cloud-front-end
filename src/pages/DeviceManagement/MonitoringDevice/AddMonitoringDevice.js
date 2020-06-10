@@ -33,6 +33,7 @@ import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor.png';
 import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-monitor-gray.png';
 import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor-gray.png';
 import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/monitor-active.png';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 
@@ -80,9 +81,10 @@ export default class AddMonitoringDevice extends Component {
       uploading: false, // 安装图片上传状态
       fileList: [], // 安装图片
     };
+    this.goBack = genGoBack(props, '/device-management/monitoring-device/list');
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
       match: {
@@ -419,7 +421,8 @@ export default class AddMonitoringDevice extends Component {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`);
-        router.push('/device-management/monitoring-device/list');
+        // router.push('/device-management/monitoring-device/list');
+        setTimeout(this.goBack, 1000);
       };
       const error = res => {
         message.error(res ? res.msg : `${tag}失败`);
@@ -658,7 +661,7 @@ export default class AddMonitoringDevice extends Component {
                           style={{ marginTop: 4 }}
                         >
                           新增建筑物楼层
-                          </AuthButton>
+                        </AuthButton>
                       </Row>
                     )}
                   </FormItem>
@@ -685,7 +688,6 @@ export default class AddMonitoringDevice extends Component {
               )}
             </Form>
           </Card>
-
           <Card className={styles.mt24}>
             <Form>
               <FormItem label="地图定位" {...formItemLayout}>
@@ -724,19 +726,18 @@ export default class AddMonitoringDevice extends Component {
             </Form>
           </Card>
         </div>
-        <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button
-            className={styles.mr10}
-            onClick={() => {
-              router.goBack();
-            }}
-          >
-            取消
-          </Button>
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
           <Button type="primary" onClick={this.handleSubmit}>
-            确定
+            提交
           </Button>
-        </Row>
+          <Button
+            style={{ marginLeft: 20 }}
+            className={styles.mr10}
+            onClick={this.goBack}
+          >
+            返回
+          </Button>
+        </div>
       </Fragment>
     );
   };

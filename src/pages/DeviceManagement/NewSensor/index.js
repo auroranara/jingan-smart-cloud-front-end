@@ -400,7 +400,7 @@ export default class NewSensorList extends Component {
         width: 230,
         render: (val, row) => (
           <Fragment>
-            <AuthA code={editSensorCode} onClick={() => router.push(`/device-management/new-sensor/edit/${row.id}`)}>编辑</AuthA>
+            <AuthA code={editSensorCode} onClick={() => window.open(`${window.publicPath}#/device-management/new-sensor/edit/${row.id}`)}>编辑</AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteSensorCode}
@@ -410,7 +410,7 @@ export default class NewSensorList extends Component {
               删除
             </AuthPopConfirm>
             <Divider type />
-            <AuthLink code={realTimeDataCode} to={`/device-management/new-sensor/real-time-data/${row.id}`}>查看实时数据</AuthLink>
+            <AuthLink code={realTimeDataCode} to={`/device-management/new-sensor/real-time-data/${row.id}`} target="_blank">查看实时数据</AuthLink>
           </Fragment>
         ),
       },

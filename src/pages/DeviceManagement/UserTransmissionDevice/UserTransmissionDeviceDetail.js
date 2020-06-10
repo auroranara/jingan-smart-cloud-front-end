@@ -233,9 +233,15 @@ export default class UserTransmissionDeviceDetail extends Component {
   // 带入了一个参数record，是为了从card中对应的地方获取数据同步到其父组件的state中，进行变量提升，
   // 这样modal中的form才能从当前共同父组件中获取从card中传上来的数据
   handleDeviceUpdateClick = deviceData => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     // this.setState({ deviceModalVisible: true, operation: 'update', deviceRecord: deviceData });
     // 跳转到编辑网关页面
-    router.push(`/device-management/user-transmission-device/edit/${deviceData.id}`)
+    // router.push(`/device-management/user-transmission-device/edit/${deviceData.id}`);
+    window.open(`${window.publicPath}#/device-management/user-transmission-device/edit/${deviceData.id}?companyId=${companyId}`);
   };
 
   handleDeviceUpdate = fieldsValue => {
@@ -348,7 +354,8 @@ export default class UserTransmissionDeviceDetail extends Component {
       gatewayCode: record.transmissionDeviceCode,
       gatewayId: record.id,
     }
-    router.push(`/device-management/user-transmission-device/host/101/edit/${record.id}?${stringify(payload)}`)
+    // router.push(`/device-management/user-transmission-device/host/101/edit/${record.id}?${stringify(payload)}`)
+    window.open(`${window.publicPath}#/device-management/user-transmission-device/host/101/edit/${record.id}?${stringify(payload)}`);
   };
 
   handleHostUpdate = fieldsValue => {
