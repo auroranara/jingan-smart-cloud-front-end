@@ -52,7 +52,7 @@ const configs = {
   },
   cmw: {
     projectKey: 'cmw_pro',
-    code: 'http://data.jingan-china.cn/v2/login/code/anzhen_code.png',
+    code: 'http://data.jingan-china.cn/v2/login/code/cmw_code.png',
     ios: 'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/chemicalAppDownload/KXBHAPP/official_version/KXBHChemicalCloud.plist&ran=',
     android: 'http://cmw.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
