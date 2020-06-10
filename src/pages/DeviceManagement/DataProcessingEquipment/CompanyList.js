@@ -100,7 +100,7 @@ export default class CompanyList extends PureComponent {
   }
 
   jumpToAddType = () => {
-    router.push('/device-management/data-processing/add')
+    router.push('/device-management/data-processing/add');
   }
 
 
@@ -118,7 +118,8 @@ export default class CompanyList extends PureComponent {
    * @param {string} 单位id
    */
   jumpToDeviceList = (id, companyId, companyName) => {
-    router.push(`/device-management/data-processing/list/${id}?companyId=${companyId}&companyName=${companyName}`)
+    // router.push(`/device-management/data-processing/list/${id}?companyId=${companyId}&companyName=${companyName}`);
+    window.open(`${window.publicPath}#/device-management/data-processing/list/${id}?companyId=${companyId}&companyName=${companyName}`);
   }
 
   /**
@@ -224,7 +225,13 @@ export default class CompanyList extends PureComponent {
         fixed: 'right',
         width: 150,
         render: (val, row) => (
-          <AuthLink code={editTypeCode} to={`/device-management/data-processing/edit/${row.id}`}>编辑</AuthLink>
+          <AuthLink
+            code={editTypeCode}
+            to={`/device-management/data-processing/edit/${row.id}`}
+            target="_blank"
+          >
+            编辑
+          </AuthLink>
         ),
       },
     ]

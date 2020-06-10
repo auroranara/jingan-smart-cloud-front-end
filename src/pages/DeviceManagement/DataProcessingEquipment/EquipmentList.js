@@ -529,7 +529,13 @@ export default class EquipmentList extends PureComponent {
                 <Divider type />
               </Fragment>
             )}
-            <AuthLink code={editCode} to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}&companyName=${companyName}`}>编辑</AuthLink>
+            <AuthLink
+              code={editCode}
+              to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}&companyName=${companyName}`}
+              target="_blank"
+            >
+              编辑
+            </AuthLink>
             <Divider type />
             <AuthPopConfirm
               authority={hasAuthority(deleteCode, permissionCodes)}

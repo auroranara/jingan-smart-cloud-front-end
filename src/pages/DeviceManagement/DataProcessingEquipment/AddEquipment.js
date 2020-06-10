@@ -31,6 +31,7 @@ import { stringify } from 'qs';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from '../NewSensor/AddSensor.less';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -55,6 +56,15 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 )
 export default class AddEquipment extends Component {
   constructor(props) {
+    const {
+      match: {
+        params: { type },
+      },
+      location: {
+        query: { companyId, companyName },
+      },
+    } = props;
+
     super(props);
     this.state = {
       pointFixInfoList: [], // 平面图标志
@@ -66,6 +76,9 @@ export default class AddEquipment extends Component {
       gateWayModalVisible: false, // 选择网关设备弹窗
       gatewayEquipment: {}, // 选择的网关设备
     };
+
+    const query = { companyId, companyName };
+    this.goBack = genGoBack(props, `/device-management/data-processing/list/${type}?${stringify(query)}`);
   }
 
   componentDidMount() {
@@ -423,12 +436,13 @@ export default class AddEquipment extends Component {
       const success = () => {
         message.success(`${tag}成功`);
         // 判断是否是新打开的页面，如果是则返回上级页面，如果不是则返回历史页面
-        if (window.history.length > 1) {
-          router.goBack();
-        } else {
-          const query = { companyId, companyName };
-          router.push(`/device-management/data-processing/list/${type}?${stringify(query)}`);
-        }
+        // if (window.history.length > 1) {
+        //   router.goBack();
+        // } else {
+        //   const query = { companyId, companyName };
+        //   router.push(`/device-management/data-processing/list/${type}?${stringify(query)}`);
+        // }
+        setTimeout(this.goBack, 1000);
       };
       const error = res => {
         message.error(res ? res.msg : `${tag}失败`);
@@ -852,15 +866,15 @@ export default class AddEquipment extends Component {
           )}
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button
-            onClick={() => {
-              router.goBack();
-            }}
-          >
-            取消
-          </Button>
           <Button type="primary" className={styles.ml10} onClick={this.handleSubmit}>
-            确定
+            提交
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            // onClick={() => { router.goBack(); }}
+            onClick={this.goBack}
+          >
+            返回
           </Button>
         </Row>
       </Card>

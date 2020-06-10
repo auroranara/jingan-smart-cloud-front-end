@@ -205,7 +205,13 @@ export default class NVR extends PureComponent {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthLink code={editCode} to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}`}>编辑</AuthLink>
+            <AuthLink
+              code={editCode}
+              to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}`}
+              target="_blank"
+            >
+              编辑
+            </AuthLink>
             <Divider type />
             <AuthA code={deleteCode}>删除</AuthA>
           </Fragment>

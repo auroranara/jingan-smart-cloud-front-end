@@ -185,18 +185,19 @@ export default class AddAssociate extends Component {
   };
 
   handleToBack = () => {
-    const {
-      match: {
-        params: { id, type },
-      },
-      location: {
-        query: { companyId },
-      },
-    } = this.props;
-    // TODO：返回对应的tab
-    router.push(
-      `/device-management/video-monitor/associate/${type}/${id}?name=${name}&&companyId=${companyId}`
-    );
+    // const {
+    //   match: {
+    //     params: { id, type },
+    //   },
+    //   location: {
+    //     query: { companyId },
+    //   },
+    // } = this.props;
+    // // TODO：返回对应的tab
+    // router.push(
+    //   `/device-management/video-monitor/associate/${type}/${id}?name=${name}&&companyId=${companyId}`
+    // );
+    window.close();
   };
 
   // 获取品牌类型列表
@@ -516,15 +517,15 @@ export default class AddAssociate extends Component {
               }}
               rowSelection={rowSelection}
             />
+            <div style={{ textAlign: 'center', marginTop: '24px' }}>
+              <Button type="primary" onClick={this.handleSave}>
+                提交
+              </Button>
+              <Button style={{ marginLeft: 20 }} onClick={this.handleToBack}>
+                返回
+              </Button>
+            </div>
           </Card>
-          <div style={{ textAlign: 'center', marginTop: '24px' }}>
-            <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>
-              取消
-            </Button>
-            <Button type="primary" onClick={this.handleSave}>
-              保存
-            </Button>
-          </div>
         </div>
       </PageHeaderLayout>
     );

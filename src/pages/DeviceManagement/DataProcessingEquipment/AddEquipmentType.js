@@ -6,6 +6,7 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import router from 'umi/router';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 
@@ -22,6 +23,10 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
   companyLoading: loading.effects['device/fetchCompanyiesForAdd'],
 }))
 export default class AddEquipmentType extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, listUrl);
+  }
 
   state = {
     // 选择企业弹窗
@@ -121,7 +126,8 @@ export default class AddEquipmentType extends PureComponent {
       const tag = id ? '编辑' : '新增'
       const success = () => {
         message.success(`${tag}成功`)
-        router.push(listUrl)
+        // router.push(listUrl)
+        setTimeout(this.goBack, 1000);
       }
       const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
       // 如果编辑
@@ -187,8 +193,13 @@ export default class AddEquipmentType extends PureComponent {
           </FormItem>
         </Form>
         <Row justify="center" style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button onClick={() => { router.push(listUrl) }}>取消</Button>
-          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>确定</Button>
+          <Button type="primary" style={{ marginRight: 20 }} onClick={this.handleSubmit}>提交</Button>
+          <Button
+            // onClick={() => { router.push(listUrl) }}
+            onClick={this.goBack}
+          >
+            返回
+          </Button>
         </Row>
       </Card>
     )

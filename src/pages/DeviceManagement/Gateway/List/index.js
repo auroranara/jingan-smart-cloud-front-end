@@ -132,13 +132,15 @@ export default class GatewayList extends Component {
   // 编辑按钮点击事件
   handleEditClick = (e) => {
     const { id } = e.currentTarget.dataset;
-    router.push(`/device-management/gateway/edit/${id}`);
+    // router.push(`/device-management/gateway/edit/${id}`);
+    window.open(`${window.publicPath}#/device-management/gateway/edit/${id}`);
   }
 
   // 查看按钮点击事件
   handleViewClick = (e) => {
     const { id } = e.currentTarget.dataset;
-    router.push(`/device-management/gateway/detail/${id}`);
+    // router.push(`/device-management/gateway/detail/${id}`);
+    window.open(`${window.publicPath}#/device-management/gateway/detail/${id}`);
   }
 
   // 删除按钮点击事件

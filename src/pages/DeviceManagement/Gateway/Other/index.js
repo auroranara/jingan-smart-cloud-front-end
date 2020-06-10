@@ -10,6 +10,7 @@ import router from 'umi/router';
 import BuildingFloorSelect from './BuildingFloorSelect';
 import MarkerSelect from './MarkerSelect';
 import styles from './index.less';
+import { genGoBack } from '@/utils/utils';
 
 const { Option } = Select;
 const LIST_PATH = '/device-management/gateway/list';
@@ -99,6 +100,10 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
   },
 }))
 export default class GatewayOther extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_PATH);
+  }
 
   state = {
     selectedCompany: {},// 选中企业
@@ -768,9 +773,9 @@ export default class GatewayOther extends Component {
   }
 
   // 返回按钮点击事件
-  handleBackButtonClick = () => {
-    router.goBack();
-  }
+  // handleBackButtonClick = () => {
+  //   router.goBack();
+  // }
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
@@ -814,9 +819,10 @@ export default class GatewayOther extends Component {
         (id ? edit : add)(payload, (isSuccess, res) => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            if (window.history.length > 1) {
-              router.goBack();
-            } else router.push(LIST_PATH);
+            // if (window.history.length > 1) {
+            //   router.goBack();
+            // } else router.push(LIST_PATH);
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(res ? res.msg : `${id ? '编辑' : '新增'}失败，请稍后重试！`);
           }
@@ -881,12 +887,13 @@ export default class GatewayOther extends Component {
             refresh={this.refresh}
             action={
               <Fragment>
-                <Button onClick={this.handleBackButtonClick}>返回</Button>
                 {type !== 'detail' ? (
                   <Button type="primary" onClick={this.handleSubmitButtonClick}>提交</Button>
                 ) : (
-                    <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
-                  )}
+                  // <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+                  null
+                )}
+                <Button onClick={this.goBack}>返回</Button>
               </Fragment>
             }
           />

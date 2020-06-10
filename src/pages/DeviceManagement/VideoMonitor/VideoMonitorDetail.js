@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Card } from 'antd';
+import { Button, Card } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
@@ -150,7 +150,7 @@ export default class VideoMonitorDetail extends PureComponent {
 
     return (
       <FooterToolbar>
-        <AuthButton
+        {/* <AuthButton
           code={codesMap.deviceManagement.videoMonitor.edit}
           size="large"
           type="primary"
@@ -159,7 +159,10 @@ export default class VideoMonitorDetail extends PureComponent {
           }}
         >
           编辑
-        </AuthButton>
+        </AuthButton> */}
+        <Button size="large" onClick={e => window.close()}>
+          返回
+        </Button>
       </FooterToolbar>
     );
   }

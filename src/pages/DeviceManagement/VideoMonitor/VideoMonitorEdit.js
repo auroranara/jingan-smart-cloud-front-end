@@ -208,18 +208,24 @@ export default class VideoMonitorEdit extends PureComponent {
 
   // 返回到视频企业列表页面
   goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/device-management/video-monitor/list`));
+    const { dispatch, match: { params: { id } } } = this.props;
+    if (id)
+      window.close();
+    else
+      dispatch(routerRedux.push(`/device-management/video-monitor/list`));
   };
 
   // 返回到视频设备列表页面
   goequipment = (editCompanyId, name) => {
-    const { dispatch } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/device-management/video-monitor/video-equipment/${editCompanyId}?name=${name}`
-      )
-    );
+    const { dispatch, match: { params: { id } } } = this.props;
+    if (id)
+      window.close();
+    else
+      dispatch(
+        routerRedux.push(
+          `/device-management/video-monitor/video-equipment/${editCompanyId}?name=${name}`
+        )
+      );
   };
 
   /**
@@ -344,7 +350,7 @@ export default class VideoMonitorEdit extends PureComponent {
           message.success(
             msg,
             1,
-            id || companyIdParams ? this.goequipment(editCompanyId, editCompanyName) : this.goBack()
+            () => setTimeout(id || companyIdParams ? () => this.goequipment(editCompanyId, editCompanyName) : this.goBack, 1000)
           );
         };
 
@@ -1179,14 +1185,13 @@ export default class VideoMonitorEdit extends PureComponent {
         </Button>
         {id || companyIdParams ? (
           <Button
-            type="primary"
             size="large"
             onClick={() => this.goequipment(editCompanyId, editCompanyName)}
           >
             返回
           </Button>
         ) : (
-          <Button type="primary" size="large" onClick={this.goBack}>
+          <Button size="large" onClick={this.goBack}>
             返回
           </Button>
         )}

@@ -311,7 +311,11 @@ export default class TableList extends PureComponent {
                   >
                     访客登记
                   </AuthButton>
-                  <AuthA code={recordCode} href={`#${ROUTER}/record/${company.id}`}>
+                  <AuthA
+                    code={recordCode}
+                    // href={`#${ROUTER}/record/${company.id}`}
+                    onClick={e => window.open(`${window.publicPath}#${ROUTER}/record/${company.id}`)}
+                  >
                     访客登记记录
                   </AuthA>
                 </div>
