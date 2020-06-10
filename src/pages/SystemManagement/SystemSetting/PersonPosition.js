@@ -13,7 +13,6 @@ const formItemLayout = {
 
 @Form.create()
 export default class PersonPosition extends PureComponent {
-
   componentDidMount () {
     const {
       dispatch,
@@ -57,7 +56,8 @@ export default class PersonPosition extends PureComponent {
         callback: (success, msg) => {
           if (success) {
             message.success('操作成功');
-            router.push(listPath);
+            // router.push(listPath);
+            setTimeout(this.handleBack, 1000);
           } else { message.error(msg || '操作失败') }
         },
       })
@@ -65,8 +65,9 @@ export default class PersonPosition extends PureComponent {
   }
 
   handleBack = () => {
-    const { listPath } = this.props;
-    router.push(listPath);
+    // const { listPath } = this.props;
+    // router.push(listPath);
+    window.close();
   }
 
   render () {
@@ -119,8 +120,8 @@ export default class PersonPosition extends PureComponent {
           </FormItem>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Button style={{ marginRight: '16px' }} onClick={this.handleBack}>返回</Button>
           <Button type="primary" onClick={this.handleSubmit}>提交</Button>
+          <Button style={{ marginLeft: 20 }} onClick={this.handleBack}>返回</Button>
         </div>
       </Card>
     )

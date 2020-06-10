@@ -29,7 +29,8 @@ export default class CommonRoleDetail extends PureComponent {
   };
 
   goBack() {
-    router.push(LIST_URL);
+    // router.push(LIST_URL);
+    window.close();
   }
 
   goToEdit = () => {

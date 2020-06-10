@@ -70,7 +70,8 @@ const breadcrumbList = [
   },
   // 返回
   goBack() {
-    dispatch(routerRedux.push(backUrl));
+    // dispatch(routerRedux.push(backUrl));
+    window.close();
   },
   /* 跳转到编辑页面 */
   goToEdit(id) {
@@ -221,8 +222,8 @@ export default class RoleDetail extends PureComponent {
 
     return (
       <div style={{ textAlign: 'center' }}>
-        <Button disabled={!hasListAuthority} onClick={goBack} style={{ marginRight: '24px' }}>返回</Button>
-        <Button type="primary" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button>
+        {/* <Button type="primary" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button> */}
+        <Button disabled={!hasListAuthority} onClick={goBack}>返回</Button>
       </div>
     );
   }

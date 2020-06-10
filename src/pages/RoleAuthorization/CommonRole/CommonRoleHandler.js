@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
+// import router from 'umi/router';
 
 import codes from '@/utils/codes';
 import RoleHandler from '../Role/RoleHandler';
 import { COMMON_LIST_URL as LIST_URL, COMMON_URLS as URLS } from '../Role/utils';
+import { genGoBack } from '@/utils/utils';
 
 @connect(({ account, commonRole, user, loading }) => ({
   account,
@@ -13,6 +14,11 @@ import { COMMON_LIST_URL as LIST_URL, COMMON_URLS as URLS } from '../Role/utils'
   loading: loading.models.commonRole,
 }))
 export default class CommonRoleHandler extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_URL);
+  }
+
   fetchUnitTypes = action => {
     const { dispatch } = this.props;
     dispatch({ type: 'account/fetchOptions', ...action });
@@ -48,9 +54,9 @@ export default class CommonRoleHandler extends PureComponent {
     dispatch({ type: 'commonRole/savePermissionTree', payload: [[], [], []] });
   };
 
-  goBack() {
-    router.push(LIST_URL);
-  };
+  // goBack() {
+  //   router.push(LIST_URL);
+  // };
 
   render() {
     return (

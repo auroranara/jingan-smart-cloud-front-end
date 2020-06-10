@@ -465,7 +465,8 @@ export default class AssociatedUnit extends PureComponent {
 
   // 返回列表
   goBack = () => {
-    router.push('/role-authorization/account-management/list');
+    // router.push('/role-authorization/account-management/list');
+    window.close();
   };
 
   /* 提交表单信息 */
@@ -567,7 +568,7 @@ export default class AssociatedUnit extends PureComponent {
           }
           const successCallback = () => {
             const msg = userId ? '编辑成功！' : '新增成功！';
-            message.success(msg, 1, this.goBack());
+            message.success(msg, 1, () => setTimeout(this.goBack, 1000));
           };
           const errorCallback = err => {
             message.error(err, 1);
@@ -1796,6 +1797,9 @@ export default class AssociatedUnit extends PureComponent {
           style={{ fontSize: 16 }}
         >
           提交
+        </Button>
+        <Button size="large" onClick={this.goBack}>
+          返回
         </Button>
       </FooterToolbar>
     );

@@ -74,7 +74,8 @@ export default class SystemSettingCompany extends Component {
   }
 
   handleSetting = row => {
-    router.push(`/system-management/system-setting/setting/${row.id}?companyId=${row.companyId}`);
+    // router.push(`/system-management/system-setting/setting/${row.id}?companyId=${row.companyId}`);
+    window.open(`${window.publicPath}#/system-management/system-setting/setting/${row.id}?companyId=${row.companyId}`);
   }
 
   // 新增单位

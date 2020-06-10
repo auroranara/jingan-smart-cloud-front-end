@@ -222,7 +222,7 @@ export default class RoleHandler extends PureComponent {
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, goBack);
+          message.success(msg, 1, () => setTimeout(goBack, 1000));
         };
         const error = () => {
           const msg = id ? '编辑失败' : '新增失败';
@@ -421,7 +421,7 @@ export default class RoleHandler extends PureComponent {
 
     return (
       <TabPane tab="权限配置" key="1" className={styles.tabPane}>
-        <Form layout="inline">
+        <Form layout="inline" style={{ padding: '0 20px' }}>
           <Form.Item
             label="WEB权限树"
             style={INLINE_FORM_STYLE}
@@ -514,11 +514,11 @@ export default class RoleHandler extends PureComponent {
 
     return (
       <div style={{ textAlign: 'center' }}>
-        <Button onClick={goBack} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>
-          返回
-        </Button>
         <Button type="primary" onClick={this.handleSubmit} loading={loading}>
-          确定
+          提交
+        </Button>
+        <Button onClick={goBack} style={{ marginLeft: 20 }} disabled={!hasListAuthority}>
+          返回
         </Button>
       </div>
     );

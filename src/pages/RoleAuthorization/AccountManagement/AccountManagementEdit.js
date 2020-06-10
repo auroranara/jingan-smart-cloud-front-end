@@ -68,6 +68,7 @@ import {
 import styles from './AccountManagementEdit.less';
 import styles1 from '../Role/Role.less';
 import { getToken } from '@/utils/authority';
+import { genGoBack } from '@/utils/utils';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -128,9 +129,9 @@ const href = '/role-authorization/account-management/list'; // 返回地址
     },
 
     // 返回列表页面
-    goBack() {
-      dispatch(routerRedux.push('/role-authorization/account-management/list'));
-    },
+    // goBack() {
+    //   dispatch(routerRedux.push('/role-authorization/account-management/list'));
+    // },
 
     // 检验是否符合规则
     checkAccountOrPhone(action) {
@@ -192,6 +193,7 @@ export default class AccountManagementEdit extends PureComponent {
   constructor(props) {
     super(props);
     this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
+    this.goBack = genGoBack(props, href);
   }
 
   state = {
@@ -367,7 +369,7 @@ export default class AccountManagementEdit extends PureComponent {
     const {
       updateAccountDetail,
       addAccount,
-      goBack,
+      // goBack,
       form: { validateFieldsAndScroll },
       match: {
         params: { id },
@@ -409,7 +411,7 @@ export default class AccountManagementEdit extends PureComponent {
         if (!error) {
           const success = () => {
             const msg = id ? '编辑成功！' : '新增成功！';
-            message.success(msg, 1, goBack);
+            message.success(msg, 1, setTimeout(this.goBack, 1000));
           };
           const error = err => {
             message.error(err, 1);
@@ -1773,6 +1775,9 @@ export default class AccountManagementEdit extends PureComponent {
           style={{ fontSize: 16 }}
         >
           提交
+        </Button>
+        <Button size="large" onClick={this.goBack}>
+          返回
         </Button>
       </FooterToolbar>
     );

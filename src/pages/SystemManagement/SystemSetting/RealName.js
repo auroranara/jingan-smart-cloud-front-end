@@ -62,7 +62,8 @@ export default class RealName extends PureComponent {
         callback: (success, msg) => {
           if (success) {
             message.success('操作成功');
-            router.push(listPath);
+            // router.push(listPath);
+            setTimeout(this.handleBack, 1000);
           } else { message.error(msg || '操作失败') }
         },
       })
@@ -70,7 +71,8 @@ export default class RealName extends PureComponent {
   }
 
   handleBack = () => {
-    router.push(this.props.listPath);
+    // router.push(this.props.listPath);
+    window.close();
   }
 
   render () {
@@ -141,8 +143,8 @@ export default class RealName extends PureComponent {
           </FormItem>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Button style={{ marginRight: '16px' }} onClick={this.handleBack}>返回</Button>
           <Button type="primary" onClick={this.handleSubmit}>提交</Button>
+          <Button style={{ marginLeft: 20 }} onClick={this.handleBack}>返回</Button>
         </div>
       </Card>
     )

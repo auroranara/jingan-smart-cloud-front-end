@@ -397,6 +397,9 @@ export default class ThreeDMap extends PureComponent {
             <Button type="primary" htmlType="submit">
               提交
             </Button>
+            <Button style={{ marginLeft: 20 }} onClick={e => window.close()}>
+              返回
+            </Button>
           </FormItem>
         </Form>
         {/* <div style={{ height: 600, display: mapVisible ? 'block' : 'none' }} id="bird-map" /> */}

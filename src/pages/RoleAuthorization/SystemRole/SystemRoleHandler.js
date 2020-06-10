@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Checkbox, Card, Input, Button, Select, Spin, Table, Tabs, Tree, message } from 'antd';
-import { routerRedux } from 'dva/router';
+// import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
@@ -11,6 +11,7 @@ import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles1 from '../Role/Role.less';
 import { checkParent, uncheckParent, sortTree, getIdMap, getNewMsgs, getChecked, getInitialMsgs } from '../Role/utils';
+import { genGoBack } from '@/utils/utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -78,14 +79,19 @@ const {
       });
     },
     // 返回
-    goBack() {
-      dispatch(routerRedux.push(backUrl));
-    },
+    // goBack() {
+    //   dispatch(routerRedux.push(backUrl));
+    // },
     dispatch,
   })
 )
 @Form.create()
 export default class RoleHandler extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, backUrl);
+  }
+
   state = {
     submitting: false,
     unitType: undefined,
@@ -164,7 +170,7 @@ export default class RoleHandler extends PureComponent {
     const {
       insertRole,
       updateRole,
-      goBack,
+      // goBack,
       form: { validateFieldsAndScroll },
       match: {
         params: { id },
@@ -200,7 +206,7 @@ export default class RoleHandler extends PureComponent {
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, goBack);
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
         const error = () => {
           const msg = id ? '编辑失败' : '新增失败';
@@ -430,7 +436,7 @@ export default class RoleHandler extends PureComponent {
   /* 按钮组 */
   renderButtonGroup() {
     const {
-      goBack,
+      // goBack,
       loading,
       user: {
         currentUser: { permissionCodes },
@@ -440,11 +446,11 @@ export default class RoleHandler extends PureComponent {
 
     return (
       <div style={{ textAlign: 'center' }}>
-        <Button onClick={goBack} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>
-          返回
-        </Button>
         <Button type="primary" onClick={this.handleSubmit} loading={loading}>
-          确定
+          提交
+        </Button>
+        <Button onClick={this.goBack} style={{ marginLeft: 20 }} disabled={!hasListAuthority}>
+          返回
         </Button>
       </div>
     );

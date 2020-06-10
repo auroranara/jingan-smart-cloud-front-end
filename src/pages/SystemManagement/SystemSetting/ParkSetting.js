@@ -161,6 +161,11 @@ export default class ParkSetting extends Component {
           pagination={false}
           loading={tableLoading}
         />
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
         <ParkModal
           {...modalProps}
         />

@@ -5,6 +5,7 @@ import router from 'umi/router';
 import codes from '@/utils/codes';
 import RoleHandler from '../Role/RoleHandler';
 import { PRIVATE_LIST_URL as LIST_URL, PRIVATE_URLS as URLS, isAdmin } from '../Role/utils';
+import { genGoBack } from '@/utils/utils';
 
 @connect(({ account, userRole, user, loading }) => ({
   account,
@@ -14,6 +15,11 @@ import { PRIVATE_LIST_URL as LIST_URL, PRIVATE_URLS as URLS, isAdmin } from '../
   loading: loading.models.userRole,
 }))
 export default class CommonRoleHandler extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, LIST_URL);
+  }
+
   fetchUnitTypes = action => {
     const { dispatch } = this.props;
     dispatch({ type: 'account/fetchOptions', ...action });
@@ -64,9 +70,9 @@ export default class CommonRoleHandler extends PureComponent {
     dispatch({ type: 'userRole/saveUnits', payload: [] });
   };
 
-  goBack() {
-    router.push(LIST_URL);
-  };
+  // goBack() {
+  //   router.push(LIST_URL);
+  // };
 
   render() {
     const { user: { currentUser: { unitId, unitType } } } = this.props;

@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Card, Modal, Input, message, Badge } from 'antd';
+import { Button, Card, Modal, Input, message, Badge } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from '@/components/DescriptionList';
@@ -296,7 +296,10 @@ export default class accountManagementDetail extends PureComponent {
         >
           重置密码
         </AuthButton>
-        <AuthButton
+        <Button size="large" onClick={e => window.close()}>
+          返回
+        </Button>
+        {/* <AuthButton
           code={codesMap.account.edit}
           type="primary"
           size="large"
@@ -305,7 +308,7 @@ export default class accountManagementDetail extends PureComponent {
           }}
         >
           编辑
-        </AuthButton>
+        </AuthButton> */}
         <Modal
           title="重置密码"
           visible={visible}

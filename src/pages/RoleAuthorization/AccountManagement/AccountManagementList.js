@@ -11,13 +11,14 @@ import {
   Row,
   Col,
   Select,
-  AutoComplete,
+  // AutoComplete,
   Modal,
   Table,
   Divider,
   Popconfirm,
   message,
   TreeSelect,
+  Tooltip,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
@@ -513,7 +514,8 @@ export default class accountManagementList extends React.Component {
 
   // 跳转到编辑关联企业
   handleToEdit = id => {
-    router.push(`/role-authorization/account-management/associated-unit/edit/${id}`);
+    // router.push(`/role-authorization/account-management/associated-unit/edit/${id}`);
+    window.open(`${window.publicPath}#/role-authorization/account-management/associated-unit/edit/${id}`);
   };
 
   // 解绑/开启安全企业
@@ -760,11 +762,11 @@ export default class accountManagementList extends React.Component {
           renderItem={item => {
             const { loginId, loginName, userName, phoneNumber, isBindWechat, status, users } = item;
             const isUsersExist = Array.isArray(users) && users.length;
-            let isSelf = false;
-            if (isUsersExist) {
-              const ids = users.map(({ id }) => id);
-              isSelf = ids.includes(userId);
-            }
+            // let isSelf = false;
+            // if (isUsersExist) {
+            //   const ids = users.map(({ id }) => id);
+            //   isSelf = ids.includes(userId);
+            // }
             const actions = [
               <AuthLink
                 code={codesMap.account.detail}
@@ -791,8 +793,7 @@ export default class accountManagementList extends React.Component {
             ];
 
             if (unitId)
-              // 有单位id则不能再关联其他单位
-              actions.pop();
+              actions.pop(); // 有单位id则不能再关联其他单位
 
             return (
               <List.Item key={loginId}>
@@ -837,7 +838,7 @@ export default class accountManagementList extends React.Component {
                             onClick={() => this.handleToEdit(users[0].id)}
                             style={{ cursor: 'pointer' }}
                           >
-                            <LegacyIcon type="edit" />
+                            <Tooltip title="编辑关联单位账号信息"><LegacyIcon type="edit" /></Tooltip>
                           </AuthSpan>
                         </Col>
                         {users[0].id !== userId && (
@@ -860,20 +861,20 @@ export default class accountManagementList extends React.Component {
                                 style={{ cursor: 'pointer' }}
                               >
                                 {!!users[0].accountStatus ? (
-                                  <LegacyIcon type="link" />
+                                  <Tooltip title="解绑关联企业"><LegacyIcon type="link" /></Tooltip>
                                 ) : (
-                                  <LegacyIcon style={{ color: 'red' }} type="disconnect" />
+                                  <Tooltip title="开启关联企业"><LegacyIcon style={{ color: 'red' }} type="disconnect" /></Tooltip>
                                 )}
                               </AuthSpan>
                             </Popconfirm>
                           </Col>
                         )}
-                        <Col span={2}>
+                        {/* <Col span={2}>
                           <LegacyIcon
                             type="login"
                             onClick={this.genHandleScreenModalOpen(users[0])}
                           />
-                        </Col>
+                        </Col> */}
                       </Row>
                     ) : (
                       <p>{getEmptyData()}</p>
@@ -937,7 +938,7 @@ export default class accountManagementList extends React.Component {
                 onClick={() => this.handleToEdit(row.id)}
                 style={{ cursor: 'pointer' }}
               >
-                <LegacyIcon type="edit" />
+                <Tooltip title="编辑关联单位账号信息"><LegacyIcon type="edit" /></Tooltip>
               </AuthSpan>
               {row.id !== userId && (
                 <Fragment>
@@ -958,16 +959,16 @@ export default class accountManagementList extends React.Component {
                       style={{ cursor: 'pointer' }}
                     >
                       {!!row.accountStatus ? (
-                        <LegacyIcon type="link" />
+                        <Tooltip title="解绑关联企业"><LegacyIcon type="link" /></Tooltip>
                       ) : (
-                        <LegacyIcon style={{ color: 'red' }} type="disconnect" />
+                        <Tooltip title="开启关联企业"><LegacyIcon style={{ color: 'red' }} type="disconnect" /></Tooltip>
                       )}
                     </AuthSpan>
                   </Popconfirm>
                 </Fragment>
               )}
-              <Divider type="vertical" />
-              <LegacyIcon type="login" onClick={this.genHandleScreenModalOpen(row)} />
+              {/* <Divider type="vertical" />
+              <LegacyIcon type="login" onClick={this.genHandleScreenModalOpen(row)} /> */}
             </Fragment>
           );
         },
