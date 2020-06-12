@@ -6,7 +6,7 @@ import { Card, Table, Divider, Popconfirm, Button, Modal, Input, message, Row, C
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { AuthA, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
-import router from 'umi/router';
+// import router from 'umi/router';
 
 const FormItem = Form.Item;
 

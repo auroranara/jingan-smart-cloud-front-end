@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Spin, Card, Collapse } from 'antd';
+import { Button, Spin, Card, Collapse } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import urls from '@/utils/urls';
@@ -106,6 +106,11 @@ export default class App extends PureComponent {
                   </Panel>
                 ))}
             </Collapse>
+            <div style={{ textAlign: 'center', marginTop: 24 }}>
+              <Button onClick={e => window.close()}>
+                返回
+              </Button>
+            </div>
           </Card>
         </Spin>
       </PageHeaderLayout>

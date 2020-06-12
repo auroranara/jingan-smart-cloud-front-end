@@ -95,6 +95,10 @@ export default class App extends PureComponent {
     router.push(backUrl);
   }
 
+  goBack = () => {
+    window.close();
+  };
+
   /**
    * 获取规则树
    */
@@ -357,11 +361,11 @@ export default class App extends PureComponent {
               </FormItem>
             </Form>
             <div style={{ textAlign: 'center' }}>
-              <Button onClick={this.goToList} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>
-                取消
-              </Button>
               <Button type="primary" onClick={this.handleSubmit}>
-                保存并预览
+                提交并预览
+              </Button>
+              <Button onClick={this.goBack} style={{ marginLeft: 20 }} disabled={!hasListAuthority}>
+                返回
               </Button>
             </div>
           </Card>

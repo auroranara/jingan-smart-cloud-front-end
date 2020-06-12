@@ -82,7 +82,8 @@ export default class ImportPointPosition extends PureComponent {
 
   // 返回上个页面
   handleBack = () => {
-    history.back();
+    // history.back();
+    window.close();
   };
 
   render() {
@@ -385,7 +386,7 @@ export default class ImportPointPosition extends PureComponent {
                 type="primary"
                 onClick={this.handleBack}
               >
-                确定
+                返回
               </Button>
             </Card>
           )}

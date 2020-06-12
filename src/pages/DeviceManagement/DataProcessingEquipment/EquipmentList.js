@@ -494,7 +494,8 @@ export default class EquipmentList extends PureComponent {
         render: (val, row) => (
           <AuthA
             code={pointViewCode}
-            onClick={() => { router.push(`/device-management/user-transmission-device/${companyId}/point-managament/${row.id}?deviceCode=${row.code}`) }}
+            // onClick={() => { router.push(`/device-management/user-transmission-device/${companyId}/point-managament/${row.id}?deviceCode=${row.code}`) }}
+            onClick={() => { window.open(`${window.publicPath}#/device-management/user-transmission-device/${companyId}/point-managament/${row.id}?deviceCode=${row.code}`) }}
           >
             {val}
           </AuthA>

@@ -17,7 +17,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import router from 'umi/router';
+// import router from 'umi/router';
 import { AuthButton } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 import moment from 'moment';

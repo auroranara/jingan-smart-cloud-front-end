@@ -223,10 +223,11 @@ export default class ArticleList extends PureComponent {
   // 点击跳转到编辑页面
   handleToEdit = (id) => {
     const { companyId } = this.props
-    router.push({
-      pathname: `/training/library/article/edit/${id}`,
-      query: { companyId },
-    })
+    // router.push({
+    //   pathname: `/training/library/article/edit/${id}`,
+    //   query: { companyId },
+    // })
+    window.open(`${window.publicPath}#/training/library/article/edit/${id}?companyId=${companyId}`);
   }
 
   // 点击加载更多

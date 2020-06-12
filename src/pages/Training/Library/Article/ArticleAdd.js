@@ -3,31 +3,33 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/index.css';
 import { connect } from 'dva';
-import router from 'umi/router';
-import debounce from 'lodash/debounce';
+// import router from 'umi/router';
+// import debounce from 'lodash/debounce';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Card, Row, Input, Col, Button, TreeSelect, Radio, message } from 'antd';
-import FooterToolbar from '@/components/FooterToolbar';
+// import FooterToolbar from '@/components/FooterToolbar';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const TreeNode = TreeSelect.TreeNode;
 
-const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
-};
+// const formItemLayout = {
+//   labelCol: { span: 4 },
+//   wrapperCol: { span: 20 },
+// };
 
 @Form.create()
 @connect(({ resourceManagement }) => ({
   resourceManagement,
 }))
 export default class ArticleAdd extends PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       editorState: BraftEditor.createEditorState(null),
     };
+    this.goBack = genGoBack(props, '/training/library/article/list');
   }
 
   componentDidMount() {
@@ -102,16 +104,17 @@ export default class ArticleAdd extends PureComponent {
   handleSubmit = () => {
     const {
       dispatch,
-      location: { pathname },
+      // location: { pathname },
       form: { validateFields },
       match: {
         params: { id },
       },
     } = this.props;
-    const libraryType = pathname.split('/')[3];
+    // const libraryType = pathname.split('/')[3];
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
-      router.push(`/training/library/${libraryType}/list`);
+      // router.push(`/training/library/${libraryType}/list`);
+      setTimeout(this.goBack, 1000);
     };
     const error = () => {
       message.error(id ? '编辑失败' : '新增失败');
@@ -221,12 +224,20 @@ export default class ArticleAdd extends PureComponent {
               </Col>
             </Row>
           </Form>
+          <div style={{ textAlign: 'center' }}>
+            <Button onClick={this.handleSubmit} type="primary">
+              提交
+            </Button>
+            <Button style={{ marginLeft: 20 }} onClick={this.goBack}>
+              返回
+            </Button>
+          </div>
         </Card>
-        <FooterToolbar>
+        {/* <FooterToolbar>
           <Button onClick={this.handleSubmit} type="primary">
             提交
           </Button>
-        </FooterToolbar>
+        </FooterToolbar> */}
       </PageHeaderLayout>
     );
   }

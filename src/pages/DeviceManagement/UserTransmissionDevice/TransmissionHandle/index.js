@@ -6,7 +6,7 @@ import CompanySelect from '@/jingan-components/CompanySelect';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import { connect } from 'dva';
 import moment from 'moment';
-import router from 'umi/router';
+// import router from 'umi/router';
 import BuildingFloorSelect from '@/pages/DeviceManagement/Gateway/Other/BuildingFloorSelect';
 // import MarkerSelect from '@/pages/DeviceManagement/Gateway/Other/MarkerSelect';
 // 地图定位
@@ -1058,7 +1058,7 @@ export default class GatewayOther extends Component {
             // if (window.history.length > 1) {
             //   router.goBack();
             // } else router.push(LIST_PATH);
-
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(res ? res.msg : `${id ? '编辑' : '新增'}失败，请稍后重试！`);
           }

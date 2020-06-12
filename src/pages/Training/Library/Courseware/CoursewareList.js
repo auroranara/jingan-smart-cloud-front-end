@@ -99,10 +99,11 @@ export default class CoursewareList extends PureComponent {
   // 跳转到编辑页面
   handleToEdit = (id) => {
     const { companyId } = this.props
-    router.push({
-      pathname: `/training/library/courseware/edit/${id}`,
-      query: { companyId },
-    })
+    // router.push({
+    //   pathname: `/training/library/courseware/edit/${id}`,
+    //   query: { companyId },
+    // })
+    window.open(`${window.publicPath}#/training/library/courseware/edit/${id}?companyId=${companyId}`);
   }
 
   // 点击加载更多

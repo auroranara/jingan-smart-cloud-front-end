@@ -7,6 +7,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { getToken } from '@/utils/authority';
 import styles from './CoursewareAdd.less';
+import { genGoBack } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -33,6 +34,11 @@ const coursewareTypes = [
   resourceManagement,
 }))
 export default class CoursewareAdd extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(props, '/training/library/courseware/list');
+  }
+
   state = {
     coverLoading: false, // 课件封面loading
     fileList: [],
@@ -127,7 +133,8 @@ export default class CoursewareAdd extends PureComponent {
     } = this.props;
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
-      router.push('/training/library/courseware/list');
+      // router.push('/training/library/courseware/list');
+      setTimeout(this.goBack, 1000);
     };
     const error = () => {
       message.error(id ? '编辑失败' : '新增失败');
@@ -267,9 +274,9 @@ export default class CoursewareAdd extends PureComponent {
   };
 
   // 点击返回
-  handleToBack = () => {
-    router.push('/training/library/courseware/list');
-  };
+  // handleToBack = () => {
+  //   router.push('/training/library/courseware/list');
+  // };
 
   // 渲染树节点
   renderTreeNodes = data => {
@@ -436,15 +443,15 @@ export default class CoursewareAdd extends PureComponent {
             </FormItem>
           </Form>
           <div style={{ textAlign: 'center' }}>
-            <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>
-              返回
-            </Button>
             <Button
               disabled={coverLoading || courseLoading}
               type="primary"
               onClick={this.handleSubmit}
             >
               提交
+            </Button>
+            <Button style={{ marginLeft: 20 }} onClick={this.goBack}>
+              返回
             </Button>
           </div>
         </Card>

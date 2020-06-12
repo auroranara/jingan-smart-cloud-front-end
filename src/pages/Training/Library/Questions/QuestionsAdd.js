@@ -20,6 +20,7 @@ import {
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './QuestionsAdd.less';
 import styles1 from '@/components/ToolBar/index.less';
+import { genGoBack } from '@/utils/utils';
 
 const RadioGroup = Radio.Group;
 const TextArea = Input.TextArea;
@@ -68,6 +69,7 @@ export default class QuestionsAdd extends PureComponent {
       optionsHelp: '',
       keys: [], // 只是用来计数（子选项数量）
     };
+    this.goBack = genGoBack(props, '/training/library/questions/list');
   }
 
   componentDidMount() {
@@ -202,9 +204,9 @@ export default class QuestionsAdd extends PureComponent {
   };
 
   // 点击返回
-  handleToBack = () => {
-    router.push('/training/library/questions/list');
-  };
+  // handleToBack = () => {
+  //   router.push('/training/library/questions/list');
+  // };
 
   // 点击提交
   handleSubmit = () => {
@@ -231,7 +233,8 @@ export default class QuestionsAdd extends PureComponent {
             payload: { ...others, arrAnswer: newAnswers, arrOptions: newOptions },
             success: () => {
               message.success('新增试题成功！');
-              router.push('/training/library/questions/list');
+              // router.push('/training/library/questions/list');
+              setTimeout(this.goBack, 1000);
             },
             error: () => {
               message.error('新增试题失败！');
@@ -243,7 +246,8 @@ export default class QuestionsAdd extends PureComponent {
             payload: { id, ...others, arrAnswer: newAnswers, arrOptions: newOptions },
             success: () => {
               message.success('编辑试题成功！');
-              router.push('/training/library/questions/list');
+              // router.push('/training/library/questions/list');
+              setTimeout(this.goBack, 1000);
             },
             error: () => {
               message.error('编辑试题失败！');
@@ -430,11 +434,11 @@ export default class QuestionsAdd extends PureComponent {
               </Col>
             </Row>
               <div style={{ textAlign: 'center' }}>
-                <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>
-                  返回
-                </Button>
                 <Button type="primary" onClick={this.handleSubmit} /* loading={} */>
-                  确定
+                  提交
+                </Button>
+                <Button style={{ marginLeft: 20 }} onClick={this.goBack}>
+                  返回
                 </Button>
               </div>
             </Form>

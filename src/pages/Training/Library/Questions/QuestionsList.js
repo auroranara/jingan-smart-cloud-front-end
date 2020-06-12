@@ -209,10 +209,11 @@ export default class QuestionsList extends PureComponent {
 
   handleToEdit = (id) => {
     const { companyId } = this.props
-    router.push({
-      pathname: `/training/library/questions/edit/${id}`,
-      query: { companyId },
-    })
+    // router.push({
+    //   pathname: `/training/library/questions/edit/${id}`,
+    //   query: { companyId },
+    // })
+    window.open(`${window.publicPath}#/training/library/questions/edit/${id}?companyId=${companyId}`);
   }
 
   // 渲染筛选

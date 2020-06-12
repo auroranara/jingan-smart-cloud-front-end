@@ -51,7 +51,8 @@ export default class App extends PureComponent {
    * 返回列表页面
    */
   goToList = () => {
-    router.push(backUrl);
+    // router.push(backUrl);
+    window.close();
   }
 
   /**
@@ -148,11 +149,11 @@ export default class App extends PureComponent {
               </FormItem>
             </Form>
             <div style={{ textAlign: 'center' }}>
-              <Button onClick={this.goToList} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>
-                返回
-              </Button>
               <Button type="primary" onClick={this.goToEdit} disabled={!hasEditAuthority || !!+status}>
-                编辑规则
+                编辑
+              </Button>
+              <Button onClick={this.goToList} style={{ marginRight: 20 }} disabled={!hasListAuthority}>
+                返回
               </Button>
             </div>
           </Card>

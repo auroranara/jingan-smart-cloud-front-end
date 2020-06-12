@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Icon as LegacyIcon } from '@ant-design/compatible';
+// import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Button, Card, Dropdown, Menu, Table } from 'antd';
 // import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
@@ -7,7 +7,7 @@ import DescriptionList from 'components/DescriptionList';
 import styles from './DeviceDetailCard.less';
 import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import buttonCodes from '@/utils/codes';
-import router from 'umi/router';
+// import router from 'umi/router';
 
 // const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
 // const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
@@ -18,7 +18,7 @@ import router from 'umi/router';
 
 const { Description } = DescriptionList;
 const ButtonGroup = Button.Group;
-const MenuItem = Menu.Item;
+// const MenuItem = Menu.Item;
 
 const hostTableAStyle = { marginRight: 10 };
 // const deviceButtonStyle = { marginRight: 8 };

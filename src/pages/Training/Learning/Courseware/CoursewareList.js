@@ -103,7 +103,8 @@ export default class CoursewareList extends PureComponent {
   // 跳转到详情
   goToDetail = id => {
     const { dispatch, companyId } = this.props;
-    dispatch(routerRedux.push(`/training/learning/courseware/detail/${id}?companyId=${companyId}`));
+    // dispatch(routerRedux.push(`/training/learning/courseware/detail/${id}?companyId=${companyId}`));
+    window.open(`${window.publicPath}#/training/learning/courseware/detail/${id}?companyId=${companyId}`);
   };
 
   /**

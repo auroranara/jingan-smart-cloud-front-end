@@ -90,7 +90,8 @@ export default class ArticleList extends PureComponent {
   // 跳转到详情页面
   goToDetail = id => {
     const { dispatch, companyId } = this.props;
-    dispatch(routerRedux.push(`/training/learning/article/detail/${id}?companyId=${companyId}`));
+    // dispatch(routerRedux.push(`/training/learning/article/detail/${id}?companyId=${companyId}`));
+    window.open(`${window.publicPath}#/training/learning/article/detail/${id}?companyId=${companyId}`);
   };
 
   /**

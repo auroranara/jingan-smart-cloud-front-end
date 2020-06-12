@@ -428,41 +428,41 @@ export default class SafetySystemOther extends Component {
               // )}
               ref={this.setFormReference}
             />
-            {!isNotDetail && approveList && approveList.length > 0 && (
-              <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
-                {approveList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
-                  <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
-                    <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
-                    <p>一级审批人：{firstApproveBy || ''}</p>
-                    <p>二级审批人：{secondApproveBy || ''}</p>
-                    <p>三级审批人：{threeApproveBy || ''}</p>
-                    <p>经办人：{approveBy || ''}</p>
-                    <div style={{ display: 'flex' }}>
-                      <span>附件：</span>
-                      <div>{otherFileList.map(({ id, fileName, webUrl }) => (
-                        <div key={id}><a href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></div>
-                      ))}</div>
-                    </div>
-                  </Card>
-                ))}
-              </Card>
-            )}
-            <div style={{ textAlign: 'center' }}>
-              {isNotDetail ? (
-                <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
-              ) : (+status === 3 || +status === 4) && (
-                // <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
-                null
-              )}
-              <Button
-                style={{ marginLeft: 20 }}
-                // onClick={this.handleBackButtonClick}
-                onClick={this.goBack}
-              >
-                返回
-              </Button>
-            </div>
           </Card>
+          {!isNotDetail && approveList && approveList.length > 0 && (
+            <Card title="审批信息" bordered={false} style={{ marginTop: '24px' }}>
+              {approveList.map(({ status, firstApproveBy, secondApproveBy, threeApproveBy, approveBy, otherFileList }, index) => (
+                <Card title={`第${index + 1}条信息`} type="inner" key={index} style={{ marginTop: index === 0 ? 'inherit' : '15px' }}>
+                  <p>审核意见：<span style={{ color: STATUS_OPTIONS[+status - 2].color }}>{STATUS_OPTIONS[+status - 2].label}</span></p>
+                  <p>一级审批人：{firstApproveBy || ''}</p>
+                  <p>二级审批人：{secondApproveBy || ''}</p>
+                  <p>三级审批人：{threeApproveBy || ''}</p>
+                  <p>经办人：{approveBy || ''}</p>
+                  <div style={{ display: 'flex' }}>
+                    <span>附件：</span>
+                    <div>{otherFileList.map(({ id, fileName, webUrl }) => (
+                      <div key={id}><a href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a></div>
+                    ))}</div>
+                  </div>
+                </Card>
+              ))}
+            </Card>
+          )}
+          <div style={{ textAlign: 'center', marginTop: 24 }}>
+            {isNotDetail ? (
+              <Button type="primary" onClick={this.handleSubmitButtonClick} loading={submitting}>提交</Button>
+            ) : (+status === 3 || +status === 4) && (
+              // <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+              null
+            )}
+            <Button
+              style={{ marginLeft: 20 }}
+              // onClick={this.handleBackButtonClick}
+              onClick={this.goBack}
+            >
+              返回
+            </Button>
+          </div>
         </Spin>
       </PageHeaderLayout>
     );

@@ -439,7 +439,7 @@ export default class ModelList extends PureComponent {
             </Popconfirm>
             {row.type === 4 && parameterAuth && (<Divider type="vertical" />)}
             {row.type === 4 && parameterAuth && (
-              <Link to={`/device-management/brand/${brandId}/model/${row.id}/parameter`}>配置参数</Link>
+              <Link to={`/device-management/brand/${brandId}/model/${row.id}/parameter`} target="_blank">配置参数</Link>
             )}
           </Fragment>
         ),

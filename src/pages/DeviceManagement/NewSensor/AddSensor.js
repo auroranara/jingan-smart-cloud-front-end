@@ -18,7 +18,7 @@ import {
 import { connect } from 'dva';
 // import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import router from 'umi/router';
+// import router from 'umi/router';
 // 选择品牌型号弹窗
 import BrandModelModal from '@/pages/DeviceManagement/Components/BrandModelModal';
 // 监测参数表格
