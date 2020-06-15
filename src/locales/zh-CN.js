@@ -46,6 +46,7 @@ export default {
   'menu.systemManagement.systemSetting': '系统设置',
   'menu.systemManagement.systemSetting.companyList': '单位列表',
   'menu.systemManagement.systemSetting.setting': '系统配置',
+  'menu.systemManagement.log': '系统日志管理',
   'menu.roleAuthorization': '角色权限',
   'menu.roleAuthorization.account': '账号管理',
   'menu.roleAuthorization.account.account': '账号管理',

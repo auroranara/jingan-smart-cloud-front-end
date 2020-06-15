@@ -495,6 +495,13 @@ module.exports = env => {
                 },
               ],
             },
+            // 系统日志管理
+            {
+              path: '/system-management/log/:type?',
+              name: 'log',
+              code: 'systemManagement.log',
+              component: './SystemManagement/Log',
+            },
           ],
         },
 

@@ -2,7 +2,10 @@ import {
   fetchSystemSetting,
   addSystemCompany,
   updateSystemSetting,
+  // 获取系统日志列表
+  getLogList,
 } from '@/services/systemManagement';
+import { message } from 'antd';
 
 const defaultData = {
   list: [],
@@ -15,45 +18,69 @@ export default {
   state: {
     systemSetting: defaultData,
     detail: {},
+    // 系统日志列表
+    logList: {},
   },
 
   effects: {
     // 获取系统设置列表
-    *fetchSystemSetting ({ payload }, { call, put }) {
+    *fetchSystemSetting({ payload }, { call, put }) {
       const res = yield call(fetchSystemSetting, payload);
       yield put({
         type: 'saveSetting',
         payload: res && res.code === 200 && res.data ? res.data : defaultData,
-      })
+      });
     },
     // 新增系统设置单位
-    *addSystemCompany ({ payload, callback }, { call }) {
+    *addSystemCompany({ payload, callback }, { call }) {
       const res = yield call(addSystemCompany, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 修改系统配置
-    *updateSystemSetting ({ payload, callback }, { call }) {
+    *updateSystemSetting({ payload, callback }, { call }) {
       const res = yield call(updateSystemSetting, payload);
       callback && callback(res && res.code === 200, res.msg);
     },
     // 获取设置详情
-    *fetchSettingDetail ({ payload, callback }, { call, put }) {
+    *fetchSettingDetail({ payload, callback }, { call, put }) {
       const res = yield call(fetchSystemSetting, { ...payload, pageNum: 1, pageSize: 0 });
       const detail = res && res.code === 200 && res.data ? res.data.list[0] : {};
       yield put({ type: 'saveDetail', payload: detail });
       callback && callback(detail);
     },
+    // 获取系统日志列表
+    *getLogList({ payload, callback }, { call, put }) {
+      const response = yield call(getLogList, payload);
+      const { code, msg, data } = response || {};
+      if (code === 200 && data) {
+        const logList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            logList,
+          },
+        });
+        callback && callback(true, logList);
+      } else {
+        message.error('获取系统日志列表数据失败，请稍后重试！');
+        callback && callback(false, msg);
+      }
+    },
   },
 
   reducers: {
+    save: (state, { payload }) => ({
+      ...state,
+      ...payload,
+    }),
     saveSetting(state, action) {
       return {
         ...state,
         systemSetting: action.payload || defaultData,
-      }
+      };
     },
     saveDetail(state, action) {
       return { ...state, detail: action.payload };
     },
   },
-}
+};
