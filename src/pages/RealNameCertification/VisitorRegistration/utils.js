@@ -205,8 +205,8 @@ export const EditModal = Form.create()(props => {
               optionFilterProp="children"
               filterOption={filterOption}
             >
-              {cardList.map(({ name, entranceNumber }) => (
-                <Select.Option key={entranceNumber} value={entranceNumber}>
+              {cardList.map(({ name, icNumber }) => (
+                <Select.Option key={icNumber} value={icNumber}>
                   {name}
                 </Select.Option>
               ))}

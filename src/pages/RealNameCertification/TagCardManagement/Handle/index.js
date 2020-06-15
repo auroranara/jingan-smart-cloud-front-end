@@ -30,7 +30,7 @@ export default class Edit extends PureComponent {
   state = {
     personId: '',
   };
-  componentDidMount() {
+  componentDidMount () {
     const {
       match: {
         params: { id },
@@ -90,8 +90,8 @@ export default class Edit extends PureComponent {
       const { companyId, icNumber, snNumber, labelType, note } = values;
       const vals = {
         companyId: companyId.key || unitId,
-        icNumber,
-        snNumber,
+        icNumber: icNumber || null,
+        snNumber: snNumber || null,
         labelType,
         personId: personId ? personId : undefined,
         carId: carId ? carId : undefined,
@@ -138,6 +138,7 @@ export default class Edit extends PureComponent {
     const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
     const spaceRe = new RegExp(/^[^ ]+$/);
     if (
+      !value ||
       value &&
       value.length === 12 &&
       snRe.test(value) &&
@@ -148,7 +149,7 @@ export default class Edit extends PureComponent {
     } else callback('必须为12位数');
   };
 
-  render() {
+  render () {
     const {
       loading,
       match: {
@@ -204,6 +205,7 @@ export default class Edit extends PureComponent {
         ),
         otherRule: this.validateSn,
         snLabel: 'SN卡号',
+        required: false,
       },
       {
         name: 'labelType',
