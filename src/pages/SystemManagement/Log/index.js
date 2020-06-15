@@ -8,17 +8,29 @@ import { Button } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import {
-  TYPES,
-  LOGIN_TYPES,
-  LOGIN_METHODS,
-  FORMAT,
-  OPERATE_TYPES,
-  NAMESPACE,
-  API,
-  PAGE_SIZE,
-} from './config';
 import styles from './index.less';
+
+const TYPES = [{ key: '1', tab: '登录日志' }, { key: '2', tab: '操作日志' }];
+const LOGIN_TYPES = [{ key: '1', value: '登入系统' }, { key: '2', value: '登出系统' }];
+const LOGIN_METHODS = [
+  { key: '1', value: 'web' },
+  { key: '2', value: 'android' },
+  { key: '3', value: 'ios' },
+];
+const FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const OPERATE_TYPES = [
+  { key: '1', value: '新增' },
+  { key: '2', value: '编辑' },
+  { key: '3', value: '删除' },
+];
+const NAMESPACE = 'systemManagement';
+const API = `${NAMESPACE}/getLogList`;
+const PAGE_SIZE = 10;
+const BREADCRUMB_LIST = [
+  { title: '首页', name: '首页', href: '/' },
+  { title: '系统管理', name: '系统管理' },
+  { title: '系统日志管理', name: '系统日志管理' },
+];
 
 export default connect(
   state => state,
@@ -254,12 +266,8 @@ export default connect(
   return (
     <PageHeaderLayout
       className={styles.layout}
-      breadcrumbList={[
-        { title: '首页', name: '首页', href: '/' },
-        { title: '系统管理', name: '系统管理' },
-        { title: '系统日志管理', name: '系统日志管理' },
-      ]}
-      title="系统日志管理"
+      breadcrumbList={BREADCRUMB_LIST}
+      title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
       action={
         <Button type="primary" href="#/test">
           申请变更
