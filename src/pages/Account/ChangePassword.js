@@ -14,7 +14,7 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '修改密码', name: '修改密码' },
 ];
-const CodeTime = 60;
+const CodeTime = 30;
 
 @connect(({ account, user, company, loading }) => ({
   user,
@@ -273,7 +273,7 @@ export default class ChangePassword extends PureComponent {
                   <Input maxLength={6} value={code} onChange={this.handleChangeCode} />
                   <Button
                     onClick={this.handleClickCode}
-                    style={{ position: 'absolute', right: -112, top: 3 }}
+                    style={{ position: 'absolute', right: -120, top: 4, width: 112 }}
                     disabled={isSendingCode}
                   >
                     {isSendingCode ? `重新获取(${codeTime})` : '获取验证码'}

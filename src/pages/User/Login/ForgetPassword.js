@@ -8,7 +8,7 @@ import router from 'umi/router';
 import { aesEncrypt } from '@/utils/utils';
 import styles from './ForgetPassword.less';
 
-const CodeTime = 60;
+const CodeTime = 30;
 const InputGroup = Input.Group;
 const FormItem = Form.Item;
 
