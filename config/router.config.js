@@ -1623,6 +1623,49 @@ module.exports = env => {
                 },
               ],
             },
+            // 变更管理-新
+            {
+              path: '/risk-control/change',
+              code: 'riskControl.change',
+              name: 'change',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/change',
+                  redirect: '/risk-control/change/list',
+                },
+                {
+                  path: '/risk-control/change/list',
+                  code: 'riskControl.change.list',
+                  name: 'list',
+                  component: './RiskControl/Change/List',
+                },
+                {
+                  path: '/risk-control/change/detail/:id',
+                  code: 'riskControl.change.detail',
+                  name: 'detail',
+                  component: './RiskControl/Change/Form',
+                },
+                {
+                  path: '/risk-control/change/add',
+                  code: 'riskControl.change.add',
+                  name: 'add',
+                  component: './RiskControl/Change/Form',
+                },
+                {
+                  path: '/risk-control/change/edit/:id',
+                  code: 'riskControl.change.edit',
+                  name: 'edit',
+                  component: './RiskControl/Change/Form',
+                },
+                {
+                  path: '/risk-control/change/approve/:id',
+                  code: 'riskControl.change.approve',
+                  name: 'approve',
+                  component: './RiskControl/Change/Form',
+                },
+              ],
+            },
           ],
         },
 
