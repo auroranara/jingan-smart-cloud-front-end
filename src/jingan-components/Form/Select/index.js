@@ -203,7 +203,8 @@ const FormSelect = ({
   useEffect(() => {
     if (
       labelInValue /* labelInValue为true */ ||
-      (!value || (multiple && !value.length)) /* value不存在 */ ||
+      !value ||
+      (multiple && !value.length) /* value不存在 */ ||
       (data &&
         (multiple
           ? data.length === value.length && value.every((key, index) => data[index].key === key)
@@ -323,7 +324,11 @@ const FormSelect = ({
               key: item.key || item.value,
               value: item.key || item.value,
             }))
-          : { ...value, key: value.key || value.value, value: value.key || value.value });
+          : {
+              ...value,
+              key: value.key || value.value,
+              value: value.key || value.value,
+            });
       if (labelInValue) {
         onChange && onChange(values, option);
       } else {

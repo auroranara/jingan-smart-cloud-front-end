@@ -258,9 +258,10 @@ const FormIndex = forwardRef((props, ref) => {
                               rules={
                                 mode !== 'detail'
                                   ? enableDefaultRules && Component.getRules
-                                    ? Component.getRules({ label, ...properties }).concat(
-                                        rules || []
-                                      )
+                                    ? Component.getRules({
+                                        label,
+                                        ...properties,
+                                      }).concat(rules || [])
                                     : rules
                                   : undefined
                               }

@@ -6,6 +6,11 @@ export async function getCompanyList(params) {
   return request(`/acloud_new/v2/baseInfo/getCompanyByUser?${stringify(params)}`);
 }
 
+// 获取企业详情
+export async function getCompanyDetail({ id }) {
+  return request(`/acloud_new/v2/baseInfo/company/${id}`);
+}
+
 /* 获取区域列表 */
 export async function getAreaList(params) {
   return request(`/acloud_new/v2/baseInfo/city/new?${stringify(params)}`);

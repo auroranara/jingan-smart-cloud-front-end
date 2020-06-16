@@ -1,5 +1,6 @@
 import {
   getCompanyList,
+  getCompanyDetail,
   getAreaList,
   getMonitorTypeList,
   getMonitorEquipmentList,
@@ -44,6 +45,7 @@ export default {
         total: 0,
       },
     },
+    companyDetail: {},
     areaList: [],
     monitorTypeList: [],
     monitorEquipmentList: {},
@@ -106,6 +108,23 @@ export default {
           payload: data,
         });
         callback && callback(true, data);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取企业详情
+    *getCompanyDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyDetail, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const companyDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            companyDetail,
+          },
+        });
+        callback && callback(true, companyDetail);
       } else {
         callback && callback(false, msg);
       }
