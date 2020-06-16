@@ -65,7 +65,7 @@ const exportList = [
   { id: '3', label: '导出全部' },
 ];
 
-const url = 'http://data.jingan-china.cn/v2/chem/file2/%E4%BA%BA%E5%91%98%E6%A8%A1%E6%9D%BF.xls';
+const url = 'http://data.jingan-china.cn/v2/chem/file3/%E4%BA%BA%E5%91%98%E6%A8%A1%E6%9D%BF.xls';
 @connect(({ realNameCertification, department, user, loading }) => ({
   realNameCertification,
   department,
