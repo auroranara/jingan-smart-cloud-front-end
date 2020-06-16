@@ -226,6 +226,7 @@ const CheckboxOrSpan = ({ mode, children, ...restProps }) =>
           payload: {
             pageNum: 1,
             pageSize: 0,
+            isSN: 1,
             ...payload,
           },
           callback: data => {
