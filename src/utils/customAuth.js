@@ -351,8 +351,8 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
     children,
     authority, // 权限 { boolean } 最高优先级
     style,
-  } = props
-  const auth = authority || hasAuthority(code, codes || permissionCodes);
+  } = props;
+  const auth = typeof authority === 'boolean' ? authority : hasAuthority(code, codes || permissionCodes);
   return auth ? (
     <Popconfirm
       title={title}
