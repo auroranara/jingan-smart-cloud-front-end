@@ -10,7 +10,7 @@ import router from 'umi/router';
 import moment from 'moment';
 import styles from './index.less';
 
-const TYPES = [{ key: '1', tab: '登录日志' }, { key: '2', tab: '操作日志' }];
+const TAB_LIST = [{ key: '1', tab: '登录日志' }, { key: '2', tab: '操作日志' }];
 const LOGIN_TYPES = [{ key: '1', value: '登入系统' }, { key: '2', value: '登出系统' }];
 const LOGIN_METHODS = [
   { key: '1', value: 'web' },
@@ -82,14 +82,14 @@ export default connect(
   // 当前选中的标签键值
   const tabActiveKey = useMemo(
     () => {
-      return TYPES.find(item => item.key === type) ? type : TYPES[0].key;
+      return TAB_LIST.find(item => item.key === type) ? type : TAB_LIST[0].key;
     },
     [type]
   );
   // 表单配置对象
   const fields = useMemo(
     () => {
-      return tabActiveKey === TYPES[0].key
+      return tabActiveKey === TAB_LIST[0].key
         ? [
             {
               name: 'loginType',
@@ -167,7 +167,7 @@ export default connect(
   // 表格配置对象
   const columns = useMemo(
     () => {
-      return tabActiveKey === TYPES[0].key
+      return tabActiveKey === TAB_LIST[0].key
         ? [
             {
               dataIndex: 'loginType',
@@ -273,7 +273,7 @@ export default connect(
           申请变更
         </Button>
       }
-      tabList={TYPES}
+      tabList={TAB_LIST}
       tabActiveKey={tabActiveKey}
       onTabChange={tabActiveKey => router.replace(`/system-management/log/${tabActiveKey}`)}
     >
