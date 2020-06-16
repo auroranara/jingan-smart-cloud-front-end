@@ -103,6 +103,7 @@ const FormIndex = forwardRef((props, ref) => {
     dependencies: globalDependencies,
     showCard = true,
     showEditButton = true,
+    addonBefore,
     ...rest
   } = props;
   // 创建form的引用
@@ -182,6 +183,15 @@ const FormIndex = forwardRef((props, ref) => {
           const toolbar = showOperation &&
             mode && (
               <div className={classNames(styles.operationContainer, styles.modeOperationContainer)}>
+                {Array.isArray(addonBefore)
+                  ? operation.map((item, index) => {
+                      return (
+                        <div key={index} className={styles.operationWrapper}>
+                          {item}
+                        </div>
+                      );
+                    })
+                  : addonBefore && <div className={styles.operationWrapper}>{addonBefore}</div>}
                 {mode === 'detail' ? (
                   (typeof showEditButton === 'function'
                     ? showEditButton(payload)

@@ -4,6 +4,7 @@ import request from '@/utils/request';
 const data = {
   id: 1,
   status: 1,
+  approveDate: +new Date(),
 };
 
 export async function getList(params) {
@@ -13,7 +14,19 @@ export async function getList(params) {
       resolve({
         code: 200,
         data: {
-          list: [data],
+          list: [
+            data,
+            {
+              id: 2,
+              status: 2,
+              approveDate: +new Date(),
+            },
+            {
+              id: 3,
+              status: 3,
+              approveDate: +new Date(),
+            },
+          ],
           pagination: {
             total: 1,
             ...params,

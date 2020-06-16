@@ -65,6 +65,7 @@ export default connect(
         });
       },
       isUnit: unitType === 4,
+      hasOperateAuthority: [3, 4].includes(unitType),
       hasDetailAuthority: permissionCodes.includes('riskControl.change.detail'),
       hasAddAuthority: permissionCodes.includes('riskControl.change.add'),
       hasEditAuthority: permissionCodes.includes('riskControl.change.edit'),
@@ -85,6 +86,7 @@ export default connect(
     loading,
     getList,
     isUnit,
+    hasOperateAuthority,
     hasDetailAuthority,
     hasAddAuthority,
     hasEditAuthority,
@@ -199,25 +201,39 @@ export default connect(
           title: '操作',
           render: (_, { id, status }) => (
             <Fragment>
-              <Link to={`/risk-control/change/detail/${id}`} disabled={!hasDetailAuthority}>
+              <Link
+                to={`/risk-control/change/detail/${id}`}
+                target="_blank"
+                disabled={!hasDetailAuthority}
+              >
                 查看
               </Link>
-              {`${status}` !== STATUSES[1].key && (
-                <Fragment>
-                  <Divider type="vertical" />
-                  <Link to={`/risk-control/change/edit/${id}`} disabled={!hasEditAuthority}>
-                    编辑
-                  </Link>
-                </Fragment>
-              )}
-              {`${status}` === STATUSES[0].key && (
-                <Fragment>
-                  <Divider type="vertical" />
-                  <Link to={`/risk-control/change/approve/${id}`} disabled={!hasApproveAuthority}>
-                    去验收
-                  </Link>
-                </Fragment>
-              )}
+              {hasOperateAuthority &&
+                `${status}` !== STATUSES[1].key && (
+                  <Fragment>
+                    <Divider type="vertical" />
+                    <Link
+                      to={`/risk-control/change/edit/${id}`}
+                      target="_blank"
+                      disabled={!hasEditAuthority}
+                    >
+                      编辑
+                    </Link>
+                  </Fragment>
+                )}
+              {hasOperateAuthority &&
+                `${status}` === STATUSES[0].key && (
+                  <Fragment>
+                    <Divider type="vertical" />
+                    <Link
+                      to={`/risk-control/change/approve/${id}`}
+                      target="_blank"
+                      disabled={!hasApproveAuthority}
+                    >
+                      去验收
+                    </Link>
+                  </Fragment>
+                )}
             </Fragment>
           ),
         },
@@ -272,11 +288,13 @@ export default connect(
             form.current.setFieldsValue(values);
           }}
           showAddButton={false}
-          operation={[
-            <Button type="primary" href="#/risk-control/change/add" disabled={!hasAddAuthority}>
-              申请变更
-            </Button>,
-          ]}
+          operation={
+            hasOperateAuthority && [
+              <Button type="primary" href="#/risk-control/change/add" disabled={!hasAddAuthority}>
+                申请变更
+              </Button>,
+            ]
+          }
         />
       </PageHeaderLayout>
     );
