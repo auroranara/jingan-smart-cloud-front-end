@@ -26,6 +26,10 @@ import specialEquipmentGray from '../imgs/special-equipment-gray.png';
 import iconTips from '../imgs/icon-tips.png';
 import iconCar from '../imgs/icon-car.png';
 import iconFace from '../imgs/icon-face.png';
+import workBill from '../imgs/work-bill.png';
+import workBillActive from '../imgs/work-bill-active.png';
+import workBillGray from '../imgs/work-bill-gray.png';
+import workBillAlarm from '../imgs/work-bill-alarm.png';
 
 const fengMap = fengmap; // eslint-disable-line
 const TiltAngle = 50;
@@ -118,6 +122,7 @@ const filterMarkerList = markerList => {
     emergencyManagement,
     changeWarning,
     licensePlateRecognitionSystem,
+    workingBill,
   }) => ({
     map,
     chemical,
@@ -127,12 +132,13 @@ const filterMarkerList = markerList => {
     emergencyManagement,
     changeWarning,
     licensePlateRecognitionSystem,
+    workingBill,
   })
 )
 export default class Map extends PureComponent {
   state = {
     gdMapVisible: false,
-    visibles: [true, false, false, false],
+    visibles: [true, false, false, false, false],
     videoVisible: false,
     videoList: [],
     keyId: undefined,
@@ -140,13 +146,14 @@ export default class Map extends PureComponent {
   };
 
   ids = [];
-  polygonArray = [];
+  fourColors = []; // 四色图polygons
   polygonLayers = [];
   markerArray = [];
   markerLayers = [];
   lastTime = 0;
   jumpEquipIds = [];
   jumpFireIds = [];
+  fourColorModels = []; // 四色图models
 
   /* eslint-disable*/
   componentDidMount() {
@@ -178,9 +185,45 @@ export default class Map extends PureComponent {
         return null;
       });
       this.fetchPonits('chemical/fetchFireDevice', 2);
+      this.renderWorkingBill();
     });
     // },
     // });
+  };
+
+  renderWorkingBill = () => {
+    const { dispatch, companyId } = this.props;
+    const iconType = 4;
+    dispatch({
+      type: 'workingBill/getList',
+      payload: {
+        companyId,
+        approveStatus: 2,
+        pageNum: 1,
+        pageSize: 0,
+      },
+      callback: (success, { list }) => {
+        if (!success) return;
+        list.map(item => {
+          const { mapAddress } = item;
+          if (!mapAddress || !JSON.parse(mapAddress).length) return;
+          const points = JSON.parse(mapAddress);
+          const { groupId, x, y, z } = points[0];
+          const polygonMarker = this.addPolygon(groupId, points, COLORS[3], item);
+          const marker = this.addMarkers(+groupId, {
+            x: +x,
+            y: +y,
+            z: +z,
+            // url: warnStatus === -1 ? controls[iconType].alarmIcon : controls[iconType].markerIcon,
+            url: workBill,
+            iconType,
+            markerProps: item,
+            groupId: +groupId,
+          });
+          if (marker) marker.show = visibles[iconType];
+        });
+      },
+    });
   };
 
   fetchDict = (payload, success, error) => {
@@ -213,6 +256,7 @@ export default class Map extends PureComponent {
             z: +item.z,
           }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
+          this.fourColors.push(polygonMarker);
           // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
           this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
           return null;
@@ -234,7 +278,7 @@ export default class Map extends PureComponent {
         if (!(code === 200 && data && data.list)) return;
         const warningList = data.list;
         this.removeMarkersByType(-1);
-        this.polygonArray.map(polygon => {
+        this.fourColors.map(polygon => {
           const {
             polygonProps: { coordinateList, id, groupId },
           } = polygon;
@@ -428,8 +472,8 @@ export default class Map extends PureComponent {
       const { eventInfo: { coord } = {}, FID, groupID } = clickedObj;
       if (coord) {
         // 点击区域
-        for (let index = 0; index < this.polygonArray.length; index++) {
-          const polygon = this.polygonArray[index];
+        for (let index = 0; index < this.fourColors.length; index++) {
+          const polygon = this.fourColors[index];
           const {
             polygonProps: { modelIds, id },
           } = polygon;
@@ -915,7 +959,17 @@ export default class Map extends PureComponent {
     const models = map.getDatasByAlias(groupId, 'model');
     models.map(model => {
       const { FID } = model;
-      if (FIDs.includes(FID)) model.setColor(color);
+      if (FIDs.includes(FID)) {
+        model.setColor(color);
+        this.fourColorModels.push(model);
+      }
+      return null;
+    });
+  };
+
+  resetFourColorModel = () => {
+    this.fourColorModels.map(item => {
+      item.setColorToDefault();
       return null;
     });
   };
@@ -959,7 +1013,6 @@ export default class Map extends PureComponent {
     });
     polygonMarker.setColor(color);
     layer.addMarker(polygonMarker);
-    this.polygonArray.push(polygonMarker);
     // this.polygonLayers.push(layer);
     return polygonMarker;
     // polygonMarker.alwaysShow(true);
