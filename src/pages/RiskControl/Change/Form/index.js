@@ -13,14 +13,16 @@ const DETAIL_API = `${NAMESPACE}/getDetail`;
 const ADD_API = `${NAMESPACE}/add`;
 const EDIT_API = `${NAMESPACE}/edit`;
 const APPROVE_API = `${NAMESPACE}/approve`;
+const LIST_PATH = '/risk-control/change/list';
+const EDIT_PATH = '/risk-control/change/edit';
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '风险分级管控', name: '风险分级管控' },
   { title: '变更管理', name: '变更管理', href: '/risk-control/change/list' },
   { title: '变更申请', name: '变更申请' },
 ];
-const LIST_PATH = '/risk-control/change/list';
-const EDIT_PATH = '/risk-control/change/edit';
+const LABEL_COL = { span: 6 };
+const WRAPPER_COL = { span: 12 };
 
 export default connect(
   state => state,
@@ -94,7 +96,9 @@ export default connect(
     },
   }
 )(({ id, detail, loading = false, getDetail, submitting, submit, hasEditAuthority, mode }) => {
+  // 表单初始值
   const [initialValues, setInitialValues] = useState(undefined);
+  // 数据初始化
   useEffect(
     () => {
       if (id) {
@@ -150,6 +154,8 @@ export default connect(
           }}
           submitting={submitting}
           // showEditButton={hasEditAuthority && }
+          labelCol={LABEL_COL}
+          wrapperCol={WRAPPER_COL}
         />
       </Spin>
     </PageHeaderLayout>

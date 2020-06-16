@@ -32,42 +32,6 @@ const BREADCRUMB_LIST = [
   { title: '风险分级管控', name: '风险分级管控' },
   { title: '变更管理', name: '变更管理' },
 ];
-const FIELDS = [
-  {
-    name: 'project',
-    label: '变更项目',
-    component: 'Input',
-    props: {
-      allowClear: true,
-    },
-  },
-  {
-    name: 'type',
-    label: '变更类别',
-    component: 'Select',
-    props: {
-      list: TYPES,
-      allowClear: true,
-    },
-  },
-  {
-    name: 'applicant',
-    label: '登录人',
-    component: 'Input',
-    props: {
-      allowClear: true,
-    },
-  },
-  {
-    name: 'status',
-    label: '验收状态',
-    component: 'Select',
-    props: {
-      list: STATUSES,
-      allowClear: true,
-    },
-  },
-];
 
 export default connect(
   state => state,
@@ -75,7 +39,7 @@ export default connect(
   (
     {
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { unitType, permissionCodes },
       },
       [NAMESPACE]: { list },
       loading: {
@@ -100,6 +64,7 @@ export default connect(
           callback,
         });
       },
+      isUnit: unitType === 4,
       hasDetailAuthority: permissionCodes.includes('riskControl.change.detail'),
       hasAddAuthority: permissionCodes.includes('riskControl.change.add'),
       hasEditAuthority: permissionCodes.includes('riskControl.change.edit'),
@@ -119,6 +84,7 @@ export default connect(
     list,
     loading,
     getList,
+    isUnit,
     hasDetailAuthority,
     hasAddAuthority,
     hasEditAuthority,
@@ -127,12 +93,7 @@ export default connect(
     // 表单实例
     const form = useRef(null);
     // 表单暂存值
-    const [values, setValues] = useState(
-      FIELDS.reduce((result, item) => {
-        result[item.name] = undefined;
-        return result;
-      }, {})
-    );
+    const [values, setValues] = useState(undefined);
     // 接口封装方法
     const getListByValues = ({ project, applicant, ...rest } = {}) => {
       getList({
@@ -141,13 +102,67 @@ export default connect(
         applicant: applicant && applicant.trim(),
       });
     };
-    // 数据初始化
-    useEffect(() => {
-      getListByValues();
-    }, []);
+    // 表单配置对象
+    const fields = [
+      ...(!isUnit
+        ? [
+            {
+              name: 'companyName',
+              label: '单位名称',
+              component: 'Input',
+              props: {
+                allowClear: true,
+              },
+            },
+          ]
+        : []),
+      {
+        name: 'type',
+        label: '变更类别',
+        component: 'Select',
+        props: {
+          list: TYPES,
+          allowClear: true,
+        },
+      },
+      {
+        name: 'project',
+        label: '变更项目',
+        component: 'Input',
+        props: {
+          allowClear: true,
+        },
+      },
+      {
+        name: 'applicant',
+        label: '申请人',
+        component: 'Input',
+        props: {
+          allowClear: true,
+        },
+      },
+      {
+        name: 'status',
+        label: '验收状态',
+        component: 'Select',
+        props: {
+          list: STATUSES,
+          allowClear: true,
+        },
+      },
+    ];
     // 表格配置对象
     const columns = useMemo(() => {
       return [
+        ...(!isUnit
+          ? [
+              {
+                dataIndex: 'companyName',
+                title: '单位名称',
+                render: value => value || <EmptyText />,
+              },
+            ]
+          : []),
         {
           dataIndex: 'project',
           title: '变更项目',
@@ -208,6 +223,16 @@ export default connect(
         },
       ];
     }, []);
+    // 数据初始化
+    useEffect(() => {
+      setValues(
+        fields.reduce((result, item) => {
+          result[item.name] = undefined;
+          return result;
+        }, {})
+      );
+      getListByValues();
+    }, []);
     // 查询、重置按钮点击事件回调
     const onSearch = values => {
       const { pagination: { pageSize = PAGE_SIZE } = {} } = list || {};
@@ -223,7 +248,7 @@ export default connect(
         breadcrumbList={BREADCRUMB_LIST}
         title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
       >
-        <Form ref={form} fields={FIELDS} onSearch={onSearch} onReset={onSearch} />
+        <Form ref={form} fields={fields} onSearch={onSearch} onReset={onSearch} />
         <Table
           list={list}
           loading={loading}
