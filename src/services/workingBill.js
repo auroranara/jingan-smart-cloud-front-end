@@ -18,7 +18,7 @@ export async function getCount(params) {
 
 /* 获取地图数据 */
 export async function getMap(params) {
-  return request(`/acloud_new/v2/workingBill?${stringify(params)}`);
+  return request(`/acloud_new/v2/ThreedMap/threedMap?${stringify(params)}`);
 }
 
 /* 获取作业票详情 */

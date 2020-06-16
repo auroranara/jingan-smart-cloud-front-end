@@ -213,10 +213,8 @@ export default class MajorHazardEdit extends PureComponent {
       dispatch,
       match: { url },
     } = this.props;
-    if (url.includes('add'))
-      dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
-    else
-      window.close();
+    if (url.includes('add')) dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
+    else window.close();
   };
 
   // 去除左右两边空白

@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { message, Spin, Card, Row, Col, Button } from 'antd';
+import { message, Spin, Card, Row, Col, Button, Checkbox, InputNumber, Tag } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Upload from '@/jingan-components/Form/Upload';
 import Select from '@/jingan-components/Form/Select';
@@ -10,7 +10,11 @@ import TextArea from '@/jingan-components/Form/TextArea';
 import DatePicker from '@/jingan-components/Form/DatePicker';
 import RangePicker from '@/jingan-components/Form/RangePicker';
 import TreeSelect from '@/jingan-components/Form/TreeSelect';
+import Radio from '@/jingan-components/Form/Radio';
 import SafetyMeasure from './components/SafetyMeasure';
+import Exception from './components/Exception';
+import FengMap from './components/Map/FengMap';
+import JoySuchMap from './components/Map/JoySuchMap';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
@@ -18,6 +22,8 @@ import {
   NAMESPACE,
   DETAIL_API,
   ADD_API,
+  MAP_API,
+  PERSON_API,
   EDIT_API,
   REAPPLY_API,
   SAVE_API,
@@ -46,12 +52,18 @@ import {
 import styles from './index.less';
 import { genGoBack } from '@/utils/utils';
 
+const CheckboxOrSpan = ({ mode, children, ...restProps }) =>
+  mode === 'detail' ? <span>{children}</span> : <Checkbox {...restProps}>{children}</Checkbox>;
+
 @connect(
   ({
     user: {
       currentUser: { unitType, unitId, unitName, permissionCodes },
     },
-    [NAMESPACE]: { detail },
+    [NAMESPACE]: { detail, map },
+    realNameCertification: {
+      person: { list: personList },
+    },
     loading: {
       effects: {
         [DETAIL_API]: loading,
@@ -66,8 +78,10 @@ import { genGoBack } from '@/utils/utils';
     unitName,
     detail,
     loading,
+    mapInfo: map,
     submitting: adding || editing || reapplying,
     hasEditAuthority: permissionCodes.includes(EDIT_CODE),
+    personList,
   }),
   null,
   (
@@ -90,7 +104,10 @@ import { genGoBack } from '@/utils/utils';
     // const goBack = () => {
     //   router.push(pathname.replace(new RegExp(`${name}.*`), 'list'));
     // };
-    const goBack = genGoBack({ match: { params: { id } } }, pathname.replace(new RegExp(`${name}.*`), 'list'));
+    const goBack = genGoBack(
+      { match: { params: { id } } },
+      pathname.replace(new RegExp(`${name}.*`), 'list')
+    );
     const type = TYPES.find(({ key }) => key === t) ? t : TYPES[0].key;
     return {
       ...stateProps,
@@ -189,17 +206,49 @@ import { genGoBack } from '@/utils/utils';
       goToEdit() {
         router.push(pathname.replace(`${name}`, 'edit'));
       },
+      getMapInfo(payload, callback) {
+        dispatch({
+          type: MAP_API,
+          payload: {
+            ...payload,
+          },
+          callback: (success, data) => {
+            if (!success) {
+              message.error('获取地图数据失败，请稍后重试！');
+            }
+            callback && callback(success, data);
+          },
+        });
+      },
+      getPersonList(payload, callback) {
+        dispatch({
+          type: PERSON_API,
+          payload: {
+            pageNum: 1,
+            pageSize: 0,
+            ...payload,
+          },
+          callback: data => {
+            callback && callback(data);
+          },
+        });
+      },
     };
   }
 )
 @Form.create()
 export default class WorkingBillOther extends Component {
+  state = {};
+
   componentDidMount() {
-    const { getDetail } = this.props;
-    getDetail({}, () => {
+    const { getDetail, getMapInfo, getPersonList } = this.props;
+    getDetail({}, (success, detail) => {
+      const { companyId } = detail || {};
       setTimeout(() => {
         this.forceUpdate();
       });
+      companyId && getMapInfo({ companyId });
+      companyId && getPersonList({ companyId });
     });
   }
 
@@ -232,6 +281,14 @@ export default class WorkingBillOther extends Component {
           finishDate,
           safetyMeasures,
           recoveryDate,
+          isSetWarn,
+          crossWarn,
+          mapAddress,
+          isCrossWarn,
+          isStaticWarn,
+          staticWarn,
+          isStrandedWarn,
+          strandedWarn,
           ...fields
         } = values;
         const payload = {
@@ -244,6 +301,11 @@ export default class WorkingBillOther extends Component {
           finishDate: finishDate && finishDate.format(`YYYY/MM/DD HH:mm:00`),
           recoveryDate: recoveryDate && recoveryDate.format(`YYYY/MM/DD HH:mm:00`),
           safetyMeasures: safetyMeasures && JSON.stringify(safetyMeasures),
+          crossWarn: isCrossWarn ? crossWarn && crossWarn.join(',') : '',
+          mapAddress: isSetWarn ? JSON.stringify(mapAddress) : '[]',
+          staticWarn: isStaticWarn ? staticWarn : '',
+          strandedWarn: isStrandedWarn ? strandedWarn : '',
+          isSetWarn,
         };
         submit(payload);
       }
@@ -254,18 +316,22 @@ export default class WorkingBillOther extends Component {
     _,
     {
       props: {
-        data: { name },
+        data: { name, company_id: companyId },
       },
     }
   ) => {
     const {
       form: { setFieldsValue },
+      getMapInfo,
+      getPersonList,
     } = this.props;
     if (name) {
       setFieldsValue({
         applyCompanyName: name,
       });
     }
+    companyId && getMapInfo({ companyId });
+    companyId && getPersonList({ companyId });
   };
 
   handlePersonSelect = (_, { data: { departmentId } }) => {
@@ -279,6 +345,25 @@ export default class WorkingBillOther extends Component {
 
   getWorkingPersonnelFromEvent = value => {
     return value && value.filter(v => v.trim());
+  };
+
+  onRef = ref => {
+    this.childMap = ref;
+  };
+
+  handleRemoveTag = tag => {
+    const {
+      form: { setFieldsValue, getFieldsValue },
+    } = this.props;
+    const values = getFieldsValue();
+    setFieldsValue({ crossWarn: values.crossWarn.filter(item => item !== tag.id) });
+  };
+
+  handleChangeCheckbox = (name, newValue) => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ [name]: newValue });
   };
 
   render() {
@@ -296,6 +381,8 @@ export default class WorkingBillOther extends Component {
       goBack,
       goToEdit,
       form: { getFieldDecorator, getFieldsValue },
+      mapInfo,
+      personList,
     } = this.props;
     const isNotDetail = mode !== 'detail';
     const values = getFieldsValue();
@@ -303,6 +390,9 @@ export default class WorkingBillOther extends Component {
       (values.certificatesFileList || []).some(({ status }) => status !== 'done') ||
       (values.applyFileList || []).some(({ status }) => status !== 'done') ||
       (values.locationFileList || []).some(({ status }) => status !== 'done');
+    const isMapShow = +values.isSetWarn === 1 && (isUnit || values.company);
+    const alarmDisabled = !values.mapAddress || values.mapAddress.length === 0;
+
     const fields = [
       {
         key: '作业票信息',
@@ -1760,6 +1850,19 @@ export default class WorkingBillOther extends Component {
               span: 24,
             },
           },
+          {
+            key: 'isSetWarn',
+            label: '是否设置作业区域及报警',
+            component: (
+              <Radio mode={mode} list={[{ key: '1', value: '是' }, { key: '0', value: '否' }]} />
+            ),
+            options: {
+              initialValue: detail.isSetWarn,
+            },
+            grid: {
+              span: 24,
+            },
+          },
         ],
       },
       // {
@@ -1814,6 +1917,162 @@ export default class WorkingBillOther extends Component {
               </Form>
             </Card>
           ))}
+
+          {isMapShow && (
+            <Card className={styles.card} title={'作业区域划分及报警设置'}>
+              <Form>
+                <Row gutter={24}>
+                  <Col span={12}>
+                    <Form.Item>
+                      {getFieldDecorator('mapAddress', {
+                        initialValue: detail.mapAddress,
+                      })(
+                        +mapInfo.remarks === 1 ? (
+                          <FengMap onRef={this.onRef} mapInfo={mapInfo} mode={mode} />
+                        ) : (
+                          <JoySuchMap onRef={this.onRef} mapInfo={mapInfo} mode={mode} />
+                        )
+                      )}
+                    </Form.Item>
+                  </Col>
+                  <Col span={12} style={{ borderLeft: '1px solid #f0f0f0' }}>
+                    <div className={styles.subTitle}>区域报警设置</div>
+                    <Row gutter={24} style={{ marginTop: 5 }}>
+                      <Col span={24}>
+                        <Form.Item className={styles.inlineItem}>
+                          {getFieldDecorator('isCrossWarn', {
+                            initialValue: !!values.crossWarn && values.crossWarn.length > 0,
+                            valuePropName: 'checked',
+                          })(
+                            <CheckboxOrSpan
+                              mode={mode}
+                              disabled={alarmDisabled}
+                              onChange={() => this.handleChangeCheckbox('crossWarn', [])}
+                            >
+                              越界报警
+                            </CheckboxOrSpan>
+                          )}
+                        </Form.Item>
+                        <Form.Item className={styles.inlineItem} style={{ marginLeft: 15 }}>
+                          {getFieldDecorator('crossWarn', {
+                            initialValue: detail.crossWarn,
+                          })(
+                            <Exception
+                              list={personList}
+                              mode={mode}
+                              disabled={alarmDisabled || values.isCrossWarn === false}
+                            />
+                          )}
+                        </Form.Item>
+                        <div className={styles.tags}>
+                          {personList
+                            .filter(item => (values.crossWarn || []).includes(item.id))
+                            .map((item, index) => (
+                              <Tag
+                                key={index}
+                                closable={mode !== 'detail' && !alarmDisabled}
+                                onClose={() => this.handleRemoveTag(item)}
+                                visible={true}
+                                color="#1890ff"
+                              >
+                                {item.name}
+                              </Tag>
+                            ))}
+                        </div>
+                        <div className={styles.tips}>
+                          设置例外人员后，这有设置人员可以进入，其他人员进入则越界报警
+                        </div>
+                      </Col>
+                    </Row>
+
+                    <Row gutter={24} style={{ marginTop: 24 }}>
+                      <Col span={24}>
+                        <Form.Item className={styles.inlineItem}>
+                          {getFieldDecorator('isStaticWarn', {
+                            initialValue: !!detail.staticWarn,
+                            valuePropName: 'checked',
+                          })(
+                            <CheckboxOrSpan
+                              mode={mode}
+                              onChange={() => this.handleChangeCheckbox('staticWarn', '')}
+                              disabled={alarmDisabled}
+                            >
+                              静止报警：
+                            </CheckboxOrSpan>
+                          )}
+                        </Form.Item>
+                        <Form.Item
+                          className={
+                            alarmDisabled || values.isStaticWarn === false
+                              ? styles.disabled
+                              : styles.inlineItem
+                          }
+                        >
+                          {getFieldDecorator('staticWarn', {
+                            initialValue: detail.staticWarn,
+                          })(
+                            <Input
+                              placeholder=""
+                              mode={mode}
+                              // onChange={e => {
+                              //   this.setState({ isStaticWarn: e.target.value ? true : false });
+                              // }}
+                              disabled={alarmDisabled || values.isStaticWarn === false}
+                            />
+                          )}
+                          分钟
+                        </Form.Item>
+                        <div className={styles.tips}>
+                          设置静止报警时间后，该作业区域人员静止时间超过设定时间后，静止报警
+                        </div>
+                      </Col>
+                    </Row>
+
+                    <Row gutter={24} style={{ marginTop: 24 }}>
+                      <Col span={24}>
+                        <Form.Item className={styles.inlineItem}>
+                          {getFieldDecorator('isStrandedWarn', {
+                            initialValue: !!detail.strandedWarn,
+                            valuePropName: 'checked',
+                          })(
+                            <CheckboxOrSpan
+                              mode={mode}
+                              onChange={() => this.handleChangeCheckbox('strandedWarn', '')}
+                              disabled={alarmDisabled}
+                            >
+                              滞留报警：
+                            </CheckboxOrSpan>
+                          )}
+                        </Form.Item>
+                        <Form.Item
+                          className={
+                            alarmDisabled || values.isStrandedWarn === false
+                              ? styles.disabled
+                              : styles.inlineItem
+                          }
+                        >
+                          {getFieldDecorator('strandedWarn', {
+                            initialValue: detail.strandedWarn,
+                          })(
+                            <Input
+                              placeholder=""
+                              mode={mode}
+                              disabled={alarmDisabled || values.isStrandedWarn === false}
+                            />
+                          )}
+                          分钟
+                        </Form.Item>
+                        <div className={styles.tips}>
+                          设置滞留报警时间后，该作业区域在作业结束后，依然有人员停留在该区域内，超过设定时间后，滞留报警
+                        </div>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </Form>
+            </Card>
+          )}
+
           <Card>
             <div className={styles.buttonContainer}>
               <div className={styles.buttonWrapper}>

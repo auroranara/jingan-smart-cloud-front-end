@@ -16,6 +16,39 @@
 .formItem {
   width: 100% !important;
 }
+.inlineItem {
+  display: inline-block;
+  margin-bottom: 5px;
+
+  input:not([type='checkbox']) {
+    width: 150px !important;
+    margin-right: 10px;
+  }
+
+  :global {
+    .ant-legacy-form-item-children {
+      div {
+        display: inherit;
+      }
+    }
+  }
+}
+.disabled {
+  .inlineItem;
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+.subTitle {
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+  font-size: 16px;
+}
+.tips {
+  color: #aeaeae;
+}
+.tags {
+  margin-bottom: 15px;
+}
 .buttonContainer {
   margin: 0 -8px;
   text-align: center;

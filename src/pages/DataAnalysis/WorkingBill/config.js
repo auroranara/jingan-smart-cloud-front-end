@@ -18,6 +18,8 @@ export const REAPPLY_API = `${NAMESPACE}/reapply`;
 
 export const SAVE_API = `${NAMESPACE}/save`;
 
+export const PERSON_API = `realNameCertification/fetchPersonList`;
+
 export const DETAIL_CODE = `operationSafety.${NAMESPACE}.detail`;
 
 export const ADD_CODE = `operationSafety.${NAMESPACE}.add`;

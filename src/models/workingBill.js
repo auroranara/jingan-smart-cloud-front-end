@@ -77,7 +77,7 @@ export default {
       const response = yield call(getMap, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const map = data.list;
+        const map = data.list[0] || {};
         yield put({
           type: 'save',
           payload: {
@@ -173,7 +173,13 @@ export default {
           recoveryDate: data.recoveryDate ? moment(data.recoveryDate) : undefined,
           powerAccessPoint: data.powerAccessPoint || undefined,
           voltage: data.voltage || undefined,
+          mapAddress: data.mapAddress ? JSON.parse(data.mapAddress) : undefined,
+          isCrossWarn: !!data.crossWarn,
+          isStaticWarn: !!data.staticWarn,
+          isStrandedWarn: !!data.strandedWarn,
+          crossWarn: data.crossWarn ? data.crossWarn.split(',') : undefined,
         };
+
         yield put({
           type: 'save',
           payload: {

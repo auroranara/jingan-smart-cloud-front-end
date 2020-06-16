@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { Fragment } from 'react';
+import { Button, message } from 'antd';
 import { isPointInPolygon } from '@/utils/map';
+import styles from './Map.less';
+
 import dotImg from './img/dot.png';
+import billImg from './img/icon-bill.png';
 
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = [
@@ -29,7 +33,9 @@ let pointMarkers = [];
 export default class JoySuchMap extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      isDrawing: false,
+    };
     this.polygonLayers = [];
     this.polygonMarkers = [];
   }
@@ -41,17 +47,23 @@ export default class JoySuchMap extends React.Component {
     mapInfo && this.initMap(mapInfo);
   }
 
-  getPointList = (pointList, getBuilding) => {
-    const newList = pointList.length > 0 ? pointList : [];
-    newList.map(item => {
-      const { zoneLevel, coordinateList, groupId, modelIds } = item;
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { mapInfo: prevMapInfo } = prevProps;
+    const { mapInfo } = this.props;
+    if (JSON.stringify(prevMapInfo) !== JSON.stringify(mapInfo)) {
+      this.initMap(mapInfo);
+    }
+  }
+
+  getPolygon = points => {
+    if (!map || !points || !points.length) return;
+    map.removeAllMarker();
+    points.length > 0 &&
       this.drawPolygon({
-        floorId: +groupId,
-        points: coordinateList,
-        color: COLORS[zoneLevel - 1],
+        floorId: +points[0].floorId,
+        points,
+        color: COLORS[4],
       });
-      return null;
-    });
   };
 
   handleDispose = () => {
@@ -61,7 +73,7 @@ export default class JoySuchMap extends React.Component {
   };
 
   initMap = ({ appName, key, mapId }) => {
-    if (!jsmap) return;
+    if (!jsmap || !key) return;
     const mapOptions = {
       mapType: jsmap.JSMapType.MAP_PSEUDO_3D,
       container: 'joySuchMap',
@@ -78,11 +90,11 @@ export default class JoySuchMap extends React.Component {
     map.on('mapClickNode', event => {
       const clickedObj = event;
       if (!clickedObj || !clickedObj.nodeType) return;
-
+      const { isDrawing } = this.state;
       const { coord } = clickedObj.eventInfo;
       const groupId = clickedObj.floorId;
 
-      if (this.props.isDrawing) {
+      if (isDrawing) {
         // 默认第一张地图
         const pointMarker = this.addPoint(groupId, coord);
         pointMarkers.push(pointMarker);
@@ -94,10 +106,9 @@ export default class JoySuchMap extends React.Component {
 
     //地图加载完回调事件
     map.on('loadComplete', () => {
-      const { pointList, init, groupId, getBuilding } = this.props;
       //加载按钮型楼层切换控件
-      this.loadBtnFloorCtrl(init ? 1 : groupId);
-      this.getPointList(pointList, getBuilding);
+      this.loadBtnFloorCtrl();
+      this.getPolygon(this.props.value);
     });
   };
 
@@ -132,7 +143,7 @@ export default class JoySuchMap extends React.Component {
   };
 
   //在点击的位置添加图片标注
-  addPoint = (gid, coord) => {
+  addPoint = (floorId, coord, imgProps) => {
     const imageMarker = new jsmap.JSImageMarker({
       // id: 'selectedMarker', //id
       image: dotImg, //图片路径
@@ -140,7 +151,7 @@ export default class JoySuchMap extends React.Component {
       position: new jsmap.JSPoint(coord.x, coord.y, 0), //坐标位置
       width: 10, //尺寸-宽
       height: 10, //尺寸-高
-      floorId: gid, //楼层 id
+      floorId, //楼层 id
       offset: jsmap.JSControlPosition.CENTER, //偏移位置
       depthTest: false, //是否开启深度检测
       // offset: {
@@ -151,6 +162,7 @@ export default class JoySuchMap extends React.Component {
       // callback: node => {
       //   console.log('node', node);
       // }, //回调
+      ...imgProps,
     });
     map.addMarker(imageMarker);
     return imageMarker;
@@ -175,20 +187,6 @@ export default class JoySuchMap extends React.Component {
     map.addMarker(polygonMarker);
     return polygonMarker;
   };
-
-  // 设置model的颜色
-  setModelColor(groupId, points, color) {
-    // 默认gid为1
-    const models = map.getDatasByAlias(groupId, 'model');
-    models
-      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
-      .map(model => model.setColor(color));
-    // 获取当前选中区域所有ID
-    const arrayList = models
-      .filter(({ mapCoord }) => isPointInPolygon(mapCoord, points))
-      .map(item => ({ buildingId: item.FID, points: item.mapCoord }));
-    this.props.getBuilding && this.props.getBuilding(arrayList, 1);
-  }
 
   // 切换tag
   handleModelEdit = (groupId, points, point, selected) => {
@@ -228,15 +226,8 @@ export default class JoySuchMap extends React.Component {
 
   // 重置地图
   resetMap = () => {
-    // const { groupId } = this.props;
-    // const group = map.getFMGroup(groupId);
-    // const layerImg = group.getOrCreateLayer('imageMarker');
-    // group.removeLayer(layerImg);
-    // const layerPolygon = group.getOrCreateLayer('polygonMarker');
-    // group.removeLayer(layerPolygon);
-    // const models = map.getDatasByAlias(groupId, 'model');
-    // models.map(model => model.setColorToDefault());
-    // map.removeMarker(lineMarker);
+    if (!linePoints.length) return;
+    const { handleChangeMapSelect, onChange } = this.props;
     map.removeMarker(drawedPolygon);
     pointMarkers.map(item => {
       map.removeMarker(item);
@@ -245,6 +236,8 @@ export default class JoySuchMap extends React.Component {
     linePoints = [];
     pointMarkers = [];
     drawedPolygon = null;
+    // handleChangeMapSelect([], []);
+    onChange && onChange(this.props.value || []);
   };
 
   // 高亮对应区域颜色
@@ -292,7 +285,6 @@ export default class JoySuchMap extends React.Component {
   ) => {
     //绘制部分
     // 获取选中坐标点
-    this.props.getPoints(floorId, points.map(item => ({ ...item, z: 0 })));
     if (points.length >= 2) {
       lineMarker && map.removeMarker(lineMarker);
       lineMarker = new jsmap.JSLineMarker({
@@ -316,22 +308,82 @@ export default class JoySuchMap extends React.Component {
     }
   };
 
+  handleFinishDraw = () => {
+    const { levelId, handleChangeMapSelect, onChange } = this.props;
+    const currColor = levelId ? COLORS[levelId] : COLORS[4];
+    const groupId = linePoints.map(item => item.floorId)[0];
+    drawedPolygon = this.drawPolygon({
+      floorId: +groupId,
+      points: linePoints,
+      color: currColor,
+    });
+    map.removeMarker(lineMarker);
+    map.removeMarker(pointMarkers[0]);
+    // pointMarkers.shift();
+    const pointMarker = this.addPoint(groupId, linePoints[0], {
+      image: billImg,
+      width: 46,
+      height: 46,
+    });
+    // pointMarkers.push(pointMarker);
+    pointMarkers[0] = pointMarker;
+
+    onChange && onChange(linePoints);
+    // handleChangeMapSelect && handleChangeMapSelect(linePoints, []);
+  };
+
+  renderDrawBtns = () => {
+    const { isDrawing } = this.state;
+    return (
+      <Fragment>
+        <Button
+          onClick={() => {
+            // if (levelId === '') return message.warning('请先选择风险分级！');
+            if (!!isDrawing && linePoints.length <= 2) return message.error('区域至少三个坐标点！');
+            if (!isDrawing) {
+              // 开始画
+              this.resetMap();
+            } else {
+              // 结束画
+              this.handleFinishDraw();
+            }
+            this.setState({ isDrawing: !isDrawing });
+          }}
+        >
+          {!isDrawing ? '开始画' : '结束画'}
+        </Button>
+        <Button style={{ marginLeft: 15 }} disabled={!!isDrawing} onClick={this.resetMap}>
+          重置
+        </Button>
+      </Fragment>
+    );
+  };
+
   render() {
-    const { isDrawing, levelId, style } = this.props;
-    if (!isDrawing && linePoints.length > 0) {
-      const groupId = linePoints.map(item => item.floorId)[0];
-      const currColor = levelId ? COLORS[levelId - 1] : COLORS[4];
-      // doDraw
-      drawedPolygon = this.drawPolygon({
-        floorId: +groupId,
-        points: linePoints,
-        color: currColor,
-      });
-      // 建筑物上色
-      // this.setModelColor(groupId, linePoints, currColor);
-      map.removeMarker(lineMarker);
-      linePoints = [];
-    }
-    return <div style={style || { height: '70vh' }} id="joySuchMap" />;
+    const { readonly, style, mode } = this.props;
+    const isNotDetail = mode !== 'detail';
+    // if (!isDrawing && linePoints.length > 0) {
+    //   const groupId = linePoints.map(item => item.floorId)[0];
+    //   const currColor = levelId ? COLORS[levelId - 1] : COLORS[4];
+    //   // doDraw
+    //   drawedPolygon = this.drawPolygon({
+    //     floorId: +groupId,
+    //     points: linePoints,
+    //     color: currColor,
+    //   });
+    //   map.removeMarker(lineMarker);
+    //   linePoints = [];
+    // }
+    return (
+      <div className={styles.container} style={style}>
+        {isNotDetail && this.renderDrawBtns()}
+        <div
+          className={styles.map}
+          style={{ height: readonly ? '100%' : undefined }}
+          id="joySuchMap"
+        />
+      </div>
+    );
+    // return <div style={style || { height: '70vh' }} id="joySuchMap" />;
   }
 }
