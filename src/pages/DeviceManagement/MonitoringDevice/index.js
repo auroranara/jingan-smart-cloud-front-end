@@ -46,7 +46,22 @@ export default class MonitoringDevice extends Component {
   };
 
   componentDidMount() {
-    this.handleQuery();
+    const {
+      location: {
+        query: { name, equipmentType, companyName },
+      },
+      form: { setFieldsValue },
+    } = this.props;
+    if (name || equipmentType || companyName) {
+      setFieldsValue({
+        name: name ? decodeURIComponent(name) : undefined,
+        equipmentType: equipmentType || undefined,
+        companyName: companyName ? decodeURIComponent(companyName) : undefined,
+      });
+      setTimeout(this.handleQuery);
+    } else {
+      this.handleQuery();
+    }
     this.fetchMonitoringDeviceTypes();
   }
 
@@ -227,6 +242,11 @@ export default class MonitoringDevice extends Component {
                     ))}
                   </Select>
                 )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('name')(<Input placeholder="设备名称" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>

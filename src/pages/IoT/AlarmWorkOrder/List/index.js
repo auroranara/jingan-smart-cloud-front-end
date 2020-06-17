@@ -252,7 +252,12 @@ export default class AlarmWorkOrderList extends Component {
       columns: this.getColumns,
       transform: TRANSFORM,
       initialValues:
-        query.monitorObjectType || query.isMajorHazard || query.status
+        query.monitorObjectType ||
+        query.isMajorHazard ||
+        query.status ||
+        query.companyName ||
+        query.reportType ||
+        (query.queryCreateStartDate && query.queryCreateEndDate)
           ? {
               monitorObject: [
                 query.monitorObjectType || undefined,
@@ -267,6 +272,12 @@ export default class AlarmWorkOrderList extends Component {
                   : undefined,
               ],
               status: query.status ? query.status.split(',') : undefined,
+              companyName: query.companyName ? decodeURIComponent(query.companyName) : undefined,
+              reportType: query.reportType ? query.reportType : undefined,
+              range:
+                query.queryCreateStartDate && query.queryCreateEndDate
+                  ? [moment(+query.queryCreateStartDate), moment(+query.queryCreateEndDate)]
+                  : [],
             }
           : null,
       otherOperation: [
