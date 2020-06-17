@@ -96,7 +96,7 @@ export default class NewMonitorDrawer extends PureComponent {
                     monitorParams,
                     allMonitorParam,
                     videoList,
-                    meList,
+                    meList = [],
                     id,
                     name,
                     tankName,

@@ -6,6 +6,39 @@ import { connect } from 'dva';
 // import { isPointInPolygon } from '@/utils/map';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import TruckModal from '../components/TruckModal';
+import Select from '@/jingan-components/Form/Select';
+import TreeSelect from '@/jingan-components/Form/TreeSelect';
+import {
+  NAMESPACE,
+  DETAIL_API,
+  ADD_API,
+  MAP_API,
+  PERSON_API,
+  EDIT_API,
+  REAPPLY_API,
+  SAVE_API,
+  EDIT_CODE,
+  BREADCRUMB_LIST_PREFIX,
+  GUTTER,
+  DAY_FORMAT,
+  MINUTE_FORMAT,
+  TYPES,
+  HOT_WORK_TYPES,
+  HIGH_WORK_TYPES,
+  HOISTING_WORK_TYPES,
+  BLIND_PLATE_WORK_TYPES,
+  UNIT_TYPES,
+  WORKING_STATUSES,
+  PLAN_TYPES,
+  TYPE_MAP_SAFETY_MEASURES,
+  COMPANY_LIST_MAPPER,
+  COMPANY_LIST_FIELDNAMES,
+  DEPARTMENT_LIST_MAPPER,
+  DEPARTMENT_LIST_FIELDNAMES,
+  PERSON_MAPPER,
+  PERSON_FILEDNAMES,
+  APPROVE_STATUSES,
+} from '@/pages/DataAnalysis/WorkingBill/config';
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';
@@ -64,6 +97,19 @@ const controls = [
     icon: specialEquipmentGray,
     activeIcon: specialEquipmentActive,
     markerIcon: specialEquipment,
+  },
+  {
+    label: '人员定位',
+    icon: specialEquipmentGray,
+    activeIcon: specialEquipmentActive,
+    markerIcon: specialEquipment,
+  },
+  {
+    label: '作业票',
+    icon: workBillGray,
+    activeIcon: workBillActive,
+    markerIcon: workBill,
+    alarmIcon: workBillAlarm,
   },
 ];
 const paststatusVal = {
@@ -138,7 +184,7 @@ const filterMarkerList = markerList => {
 export default class Map extends PureComponent {
   state = {
     gdMapVisible: false,
-    visibles: [true, false, false, false, false],
+    visibles: [true, false, false, false, false, false],
     videoVisible: false,
     videoList: [],
     keyId: undefined,
@@ -146,7 +192,7 @@ export default class Map extends PureComponent {
   };
 
   ids = [];
-  fourColors = []; // 四色图polygons
+  fourColorPolygons = []; // 四色图polygons
   polygonLayers = [];
   markerArray = [];
   markerLayers = [];
@@ -154,6 +200,8 @@ export default class Map extends PureComponent {
   jumpEquipIds = [];
   jumpFireIds = [];
   fourColorModels = []; // 四色图models
+  workBillMarkers = []; // 作业票markers
+  workBillPolygons = []; // 作业票polygons
 
   /* eslint-disable*/
   componentDidMount() {
@@ -193,7 +241,7 @@ export default class Map extends PureComponent {
 
   renderWorkingBill = () => {
     const { dispatch, companyId } = this.props;
-    const iconType = 4;
+    const iconType = 5;
     dispatch({
       type: 'workingBill/getList',
       payload: {
@@ -206,11 +254,13 @@ export default class Map extends PureComponent {
         if (!success) return;
         list.map(item => {
           const { mapAddress } = item;
+          const { visibles } = this.state;
           if (!mapAddress || !JSON.parse(mapAddress).length) return;
           const points = JSON.parse(mapAddress);
-          const { groupId, x, y, z } = points[0];
-          const polygonMarker = this.addPolygon(groupId, points, COLORS[3], item);
-          const marker = this.addMarkers(+groupId, {
+          const { groupID, x, y, z } = points[0];
+          const polygonMarker = this.addPolygon(groupID, points, COLORS[3], item);
+          this.workBillPolygons.push(polygonMarker);
+          const marker = this.addMarkers(+groupID, {
             x: +x,
             y: +y,
             z: +z,
@@ -218,9 +268,11 @@ export default class Map extends PureComponent {
             url: workBill,
             iconType,
             markerProps: item,
-            groupId: +groupId,
+            groupId: +groupID,
           });
+          this.workBillMarkers.push(marker);
           if (marker) marker.show = visibles[iconType];
+          if (polygonMarker) polygonMarker.show = visibles[iconType];
         });
       },
     });
@@ -256,7 +308,7 @@ export default class Map extends PureComponent {
             z: +item.z,
           }));
           const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
-          this.fourColors.push(polygonMarker);
+          this.fourColorPolygons.push(polygonMarker);
           // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
           this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
           return null;
@@ -278,7 +330,7 @@ export default class Map extends PureComponent {
         if (!(code === 200 && data && data.list)) return;
         const warningList = data.list;
         this.removeMarkersByType(-1);
-        this.fourColors.map(polygon => {
+        this.fourColorPolygons.map(polygon => {
           const {
             polygonProps: { coordinateList, id, groupId },
           } = polygon;
@@ -472,8 +524,11 @@ export default class Map extends PureComponent {
       const { eventInfo: { coord } = {}, FID, groupID } = clickedObj;
       if (coord) {
         // 点击区域
-        for (let index = 0; index < this.fourColors.length; index++) {
-          const polygon = this.fourColors[index];
+        const { visibles } = this.state;
+        // 作业票 return
+        if (visibles[5]) return;
+        for (let index = 0; index < this.fourColorPolygons.length; index++) {
+          const polygon = this.fourColorPolygons[index];
           const {
             polygonProps: { modelIds, id },
           } = polygon;
@@ -518,6 +573,16 @@ export default class Map extends PureComponent {
           case 3:
             // 特种设备
             this.handleShowSpecialInfo(markerProps, {
+              x,
+              y,
+              z,
+              height,
+              groupID: markerGroupId,
+            });
+            break;
+          case 5:
+            // 作业票
+            this.handleShowWorkBillInfo(markerProps, {
               x,
               y,
               z,
@@ -710,6 +775,108 @@ export default class Map extends PureComponent {
         }
         .specOver:hover .specTip {
           display: block;
+        }
+        .specLabel {
+          color: #979495;
+          display: inline-block;
+          width: 7em;
+          white-space: nowrap;
+          vertical-align: middle;
+        }
+        .specValue {
+          display: inline-block;
+          width: calc(100% - 7.5em);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          vertical-align: middle;
+        }
+        .specFile {
+          color: #0ff;
+          position: absolute;
+          bottom: 10px;
+          right: 15px;
+          cursor: pointer;
+        }
+      </style>`,
+    };
+    //添加弹框到地图上，绑定marker
+    popInfoWindow = new fengmap.FMPopInfoWindow(map, ctlOpt);
+  };
+
+  handleShowWorkBillInfo = (info, mapCoord) => {
+    const {
+      billCode,
+      billType,
+      workingStatus,
+      applyUserName,
+      applyDepartmentName,
+      workingEndDate,
+      workingStartDate,
+      id,
+    } = info;
+    popInfoWindow && popInfoWindow.close();
+    //添加绑定marker信息窗
+    const noData = '--';
+    const ctlOpt = {
+      mapCoord: {
+        ...mapCoord,
+        z: 1,
+        height: 0,
+      },
+      //设置弹框的宽度
+      width: 450,
+      //设置弹框的高度px
+      height: 210,
+      //设置弹框的内容，文本或html页面元素
+      content: `<div class="specContainer">
+        <div class="specTitle">作业票</div>
+        <div class="specWrapper">
+          <div class="specLabel">作业证名称：</div>
+          <div class="specValue">${TYPES.find(item => +item.key === +billType).value ||
+            noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业证编号：</div>
+          <div class="specValue">${billCode || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">申请人：</div>
+          <div class="specValue">${applyUserName || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">申请部门：</div>
+          <div class="specValue">${applyDepartmentName || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业时间：</div>
+          <div class="specValue">${moment(workingStartDate).format(MINUTE_FORMAT)} ~ ${moment(
+        workingEndDate
+      ).format(MINUTE_FORMAT)}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业状态：</div>
+          <div class="specValue">${WORKING_STATUSES.find(item => +item.key === +workingStatus)
+            .value || noData}</div>
+        </div>
+        <div class="specFile" onclick="window.open('${
+          window.publicPath
+        }#/operation-safety/working-bill/${billType}/detail/${id}','_blank');">详情>></div>
+      </div>
+      <style>
+        .specContainer {
+          position: relative;
+          line-height: 24px;
+          color: #fff;
+          font-size: 14px;
+          padding: 10px 15px;
+          height: 100%;
+          border: 1px solid rgba(0,255,255,0.3);
+          border-radius: 5px;
+        }
+        .specTitle {
+          font-size: 16px;
+          line-height: 32px;
         }
         .specLabel {
           color: #979495;
@@ -1066,6 +1233,41 @@ export default class Map extends PureComponent {
     });
   };
 
+  // 作业票是否显示
+  handleToggleWorkBill = iconType => {
+    const { visibles } = this.state;
+    const visible = visibles[iconType];
+    this.workBillPolygons.map(item => {
+      item.show = !visible;
+      return null;
+    });
+    this.workBillMarkers.map(item => {
+      item.show = !visible;
+      return null;
+    });
+
+    // 四色图与作业票互斥
+    this.fourColorPolygons.map(item => {
+      item.show = visible;
+      return null;
+    });
+    if (visible) {
+      this.fourColorModels.map(item => {
+        const {
+          material: {
+            config: { color },
+          },
+        } = item;
+        item.setColor(color);
+        return null;
+      });
+    } else this.resetFourColorModel();
+
+    const copy = [...visibles];
+    copy[iconType] = !visible;
+    this.setState({ visibles: copy });
+  };
+
   handleShowVideo = keyId => {
     this.setState({ videoVisible: true, keyId });
   };
@@ -1146,6 +1348,9 @@ export default class Map extends PureComponent {
         currentUser: { permissionCodes },
       },
       licensePlateRecognitionSystem: { abnormalRecordList },
+      workingBill: {
+        list: { list: workBillList = [] },
+      },
     } = this.props;
     const presentCar = inCount - outCount >= 0 ? inCount - outCount : 0;
     const controlDataList = [
@@ -1153,6 +1358,8 @@ export default class Map extends PureComponent {
       filterMarkerList(videoList).filter(({ status }) => status && +status === 1),
       filterMarkerList(monitorEquipment),
       filterMarkerList(specialEquipmentList),
+      filterMarkerList(specialEquipmentList),
+      workBillList.filter(item => item.mapAddress && JSON.parse(item.mapAddress).length),
     ];
     const controlDataLength = controlDataList.filter(list => list.length > 0).length;
 
@@ -1205,7 +1412,11 @@ export default class Map extends PureComponent {
                   <div
                     className={itemStyles}
                     key={index}
-                    onClick={() => this.handleClickControl(index)}
+                    onClick={() => {
+                      if (index === 5) {
+                        this.handleToggleWorkBill(index);
+                      } else this.handleClickControl(index);
+                    }}
                   >
                     <span
                       className={styles.icon}
@@ -1221,17 +1432,19 @@ export default class Map extends PureComponent {
               })}
             </div>
           )}
-          <div className={styles.fourColorsContainer}>
-            {FourColors.map((item, index) => {
-              const { label, color } = item;
-              return (
-                <div className={styles.fourColorsWrapper} key={index}>
-                  <span className={styles.rect} style={{ backgroundColor: color }} />
-                  {label}
-                </div>
-              );
-            })}
-          </div>
+          {!visibles[5] && (
+            <div className={styles.fourColorsContainer}>
+              {FourColors.map((item, index) => {
+                const { label, color } = item;
+                return (
+                  <div className={styles.fourColorsWrapper} key={index}>
+                    <span className={styles.rect} style={{ backgroundColor: color }} />
+                    {label}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           <div className={styles.extraContainer}>
             <div
