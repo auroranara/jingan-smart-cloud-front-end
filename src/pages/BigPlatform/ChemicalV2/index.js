@@ -1909,6 +1909,8 @@ export default class Chemical extends PureComponent {
           }}
           monitorType={monitorType}
           monitorData={monitorData}
+          handleShowVideo={this.handleShowVideo}
+          handleClickShowMonitorDetail={this.handleClickShowMonitorDetail}
           handleClickMonitorDetail={this.handleClickMonitorDetail}
           setDrawerVisible={this.setDrawerVisible}
           handleClickMonitorIcon={this.handleClickMonitorIcon}

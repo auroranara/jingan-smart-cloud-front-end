@@ -42,12 +42,13 @@ const hosts = {
   show: 'www.jinganyun.net',
   five: 'five.jinganyun.net',
   demo: 'demo.jinganyun.net',
+  cmw: 'cmw.jinganyun.net',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.cmw}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
