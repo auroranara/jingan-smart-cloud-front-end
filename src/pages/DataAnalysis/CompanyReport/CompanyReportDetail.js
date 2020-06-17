@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Spin, Table } from 'antd';
+import { Card, Spin, Table, Button } from 'antd';
 import { connect } from 'dva';
 import Lightbox from 'react-images';
 import Link from 'umi/link';
@@ -314,23 +314,28 @@ export default class App extends PureComponent {
         <Spin spinning={!!loading}>
           {tab === '1' && (
             <Fragment>
-            <Card title="检查内容" className={styles.card} bordered={false}>
-              <Table
-                className={styles.table}
-                dataSource={newList}
-                columns={columns}
-                rowKey={'detail_id'}
-                scroll={{
-                  x: true,
-                }}
-                pagination={false}
-              />
-            </Card>
-            {this.renderOther()}
+              <Card title="检查内容" className={styles.card} bordered={false}>
+                <Table
+                  className={styles.table}
+                  dataSource={newList}
+                  columns={columns}
+                  rowKey={'detail_id'}
+                  scroll={{
+                    x: true,
+                  }}
+                  pagination={false}
+                />
+              </Card>
+              {this.renderOther()}
             </Fragment>
           )}
           {/* {tab === '2'} */}
           {this.renderImageDetail()}
+          <div style={{ textAlign: 'center' }}>
+            <Button onClick={e => window.close()}>
+              返回
+            </Button>
+          </div>
         </Spin>
       </PageHeaderLayout>
     );

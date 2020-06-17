@@ -28,6 +28,7 @@ import Lightbox from 'react-images';
 import TankMonitorDrawer from './sections/TankMonitorDrawer';
 import AreaMonitorDrawer from './sections/AreaMonitorDrawer';
 import Distribution from './sections/Distribution';
+import ProductionOfficerDrawer from './sections/Drawers/ProductionOfficerDrawer';
 
 import {
   DangerSourceInfoDrawer,
@@ -256,6 +257,8 @@ export default class Chemical extends PureComponent {
       fireDetail: {},
       newMonitorDrawerVisible: false,
       monitorTabDrawerVisible: false,
+      distributionVisible: false,
+      productionVisible: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -496,7 +499,7 @@ export default class Chemical extends PureComponent {
     const {
       monitorMessageDto: {
         id,
-        happenTime,
+        // happenTime,
         statusType,
         warnLevel,
         monitorEquipmentTypeName,
@@ -506,7 +509,7 @@ export default class Chemical extends PureComponent {
         limitValue,
         monitorEquipmentAreaLocation,
         monitorEquipmentName,
-        faultTypeName,
+        // faultTypeName,
         condition,
         fixType,
         monitorEquipmentType,
@@ -1344,6 +1347,18 @@ export default class Chemical extends PureComponent {
     );
   };
 
+  handleDistributionIconClick = e => {
+    this.setState(({ distributionVisible }) => ({ distributionVisible: !distributionVisible }));
+  };
+
+  handleProductionOpen = e => {
+    this.setState({ productionVisible: true });
+  };
+
+  handleProductionClose = e => {
+    this.setState({ productionVisible: false });
+  }
+
   /**
    * 渲染
    */
@@ -1353,9 +1368,9 @@ export default class Chemical extends PureComponent {
       bigPlatform: { hiddenDangerList },
       hiddenDangerLoading,
       unitSafety: { hiddenDangerCount },
-      fourColorImage: {
-        data: { list: polygons },
-      },
+      // fourColorImage: {
+      //   data: { list: polygons },
+      // },
       chemical: {
         monitorTargetCount,
         monitorEquipCount,
@@ -1400,7 +1415,7 @@ export default class Chemical extends PureComponent {
       riskPointDrawerVisible,
       riskPointType,
       dangerAreaDrawerVisible,
-      storageAreaDrawerVisible,
+      // storageAreaDrawerVisible,
       safetyOfficerDrawerVisible,
       specialEquipmentDrawerVisible,
       videoVisible,
@@ -1446,6 +1461,8 @@ export default class Chemical extends PureComponent {
       fireDetail,
       newMonitorDrawerVisible,
       monitorTabDrawerVisible,
+      distributionVisible,
+      productionVisible,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1557,7 +1574,11 @@ export default class Chemical extends PureComponent {
                 {/* {href.indexOf('five.jinganyun.net') < 0 && (
                   <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
                 )} */}
-                <Distribution />
+                <Distribution
+                  visible={distributionVisible}
+                  handleIconClick={this.handleDistributionIconClick}
+                  handleProductionOpen={this.handleProductionOpen}
+                />
               </div>
             </Col>
           </Row>
@@ -1924,6 +1945,11 @@ export default class Chemical extends PureComponent {
           }}
           fireDetail={fireDetail}
           handleShowVideo={this.handleShowVideo}
+        />
+        {/* 生产区域人员统计 */}
+        <ProductionOfficerDrawer
+          visible={productionVisible}
+          onClose={this.handleProductionClose}
         />
       </BigPlatformLayout>
     );
