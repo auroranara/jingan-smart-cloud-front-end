@@ -28,25 +28,6 @@ const TAB_LIST = [{ key: '1', tab: '申请信息' }, { key: '2', tab: '验收信
 const LABEL_COL = { span: 6 };
 const WRAPPER_COL = { span: 12 };
 const RESULTS = [{ key: '1', value: '通过' }, { key: '0', value: '不通过' }];
-const TRANSFORM = ({ company, applyPerson, applyPart, ...rest }) => ({
-  ...rest,
-  companyId: company && company.key,
-  applyPerson: applyPerson && applyPerson.key,
-  applyPart: applyPart && applyPart.key,
-});
-const TRANSFORM2 = ({
-  approvePart,
-  approveDate,
-  approvePersonPart,
-  changeCommunicatePart,
-  ...rest
-}) => ({
-  ...rest,
-  approvePart: approvePart && approvePart.key,
-  approveDate: approveDate && approveDate.format(FORMAT),
-  approvePersonPart: approvePersonPart && approvePersonPart.key,
-  changeCommunicatePart: changeCommunicatePart && changeCommunicatePart.key,
-});
 
 export default connect(
   state => state,
@@ -169,8 +150,15 @@ export default connect(
                       props: {
                         preset: 'company',
                         labelInValue: true,
-                        allowClear: true,
+                        disabled: mode !== 'add',
                       },
+                      onChange() {
+                        return {
+                          applyPerson: undefined,
+                          applyPart: undefined,
+                        };
+                      },
+                      enableDefaultRules: true,
                     },
                   ]
                 : []),
@@ -453,7 +441,7 @@ export default connect(
               },
             ];
       },
-      [tabActiveKey]
+      [tabActiveKey, mode, companyId]
     );
     // 数据初始化
     useEffect(
@@ -611,6 +599,25 @@ export default connect(
         realMode = 'edit';
       }
     }
+    const transform = ({ company, applyPerson, applyPart, ...rest }) => ({
+      ...rest,
+      companyId: isUnit ? unitId : company && company.key,
+      applyPerson: applyPerson && applyPerson.key,
+      applyPart: applyPart && applyPart.key,
+    });
+    const transform2 = ({
+      approvePart,
+      approveDate,
+      approvePersonPart,
+      changeCommunicatePart,
+      ...rest
+    }) => ({
+      ...rest,
+      approvePart: approvePart && approvePart.key,
+      approveDate: approveDate && approveDate.format(FORMAT),
+      approvePersonPart: approvePersonPart && approvePersonPart.key,
+      changeCommunicatePart: changeCommunicatePart && changeCommunicatePart.key,
+    });
     return (
       <PageHeaderLayout
         className={styles.layout}
@@ -630,7 +637,7 @@ export default connect(
             listPath={LIST_PATH}
             onSubmit={values => {
               submit(
-                tabActiveKey === TAB_LIST[0].key ? TRANSFORM(values) : TRANSFORM2(values),
+                tabActiveKey === TAB_LIST[0].key ? transform(values) : transform2(values),
                 success => {
                   if (success) {
                     router.push(LIST_PATH);

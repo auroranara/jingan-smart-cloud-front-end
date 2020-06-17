@@ -201,6 +201,8 @@ export default connect(
         {
           dataIndex: '操作',
           title: '操作',
+          fixed: 'right',
+          width: 164,
           render: (_, { id, status }) => (
             <Fragment>
               <Link
