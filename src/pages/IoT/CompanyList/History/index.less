@@ -1,208 +1,96 @@
-.row {
-  margin-bottom: -24px;
-  overflow: hidden;
+.layout {
+  :global {
+    .ant-tabs {
+      margin-bottom: -17px !important;
+    }
+  }
 }
 
 .card {
-  margin-bottom: 24px;
-
-  :global {
-    .ant-card-body {
-      padding-left: 24px !important;
-      padding-right: 24px !important;
-    }
-  }
-
-  .cardTitle {
-    position: relative;
-  }
-
-  .cardContent {
-    height: 200px;
+  & > :global(.ant-card-body) {
+    padding: 0;
   }
 }
 
 /* 筛选栏 */
-.toolbar {
+.toolbar1 {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 12px 24px;
+  border-bottom: 1px solid #f0f0f0;
+
+  & > div {
+    flex: none;
+  }
+}
+.toolbar2 {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
-  margin: 0 -12px -16px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #f0f0f0;
 
-  &>div {
-    margin-bottom: 16px;
-    padding: 0 12px;
+  & > div {
+    flex: none;
   }
 }
 
-/* 统计栏 */
-.countContainer {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
+.countBar {
+  margin-bottom: 24px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
 
-  &>:first-child {
-    flex: 1;
-    padding-right: 24px;
+.row {
+  padding: 0 24px;
 
-    .countItem {
-      padding-left: 50px;
-      background: no-repeat left;
-      background-size: 36px;
-    }
+  .col {
+    margin-bottom: 24px;
   }
+}
 
-  &>:nth-child(2) {
-    flex: 4;
+.rangeContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0 -12px;
+
+  .quickRangeContainer {
+    flex: none;
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: -6.5px;
-    padding-left: 24px;
-    border-left: 1px solid #ddd;
+    align-items: center;
+    margin: 0 -6px;
+    padding: 0 12px;
 
-    .countItem {
+    & > div {
       flex: none;
-      margin-bottom: 6.5px;
-      width: 16%;
+      padding: 0 6px;
+    }
 
-      .countLabel {
-        width: 8em;
+    .quickRange {
+      cursor: pointer;
+      transition: color 0.3s;
+
+      &.active {
+        color: #1890ff;
+      }
+
+      &:hover {
+        color: #40a9ff;
+      }
+
+      &:active {
+        color: #096dd9;
       }
     }
   }
 
-  .countItem {
-    white-space: nowrap;
-
-    .countLabel {
-      color: rgba(0, 0, 0, 0.45);
-    }
-
-    .countValue {
-      font-size: 24px;
-    }
-  }
-}
-
-/* 报警工单处理趋势 */
-.numberType {
-  position: absolute;
-  top: -5.5px;
-  right: 0;
-}
-
-/* 监测点报警/预警排名 */
-.table {
-  :global {
-
-    th,
-    td {
-      padding: 3px !important;
-      white-space: nowrap;
-    }
-
-    th {
-      color: rgba(0, 0, 0, 0.45) !important;
-      background-color: transparent !important;
-    }
-
-    td {
-      span {
-        display: block !important;
-      }
-    }
-
-    // .ant-table-thead > tr > th.ant-table-column-has-actions.ant-table-column-has-sorters {
-    thead>tr>th.ant-table-column-has-actions.ant-table-column-has-sorters {
-      padding-right: 14px !important;
-    }
-
-    // .ant-table-thead > tr > th .ant-table-column-sorter {
-    thead>tr>th .ant-table-column-sorter {
-      right: auto !important;
-      left: 59px !important;
-    }
-
-    .ant-table-placeholder {
-      border-bottom: none !important;
-    }
-
-    .ant-badge-count {
-      width: 20px;
-    }
-  }
-}
-
-/* 列表 */
-.controlRow {
-  &>div {
-    margin-bottom: 16px;
-  }
-}
-
-.select {
-  width: 100%;
-}
-
-.table2 {
-  :global {
-    .ant-table {
-
-      td,
-      th {
-        white-space: nowrap;
-      }
-    }
-
-    .ant-table-body {
-      overflow-x: auto !important;
-    }
-
-    .ant-spin-nested-loading {
-      z-index: 2;
-    }
-
-    .ant-table-placeholder {
-      border-bottom: none !important;
-    }
-  }
-}
-
-/* <xl */
-@media screen and (max-width: 1199px) {
-
-  /* 统计栏 */
-  .countContainer {
-    &>:nth-child(2) {
-      .countItem {
-        width: 33.333333%;
-      }
-    }
-  }
-}
-
-/* <md */
-@media screen and (max-width: 767px) {
-
-  /* 统计栏 */
-  .countContainer {
-    &>:nth-child(2) {
-      .countItem {
-        width: 50%;
-      }
-    }
-  }
-}
-
-/* <sm 在这个分辨率下还是有点问题的，先不管了 */
-@media screen and (max-width: 575px) {
-
-  /* 统计栏 */
-  .countContainer {
-    &>:nth-child(2) {
-      .countItem {
-        width: 100%;
-      }
-    }
+  .rangePickerWrapper {
+    flex: none;
+    padding: 0 12px;
   }
 }

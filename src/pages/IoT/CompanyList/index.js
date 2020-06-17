@@ -1,250 +1,170 @@
-import React, { Component } from 'react';
-import { Card, message, Tooltip } from 'antd';
+import React, { useState, useEffect } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import InputOrSpan from '@/jingan-components/InputOrSpan';
-import InfiniteList from '@/jingan-components/InfiniteList';
-import CustomForm from '@/jingan-components/CustomForm';
-import MonitorTypeSelect from '@/jingan-components/MonitorTypeSelect';
+import Form from '@/jingan-components/Form';
+import { List, Link } from '@/jingan-components/View';
+import { Card, Tooltip } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import { connect } from 'dva';
-import Link from 'umi/link';
+import router from 'umi/router';
 import styles from './index.less';
 
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '物联网监测', name: '物联网监测' },
-  { title: 'IOT监测及趋势统计', name: 'IOT监测及趋势统计' },
-];
-const FIELDS = [
-  {
-    id: 'name',
-    label: '单位名称',
-    transform: value => value.trim(),
-    render: ({ handleSearch }) => (
-      <InputOrSpan placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
-    ),
-  },
-  {
-    id: 'practicalAddress',
-    label: '单位地址',
-    render: ({ handleSearch }) => (
-      <InputOrSpan placeholder="请输入单位地址" onPressEnter={handleSearch} maxLength={50} />
-    ),
-  },
-  {
-    id: 'equipmentType',
-    label: '监测类型',
-    render: () => <MonitorTypeSelect allowClear />,
-  },
+  { title: 'IOT异常数据及趋势统计', name: 'IOT异常数据及趋势统计' },
 ];
 const API = 'iotStatistics/getCompanyList';
-const EmptyData = () => <span className={styles.emptyData}>暂无数据</span>;
+const PAGE_SIZE = 18;
+const TRANSFORM = ({ gridId, name, practicalAddress, equipmentType } = {}) => ({
+  gridId,
+  name: name && name.trim(),
+  practicalAddress: practicalAddress && practicalAddress.trim(),
+  equipmentType,
+});
 
-@connect(
-  ({ user: { currentUser }, iotStatistics: { companyList }, loading }) => ({
+export default connect(
+  ({
+    user: { currentUser },
+    iotStatistics: { companyList: list },
+    loading: {
+      effects: { [API]: loading },
+    },
+  }) => ({
     currentUser,
-    companyList,
-    loading: loading.effects[API],
+    list,
+    loading,
   }),
   dispatch => ({
-    getCompanyList(payload, callback) {
+    getList(payload, callback) {
       dispatch({
         type: API,
         payload: {
           pageNum: 1,
-          pageSize: 18,
+          pageSize: PAGE_SIZE,
           ...payload,
         },
-        callback: (success, data) => {
-          if (!success) {
-            message.error('获取列表数据失败，请稍后重试！');
-          }
-          callback && callback(success, callback);
-        },
+        callback,
       });
     },
-  })
-)
-export default class CompanyList extends Component {
-  state = {
-    reloading: false,
-  };
-
-  prevValues = {};
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      nextProps.currentUser !== this.props.currentUser ||
-      nextProps.companyList !== this.props.companyList ||
-      nextProps.loading !== this.props.loading ||
-      nextState !== this.state
-    );
+  }),
+  null,
+  {
+    areStatesEqual: () => false,
+    areOwnPropsEqual: () => false,
+    areStatePropsEqual: () => false,
+    areMergedPropsEqual: (props, nextProps) => {
+      return props.list === nextProps.list && props.loading === nextProps.loading;
+    },
   }
-
-  getCompanyList = (pageNum, callback) => {
-    this.props.getCompanyList(
-      {
-        pageNum,
-        ...this.prevValues,
-      },
-      callback
-    );
-  };
-
-  handleSearch = values => {
-    this.prevValues = values;
-    this.setState({
-      reloading: true,
-    });
-    this.props.getCompanyList(values, () => {
-      this.setState({
-        reloading: false,
-      });
-    });
-  };
-
-  renderItem = ({
-    id: companyId,
-    name,
-    practicalProvinceLabel,
-    practicalCityLabel,
-    practicalDistrictLabel,
-    practicalTownLabel,
-    practicalAddress,
-    industryCategoryLabel,
-    safetyName,
-    safetyPhone,
-    equipmentTypeList,
+)(
+  ({
+    currentUser: { unitType, unitId },
+    list,
+    list: { pagination: { total } = {} } = {},
+    loading,
+    getList,
   }) => {
-    const address = [
-      practicalProvinceLabel,
-      practicalCityLabel,
-      practicalDistrictLabel,
-      practicalTownLabel,
-      practicalDistrictLabel,
-    ]
-      .filter(v => v)
-      .join('');
-    return (
-      <Card
-        title={
-          <Ellipsis lines={1} tooltip>
-            {name}
-          </Ellipsis>
-        }
-      >
-        <div className={styles.fieldWrapper}>
-          <span>
-            <span className={styles.address}>地址</span>：
-          </span>
-          <span>
-            {address ? (
-              <Ellipsis lines={1} tooltip>
-                {address}
-              </Ellipsis>
-            ) : (
-              <EmptyData />
-            )}
-          </span>
-        </div>
-        <div className={styles.fieldWrapper}>
-          <span>
-            <span className={styles.industryCategory}>行业类别</span>：
-          </span>
-          <span>
-            {industryCategoryLabel ? (
-              <Ellipsis lines={1} tooltip>
-                {industryCategoryLabel}
-              </Ellipsis>
-            ) : (
-              <EmptyData />
-            )}
-          </span>
-        </div>
-        <div className={styles.fieldWrapper}>
-          <span>
-            <span className={styles.safetyName}>安全管理员</span>：
-          </span>
-          <span>
-            {safetyName ? (
-              <Ellipsis lines={1} tooltip>
-                {safetyName}
-              </Ellipsis>
-            ) : (
-              <EmptyData />
-            )}
-          </span>
-        </div>
-        <div className={styles.fieldWrapper}>
-          <span>
-            <span className={styles.safetyPhone}>联系电话</span>：
-          </span>
-          <span>
-            {safetyPhone ? (
-              <Ellipsis lines={1} tooltip>
-                {safetyPhone}
-              </Ellipsis>
-            ) : (
-              <EmptyData />
-            )}
-          </span>
-        </div>
-        <div className={styles.iconContainer}>
-          {equipmentTypeList.map(({ id, name, logoWebUrl }) => {
-            return (
-              <div className={styles.iconWrapper} key={id}>
-                <Tooltip title={name}>
-                  <Link
-                    className={styles.icon}
-                    style={{ backgroundImage: `url(${logoWebUrl})` }}
-                    to={
-                      name === '火灾自动报警系统'
-                        ? `/company-iot/IOT-abnormal-data/fire-alarm/company/${companyId}`
-                        : `/company-iot/IOT-abnormal-data/${companyId}/${id}`
-                    }
-                    target="_blank"
-                  />
-                </Tooltip>
-              </div>
-            );
-          })}
-        </div>
-      </Card>
-    );
-  };
-
-  render() {
-    const {
-      companyList,
-      companyList: { pagination: { total } = {} } = {},
-      loading = false,
-    } = this.props;
-    const { reloading } = this.state;
-
+    const [values, setValues] = useState(undefined);
+    const [reloading, setReloading] = useState(false);
+    useEffect(() => {
+      if (unitType === 1 || unitType === 4) {
+        router.replace(`/company-iot/IOT-abnormal-data/${unitId}`);
+      }
+    }, []);
+    const fields = [
+      ...(unitType !== 1 && unitType !== 4
+        ? [
+            {
+              name: 'gridId',
+              label: '所属网格',
+              component: 'TreeSelect',
+              props: {
+                preset: 'grid',
+                allowClear: true,
+              },
+            },
+          ]
+        : []),
+      {
+        name: 'name',
+        label: '单位名称',
+        component: 'Input',
+      },
+      {
+        name: 'practicalAddress',
+        label: '单位地址',
+        component: 'Input',
+      },
+      {
+        name: 'equipmentType',
+        label: '监测类型',
+        component: 'Select',
+        props: {
+          preset: 'monitorType',
+          params: {
+            type: 4,
+          },
+          allowClear: true,
+        },
+      },
+    ];
     return (
       <PageHeaderLayout
-        title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
         breadcrumbList={BREADCRUMB_LIST}
-        content={`监测单位总数：${total || 0}`}
+        title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
+        content={`单位总数：${total || 0}`}
       >
-        <Card className={styles.customFormCard}>
-          <CustomForm
-            className={styles.customForm}
-            fields={FIELDS}
-            onSearch={this.handleSearch}
-            onReset={this.handleSearch}
-            ref={this.setFormReference}
-          />
-        </Card>
-        <InfiniteList
+        <Form
+          fields={fields}
+          onSearch={values => {
+            setValues(values);
+            setReloading(true);
+            getList(TRANSFORM(values), () => {
+              setReloading(false);
+            });
+          }}
+          onReset={values => {
+            setValues(values);
+            setReloading(true);
+            getList(TRANSFORM(values), () => {
+              setReloading(false);
+            });
+          }}
+        />
+        <List
           className={styles.infiniteList}
-          list={companyList}
+          list={list}
           loading={loading}
           reloading={reloading}
-          getList={this.getCompanyList}
-          renderItem={this.renderItem}
+          getList={(payload, callback) => getList({ ...payload, ...TRANSFORM(values) }, callback)}
+          renderItem={({ id: companyId, name, equipmentTypeList }) => (
+            <Card
+              title={
+                <Ellipsis lines={1} tooltip>
+                  {name}
+                </Ellipsis>
+              }
+            >
+              <div className={styles.iconContainer}>
+                {equipmentTypeList.map(({ id, name, logoWebUrl }) => {
+                  return (
+                    <div className={styles.iconWrapper} key={id}>
+                      <Tooltip title={name}>
+                        <Link
+                          className={styles.icon}
+                          style={{ backgroundImage: `url(${logoWebUrl})` }}
+                          to={`/company-iot/IOT-abnormal-data/${companyId}/${id}`}
+                          target="_blank"
+                        />
+                      </Tooltip>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+          )}
         />
       </PageHeaderLayout>
     );
   }
-}
+);

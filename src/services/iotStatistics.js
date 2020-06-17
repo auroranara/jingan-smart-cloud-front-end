@@ -10,3 +10,8 @@ export async function getCompanyList(params) {
 export async function getEquipmentTypeDetail({ id }) {
   return request(`/acloud_new/v2/monitor/equipmentType/${id}`);
 }
+
+/* 获取企业监测类型列表 */
+export async function getCompanyMonitorTypeList(params) {
+  return request(`/acloud_new/v2/monitor/monitorEquipmentTypeList?${stringify(params)}`);
+}

@@ -1,0 +1,84 @@
+/* 统计栏 */
+.countContainer {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  & > :first-child {
+    flex: 1;
+    padding-right: 24px;
+
+    .countItem {
+      padding-left: 50px;
+      background: no-repeat left;
+      background-size: 36px;
+    }
+  }
+
+  & > :nth-child(2) {
+    flex: 4;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: -6.5px;
+    padding-left: 24px;
+    border-left: 1px solid #ddd;
+
+    .countItem {
+      flex: none;
+      margin-bottom: 6.5px;
+      width: 16.666666%;
+
+      .countLabel {
+        width: 8em;
+      }
+    }
+  }
+
+  .countItem {
+    white-space: nowrap;
+
+    .countLabel {
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .countValue {
+      font-size: 24px;
+    }
+  }
+}
+
+/* <xl */
+@media screen and (max-width: 1199px) {
+  /* 统计栏 */
+  .countContainer {
+    & > :nth-child(2) {
+      .countItem {
+        width: 33.333333%;
+      }
+    }
+  }
+}
+
+/* <md */
+@media screen and (max-width: 767px) {
+  /* 统计栏 */
+  .countContainer {
+    & > :nth-child(2) {
+      .countItem {
+        width: 50%;
+      }
+    }
+  }
+}
+
+/* <sm 在这个分辨率下还是有点问题的，先不管了 */
+@media screen and (max-width: 575px) {
+  /* 统计栏 */
+  .countContainer {
+    & > :nth-child(2) {
+      .countItem {
+        width: 100%;
+      }
+    }
+  }
+}
