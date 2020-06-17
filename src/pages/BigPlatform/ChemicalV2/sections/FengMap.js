@@ -6,39 +6,7 @@ import { connect } from 'dva';
 // import { isPointInPolygon } from '@/utils/map';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import TruckModal from '../components/TruckModal';
-import Select from '@/jingan-components/Form/Select';
-import TreeSelect from '@/jingan-components/Form/TreeSelect';
-import {
-  NAMESPACE,
-  DETAIL_API,
-  ADD_API,
-  MAP_API,
-  PERSON_API,
-  EDIT_API,
-  REAPPLY_API,
-  SAVE_API,
-  EDIT_CODE,
-  BREADCRUMB_LIST_PREFIX,
-  GUTTER,
-  DAY_FORMAT,
-  MINUTE_FORMAT,
-  TYPES,
-  HOT_WORK_TYPES,
-  HIGH_WORK_TYPES,
-  HOISTING_WORK_TYPES,
-  BLIND_PLATE_WORK_TYPES,
-  UNIT_TYPES,
-  WORKING_STATUSES,
-  PLAN_TYPES,
-  TYPE_MAP_SAFETY_MEASURES,
-  COMPANY_LIST_MAPPER,
-  COMPANY_LIST_FIELDNAMES,
-  DEPARTMENT_LIST_MAPPER,
-  DEPARTMENT_LIST_FIELDNAMES,
-  PERSON_MAPPER,
-  PERSON_FILEDNAMES,
-  APPROVE_STATUSES,
-} from '@/pages/DataAnalysis/WorkingBill/config';
+import { MINUTE_FORMAT, TYPES, WORKING_STATUSES } from '@/pages/DataAnalysis/WorkingBill/config';
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';
@@ -246,9 +214,11 @@ export default class Map extends PureComponent {
       type: 'workingBill/getList',
       payload: {
         companyId,
-        approveStatus: 2,
         pageNum: 1,
         pageSize: 0,
+        // approveStatus: 2,
+        // startWorkingDate: moment().format('YYYY-MM-DD 00:00'),
+        // endWorkingDate: moment().format('YYYY-MM-DD 23:59'),
       },
       callback: (success, { list }) => {
         if (!success) return;
