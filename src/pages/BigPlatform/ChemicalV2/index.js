@@ -27,6 +27,7 @@ import iconAlarm from '@/assets/icon-alarm.png';
 import Lightbox from 'react-images';
 import TankMonitorDrawer from './sections/TankMonitorDrawer';
 import AreaMonitorDrawer from './sections/AreaMonitorDrawer';
+import Distribution from './sections/Distribution';
 
 import {
   DangerSourceInfoDrawer,
@@ -1556,6 +1557,7 @@ export default class Chemical extends PureComponent {
                 {/* {href.indexOf('five.jinganyun.net') < 0 && (
                   <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
                 )} */}
+                <Distribution />
               </div>
             </Col>
           </Row>
