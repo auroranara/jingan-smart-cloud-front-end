@@ -5,6 +5,7 @@ import { Spin, Button } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
+import { isNumber } from '@/utils/utils';
 import { TYPES, STATUSES, FORMAT } from '../List';
 import styles from './index.less';
 
@@ -13,6 +14,7 @@ const DETAIL_API = `${NAMESPACE}/getDetail`;
 const ADD_API = `${NAMESPACE}/add`;
 const EDIT_API = `${NAMESPACE}/edit`;
 const APPROVE_API = `${NAMESPACE}/approve`;
+const APPROVE_DETAIL_API = `${NAMESPACE}/getApproveDetail`;
 const LIST_PATH = '/risk-control/change/list';
 const EDIT_PATH = '/risk-control/change/edit';
 const APPROVE_PATH = '/risk-control/change/approve';
@@ -26,6 +28,25 @@ const TAB_LIST = [{ key: '1', tab: '申请信息' }, { key: '2', tab: '验收信
 const LABEL_COL = { span: 6 };
 const WRAPPER_COL = { span: 12 };
 const RESULTS = [{ key: '1', value: '通过' }, { key: '0', value: '不通过' }];
+const TRANSFORM = ({ company, applyPerson, applyPart, ...rest }) => ({
+  ...rest,
+  companyId: company && company.key,
+  applyPerson: applyPerson && applyPerson.key,
+  applyPart: applyPart && applyPart.key,
+});
+const TRANSFORM2 = ({
+  approvePart,
+  approveDate,
+  approvePersonPart,
+  changeCommunicatePart,
+  ...rest
+}) => ({
+  ...rest,
+  approvePart: approvePart && approvePart.key,
+  approveDate: approveDate && approveDate.format(FORMAT),
+  approvePersonPart: approvePersonPart && approvePersonPart.key,
+  changeCommunicatePart: changeCommunicatePart && changeCommunicatePart.key,
+});
 
 export default connect(
   state => state,
@@ -35,13 +56,14 @@ export default connect(
       user: {
         currentUser: { unitId, unitType, permissionCodes },
       },
-      [NAMESPACE]: { detail },
+      [NAMESPACE]: { detail, approveDetail },
       loading: {
         effects: {
           [DETAIL_API]: loading,
           [ADD_API]: adding,
           [EDIT_API]: editing,
           [APPROVE_API]: approving,
+          [APPROVE_DETAIL_API]: loading2,
         },
       },
     },
@@ -58,7 +80,8 @@ export default connect(
       ...ownProps,
       id,
       detail,
-      loading: loading || false,
+      approveDetail,
+      loading: loading || loading2 || false,
       getDetail(payload, callback) {
         dispatch({
           type: DETAIL_API,
@@ -69,20 +92,30 @@ export default connect(
           callback,
         });
       },
+      getApproveDetail(payload, callback) {
+        dispatch({
+          type: APPROVE_DETAIL_API,
+          payload: {
+            ...payload,
+            applyId: id,
+          },
+          callback,
+        });
+      },
       submitting: adding || editing || approving || false,
       submit(payload, callback) {
         dispatch({
           type: { add: ADD_API, edit: EDIT_API, approve: APPROVE_API }[name],
           payload: {
             ...payload,
-            id,
+            ...(name !== 'approve' ? { id } : { applyId: id }),
           },
           callback,
         });
       },
       mode: name,
-      unitId,
       isUnit: unitType === 4,
+      unitId,
       hasEditAuthority: permissionCodes.includes('riskControl.change.edit'),
       hasApproveAuthority: permissionCodes.includes('riskControl.change.approve'),
     };
@@ -94,6 +127,7 @@ export default connect(
     areMergedPropsEqual: (props, nextProps) => {
       return (
         props.detail === nextProps.detail &&
+        props.approveDetail === nextProps.approveDetail &&
         props.loading === nextProps.loading &&
         props.submitting === nextProps.submitting &&
         props.id === nextProps.id &&
@@ -104,19 +138,21 @@ export default connect(
 )(
   ({
     id,
-    detail: { approveDate, status } = {},
+    detail: { companyId, isApprove, status } = {},
     loading,
     getDetail,
+    getApproveDetail,
     submitting,
     submit,
     mode,
-    unitId,
     isUnit,
+    unitId,
     hasEditAuthority,
     hasApproveAuthority,
   }) => {
     // 表单初始值
     const [initialValues, setInitialValues] = useState(undefined);
+    const [initialValues2, setInitialValues2] = useState(undefined);
     // 当前选中的标签键值
     const [tabActiveKey, setTabActiveKey] = useState(TAB_LIST[+(mode === 'approve')].key);
     // 表单配置对象
@@ -139,7 +175,7 @@ export default connect(
                   ]
                 : []),
               {
-                name: '变更项目',
+                name: 'changeProject',
                 label: '变更项目',
                 component: 'Input',
                 props: {
@@ -148,7 +184,7 @@ export default connect(
                 enableDefaultRules: true,
               },
               {
-                name: '变更类别',
+                name: 'changeType',
                 label: '变更类别',
                 component: 'Radio',
                 props: {
@@ -157,7 +193,7 @@ export default connect(
                 enableDefaultRules: true,
               },
               {
-                name: '申请人',
+                name: 'applyPerson',
                 label: '申请人',
                 component: 'Select',
                 dependencies: ['company'],
@@ -173,7 +209,7 @@ export default connect(
                 },
               },
               {
-                name: '申请人职务',
+                name: 'applyPosition',
                 label: '申请人职务',
                 component: 'Input',
                 props: {
@@ -182,7 +218,7 @@ export default connect(
                 },
               },
               {
-                name: 'department',
+                name: 'applyPart',
                 label: '申请人部门',
                 component: 'TreeSelect',
                 dependencies: ['company'],
@@ -198,7 +234,7 @@ export default connect(
                 },
               },
               {
-                name: '申请内容描述',
+                name: 'applyContent',
                 label: '申请内容描述',
                 component: 'TextArea',
                 props: {
@@ -207,7 +243,7 @@ export default connect(
                 enableDefaultRules: true,
               },
               {
-                name: '变更原因',
+                name: 'changeReason',
                 label: '变更原因',
                 component: 'Input',
                 props: {
@@ -216,7 +252,7 @@ export default connect(
                 },
               },
               {
-                name: '危害识别风险评估结果',
+                name: 'hazardRisk',
                 label: '危害识别风险评估结果',
                 component: 'TextArea',
                 props: {
@@ -225,7 +261,7 @@ export default connect(
                 },
               },
               {
-                name: '风险分析及控制措施',
+                name: 'riskMeasure',
                 label: '风险分析及控制措施',
                 component: 'TextArea',
                 props: {
@@ -234,12 +270,12 @@ export default connect(
                 },
               },
               {
-                name: '变更方案',
+                name: 'changeFileList',
                 label: '变更方案',
                 component: 'Upload',
               },
               {
-                name: '部门领导意见',
+                name: 'departLeaderOpinion',
                 label: '部门领导意见',
                 component: 'TextArea',
                 props: {
@@ -248,7 +284,7 @@ export default connect(
                 },
               },
               {
-                name: '主管领导意见',
+                name: 'directorOpinion',
                 label: '主管领导意见',
                 component: 'TextArea',
                 props: {
@@ -257,7 +293,7 @@ export default connect(
                 },
               },
               {
-                name: '实施人员意见',
+                name: 'implementOpinion',
                 label: '实施人员意见',
                 component: 'TextArea',
                 props: {
@@ -266,7 +302,7 @@ export default connect(
                 },
               },
               {
-                name: '公司领导意见',
+                name: 'unitLeaderOpinion',
                 label: '公司领导意见',
                 component: 'TextArea',
                 props: {
@@ -277,23 +313,20 @@ export default connect(
             ]
           : [
               {
-                name: '组织验收部门',
+                name: 'approvePart',
                 label: '组织验收部门',
                 component: 'TreeSelect',
-                dependencies: ['company'],
-                props({ company }) {
-                  return {
-                    preset: 'department',
-                    labelInValue: true,
-                    params: {
-                      companyId: isUnit ? unitId : company && company.key,
-                    },
-                    allowClear: true,
-                  };
+                props: {
+                  preset: 'department',
+                  labelInValue: true,
+                  params: {
+                    companyId,
+                  },
+                  allowClear: true,
                 },
               },
               {
-                name: '验收日期',
+                name: 'approveDate',
                 label: '验收日期',
                 component: 'DatePicker',
                 props: {
@@ -302,7 +335,7 @@ export default connect(
                 enableDefaultRules: true,
               },
               {
-                name: '验收人员',
+                name: 'approvePerson',
                 label: '验收人员',
                 component: 'Input',
                 props: {
@@ -311,23 +344,20 @@ export default connect(
                 enableDefaultRules: true,
               },
               {
-                name: '验收人员所在部门',
+                name: 'approvePersonPart',
                 label: '验收人员所在部门',
                 component: 'TreeSelect',
-                dependencies: ['company'],
-                props({ company }) {
-                  return {
-                    preset: 'department',
-                    labelInValue: true,
-                    params: {
-                      companyId: isUnit ? unitId : company && company.key,
-                    },
-                    allowClear: true,
-                  };
+                props: {
+                  preset: 'department',
+                  labelInValue: true,
+                  params: {
+                    companyId,
+                  },
+                  allowClear: true,
                 },
               },
               {
-                name: '验收人员职务',
+                name: 'approvePersonPosition',
                 label: '验收人员职务',
                 component: 'Input',
                 props: {
@@ -336,7 +366,7 @@ export default connect(
                 },
               },
               {
-                name: '验收结果',
+                name: 'approveStatus',
                 label: '验收结果',
                 component: 'Radio',
                 props: {
@@ -345,7 +375,7 @@ export default connect(
                 enableDefaultRules: true,
               },
               {
-                name: '验收意见',
+                name: 'approveOpinion',
                 label: '验收意见',
                 component: 'TextArea',
                 props: {
@@ -354,12 +384,12 @@ export default connect(
                 enableDefaultRules: true,
               },
               {
-                name: '验收报告',
+                name: 'approveFileList',
                 label: '验收报告',
                 component: 'Upload',
               },
               {
-                name: '主管部门意见',
+                name: 'directorPartOpinion',
                 label: '主管部门意见',
                 component: 'TextArea',
                 props: {
@@ -368,23 +398,20 @@ export default connect(
                 },
               },
               {
-                name: '变更结果需要沟通部门',
+                name: 'changeCommunicatePart',
                 label: '变更结果需要沟通部门',
                 component: 'TreeSelect',
-                dependencies: ['company'],
-                props({ company }) {
-                  return {
-                    preset: 'department',
-                    labelInValue: true,
-                    params: {
-                      companyId: isUnit ? unitId : company && company.key,
-                    },
-                    allowClear: true,
-                  };
+                props: {
+                  preset: 'department',
+                  labelInValue: true,
+                  params: {
+                    companyId,
+                  },
+                  allowClear: true,
                 },
               },
               {
-                name: '沟通部门意见',
+                name: 'communicatePartOpinion',
                 label: '沟通部门意见',
                 component: 'TextArea',
                 props: {
@@ -393,7 +420,7 @@ export default connect(
                 },
               },
               {
-                name: '部门领导意见',
+                name: 'departLeaderOpinion',
                 label: '部门领导意见',
                 component: 'TextArea',
                 props: {
@@ -402,7 +429,7 @@ export default connect(
                 },
               },
               {
-                name: '主管领导意见',
+                name: 'directorOpinion',
                 label: '主管领导意见',
                 component: 'TextArea',
                 props: {
@@ -411,7 +438,7 @@ export default connect(
                 },
               },
               {
-                name: '公司领导意见',
+                name: 'unitLeaderOpinion',
                 label: '公司领导意见',
                 component: 'TextArea',
                 props: {
@@ -420,7 +447,7 @@ export default connect(
                 },
               },
               {
-                name: '附件',
+                name: 'otherFileList',
                 label: '附件',
                 component: 'Upload',
               },
@@ -434,20 +461,141 @@ export default connect(
         if (id) {
           getDetail(undefined, (success, data) => {
             if (success) {
-              const { project, departmentId, departmentName } = data;
+              const {
+                isApprove,
+                companyId,
+                companyName,
+                changeProject,
+                changeType,
+                applyPerson,
+                applyPersonName,
+                applyPosition,
+                applyPart,
+                applyPartName,
+                applyContent,
+                changeReason,
+                hazardRisk,
+                riskMeasure,
+                changeFileList,
+                departLeaderOpinion,
+                directorOpinion,
+                implementOpinion,
+                unitLeaderOpinion,
+              } = data;
               setInitialValues({
-                project: project || undefined,
-                department: departmentId
-                  ? { key: departmentId, value: departmentId, label: departmentName }
+                company: companyId
+                  ? { key: companyId, value: companyId, label: companyName }
                   : undefined,
+                changeProject: changeProject || undefined,
+                changeType: isNumber(changeType) ? `${changeType}` : undefined,
+                applyPerson: applyPerson
+                  ? { key: applyPerson, value: applyPerson, label: applyPersonName }
+                  : undefined,
+                applyPosition: applyPosition || undefined,
+                applyPart: applyPart
+                  ? { key: applyPart, value: applyPart, label: applyPartName }
+                  : undefined,
+                applyContent: applyContent || undefined,
+                changeReason: changeReason || undefined,
+                hazardRisk: hazardRisk || undefined,
+                riskMeasure: riskMeasure || undefined,
+                changeFileList: changeFileList
+                  ? changeFileList.map((item, index) => ({
+                      ...item,
+                      uid: -1 - index,
+                      status: 'done',
+                      name: item.fileName,
+                      url: item.webUrl,
+                    }))
+                  : undefined,
+                departLeaderOpinion: departLeaderOpinion || undefined,
+                directorOpinion: directorOpinion || undefined,
+                implementOpinion: implementOpinion || undefined,
+                unitLeaderOpinion: unitLeaderOpinion || undefined,
               });
+              if (isApprove) {
+                getApproveDetail(undefined, (success, data) => {
+                  if (success) {
+                    const {
+                      approvePart,
+                      approvePartName,
+                      approveDate,
+                      approvePerson,
+                      approvePersonPart,
+                      approvePersonPartName,
+                      approvePersonPosition,
+                      approveStatus,
+                      approveOpinion,
+                      approveFileList,
+                      directorPartOpinion,
+                      changeCommunicatePart,
+                      changeCommunicatePartName,
+                      communicatePartOpinion,
+                      departLeaderOpinion,
+                      directorOpinion,
+                      unitLeaderOpinion,
+                      otherFileList,
+                    } = data;
+                    setInitialValues2({
+                      approvePart: approvePart
+                        ? { key: approvePart, value: approvePart, label: approvePartName }
+                        : undefined,
+                      approveDate: approveDate ? moment(approveDate) : undefined,
+                      approvePerson: approvePerson || undefined,
+                      approvePersonPart: approvePersonPart
+                        ? {
+                            key: approvePersonPart,
+                            value: approvePersonPart,
+                            label: approvePersonPartName,
+                          }
+                        : undefined,
+                      approvePersonPosition: approvePersonPosition || undefined,
+                      approveStatus: isNumber(approveStatus) ? `${approveStatus}` : undefined,
+                      approveOpinion: approveOpinion || undefined,
+                      approveFileList: approveFileList
+                        ? approveFileList.map((item, index) => ({
+                            ...item,
+                            uid: -1 - index,
+                            status: 'done',
+                            name: item.fileName,
+                            url: item.webUrl,
+                          }))
+                        : undefined,
+                      directorPartOpinion: directorPartOpinion || undefined,
+                      changeCommunicatePart: changeCommunicatePart
+                        ? {
+                            key: changeCommunicatePart,
+                            value: changeCommunicatePart,
+                            label: changeCommunicatePartName,
+                          }
+                        : undefined,
+                      communicatePartOpinion: communicatePartOpinion || undefined,
+                      departLeaderOpinion: departLeaderOpinion || undefined,
+                      directorOpinion: directorOpinion || undefined,
+                      unitLeaderOpinion: unitLeaderOpinion || undefined,
+                      otherFileList: otherFileList
+                        ? otherFileList.map((item, index) => ({
+                            ...item,
+                            uid: -1 - index,
+                            status: 'done',
+                            name: item.fileName,
+                            url: item.webUrl,
+                          }))
+                        : undefined,
+                    });
+                  } else {
+                    setInitialValues2();
+                  }
+                });
+              }
             } else {
               setInitialValues();
+              setInitialValues2();
             }
           });
         }
       },
-      [id, mode]
+      [id]
     );
     let realMode = mode;
     if (mode === 'edit') {
@@ -468,23 +616,21 @@ export default connect(
         className={styles.layout}
         breadcrumbList={BREADCRUMB_LIST}
         title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
-        tabList={approveDate || mode === 'approve' ? TAB_LIST : undefined}
+        tabList={isApprove || mode === 'approve' ? TAB_LIST : undefined}
         tabActiveKey={tabActiveKey}
         onTabChange={setTabActiveKey}
       >
         <Spin spinning={loading}>
           <Form
             fields={fields}
-            initialValues={initialValues}
+            initialValues={tabActiveKey === TAB_LIST[0].key ? initialValues : initialValues2}
             mode={realMode}
             hasEditAuthority={hasEditAuthority}
             editPath={`${EDIT_PATH}/${id}`}
             listPath={LIST_PATH}
             onSubmit={values => {
               submit(
-                {
-                  ...values,
-                },
+                tabActiveKey === TAB_LIST[0].key ? TRANSFORM(values) : TRANSFORM2(values),
                 success => {
                   if (success) {
                     router.push(LIST_PATH);

@@ -19,9 +19,9 @@ export const TYPES = [
   { key: '5', value: '其他变更' },
 ];
 export const STATUSES = [
-  { key: '1', value: '待验收', status: 'default' },
-  { key: '2', value: '验收通过', status: 'success' },
-  { key: '3', value: '验收不通过', status: 'error' },
+  { key: '2', value: '待验收', status: 'default' },
+  { key: '1', value: '验收通过', status: 'success' },
+  { key: '0', value: '验收不通过', status: 'error' },
 ];
 export const FORMAT = 'YYYY-MM-DD';
 const NAMESPACE = 'change';
@@ -65,6 +65,7 @@ export default connect(
         });
       },
       isUnit: unitType === 4,
+      // 运维和企业才有操作权限，其他角色只能查看
       hasOperateAuthority: [3, 4].includes(unitType),
       hasDetailAuthority: permissionCodes.includes('riskControl.change.detail'),
       hasAddAuthority: permissionCodes.includes('riskControl.change.add'),
@@ -97,11 +98,12 @@ export default connect(
     // 表单暂存值
     const [values, setValues] = useState(undefined);
     // 接口封装方法
-    const getListByValues = ({ project, applicant, ...rest } = {}) => {
+    const getListByValues = ({ companyName, changeProject, applyPerson, ...rest } = {}) => {
       getList({
         ...rest,
-        project: project && project.trim(),
-        applicant: applicant && applicant.trim(),
+        companyName: companyName && companyName.trim(),
+        changeProject: changeProject && changeProject.trim(),
+        applyPerson: applyPerson && applyPerson.trim(),
       });
     };
     // 表单配置对象
@@ -119,7 +121,7 @@ export default connect(
           ]
         : []),
       {
-        name: 'type',
+        name: 'changeType',
         label: '变更类别',
         component: 'Select',
         props: {
@@ -128,7 +130,7 @@ export default connect(
         },
       },
       {
-        name: 'project',
+        name: 'changeProject',
         label: '变更项目',
         component: 'Input',
         props: {
@@ -136,7 +138,7 @@ export default connect(
         },
       },
       {
-        name: 'applicant',
+        name: 'applyPerson',
         label: '申请人',
         component: 'Input',
         props: {
@@ -166,28 +168,28 @@ export default connect(
             ]
           : []),
         {
-          dataIndex: 'project',
+          dataIndex: 'changeProject',
           title: '变更项目',
           render: value => value || <EmptyText />,
         },
         {
-          dataIndex: 'type',
+          dataIndex: 'changeType',
           title: '变更类别',
           render: value =>
             (TYPES.find(item => item.key === `${value}`) || {}).value || <EmptyText />,
         },
         {
-          dataIndex: 'description',
+          dataIndex: 'applyContent',
           title: '变更内容描述',
           render: value => <TextAreaEllipsis value={value} />,
         },
         {
-          dataIndex: 'applicant',
+          dataIndex: 'applyPersonName',
           title: '申请人',
           render: value => value || <EmptyText />,
         },
         {
-          dataIndex: 'applyDate',
+          dataIndex: 'createTime',
           title: '申请时间',
           render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
         },
