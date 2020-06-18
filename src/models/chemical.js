@@ -19,6 +19,8 @@ import {
   getInOutRecord,
   getLEDPersonCount,
   getLEDPerson,
+  getLocation,
+  getOneKeyAlarm,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
@@ -74,6 +76,8 @@ export default {
     monitoringDevice: {},
     LEDPersonCount: {},
     LEDPerson: {},
+    oneKeyAlarm: [],
+    locations: [],
   },
 
   effects: {
@@ -502,6 +506,36 @@ export default {
         yield put({ type: 'saveLEDPerson', payload: data || {} });
         callback && callback(data);
       }
+    },
+    // 定位数据
+    *getLocation({ payload, callback }, { call, put }) {
+      const response = yield call(getLocation, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const locations = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            locations,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 定位报警数据
+    *getOneKeyAlarm({ payload, callback }, { call, put }) {
+      const response = yield call(getOneKeyAlarm, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const oneKeyAlarm = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            oneKeyAlarm,
+          },
+        });
+      }
+      callback && callback(response);
     },
   },
 
