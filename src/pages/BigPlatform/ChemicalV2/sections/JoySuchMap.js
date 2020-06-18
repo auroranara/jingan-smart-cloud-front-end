@@ -46,6 +46,306 @@ import helmetAlarm5 from '../imgs/helmet-alarm-5.png';
 import helmetAlarm6 from '../imgs/helmet-alarm-6.png';
 import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
 
+const mockData = [
+  {
+    latitude: 31.545964158887074,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.36140601261161,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'lm',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: '1918E001FAE3',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+  {
+    latitude: 31.54599011116575,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.36142360805042,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'aaaa',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: '1918E001FAE3',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+  {
+    latitude: 31.54596264128945,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.36140810929106,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'bbb',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: '1918E001FAE3',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+  {
+    latitude: 31.545964867960592,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.3613941235298,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'cccc',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: '1918E001FAE3',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+  {
+    latitude: 31.54608591589117,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.36139024907817,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'dddd',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: 'aaaaaa',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+];
+
+const Distance = 9.82986525e-10;
+const isNear = (a, b) => {
+  const x = a.x - b.x;
+  const y = a.y - b.y;
+  return x * x + y * y < Distance;
+};
+
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = [
   'rgba(254, 0, 3, 0.5)',
@@ -189,6 +489,7 @@ export default class Map extends PureComponent {
   jumpFireIds = [];
   workBillMarkers = []; // 作业票markers
   workBillPolygons = []; // 作业票polygons
+  positionMarkers = []; // 人员定位markers
 
   /* eslint-disable*/
   componentDidMount() {
@@ -229,66 +530,6 @@ export default class Map extends PureComponent {
       callback: res => {
         const { visibles } = this.state;
         const iconType = 4;
-        const mockData = [
-          {
-            latitude: 31.545964158887074,
-            yMillimeter: 19000,
-            locationType: 1,
-            buildId: '202343',
-            floorNo: 'Floor1',
-            timestampMillisecond: 1592459848208,
-            xMillimeter: 52000,
-            userId: '505e9bad279511eab68d7cd30aeb74c6',
-            mac: '1918E001FAE3',
-            longitude: 120.36140601261161,
-            status: 2,
-            hgFaceInfo: {
-              id: 'rbyr7a_v_8sbgkwq',
-              remarks: null,
-              ids: null,
-              idList: null,
-              companyId: '99rz446zt9fet_lr',
-              name: 'lm',
-              sex: '0',
-              ethnic: null,
-              certificateType: null,
-              certificateNumber: null,
-              birthday: null,
-              location: null,
-              address: null,
-              telephone: null,
-              email: null,
-              personType: '1',
-              personCompany: null,
-              duty: null,
-              workType: null,
-              education: null,
-              major: null,
-              icnumber: '12123',
-              entranceNumber: '1918E001FAE3',
-              photo: '',
-              educationCertificate: '',
-              guid: null,
-              employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
-              workerNumber: null,
-              iconID: null,
-              partId: null,
-              partName: null,
-              companyJob: null,
-              companyJobName: null,
-              status: null,
-              labelId: 'qrqa4e_9dblfpmbr',
-              isSN: null,
-              photoDetails: null,
-              educationCertificateDetails: null,
-              companyName: null,
-              gridIdList: null,
-              companyBasicInfo: null,
-              hgAuthorizationManage: null,
-              authorizationMessage: null,
-            },
-          },
-        ];
         mockData.map(item => {
           // res.data.list.map((item, index) => {
           const {
@@ -337,6 +578,7 @@ export default class Map extends PureComponent {
             width: +status === 1 ? 80 : 50,
             height: +status === 1 ? 80 : 50,
           });
+          this.positionMarkers.push(marker);
           this.renderLabelMarker({
             id,
             text: name,
@@ -643,6 +885,7 @@ export default class Map extends PureComponent {
         const { properties, node } = clickedObj;
         const iconType = properties.get('iconType');
         const markerProps = mapChangeObj(properties);
+        const position = new jsmap.JSPoint(node.x, node.y, 0);
         switch (iconType) {
           case 0:
             // 风险点
@@ -668,43 +911,42 @@ export default class Map extends PureComponent {
             break;
           case 3:
             // 特种设备
-            this.handleShowSpecialInfo(
-              markerProps,
-              floorId,
-              tool.MercatorToWGS84(new jsmap.JSPoint(node.x, node.y, 0))
-            );
+            this.handleShowSpecialInfo(markerProps, floorId, tool.MercatorToWGS84(position));
             break;
           case 4:
             // 人员定位
-            this.handleShowPositionInfo(
-              markerProps,
-              floorId,
-              tool.MercatorToWGS84(new jsmap.JSPoint(node.x, node.y, 0))
-            );
+            this.handleClickPosition(markerProps, floorId, position);
             break;
           case 5:
             // 作业票
-            this.handleShowWorkBillInfo(
-              markerProps,
-              floorId,
-              tool.MercatorToWGS84(new jsmap.JSPoint(node.x, node.y, 0))
-            );
+            this.handleShowWorkBillInfo(markerProps, floorId, tool.MercatorToWGS84(position));
             break;
           case -1:
             // 变更预警
             const { zoneId } = markerProps;
-            this.handleShowChangeWarning(
-              zoneId,
-              floorId,
-              tool.MercatorToWGS84(new jsmap.JSPoint(node.x, node.y, 0))
-            );
+            this.handleShowChangeWarning(zoneId, floorId, tool.MercatorToWGS84(position));
             break;
           default:
             console.log('iconType', iconType);
             break;
         }
       }
+      if (nodeType === jsmap.JSNodeType.LABEL_MARKER) {
+        const { properties, node } = clickedObj;
+        const iconType = properties.get('iconType');
+        const markerProps = mapChangeObj(properties);
+        const position = new jsmap.JSPoint(node.x, node.y, 0);
+        // 人员定位
+        this.handleClickPosition(markerProps, floorId, position);
+      }
     });
+  };
+
+  // 点击人员定位事件
+  handleClickPosition = (markerProps, floorId, position) => {
+    this.handleFocusPosition(markerProps.hgFaceInfo.entranceNumber);
+    this.handleShowPersonList(position);
+    this.handleShowPositionInfo(markerProps, floorId, tool.MercatorToWGS84(position));
   };
 
   // 点击监测设备重新获取信息 重绘点位 显示详情内容
@@ -721,6 +963,38 @@ export default class Map extends PureComponent {
         }
       },
     });
+  };
+
+  // 点击focus到焦点
+  handleFocusPosition = snId => {
+    const {
+      chemical: { locations = [] },
+    } = this.props;
+    const focus = this.positionMarkers.find(item => {
+      const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+      return entranceNumber === snId;
+    });
+
+    if (focus) {
+      map.flyToMarker(focus);
+      this.handleShowPositionInfo(
+        mapChangeObj(focus.getProperties()),
+        focus.floorId,
+        focus.position
+      );
+    }
+  };
+
+  // 显示附近人员列表
+  handleShowPersonList = position => {
+    const {
+      chemical: { locations = [] },
+    } = this.props;
+    const filteredList = mockData.filter(item => {
+      const { longitude, latitude } = item;
+      return isNear({ x: longitude, y: latitude }, position);
+    });
+    console.log('filteredList', filteredList);
   };
 
   // 变更预警
