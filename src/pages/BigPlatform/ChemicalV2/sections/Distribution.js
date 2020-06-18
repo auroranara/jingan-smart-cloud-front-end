@@ -22,8 +22,9 @@ function RectTotal(props) {
 
 export default class Distribution extends PureComponent {
   render() {
-    const { visible, handleIconClick, handleProductionOpen } = this.props;
-    const list = [{ label: '管理人员', num: 2 }, { label: '安全巡查人员', num: 2 }, { label: '管理人员', num: 2 },{ label: '管理人员', num: 2 }, { label: '安全巡查人员', num: 2 }, { label: '管理人员', num: 2 },{ label: '管理人员', num: 2 }, { label: '安全巡查人员', num: 2 }, { label: '管理人员', num: 2 }];
+    const { visible, data, handleIconClick, handleProductionOpen } = this.props;
+    const list = Object.entries(data);
+    const total = list.reduce((accum, curr) => accum + curr[1], 0);
 
     return (
       <div className={styles.container}>
@@ -38,10 +39,10 @@ export default class Distribution extends PureComponent {
             <div className={styles.title}>
               {rect}
               生产区域人员统计
-              <span className={styles.total}>(21)</span>
+              <span className={styles.total}>({total})</span>
             </div>
             <div className={styles.rects}>
-              {list.map(({ label, num }, i) => <RectTotal key={i} label={label} num={num} onClick={e => handleProductionOpen()} />)}
+              {list.map(([label, num], i) => <RectTotal key={i} label={label} num={num} onClick={e => handleProductionOpen(label, null)} />)}
             </div>
           </div>
         </div>

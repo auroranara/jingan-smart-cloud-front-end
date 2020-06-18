@@ -92,3 +92,13 @@ export async function countByParkId(params) {
 export async function getInOutRecord(params) {
   return request(`${URL_PREFIX}/carPlateRecognition/inOutRecord/page?${stringify(params)}`);
 }
+
+// LED大屏人员统计
+export async function getLEDPersonCount(params) {
+  return request(`${URL_PREFIX}/ci/HGFace/getUserCountByJob?${stringify(params)}`);
+}
+
+// LED大屏人员列表
+export async function getLEDPerson(params) {
+  return request(`${URL_PREFIX}/ci/HGFace/getUserListByJob?${stringify(params)}`);
+}

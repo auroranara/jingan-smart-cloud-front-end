@@ -48,9 +48,9 @@ import drawer303 from './imgs/drawer/drawer-303.png';
 import drawer304 from './imgs/drawer/drawer-304.png';
 
 const storageAreaImg = 'http://data.jingan-china.cn/v2/chem/screen/storage.png';
-const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
+// const storageImg = 'http://data.jingan-china.cn/v2/chem/chemScreen/icon-tank-empty.png';
 const reservoirImg = 'http://data.jingan-china.cn/v2/chem/screen/reservoir.png';
-const warehouseImg = 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png';
+// const warehouseImg = 'http://data.jingan-china.cn/v2/chem/screen/warehouse.png';
 const gasometerImg = 'http://data.jingan-china.cn/v2/chem/screen/gasometer.png';
 const productDeviceImg = 'http://data.jingan-china.cn/v2/chem/screen/productDevice.png';
 const pipelineImg = 'http://data.jingan-china.cn/v2/chem/screen/pipeline.png';
@@ -62,11 +62,11 @@ const iconToxicGas = 'http://data.jingan-china.cn/v2/chem/chemScreen/poison.png'
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const NO_DATA = '暂无数据';
 
-const transformCondition = condition => {
-  if (condition === '>=') return '≥';
-  else if (condition === '<=') return '≤';
-  return condition;
-};
+// const transformCondition = condition => {
+//   if (condition === '>=') return '≥';
+//   else if (condition === '<=') return '≤';
+//   return condition;
+// };
 
 const renderEllipsis = val => (
   <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
@@ -952,3 +952,23 @@ export const DrawerIcons = {
   '415': drawer415,
   '416': drawer416,
 };
+
+export function getPersonList(persons, label, list) {
+  if (label === 'position') {
+    return { keyList: [], valueList: [], total: 0 };
+  }
+
+  let personList = Object.entries(persons);
+  let keyList = personList.map(([k, v], i) => ({ id: i, label: k, num: Array.isArray(v) ? v.length : 0 }));
+  let valueList = personList.map(([k, v], i) => ({ id: i, title: k, list: v }));
+  if (label) {
+    const list = persons[label];
+    if (list) {
+      keyList = [{ label, num: list.length }];
+      valueList = [{ id: 0, title: label, list }];
+    }
+  }
+
+  const total = keyList.reduce((accum, curr) => accum + curr.num, 0);
+  return { keyList, valueList, total };
+}

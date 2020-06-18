@@ -9,8 +9,8 @@ import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
 const rect = <span className={styles.rect} />;
 
 function Card(props) {
-  const { id, user_name, sex, sn, section, cardNumber, avatarFileList } = props;
-  const avatar = avatarFileList && avatarFileList.length ? avatarFileList[0].webUrl : imgNoAvatar;
+  const { id, name, sex, entranceNumber, partName, icnumber, photoDetails } = props;
+  const avatar = photoDetails && photoDetails.length ? photoDetails[0].webUrl : imgNoAvatar;
 
   return (
     <div className={styles.personList} key={id}>
@@ -18,24 +18,24 @@ function Card(props) {
         <img src={avatar} alt="avatar" />
       </div>
       <div className={styles.middle}>
-        <div className={styles.name}>{user_name}</div>
+        <div className={styles.name}>{name}</div>
         <div className={styles.item}>
           <span className={styles.label1}>性别：</span>
           <span className={styles.value}>{getLabel(sex, SEXES)}</span>
         </div>
         <div className={styles.item}>
           <span className={styles.label1}>SN：</span>
-          <span className={styles.value}>{sn}</span>
+          <span className={styles.value}>{entranceNumber}</span>
         </div>
         <div className={styles.item}>
           <span className={styles.label1}>区域：</span>
           <span className={styles.value}>
-            {section}
+            {partName}
           </span>
         </div>
         <div className={styles.item}>
           <span className={styles.label1}>门禁卡号：</span>
-          <span className={styles.value}>{cardNumber}</span>
+          <span className={styles.value}>{icnumber}</span>
         </div>
       </div>
     </div>
@@ -71,15 +71,11 @@ export default class ProductionOfficerDrawer extends PureComponent {
   render() {
     let {
       visible,
+      data: { keyList, valueList, total },
       onClose,
     } = this.props;
 
-    const title = <Fragment>生产区域人员统计<span className={styles.length}>(21人)</span></Fragment>
-    const keyList = [{ label: '管理人员', num: 2 }, { label: '安全巡查人员', num: 2 }, { label: '管理人员', num: 2 },{ label: '管理人员', num: 2 }, { label: '安全巡查人员', num: 2 }, { label: '管理人员', num: 2 },{ label: '管理人员', num: 2 }, { label: '安全巡查人员', num: 2 }, { label: '管理人员', num: 2 }];
-    const valueList = [
-      { title: '管理人员', list: [{ id:0, user_name: '张三', sex: '0', sn: '1980001cc8', section: '库房', cardNumber: '27102' }, { id:1, user_name: '张三', sex: '1', sn: '1980001cc8', section: '库房', cardNumber: '27102' }] },
-      { title: '安全巡查人员', list: [{ id:0, user_name: '张三', sex: '0', sn: '1980001cc8', section: '库房', cardNumber: '27102' }] },
-    ];
+    const title = <Fragment>生产区域人员统计<span className={styles.length}>({total}人)</span></Fragment>;
 
     return (
       <SectionDrawer

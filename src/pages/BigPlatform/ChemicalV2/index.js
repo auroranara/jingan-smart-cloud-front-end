@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
-import { Row, Col, Badge, notification } from 'antd';
+import { Row, Col, notification } from 'antd';
 import { connect } from 'dva';
 // import moment from 'moment';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
@@ -11,7 +11,7 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import { mapMutations } from '@/utils/utils';
 // import headerBg from '@/assets/new-header-bg.png';
 // import bgImg from '@/pages/BigPlatform/ChemicalV2/imgs/bg.png';
-import menuIcon from './imgs/menu-icon.png';
+// import menuIcon from './imgs/menu-icon.png';
 import styles from './index.less';
 import {
   RiskPointDrawer,
@@ -20,7 +20,7 @@ import {
 import { GET_STATUS_NAME } from '@/pages/IoT/AlarmMessage';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { VideoList, MonitorConfig } from './utils';
+import { MonitorConfig, getPersonList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
@@ -259,6 +259,8 @@ export default class Chemical extends PureComponent {
       monitorTabDrawerVisible: false,
       distributionVisible: false,
       productionVisible: false,
+      personLabel: null,
+      personList: [],
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -368,6 +370,7 @@ export default class Chemical extends PureComponent {
     // this.fetchHiddenDangerList();
     // 四色图分区
     // this.fetchFourColorPolygons();
+    this.getLEDPersonCount();
   };
 
   // 获取特种设备列表（全部）
@@ -1351,13 +1354,34 @@ export default class Chemical extends PureComponent {
     this.setState(({ distributionVisible }) => ({ distributionVisible: !distributionVisible }));
   };
 
-  handleProductionOpen = e => {
-    this.setState({ productionVisible: true });
+  handleProductionOpen = (personLabel, personList) => {
+    this.getLEDPerson();
+    this.setState({ productionVisible: true, personLabel, personList });
   };
 
   handleProductionClose = e => {
     this.setState({ productionVisible: false });
   }
+
+  getLEDPersonCount = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({ type: 'chemical/fetchLEDPersonCount', payload: { companyId } });
+  };
+
+  getLEDPerson = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({ type: 'chemical/fetchLEDPerson', payload: { companyId } });
+  };
 
   /**
    * 渲染
@@ -1391,6 +1415,8 @@ export default class Chemical extends PureComponent {
         },
         dangerSourceMaterials,
         zoneEquip = {},
+        LEDPersonCount,
+        LEDPerson,
       },
       match: {
         params: { unitId: companyId },
@@ -1463,6 +1489,8 @@ export default class Chemical extends PureComponent {
       monitorTabDrawerVisible,
       distributionVisible,
       productionVisible,
+      personLabel,
+      personList,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1477,7 +1505,7 @@ export default class Chemical extends PureComponent {
       });
       return prev;
     }, []);
-    const href = location.href;
+    // const href = location.href;
 
     return (
       <BigPlatformLayout
@@ -1575,6 +1603,7 @@ export default class Chemical extends PureComponent {
                   <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
                 )} */}
                 <Distribution
+                  data={LEDPersonCount}
                   visible={distributionVisible}
                   handleIconClick={this.handleDistributionIconClick}
                   handleProductionOpen={this.handleProductionOpen}
@@ -1949,6 +1978,7 @@ export default class Chemical extends PureComponent {
         {/* 生产区域人员统计 */}
         <ProductionOfficerDrawer
           visible={productionVisible}
+          data={getPersonList(personLabel, LEDPerson, personList)}
           onClose={this.handleProductionClose}
         />
       </BigPlatformLayout>

@@ -17,6 +17,8 @@ import {
   getOnDuty,
   countByParkId,
   getInOutRecord,
+  getLEDPersonCount,
+  getLEDPerson,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
@@ -25,7 +27,7 @@ import { queryStorehouseList } from '@/services/baseInfo/storehouse';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { getList } from '@/services/gasometer';
 import { getList as getPipelineList } from '@/services/pipeline';
-import { getDeviceDetail } from '@/services/alarmWorkOrder';
+// import { getDeviceDetail } from '@/services/alarmWorkOrder';
 import { getWarningNewList } from '@/services/changeWarning';
 import { fetchMonitoringDevice } from '@/services/device/monitoringDevice';
 
@@ -70,6 +72,8 @@ export default {
     truckCount: [],
     inOutRecordList: [],
     monitoringDevice: {},
+    LEDPersonCount: {},
+    LEDPerson: {},
   },
 
   effects: {
@@ -483,6 +487,22 @@ export default {
         callback && callback(res.data.list);
       }
     },
+    *fetchLEDPersonCount({ payload, callback }, { call, put }) {
+      const res = yield call(getLEDPersonCount, payload);
+      const { code, data } = res || {};
+      if (code === 200) {
+        yield put({ type: 'saveLEDPersonCount', payload: data || {} });
+        callback && callback(data);
+      }
+    },
+    *fetchLEDPerson({ payload, callback }, { call, put }) {
+      const res = yield call(getLEDPerson, payload);
+      const { code, data } = res || {};
+      if (code === 200) {
+        yield put({ type: 'saveLEDPerson', payload: data || {} });
+        callback && callback(data);
+      }
+    },
   },
 
   reducers: {
@@ -515,5 +535,11 @@ export default {
         [id]: list,
       },
     }),
+    saveLEDPersonCount(state, action) {
+      return { ...state, LEDPersonCount: action.payload };
+    },
+    saveLEDPerson(state, action) {
+      return { ...state, LEDPerson: action.payload };
+    },
   },
 };
