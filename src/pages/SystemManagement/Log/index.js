@@ -4,27 +4,28 @@ import Form from '@/jingan-components/Form';
 import Table from '@/jingan-components/View/Table';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import Link from '@/jingan-components/View/Link';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import styles from './index.less';
 
 const TAB_LIST = [{ key: '1', tab: '登录日志' }, { key: '2', tab: '操作日志' }];
-const LOGIN_TYPES = [{ key: '1', value: '登入系统' }, { key: '2', value: '登出系统' }];
+const LOGIN_TYPES = [{ key: 'login', value: '登入系统' }, { key: 'logout', value: '登出系统' }];
 const LOGIN_METHODS = [
-  { key: '1', value: 'web' },
-  { key: '2', value: 'android' },
-  { key: '3', value: 'ios' },
+  { key: 'web', value: 'web' },
+  { key: 'android', value: 'android' },
+  { key: 'ios', value: 'ios' },
 ];
 const FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const OPERATE_TYPES = [
-  { key: '1', value: '新增' },
-  { key: '2', value: '编辑' },
-  { key: '3', value: '删除' },
+  { key: 'INSERT', value: '新增' },
+  { key: 'UPDATE', value: '编辑' },
+  { key: 'DELETE', value: '删除' },
 ];
 const NAMESPACE = 'systemManagement';
-const API = `${NAMESPACE}/getLogList`;
+const API = `${NAMESPACE}/getLoginLogList`;
+const API2 = `${NAMESPACE}/getOperationLogList`;
 const PAGE_SIZE = 10;
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
@@ -37,29 +38,60 @@ export default connect(
   null,
   (
     {
-      [NAMESPACE]: { logList: list },
+      [NAMESPACE]: { loginLogList, operationLogList },
       loading: {
-        effects: { [API]: loading },
+        effects: { [API]: loading, [API2]: loading2 },
       },
     },
     { dispatch },
-    ownProps
+    {
+      match: {
+        params: { type },
+      },
+      ...ownProps
+    }
   ) => {
+    const tabActiveKey = TAB_LIST.find(item => item.key === type) ? type : TAB_LIST[0].key;
     return {
       ...ownProps,
-      list,
-      loading,
-      getList(payload, callback) {
-        dispatch({
-          type: API,
-          payload: {
-            pageNum: 1,
-            pageSize: PAGE_SIZE,
-            ...payload,
-          },
-          callback,
-        });
-      },
+      tabActiveKey,
+      list: tabActiveKey === TAB_LIST[0].key ? loginLogList : operationLogList,
+      loading: loading || loading2 || false,
+      getList:
+        tabActiveKey === TAB_LIST[0].key
+          ? ({ userName, range, ip, ...rest } = {}, callback) => {
+              const [startTime, endTime] = range || [];
+              dispatch({
+                type: API,
+                payload: {
+                  pageNum: 1,
+                  pageSize: PAGE_SIZE,
+                  projectKey: global.PROJECT_CONFIG.projectKey,
+                  userName: userName && userName.trim(),
+                  startTime: startTime && startTime.format(FORMAT),
+                  endTime: endTime && endTime.format(FORMAT),
+                  ip: ip && ip.trim(),
+                  ...rest,
+                },
+                callback,
+              });
+            }
+          : ({ userName, range, ...rest } = {}, callback) => {
+              const [startTime, endTime] = range || [];
+              dispatch({
+                type: API2,
+                payload: {
+                  pageNum: 1,
+                  pageSize: PAGE_SIZE,
+                  projectKey: global.PROJECT_CONFIG.projectKey,
+                  userName: userName && userName.trim(),
+                  startTime: startTime && startTime.format(FORMAT),
+                  endTime: endTime && endTime.format(FORMAT),
+                  ...rest,
+                },
+                callback,
+              });
+            },
     };
   },
   {
@@ -68,31 +100,24 @@ export default connect(
     areStatePropsEqual: () => false,
     areMergedPropsEqual: (props, nextProps) => {
       return (
+        props.tabActiveKey === nextProps.tabActiveKey &&
         props.list === nextProps.list &&
-        props.loading === nextProps.loading &&
-        props.match.params.type === nextProps.match.params.type
+        props.loading === nextProps.loading
       );
     },
   }
-)(({ match: { params: { type } }, list, loading, getList }) => {
+)(({ tabActiveKey, list, loading, getList }) => {
   // 表单实例
   const form = useRef(null);
   // 表单暂存值
   const [values, setValues] = useState(undefined);
-  // 当前选中的标签键值
-  const tabActiveKey = useMemo(
-    () => {
-      return TAB_LIST.find(item => item.key === type) ? type : TAB_LIST[0].key;
-    },
-    [type]
-  );
   // 表单配置对象
   const fields = useMemo(
     () => {
       return tabActiveKey === TAB_LIST[0].key
         ? [
             {
-              name: 'loginType',
+              name: 'way',
               label: '登录类型',
               component: 'Select',
               props: {
@@ -101,7 +126,7 @@ export default connect(
               },
             },
             {
-              name: 'loginMethod',
+              name: 'device',
               label: '登录方式',
               component: 'Select',
               props: {
@@ -110,7 +135,7 @@ export default connect(
               },
             },
             {
-              name: 'loginUser',
+              name: 'userName',
               label: '登录人',
               component: 'Input',
               props: {
@@ -136,7 +161,7 @@ export default connect(
           ]
         : [
             {
-              name: 'operateType',
+              name: 'sqlType',
               label: '操作类型',
               component: 'Select',
               props: {
@@ -145,7 +170,7 @@ export default connect(
               },
             },
             {
-              name: 'operator',
+              name: 'userName',
               label: '操作人',
               component: 'Input',
               props: {
@@ -170,87 +195,85 @@ export default connect(
       return tabActiveKey === TAB_LIST[0].key
         ? [
             {
-              dataIndex: 'loginType',
+              dataIndex: '登录类型',
               title: '登录类型',
-              render: value =>
+              render: (_, { data: { way: value } }) =>
                 (LOGIN_TYPES.find(item => item.key === `${value}`) || {}).value || <EmptyText />,
             },
             {
-              dataIndex: 'loginMethod',
+              dataIndex: '登录方式',
               title: '登录方式',
-              render: value =>
+              render: (_, { data: { device: value } }) =>
                 (LOGIN_METHODS.find(item => item.key === `${value}`) || {}).value || <EmptyText />,
             },
             {
-              dataIndex: 'loginUser',
+              dataIndex: '登录人',
               title: '登录人',
-              render: value => value || <EmptyText />,
+              render: (_, { data: { userName: value } }) => value || <EmptyText />,
             },
             {
-              dataIndex: 'operateTime',
+              dataIndex: 'addTime',
               title: '操作时间',
               render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
             },
             {
-              dataIndex: 'ip',
+              dataIndex: 'IP地址',
               title: 'IP地址',
-              render: value => value || <EmptyText />,
+              render: (_, { data: { ip: value } }) => value || <EmptyText />,
             },
           ]
         : [
             {
-              dataIndex: 'operateType',
+              dataIndex: '操作类型',
               title: '操作类型',
-              render: value =>
+              render: (_, { data: { sqlType: value } }) =>
                 (OPERATE_TYPES.find(item => item.key === `${value}`) || {}).value || <EmptyText />,
             },
             {
-              dataIndex: 'operator',
+              dataIndex: '操作人',
               title: '操作人',
-              render: value => value || <EmptyText />,
+              render: (_, { data: { userName: value } }) => value || <EmptyText />,
             },
             {
-              dataIndex: 'operateTime',
+              dataIndex: 'addTime',
               title: '操作时间',
               render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
             },
             {
-              dataIndex: 'operateTarget',
+              dataIndex: '操作表',
               title: '操作表',
-              render: value => value || <EmptyText />,
+              render: (_, { data: { tableName: value } }) => value || <EmptyText />,
             },
             {
               dataIndex: '操作内容',
               title: '操作内容',
-              render: (_, { id }) => <Link onClick={() => console.log(id)}>查看</Link>,
+              render: (_, { data: { sql: value } }) => (
+                <Link
+                  onClick={() =>
+                    Modal.info({
+                      title: '操作内容',
+                      content: value,
+                    })
+                  }
+                >
+                  查看
+                </Link>
+              ),
             },
           ];
     },
     [tabActiveKey]
   );
-  // 接口封装方法
-  const getListByValues = ({ loginUser, range, ip, operator, ...rest } = {}) => {
-    const [startTime, endTime] = range || [];
-    getList({
-      ...rest,
-      tabActiveKey,
-      loginUser: loginUser && loginUser.trim(),
-      startTime: startTime && startTime.format(FORMAT),
-      endTime: endTime && endTime.format(FORMAT),
-      ip: ip && ip.trim(),
-      operator: operator && operator.trim(),
-    });
-  };
   // 数据初始化
   useEffect(
     () => {
-      setValues(
-        fields.reduce((result, item) => {
-          result[item.name] = undefined;
-          return result;
-        }, {})
-      );
-      getListByValues();
+      const values = fields.reduce((result, item) => {
+        result[item.name] = undefined;
+        return result;
+      }, {});
+      setValues(values);
+      getList();
+      form.current.setFieldsValue(values);
     },
     [tabActiveKey]
   );
@@ -258,7 +281,7 @@ export default connect(
   const onSearch = values => {
     const { pagination: { pageSize = PAGE_SIZE } = {} } = list || {};
     setValues(values);
-    getListByValues({
+    getList({
       ...values,
       pageSize,
     });
@@ -269,7 +292,7 @@ export default connect(
       breadcrumbList={BREADCRUMB_LIST}
       title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
       action={
-        <Button type="primary" href="#/test">
+        <Button type="primary" href="#/risk-control/change/list">
           申请变更
         </Button>
       }
@@ -284,7 +307,7 @@ export default connect(
         columns={columns}
         onChange={({ current, pageSize }) => {
           const { pagination: { pageSize: prevPageSize } = {} } = list || {};
-          getListByValues({
+          getList({
             ...values,
             pageNum: pageSize !== prevPageSize ? 1 : current,
             pageSize,
@@ -293,7 +316,7 @@ export default connect(
         }}
         onReload={() => {
           const { pagination: { pageNum, pageSize } = {} } = list || {};
-          getListByValues({
+          getList({
             ...values,
             pageNum,
             pageSize,

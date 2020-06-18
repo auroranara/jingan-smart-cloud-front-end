@@ -2,8 +2,10 @@ import {
   fetchSystemSetting,
   addSystemCompany,
   updateSystemSetting,
-  // 获取系统日志列表
-  getLogList,
+  // 获取登录日志列表
+  getLoginLogList,
+  // 获取操作日志列表
+  getOperationLogList,
 } from '@/services/systemManagement';
 import { message } from 'antd';
 
@@ -19,7 +21,9 @@ export default {
     systemSetting: defaultData,
     detail: {},
     // 系统日志列表
-    logList: {},
+    loginLogList: {},
+    // 操作日志列表
+    operationLogList: {},
   },
 
   effects: {
@@ -48,21 +52,89 @@ export default {
       yield put({ type: 'saveDetail', payload: detail });
       callback && callback(detail);
     },
-    // 获取系统日志列表
-    *getLogList({ payload, callback }, { call, put }) {
-      const response = yield call(getLogList, payload);
+    // 获取登录日志列表
+    *getLoginLogList(
+      {
+        payload: { pageNum, pageSize, startTime, endTime, ...rest },
+        callback,
+      },
+      { call, put }
+    ) {
+      const response = yield call(getLoginLogList, {
+        pageNum,
+        pageSize,
+        startTime,
+        endTime,
+        queryStrList: Object.entries(rest)
+          .reduce((result, [key, value]) => {
+            if (value || value === 0) {
+              result.push(`${key}:${value}`);
+            }
+            return result;
+          }, [])
+          .join(','),
+      });
       const { code, msg, data } = response || {};
       if (code === 200 && data) {
-        const logList = data;
+        const loginLogList = {
+          ...data,
+          list: data.list.map((item, index) => ({
+            ...item,
+            id: index,
+          })),
+        };
         yield put({
           type: 'save',
           payload: {
-            logList,
+            loginLogList,
           },
         });
-        callback && callback(true, logList);
+        callback && callback(true, loginLogList);
       } else {
-        message.error('获取系统日志列表数据失败，请稍后重试！');
+        message.error('获取登录日志列表数据失败，请稍后重试！');
+        callback && callback(false, msg);
+      }
+    },
+    // 获取操作日志列表
+    *getOperationLogList(
+      {
+        payload: { pageNum, pageSize, startTime, endTime, ...rest },
+        callback,
+      },
+      { call, put }
+    ) {
+      const response = yield call(getOperationLogList, {
+        pageNum,
+        pageSize,
+        startTime,
+        endTime,
+        queryStrList: Object.entries(rest)
+          .reduce((result, [key, value]) => {
+            if (value || value === 0) {
+              result.push(`${key}:${value}`);
+            }
+            return result;
+          }, [])
+          .join(','),
+      });
+      const { code, msg, data } = response || {};
+      if (code === 200 && data) {
+        const operationLogList = {
+          ...data,
+          list: data.list.map((item, index) => ({
+            ...item,
+            id: index,
+          })),
+        };
+        yield put({
+          type: 'save',
+          payload: {
+            operationLogList,
+          },
+        });
+        callback && callback(true, operationLogList);
+      } else {
+        message.error('获取操作日志列表数据失败，请稍后重试！');
         callback && callback(false, msg);
       }
     },
