@@ -52,7 +52,7 @@ export default {
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

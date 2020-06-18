@@ -90,6 +90,8 @@ export default class ProductionOfficerDrawer extends PureComponent {
     return (
       <SectionDrawer
         drawerProps={{
+          mask: false,
+          width: 512,
           title,
           visible,
           onClose,

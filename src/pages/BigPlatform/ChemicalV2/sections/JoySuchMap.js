@@ -140,7 +140,7 @@ const mockData = [
       education: null,
       major: null,
       icnumber: '12123',
-      entranceNumber: '1918E001FAE3',
+      entranceNumber: 'zzzzzzzzzzz',
       photo: '',
       educationCertificate: '',
       guid: null,
@@ -198,7 +198,7 @@ const mockData = [
       education: null,
       major: null,
       icnumber: '12123',
-      entranceNumber: '1918E001FAE3',
+      entranceNumber: 'ccccccccccc',
       photo: '',
       educationCertificate: '',
       guid: null,
@@ -256,7 +256,7 @@ const mockData = [
       education: null,
       major: null,
       icnumber: '12123',
-      entranceNumber: '1918E001FAE3',
+      entranceNumber: 'sssssssssss',
       photo: '',
       educationCertificate: '',
       guid: null,
@@ -500,6 +500,7 @@ export default class Map extends PureComponent {
     onRef && onRef(this);
     this.fetchDict({ type: 'specialEquipment' });
     this.fetchOnDuty({ companyId });
+    // cacheHandleFocusPositionFn(this.handleFocusPosition);
   }
 
   fetchMap = () => {
@@ -915,7 +916,7 @@ export default class Map extends PureComponent {
             break;
           case 4:
             // 人员定位
-            this.handleClickPosition(markerProps, floorId, position);
+            this.handleClickPosition(markerProps, floorId, tool.MercatorToWGS84(position));
             break;
           case 5:
             // 作业票
@@ -946,7 +947,7 @@ export default class Map extends PureComponent {
   handleClickPosition = (markerProps, floorId, position) => {
     this.handleFocusPosition(markerProps.hgFaceInfo.entranceNumber);
     this.handleShowPersonList(position);
-    this.handleShowPositionInfo(markerProps, floorId, tool.MercatorToWGS84(position));
+    // this.handleShowPositionInfo(markerProps, floorId, tool.MercatorToWGS84(position));
   };
 
   // 点击监测设备重新获取信息 重绘点位 显示详情内容
@@ -989,11 +990,13 @@ export default class Map extends PureComponent {
   handleShowPersonList = position => {
     const {
       chemical: { locations = [] },
+      handleProductionOpen,
     } = this.props;
     const filteredList = mockData.filter(item => {
       const { longitude, latitude } = item;
       return isNear({ x: longitude, y: latitude }, position);
     });
+    handleProductionOpen('position', filteredList);
     console.log('filteredList', filteredList);
   };
 

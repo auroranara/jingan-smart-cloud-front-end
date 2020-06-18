@@ -264,6 +264,7 @@ export default class Chemical extends PureComponent {
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
+    // this.handleFocusPosition = null;
 
     mapMutations(this, {
       namespace: 'unitSafety',
@@ -1356,6 +1357,7 @@ export default class Chemical extends PureComponent {
 
   handleProductionOpen = (personLabel, personList) => {
     this.getLEDPerson();
+    console.log(personLabel, personList);
     this.setState({ productionVisible: true, personLabel, personList });
   };
 
@@ -1381,6 +1383,10 @@ export default class Chemical extends PureComponent {
       },
     } = this.props;
     dispatch({ type: 'chemical/fetchLEDPerson', payload: { companyId } });
+  };
+
+  handleFocusPosition = id => {
+    this.childMap && this.childMap.handleFocusPosition(id);
   };
 
   /**
@@ -1576,6 +1582,8 @@ export default class Chemical extends PureComponent {
                   handleShowAreaDrawer={this.handleShowAreaDrawer}
                   handleClickMonitorIcon={this.handleClickMonitorIcon}
                   handleClickFireMonitor={this.handleClickFireMonitor}
+                  handleProductionOpen={this.handleProductionOpen}
+                  // cacheHandleFocusPositionFn={this.cacheHandleFocusPositionFn}
                 />
 
                 {msgVisible ? (
@@ -1979,7 +1987,7 @@ export default class Chemical extends PureComponent {
         <ProductionOfficerDrawer
           visible={productionVisible}
           data={getPersonList(LEDPerson, personLabel, personList)}
-          handleLocatationClick={this.handleLocatationClick}
+          handleLocatationClick={this.handleFocusPosition}
           onClose={this.handleProductionClose}
         />
       </BigPlatformLayout>

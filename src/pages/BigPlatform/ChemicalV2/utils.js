@@ -956,6 +956,7 @@ export const DrawerIcons = {
 export function getPersonList(persons, label, list) {
   let pers = persons;
   let lal = label;
+  console.log(persons, label, list);
   if (label === 'position') {
     pers = convertListToPersons(list);
     lal = null;
