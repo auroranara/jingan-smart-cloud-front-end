@@ -403,7 +403,7 @@ export default class PersonnelAdd extends PureComponent {
         personCar: 1,
       },
       callback: (res) => {
-        const list = res.data && Array.isArray(res.data.list) ? res.data.list.filter(item => item.snNumber && item.icNumber) : [];
+        const list = res.data && Array.isArray(res.data.list) ? res.data.list : [];
         this.setState({ curLabelList: list });
       },
     });
@@ -663,11 +663,11 @@ export default class PersonnelAdd extends PureComponent {
                       onSearch={this.handleICSearch}
                       onChange={this.handleICChange}
                     >
-                      {curLabelList.map(({ icNumber, id }) => (
+                      {curLabelList.map(({ icNumber, id }) => icNumber ? (
                         <Option value={id} key={id}>
                           {icNumber}
                         </Option>
-                      ))}
+                      ) : null)}
                     </Select>
                   )}
                 </FormItem>
@@ -700,11 +700,11 @@ export default class PersonnelAdd extends PureComponent {
                       onSearch={this.handleSNSearch}
                       onChange={this.handleSNChange}
                     >
-                      {curLabelList.map(({ snNumber, id }) => (
+                      {curLabelList.map(({ snNumber, id }) => snNumber ? (
                         <Option value={id} key={id}>
                           {snNumber}
                         </Option>
-                      ))}
+                      ) : null)}
                     </Select>
                   )}
                 </FormItem>
