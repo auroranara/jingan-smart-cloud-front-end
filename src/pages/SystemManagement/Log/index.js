@@ -4,7 +4,7 @@ import Form from '@/jingan-components/Form';
 import Table from '@/jingan-components/View/Table';
 import EmptyText from '@/jingan-components/View/EmptyText';
 import Link from '@/jingan-components/View/Link';
-import { Button, Modal } from 'antd';
+import { Modal } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
@@ -147,6 +147,7 @@ export default connect(
               label: '操作时间',
               component: 'RangePicker',
               props: {
+                format: FORMAT,
                 allowClear: true,
               },
             },
@@ -182,6 +183,7 @@ export default connect(
               label: '操作时间',
               component: 'RangePicker',
               props: {
+                format: FORMAT,
                 allowClear: true,
               },
             },
