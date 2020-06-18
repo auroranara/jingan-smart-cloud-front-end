@@ -1979,6 +1979,7 @@ export default class Chemical extends PureComponent {
         <ProductionOfficerDrawer
           visible={productionVisible}
           data={getPersonList(LEDPerson, personLabel, personList)}
+          handleLocatationClick={this.handleLocatationClick}
           onClose={this.handleProductionClose}
         />
       </BigPlatformLayout>

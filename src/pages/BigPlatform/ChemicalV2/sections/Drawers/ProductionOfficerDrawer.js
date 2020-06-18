@@ -5,15 +5,16 @@ import SectionDrawer from '@/pages/BigPlatform/Safety/Company3/components/Sectio
 import { getLabel, SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
 import styles from './SafetyOfficerDrawer.less';
 import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
+import locationIcon from '../../imgs/location.png';
 
 const rect = <span className={styles.rect} />;
 
 function Card(props) {
-  const { id, name, sex, entranceNumber, icnumber, photoDetails } = props;
+  const { id, name, sex, entranceNumber, icnumber, photoDetails, handleLocatationClick } = props;
   const avatar = photoDetails && photoDetails.length ? photoDetails[0].webUrl : imgNoAvatar;
 
   return (
-    <div className={styles.personList} key={id}>
+    <div className={styles.personList1} key={id}>
       <div className={styles.left}>
         <img src={avatar} alt="avatar" />
       </div>
@@ -25,25 +26,33 @@ function Card(props) {
         </div>
         <div className={styles.item}>
           <span className={styles.label1}>SN：</span>
-          <span className={styles.value}>{entranceNumber}</span>
+          <span className={styles.value}>{entranceNumber || '-'}</span>
         </div>
         <div className={styles.item}>
           <span className={styles.label1}>区域：</span>
           <span className={styles.value}>
-            --
+            -
           </span>
         </div>
         <div className={styles.item}>
           <span className={styles.label1}>门禁卡号：</span>
-          <span className={styles.value}>{icnumber}</span>
+          <span className={styles.value}>{icnumber || '-'}</span>
         </div>
       </div>
+      {entranceNumber && (
+        <span
+          className={styles.locationIcon}
+          style={{ backgroundImage: `url(${locationIcon})` }}
+          onClick={e => handleLocatationClick && handleLocatationClick(entranceNumber)}
+        />
+      )}
     </div>
   );
 }
 
 function CardList(props) {
-  const { title, list } = props;
+  const { title, list, handleLocatationClick } = props;
+  // const list = [{}];
 
   return (
     <div>
@@ -51,7 +60,7 @@ function CardList(props) {
         {rect}{title}
         <span className={styles.length}>({list.length}人)</span>
       </h3>
-      {list.map(item => <Card key={item.id} {...item} />)}
+      {list.map(item => <Card key={item.id} handleLocatationClick={handleLocatationClick} {...item} />)}
     </div>
   );
 }
@@ -72,6 +81,7 @@ export default class ProductionOfficerDrawer extends PureComponent {
     let {
       visible,
       data: { keyList, valueList, total },
+      handleLocatationClick,
       onClose,
     } = this.props;
 
@@ -98,7 +108,7 @@ export default class ProductionOfficerDrawer extends PureComponent {
             ))}
         </Row>
         <div className={styles.container}>
-          {valueList.map(({ title, list }) => <CardList key={title} title={title} list={list} />)}
+          {valueList.map(({ title, list }) => <CardList key={title} title={title} list={list} handleLocatationClick={handleLocatationClick} />)}
         </div>
       </SectionDrawer>
     );
