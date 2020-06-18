@@ -92,3 +92,13 @@ export async function countByParkId(params) {
 export async function getInOutRecord(params) {
   return request(`${URL_PREFIX}/carPlateRecognition/inOutRecord/page?${stringify(params)}`);
 }
+
+// 定位数据
+export async function getLocation(params) {
+  return request(`${URL_PREFIX}/joySuchLocation/getLocation?${stringify(params)}`);
+}
+
+// 定位报警数据
+export async function getOneKeyAlarm(params) {
+  return request(`${URL_PREFIX}/joySuchLocation/getOneKeyAlarm?${stringify(params)}`);
+}

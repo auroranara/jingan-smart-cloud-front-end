@@ -34,6 +34,17 @@ import positionActive from '../imgs/position-active.png';
 import positionGray from '../imgs/position-gray.png';
 import helmet1 from '../imgs/helmet-1.png';
 import helmet2 from '../imgs/helmet-2.png';
+import helmet3 from '../imgs/helmet-3.png';
+import helmet4 from '../imgs/helmet-4.png';
+import helmet5 from '../imgs/helmet-5.png';
+import helmet6 from '../imgs/helmet-6.png';
+import helmetAlarm1 from '../imgs/helmet-alarm-1.png';
+import helmetAlarm2 from '../imgs/helmet-alarm-2.png';
+import helmetAlarm3 from '../imgs/helmet-alarm-3.png';
+import helmetAlarm4 from '../imgs/helmet-alarm-4.png';
+import helmetAlarm5 from '../imgs/helmet-alarm-5.png';
+import helmetAlarm6 from '../imgs/helmet-alarm-6.png';
+import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
 
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = [
@@ -210,6 +221,136 @@ export default class Map extends PureComponent {
   };
 
   renderPosition = () => {
+    // 人员定位
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/getLocation',
+      payload: { companyId },
+      callback: res => {
+        const { visibles } = this.state;
+        const iconType = 4;
+        const mockData = [
+          {
+            latitude: 31.545964158887074,
+            yMillimeter: 19000,
+            locationType: 1,
+            buildId: '202343',
+            floorNo: 'Floor1',
+            timestampMillisecond: 1592459848208,
+            xMillimeter: 52000,
+            userId: '505e9bad279511eab68d7cd30aeb74c6',
+            mac: '1918E001FAE3',
+            longitude: 120.36140601261161,
+            status: 2,
+            hgFaceInfo: {
+              id: 'rbyr7a_v_8sbgkwq',
+              remarks: null,
+              ids: null,
+              idList: null,
+              companyId: '99rz446zt9fet_lr',
+              name: 'lm',
+              sex: '0',
+              ethnic: null,
+              certificateType: null,
+              certificateNumber: null,
+              birthday: null,
+              location: null,
+              address: null,
+              telephone: null,
+              email: null,
+              personType: '1',
+              personCompany: null,
+              duty: null,
+              workType: null,
+              education: null,
+              major: null,
+              icnumber: '12123',
+              entranceNumber: '1918E001FAE3',
+              photo: '',
+              educationCertificate: '',
+              guid: null,
+              employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+              workerNumber: null,
+              iconID: null,
+              partId: null,
+              partName: null,
+              companyJob: null,
+              companyJobName: null,
+              status: null,
+              labelId: 'qrqa4e_9dblfpmbr',
+              isSN: null,
+              photoDetails: null,
+              educationCertificateDetails: null,
+              companyName: null,
+              gridIdList: null,
+              companyBasicInfo: null,
+              hgAuthorizationManage: null,
+              authorizationMessage: null,
+            },
+          },
+        ];
+        mockData.map(item => {
+          // res.data.list.map((item, index) => {
+          const {
+            latitude,
+            longitude,
+            status,
+            floorNo,
+            hgFaceInfo: { id, name, iconID },
+          } = item;
+          // status 0 运动、1 报警、2 休眠
+          const floorId = +floorNo.split('Floor')[1];
+          const position = new jsmap.JSPoint(longitude, latitude, 0);
+          const position2 = new jsmap.JSPoint(longitude, latitude, 5);
+          const url = [helmet1, helmet2, helmet3, helmet4, helmet5, helmet6][
+            iconID ? iconID - 1 : 0
+          ];
+          const alarmUrl = [
+            helmetAlarm1,
+            helmetAlarm2,
+            helmetAlarm3,
+            helmetAlarm4,
+            helmetAlarm5,
+            helmetAlarm6,
+          ][iconID ? iconID - 1 : 0];
+          // if (+status === 2) {
+          //   const alarmUrl = [helmetAlarm1, helmetAlarm2, helmetAlarm3, helmetAlarm4, helmetAlarm5, helmetAlarm6][
+          //     iconID ? iconID - 1 : 0
+          //   ];
+          //   const alarm = this.addMarkers({
+          //     image: alarmUrl, //图片路径
+          //     position,
+          //     floorId, //楼
+          //     properties: { ...item, iconType },
+          //     show: visibles[iconType],
+          //     width: 80,
+          //     height: 80,
+          //     offset: jsmap.JSControlPosition.LEFT_TOP,
+          //   });
+          // }
+          const marker = this.addMarkers({
+            image: +status === 1 ? alarmUrl : url, //图片路径
+            position,
+            floorId, //楼
+            properties: { ...item, iconType },
+            show: visibles[iconType],
+            width: +status === 1 ? 80 : 50,
+            height: +status === 1 ? 80 : 50,
+          });
+          this.renderLabelMarker({
+            id,
+            text: name,
+            position: position2,
+            floorId,
+            properties: item,
+          });
+          return null;
+        });
+      },
+    });
+  };
+
+  renderPosition2 = () => {
     // 人员定位
     const { dispatch, companyId } = this.props;
     dispatch({
@@ -862,51 +1003,46 @@ export default class Map extends PureComponent {
 
   handleShowPositionInfo = (info, floorId, position) => {
     const {
-      billCode,
-      billType,
-      workingStatus,
-      applyUserName,
-      applyDepartmentName,
-      workingEndDate,
-      workingStartDate,
-      id,
+      hgFaceInfo: { id, name, sex, entranceNumber, icnumber, companyJobName, photoDetails = [] },
     } = info;
+    const photo = (photoDetails || [])[0] || {};
+    const avatar = photo.webUrl || imgNoAvatar;
     const noData = '--';
-    const content = `<div class="specContainer">
-        <div class="specTitle">作业票</div>
-        <div class="specWrapper">
-          <div class="specLabel">作业证名称：</div>
-          <div class="specValue">${(TYPES.find(item => +item.key === +billType) || {}).value ||
-            noData}</div>
+    const content = `
+      <div class="specContainer">
+        <div class="top">
+          <div class="left"><img src="${avatar}" alt="avatar" style="width: ${
+      photo.webUrl ? '100%' : '70%'
+    }" /></div>
+          <div class="right">
+            <div class="specTitle">${name}</div>
+            <div class="specWrapper">
+              <div class="specLabel">性别：</div>
+              <div class="specValue">${['男', '女'][+sex] || noData}</div>
+            </div>
+            <div class="specWrapper">
+            <div class="specLabel">SN：</div>
+              <div class="specValue">${entranceNumber || noData}</div>
+            </div>
+            <div class="specWrapper">
+              <div class="specLabel">人员类型：</div>
+              <div class="specValue">${companyJobName || noData}</div>
+            </div>
+            <div class="specWrapper">
+              <div class="specLabel">区域：</div>
+              <div class="specValue">${noData}</div>
+            </div>
+            <div class="specWrapper">
+              <div class="specLabel">门禁卡号：</div>
+              <div class="specValue">${icnumber || noData}</div>
+            </div>
+          </div>
         </div>
-        <div class="specWrapper">
-          <div class="specLabel">作业证编号：</div>
-          <div class="specValue">${billCode || noData}</div>
+        <div class="bottom">
+          <div class="trackBtn">跟踪</div>
         </div>
-        <div class="specWrapper">
-          <div class="specLabel">申请人：</div>
-          <div class="specValue">${applyUserName || noData}</div>
-        </div>
-        <div class="specWrapper">
-          <div class="specLabel">申请部门：</div>
-          <div class="specValue">${applyDepartmentName || noData}</div>
-        </div>
-        <div class="specWrapper">
-          <div class="specLabel">作业时间：</div>
-          <div class="specValue">${moment(workingStartDate).format(MINUTE_FORMAT)} ~ ${moment(
-      workingEndDate
-    ).format(MINUTE_FORMAT)}</div>
-        </div>
-        <div class="specWrapper">
-          <div class="specLabel">作业状态：</div>
-          <div class="specValue">${(
-            WORKING_STATUSES.find(item => +item.key === +workingStatus) || {}
-          ).value || noData}</div>
-        </div>
-        <div class="specFile" onclick="window.open('${
-          window.publicPath
-        }#/operation-safety/working-bill/${billType}/detail/${id}','_blank');">详情>></div>
       </div>
+
       <style>
         .specContainer {
           position: relative;
@@ -917,7 +1053,41 @@ export default class Map extends PureComponent {
           height: 100%;
           border: 1px solid rgba(0,255,255,0.3);
           border-radius: 5px;
-          min-width: 450px
+          min-width: 450px;
+        }
+        .top {
+          display: flex;
+        }
+        .bottom {
+          text-align: center;
+          margin-top: 5px;
+        }
+        .trackBtn {
+          background-color: #1470D7;
+          padding: 6px 12px;
+          border-radius: 5px;
+          width: 60px;
+          margin: 0 auto;
+          cursor: pointer;
+        }
+        .trackBtn:hover {
+          opacity: 0.8;
+        }
+        .left {
+          width: 120px;
+          background-color: rgba(0, 30, 56, 0.45);
+          display: inline-block;
+          text-align: center;
+          border: 1px solid #1A5E8E;
+          margin-right: 15px;
+        }
+        .right {
+          flex: 1;
+        }
+        .left img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
         }
         .specTitle {
           font-size: 16px;
@@ -926,7 +1096,7 @@ export default class Map extends PureComponent {
         .specLabel {
           color: #979495;
           display: inline-block;
-          width: 7em;
+          width: 5em;
           white-space: nowrap;
           vertical-align: middle;
         }
@@ -937,13 +1107,6 @@ export default class Map extends PureComponent {
           text-overflow: ellipsis;
           overflow: hidden;
           vertical-align: middle;
-        }
-        .specFile {
-          color: #0ff;
-          position: absolute;
-          bottom: 10px;
-          right: 15px;
-          cursor: pointer;
         }
       </style>`;
     if (popInfoWindow) {
