@@ -291,11 +291,6 @@ export default connect(
       className={styles.layout}
       breadcrumbList={BREADCRUMB_LIST}
       title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
-      action={
-        <Button type="primary" href="#/risk-control/change/list">
-          申请变更
-        </Button>
-      }
       tabList={TAB_LIST}
       tabActiveKey={tabActiveKey}
       onTabChange={tabActiveKey => router.replace(`/system-management/log/${tabActiveKey}`)}
