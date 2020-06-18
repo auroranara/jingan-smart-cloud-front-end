@@ -210,7 +210,9 @@ const FormIndex = forwardRef((props, ref) => {
                   </div>
                 )}
                 <div className={styles.operationWrapper}>
-                  <Button href={`#${listPath}`}>返回</Button>
+                  <Button href={`#${listPath}`} onClick={() => window.close()}>
+                    返回
+                  </Button>
                 </div>
                 {Array.isArray(operation) &&
                   operation.map((item, index) => {

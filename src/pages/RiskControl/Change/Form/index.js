@@ -39,13 +39,7 @@ export default connect(
       },
       [NAMESPACE]: { detail, approveDetail },
       loading: {
-        effects: {
-          [DETAIL_API]: loading,
-          [ADD_API]: adding,
-          [EDIT_API]: editing,
-          [APPROVE_API]: approving,
-          [APPROVE_DETAIL_API]: loading2,
-        },
+        effects: { [DETAIL_API]: loading, [APPROVE_DETAIL_API]: loading2 },
       },
     },
     { dispatch },
@@ -83,7 +77,6 @@ export default connect(
           callback,
         });
       },
-      submitting: adding || editing || approving || false,
       submit(payload, callback) {
         dispatch({
           type: { add: ADD_API, edit: EDIT_API, approve: APPROVE_API }[name],
@@ -110,7 +103,6 @@ export default connect(
         props.detail === nextProps.detail &&
         props.approveDetail === nextProps.approveDetail &&
         props.loading === nextProps.loading &&
-        props.submitting === nextProps.submitting &&
         props.id === nextProps.id &&
         props.mode === nextProps.mode
       );
@@ -123,7 +115,6 @@ export default connect(
     loading,
     getDetail,
     getApproveDetail,
-    submitting,
     submit,
     mode,
     isUnit,
@@ -136,6 +127,8 @@ export default connect(
     const [initialValues2, setInitialValues2] = useState(undefined);
     // 当前选中的标签键值
     const [tabActiveKey, setTabActiveKey] = useState(TAB_LIST[+(mode === 'approve')].key);
+    // 是否正在提交
+    const [submitting, setSubmitting] = useState(false);
     // 表单配置对象
     const fields = useMemo(
       () => {
@@ -636,11 +629,17 @@ export default connect(
             editPath={`${EDIT_PATH}/${id}`}
             listPath={LIST_PATH}
             onSubmit={values => {
+              setSubmitting(true);
               submit(
                 tabActiveKey === TAB_LIST[0].key ? transform(values) : transform2(values),
                 success => {
                   if (success) {
-                    router.push(LIST_PATH);
+                    setTimeout(() => {
+                      window.close();
+                      router.push(LIST_PATH);
+                    }, 1000);
+                  } else {
+                    setSubmitting(false);
                   }
                 }
               );

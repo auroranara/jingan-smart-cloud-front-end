@@ -30,7 +30,6 @@ const FormPage = props => {
     handler,
     transform,
     loading,
-    submitting,
     labelCol,
     wrapperCol,
     initialValues,
@@ -41,6 +40,8 @@ const FormPage = props => {
   const form = useRef(null);
   useImperativeHandle(formRef, () => form.current);
   const [values, setValues] = useState(initialValues);
+  // 是否正在提交
+  const [submitting, setSubmitting] = useState(false);
   useEffect(
     () => {
       if (id) {
@@ -78,6 +79,7 @@ const FormPage = props => {
           editPath={editPath}
           listPath={listPath}
           onSubmit={values => {
+            setSubmitting(true);
             handler(
               {
                 ...(transform
@@ -94,7 +96,12 @@ const FormPage = props => {
               },
               success => {
                 if (success) {
-                  router.push(listPath);
+                  setTimeout(() => {
+                    window.close();
+                    router.push(listPath);
+                  }, 1000);
+                } else {
+                  setSubmitting(false);
                 }
               }
             );
@@ -139,11 +146,7 @@ export default connect(
       },
       [namespace]: { [d]: detail },
       loading: {
-        effects: {
-          [`${namespace}/${gd}`]: loading,
-          [`${namespace}/${a}`]: adding,
-          [`${namespace}/${e}`]: editing,
-        },
+        effects: { [`${namespace}/${gd}`]: loading },
       },
     } = state;
     const isUnit = +unitType === 4;
@@ -194,7 +197,6 @@ export default connect(
       breadcrumbList,
       detail: name !== 'add' && detail ? detail : undefined,
       loading: loading || loading2 || false,
-      submitting: adding || editing || false,
       mode: name,
       hasEditAuthority: permissionCodes.includes(code.replace(/[^\.]+$/, 'edit')),
       editPath: pathname.replace(new RegExp(`${name}.*`), `edit/${id}`),
@@ -253,7 +255,6 @@ export default connect(
       return (
         props.detail === nextProps.detail &&
         props.loading === nextProps.loading &&
-        props.submitting === nextProps.submitting &&
         props.mode === nextProps.mode &&
         props.children === nextProps.children &&
         props.hack === nextProps.hack &&
