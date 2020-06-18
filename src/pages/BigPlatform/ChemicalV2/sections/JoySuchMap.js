@@ -33,6 +33,7 @@ import workBillAlarm from '../imgs/work-bill-alarm.png';
 import positionActive from '../imgs/position-active.png';
 import positionGray from '../imgs/position-gray.png';
 import helmet1 from '../imgs/helmet-1.png';
+import helmet2 from '../imgs/helmet-2.png';
 
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = [
@@ -48,6 +49,7 @@ const StrokeColor = [
   'rgba(20, 35, 196, 1)',
 ];
 let map;
+let tool;
 let popInfoWindow;
 const controls = [
   { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive, markerIcon: riskPoint },
@@ -209,7 +211,60 @@ export default class Map extends PureComponent {
 
   renderPosition = () => {
     // 人员定位
-    this.fetchPonits('chemical/fetchMonitorEquipment', 4);
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/fetchMonitorEquipment',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: res => {
+        const { visibles } = this.state;
+        const iconType = 4;
+        filterMarkerList(res.data.list).map((item, index) => {
+          const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
+          const position = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 0));
+          const position2 = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 5));
+          let url = controls[iconType].markerIcon;
+          const marker = this.addMarkers({
+            image: url, //图片路径
+            position,
+            floorId: +groupId, //楼
+            properties: { ...item, iconType },
+            show: visibles[iconType],
+          });
+          this.renderLabelMarker({
+            text: `name${index}`,
+            position: position2,
+            floorId: +groupId,
+            properties: item,
+          });
+          return null;
+        });
+      },
+    });
+  };
+
+  renderLabelMarker = (markerProps = {}) => {
+    const labelMarker = new jsmap.JSLabelMarker({
+      // id: 'selectedMarker', //id
+      position: new jsmap.JSPoint(0, 0, 0),
+      text: '',
+      floorId: 1,
+      font: 'normal 12px 微软雅黑',
+      color: '#000',
+      labelStyle: jsmap.JSLabelStyle.FILL,
+      // offset: jsmap.JSControlPosition.RIGHT_TOP,
+      offset: jsmap.JSControlPosition.CENTER_TOP,
+      // offset: new jsmap.JSPoint(0, 100, 0),
+      showBackground: true,
+      backgroundColor: '#fff',
+      depthTest: false,
+      show: undefined,
+      callback: node => {
+        node.show = false;
+      }, //回调
+      ...markerProps,
+    });
+    map.addMarker(labelMarker);
+    return labelMarker;
   };
 
   renderWorkingBill = () => {
@@ -232,11 +287,13 @@ export default class Map extends PureComponent {
           const { mapAddress } = item;
           const { visibles } = this.state;
           if (!mapAddress || !JSON.parse(mapAddress).length) return;
-          const points = JSON.parse(mapAddress);
+          const points = JSON.parse(mapAddress).map(p =>
+            tool.MercatorToWGS84(new jsmap.JSPoint(+p.x, +p.y, 0))
+          );
           const { floorId, x, y, z } = points[0];
           const polygonMarker = this.addPolygon({
             floorId: +floorId,
-            points,
+            position: points,
             color: COLORS[3],
             strokeColor: StrokeColor[3],
             polygonProps: { ...item, polygonType: 2 }, // polygonType 1 四色图， 2 作业票
@@ -276,10 +333,12 @@ export default class Map extends PureComponent {
       callback: ({ list }) => {
         list.map(polygon => {
           const { zoneLevel, coordinateList, groupId, modelIds } = polygon;
-          const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
+          const points = coordinateList.map(item =>
+            tool.MercatorToWGS84(new jsmap.JSPoint(+item.x, +item.y, 0))
+          );
           const polygonMarker = this.addPolygon({
             floorId: +groupId,
-            points,
+            position: points,
             color: COLORS[zoneLevel - 1],
             strokeColor: StrokeColor[zoneLevel - 1],
             polygonProps: { ...polygon, polygonType: 1 },
@@ -346,6 +405,7 @@ export default class Map extends PureComponent {
     filterMarkerList(pointsInfo).map(item => {
       const { warnStatus, status, deviceCode, pointCountMap, id } = item;
       const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
+      const position = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 0));
       if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
       let url = controls[iconType].markerIcon;
       if (iconType === 2) {
@@ -358,7 +418,7 @@ export default class Map extends PureComponent {
       }
       const marker = this.addMarkers({
         image: url, //图片路径
-        position: new jsmap.JSPoint(+xnum, +ynum, 0),
+        position,
         floorId: +groupId, //楼
         properties: { ...item, iconType },
         show: visibles[iconType],
@@ -402,6 +462,7 @@ export default class Map extends PureComponent {
     map = new jsmap.JSMap(mapOptions);
     map.openMapById(mapId);
     console.log('map', map);
+    tool = new jsmap.JSMapCoordTool(map);
 
     // 地图加载完成事件
     map.on('loadComplete', () => {
@@ -466,16 +527,36 @@ export default class Map extends PureComponent {
             break;
           case 3:
             // 特种设备
-            this.handleShowSpecialInfo(markerProps, floorId, new jsmap.JSPoint(node.x, node.y, 0));
+            this.handleShowSpecialInfo(
+              markerProps,
+              floorId,
+              tool.MercatorToWGS84(new jsmap.JSPoint(node.x, node.y, 0))
+            );
+            break;
+          case 4:
+            // 人员定位
+            this.handleShowPositionInfo(
+              markerProps,
+              floorId,
+              tool.MercatorToWGS84(new jsmap.JSPoint(node.x, node.y, 0))
+            );
             break;
           case 5:
             // 作业票
-            this.handleShowWorkBillInfo(markerProps, floorId, new jsmap.JSPoint(node.x, node.y, 0));
+            this.handleShowWorkBillInfo(
+              markerProps,
+              floorId,
+              tool.MercatorToWGS84(new jsmap.JSPoint(node.x, node.y, 0))
+            );
             break;
           case -1:
             // 变更预警
             const { zoneId } = markerProps;
-            this.handleShowChangeWarning(zoneId, floorId, new jsmap.JSPoint(node.x, node.y, 0));
+            this.handleShowChangeWarning(
+              zoneId,
+              floorId,
+              tool.MercatorToWGS84(new jsmap.JSPoint(node.x, node.y, 0))
+            );
             break;
           default:
             console.log('iconType', iconType);
@@ -675,8 +756,111 @@ export default class Map extends PureComponent {
   };
 
   handleShowWorkBillInfo = (info, floorId, position) => {
-    console.log('info', info);
-    console.log('position', position);
+    const {
+      billCode,
+      billType,
+      workingStatus,
+      applyUserName,
+      applyDepartmentName,
+      workingEndDate,
+      workingStartDate,
+      id,
+    } = info;
+    const noData = '--';
+    const content = `<div class="specContainer">
+        <div class="specTitle">作业票</div>
+        <div class="specWrapper">
+          <div class="specLabel">作业证名称：</div>
+          <div class="specValue">${(TYPES.find(item => +item.key === +billType) || {}).value ||
+            noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业证编号：</div>
+          <div class="specValue">${billCode || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">申请人：</div>
+          <div class="specValue">${applyUserName || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">申请部门：</div>
+          <div class="specValue">${applyDepartmentName || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业时间：</div>
+          <div class="specValue">${moment(workingStartDate).format(MINUTE_FORMAT)} ~ ${moment(
+      workingEndDate
+    ).format(MINUTE_FORMAT)}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业状态：</div>
+          <div class="specValue">${(
+            WORKING_STATUSES.find(item => +item.key === +workingStatus) || {}
+          ).value || noData}</div>
+        </div>
+        <div class="specFile" onclick="window.open('${
+          window.publicPath
+        }#/operation-safety/working-bill/${billType}/detail/${id}','_blank');">详情>></div>
+      </div>
+      <style>
+        .specContainer {
+          position: relative;
+          line-height: 24px;
+          color: #fff;
+          font-size: 14px;
+          padding: 10px 15px;
+          height: 100%;
+          border: 1px solid rgba(0,255,255,0.3);
+          border-radius: 5px;
+          min-width: 450px
+        }
+        .specTitle {
+          font-size: 16px;
+          line-height: 32px;
+        }
+        .specLabel {
+          color: #979495;
+          display: inline-block;
+          width: 7em;
+          white-space: nowrap;
+          vertical-align: middle;
+        }
+        .specValue {
+          display: inline-block;
+          width: calc(100% - 7.5em);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          vertical-align: middle;
+        }
+        .specFile {
+          color: #0ff;
+          position: absolute;
+          bottom: 10px;
+          right: 15px;
+          cursor: pointer;
+        }
+      </style>`;
+    if (popInfoWindow) {
+      map.removeMarker(popInfoWindow);
+      popInfoWindow = null;
+    }
+    popInfoWindow = new jsmap.JSPopInfoMarker({
+      id: 'popInfoWindow',
+      floorId: map.focusFloorId,
+      content,
+      position,
+      // marginTop: 0,
+      properties: info,
+      showCloseButton: true,
+      // callback: node => {
+      //   console.log('node', node);
+      // },
+    });
+    map.addMarker(popInfoWindow);
+  };
+
+  handleShowPositionInfo = (info, floorId, position) => {
     const {
       billCode,
       billType,
@@ -880,19 +1064,28 @@ export default class Map extends PureComponent {
     return imageMarker;
   };
 
-  addPolygon = ({ floorId, points, color, strokeColor, polygonProps = {}, show = true }) => {
+  addPolygon = ({
+    // floorId,
+    position,
+    // color,
+    // strokeColor,
+    polygonProps = {},
+    show = true,
+    ...restProps
+  }) => {
     const polygonMarker = new jsmap.JSPolygonMarker({
       id: polygonProps.id,
-      position: points.map(item => ({ ...item, z: 0 })),
-      floorId,
-      color,
-      strokeColor: strokeColor,
+      position,
+      floorId: 1,
+      // color,
+      // strokeColor: strokeColor,
       properties: polygonProps,
       strokeWidth: 2, //边线宽度
       depthTest: false, //是否开启深度检测
       callback: marker => {
         marker.show = show;
       },
+      ...restProps,
     });
     this.fourColorPolygons.push(polygonMarker);
     map.addMarker(polygonMarker);
@@ -917,32 +1110,23 @@ export default class Map extends PureComponent {
     const copy = [...visibles];
     copy[index] = !visibles[index];
     this.setState({ visibles: copy });
-    if (index === 0) {
-      // setMarkerVisibleByFilter, iconType == 0不行    ?????????????
-      this.markerArray.map(item => {
-        const properties = item.getProperties();
-        const iconType = properties.get('iconType');
-        if (iconType === 0) item.show = copy[index];
-        return null;
-      });
-      return;
-    }
     map.setMarkerVisibleByFilter(
       jsmap.JSMarkerType.IMAGE_MARKER,
       copy[index],
-      `iconType == ${index}`
+      properties => +properties.get('iconType') === index
     );
   };
 
   // 作业票是否显示
-  handleToggleWorkBill = iconType => {
+  handleToggleWorkBill = () => {
+    const iconType = 5;
     const { visibles } = this.state;
     const visible = visibles[iconType];
     map.setMarkerVisibleByFilter(jsmap.JSMarkerType.POLYGON_MARKER, !visible, `polygonType == 2`);
     map.setMarkerVisibleByFilter(
       jsmap.JSMarkerType.IMAGE_MARKER,
       !visible,
-      `iconType == ${iconType}`
+      properties => +properties.get('iconType') === iconType
     );
 
     // 四色图与作业票互斥
@@ -951,6 +1135,21 @@ export default class Map extends PureComponent {
     const copy = [...visibles];
     copy[iconType] = !visible;
     this.setState({ visibles: copy });
+  };
+
+  handleTogglePosition = () => {
+    const iconType = 4;
+    const { visibles } = this.state;
+    const visible = visibles[iconType];
+    const copy = [...visibles];
+    copy[iconType] = !visible;
+    this.setState({ visibles: copy });
+    map.setMarkerVisibleByFilter(
+      jsmap.JSMarkerType.IMAGE_MARKER,
+      !visible,
+      properties => +properties.get('iconType') === iconType
+    );
+    map.setMarkerVisibleByFilter(jsmap.JSMarkerType.LABEL_MARKER, !visible, properties => true);
   };
 
   handleShowVideo = keyId => {
@@ -1070,7 +1269,9 @@ export default class Map extends PureComponent {
                   key={index}
                   onClick={() => {
                     if (index === 5) {
-                      this.handleToggleWorkBill(index);
+                      this.handleToggleWorkBill();
+                    } else if (index === 4) {
+                      this.handleTogglePosition();
                     } else this.handleClickControl(index);
                   }}
                 >
