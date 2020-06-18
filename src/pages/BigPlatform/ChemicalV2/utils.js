@@ -954,10 +954,34 @@ export const DrawerIcons = {
 };
 
 export function getPersonList(persons, label, list) {
+  let pers = persons;
+  let lal = label;
   if (label === 'position') {
-    return { keyList: [], valueList: [], total: 0 };
+    pers = convertListToPersons(list);
+    lal = null;
   }
+  return getPersons(pers, lal);
+}
 
+function convertListToPersons(list) {
+  return list.reduce(function (result, current) {
+    const { hgFaceInfo } = current;
+    const job = hgFaceInfo.companyJobName || '暂无岗位';
+    // if (job) {
+    //   const lst = result[job];
+    //   if (lst) result[job].push(hgFaceInfo);
+    //   else result[job] = [hgFaceInfo];
+    // }
+
+    const lst = result[job];
+    if (lst) result[job].push(hgFaceInfo);
+    else result[job] = [hgFaceInfo];
+
+    return result;
+  }, {});
+}
+
+function getPersons(persons, label) {
   let personList = Object.entries(persons);
   let keyList = personList.map(([k, v], i) => ({ id: i, label: k, num: Array.isArray(v) ? v.length : 0 }));
   let valueList = personList.map(([k, v], i) => ({ id: i, title: k, list: v }));

@@ -9,7 +9,7 @@ import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
 const rect = <span className={styles.rect} />;
 
 function Card(props) {
-  const { id, name, sex, entranceNumber, partName, icnumber, photoDetails } = props;
+  const { id, name, sex, entranceNumber, icnumber, photoDetails } = props;
   const avatar = photoDetails && photoDetails.length ? photoDetails[0].webUrl : imgNoAvatar;
 
   return (
@@ -30,7 +30,7 @@ function Card(props) {
         <div className={styles.item}>
           <span className={styles.label1}>区域：</span>
           <span className={styles.value}>
-            {partName}
+            --
           </span>
         </div>
         <div className={styles.item}>

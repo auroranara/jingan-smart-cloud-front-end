@@ -1978,7 +1978,7 @@ export default class Chemical extends PureComponent {
         {/* 生产区域人员统计 */}
         <ProductionOfficerDrawer
           visible={productionVisible}
-          data={getPersonList(personLabel, LEDPerson, personList)}
+          data={getPersonList(LEDPerson, personLabel, personList)}
           onClose={this.handleProductionClose}
         />
       </BigPlatformLayout>
