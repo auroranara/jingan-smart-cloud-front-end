@@ -14,6 +14,7 @@
     "build:default": "cross-env ESLINT=none umi build",
     "build:test": "cross-env PROJECT_ENV=test ESLINT=none umi build",
     "build:demo": "cross-env PROJECT_ENV=demo ESLINT=none umi build",
+    "build:cmw": "cross-env PROJECT_ENV=cmw ESLINT=none umi build",
     "build:five": "cross-env PROJECT_ENV=five ESLINT=none umi build",
     "site": "npm run presite && npm run build && firebase deploy",
     "analyze": "cross-env ESLINT=none ANALYZE=1 umi build",

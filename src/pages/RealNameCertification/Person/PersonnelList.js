@@ -21,12 +21,11 @@ import {
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 import { getToken } from '@/utils/authority';
-import { AuthButton, AuthA, AuthPopConfirm } from '@/utils/customAuth';
+import { AuthButton, AuthA, AuthPopConfirm, hasAuthority } from '@/utils/customAuth';
 import router from 'umi/router';
 import { stringify } from 'qs';
 import { SEXES } from '@/pages/RoleAuthorization/AccountManagement/utils';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { hasAuthority } from '@/utils/customAuth';
 import styles from './CompanyList.less';
 const {
   realNameCertification: {
@@ -65,7 +64,7 @@ const exportList = [
   { id: '3', label: '导出全部' },
 ];
 
-const url = 'http://data.jingan-china.cn/v2/chem/file2/%E4%BA%BA%E5%91%98%E6%A8%A1%E6%9D%BF.xls';
+const url = 'http://data.jingan-china.cn/v2/chem/file3/%E4%BA%BA%E5%91%98%E6%A8%A1%E6%9D%BF.xls';
 @connect(({ realNameCertification, department, user, loading }) => ({
   realNameCertification,
   department,
@@ -488,9 +487,7 @@ export default class PersonnelList extends PureComponent {
   renderList = () => {
     const {
       loading,
-      match: {
-        params: { companyId },
-      },
+      match: { params: { companyId } },
       realNameCertification: {
         person: {
           list = [],
@@ -498,17 +495,20 @@ export default class PersonnelList extends PureComponent {
         },
         personTypeDict,
       },
-      user: {
-        currentUser: { permissionCodes },
-      },
+      user: { currentUser: { permissionCodes } },
     } = this.props;
     const { selectedRowKeys, curCompanyName } = this.state;
     const exportAuth = hasAuthority(exportCode, permissionCodes);
     const importAuth = hasAuthority(importCode, permissionCodes);
+    const editAuth = hasAuthority(editCode, permissionCodes);
+    const deleteAuth = hasAuthority(deleteCode, permissionCodes);
 
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
+      getCheckboxProps: record => ({
+        disabled: +record.isVisitor === 1,
+      }),
     };
 
     const columns = [
@@ -620,12 +620,12 @@ export default class PersonnelList extends PureComponent {
               查看
             </AuthA>
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleToEdit(record.id)}>
+            <AuthA hasAuthFn={() => editAuth && +record.isVisitor !== 1} onClick={() => this.handleToEdit(record.id)}>
               编辑
             </AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
-              code={deleteCode}
+              authority={deleteAuth && +record.isVisitor !== 1}
               title="确认要删除该人员吗?删除人员后，将删除人员信息及人员所有授权信息。"
               onConfirm={() => this.handleDelete(record.id)}
             >

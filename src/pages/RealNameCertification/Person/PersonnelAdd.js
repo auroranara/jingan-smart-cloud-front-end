@@ -154,27 +154,12 @@ export default class PersonnelAdd extends PureComponent {
               url: item.webUrl,
             })),
           });
-          this.fetchTagCard(
-            {
-              companyId: companyId || unitCompantId,
-              personType: detail.personType,
-              status: 1,
-            },
-            res => {
-              const { list } = res.data;
-              this.setState({ curLabelList: list });
-            }
+          this.fetchTagCard({ companyId: companyId || unitCompantId, personType: detail.personType, status: 1 },
           );
         },
       });
     } else {
-      this.fetchTagCard(
-        { companyId: companyId || unitCompantId, status: 1, personType: perType },
-        res => {
-          const { list } = res.data;
-          this.setState({ curLabelList: list });
-        }
-      );
+      this.fetchTagCard({ companyId: companyId || unitCompantId, status: 1, personType: perType });
     }
   }
 
@@ -402,14 +387,11 @@ export default class PersonnelAdd extends PureComponent {
     const { curCompanyId } = this.state;
     this.setState({ perType: id });
     setFieldsValue({ personCompany: undefined, icnumber: undefined, entranceNumber: undefined });
-    this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: id }, res => {
-      const { list } = res.data;
-      this.setState({ curLabelList: list });
-    });
+    this.fetchTagCard({ companyId: curCompanyId, status: 1, personType: id });
   };
 
   // 获取标签卡列表
-  fetchTagCard = ({ ...params }, callback) => {
+  fetchTagCard = ({ ...params }) => {
     const { dispatch } = this.props;
     // 根据输入值获取列表
     dispatch({
@@ -420,20 +402,17 @@ export default class PersonnelAdd extends PureComponent {
         pageSize: 30,
         personCar: 1,
       },
-      callback,
+      callback: (res) => {
+        const list = res.data && Array.isArray(res.data.list) ? res.data.list : [];
+        this.setState({ curLabelList: list });
+      },
     });
   };
 
   handleICSearch = value => {
     const { curCompanyId, perType } = this.state;
     // 根据输入值获取列表
-    this.fetchTagCard(
-      { icNumber: value && value.trim(), companyId: curCompanyId, status: 1, personType: perType },
-      res => {
-        const { list } = res.data;
-        this.setState({ curLabelList: list });
-      }
-    );
+    this.fetchTagCard({ icNumber: value && value.trim(), companyId: curCompanyId, status: 1, personType: perType });
   };
 
   handleICChange = value => {
@@ -459,13 +438,7 @@ export default class PersonnelAdd extends PureComponent {
   handleSNSearch = value => {
     const { curCompanyId, perType } = this.state;
     // 根据输入值获取列表
-    this.fetchTagCard(
-      { snNumber: value && value.trim(), companyId: curCompanyId, status: 1, personType: perType },
-      res => {
-        const { list } = res.data;
-        this.setState({ curLabelList: list });
-      }
-    );
+    this.fetchTagCard({ snNumber: value && value.trim(), companyId: curCompanyId, status: 1, personType: perType });
   };
 
   handleSNChange = value => {
@@ -690,11 +663,11 @@ export default class PersonnelAdd extends PureComponent {
                       onSearch={this.handleICSearch}
                       onChange={this.handleICChange}
                     >
-                      {curLabelList.map(({ icNumber, id }) => (
+                      {curLabelList.map(({ icNumber, id }) => icNumber ? (
                         <Option value={id} key={id}>
                           {icNumber}
                         </Option>
-                      ))}
+                      ) : null)}
                     </Select>
                   )}
                 </FormItem>
@@ -727,11 +700,11 @@ export default class PersonnelAdd extends PureComponent {
                       onSearch={this.handleSNSearch}
                       onChange={this.handleSNChange}
                     >
-                      {curLabelList.map(({ snNumber, id }) => (
+                      {curLabelList.map(({ snNumber, id }) => snNumber ? (
                         <Option value={id} key={id}>
                           {snNumber}
                         </Option>
-                      ))}
+                      ) : null)}
                     </Select>
                   )}
                 </FormItem>

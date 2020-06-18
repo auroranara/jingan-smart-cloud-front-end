@@ -50,6 +50,12 @@ const configs = {
   five: {
     projectKey: 'huagong_pro',
   },
+  cmw: {
+    projectKey: 'cmw_pro',
+    code: 'http://data.jingan-china.cn/v2/login/code/cmw_code.png',
+    ios: 'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/chemicalAppDownload/KXBHAPP/official_version/KXBHChemicalCloud.plist&ran=',
+    android: 'http://cmw.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+  },
 };
 
 export default class Config {
