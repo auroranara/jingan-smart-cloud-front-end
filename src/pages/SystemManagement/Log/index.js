@@ -11,7 +11,7 @@ import moment from 'moment';
 import styles from './index.less';
 
 const TAB_LIST = [{ key: '1', tab: '登录日志' }, { key: '2', tab: '操作日志' }];
-const LOGIN_TYPES = [{ key: 'login', value: '登入系统' }, { key: 'logout', value: '登出系统' }];
+const LOGIN_TYPES = [{ key: 'login', value: '登入系统' }, { key: 'logout', value: '退出系统' }];
 const LOGIN_METHODS = [
   { key: 'web', value: 'web' },
   { key: 'android', value: 'android' },
