@@ -247,19 +247,17 @@ const FormIndex = forwardRef((props, ref) => {
                         const Component = componentReference[component] || component;
                         const hidden = hide && hide(payload);
                         const properties = typeof props === 'function' ? props(payload) : props;
-                        if (!mode) {
+                        if (!mode && !hidden && showItem) {
                           const span = GET_SPAN(col, size);
-                          if (!hidden) {
-                            if (offset >= span) {
-                              offset -= span;
+                          if (offset >= span) {
+                            offset -= span;
+                          } else {
+                            if (expand) {
+                              offset = 24 - span;
                             } else {
-                              if (expand) {
-                                offset = 24 - span;
-                              } else {
-                                showItem = false;
-                              }
-                              multiLine = true;
+                              showItem = false;
                             }
+                            multiLine = true;
                           }
                         }
                         return !hidden && showItem ? (

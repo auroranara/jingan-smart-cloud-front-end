@@ -34,7 +34,7 @@ const BREADCRUMB_LIST = [
 ];
 const COL = {
   xxl: 12,
-  xl: 16,
+  xl: 12,
   lg: 24,
   md: 24,
   sm: 24,
@@ -133,15 +133,6 @@ export default connect(
       return tabActiveKey === TAB_LIST[0].key
         ? [
             {
-              name: 'way',
-              label: '登录类型',
-              component: 'Select',
-              props: {
-                list: LOGIN_TYPES,
-                allowClear: true,
-              },
-            },
-            {
               name: 'device',
               label: '登录方式',
               component: 'Select',
@@ -149,6 +140,7 @@ export default connect(
                 list: LOGIN_METHODS,
                 allowClear: true,
               },
+              col: COL2,
             },
             {
               name: 'userName',
@@ -157,14 +149,7 @@ export default connect(
               props: {
                 allowClear: true,
               },
-            },
-            {
-              name: 'ip',
-              label: 'IP地址',
-              component: 'Input',
-              props: {
-                allowClear: true,
-              },
+              col: COL2,
             },
             {
               name: 'range',
@@ -175,6 +160,15 @@ export default connect(
                 allowClear: true,
               },
               col: COL,
+            },
+            {
+              name: 'ip',
+              label: 'IP地址',
+              component: 'Input',
+              props: {
+                allowClear: true,
+              },
+              col: COL2,
             },
           ]
         : [
