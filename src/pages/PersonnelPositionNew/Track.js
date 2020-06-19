@@ -34,10 +34,11 @@ export default class Track extends PureComponent {
   render() {
     const {
       systemManagement: { detail },
+      location: { query: { trackSn } },
     } = this.props;
 
     const { url: mapIp, buildingId: mapBuildId, secret: mapSecret, userName: appId } = detail;
-    const src = getSrc('trackSn', mapIp, mapBuildId, mapSecret, appId);
+    const src = getSrc('trackSn', mapIp, mapBuildId, mapSecret, appId, trackSn);
     return (
       <PageHeaderLayout
         title={TITLE}

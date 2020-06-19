@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Spin, Table } from 'antd';
+import { Button, Card, Spin, Table } from 'antd';
 import { connect } from 'dva';
 import Lightbox from 'react-images';
 import Link from 'umi/link';
@@ -332,6 +332,11 @@ export default class App extends PureComponent {
           {/* {tab === '2'} */}
           {this.renderImageDetail()}
         </Spin>
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
       </PageHeaderLayout>
     );
   }
