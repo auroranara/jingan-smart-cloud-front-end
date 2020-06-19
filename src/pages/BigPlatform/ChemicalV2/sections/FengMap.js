@@ -1328,7 +1328,7 @@ export default class Map extends PureComponent {
       filterMarkerList(videoList).filter(({ status }) => status && +status === 1),
       filterMarkerList(monitorEquipment),
       filterMarkerList(specialEquipmentList),
-      filterMarkerList(specialEquipmentList),
+      [],
       workBillList.filter(item => item.mapAddress && JSON.parse(item.mapAddress).length),
     ];
     const controlDataLength = controlDataList.filter(list => list.length > 0).length;

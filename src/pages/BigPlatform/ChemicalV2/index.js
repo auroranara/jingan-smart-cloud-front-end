@@ -261,6 +261,7 @@ export default class Chemical extends PureComponent {
       productionVisible: false,
       personLabel: null,
       personList: [],
+      showDistribution: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -520,6 +521,11 @@ export default class Chemical extends PureComponent {
               longitude: 120.3612 + Math.random() * 0.0003,
               latitude: 31.5459 + Math.random() * 0.0003,
             });
+            // this.childMap.handleUpdatePosition({
+            //   ...postionData,
+            //   longitude: 120.3612902133691,
+            //   latitude: 31.54597981809998,
+            // });
             break;
           case 'oneKeyAlarm':
             this.childMap.handleOneKeyAlarm(postionData);
@@ -1555,6 +1561,7 @@ export default class Chemical extends PureComponent {
       productionVisible,
       personLabel,
       personList,
+      showDistribution,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1641,6 +1648,7 @@ export default class Chemical extends PureComponent {
                   handleClickMonitorIcon={this.handleClickMonitorIcon}
                   handleClickFireMonitor={this.handleClickFireMonitor}
                   handleProductionOpen={this.handleProductionOpen}
+                  handleParentChange={this.handleParentChange}
                   // cacheHandleFocusPositionFn={this.cacheHandleFocusPositionFn}
                 />
 
@@ -1668,12 +1676,14 @@ export default class Chemical extends PureComponent {
                 {/* {href.indexOf('five.jinganyun.net') < 0 && (
                   <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
                 )} */}
-                <Distribution
-                  data={LEDPersonCount}
-                  visible={distributionVisible}
-                  handleIconClick={this.handleDistributionIconClick}
-                  handleProductionOpen={this.handleProductionOpen}
-                />
+                {showDistribution && (
+                  <Distribution
+                    data={LEDPersonCount}
+                    visible={distributionVisible}
+                    handleIconClick={this.handleDistributionIconClick}
+                    handleProductionOpen={this.handleProductionOpen}
+                  />
+                )}
               </div>
             </Col>
           </Row>

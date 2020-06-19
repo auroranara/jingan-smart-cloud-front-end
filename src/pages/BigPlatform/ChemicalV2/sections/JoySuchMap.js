@@ -46,6 +46,7 @@ import helmetAlarm4 from '../imgs/helmet-alarm-4.png';
 import helmetAlarm5 from '../imgs/helmet-alarm-5.png';
 import helmetAlarm6 from '../imgs/helmet-alarm-6.png';
 import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
+import jobType from '../imgs/job-type.png';
 
 const mockData = [
   {
@@ -281,7 +282,7 @@ const mockData = [
     },
   },
   {
-    latitude: 31.54608591589117,
+    latitude: 31.546056228302405,
     yMillimeter: 19000,
     locationType: 1,
     buildId: '202343',
@@ -290,7 +291,7 @@ const mockData = [
     xMillimeter: 52000,
     userId: '505e9bad279511eab68d7cd30aeb74c6',
     mac: '1918E001FAE3',
-    longitude: 120.36139024907817,
+    longitude: 120.36137511023651,
     status: 2,
     hgFaceInfo: {
       id: 'rbyr7a_v_8sbgkwq4',
@@ -958,19 +959,42 @@ export default class Map extends PureComponent {
     } = this.props;
     const { visibles } = this.state;
     const iconType = 4;
+    const point = new jsmap.JSPoint(longitude, latitude, 0);
     const focus = this.positionMarkers.find(item => {
       const { entranceNumber } = item.getProperties().get('hgFaceInfo');
       return entranceNumber === userId;
     });
+    if (!focus) return;
     const label = this.positionLabelMarkers.find(item => {
       const { entranceNumber } = item.getProperties().get('hgFaceInfo');
       return entranceNumber === userId;
     });
+    if (
+      floorId === focus.floorId &&
+      longitude === focus.position.x &&
+      latitude === focus.position.y
+    ) {
+      // 位置没改return
+      return;
+    }
+    if (visibles[5] && !visibles[4]) {
+      // 显示作业票， 不显示人员定位时， 移动到作业票区域内人员也要显示
+      const isInPolygon = !this.workBillPolygons.every(
+        polygon => !isPointInPolygon(point, polygon.position)
+      );
+      if (isInPolygon) {
+        focus.show = true;
+        label.show = true;
+      } else {
+        focus.show = false;
+        label.show = false;
+      }
+    }
     const floorId = +floorNo.split('Floor')[1];
     if (floorId === focus.floorId) {
-      focus.moveTo(new jsmap.JSPoint(longitude, latitude, 0));
+      focus.moveTo(point);
       label.moveTo(new jsmap.JSPoint(longitude, latitude, 5));
-      popInfoWindow.moveTo(new jsmap.JSPoint(longitude, latitude, 0));
+      popInfoWindow.moveTo(point);
     } else {
       const properties = mapChangeObj(focus.getProperties());
       map.removeMarker(focus);
@@ -1382,7 +1406,9 @@ export default class Map extends PureComponent {
           </div>
         </div>
         <div class="bottom">
-          <div class="trackBtn">跟踪</div>
+          <div class="trackBtn" onclick="window.open('${
+            window.publicPath
+          }#/personnel-position/track/index?trackSn=${entranceNumber}','_blank');">跟踪</div>
         </div>
       </div>
 
@@ -1637,11 +1663,18 @@ export default class Map extends PureComponent {
     copy[iconType] = !visible;
     this.setState({ visibles: copy });
 
-    if (!visible) {
-      // 显示作业票， 不显示人员定位， 仅显示作业票区域内的人员
-      if (!visibles[4]) {
+    if (!visibles[4]) {
+      if (!visible) {
+        // 显示作业票， 不显示人员定位， 仅显示作业票区域内的人员
+        this.handleShowPositionInWorkBill();
+      } else {
+        // 不显示作业票， 不显示人员定位
         this.positionMarkers.map(item => {
-          // if()
+          item.show = false;
+          return null;
+        });
+        this.positionLabelMarkers.map(item => {
+          item.show = false;
           return null;
         });
       }
@@ -1649,18 +1682,65 @@ export default class Map extends PureComponent {
   };
 
   handleTogglePosition = () => {
+    const { handleParentChange } = this.props;
     const iconType = 4;
     const { visibles } = this.state;
     const visible = visibles[iconType];
     const copy = [...visibles];
     copy[iconType] = !visible;
     this.setState({ visibles: copy });
-    map.setMarkerVisibleByFilter(
-      jsmap.JSMarkerType.IMAGE_MARKER,
-      !visible,
-      properties => +properties.get('iconType') === iconType
-    );
-    map.setMarkerVisibleByFilter(jsmap.JSMarkerType.LABEL_MARKER, !visible, properties => true);
+    // map.setMarkerVisibleByFilter(
+    //   jsmap.JSMarkerType.IMAGE_MARKER,
+    //   !visible,
+    //   properties => +properties.get('iconType') === iconType
+    // );
+    // map.setMarkerVisibleByFilter(jsmap.JSMarkerType.LABEL_MARKER, !visible, properties => true);
+    handleParentChange({ showDistribution: !visible });
+
+    if (visibles[5]) {
+      if (visible) {
+        this.handleShowPositionInWorkBill();
+      } else {
+        this.positionMarkers.map(item => {
+          item.show = true;
+          return null;
+        });
+        this.positionLabelMarkers.map(item => {
+          item.show = true;
+          return null;
+        });
+      }
+    } else {
+      this.positionMarkers.map(item => {
+        item.show = !visible;
+        return null;
+      });
+      this.positionLabelMarkers.map(item => {
+        item.show = !visible;
+        return null;
+      });
+    }
+  };
+
+  handleShowPositionInWorkBill = () => {
+    this.positionMarkers.map(item => {
+      const point = item.position;
+      const isInPolygon = !this.workBillPolygons.every(
+        polygon => !isPointInPolygon(point, polygon.position)
+      );
+      if (isInPolygon) item.show = true;
+      else item.show = false;
+      return null;
+    });
+    this.positionLabelMarkers.map(item => {
+      const point = item.position;
+      const isInPolygon = !this.workBillPolygons.every(
+        polygon => !isPointInPolygon(point, polygon.position)
+      );
+      if (isInPolygon) item.show = true;
+      else item.show = false;
+      return null;
+    });
   };
 
   handleShowVideo = keyId => {
@@ -1737,6 +1817,7 @@ export default class Map extends PureComponent {
         inOutRecordList,
         riskPoint,
         monitorEquipment,
+        locations,
       },
       specialEquipment: { list: specialEquipmentList },
       user: {
@@ -1753,7 +1834,7 @@ export default class Map extends PureComponent {
       filterMarkerList(videoList).filter(({ status }) => status && +status === 1),
       filterMarkerList(monitorEquipment),
       filterMarkerList(specialEquipmentList),
-      filterMarkerList(monitorEquipment),
+      locations,
       workBillList.filter(item => item.mapAddress && JSON.parse(item.mapAddress).length),
     ];
     const controlDataLength = controlDataList.filter(list => list.length > 0).length;
@@ -1775,27 +1856,38 @@ export default class Map extends PureComponent {
               });
               if (controlDataList[index].length === 0) return null;
               return (
-                <div
-                  className={itemStyles}
-                  key={index}
-                  onClick={() => {
-                    if (index === 5) {
-                      this.handleToggleWorkBill();
-                    } else if (index === 4) {
-                      this.handleTogglePosition();
-                    } else this.handleClickControl(index);
-                  }}
-                >
-                  <span
-                    className={styles.icon}
-                    style={{
-                      background: `url(${
-                        visibles[index] ? activeIcon : icon
-                      }) center center / auto 100% no-repeat`,
+                <Fragment>
+                  <div
+                    className={itemStyles}
+                    key={index}
+                    onClick={() => {
+                      if (index === 5) {
+                        this.handleToggleWorkBill();
+                      } else if (index === 4) {
+                        this.handleTogglePosition();
+                      } else this.handleClickControl(index);
                     }}
-                  />
-                  {label}
-                </div>
+                  >
+                    <span
+                      className={styles.icon}
+                      style={{
+                        background: `url(${
+                          visibles[index] ? activeIcon : icon
+                        }) center center / auto 100% no-repeat`,
+                      }}
+                    />
+                    {label}
+                  </div>
+                  {/* <div className={itemStyles}>
+                    <span
+                      className={styles.icon}
+                      style={{
+                        background: `url(${jobType}) center center / auto 100% no-repeat`,
+                      }}
+                    />
+                    {label}
+                  </div> */}
+                </Fragment>
               );
             })}
           </div>
