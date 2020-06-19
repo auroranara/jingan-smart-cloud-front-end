@@ -1858,7 +1858,7 @@ export default class WorkingBillOther extends Component {
               <Radio mode={mode} list={[{ key: '1', value: '是' }, { key: '0', value: '否' }]} />
             ),
             options: {
-              initialValue: detail.isSetWarn,
+              initialValue: detail.isSetWarn || '0',
             },
             grid: {
               span: 24,
@@ -1975,6 +1975,7 @@ export default class WorkingBillOther extends Component {
                                 onClose={() => this.handleRemoveTag(item)}
                                 visible={true}
                                 color="#1890ff"
+                                style={{ marginBottom: 10 }}
                               >
                                 {item.name}
                               </Tag>

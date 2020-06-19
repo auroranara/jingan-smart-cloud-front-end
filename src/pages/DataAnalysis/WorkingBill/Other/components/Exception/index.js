@@ -6,6 +6,11 @@ import styles from './index.less';
 export default class Exception extends Component {
   state = { visible: false, targetKeys: [] };
 
+  componentDidMount() {
+    const { value } = this.props;
+    this.setState({ targetKeys: value });
+  }
+
   componentDidUpdate({ value: prevValue }) {
     const { value } = this.props;
     if (JSON.stringify(value) !== JSON.stringify(prevValue)) this.setState({ targetKeys: value });
