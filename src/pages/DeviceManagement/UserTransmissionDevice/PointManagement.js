@@ -585,6 +585,11 @@ export default class PointManagement extends Component {
             </Card>
           ) : <div style={{ padding: '20px', color: 'rgba(0, 0, 0, 0.45)', textAlign: 'center' }}>暂无数据</div>}
         </Spin>
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
         {this.renderModal()}
       </PageHeaderLayout>
     )

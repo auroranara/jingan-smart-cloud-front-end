@@ -447,9 +447,14 @@ export default class InspectionReport extends PureComponent {
               <span>暂无数据</span>
             </Card>
           )}
-          <div style={{ textAlign: 'right', marginTop: 20 }}>
-            <Button href={`#/facility-management/safety-facilities/list`}>返回</Button>
-          </div>
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <Button
+            // href={`#/facility-management/safety-facilities/list`}
+            onClick={e => window.close()}
+          >
+            返回
+          </Button>
         </div>
         <ReportModal {...modalData} />
         <Lightbox

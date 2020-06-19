@@ -418,6 +418,11 @@ export default class MaterialMaintList extends PureComponent {
       >
         {this.renderForm()}
         {this.renderTable()}
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
       </PageHeaderLayout>
     );
   }

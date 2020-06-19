@@ -381,15 +381,14 @@ export default class ImportPointPosition extends PureComponent {
                   />
                 </div>
               )}
-              <Button
-                style={{ margin: '0 auto', display: 'block', marginTop: '20px' }}
-                type="primary"
-                onClick={this.handleBack}
-              >
-                返回
-              </Button>
             </Card>
           )}
+          <Button
+            style={{ margin: '0 auto', display: 'block', marginTop: '20px' }}
+            onClick={this.handleBack}
+          >
+            返回
+          </Button>
         </Spin>
       </PageHeaderLayout>
     );

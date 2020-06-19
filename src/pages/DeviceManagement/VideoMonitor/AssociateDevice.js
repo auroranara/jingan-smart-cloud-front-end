@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { connect } from 'dva';
-import { Spin } from 'antd';
+import { Button, Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import AssociatePersonnelPosition from './AssociatePersonnelPosition.js';
@@ -112,6 +112,11 @@ export default class AssociateDevice extends Component {
           {/* 人员定位 */}
           {tabActiveKey === tabList[2].key && <AssociatePersonnelPosition data={data} />}
         </Spin>
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
       </PageHeaderLayout>
     )
   }

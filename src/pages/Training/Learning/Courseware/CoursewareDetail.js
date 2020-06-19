@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Card, Row, Col, Divider } from 'antd';
+import { Button, Card, Row, Col, Divider } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Resource from '@/components/Resource';
@@ -140,6 +140,11 @@ export default class LearningLayout extends PureComponent {
             </Card>
           </Col>
         </Row>
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
       </PageHeaderLayout>
     );
   }

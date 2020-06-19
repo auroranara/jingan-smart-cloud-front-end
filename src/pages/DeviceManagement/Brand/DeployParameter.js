@@ -606,6 +606,11 @@ export default class DeployParameter extends PureComponent {
         }
       >
         {this.renderTable()}
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
         <RenderAddModal {...addModalProps} />
         <RenderAlarmStrategyModal {...alarmProps} />
         <HistoryModal  {...historyProps} />

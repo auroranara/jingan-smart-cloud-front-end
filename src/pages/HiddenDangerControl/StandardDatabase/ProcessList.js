@@ -367,6 +367,11 @@ export default class StandardProcessList extends Component {
       >
         {this.renderFilter()}
         {this.renderTable()}
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
         <HandleModal {...modalProps} />
       </PageHeaderLayout>
     )

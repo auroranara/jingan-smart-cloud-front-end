@@ -566,6 +566,11 @@ export default class ModelList extends PureComponent {
       >
         {this.renderFilter()}
         {this.renderTable()}
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
         <RenderModal {...modalProps} />
       </PageHeaderLayout>
     )

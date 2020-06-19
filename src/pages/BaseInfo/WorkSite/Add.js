@@ -17,7 +17,7 @@ import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import Map from '@/pages/RiskControl/FourColorImage/Map';
 import JoySuchMap from '@/pages/RiskControl/FourColorImage/JoySuchMap';
-import { AuthButton } from '@/utils/customAuth';
+// import { AuthButton } from '@/utils/customAuth';
 import styles from './Add.less';
 import { genGoBack } from '@/utils/utils';
 
@@ -40,6 +40,11 @@ const numberReg = /^\d*\.?\d*$/;
 }))
 @Form.create()
 export default class StorageEdit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.goBack = genGoBack(this.props, LIST_URL);
+  }
+
   state = {
     company: undefined, // 当前单位 { value,label,key }
     detail: {}, // 详情
@@ -62,7 +67,6 @@ export default class StorageEdit extends PureComponent {
       form: { setFieldsValue },
       user: { isCompany, currentUser },
     } = this.props;
-    this.goBack = genGoBack(this.props, LIST_URL);
 
     if (id) {
       dispatch({
