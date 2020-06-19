@@ -219,7 +219,7 @@ export default class SafetySystemOther extends Component {
           if (success) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
             // router.push(LIST_PATH);
-            // setTimeout(this.goBack, 1000);
+            setTimeout(this.goBack, 1000);
           } else {
             message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
             this.setState({
