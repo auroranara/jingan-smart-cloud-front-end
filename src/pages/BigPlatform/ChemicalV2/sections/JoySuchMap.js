@@ -6,6 +6,7 @@ import { connect } from 'dva';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import TruckModal from '../components/TruckModal';
 import { MINUTE_FORMAT, TYPES, WORKING_STATUSES } from '@/pages/DataAnalysis/WorkingBill/config';
+import { isPointInPolygon } from '@/utils/map';
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';
@@ -118,7 +119,7 @@ const mockData = [
     longitude: 120.36142360805042,
     status: 2,
     hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq',
+      id: 'rbyr7a_v_8sbgkwq1',
       remarks: null,
       ids: null,
       idList: null,
@@ -176,7 +177,7 @@ const mockData = [
     longitude: 120.36140810929106,
     status: 2,
     hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq',
+      id: 'rbyr7a_v_8sbgkwq2',
       remarks: null,
       ids: null,
       idList: null,
@@ -234,7 +235,7 @@ const mockData = [
     longitude: 120.3613941235298,
     status: 2,
     hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq',
+      id: 'rbyr7a_v_8sbgkwq3',
       remarks: null,
       ids: null,
       idList: null,
@@ -292,7 +293,7 @@ const mockData = [
     longitude: 120.36139024907817,
     status: 2,
     hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq',
+      id: 'rbyr7a_v_8sbgkwq4',
       remarks: null,
       ids: null,
       idList: null,
@@ -490,6 +491,7 @@ export default class Map extends PureComponent {
   workBillMarkers = []; // 作业票markers
   workBillPolygons = []; // 作业票polygons
   positionMarkers = []; // 人员定位markers
+  positionLabelMarkers = []; // 人员定位labels
 
   /* eslint-disable*/
   componentDidMount() {
@@ -519,6 +521,11 @@ export default class Map extends PureComponent {
       this.fetchPonits('chemical/fetchFireDevice', 2);
       this.renderPosition();
       this.renderWorkingBill();
+
+      setTimeout(() => {
+        this.markerArray[0].image = positionGray;
+        this.markerArray[0].floorId = 3;
+      }, 8000);
     });
   };
 
@@ -580,13 +587,15 @@ export default class Map extends PureComponent {
             height: +status === 1 ? 80 : 50,
           });
           this.positionMarkers.push(marker);
-          this.renderLabelMarker({
+          const labelMarker = this.renderLabelMarker({
             id,
             text: name,
             position: position2,
             floorId,
             properties: item,
+            show: visibles[iconType],
           });
+          this.positionLabelMarkers.push(labelMarker);
           return null;
         });
       },
@@ -641,11 +650,11 @@ export default class Map extends PureComponent {
       showBackground: true,
       backgroundColor: '#fff',
       depthTest: false,
+      ...markerProps,
       show: undefined,
       callback: node => {
-        node.show = false;
+        node.show = !!markerProps.show;
       }, //回调
-      ...markerProps,
     });
     map.addMarker(labelMarker);
     return labelMarker;
@@ -943,6 +952,70 @@ export default class Map extends PureComponent {
     });
   };
 
+  handleUpdatePosition = ({ floorNo, latitude, longitude, status, userId }) => {
+    const {
+      chemical: { locations = [] },
+    } = this.props;
+    const { visibles } = this.state;
+    const iconType = 4;
+    const focus = this.positionMarkers.find(item => {
+      const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+      return entranceNumber === userId;
+    });
+    const label = this.positionLabelMarkers.find(item => {
+      const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+      return entranceNumber === userId;
+    });
+    const floorId = +floorNo.split('Floor')[1];
+    if (floorId === focus.floorId) {
+      focus.moveTo(new jsmap.JSPoint(longitude, latitude, 0));
+      label.moveTo(new jsmap.JSPoint(longitude, latitude, 5));
+      popInfoWindow.moveTo(new jsmap.JSPoint(longitude, latitude, 0));
+    } else {
+      const properties = mapChangeObj(focus.getProperties());
+      map.removeMarker(focus);
+      map.removeMarker(label);
+      this.positionMarkers = this.positionMarkers.filter(item => item => {
+        const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+        return entranceNumber !== userId;
+      });
+      this.positionLabelMarkers = this.positionLabelMarkers.filter(item => item => {
+        const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+        return entranceNumber !== userId;
+      });
+      const marker = this.addMarkers({
+        image: +status === 1 ? alarmUrl : url, //图片路径
+        position: new jsmap.JSPoint(longitude, latitude, 0),
+        floorId, //楼
+        properties,
+        show: visibles[iconType],
+        width: +status === 1 ? 80 : 50,
+        height: +status === 1 ? 80 : 50,
+      });
+      this.positionMarkers.push(marker);
+      const labelMarker = this.renderLabelMarker({
+        id,
+        text: properties.hgFaceInfo.name,
+        position: new jsmap.JSPoint(longitude, latitude, 5),
+        floorId,
+        properties,
+        show: visibles[iconType],
+      });
+      this.positionLabelMarkers.push(labelMarker);
+      if (popInfoWindow) {
+        map.removeMarker(popInfoWindow);
+        popInfoWindow = null;
+      }
+    }
+  };
+
+  handleOneKeyAlarm = socketProps => {
+    const { event, mac } = socketProps;
+    // event   alarm  cancel_alarm
+    // mac    sn号
+    if (event === 'alarm') console.log('socketProps', socketProps);
+  };
+
   // 点击人员定位事件
   handleClickPosition = (markerProps, floorId, position) => {
     this.handleFocusPosition(markerProps.hgFaceInfo.entranceNumber);
@@ -997,7 +1070,6 @@ export default class Map extends PureComponent {
       return isNear({ x: longitude, y: latitude }, position);
     });
     handleProductionOpen('position', filteredList);
-    console.log('filteredList', filteredList);
   };
 
   // 变更预警
@@ -1166,9 +1238,6 @@ export default class Map extends PureComponent {
       // marginTop: 0,
       properties: info,
       showCloseButton: true,
-      // callback: node => {
-      //   console.log('node', node);
-      // },
     });
     map.addMarker(popInfoWindow);
   };
@@ -1271,9 +1340,6 @@ export default class Map extends PureComponent {
       // marginTop: 0,
       properties: info,
       showCloseButton: true,
-      // callback: node => {
-      //   console.log('node', node);
-      // },
     });
     map.addMarker(popInfoWindow);
   };
@@ -1398,9 +1464,6 @@ export default class Map extends PureComponent {
       // marginTop: 0,
       properties: info,
       showCloseButton: true,
-      // callback: node => {
-      //   console.log('node', node);
-      // },
     });
     map.addMarker(popInfoWindow);
   };
@@ -1482,8 +1545,6 @@ export default class Map extends PureComponent {
   };
 
   addMarkers = (markerProps = {}) => {
-    // console.log('markerProps', markerProps);
-
     const imageMarker = new jsmap.JSImageMarker({
       // id: 'selectedMarker', //id
       image: monitor, //图片路径
@@ -1575,6 +1636,16 @@ export default class Map extends PureComponent {
     const copy = [...visibles];
     copy[iconType] = !visible;
     this.setState({ visibles: copy });
+
+    if (!visible) {
+      // 显示作业票， 不显示人员定位， 仅显示作业票区域内的人员
+      if (!visibles[4]) {
+        this.positionMarkers.map(item => {
+          // if()
+          return null;
+        });
+      }
+    }
   };
 
   handleTogglePosition = () => {

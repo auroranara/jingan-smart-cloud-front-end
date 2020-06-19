@@ -340,6 +340,8 @@ export default class Chemical extends PureComponent {
     this.fetchNotice({ pageSize: 1, pageNum: 1, companyId });
     // socket消息
     this.handleSocket();
+    // 定位socket
+    this.handlePositionSocket();
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
@@ -469,6 +471,62 @@ export default class Chemical extends PureComponent {
         } else if (+type === 52) {
           // 主机复位
           this.childMap.handleUpdateFire();
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
+  };
+
+  handlePositionSocket = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    const params = {
+      companyId,
+      env: 'dev',
+      type: 13,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
+    // 链接webscoket
+    const ws = new WebsocketHeartbeatJs({ url, ...SocketOptions });
+    this.ws = ws;
+
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
+
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data);
+        const { type, data: postionData } = data;
+        console.log('socket', data);
+        switch (type) {
+          case 'location':
+            // this.childMap.handleUpdatePosition(postionData);
+            this.childMap.handleUpdatePosition({
+              ...postionData,
+              longitude: 120.3612 + Math.random() * 0.0003,
+              latitude: 31.5459 + Math.random() * 0.0003,
+            });
+            break;
+          case 'oneKeyAlarm':
+            this.childMap.handleOneKeyAlarm(postionData);
+            break;
+          default:
+            console.log('data', data);
+            break;
         }
       } catch (error) {
         console.log('error', error);
@@ -1363,7 +1421,7 @@ export default class Chemical extends PureComponent {
 
   handleProductionClose = e => {
     this.setState({ productionVisible: false });
-  }
+  };
 
   getLEDPersonCount = () => {
     const {
