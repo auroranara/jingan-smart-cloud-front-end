@@ -32,6 +32,7 @@ import { getList as getPipelineList } from '@/services/pipeline';
 // import { getDeviceDetail } from '@/services/alarmWorkOrder';
 import { getWarningNewList } from '@/services/changeWarning';
 import { fetchMonitoringDevice } from '@/services/device/monitoringDevice';
+import { queryPostList } from '@/services/postManagement.js';
 
 export default {
   namespace: 'chemical',
@@ -78,6 +79,7 @@ export default {
     LEDPerson: {},
     oneKeyAlarm: [],
     locations: [],
+    postList: [],
   },
 
   effects: {
@@ -532,6 +534,21 @@ export default {
           type: 'save',
           payload: {
             oneKeyAlarm,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 岗位列表
+    *fetchPostList({ payload, callback }, { call, put }) {
+      const response = yield call(queryPostList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const postList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            postList,
           },
         });
       }

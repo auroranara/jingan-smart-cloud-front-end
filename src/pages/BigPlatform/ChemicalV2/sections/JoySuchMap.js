@@ -1,4 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Dropdown, Menu } from 'antd';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 import classnames from 'classnames';
 import moment from 'moment';
@@ -479,6 +481,7 @@ export default class Map extends PureComponent {
     videoList: [],
     keyId: undefined,
     truckModalVisible: false,
+    jobName: '全部人员',
   };
 
   ids = [];
@@ -503,7 +506,7 @@ export default class Map extends PureComponent {
     onRef && onRef(this);
     this.fetchDict({ type: 'specialEquipment' });
     this.fetchOnDuty({ companyId });
-    // cacheHandleFocusPositionFn(this.handleFocusPosition);
+    this.fetchPostList({ companyId, pageSize: 0, pageNum: 1 });
   }
 
   fetchMap = () => {
@@ -528,6 +531,11 @@ export default class Map extends PureComponent {
         this.markerArray[0].floorId = 3;
       }, 8000);
     });
+  };
+
+  fetchPostList = (payload, callback) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'chemical/fetchPostList', payload, callback });
   };
 
   renderPosition = () => {
@@ -563,21 +571,6 @@ export default class Map extends PureComponent {
             helmetAlarm5,
             helmetAlarm6,
           ][iconID ? iconID - 1 : 0];
-          // if (+status === 2) {
-          //   const alarmUrl = [helmetAlarm1, helmetAlarm2, helmetAlarm3, helmetAlarm4, helmetAlarm5, helmetAlarm6][
-          //     iconID ? iconID - 1 : 0
-          //   ];
-          //   const alarm = this.addMarkers({
-          //     image: alarmUrl, //图片路径
-          //     position,
-          //     floorId, //楼
-          //     properties: { ...item, iconType },
-          //     show: visibles[iconType],
-          //     width: 80,
-          //     height: 80,
-          //     offset: jsmap.JSControlPosition.LEFT_TOP,
-          //   });
-          // }
           const marker = this.addMarkers({
             image: +status === 1 ? alarmUrl : url, //图片路径
             position,
@@ -645,9 +638,7 @@ export default class Map extends PureComponent {
       font: 'normal 12px 微软雅黑',
       color: '#000',
       labelStyle: jsmap.JSLabelStyle.FILL,
-      // offset: jsmap.JSControlPosition.RIGHT_TOP,
       offset: jsmap.JSControlPosition.CENTER_TOP,
-      // offset: new jsmap.JSPoint(0, 100, 0),
       showBackground: true,
       backgroundColor: '#fff',
       depthTest: false,
@@ -671,9 +662,9 @@ export default class Map extends PureComponent {
         companyId,
         pageNum: 1,
         pageSize: 0,
-        // approveStatus: 2,
-        // startWorkingDate: moment().format('YYYY-MM-DD 00:00'),
-        // endWorkingDate: moment().format('YYYY-MM-DD 23:59'),
+        approveStatus: 2,
+        startWorkingDate: moment().format('YYYY-MM-DD 00:00'),
+        endWorkingDate: moment().format('YYYY-MM-DD 23:59'),
       },
       callback: (success, { list }) => {
         if (!success) return;
@@ -1807,8 +1798,22 @@ export default class Map extends PureComponent {
     );
   };
 
+  onFilterJob = ({ id, jobName }) => {
+    this.setState({ jobName, jobId: id });
+    this.positionMarkers.map(item => {
+      if (id === 0) {
+        item.show = true;
+        return;
+      }
+      const { companyJob } = item.getProperties().get('hgFaceInfo');
+      if (companyJob === id) item.show = true;
+      else item.show = false;
+      return null;
+    });
+  };
+
   render() {
-    const { gdMapVisible, visibles, videoVisible, keyId, truckModalVisible } = this.state;
+    const { gdMapVisible, visibles, videoVisible, keyId, truckModalVisible, jobName } = this.state;
     const {
       chemical: {
         videoList,
@@ -1818,6 +1823,7 @@ export default class Map extends PureComponent {
         riskPoint,
         monitorEquipment,
         locations,
+        postList,
       },
       specialEquipment: { list: specialEquipmentList },
       user: {
@@ -1839,6 +1845,16 @@ export default class Map extends PureComponent {
     ];
     const controlDataLength = controlDataList.filter(list => list.length > 0).length;
 
+    const menu = (
+      <Menu>
+        {[{ id: 0, jobName: '全部人员' }, ...postList].map(item => (
+          <Menu.Item key={item.id} onClick={() => this.onFilterJob(item)}>
+            {item.jobName}
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
+
     return (
       <Fragment>
         <div className={styles.container} id="mapContainer">
@@ -1856,10 +1872,9 @@ export default class Map extends PureComponent {
               });
               if (controlDataList[index].length === 0) return null;
               return (
-                <Fragment>
+                <Fragment key={index}>
                   <div
                     className={itemStyles}
-                    key={index}
                     onClick={() => {
                       if (index === 5) {
                         this.handleToggleWorkBill();
@@ -1878,15 +1893,25 @@ export default class Map extends PureComponent {
                     />
                     {label}
                   </div>
-                  {/* <div className={itemStyles}>
-                    <span
-                      className={styles.icon}
-                      style={{
-                        background: `url(${jobType}) center center / auto 100% no-repeat`,
-                      }}
-                    />
-                    {label}
-                  </div> */}
+                  {index === 4 &&
+                    visibles[4] &&
+                    postList.length > 1 && (
+                      <Dropdown overlay={menu} overlayClassName={styles.dropdown}>
+                        <div
+                          className={classnames(styles.controlItem, styles.active)}
+                          style={{ width: 140, marginLeft: 10 }}
+                        >
+                          <span
+                            className={styles.icon}
+                            style={{
+                              background: `url(${jobType}) center center / auto 100% no-repeat`,
+                            }}
+                          />
+                          {jobName}
+                          <CaretDownOutlined />
+                        </div>
+                      </Dropdown>
+                    )}
                 </Fragment>
               );
             })}
@@ -1943,7 +1968,7 @@ export default class Map extends PureComponent {
             </div>
           </div>
 
-          {permissionCodes.includes('dashboard.personnelPositioningView') && (
+          {/* {permissionCodes.includes('dashboard.personnelPositioningView') && (
             <div
               className={styles.positionBtn}
               style={{
@@ -1951,7 +1976,7 @@ export default class Map extends PureComponent {
               }}
               onClick={this.handlePosition}
             />
-          )}
+          )} */}
           <NewVideoPlay
             showList={true}
             videoList={videoList

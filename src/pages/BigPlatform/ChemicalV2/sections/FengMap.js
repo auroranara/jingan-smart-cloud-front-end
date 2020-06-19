@@ -216,9 +216,9 @@ export default class Map extends PureComponent {
         companyId,
         pageNum: 1,
         pageSize: 0,
-        // approveStatus: 2,
-        // startWorkingDate: moment().format('YYYY-MM-DD 00:00'),
-        // endWorkingDate: moment().format('YYYY-MM-DD 23:59'),
+        approveStatus: 2,
+        startWorkingDate: moment().format('YYYY-MM-DD 00:00'),
+        endWorkingDate: moment().format('YYYY-MM-DD 23:59'),
       },
       callback: (success, { list }) => {
         if (!success) return;
