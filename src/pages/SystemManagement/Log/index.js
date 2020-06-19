@@ -32,6 +32,22 @@ const BREADCRUMB_LIST = [
   { title: '系统管理', name: '系统管理' },
   { title: '系统日志管理', name: '系统日志管理' },
 ];
+const COL = {
+  xxl: 12,
+  xl: 16,
+  lg: 24,
+  md: 24,
+  sm: 24,
+  xs: 24,
+};
+const COL2 = {
+  xxl: 6,
+  xl: 12,
+  lg: 12,
+  md: 12,
+  sm: 12,
+  xs: 24,
+};
 
 export default connect(
   state => state,
@@ -143,6 +159,14 @@ export default connect(
               },
             },
             {
+              name: 'ip',
+              label: 'IP地址',
+              component: 'Input',
+              props: {
+                allowClear: true,
+              },
+            },
+            {
               name: 'range',
               label: '操作时间',
               component: 'RangePicker',
@@ -150,14 +174,7 @@ export default connect(
                 format: FORMAT,
                 allowClear: true,
               },
-            },
-            {
-              name: 'ip',
-              label: 'IP地址',
-              component: 'Input',
-              props: {
-                allowClear: true,
-              },
+              col: COL,
             },
           ]
         : [
@@ -169,6 +186,7 @@ export default connect(
                 list: OPERATE_TYPES,
                 allowClear: true,
               },
+              col: COL2,
             },
             {
               name: 'userName',
@@ -177,6 +195,7 @@ export default connect(
               props: {
                 allowClear: true,
               },
+              col: COL2,
             },
             {
               name: 'range',
@@ -186,6 +205,7 @@ export default connect(
                 format: FORMAT,
                 allowClear: true,
               },
+              col: COL,
             },
           ];
     },
