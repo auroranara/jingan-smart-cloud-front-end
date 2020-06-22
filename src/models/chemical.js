@@ -25,7 +25,7 @@ import { queryStorehouseList } from '@/services/baseInfo/storehouse';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { getList } from '@/services/gasometer';
 import { getList as getPipelineList } from '@/services/pipeline';
-import { getDeviceDetail } from '@/services/alarmWorkOrder';
+// import { getDeviceDetail } from '@/services/alarmWorkOrder';
 import { getWarningNewList } from '@/services/changeWarning';
 import { fetchMonitoringDevice } from '@/services/device/monitoringDevice';
 
