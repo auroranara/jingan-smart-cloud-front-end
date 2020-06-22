@@ -204,7 +204,7 @@ export default class Edit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          // message.success(msg, 1, () => setTimeout(this.goBack, 1000));
+          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
