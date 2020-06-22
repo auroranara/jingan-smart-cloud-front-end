@@ -1,3 +1,6 @@
+@grey: #A4ACBC;
+@blue: #196092;
+
 .overflow() {
   white-space: nowrap;
   overflow: hidden;
@@ -38,7 +41,7 @@
 }
 
 /* 人员列表 */
-.personList {
+.personList, .personList1 {
   width: 100%;
   position: relative;
   margin-bottom: 1em;
@@ -76,6 +79,11 @@
 
       .label {
         color: #00ffff;
+        font-size: 14px;
+      }
+
+      .label1 {
+        color: @grey;
         font-size: 14px;
       }
 
@@ -121,6 +129,40 @@
       cursor: pointer;
     }
   }
+}
+
+.personList1 {
+  border-color: @blue;
+}
+
+.rect {
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  margin-right: 10px;
+  background-color: #0FF;
+  position: relative;
+  top: 2px;
+}
+
+.cardTitle {
+  color: #FFF;
+  font-size: 15px;
+}
+
+.length {
+  color: @grey;
+  margin-left: 6px;
+}
+
+.locationIcon {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  right: 16px;
+  bottom: 10px;
+  background-size: 100% 100%;
+  cursor: pointer;
 }
 
 // .personList {

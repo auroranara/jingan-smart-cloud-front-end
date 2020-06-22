@@ -1,10 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Dropdown, Menu } from 'antd';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { Map as GDMap, InfoWindow, Marker, Polygon } from 'react-amap';
 import classnames from 'classnames';
 import moment from 'moment';
 import { connect } from 'dva';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import TruckModal from '../components/TruckModal';
+import { MINUTE_FORMAT, TYPES, WORKING_STATUSES } from '@/pages/DataAnalysis/WorkingBill/config';
+import { isPointInPolygon } from '@/utils/map';
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';
@@ -25,11 +29,327 @@ import specialEquipmentGray from '../imgs/special-equipment-gray.png';
 import iconTips from '../imgs/icon-tips.png';
 import iconCar from '../imgs/icon-car.png';
 import iconFace from '../imgs/icon-face.png';
+import workBill from '../imgs/work-bill.png';
+import workBillActive from '../imgs/work-bill-active.png';
+import workBillGray from '../imgs/work-bill-gray.png';
+import workBillAlarm from '../imgs/work-bill-alarm.png';
+import positionActive from '../imgs/position-active.png';
+import positionGray from '../imgs/position-gray.png';
+import helmet1 from '../imgs/helmet-1.png';
+import helmet2 from '../imgs/helmet-2.png';
+import helmet3 from '../imgs/helmet-3.png';
+import helmet4 from '../imgs/helmet-4.png';
+import helmet5 from '../imgs/helmet-5.png';
+import helmet6 from '../imgs/helmet-6.png';
+import helmetAlarm1 from '../imgs/helmet-alarm-1.png';
+import helmetAlarm2 from '../imgs/helmet-alarm-2.png';
+import helmetAlarm3 from '../imgs/helmet-alarm-3.png';
+import helmetAlarm4 from '../imgs/helmet-alarm-4.png';
+import helmetAlarm5 from '../imgs/helmet-alarm-5.png';
+import helmetAlarm6 from '../imgs/helmet-alarm-6.png';
+import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
+import jobType from '../imgs/job-type.png';
 
-const fengMap = fengmap; // eslint-disable-line
-const TiltAngle = 50;
-const RotateAngle = 60;
-const MapScaleLevel = 21;
+const mockData = [
+  {
+    latitude: 31.545964158887074,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.36140601261161,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'lm',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: '1918E001FAE3',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+  {
+    latitude: 31.54599011116575,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.36142360805042,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq1',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'aaaa',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: 'zzzzzzzzzzz',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+  {
+    latitude: 31.54596264128945,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.36140810929106,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq2',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'bbb',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: 'ccccccccccc',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+  {
+    latitude: 31.545964867960592,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.3613941235298,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq3',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'cccc',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: 'sssssssssss',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+  {
+    latitude: 31.546056228302405,
+    yMillimeter: 19000,
+    locationType: 1,
+    buildId: '202343',
+    floorNo: 'Floor1',
+    timestampMillisecond: 1592459848208,
+    xMillimeter: 52000,
+    userId: '505e9bad279511eab68d7cd30aeb74c6',
+    mac: '1918E001FAE3',
+    longitude: 120.36137511023651,
+    status: 2,
+    hgFaceInfo: {
+      id: 'rbyr7a_v_8sbgkwq4',
+      remarks: null,
+      ids: null,
+      idList: null,
+      companyId: '99rz446zt9fet_lr',
+      name: 'dddd',
+      sex: '0',
+      ethnic: null,
+      certificateType: null,
+      certificateNumber: null,
+      birthday: null,
+      location: null,
+      address: null,
+      telephone: null,
+      email: null,
+      personType: '1',
+      personCompany: null,
+      duty: null,
+      workType: null,
+      education: null,
+      major: null,
+      icnumber: '12123',
+      entranceNumber: 'aaaaaa',
+      photo: '',
+      educationCertificate: '',
+      guid: null,
+      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
+      workerNumber: null,
+      iconID: null,
+      partId: null,
+      partName: null,
+      companyJob: null,
+      companyJobName: null,
+      status: null,
+      labelId: 'qrqa4e_9dblfpmbr',
+      isSN: null,
+      photoDetails: null,
+      educationCertificateDetails: null,
+      companyName: null,
+      gridIdList: null,
+      companyBasicInfo: null,
+      hgAuthorizationManage: null,
+      authorizationMessage: null,
+    },
+  },
+];
+
+const Distance = 9.82986525e-10;
+const isNear = (a, b) => {
+  const x = a.x - b.x;
+  const y = a.y - b.y;
+  return x * x + y * y < Distance;
+};
+
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = [
   'rgba(254, 0, 3, 0.5)',
@@ -44,6 +364,7 @@ const StrokeColor = [
   'rgba(20, 35, 196, 1)',
 ];
 let map;
+let tool;
 let popInfoWindow;
 const controls = [
   { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive, markerIcon: riskPoint },
@@ -60,6 +381,19 @@ const controls = [
     icon: specialEquipmentGray,
     activeIcon: specialEquipmentActive,
     markerIcon: specialEquipment,
+  },
+  {
+    label: '人员定位',
+    icon: positionGray,
+    activeIcon: positionActive,
+    markerIcon: helmet1,
+  },
+  {
+    label: '作业票',
+    icon: workBillGray,
+    activeIcon: workBillActive,
+    markerIcon: workBill,
+    alarmIcon: workBillAlarm,
   },
 ];
 const paststatusVal = {
@@ -126,6 +460,7 @@ const mapChangeObj = map => {
     emergencyManagement,
     changeWarning,
     licensePlateRecognitionSystem,
+    workingBill,
   }) => ({
     map,
     chemical,
@@ -135,26 +470,32 @@ const mapChangeObj = map => {
     emergencyManagement,
     changeWarning,
     licensePlateRecognitionSystem,
+    workingBill,
   })
 )
 export default class Map extends PureComponent {
   state = {
     gdMapVisible: false,
-    visibles: [true, false, false, false],
+    visibles: [true, false, false, false, false, false],
     videoVisible: false,
     videoList: [],
     keyId: undefined,
     truckModalVisible: false,
+    jobName: '全部人员',
   };
 
   ids = [];
-  polygonArray = [];
+  fourColorPolygons = []; // 四色图polygons
   polygonLayers = [];
   markerArray = [];
   markerLayers = [];
   lastTime = 0;
   jumpEquipIds = [];
   jumpFireIds = [];
+  workBillMarkers = []; // 作业票markers
+  workBillPolygons = []; // 作业票polygons
+  positionMarkers = []; // 人员定位markers
+  positionLabelMarkers = []; // 人员定位labels
 
   /* eslint-disable*/
   componentDidMount() {
@@ -165,15 +506,11 @@ export default class Map extends PureComponent {
     onRef && onRef(this);
     this.fetchDict({ type: 'specialEquipment' });
     this.fetchOnDuty({ companyId });
+    this.fetchPostList({ companyId, pageSize: 0, pageNum: 1 });
   }
 
   fetchMap = () => {
-    const { dispatch, companyId, mapInfo } = this.props;
-    // 获取地图列表cnpm start
-    // dispatch({
-    //   type: 'map/fetchMapList',
-    //   payload: { companyId },
-    //   callback: mapInfo => {
+    const { mapInfo } = this.props;
     this.initMap({ ...mapInfo }, () => {
       this.fetchMapAreaList();
       [
@@ -186,9 +523,180 @@ export default class Map extends PureComponent {
         return null;
       });
       this.fetchPonits('chemical/fetchFireDevice', 2);
+      this.renderPosition();
+      this.renderWorkingBill();
+
+      setTimeout(() => {
+        this.markerArray[0].image = positionGray;
+        this.markerArray[0].floorId = 3;
+      }, 8000);
     });
-    //   },
-    // });
+  };
+
+  fetchPostList = (payload, callback) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'chemical/fetchPostList', payload, callback });
+  };
+
+  renderPosition = () => {
+    // 人员定位
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/getLocation',
+      payload: { companyId },
+      callback: res => {
+        const { visibles } = this.state;
+        const iconType = 4;
+        mockData.map(item => {
+          // res.data.list.map((item, index) => {
+          const {
+            latitude,
+            longitude,
+            status,
+            floorNo,
+            hgFaceInfo: { id, name, iconID },
+          } = item;
+          // status 0 运动、1 报警、2 休眠
+          const floorId = +floorNo.split('Floor')[1];
+          const position = new jsmap.JSPoint(longitude, latitude, 0);
+          const position2 = new jsmap.JSPoint(longitude, latitude, 5);
+          const url = [helmet1, helmet2, helmet3, helmet4, helmet5, helmet6][
+            iconID ? iconID - 1 : 0
+          ];
+          const alarmUrl = [
+            helmetAlarm1,
+            helmetAlarm2,
+            helmetAlarm3,
+            helmetAlarm4,
+            helmetAlarm5,
+            helmetAlarm6,
+          ][iconID ? iconID - 1 : 0];
+          const marker = this.addMarkers({
+            image: +status === 1 ? alarmUrl : url, //图片路径
+            position,
+            floorId, //楼
+            properties: { ...item, iconType },
+            show: visibles[iconType],
+            width: +status === 1 ? 80 : 50,
+            height: +status === 1 ? 80 : 50,
+          });
+          this.positionMarkers.push(marker);
+          const labelMarker = this.renderLabelMarker({
+            id,
+            text: name,
+            position: position2,
+            floorId,
+            properties: item,
+            show: visibles[iconType],
+          });
+          this.positionLabelMarkers.push(labelMarker);
+          return null;
+        });
+      },
+    });
+  };
+
+  renderPosition2 = () => {
+    // 人员定位
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/fetchMonitorEquipment',
+      payload: { companyId, pageNum: 1, pageSize: 0 },
+      callback: res => {
+        const { visibles } = this.state;
+        const iconType = 4;
+        filterMarkerList(res.data.list).map((item, index) => {
+          const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
+          const position = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 0));
+          const position2 = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 5));
+          let url = controls[iconType].markerIcon;
+          const marker = this.addMarkers({
+            image: url, //图片路径
+            position,
+            floorId: +groupId, //楼
+            properties: { ...item, iconType },
+            show: visibles[iconType],
+          });
+          this.renderLabelMarker({
+            text: `name${index}`,
+            position: position2,
+            floorId: +groupId,
+            properties: item,
+          });
+          return null;
+        });
+      },
+    });
+  };
+
+  renderLabelMarker = (markerProps = {}) => {
+    const labelMarker = new jsmap.JSLabelMarker({
+      // id: 'selectedMarker', //id
+      position: new jsmap.JSPoint(0, 0, 0),
+      text: '',
+      floorId: 1,
+      font: 'normal 12px 微软雅黑',
+      color: '#000',
+      labelStyle: jsmap.JSLabelStyle.FILL,
+      offset: jsmap.JSControlPosition.CENTER_TOP,
+      showBackground: true,
+      backgroundColor: '#fff',
+      depthTest: false,
+      ...markerProps,
+      show: undefined,
+      callback: node => {
+        node.show = !!markerProps.show;
+      }, //回调
+    });
+    map.addMarker(labelMarker);
+    return labelMarker;
+  };
+
+  renderWorkingBill = () => {
+    // 作业票
+    const { dispatch, companyId } = this.props;
+    const iconType = 5;
+    dispatch({
+      type: 'workingBill/getList',
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 0,
+        approveStatus: 2,
+        startWorkingDate: moment().format('YYYY-MM-DD 00:00'),
+        endWorkingDate: moment().format('YYYY-MM-DD 23:59'),
+      },
+      callback: (success, { list }) => {
+        if (!success) return;
+        list.map(item => {
+          const { mapAddress } = item;
+          const { visibles } = this.state;
+          if (!mapAddress || !JSON.parse(mapAddress).length) return;
+          const points = JSON.parse(mapAddress).map(p =>
+            tool.MercatorToWGS84(new jsmap.JSPoint(+p.x, +p.y, 0))
+          );
+          const { floorId, x, y, z } = points[0];
+          const polygonMarker = this.addPolygon({
+            floorId: +floorId,
+            position: points,
+            color: COLORS[3],
+            strokeColor: StrokeColor[3],
+            polygonProps: { ...item, polygonType: 2 }, // polygonType 1 四色图， 2 作业票
+            show: visibles[iconType],
+          });
+          this.workBillPolygons.push(polygonMarker);
+
+          const marker = this.addMarkers({
+            image: workBill, //图片路径
+            position: new jsmap.JSPoint(+x, +y, 0),
+            floorId: +floorId, //楼
+            properties: { ...item, iconType },
+            show: visibles[iconType],
+          });
+          this.workBillMarkers.push(marker);
+        });
+      },
+    });
   };
 
   fetchDict = (payload, success, error) => {
@@ -210,13 +718,15 @@ export default class Map extends PureComponent {
       callback: ({ list }) => {
         list.map(polygon => {
           const { zoneLevel, coordinateList, groupId, modelIds } = polygon;
-          const points = coordinateList.map(item => ({ x: +item.x, y: +item.y, z: +item.z }));
+          const points = coordinateList.map(item =>
+            tool.MercatorToWGS84(new jsmap.JSPoint(+item.x, +item.y, 0))
+          );
           const polygonMarker = this.addPolygon({
             floorId: +groupId,
-            points,
+            position: points,
             color: COLORS[zoneLevel - 1],
             strokeColor: StrokeColor[zoneLevel - 1],
-            polygonProps: polygon,
+            polygonProps: { ...polygon, polygonType: 1 },
           });
           return null;
         });
@@ -237,7 +747,7 @@ export default class Map extends PureComponent {
         if (!(code === 200 && data && data.list)) return;
         const warningList = data.list;
         this.removeMarkersByType(-1);
-        this.polygonArray.map(polygon => {
+        this.fourColorPolygons.map(polygon => {
           const properties = polygon.getProperties();
           const coordinateList = properties.get('coordinateList');
           const id = properties.get('id');
@@ -280,6 +790,7 @@ export default class Map extends PureComponent {
     filterMarkerList(pointsInfo).map(item => {
       const { warnStatus, status, deviceCode, pointCountMap, id } = item;
       const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
+      const position = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 0));
       if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
       let url = controls[iconType].markerIcon;
       if (iconType === 2) {
@@ -292,7 +803,7 @@ export default class Map extends PureComponent {
       }
       const marker = this.addMarkers({
         image: url, //图片路径
-        position: new jsmap.JSPoint(+xnum, +ynum, 0),
+        position,
         floorId: +groupId, //楼
         properties: { ...item, iconType },
         show: visibles[iconType],
@@ -336,6 +847,7 @@ export default class Map extends PureComponent {
     map = new jsmap.JSMap(mapOptions);
     map.openMapById(mapId);
     console.log('map', map);
+    tool = new jsmap.JSMapCoordTool(map);
 
     // 地图加载完成事件
     map.on('loadComplete', () => {
@@ -364,6 +876,9 @@ export default class Map extends PureComponent {
       } = clickedObj;
       if (nodeType === jsmap.JSNodeType.POLYGON_MARKER) {
         // 点击区域
+        const { visibles } = this.state;
+        // 作业票 return
+        if (visibles[5]) return;
         const { id } = clickedObj;
         handleShowAreaDrawer(id);
       }
@@ -372,6 +887,7 @@ export default class Map extends PureComponent {
         const { properties, node } = clickedObj;
         const iconType = properties.get('iconType');
         const markerProps = mapChangeObj(properties);
+        const position = new jsmap.JSPoint(node.x, node.y, 0);
         switch (iconType) {
           case 0:
             // 风险点
@@ -397,19 +913,129 @@ export default class Map extends PureComponent {
             break;
           case 3:
             // 特种设备
-            this.handleShowSpecialInfo(markerProps, floorId, new jsmap.JSPoint(node.x, node.y, 0));
+            this.handleShowSpecialInfo(markerProps, floorId, tool.MercatorToWGS84(position));
+            break;
+          case 4:
+            // 人员定位
+            this.handleClickPosition(markerProps, floorId, tool.MercatorToWGS84(position));
+            break;
+          case 5:
+            // 作业票
+            this.handleShowWorkBillInfo(markerProps, floorId, tool.MercatorToWGS84(position));
             break;
           case -1:
             // 变更预警
             const { zoneId } = markerProps;
-            this.handleShowChangeWarning(zoneId, floorId, new jsmap.JSPoint(node.x, node.y, 0));
+            this.handleShowChangeWarning(zoneId, floorId, tool.MercatorToWGS84(position));
             break;
           default:
             console.log('iconType', iconType);
             break;
         }
       }
+      if (nodeType === jsmap.JSNodeType.LABEL_MARKER) {
+        const { properties, node } = clickedObj;
+        const iconType = properties.get('iconType');
+        const markerProps = mapChangeObj(properties);
+        const position = new jsmap.JSPoint(node.x, node.y, 0);
+        // 人员定位
+        this.handleClickPosition(markerProps, floorId, position);
+      }
     });
+  };
+
+  handleUpdatePosition = ({ floorNo, latitude, longitude, status, userId }) => {
+    const {
+      chemical: { locations = [] },
+    } = this.props;
+    const { visibles } = this.state;
+    const iconType = 4;
+    const point = new jsmap.JSPoint(longitude, latitude, 0);
+    const focus = this.positionMarkers.find(item => {
+      const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+      return entranceNumber === userId;
+    });
+    if (!focus) return;
+    const label = this.positionLabelMarkers.find(item => {
+      const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+      return entranceNumber === userId;
+    });
+    if (
+      floorId === focus.floorId &&
+      longitude === focus.position.x &&
+      latitude === focus.position.y
+    ) {
+      // 位置没改return
+      return;
+    }
+    if (visibles[5] && !visibles[4]) {
+      // 显示作业票， 不显示人员定位时， 移动到作业票区域内人员也要显示
+      const isInPolygon = !this.workBillPolygons.every(
+        polygon => !isPointInPolygon(point, polygon.position)
+      );
+      if (isInPolygon) {
+        focus.show = true;
+        label.show = true;
+      } else {
+        focus.show = false;
+        label.show = false;
+      }
+    }
+    const floorId = +floorNo.split('Floor')[1];
+    if (floorId === focus.floorId) {
+      focus.moveTo(point);
+      label.moveTo(new jsmap.JSPoint(longitude, latitude, 5));
+      popInfoWindow.moveTo(point);
+    } else {
+      const properties = mapChangeObj(focus.getProperties());
+      map.removeMarker(focus);
+      map.removeMarker(label);
+      this.positionMarkers = this.positionMarkers.filter(item => item => {
+        const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+        return entranceNumber !== userId;
+      });
+      this.positionLabelMarkers = this.positionLabelMarkers.filter(item => item => {
+        const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+        return entranceNumber !== userId;
+      });
+      const marker = this.addMarkers({
+        image: +status === 1 ? alarmUrl : url, //图片路径
+        position: new jsmap.JSPoint(longitude, latitude, 0),
+        floorId, //楼
+        properties,
+        show: visibles[iconType],
+        width: +status === 1 ? 80 : 50,
+        height: +status === 1 ? 80 : 50,
+      });
+      this.positionMarkers.push(marker);
+      const labelMarker = this.renderLabelMarker({
+        id,
+        text: properties.hgFaceInfo.name,
+        position: new jsmap.JSPoint(longitude, latitude, 5),
+        floorId,
+        properties,
+        show: visibles[iconType],
+      });
+      this.positionLabelMarkers.push(labelMarker);
+      if (popInfoWindow) {
+        map.removeMarker(popInfoWindow);
+        popInfoWindow = null;
+      }
+    }
+  };
+
+  handleOneKeyAlarm = socketProps => {
+    const { event, mac } = socketProps;
+    // event   alarm  cancel_alarm
+    // mac    sn号
+    if (event === 'alarm') console.log('socketProps', socketProps);
+  };
+
+  // 点击人员定位事件
+  handleClickPosition = (markerProps, floorId, position) => {
+    this.handleFocusPosition(markerProps.hgFaceInfo.entranceNumber);
+    this.handleShowPersonList(position);
+    // this.handleShowPositionInfo(markerProps, floorId, tool.MercatorToWGS84(position));
   };
 
   // 点击监测设备重新获取信息 重绘点位 显示详情内容
@@ -426,6 +1052,39 @@ export default class Map extends PureComponent {
         }
       },
     });
+  };
+
+  // 点击focus到焦点
+  handleFocusPosition = snId => {
+    const {
+      chemical: { locations = [] },
+    } = this.props;
+    const focus = this.positionMarkers.find(item => {
+      const { entranceNumber } = item.getProperties().get('hgFaceInfo');
+      return entranceNumber === snId;
+    });
+
+    if (focus) {
+      map.flyToMarker(focus);
+      this.handleShowPositionInfo(
+        mapChangeObj(focus.getProperties()),
+        focus.floorId,
+        focus.position
+      );
+    }
+  };
+
+  // 显示附近人员列表
+  handleShowPersonList = position => {
+    const {
+      chemical: { locations = [] },
+      handleProductionOpen,
+    } = this.props;
+    const filteredList = mockData.filter(item => {
+      const { longitude, latitude } = item;
+      return isNear({ x: longitude, y: latitude }, position);
+    });
+    handleProductionOpen('position', filteredList);
   };
 
   // 变更预警
@@ -522,7 +1181,7 @@ export default class Map extends PureComponent {
         height: 100%;
         border: 1px solid rgba(0,255,255,0.3);
         border-radius: 5px;
-        min-width: 450px
+        min-width: 450px;
       }
       .specTitle {
         font-size: 16px;
@@ -594,9 +1253,234 @@ export default class Map extends PureComponent {
       // marginTop: 0,
       properties: info,
       showCloseButton: true,
-      // callback: node => {
-      //   console.log('node', node);
-      // },
+    });
+    map.addMarker(popInfoWindow);
+  };
+
+  handleShowWorkBillInfo = (info, floorId, position) => {
+    const {
+      billCode,
+      billType,
+      workingStatus,
+      applyUserName,
+      applyDepartmentName,
+      workingEndDate,
+      workingStartDate,
+      id,
+    } = info;
+    const noData = '--';
+    const content = `<div class="specContainer">
+        <div class="specTitle">作业票</div>
+        <div class="specWrapper">
+          <div class="specLabel">作业证名称：</div>
+          <div class="specValue">${(TYPES.find(item => +item.key === +billType) || {}).value ||
+            noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业证编号：</div>
+          <div class="specValue">${billCode || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">申请人：</div>
+          <div class="specValue">${applyUserName || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">申请部门：</div>
+          <div class="specValue">${applyDepartmentName || noData}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业时间：</div>
+          <div class="specValue">${moment(workingStartDate).format(MINUTE_FORMAT)} ~ ${moment(
+      workingEndDate
+    ).format(MINUTE_FORMAT)}</div>
+        </div>
+        <div class="specWrapper">
+          <div class="specLabel">作业状态：</div>
+          <div class="specValue">${(
+            WORKING_STATUSES.find(item => +item.key === +workingStatus) || {}
+          ).value || noData}</div>
+        </div>
+        <div class="specFile" onclick="window.open('${
+          window.publicPath
+        }#/operation-safety/working-bill/${billType}/detail/${id}','_blank');">详情>></div>
+      </div>
+      <style>
+        .specContainer {
+          position: relative;
+          line-height: 24px;
+          color: #fff;
+          font-size: 14px;
+          padding: 10px 15px;
+          height: 100%;
+          border: 1px solid rgba(0,255,255,0.3);
+          border-radius: 5px;
+          min-width: 450px
+        }
+        .specTitle {
+          font-size: 16px;
+          line-height: 32px;
+        }
+        .specLabel {
+          color: #979495;
+          display: inline-block;
+          width: 7em;
+          white-space: nowrap;
+          vertical-align: middle;
+        }
+        .specValue {
+          display: inline-block;
+          width: calc(100% - 7.5em);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          vertical-align: middle;
+        }
+        .specFile {
+          color: #0ff;
+          position: absolute;
+          bottom: 10px;
+          right: 15px;
+          cursor: pointer;
+        }
+      </style>`;
+    if (popInfoWindow) {
+      map.removeMarker(popInfoWindow);
+      popInfoWindow = null;
+    }
+    popInfoWindow = new jsmap.JSPopInfoMarker({
+      id: 'popInfoWindow',
+      floorId: map.focusFloorId,
+      content,
+      position,
+      // marginTop: 0,
+      properties: info,
+      showCloseButton: true,
+    });
+    map.addMarker(popInfoWindow);
+  };
+
+  handleShowPositionInfo = (info, floorId, position) => {
+    const {
+      hgFaceInfo: { id, name, sex, entranceNumber, icnumber, companyJobName, photoDetails = [] },
+    } = info;
+    const photo = (photoDetails || [])[0] || {};
+    const avatar = photo.webUrl || imgNoAvatar;
+    const noData = '--';
+    const content = `
+      <div class="specContainer">
+        <div class="top">
+          <div class="left"><img src="${avatar}" alt="avatar" style="width: ${
+      photo.webUrl ? '100%' : '70%'
+    }" /></div>
+          <div class="right">
+            <div class="specTitle">${name}</div>
+            <div class="specWrapper">
+              <div class="specLabel">性别：</div>
+              <div class="specValue">${['男', '女'][+sex] || noData}</div>
+            </div>
+            <div class="specWrapper">
+            <div class="specLabel">SN：</div>
+              <div class="specValue">${entranceNumber || noData}</div>
+            </div>
+            <div class="specWrapper">
+              <div class="specLabel">人员类型：</div>
+              <div class="specValue">${companyJobName || noData}</div>
+            </div>
+            <div class="specWrapper">
+              <div class="specLabel">区域：</div>
+              <div class="specValue">${noData}</div>
+            </div>
+            <div class="specWrapper">
+              <div class="specLabel">门禁卡号：</div>
+              <div class="specValue">${icnumber || noData}</div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom">
+          <div class="trackBtn" onclick="window.open('${
+            window.publicPath
+          }#/personnel-position/track/index?trackSn=${entranceNumber}','_blank');">跟踪</div>
+        </div>
+      </div>
+
+      <style>
+        .specContainer {
+          position: relative;
+          line-height: 24px;
+          color: #fff;
+          font-size: 14px;
+          padding: 10px 15px;
+          height: 100%;
+          border: 1px solid rgba(0,255,255,0.3);
+          border-radius: 5px;
+          min-width: 450px;
+        }
+        .top {
+          display: flex;
+        }
+        .bottom {
+          text-align: center;
+          margin-top: 5px;
+        }
+        .trackBtn {
+          background-color: #1470D7;
+          padding: 6px 12px;
+          border-radius: 5px;
+          width: 60px;
+          margin: 0 auto;
+          cursor: pointer;
+        }
+        .trackBtn:hover {
+          opacity: 0.8;
+        }
+        .left {
+          width: 120px;
+          background-color: rgba(0, 30, 56, 0.45);
+          display: inline-block;
+          text-align: center;
+          border: 1px solid #1A5E8E;
+          margin-right: 15px;
+        }
+        .right {
+          flex: 1;
+        }
+        .left img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        .specTitle {
+          font-size: 16px;
+          line-height: 32px;
+        }
+        .specLabel {
+          color: #979495;
+          display: inline-block;
+          width: 5em;
+          white-space: nowrap;
+          vertical-align: middle;
+        }
+        .specValue {
+          display: inline-block;
+          width: calc(100% - 7.5em);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          vertical-align: middle;
+        }
+      </style>`;
+    if (popInfoWindow) {
+      map.removeMarker(popInfoWindow);
+      popInfoWindow = null;
+    }
+    popInfoWindow = new jsmap.JSPopInfoMarker({
+      id: 'popInfoWindow',
+      floorId: map.focusFloorId,
+      content,
+      position,
+      // marginTop: 0,
+      properties: info,
+      showCloseButton: true,
     });
     map.addMarker(popInfoWindow);
   };
@@ -678,8 +1562,6 @@ export default class Map extends PureComponent {
   };
 
   addMarkers = (markerProps = {}) => {
-    // console.log('markerProps', markerProps);
-
     const imageMarker = new jsmap.JSImageMarker({
       // id: 'selectedMarker', //id
       image: monitor, //图片路径
@@ -700,21 +1582,30 @@ export default class Map extends PureComponent {
     return imageMarker;
   };
 
-  addPolygon = ({ floorId, points, color, strokeColor, polygonProps = {} }) => {
+  addPolygon = ({
+    // floorId,
+    position,
+    // color,
+    // strokeColor,
+    polygonProps = {},
+    show = true,
+    ...restProps
+  }) => {
     const polygonMarker = new jsmap.JSPolygonMarker({
       id: polygonProps.id,
-      position: points.map(item => ({ ...item, z: 0 })),
-      floorId,
-      color,
-      strokeColor: strokeColor,
+      position,
+      floorId: 1,
+      // color,
+      // strokeColor: strokeColor,
       properties: polygonProps,
       strokeWidth: 2, //边线宽度
       depthTest: false, //是否开启深度检测
-      // callback: marker => {
-      //   console.log('marker', marker);
-      // },
+      callback: marker => {
+        marker.show = show;
+      },
+      ...restProps,
     });
-    this.polygonArray.push(polygonMarker);
+    this.fourColorPolygons.push(polygonMarker);
     map.addMarker(polygonMarker);
     return polygonMarker;
   };
@@ -737,21 +1628,110 @@ export default class Map extends PureComponent {
     const copy = [...visibles];
     copy[index] = !visibles[index];
     this.setState({ visibles: copy });
-    if (index === 0) {
-      // setMarkerVisibleByFilter, iconType == 0不行    ?????????????
-      this.markerArray.map(item => {
-        const properties = item.getProperties();
-        const iconType = properties.get('iconType');
-        if (iconType === 0) item.show = copy[index];
-        return null;
-      });
-      return;
-    }
     map.setMarkerVisibleByFilter(
       jsmap.JSMarkerType.IMAGE_MARKER,
       copy[index],
-      `iconType == ${index}`
+      properties => +properties.get('iconType') === index
     );
+  };
+
+  // 作业票是否显示
+  handleToggleWorkBill = () => {
+    const iconType = 5;
+    const { visibles } = this.state;
+    const visible = visibles[iconType];
+    map.setMarkerVisibleByFilter(jsmap.JSMarkerType.POLYGON_MARKER, !visible, `polygonType == 2`);
+    map.setMarkerVisibleByFilter(
+      jsmap.JSMarkerType.IMAGE_MARKER,
+      !visible,
+      properties => +properties.get('iconType') === iconType
+    );
+
+    // 四色图与作业票互斥
+    map.setMarkerVisibleByFilter(jsmap.JSMarkerType.POLYGON_MARKER, visible, `polygonType == 1`);
+
+    const copy = [...visibles];
+    copy[iconType] = !visible;
+    this.setState({ visibles: copy });
+
+    if (!visibles[4]) {
+      if (!visible) {
+        // 显示作业票， 不显示人员定位， 仅显示作业票区域内的人员
+        this.handleShowPositionInWorkBill();
+      } else {
+        // 不显示作业票， 不显示人员定位
+        this.positionMarkers.map(item => {
+          item.show = false;
+          return null;
+        });
+        this.positionLabelMarkers.map(item => {
+          item.show = false;
+          return null;
+        });
+      }
+    }
+  };
+
+  handleTogglePosition = () => {
+    const { handleParentChange } = this.props;
+    const iconType = 4;
+    const { visibles } = this.state;
+    const visible = visibles[iconType];
+    const copy = [...visibles];
+    copy[iconType] = !visible;
+    this.setState({ visibles: copy });
+    // map.setMarkerVisibleByFilter(
+    //   jsmap.JSMarkerType.IMAGE_MARKER,
+    //   !visible,
+    //   properties => +properties.get('iconType') === iconType
+    // );
+    // map.setMarkerVisibleByFilter(jsmap.JSMarkerType.LABEL_MARKER, !visible, properties => true);
+    handleParentChange({ showDistribution: !visible });
+
+    if (visibles[5]) {
+      if (visible) {
+        this.handleShowPositionInWorkBill();
+      } else {
+        this.positionMarkers.map(item => {
+          item.show = true;
+          return null;
+        });
+        this.positionLabelMarkers.map(item => {
+          item.show = true;
+          return null;
+        });
+      }
+    } else {
+      this.positionMarkers.map(item => {
+        item.show = !visible;
+        return null;
+      });
+      this.positionLabelMarkers.map(item => {
+        item.show = !visible;
+        return null;
+      });
+    }
+  };
+
+  handleShowPositionInWorkBill = () => {
+    this.positionMarkers.map(item => {
+      const point = item.position;
+      const isInPolygon = !this.workBillPolygons.every(
+        polygon => !isPointInPolygon(point, polygon.position)
+      );
+      if (isInPolygon) item.show = true;
+      else item.show = false;
+      return null;
+    });
+    this.positionLabelMarkers.map(item => {
+      const point = item.position;
+      const isInPolygon = !this.workBillPolygons.every(
+        polygon => !isPointInPolygon(point, polygon.position)
+      );
+      if (isInPolygon) item.show = true;
+      else item.show = false;
+      return null;
+    });
   };
 
   handleShowVideo = keyId => {
@@ -818,8 +1798,22 @@ export default class Map extends PureComponent {
     );
   };
 
+  onFilterJob = ({ id, jobName }) => {
+    this.setState({ jobName, jobId: id });
+    this.positionMarkers.map(item => {
+      if (id === 0) {
+        item.show = true;
+        return;
+      }
+      const { companyJob } = item.getProperties().get('hgFaceInfo');
+      if (companyJob === id) item.show = true;
+      else item.show = false;
+      return null;
+    });
+  };
+
   render() {
-    const { gdMapVisible, visibles, videoVisible, keyId, truckModalVisible } = this.state;
+    const { gdMapVisible, visibles, videoVisible, keyId, truckModalVisible, jobName } = this.state;
     const {
       chemical: {
         videoList,
@@ -828,12 +1822,17 @@ export default class Map extends PureComponent {
         inOutRecordList,
         riskPoint,
         monitorEquipment,
+        locations,
+        postList,
       },
       specialEquipment: { list: specialEquipmentList },
       user: {
         currentUser: { permissionCodes },
       },
       licensePlateRecognitionSystem: { abnormalRecordList },
+      workingBill: {
+        list: { list: workBillList = [] },
+      },
     } = this.props;
     const presentCar = inCount - outCount >= 0 ? inCount - outCount : 0;
     const controlDataList = [
@@ -841,8 +1840,20 @@ export default class Map extends PureComponent {
       filterMarkerList(videoList).filter(({ status }) => status && +status === 1),
       filterMarkerList(monitorEquipment),
       filterMarkerList(specialEquipmentList),
+      locations,
+      workBillList.filter(item => item.mapAddress && JSON.parse(item.mapAddress).length),
     ];
     const controlDataLength = controlDataList.filter(list => list.length > 0).length;
+
+    const menu = (
+      <Menu>
+        {[{ id: 0, jobName: '全部人员' }, ...postList].map(item => (
+          <Menu.Item key={item.id} onClick={() => this.onFilterJob(item)}>
+            {item.jobName}
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
 
     return (
       <Fragment>
@@ -861,35 +1872,63 @@ export default class Map extends PureComponent {
               });
               if (controlDataList[index].length === 0) return null;
               return (
-                <div
-                  className={itemStyles}
-                  key={index}
-                  onClick={() => this.handleClickControl(index)}
-                >
-                  <span
-                    className={styles.icon}
-                    style={{
-                      background: `url(${
-                        visibles[index] ? activeIcon : icon
-                      }) center center / auto 100% no-repeat`,
+                <Fragment key={index}>
+                  <div
+                    className={itemStyles}
+                    onClick={() => {
+                      if (index === 5) {
+                        this.handleToggleWorkBill();
+                      } else if (index === 4) {
+                        this.handleTogglePosition();
+                      } else this.handleClickControl(index);
                     }}
-                  />
-                  {label}
-                </div>
+                  >
+                    <span
+                      className={styles.icon}
+                      style={{
+                        background: `url(${
+                          visibles[index] ? activeIcon : icon
+                        }) center center / auto 100% no-repeat`,
+                      }}
+                    />
+                    {label}
+                  </div>
+                  {index === 4 &&
+                    visibles[4] &&
+                    postList.length > 1 && (
+                      <Dropdown overlay={menu} overlayClassName={styles.dropdown}>
+                        <div
+                          className={classnames(styles.controlItem, styles.active)}
+                          style={{ width: 140, marginLeft: 10 }}
+                        >
+                          <span
+                            className={styles.icon}
+                            style={{
+                              background: `url(${jobType}) center center / auto 100% no-repeat`,
+                            }}
+                          />
+                          {jobName}
+                          <CaretDownOutlined />
+                        </div>
+                      </Dropdown>
+                    )}
+                </Fragment>
               );
             })}
           </div>
-          <div className={styles.joySuchFour}>
-            {FourColors.map((item, index) => {
-              const { label, color } = item;
-              return (
-                <div className={styles.fourColorsWrapper} key={index}>
-                  <span className={styles.rect} style={{ backgroundColor: color }} />
-                  {label}
-                </div>
-              );
-            })}
-          </div>
+          {!visibles[5] && (
+            <div className={styles.joySuchFour}>
+              {FourColors.map((item, index) => {
+                const { label, color } = item;
+                return (
+                  <div className={styles.fourColorsWrapper} key={index}>
+                    <span className={styles.rect} style={{ backgroundColor: color }} />
+                    {label}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           <div className={styles.extraContainer}>
             <div
@@ -929,7 +1968,7 @@ export default class Map extends PureComponent {
             </div>
           </div>
 
-          {permissionCodes.includes('dashboard.personnelPositioningView') && (
+          {/* {permissionCodes.includes('dashboard.personnelPositioningView') && (
             <div
               className={styles.positionBtn}
               style={{
@@ -937,7 +1976,7 @@ export default class Map extends PureComponent {
               }}
               onClick={this.handlePosition}
             />
-          )}
+          )} */}
           <NewVideoPlay
             showList={true}
             videoList={videoList

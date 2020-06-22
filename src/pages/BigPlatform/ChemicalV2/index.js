@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
-import { Row, Col, Badge, notification } from 'antd';
+import { Row, Col, notification } from 'antd';
 import { connect } from 'dva';
 // import moment from 'moment';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
@@ -11,7 +11,7 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import { mapMutations } from '@/utils/utils';
 // import headerBg from '@/assets/new-header-bg.png';
 // import bgImg from '@/pages/BigPlatform/ChemicalV2/imgs/bg.png';
-import menuIcon from './imgs/menu-icon.png';
+// import menuIcon from './imgs/menu-icon.png';
 import styles from './index.less';
 import {
   RiskPointDrawer,
@@ -20,13 +20,15 @@ import {
 import { GET_STATUS_NAME } from '@/pages/IoT/AlarmMessage';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import ImagePreview from '@/jingan-components/ImagePreview';
-import { VideoList, MonitorConfig } from './utils';
+import { MonitorConfig, getPersonList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import iconAlarm from '@/assets/icon-alarm.png';
 import Lightbox from 'react-images';
 import TankMonitorDrawer from './sections/TankMonitorDrawer';
 import AreaMonitorDrawer from './sections/AreaMonitorDrawer';
+import Distribution from './sections/Distribution';
+import ProductionOfficerDrawer from './sections/Drawers/ProductionOfficerDrawer';
 
 import {
   DangerSourceInfoDrawer,
@@ -255,9 +257,15 @@ export default class Chemical extends PureComponent {
       fireDetail: {},
       newMonitorDrawerVisible: false,
       monitorTabDrawerVisible: false,
+      distributionVisible: false,
+      productionVisible: false,
+      personLabel: null,
+      personList: [],
+      showDistribution: false,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
+    // this.handleFocusPosition = null;
 
     mapMutations(this, {
       namespace: 'unitSafety',
@@ -333,6 +341,8 @@ export default class Chemical extends PureComponent {
     this.fetchNotice({ pageSize: 1, pageNum: 1, companyId });
     // socket消息
     this.handleSocket();
+    // 定位socket
+    this.handlePositionSocket();
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
@@ -364,6 +374,7 @@ export default class Chemical extends PureComponent {
     // this.fetchHiddenDangerList();
     // 四色图分区
     // this.fetchFourColorPolygons();
+    this.getLEDPersonCount();
   };
 
   // 获取特种设备列表（全部）
@@ -472,6 +483,67 @@ export default class Chemical extends PureComponent {
     };
   };
 
+  handlePositionSocket = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    const params = {
+      companyId,
+      env: 'dev',
+      type: 13,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
+    // 链接webscoket
+    const ws = new WebsocketHeartbeatJs({ url, ...SocketOptions });
+    this.ws = ws;
+
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
+
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data);
+        const { type, data: postionData } = data;
+        console.log('socket', data);
+        switch (type) {
+          case 'location':
+            // this.childMap.handleUpdatePosition(postionData);
+            this.childMap.handleUpdatePosition({
+              ...postionData,
+              longitude: 120.3612 + Math.random() * 0.0003,
+              latitude: 31.5459 + Math.random() * 0.0003,
+            });
+            // this.childMap.handleUpdatePosition({
+            //   ...postionData,
+            //   longitude: 120.3612902133691,
+            //   latitude: 31.54597981809998,
+            // });
+            break;
+          case 'oneKeyAlarm':
+            this.childMap.handleOneKeyAlarm(postionData);
+            break;
+          default:
+            console.log('data', data);
+            break;
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
+  };
+
   /**
    * 获取大屏消息
    */
@@ -495,7 +567,7 @@ export default class Chemical extends PureComponent {
     const {
       monitorMessageDto: {
         id,
-        happenTime,
+        // happenTime,
         statusType,
         warnLevel,
         monitorEquipmentTypeName,
@@ -505,7 +577,7 @@ export default class Chemical extends PureComponent {
         limitValue,
         monitorEquipmentAreaLocation,
         monitorEquipmentName,
-        faultTypeName,
+        // faultTypeName,
         condition,
         fixType,
         monitorEquipmentType,
@@ -1343,6 +1415,44 @@ export default class Chemical extends PureComponent {
     );
   };
 
+  handleDistributionIconClick = e => {
+    this.setState(({ distributionVisible }) => ({ distributionVisible: !distributionVisible }));
+  };
+
+  handleProductionOpen = (personLabel, personList) => {
+    this.getLEDPerson();
+    console.log(personLabel, personList);
+    this.setState({ productionVisible: true, personLabel, personList });
+  };
+
+  handleProductionClose = e => {
+    this.setState({ productionVisible: false });
+  };
+
+  getLEDPersonCount = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({ type: 'chemical/fetchLEDPersonCount', payload: { companyId } });
+  };
+
+  getLEDPerson = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({ type: 'chemical/fetchLEDPerson', payload: { companyId } });
+  };
+
+  handleFocusPosition = id => {
+    this.childMap && this.childMap.handleFocusPosition(id);
+  };
+
   /**
    * 渲染
    */
@@ -1352,9 +1462,9 @@ export default class Chemical extends PureComponent {
       bigPlatform: { hiddenDangerList },
       hiddenDangerLoading,
       unitSafety: { hiddenDangerCount },
-      fourColorImage: {
-        data: { list: polygons },
-      },
+      // fourColorImage: {
+      //   data: { list: polygons },
+      // },
       chemical: {
         monitorTargetCount,
         monitorEquipCount,
@@ -1375,6 +1485,8 @@ export default class Chemical extends PureComponent {
         },
         dangerSourceMaterials,
         zoneEquip = {},
+        LEDPersonCount,
+        LEDPerson,
       },
       match: {
         params: { unitId: companyId },
@@ -1399,7 +1511,7 @@ export default class Chemical extends PureComponent {
       riskPointDrawerVisible,
       riskPointType,
       dangerAreaDrawerVisible,
-      storageAreaDrawerVisible,
+      // storageAreaDrawerVisible,
       safetyOfficerDrawerVisible,
       specialEquipmentDrawerVisible,
       videoVisible,
@@ -1445,6 +1557,11 @@ export default class Chemical extends PureComponent {
       fireDetail,
       newMonitorDrawerVisible,
       monitorTabDrawerVisible,
+      distributionVisible,
+      productionVisible,
+      personLabel,
+      personList,
+      showDistribution,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1459,7 +1576,7 @@ export default class Chemical extends PureComponent {
       });
       return prev;
     }, []);
-    const href = location.href;
+    // const href = location.href;
 
     return (
       <BigPlatformLayout
@@ -1530,6 +1647,9 @@ export default class Chemical extends PureComponent {
                   handleShowAreaDrawer={this.handleShowAreaDrawer}
                   handleClickMonitorIcon={this.handleClickMonitorIcon}
                   handleClickFireMonitor={this.handleClickFireMonitor}
+                  handleProductionOpen={this.handleProductionOpen}
+                  handleParentChange={this.handleParentChange}
+                  // cacheHandleFocusPositionFn={this.cacheHandleFocusPositionFn}
                 />
 
                 {msgVisible ? (
@@ -1556,6 +1676,14 @@ export default class Chemical extends PureComponent {
                 {/* {href.indexOf('five.jinganyun.net') < 0 && (
                   <div className={styles.fadeBtn} onClick={this.handleClickNotification} />
                 )} */}
+                {showDistribution && (
+                  <Distribution
+                    data={LEDPersonCount}
+                    visible={distributionVisible}
+                    handleIconClick={this.handleDistributionIconClick}
+                    handleProductionOpen={this.handleProductionOpen}
+                  />
+                )}
               </div>
             </Col>
           </Row>
@@ -1924,6 +2052,13 @@ export default class Chemical extends PureComponent {
           }}
           fireDetail={fireDetail}
           handleShowVideo={this.handleShowVideo}
+        />
+        {/* 生产区域人员统计 */}
+        <ProductionOfficerDrawer
+          visible={productionVisible}
+          data={getPersonList(LEDPerson, personLabel, personList)}
+          handleLocatationClick={this.handleFocusPosition}
+          onClose={this.handleProductionClose}
         />
       </BigPlatformLayout>
     );

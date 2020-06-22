@@ -17,6 +17,10 @@ import {
   getOnDuty,
   countByParkId,
   getInOutRecord,
+  getLEDPersonCount,
+  getLEDPerson,
+  getLocation,
+  getOneKeyAlarm,
 } from '@/services/bigPlatform/chemical';
 import { getHiddenDangerListForPage } from '@/services/bigPlatform/bigPlatform.js';
 import { queryTankAreaList } from '@/services/baseInfo/storageAreaManagement';
@@ -25,9 +29,10 @@ import { queryStorehouseList } from '@/services/baseInfo/storehouse';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { getList } from '@/services/gasometer';
 import { getList as getPipelineList } from '@/services/pipeline';
-import { getDeviceDetail } from '@/services/alarmWorkOrder';
+// import { getDeviceDetail } from '@/services/alarmWorkOrder';
 import { getWarningNewList } from '@/services/changeWarning';
 import { fetchMonitoringDevice } from '@/services/device/monitoringDevice';
+import { queryPostList } from '@/services/postManagement.js';
 
 export default {
   namespace: 'chemical',
@@ -70,6 +75,11 @@ export default {
     truckCount: [],
     inOutRecordList: [],
     monitoringDevice: {},
+    LEDPersonCount: {},
+    LEDPerson: {},
+    oneKeyAlarm: [],
+    locations: [],
+    postList: [],
   },
 
   effects: {
@@ -483,6 +493,67 @@ export default {
         callback && callback(res.data.list);
       }
     },
+    *fetchLEDPersonCount({ payload, callback }, { call, put }) {
+      const res = yield call(getLEDPersonCount, payload);
+      const { code, data } = res || {};
+      if (code === 200) {
+        yield put({ type: 'saveLEDPersonCount', payload: data || {} });
+        callback && callback(data);
+      }
+    },
+    *fetchLEDPerson({ payload, callback }, { call, put }) {
+      const res = yield call(getLEDPerson, payload);
+      const { code, data } = res || {};
+      if (code === 200) {
+        yield put({ type: 'saveLEDPerson', payload: data || {} });
+        callback && callback(data);
+      }
+    },
+    // 定位数据
+    *getLocation({ payload, callback }, { call, put }) {
+      const response = yield call(getLocation, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const locations = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            locations,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 定位报警数据
+    *getOneKeyAlarm({ payload, callback }, { call, put }) {
+      const response = yield call(getOneKeyAlarm, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const oneKeyAlarm = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            oneKeyAlarm,
+          },
+        });
+      }
+      callback && callback(response);
+    },
+    // 岗位列表
+    *fetchPostList({ payload, callback }, { call, put }) {
+      const response = yield call(queryPostList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const postList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            postList,
+          },
+        });
+      }
+      callback && callback(response);
+    },
   },
 
   reducers: {
@@ -515,5 +586,11 @@ export default {
         [id]: list,
       },
     }),
+    saveLEDPersonCount(state, action) {
+      return { ...state, LEDPersonCount: action.payload };
+    },
+    saveLEDPerson(state, action) {
+      return { ...state, LEDPerson: action.payload };
+    },
   },
 };
