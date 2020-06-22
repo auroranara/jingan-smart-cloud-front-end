@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styles from './index.less';
 const fengMap = fengmap; // eslint-disable-line
 const MapContainer = 'joySuchMap';
-
+let tool = null;
 export default class FormMap extends Component {
   state = {
     map: undefined,
@@ -231,6 +231,7 @@ export default class FormMap extends Component {
     const map = new jsmap.JSMap(mapOptions);
     map.openMapById(mapId);
     console.log('map', map);
+    tool = new jsmap.JSMapCoordTool(map);
 
     map.on('loadComplete', () => {
       this.setState(
@@ -396,14 +397,12 @@ export default class FormMap extends Component {
 
   // 图片覆盖物
   renderImageMarker(data) {
-    console.log('data', data);
-
     const { map } = this.state;
     const { key, url, x, y, groupId, size } = data;
     const marker = new jsmap.JSImageMarker({
       id: key, //id
       image: url, //图片路径
-      position: new jsmap.JSPoint(x, y, 0), //坐标位置
+      position: tool.MercatorToWGS84(new jsmap.JSPoint(x, y, 0)), //坐标位置
       width: size, //尺寸-宽
       height: size, //尺寸-高
       floorId: groupId, //楼层 id
@@ -428,7 +427,7 @@ export default class FormMap extends Component {
     const { color, groupId, key, lineWidth, points } = data;
     const polygonMarker = new jsmap.JSPolygonMarker({
       id: key,
-      position: points,
+      position: tool.MercatorToWGS84(points),
       floorId: groupId,
       color,
       strokeColor: color,

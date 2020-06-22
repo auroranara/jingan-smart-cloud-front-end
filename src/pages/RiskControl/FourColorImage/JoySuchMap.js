@@ -25,6 +25,7 @@ let linePoints = [];
 let lineMarker = null;
 let drawedPolygon = null;
 let pointMarkers = [];
+let tool = [];
 
 export default class JoySuchMap extends React.Component {
   constructor(props) {
@@ -47,7 +48,7 @@ export default class JoySuchMap extends React.Component {
       const { zoneLevel, coordinateList, groupId, modelIds } = item;
       this.drawPolygon({
         floorId: +groupId,
-        points: coordinateList,
+        points: tool.MercatorToWGS84(coordinateList),
         color: COLORS[zoneLevel - 1],
       });
       return null;
@@ -74,6 +75,7 @@ export default class JoySuchMap extends React.Component {
 
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
+    tool = new jsmap.JSMapCoordTool(map);
 
     map.on('mapClickNode', event => {
       const clickedObj = event;
@@ -292,7 +294,10 @@ export default class JoySuchMap extends React.Component {
   ) => {
     //绘制部分
     // 获取选中坐标点
-    this.props.getPoints(floorId, points.map(item => ({ ...item, z: 0 })));
+    this.props.getPoints(
+      floorId,
+      tool.WGS84ToMercator(points).map(item => ({ x: item.x, y: item.y, z: 0 }))
+    );
     if (points.length >= 2) {
       lineMarker && map.removeMarker(lineMarker);
       lineMarker = new jsmap.JSLineMarker({
