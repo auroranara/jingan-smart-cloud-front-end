@@ -100,7 +100,6 @@ export default class Edit extends PureComponent {
           driving: +arrayData[16],
           safe: +arrayData[17],
           submitter: arrayData[18],
-
         };
         this.setState(
           {
