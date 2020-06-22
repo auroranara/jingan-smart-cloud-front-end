@@ -14,7 +14,7 @@ const SocketOptions = {
   pingMsg: 'heartbeat',
 };
 
-const DELAY = 20000;
+const DELAY = 60000;
 
 @connect(({ loading, bigPlatform, twoInformManagement }) => ({
   twoInformManagement,
