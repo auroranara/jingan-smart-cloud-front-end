@@ -40,6 +40,44 @@ function checkStatus(response) {
  * @param  {object} [options] The options we want to pass to "fetch"
  * @return {object}           An object containing either "data" or "err"
  */
+export function request1(url, options = {}) {
+  const token = getToken();
+  const defaultOptions = {
+    headers: {
+      'JA-Token': token,
+    },
+    credentials: 'include',
+  };
+  const newOptions = {
+    ...defaultOptions,
+    ...options,
+    headers: { ...defaultOptions.headers, ...options.headers },
+  };
+  if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
+    if (!(newOptions.body instanceof FormData)) {
+      newOptions.headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+        ...newOptions.headers,
+      };
+      newOptions.body = JSON.stringify(newOptions.body);
+    } else {
+      newOptions.headers = {
+        Accept: 'application/json',
+        ...newOptions.headers,
+      };
+    }
+  }
+
+  return fetch(url, newOptions)
+    .then(response => {
+      return response.json();
+    })
+    .catch(e => {
+      return {};
+    });
+}
+
 export default function request(url, options = {}) {
   const token = getToken();
   const defaultOptions = {

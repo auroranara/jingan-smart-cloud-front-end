@@ -93,6 +93,12 @@ export default class Edit extends PureComponent {
           driving: +arrayData[9],
           safe: +arrayData[10],
           submitter: arrayData[11],
+          ground: arrayData[12],
+          short: arrayData[13],
+          breaker: arrayData[14],
+          wall: arrayData[15],
+          electricity: arrayData[16],
+          other: arrayData[17],
         };
         this.setState(
           {
@@ -143,6 +149,12 @@ export default class Edit extends PureComponent {
           driving,
           safe,
           submitter,
+          ground,
+          short,
+          breaker,
+          wall,
+          electricity,
+          other,
         } = values;
         const payload = {
           id,
@@ -170,7 +182,19 @@ export default class Edit extends PureComponent {
             ',' +
             safe +
             ',' +
-            submitter,
+            submitter +
+            ',' +
+            ground +
+            ',' +
+            short +
+            ',' +
+            breaker +
+            ',' +
+            wall +
+            ',' +
+            electricity +
+            ',' +
+            other,
         };
 
         const success = () => {

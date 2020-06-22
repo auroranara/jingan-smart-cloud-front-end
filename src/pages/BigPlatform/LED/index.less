@@ -1,3 +1,8 @@
+@keyframes move {
+  from { top: 0; }
+  to { top: -100%; }
+}
+
 .content {
   width: 480px;
   height: 320px;
@@ -50,6 +55,23 @@
     display: flex;
     justify-content: center;
     font-size: 18px;
+  }
+
+  .promise {
+    height: calc(100% - 28px);
+    overflow: hidden;
+  }
+
+  .promiseOuter {
+    position: relative;
+  }
+
+  // .promiseInner {
+  // }
+
+  .promiseInner1 {
+    position: absolute;
+    animation: move 30s infinite linear;
   }
 
   .item {

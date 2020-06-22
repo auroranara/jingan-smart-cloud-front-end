@@ -158,6 +158,12 @@ export const EDIT_FORMITEMS = [
   { name: 'levelOne', label: '一级动火作业', placeholder: '请输入数量', required: true },
   { name: 'levelTwo', label: '二级动火作业', placeholder: '请输入数量', required: true },
   { name: 'limitedSpace', label: '进入受限空间作业', placeholder: '请输入数量', required: true },
+  { name: 'ground', label: '动土作业', placeholder: '请输入数量', required: true },
+  { name: 'short', label: '短路作业', placeholder: '请输入数量', required: true },
+  { name: 'breaker', label: '断路作业', placeholder: '请输入数量', required: true },
+  { name: 'wall', label: '盲板抽堵', placeholder: '请输入数量', required: true },
+  { name: 'electricity', label: '临时用电', placeholder: '请输入数量', required: true },
+  { name: 'other', label: '其他作业', placeholder: '请输入数量', required: true },
   { name: 'pilot', label: '是否处于试生产', type: 'radio', options: PILOT, required: true },
   { name: 'driving', label: '是否处于开停车状态', type: 'radio', options: DRIVING, required: true },
   {

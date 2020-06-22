@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import { stringify } from 'qs';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 
-import Scroll from '../../../components/Scroll';
+import Scroll  from '../../../components/Scroll';
 import styles from './index.less';
 
 const SocketOptions = {
@@ -14,7 +14,7 @@ const SocketOptions = {
   pingMsg: 'heartbeat',
 };
 
-// const DELAY = 7200000;
+const DELAY = 20000;
 
 @connect(({ loading, bigPlatform, twoInformManagement }) => ({
   twoInformManagement,
@@ -28,8 +28,12 @@ export default class Led extends PureComponent {
       detailList: [],
       personData: [],
       createTime: '',
+      height: 0,
+      scroll: false,
     };
   }
+
+  pollTimer = null;
 
   componentDidMount() {
     this.fetchCompanyMsg();
@@ -37,12 +41,19 @@ export default class Led extends PureComponent {
     this.myTimer = setInterval(() => {
       this.setCurrentTime();
     }, 1000);
-    // 获取Socket
     this.initWebSocket();
-    // this.fetchSafetyPromise();
-    // 轮询
-    // this.pollTimer = setInterval(this.polling, DELAY);
+    this.fetchSafetyPromise();
+    this.pollTimer = setInterval(this.polling, DELAY);
   }
+
+  componentWillUnmount() {
+    clearInterval(this.pollTimer);
+    clearInterval(this.myTimer);
+  }
+
+  polling = () => {
+    this.fetchSafetyPromise();
+  };
 
   // 获取统计初始化数据
   fetchLedData = () => {
@@ -103,11 +114,6 @@ export default class Led extends PureComponent {
     };
   };
 
-  // pollTimer = null;
-  // polling = () => {
-  //   this.fetchSafetyPromise();
-  // };
-
   // 获取企业名字
   fetchCompanyMsg = () => {
     const {
@@ -125,7 +131,7 @@ export default class Led extends PureComponent {
   };
 
   // 获取承诺公告
-  fetchSafetyPromise = () => {
+  fetchSafetyPromise = (isInit) => {
     const {
       dispatch,
       match: {
@@ -133,21 +139,16 @@ export default class Led extends PureComponent {
       },
     } = this.props;
     dispatch({
-      type: 'twoInformManagement/fetchSafetyPromiseList',
-      payload: {
-        companyId,
-        pageSize: 10,
-        pageNum: 1,
-      },
-      // callback: ({ list }) => {
-      //   const [{ allContent, createTime }] = list;
-      //   const arrayData = allContent.split(',');
-      //   this.setState({
-      //     detailList: arrayData,
-      //     createTime: createTime,
-      //   });
-      // },
+      type: 'bigPlatform/fetchLedPromise',
+      payload: { companyId },
     });
+  };
+
+  onPromiseRef = dom => {
+    // console.log(dom, dom.offsetHeight);
+    const outerHeight = document.querySelector('#led-promise').offsetHeight;
+    const height = dom.offsetHeight;
+    this.setState({ height, scroll: height > outerHeight });
   };
 
   // 设置当前时间
@@ -157,20 +158,16 @@ export default class Led extends PureComponent {
     });
   };
 
-  componentWillUnmount() {
-    // clearInterval(this.pollTimer);
-    clearInterval(this.myTimer);
-  }
-
   render() {
     const {
       bigPlatform: {
         companyMessage: {
           companyMessage: { companyName },
         },
+        ledPromise: { contentForLED, dutyPerson, createTime },
       },
     } = this.props;
-    const { personData, currentTime, createTime } = this.state;
+    const { personData, currentTime, height, scroll } = this.state;
     const personList = Array.isArray(personData) ? personData.slice(1) : [];
 
     return (
@@ -198,11 +195,21 @@ export default class Led extends PureComponent {
           </div>
           <div className={styles.right}>
             <div className={styles.title}>安全承诺公告</div>
-            <div className={styles.item}>
+            {/* <div className={styles.item}>
               今天我公司已经进行了安全风险研判，各项安全风险防控措施落实到位，我承诺所有生产装置处于安全运行状态，罐区、仓库等重大危险源安全风险得到有效控制。
             </div>
-            <div className={styles.itemExtra}>负责人：周新</div>
-            <div className={styles.itemExtra}>{moment().format('YYYY-MM-DD')}</div>
+            <div className={styles.itemExtra}>负责人：周新</div> */}
+            {contentForLED && (
+              <div className={styles.promise} id="led-promise">
+                <div style={{ height }} className={styles.promiseOuter}>
+                  <div className={styles[`promiseInner${scroll ? '1' : ''}`]} ref={this.onPromiseRef}>
+                    <div>{contentForLED}</div>
+                    <div className={styles.itemExtra}>{dutyPerson}</div>
+                    <div className={styles.itemExtra}>{moment(createTime).format('YYYY-MM-DD')}</div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

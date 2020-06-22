@@ -1,4 +1,4 @@
-import request from '../../utils/cockpitRequest';
+import request, { request1 } from '../../utils/cockpitRequest';
 import { stringify } from 'qs';
 
 // 政府大屏
@@ -265,4 +265,9 @@ export async function getCompanyInfo(params) {
 // 获取led数据
 export async function getLedData(params) {
   return request(`/acloud_new/v2/ci/HGFace/getJobCountInProductArea?${stringify(params)}`);
+}
+
+// 获取企业最后一个安全承诺公告
+export async function getLedPromise(params) {
+  return request1(`/acloud_new/v2/notice/getLastCompanyPublic?${stringify(params)}`);
 }
