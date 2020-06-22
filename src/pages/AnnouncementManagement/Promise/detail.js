@@ -179,7 +179,7 @@ export default class Detail extends PureComponent {
           >
             返回
           </Button>
-          <Button
+          {/* <Button
             // style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
             type="primary"
             // size="large"
@@ -187,7 +187,7 @@ export default class Detail extends PureComponent {
             href={`#${ROUTER}/edit/${id}`}
           >
             编辑
-          </Button>
+          </Button> */}
         </div>
       </Card>
     );

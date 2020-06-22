@@ -35,7 +35,7 @@ export const BREADCRUMBLIST = [
 ];
 
 const DEVICES = ['总：', '运行：', '停产：', '检修：'];
-const SPECIAL = ['特种作业：', '一级动火作业：', '二级动火作业：', '进入受限空间作业：'];
+const SPECIAL = ['二级动火作业：', '一级动火作业：', '特种作业：', '进入受限空间作业：'];
 const PILOT = ['否', '是'];
 const DRIVING = ['否', '是'];
 
@@ -105,7 +105,7 @@ export const TABLE_COLUMNS = [
     width: 160,
     render: (val, row) => {
       const { allContent } = row;
-      return <span>{PILOT[allContent.split(',')[8]]}</span>;
+      return <span>{PILOT[allContent.split(',')[15]]}</span>;
     },
   },
   {
@@ -116,7 +116,7 @@ export const TABLE_COLUMNS = [
     width: 160,
     render: (val, row) => {
       const { allContent } = row;
-      return <span>{DRIVING[allContent.split(',')[9]]}</span>;
+      return <span>{DRIVING[allContent.split(',')[16]]}</span>;
     },
   },
   {
@@ -133,7 +133,7 @@ export const TABLE_COLUMNS = [
         <div>
           <p>
             提交者：
-            {`${allContent.split(',')[11]}`}
+            {`${allContent.split(',')[18]}`}
           </p>
           <p>
             提交时间：

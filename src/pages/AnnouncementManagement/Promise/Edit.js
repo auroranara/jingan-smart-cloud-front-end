@@ -146,17 +146,18 @@ export default class Edit extends PureComponent {
           specialWork,
           levelOne,
           levelTwo,
+          high,
           limitedSpace,
-          pilot,
-          driving,
-          safe,
-          submitter,
           ground,
           short,
           breaker,
           wall,
           electricity,
           other,
+          pilot,
+          driving,
+          safe,
+          submitter,
         } = values;
         const payload = {
           id,
@@ -175,6 +176,8 @@ export default class Edit extends PureComponent {
             levelOne +
             ',' +
             specialWork +
+            ',' +
+            high +
             ',' +
             limitedSpace +
             ',' +
@@ -201,7 +204,7 @@ export default class Edit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, () => setTimeout(this.goBack, 1000));
+          // message.success(msg, 1, () => setTimeout(this.goBack, 1000));
         };
 
         const error = () => {
