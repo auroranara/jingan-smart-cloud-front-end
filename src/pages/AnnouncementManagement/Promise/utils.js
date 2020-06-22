@@ -157,6 +157,7 @@ export const EDIT_FORMITEMS = [
   { name: 'levelTwo', label: '二级动火作业', placeholder: '请输入数量', required: true },
   { name: 'levelOne', label: '一级动火作业', placeholder: '请输入数量', required: true },
   { name: 'specialWork', label: '特殊动火作业', placeholder: '请输入数量', required: true },
+  { name: 'high', label: '高处作业', placeholder: '请输入数量', required: true },
   { name: 'limitedSpace', label: '进入受限空间作业', placeholder: '请输入数量', required: true },
   { name: 'ground', label: '动土作业', placeholder: '请输入数量', required: true },
   { name: 'short', label: '短路作业', placeholder: '请输入数量', required: true },

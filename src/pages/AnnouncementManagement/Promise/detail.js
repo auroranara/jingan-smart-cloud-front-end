@@ -101,26 +101,54 @@ export default class Detail extends PureComponent {
                 <span className={styles.label}>{detailList[3]}</span>套
               </div>
               <div className={styles.item}>
-                特殊、一级、二级动火作业各
+                二级、一级、特殊动火作业各
                 <span className={styles.label}>{detailList[4]}</span>、
                 <span className={styles.label}>{detailList[5]}</span>、
                 <span className={styles.label}>{detailList[6]}</span>处
               </div>
               <div className={styles.item}>
-                进入受限空间作业
+                高处作业
                 <span className={styles.label}>{detailList[7]}</span>处
               </div>
               <div className={styles.item}>
+                进入受限空间作业
+                <span className={styles.label}>{detailList[8]}</span>处
+              </div>
+              <div className={styles.item}>
+                动土作业
+                <span className={styles.label}>{detailList[9]}</span>处
+              </div>
+              <div className={styles.item}>
+                短路作业
+                <span className={styles.label}>{detailList[10]}</span>处
+              </div>
+              <div className={styles.item}>
+                断路作业
+                <span className={styles.label}>{detailList[11]}</span>处
+              </div>
+              <div className={styles.item}>
+                盲板抽堵
+                <span className={styles.label}>{detailList[12]}</span>处
+              </div>
+              <div className={styles.item}>
+                临时用电
+                <span className={styles.label}>{detailList[13]}</span>处
+              </div>
+              <div className={styles.item}>
+                其他作业
+                <span className={styles.label}>{detailList[14]}</span>处
+              </div>
+              <div className={styles.item}>
                 是否处于试生产{' '}
-                <span className={styles.label}>{detailList[8] === '0' ? '否' : '是'}</span>
+                <span className={styles.label}>{detailList[15] === '0' ? '否' : '是'}</span>
               </div>
               <div className={styles.item}>
                 是否处于开停车状态{' '}
-                <span className={styles.label}>{detailList[9] === '0' ? '否' : '是'}</span>
+                <span className={styles.label}>{detailList[16] === '0' ? '否' : '是'}</span>
               </div>
               <div className={styles.item}>
                 储罐、仓库等重大危险源是否处于安全状态{' '}
-                <span className={styles.label}>{detailList[10] === '0' ? '否' : '是'}</span>
+                <span className={styles.label}>{detailList[17] === '0' ? '否' : '是'}</span>
               </div>
             </div>
           </div>
@@ -135,7 +163,7 @@ export default class Detail extends PureComponent {
               </div>
               <div className={styles.personLabel}>
                 主要负责人：
-                <span className={styles.label}>{detailList[11]}</span>
+                <span className={styles.label}>{detailList[18]}</span>
               </div>
               <div className={styles.personLabel}>{moment(+createTime).format('YYYY-MM-DD')}</div>
             </div>
