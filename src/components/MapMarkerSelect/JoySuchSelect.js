@@ -100,7 +100,7 @@ export default class JoySuchSelect extends PureComponent {
       const { groupId, xnum, ynum } = item.pointFixInfoList[0];
       const imgMarker = this.addImgMarker({
         groupId,
-        coord: tool.MercatorToWGS84(new jsmap.Point(+xnum, +ynum, 0)) /* eslint-disable-line */,
+        coord: tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 0)) /* eslint-disable-line */,
         markerId: item.id,
         show: otherMarkersVisible,
         ...otherMarkersOption,
@@ -164,7 +164,7 @@ export default class JoySuchSelect extends PureComponent {
     this.map = new jsmap.JSMap(mapOptions);
     //打开Fengmap服务器的地图数据和主题
     this.map.openMapById(mapId);
-    tool = new jsmap.JSMapCoordTool(map);
+    tool = new jsmap.JSMapCoordTool(this.map);
     // 监听点击
     this.map.on('mapClickNode', event => {
       const { onChange, readonly, markerOption = {} } = this.props;

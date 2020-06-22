@@ -252,7 +252,7 @@ export default class WorkingBillOther extends Component {
   state = {};
 
   componentDidMount() {
-    const { getDetail, getMapInfo, getPersonList } = this.props;
+    const { getDetail, getMapInfo, getPersonList, isUnit, unitId } = this.props;
     getDetail({}, (success, detail) => {
       const { companyId } = detail || {};
       setTimeout(() => {
@@ -261,6 +261,10 @@ export default class WorkingBillOther extends Component {
       companyId && getMapInfo({ companyId });
       companyId && getPersonList({ companyId });
     });
+    if (isUnit) {
+      getMapInfo({ unitId });
+      getPersonList({ unitId });
+    }
   }
 
   validateSafetyMeasure = (rule, value, callback) => {

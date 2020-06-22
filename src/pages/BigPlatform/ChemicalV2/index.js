@@ -2100,6 +2100,7 @@ export default class Chemical extends PureComponent {
           data={getPersonList(LEDPerson, personLabel, personList)}
           handleLocatationClick={this.handleFocusPosition}
           onClose={this.handleProductionClose}
+          title={personLabel === 'position' ? '人员列表' : '生产区域人员统计'}
         />
       </BigPlatformLayout>
     );

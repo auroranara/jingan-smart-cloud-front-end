@@ -91,11 +91,12 @@ export default class ProductionOfficerDrawer extends PureComponent {
       data: { keyList, valueList, total },
       handleLocatationClick,
       onClose,
+      title: propsTitle,
     } = this.props;
 
     const title = (
       <Fragment>
-        生产区域人员统计
+        {propsTitle}
         <span className={styles.length}>
           ({total}
           人)
@@ -125,8 +126,11 @@ export default class ProductionOfficerDrawer extends PureComponent {
           {Array.isArray(keyList) &&
             keyList.map(({ label, num }, index) => (
               <Col span={12} className={styles.person} key={index}>
-                <div className={styles.personName}>{label}</div>
-                <div className={styles.personValue}>{num || 0}</div>
+                <div className={styles.personName}>{label}：</div>
+                <div className={styles.personValue}>
+                  {num || 0}
+                  <span style={{ color: '#fff' }}>人</span>
+                </div>
               </Col>
             ))}
         </Row>
