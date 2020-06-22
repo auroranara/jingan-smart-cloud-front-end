@@ -173,7 +173,7 @@ export default class KeyPoints extends PureComponent {
                 })}
               </Row>
             ) : (
-              <NoData />
+              <NoData style={{ height: '100%' }} />
             )}
           </div>
         </div>

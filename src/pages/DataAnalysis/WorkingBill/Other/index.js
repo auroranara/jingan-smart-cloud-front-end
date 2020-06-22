@@ -54,6 +54,16 @@ import { genGoBack } from '@/utils/utils';
 
 const CheckboxOrSpan = ({ mode, children, ...restProps }) =>
   mode === 'detail' ? <span>{children}</span> : <Checkbox {...restProps}>{children}</Checkbox>;
+const limitDecimals = value => {
+  const reg = /^(\-)*(\d+)\.(\d\d).*$/;
+  if (typeof value === 'string') {
+    return !isNaN(Number(value)) ? value.replace(reg, '$1$2.$3') : '';
+  } else if (typeof value === 'number') {
+    return !isNaN(value) ? String(value).replace(reg, '$1$2.$3') : '';
+  } else {
+    return '';
+  }
+};
 
 @connect(
   ({
@@ -2012,6 +2022,8 @@ export default class WorkingBillOther extends Component {
                         >
                           {getFieldDecorator('staticWarn', {
                             initialValue: detail.staticWarn,
+                            getValueFromEvent: ({ target: { value } }) =>
+                              value.replace(/(\d*).*/, '$1'),
                           })(
                             <Input
                               placeholder=""
@@ -2055,6 +2067,8 @@ export default class WorkingBillOther extends Component {
                         >
                           {getFieldDecorator('strandedWarn', {
                             initialValue: detail.strandedWarn,
+                            getValueFromEvent: ({ target: { value } }) =>
+                              value.replace(/(\d*).*/, '$1'),
                           })(
                             <Input
                               placeholder=""

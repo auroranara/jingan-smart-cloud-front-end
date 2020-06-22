@@ -525,11 +525,6 @@ export default class Map extends PureComponent {
       this.fetchPonits('chemical/fetchFireDevice', 2);
       this.renderPosition();
       this.renderWorkingBill();
-
-      setTimeout(() => {
-        this.markerArray[0].image = positionGray;
-        this.markerArray[0].floorId = 3;
-      }, 8000);
     });
   };
 
@@ -559,7 +554,7 @@ export default class Map extends PureComponent {
           // status 0 运动、1 报警、2 休眠
           const floorId = +floorNo.split('Floor')[1];
           const position = new jsmap.JSPoint(longitude, latitude, 0);
-          const position2 = new jsmap.JSPoint(longitude, latitude, 5);
+          const position2 = new jsmap.JSPoint(longitude, latitude, 3);
           const url = [helmet1, helmet2, helmet3, helmet4, helmet5, helmet6][
             iconID ? iconID - 1 : 0
           ];
@@ -608,7 +603,7 @@ export default class Map extends PureComponent {
         filterMarkerList(res.data.list).map((item, index) => {
           const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
           const position = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 0));
-          const position2 = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 5));
+          const position2 = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 3));
           let url = controls[iconType].markerIcon;
           const marker = this.addMarkers({
             image: url, //图片路径
@@ -984,7 +979,7 @@ export default class Map extends PureComponent {
     const floorId = +floorNo.split('Floor')[1];
     if (floorId === focus.floorId) {
       focus.moveTo(point);
-      label.moveTo(new jsmap.JSPoint(longitude, latitude, 5));
+      label.moveTo(new jsmap.JSPoint(longitude, latitude, 3));
       popInfoWindow.moveTo(point);
     } else {
       const properties = mapChangeObj(focus.getProperties());
@@ -1011,7 +1006,7 @@ export default class Map extends PureComponent {
       const labelMarker = this.renderLabelMarker({
         id,
         text: properties.hgFaceInfo.name,
-        position: new jsmap.JSPoint(longitude, latitude, 5),
+        position: new jsmap.JSPoint(longitude, latitude, 3),
         floorId,
         properties,
         show: visibles[iconType],
@@ -1801,6 +1796,17 @@ export default class Map extends PureComponent {
   onFilterJob = ({ id, jobName }) => {
     this.setState({ jobName, jobId: id });
     this.positionMarkers.map(item => {
+      if (id === 0) {
+        item.show = true;
+        return;
+      }
+      const { companyJob } = item.getProperties().get('hgFaceInfo');
+      if (companyJob === id) item.show = true;
+      else item.show = false;
+      return null;
+    });
+
+    this.positionLabelMarkers.map(item => {
       if (id === 0) {
         item.show = true;
         return;

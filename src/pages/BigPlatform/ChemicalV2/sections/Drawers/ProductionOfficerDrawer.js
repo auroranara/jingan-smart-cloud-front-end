@@ -30,9 +30,7 @@ function Card(props) {
         </div>
         <div className={styles.item}>
           <span className={styles.label1}>区域：</span>
-          <span className={styles.value}>
-            -
-          </span>
+          <span className={styles.value}>-</span>
         </div>
         <div className={styles.item}>
           <span className={styles.label1}>门禁卡号：</span>
@@ -57,15 +55,24 @@ function CardList(props) {
   return (
     <div>
       <h3 className={styles.cardTitle}>
-        {rect}{title}
-        <span className={styles.length}>({list.length}人)</span>
+        {rect}
+        {title}
+        <span className={styles.length}>
+          ({list.length}
+          人)
+        </span>
       </h3>
-      {list.map(item => <Card key={item.id} handleLocatationClick={handleLocatationClick} {...item} />)}
+      {list.map(item => (
+        <Card key={item.id} handleLocatationClick={handleLocatationClick} {...item} />
+      ))}
     </div>
   );
 }
 
 export default class ProductionOfficerDrawer extends PureComponent {
+  state = {
+    drawerWidth: 0,
+  };
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
@@ -78,6 +85,7 @@ export default class ProductionOfficerDrawer extends PureComponent {
   };
 
   render() {
+    const { drawerWidth } = this.state;
     let {
       visible,
       data: { keyList, valueList, total },
@@ -85,16 +93,29 @@ export default class ProductionOfficerDrawer extends PureComponent {
       onClose,
     } = this.props;
 
-    const title = <Fragment>生产区域人员统计<span className={styles.length}>({total}人)</span></Fragment>;
+    const title = (
+      <Fragment>
+        生产区域人员统计
+        <span className={styles.length}>
+          ({total}
+          人)
+        </span>
+      </Fragment>
+    );
 
     return (
       <SectionDrawer
         drawerProps={{
           mask: false,
-          width: 512,
+          width: visible ? 512 : drawerWidth,
           title,
           visible,
           onClose,
+          afterVisibleChange: () => {
+            // fix bug 10697, 弹窗遮罩问题
+            if (!visible) this.setState({ drawerWidth: 0 });
+            else this.setState({ drawerWidth: 512 });
+          },
         }}
         sectionProps={{
           refScroll: this.refScroll,
@@ -110,7 +131,14 @@ export default class ProductionOfficerDrawer extends PureComponent {
             ))}
         </Row>
         <div className={styles.container}>
-          {valueList.map(({ title, list }) => <CardList key={title} title={title} list={list} handleLocatationClick={handleLocatationClick} />)}
+          {valueList.map(({ title, list }) => (
+            <CardList
+              key={title}
+              title={title}
+              list={list}
+              handleLocatationClick={handleLocatationClick}
+            />
+          ))}
         </div>
       </SectionDrawer>
     );

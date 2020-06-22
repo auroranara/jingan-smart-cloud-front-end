@@ -343,6 +343,8 @@ export default class Chemical extends PureComponent {
     this.handleSocket();
     // 定位socket
     this.handlePositionSocket();
+    // led socket
+    this.handleLEDSocket();
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
@@ -492,7 +494,7 @@ export default class Chemical extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId,
-      env: 'dev',
+      env,
       type: 13,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
@@ -534,6 +536,45 @@ export default class Chemical extends PureComponent {
             console.log('data', data);
             break;
         }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
+  };
+
+  handleLEDSocket = () => {
+    const {
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    const params = {
+      companyId,
+      env,
+      type: 200,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
+    // 链接webscoket
+    const ws = new WebsocketHeartbeatJs({ url, ...SocketOptions });
+    this.ws = ws;
+
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
+
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data);
+        if (data) this.getLEDPersonCount();
       } catch (error) {
         console.log('error', error);
       }
