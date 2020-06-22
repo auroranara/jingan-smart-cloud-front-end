@@ -85,20 +85,21 @@ export default class Edit extends PureComponent {
           run: arrayData[1],
           stop: arrayData[2],
           checking: arrayData[3],
-          specialWork: arrayData[4],
+          levelTwo: arrayData[4],
           levelOne: arrayData[5],
-          levelTwo: arrayData[6],
+          specialWork: arrayData[6],
           limitedSpace: arrayData[7],
-          pilot: +arrayData[8],
-          driving: +arrayData[9],
-          safe: +arrayData[10],
-          submitter: arrayData[11],
-          ground: arrayData[12],
-          short: arrayData[13],
-          breaker: arrayData[14],
-          wall: arrayData[15],
-          electricity: arrayData[16],
-          other: arrayData[17],
+          ground: arrayData[8],
+          short: arrayData[9],
+          breaker: arrayData[10],
+          wall: arrayData[11],
+          electricity: arrayData[12],
+          other: arrayData[13],
+          pilot: +arrayData[14],
+          driving: +arrayData[15],
+          safe: +arrayData[16],
+          submitter: arrayData[17],
+
         };
         this.setState(
           {
@@ -168,21 +169,13 @@ export default class Edit extends PureComponent {
             ',' +
             checking +
             ',' +
-            specialWork +
+            levelTwo +
             ',' +
             levelOne +
             ',' +
-            levelTwo +
+            specialWork +
             ',' +
             limitedSpace +
-            ',' +
-            pilot +
-            ',' +
-            driving +
-            ',' +
-            safe +
-            ',' +
-            submitter +
             ',' +
             ground +
             ',' +
@@ -194,7 +187,15 @@ export default class Edit extends PureComponent {
             ',' +
             electricity +
             ',' +
-            other,
+            other +
+            ',' +
+            pilot +
+            ',' +
+            driving +
+            ',' +
+            safe +
+            ',' +
+            submitter,
         };
 
         const success = () => {
