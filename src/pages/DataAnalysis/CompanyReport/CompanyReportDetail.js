@@ -276,6 +276,7 @@ export default class App extends PureComponent {
           return (
             <div>
               <Link
+                target="_blank"
                 to={`/control-measures-follow-up/company-report/checkDetail/${
                   val._id
                   }?checkId=${id}&&companyName=${companyName}&&object_title=${encodeURIComponent(object_title)}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
@@ -331,11 +332,6 @@ export default class App extends PureComponent {
           )}
           {/* {tab === '2'} */}
           {this.renderImageDetail()}
-          <div style={{ textAlign: 'center' }}>
-            <Button onClick={e => window.close()}>
-              返回
-            </Button>
-          </div>
         </Spin>
         <div style={{ textAlign: 'center', marginTop: 24 }}>
           <Button onClick={e => window.close()}>

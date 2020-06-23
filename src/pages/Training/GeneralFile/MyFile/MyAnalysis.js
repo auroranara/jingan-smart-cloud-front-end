@@ -108,6 +108,11 @@ export default class MyAnalysis extends PureComponent {
             }, 1000);
           }}
         />
+        <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <Button onClick={e => window.close()}>
+            返回
+          </Button>
+        </div>
       </PageHeaderLayout>
     );
   }
