@@ -517,17 +517,7 @@ export default class Chemical extends PureComponent {
         console.log('socket', data);
         switch (type) {
           case 'location':
-            // this.childMap.handleUpdatePosition(postionData);
-            this.childMap.handleUpdatePosition({
-              ...postionData,
-              longitude: 120.3612 + Math.random() * 0.0003,
-              latitude: 31.5459 + Math.random() * 0.0003,
-            });
-            // this.childMap.handleUpdatePosition({
-            //   ...postionData,
-            //   longitude: 120.3612902133691,
-            //   latitude: 31.54597981809998,
-            // });
+            this.childMap.handleUpdatePosition(postionData);
             break;
           case 'oneKeyAlarm':
             this.childMap.handleOneKeyAlarm(postionData);

@@ -129,7 +129,7 @@ export default class ProductionOfficerDrawer extends PureComponent {
                 <div className={styles.personName}>{label}：</div>
                 <div className={styles.personValue}>
                   {num || 0}
-                  <span style={{ color: '#fff' }}>人</span>
+                  <span style={{ color: '#fff', marginLeft: 8 }}>人</span>
                 </div>
               </Col>
             ))}

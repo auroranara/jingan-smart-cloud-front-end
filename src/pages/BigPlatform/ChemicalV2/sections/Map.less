@@ -279,4 +279,15 @@
     right: 0;
     left: auto !important;
   }
+  .container {
+    .controlContainer {
+      .controlItem {
+        width: 100px;
+
+        & + .controlItem {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
 }

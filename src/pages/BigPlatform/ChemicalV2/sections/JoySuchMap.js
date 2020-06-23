@@ -50,299 +50,6 @@ import helmetAlarm6 from '../imgs/helmet-alarm-6.png';
 import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
 import jobType from '../imgs/job-type.png';
 
-const mockData = [
-  {
-    latitude: 31.545964158887074,
-    yMillimeter: 19000,
-    locationType: 1,
-    buildId: '202343',
-    floorNo: 'Floor1',
-    timestampMillisecond: 1592459848208,
-    xMillimeter: 52000,
-    userId: '505e9bad279511eab68d7cd30aeb74c6',
-    mac: '1918E001FAE3',
-    longitude: 120.36140601261161,
-    status: 2,
-    hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq',
-      remarks: null,
-      ids: null,
-      idList: null,
-      companyId: '99rz446zt9fet_lr',
-      name: 'lm',
-      sex: '0',
-      ethnic: null,
-      certificateType: null,
-      certificateNumber: null,
-      birthday: null,
-      location: null,
-      address: null,
-      telephone: null,
-      email: null,
-      personType: '1',
-      personCompany: null,
-      duty: null,
-      workType: null,
-      education: null,
-      major: null,
-      icnumber: '12123',
-      entranceNumber: '1918E001FAE3',
-      photo: '',
-      educationCertificate: '',
-      guid: null,
-      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
-      workerNumber: null,
-      iconID: null,
-      partId: null,
-      partName: null,
-      companyJob: null,
-      companyJobName: null,
-      status: null,
-      labelId: 'qrqa4e_9dblfpmbr',
-      isSN: null,
-      photoDetails: null,
-      educationCertificateDetails: null,
-      companyName: null,
-      gridIdList: null,
-      companyBasicInfo: null,
-      hgAuthorizationManage: null,
-      authorizationMessage: null,
-    },
-  },
-  {
-    latitude: 31.54599011116575,
-    yMillimeter: 19000,
-    locationType: 1,
-    buildId: '202343',
-    floorNo: 'Floor1',
-    timestampMillisecond: 1592459848208,
-    xMillimeter: 52000,
-    userId: '505e9bad279511eab68d7cd30aeb74c6',
-    mac: '1918E001FAE3',
-    longitude: 120.36142360805042,
-    status: 2,
-    hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq1',
-      remarks: null,
-      ids: null,
-      idList: null,
-      companyId: '99rz446zt9fet_lr',
-      name: 'aaaa',
-      sex: '0',
-      ethnic: null,
-      certificateType: null,
-      certificateNumber: null,
-      birthday: null,
-      location: null,
-      address: null,
-      telephone: null,
-      email: null,
-      personType: '1',
-      personCompany: null,
-      duty: null,
-      workType: null,
-      education: null,
-      major: null,
-      icnumber: '12123',
-      entranceNumber: 'zzzzzzzzzzz',
-      photo: '',
-      educationCertificate: '',
-      guid: null,
-      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
-      workerNumber: null,
-      iconID: null,
-      partId: null,
-      partName: null,
-      companyJob: null,
-      companyJobName: null,
-      status: null,
-      labelId: 'qrqa4e_9dblfpmbr',
-      isSN: null,
-      photoDetails: null,
-      educationCertificateDetails: null,
-      companyName: null,
-      gridIdList: null,
-      companyBasicInfo: null,
-      hgAuthorizationManage: null,
-      authorizationMessage: null,
-    },
-  },
-  {
-    latitude: 31.54596264128945,
-    yMillimeter: 19000,
-    locationType: 1,
-    buildId: '202343',
-    floorNo: 'Floor1',
-    timestampMillisecond: 1592459848208,
-    xMillimeter: 52000,
-    userId: '505e9bad279511eab68d7cd30aeb74c6',
-    mac: '1918E001FAE3',
-    longitude: 120.36140810929106,
-    status: 2,
-    hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq2',
-      remarks: null,
-      ids: null,
-      idList: null,
-      companyId: '99rz446zt9fet_lr',
-      name: 'bbb',
-      sex: '0',
-      ethnic: null,
-      certificateType: null,
-      certificateNumber: null,
-      birthday: null,
-      location: null,
-      address: null,
-      telephone: null,
-      email: null,
-      personType: '1',
-      personCompany: null,
-      duty: null,
-      workType: null,
-      education: null,
-      major: null,
-      icnumber: '12123',
-      entranceNumber: 'ccccccccccc',
-      photo: '',
-      educationCertificate: '',
-      guid: null,
-      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
-      workerNumber: null,
-      iconID: null,
-      partId: null,
-      partName: null,
-      companyJob: null,
-      companyJobName: null,
-      status: null,
-      labelId: 'qrqa4e_9dblfpmbr',
-      isSN: null,
-      photoDetails: null,
-      educationCertificateDetails: null,
-      companyName: null,
-      gridIdList: null,
-      companyBasicInfo: null,
-      hgAuthorizationManage: null,
-      authorizationMessage: null,
-    },
-  },
-  {
-    latitude: 31.545964867960592,
-    yMillimeter: 19000,
-    locationType: 1,
-    buildId: '202343',
-    floorNo: 'Floor1',
-    timestampMillisecond: 1592459848208,
-    xMillimeter: 52000,
-    userId: '505e9bad279511eab68d7cd30aeb74c6',
-    mac: '1918E001FAE3',
-    longitude: 120.3613941235298,
-    status: 2,
-    hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq3',
-      remarks: null,
-      ids: null,
-      idList: null,
-      companyId: '99rz446zt9fet_lr',
-      name: 'cccc',
-      sex: '0',
-      ethnic: null,
-      certificateType: null,
-      certificateNumber: null,
-      birthday: null,
-      location: null,
-      address: null,
-      telephone: null,
-      email: null,
-      personType: '1',
-      personCompany: null,
-      duty: null,
-      workType: null,
-      education: null,
-      major: null,
-      icnumber: '12123',
-      entranceNumber: 'sssssssssss',
-      photo: '',
-      educationCertificate: '',
-      guid: null,
-      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
-      workerNumber: null,
-      iconID: null,
-      partId: null,
-      partName: null,
-      companyJob: null,
-      companyJobName: null,
-      status: null,
-      labelId: 'qrqa4e_9dblfpmbr',
-      isSN: null,
-      photoDetails: null,
-      educationCertificateDetails: null,
-      companyName: null,
-      gridIdList: null,
-      companyBasicInfo: null,
-      hgAuthorizationManage: null,
-      authorizationMessage: null,
-    },
-  },
-  {
-    latitude: 31.546056228302405,
-    yMillimeter: 19000,
-    locationType: 1,
-    buildId: '202343',
-    floorNo: 'Floor1',
-    timestampMillisecond: 1592459848208,
-    xMillimeter: 52000,
-    userId: '505e9bad279511eab68d7cd30aeb74c6',
-    mac: '1918E001FAE3',
-    longitude: 120.36137511023651,
-    status: 2,
-    hgFaceInfo: {
-      id: 'rbyr7a_v_8sbgkwq4',
-      remarks: null,
-      ids: null,
-      idList: null,
-      companyId: '99rz446zt9fet_lr',
-      name: 'dddd',
-      sex: '0',
-      ethnic: null,
-      certificateType: null,
-      certificateNumber: null,
-      birthday: null,
-      location: null,
-      address: null,
-      telephone: null,
-      email: null,
-      personType: '1',
-      personCompany: null,
-      duty: null,
-      workType: null,
-      education: null,
-      major: null,
-      icnumber: '12123',
-      entranceNumber: 'aaaaaa',
-      photo: '',
-      educationCertificate: '',
-      guid: null,
-      employeeId: 'c755f4f3b06a11ea982700163e15b4dc',
-      workerNumber: null,
-      iconID: null,
-      partId: null,
-      partName: null,
-      companyJob: null,
-      companyJobName: null,
-      status: null,
-      labelId: 'qrqa4e_9dblfpmbr',
-      isSN: null,
-      photoDetails: null,
-      educationCertificateDetails: null,
-      companyName: null,
-      gridIdList: null,
-      companyBasicInfo: null,
-      hgAuthorizationManage: null,
-      authorizationMessage: null,
-    },
-  },
-];
-
 const Distance = 9.82986525e-10;
 const isNear = (a, b) => {
   const x = a.x - b.x;
@@ -533,6 +240,13 @@ export default class Map extends PureComponent {
     dispatch({ type: 'chemical/fetchPostList', payload, callback });
   };
 
+  calcCoord = (x, y) => {
+    const minX = 13398536;
+    const maxY = 3703889;
+    const position = tool.MercatorToWGS84({ x: minX + x / 1000, y: maxY - y / 1000, z: 0 });
+    return position;
+  };
+
   renderPosition = () => {
     // 人员定位
     const { dispatch, companyId } = this.props;
@@ -542,19 +256,22 @@ export default class Map extends PureComponent {
       callback: res => {
         const { visibles } = this.state;
         const iconType = 4;
-        mockData.map(item => {
-          // res.data.list.map((item, index) => {
+        res.data.list.map((item, index) => {
           const {
             latitude,
             longitude,
             status,
             floorNo,
             hgFaceInfo: { id, name, iconID },
+            xMillimeter,
+            yMillimeter,
           } = item;
           // status 0 运动、1 报警、2 休眠
           const floorId = +floorNo.split('Floor')[1];
-          const position = new jsmap.JSPoint(longitude, latitude, 0);
-          const position2 = new jsmap.JSPoint(longitude, latitude, 3);
+          // const position = new jsmap.JSPoint(longitude, latitude, 0);
+          // const position2 = new jsmap.JSPoint(longitude, latitude, 3);
+          const position = this.calcCoord(xMillimeter, yMillimeter);
+          const position2 = new jsmap.JSPoint(position.x, position.y, 3);
           const url = [helmet1, helmet2, helmet3, helmet4, helmet5, helmet6][
             iconID ? iconID - 1 : 0
           ];
@@ -939,13 +656,21 @@ export default class Map extends PureComponent {
     });
   };
 
-  handleUpdatePosition = ({ floorNo, latitude, longitude, status, userId }) => {
+  handleUpdatePosition = ({
+    floorNo,
+    latitude,
+    longitude,
+    status,
+    userId,
+    xMillimeter,
+    yMillimeter,
+  }) => {
     const {
       chemical: { locations = [] },
     } = this.props;
     const { visibles } = this.state;
     const iconType = 4;
-    const point = new jsmap.JSPoint(longitude, latitude, 0);
+    const point = this.calcCoord(xMillimeter, yMillimeter);
     const focus = this.positionMarkers.find(item => {
       const { entranceNumber } = item.getProperties().get('hgFaceInfo');
       return entranceNumber === userId;
@@ -955,11 +680,7 @@ export default class Map extends PureComponent {
       const { entranceNumber } = item.getProperties().get('hgFaceInfo');
       return entranceNumber === userId;
     });
-    if (
-      floorId === focus.floorId &&
-      longitude === focus.position.x &&
-      latitude === focus.position.y
-    ) {
+    if (floorId === focus.floorId && point.x === focus.position.x && point.y === focus.position.y) {
       // 位置没改return
       return;
     }
@@ -979,23 +700,29 @@ export default class Map extends PureComponent {
     const floorId = +floorNo.split('Floor')[1];
     if (floorId === focus.floorId) {
       focus.moveTo(point);
-      label.moveTo(new jsmap.JSPoint(longitude, latitude, 3));
-      popInfoWindow.moveTo(point);
+      label.moveTo(new jsmap.JSPoint(point.x, point.y, 3));
+      if (
+        popInfoWindow &&
+        popInfoWindow.show &&
+        popInfoWindow.getProperties().get('hgFaceInfo').entranceNumber === userId
+      ) {
+        popInfoWindow.moveTo(point);
+      }
     } else {
       const properties = mapChangeObj(focus.getProperties());
       map.removeMarker(focus);
       map.removeMarker(label);
-      this.positionMarkers = this.positionMarkers.filter(item => item => {
+      this.positionMarkers = this.positionMarkers.filter(item => {
         const { entranceNumber } = item.getProperties().get('hgFaceInfo');
         return entranceNumber !== userId;
       });
-      this.positionLabelMarkers = this.positionLabelMarkers.filter(item => item => {
+      this.positionLabelMarkers = this.positionLabelMarkers.filter(item => {
         const { entranceNumber } = item.getProperties().get('hgFaceInfo');
         return entranceNumber !== userId;
       });
       const marker = this.addMarkers({
         image: +status === 1 ? alarmUrl : url, //图片路径
-        position: new jsmap.JSPoint(longitude, latitude, 0),
+        position: point,
         floorId, //楼
         properties,
         show: visibles[iconType],
@@ -1006,7 +733,7 @@ export default class Map extends PureComponent {
       const labelMarker = this.renderLabelMarker({
         id,
         text: properties.hgFaceInfo.name,
-        position: new jsmap.JSPoint(longitude, latitude, 3),
+        position: new jsmap.JSPoint(point.x, point.y, 3),
         floorId,
         properties,
         show: visibles[iconType],
@@ -1075,9 +802,9 @@ export default class Map extends PureComponent {
       chemical: { locations = [] },
       handleProductionOpen,
     } = this.props;
-    const filteredList = mockData.filter(item => {
-      const { longitude, latitude } = item;
-      return isNear({ x: longitude, y: latitude }, position);
+    const filteredList = locations.filter(item => {
+      const { longitude, latitude, xMillimeter, yMillimeter } = item;
+      return isNear(this.calcCoord(xMillimeter, yMillimeter), position);
     });
     handleProductionOpen('position', filteredList);
   };
@@ -1105,7 +832,7 @@ export default class Map extends PureComponent {
       floorId: map.focusFloorId,
       content,
       position,
-      properties: { zoneId },
+      properties: { zoneId, iconType: -1 },
       showCloseButton: true,
     });
     map.addMarker(popInfoWindow);
@@ -1246,7 +973,7 @@ export default class Map extends PureComponent {
       content,
       position,
       // marginTop: 0,
-      properties: info,
+      properties: { ...info, iconType: 3 },
       showCloseButton: true,
     });
     map.addMarker(popInfoWindow);
@@ -1348,7 +1075,7 @@ export default class Map extends PureComponent {
       content,
       position,
       // marginTop: 0,
-      properties: info,
+      properties: { ...info, iconType: 5 },
       showCloseButton: true,
     });
     map.addMarker(popInfoWindow);
@@ -1474,7 +1201,7 @@ export default class Map extends PureComponent {
       content,
       position,
       // marginTop: 0,
-      properties: info,
+      properties: { ...info, iconType: 4 },
       showCloseButton: true,
     });
     map.addMarker(popInfoWindow);
@@ -1816,6 +1543,11 @@ export default class Map extends PureComponent {
       else item.show = false;
       return null;
     });
+
+    if (popInfoWindow) {
+      map.removeMarker(popInfoWindow);
+      popInfoWindow = null;
+    }
   };
 
   render() {
