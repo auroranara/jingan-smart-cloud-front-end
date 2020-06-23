@@ -1,0 +1,108 @@
+.card:not(:last-child) {
+  margin-bottom: 24px;
+}
+.nameWrapper {
+  margin: 0 -8px;
+
+  .name {
+    display: inline-block;
+    padding: 0 8px;
+    vertical-align: top;
+  }
+
+  .videoWrapper {
+    display: inline-block;
+    padding: 0 8px;
+    vertical-align: top;
+
+    .video {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      vertical-align: top;
+      background: url('@/assets/videoCamera.png') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+    }
+  }
+}
+.imageContainer {
+  margin: 0 -4px -4px 0;
+
+  .image {
+    display: inline-block;
+    margin: 0 4px 4px 0;
+    height: 80px;
+    vertical-align: top;
+    cursor: pointer;
+  }
+}
+.descriptionList:not(:last-child) {
+  margin-bottom: 16px;
+}
+.description {
+  white-space: pre-line;
+}
+.collapse {
+  .message {
+    display: flex;
+    justify-content: space-between;
+
+    .messageLeft {
+      flex: none;
+    }
+    .messageRight {
+      flex: none;
+    }
+  }
+
+  .receiverWrapper {
+    display: flex;
+    align-items: center;
+
+    .avatar {
+      flex: none;
+      margin-right: 12px;
+      background-color: #1890ff;
+    }
+    .receiverInfoWrapper {
+      flex: 1;
+      white-space: nowrap;
+
+      .receiverInfo {
+        margin: 0 -8px;
+
+        .receiverName {
+          display: inline-block;
+          padding: 0 8px;
+          vertical-align: top;
+        }
+        .receiverPhone {
+          display: inline-block;
+          padding: 0 8px;
+          vertical-align: top;
+        }
+      }
+      .receiverStatus {
+        font-size: 12px;
+        color: #ff4848;
+      }
+    }
+  }
+}
+.total {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+}
+.row {
+  margin-bottom: -12px;
+  :global {
+    .ant-col {
+      margin-bottom: 12px;
+    }
+  }
+}
+.pagination {
+  float: right;
+  margin-top: 16px;
+}

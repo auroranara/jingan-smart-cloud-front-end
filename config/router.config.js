@@ -4950,6 +4950,56 @@ module.exports = env => {
                 },
               ],
             },
+            // 故障工单
+            {
+              path: '/company-iot/fault-work-order',
+              code: 'companyIot.faultWorkOrder',
+              name: 'faultWorkOrder',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/company-iot/fault-work-order',
+                  redirect: '/company-iot/fault-work-order/list',
+                },
+                {
+                  path: '/company-iot/fault-work-order/list',
+                  code: 'companyIot.faultWorkOrder.list',
+                  name: 'list',
+                  component: './IoT/FaultWorkOrder/List',
+                },
+                {
+                  path: '/company-iot/fault-work-order/detail/:id',
+                  code: 'companyIot.faultWorkOrder.detail',
+                  name: 'detail',
+                  component: './IoT/FaultWorkOrder/Detail',
+                },
+              ],
+            },
+            // 失联工单
+            {
+              path: '/company-iot/loss-work-order',
+              code: 'companyIot.lossWorkOrder',
+              name: 'lossWorkOrder',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/company-iot/loss-work-order',
+                  redirect: '/company-iot/loss-work-order/list',
+                },
+                {
+                  path: '/company-iot/loss-work-order/list',
+                  code: 'companyIot.lossWorkOrder.list',
+                  name: 'list',
+                  component: './IoT/LossWorkOrder/List',
+                },
+                {
+                  path: '/company-iot/loss-work-order/detail/:id',
+                  code: 'companyIot.lossWorkOrder.detail',
+                  name: 'detail',
+                  component: './IoT/LossWorkOrder/Detail',
+                },
+              ],
+            },
             {
               name: 'alarmMessage', // 报警消息
               code: 'companyIot.alarmMessage',

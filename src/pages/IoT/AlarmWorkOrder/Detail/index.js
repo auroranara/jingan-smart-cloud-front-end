@@ -7,77 +7,15 @@ import ImagePreview from '@/jingan-components/ImagePreview';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { connect } from 'dva';
 import moment from 'moment';
-import { isNumber, getPageSize, setPageSize, toFixed } from '@/utils/utils';
+import { isNumber, getPageSize, setPageSize } from '@/utils/utils';
 import locales from '@/locales/zh-CN';
-import { DEFAULT_FORMAT, STATUSES } from '../List';
+import { STATUSES, FORMAT, GET_TRANSFORMED_TIME, GET_MESSAGE_CONTENT } from '../config';
 import styles from './index.less';
 
 const { Step } = Steps;
 const { Description } = DescriptionList;
 const { Panel } = Collapse;
 const EmptyData = () => <span className={styles.empty}>暂无数据</span>;
-export const getTransformedTime = time => {
-  if (time < 60 * 1000) {
-    return '小于1min';
-  } else {
-    const day = Math.floor(time / (24 * 60 * 60 * 1000));
-    time %= 24 * 60 * 60 * 1000;
-    const hour = Math.floor(time / (60 * 60 * 1000));
-    time %= 60 * 60 * 1000;
-    const minute = Math.floor(time / (60 * 1000));
-    // time %= 60 * 1000;
-    // const second = Math.floor(time / 1000);
-    return [
-      day && `${day}d`,
-      hour && `${hour}h`,
-      minute && `${minute}min` /* , second && `${second}s` */,
-    ]
-      .filter(v => v)
-      .join('');
-  }
-};
-const getMessageContent = ({
-  statusType,
-  fixType,
-  warnLevel,
-  paramDesc,
-  monitorValue,
-  paramUnit,
-  limitValue,
-  monitorEquipmentTypeName,
-  faultTypeName,
-  condition,
-}) => {
-  if (+statusType === -1) {
-    if (+fixType === 5) {
-      return `${monitorEquipmentTypeName}发生火警`;
-    } else if (+warnLevel === 1) {
-      return `${monitorEquipmentTypeName}发生预警，${paramDesc}为${monitorValue}${paramUnit ||
-        ''}，${condition === '>=' ? '超过' : '低于'}预警值${toFixed(
-        Math.abs(limitValue - monitorValue)
-      )}${paramUnit || ''}`;
-    } else if (+warnLevel === 2) {
-      return `${monitorEquipmentTypeName}发生告警，${paramDesc}为${monitorValue}${paramUnit ||
-        ''}，${condition === '>=' ? '超过' : '低于'}告警值${toFixed(
-        Math.abs(limitValue - monitorValue)
-      )}${paramUnit || ''}`;
-    }
-  } else if (+statusType === -2) {
-    return `${monitorEquipmentTypeName}发生失联`;
-  } else if (+statusType === -3) {
-    return `${monitorEquipmentTypeName}发生故障（${faultTypeName}）`;
-  } else if (+statusType === 1) {
-    if (+fixType === 5) {
-      return `${monitorEquipmentTypeName}火警解除`;
-    } else {
-      return `${monitorEquipmentTypeName}报警解除（${paramDesc}）`;
-    }
-  } else if (+statusType === 2) {
-    return `${monitorEquipmentTypeName}恢复在线`;
-  } else if (+statusType === 3) {
-    return `${monitorEquipmentTypeName}故障消除（${faultTypeName}）`;
-  }
-};
 
 @connect(
   (state, { route: { name, code, path } }) => {
@@ -262,7 +200,7 @@ export default class AlarmWorkOrderDetail extends Component {
         description: (
           <Fragment>
             {/* <div>{createUserName}</div> */}
-            <div>{createDate && moment(createDate).format(DEFAULT_FORMAT)}</div>
+            <div>{createDate && moment(createDate).format(FORMAT)}</div>
           </Fragment>
         ),
       },
@@ -278,7 +216,7 @@ export default class AlarmWorkOrderDetail extends Component {
             <Fragment>
               <div>{{ 1: '误报警情', 2: '真实警情' }[type]}</div>
               <div>{startUserName}</div>
-              <div>{moment(startDate).format(DEFAULT_FORMAT)}</div>
+              <div>{moment(startDate).format(FORMAT)}</div>
             </Fragment>
           ),
         });
@@ -297,7 +235,7 @@ export default class AlarmWorkOrderDetail extends Component {
         description: (
           <Fragment>
             {+executeType !== 2 && <div>{executorName}</div>}
-            <div>{moment(endDate).format(DEFAULT_FORMAT)}</div>
+            <div>{moment(endDate).format(FORMAT)}</div>
           </Fragment>
         ),
       });
@@ -368,7 +306,7 @@ export default class AlarmWorkOrderDetail extends Component {
           </Description>
           {isFinished && (
             <Description term="耗时">
-              {isNumber(spendTime) ? getTransformedTime(spendTime) : <EmptyData />}
+              {isNumber(spendTime) ? GET_TRANSFORMED_TIME(spendTime) : <EmptyData />}
             </Description>
           )}
           {!isHost && <Description term="监测对象">{targetName || <EmptyData />}</Description>}
@@ -541,9 +479,9 @@ export default class AlarmWorkOrderDetail extends Component {
                       header={
                         <div className={styles.message}>
                           <div className={styles.messageLeft}>
-                            {moment(happenTime).format(DEFAULT_FORMAT)}
+                            {moment(happenTime).format(FORMAT)}
                             &nbsp;&nbsp;
-                            {getMessageContent(item)}
+                            {GET_MESSAGE_CONTENT(item)}
                           </div>
                           <div className={styles.messageRight}>
                             站内信：
