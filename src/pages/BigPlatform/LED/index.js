@@ -14,7 +14,7 @@ const SocketOptions = {
   pingMsg: 'heartbeat',
 };
 
-const DELAY = 60000;
+const DELAY = 60000 * 10;
 
 @connect(({ loading, bigPlatform, twoInformManagement }) => ({
   twoInformManagement,
@@ -102,7 +102,7 @@ export default class Led extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = e.data;
-        console.log('e.data', data);
+        // console.log('e.data', data);
         this.setState({ personData: JSON.parse(data) });
       } catch (error) {
         console.log('error', error);
