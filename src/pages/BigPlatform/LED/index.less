@@ -21,8 +21,24 @@
   justify-content: center;
 }
 
-.seaction {
+.sectionsContainer {
   height: 82%;
+  position: relative;
+  overflow: hidden;
+}
+
+.sections {
+  width: 200%;
+  position: absolute;
+  display: flex;
+  transition: left 2s;
+}
+
+.section, .section1 {
+  width: 50%;
+}
+
+.section {
   display: flex;
 }
 
@@ -57,23 +73,6 @@
     font-size: 18px;
   }
 
-  .promise {
-    height: calc(100% - 28px);
-    overflow: hidden;
-  }
-
-  .promiseOuter {
-    position: relative;
-  }
-
-  // .promiseInner {
-  // }
-
-  .promiseInner1 {
-    position: absolute;
-    animation: move 30s infinite linear;
-  }
-
   .item {
     line-height: 36px;
   }
@@ -81,5 +80,17 @@
   .itemExtra {
     display: flex;
     justify-content: flex-end;
+  }
+}
+
+.table {
+  width: 100%;
+  th, td {
+    font-size: 13px;
+    border: 1px solid red;
+  }
+
+  th {
+    text-align: center;
   }
 }
