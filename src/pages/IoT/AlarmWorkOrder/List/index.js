@@ -7,16 +7,10 @@ import TablePage from '@/templates/TablePage';
 import MajorHazardSelect from '../../components/MajorHazardSelect';
 import MonitorObjectSelect from '../../components/MonitorObjectSelect';
 import moment from 'moment';
-import classNames from 'classnames';
 import router from 'umi/router';
+import { STATUSES, FORMAT } from '../config';
 import styles from './index.less';
 
-export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-export const STATUSES = [
-  { key: '2', value: '待处理' },
-  { key: '0', value: '处理中' },
-  { key: '1', value: '已处理' },
-];
 const TRANSFORM = data => {
   const {
     range: [startTime, endTime] = [],
@@ -27,8 +21,8 @@ const TRANSFORM = data => {
   } = data || {};
   return {
     ...rest,
-    queryCreateStartDate: startTime && startTime.startOf('day').format(DEFAULT_FORMAT),
-    queryCreateEndDate: endTime && endTime.endOf('day').format(DEFAULT_FORMAT),
+    queryCreateStartDate: startTime && startTime.startOf('day').format(FORMAT),
+    queryCreateEndDate: endTime && endTime.endOf('day').format(FORMAT),
     dangerSource,
     dangerSourceId: dangerSourceId && dangerSourceId.key,
     targetType,
@@ -188,7 +182,7 @@ export default class AlarmWorkOrderList extends Component {
     {
       title: '工单创建时间',
       dataIndex: 'createDate',
-      render: time => time && moment(time).format(DEFAULT_FORMAT),
+      render: time => time && moment(time).format(FORMAT),
       align: 'center',
     },
     {
@@ -200,7 +194,7 @@ export default class AlarmWorkOrderList extends Component {
     {
       title: '工单结束时间',
       dataIndex: 'endDate',
-      render: time => time && moment(time).format(DEFAULT_FORMAT),
+      render: time => time && moment(time).format(FORMAT),
       align: 'center',
     },
     {

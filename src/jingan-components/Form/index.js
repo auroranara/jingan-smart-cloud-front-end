@@ -124,7 +124,8 @@ const FormIndex = forwardRef((props, ref) => {
     [initialValues]
   );
   // 创建是否展开的变量
-  const [expand, setExpand] = useState(!mode && expandable ? false : true);
+  // const [expand, setExpand] = useState(!mode && expandable ? false : true);
+  const [expand, setExpand] = useState(true);
   // 获取当前栅格大小
   const size = useMediaQuery();
   // 对fields做统一化处理

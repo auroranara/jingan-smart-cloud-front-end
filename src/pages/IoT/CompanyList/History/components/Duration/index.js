@@ -5,7 +5,7 @@ import Link from '@/jingan-components/View/Link';
 import { connect } from 'dva';
 import { stringify } from 'qs';
 import moment from 'moment';
-import { getTransformedTime } from '@/pages/IoT/AlarmWorkOrder/Detail';
+import { GET_TRANSFORMED_TIME } from '@/pages/IoT/AlarmWorkOrder/config';
 import { isEqual } from 'lodash';
 import styles from './index.less';
 
@@ -74,7 +74,7 @@ export default connect(
       },
       [params]
     );
-    let time = getTransformedTime((avgTime || 0) * 1000);
+    let time = GET_TRANSFORMED_TIME((avgTime || 0) * 1000);
     const numbers = time.match(/\d+/g);
     time = time.split(/\d+/g).reduce((result, item, index) => {
       if (item) {
