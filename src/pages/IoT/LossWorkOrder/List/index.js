@@ -121,7 +121,7 @@ export default connect(
       },
       [query]
     );
-    const hasDetailAuthority = permissionCodes.includes('companyIot.faultWorkOrder.detail');
+    const hasDetailAuthority = permissionCodes.includes('companyIot.lossWorkOrder.detail');
     const FIELDS = [
       ...(unitType !== 4
         ? [
@@ -251,7 +251,7 @@ export default connect(
         width: 88,
         fixed: 'right',
         render: (_, { id }) => (
-          <Link to={`/company-iot/fault-work-order/detail/${id}`} disabled={!hasDetailAuthority}>
+          <Link to={`/company-iot/loss-work-order/detail/${id}`} disabled={!hasDetailAuthority}>
             查看详情
           </Link>
         ),
@@ -265,7 +265,7 @@ export default connect(
           <Fragment>
             <span className={styles.text}>已发送</span>
             <Link
-              to={`/company-iot/fault-work-order/detail/${id}?flag`}
+              to={`/company-iot/loss-work-order/detail/${id}?flag`}
               disabled={!hasDetailAuthority || !value}
             >
               {`${value || 0}条`}
