@@ -11,7 +11,7 @@ const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)' };
 /**
  * description: 容器
  */
-export default function CustomSection ({
+export default function CustomSection({
   // 容器类名
   className,
   // 容器样式
@@ -32,8 +32,9 @@ export default function CustomSection ({
   scrollProps: {
     className: scrollClassName,
     ref: setScrollReference,
+    refScroll,
     ...scrollProps
-  }={},
+  } = {},
   // spin组件相关参数
   spinProps: {
     // 是否在加载中
@@ -41,17 +42,13 @@ export default function CustomSection ({
     // 类名
     wrapperClassName: spinClassName,
     ...spinProps
-  }={},
+  } = {},
   // 是否显示第二个滚动条
-  mode="single",
+  mode = 'single',
   // 子元素
   children2,
   // 滚动条相关设置属性，请查看Scroll组件
-  scrollProps2: {
-    className: scrollClassName2,
-    ref: setScrollReference2,
-    ...scrollProps2
-  }={},
+  scrollProps2: { className: scrollClassName2, ref: setScrollReference2, ...scrollProps2 } = {},
   // spin组件相关参数
   spinProps2: {
     // 是否在加载中
@@ -59,7 +56,7 @@ export default function CustomSection ({
     // 类名
     wrapperClassName: spinClassName2,
     ...spinProps2
-  }={},
+  } = {},
   ...restProps
 }) {
   return (
@@ -79,7 +76,9 @@ export default function CustomSection ({
           {...spinProps}
         >
           <Scroll
-            ref={scroll => setScrollReference && setScrollReference(scroll && scroll.dom)}
+            ref={
+              setScrollReference ? scroll => setScrollReference(scroll && scroll.dom) : refScroll
+            }
             className={classNames('custom-section-scroll', scrollClassName)}
             thumbStyle={thumbStyle}
             renderThumbHorizontal={renderHorizontal}

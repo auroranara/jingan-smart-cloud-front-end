@@ -215,13 +215,22 @@ export const MonitorConfig = {
       {
         label: '存储物质',
         value: 'chineName',
-        extra: ({ id, companyId }) => (
+        extra: ({ id, companyId, storageMedium, chineName }, onSecurityClick) => (
           <div
             className={styles.detail}
             style={{ right: 0, top: 0 }}
-            onClick={() => {
-              window.open(`${window.publicPath}#/security/${companyId}/detail/${id}`);
-            }}
+            // onClick={() => {
+            //   window.open(`${window.publicPath}#/security/${companyId}/detail/${id}`);
+            // }}
+            onClick={() =>
+              storageMedium &&
+              onSecurityClick([
+                {
+                  key: storageMedium,
+                  value: chineName,
+                },
+              ])
+            }
           >
             安防措施>>
           </div>

@@ -19,6 +19,7 @@ export default class CardItem extends PureComponent {
       iconStyle = {},
       labelStyle = {},
       fieldsStyle = {},
+      onSecurityClick,
     } = this.props;
     const { icon } = data;
     return (
@@ -51,7 +52,7 @@ export default class CardItem extends PureComponent {
                 <span className={styles.value} style={valueStyle}>
                   {render ? render(data[value], data) : data[value] || NO_DATA}
                 </span>
-                {(typeof extra === 'function' ? extra(data) : extra) || null}
+                {(typeof extra === 'function' ? extra(data, onSecurityClick) : extra) || null}
               </div>
             );
           })}

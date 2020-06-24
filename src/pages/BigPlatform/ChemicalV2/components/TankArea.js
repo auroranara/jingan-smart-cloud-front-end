@@ -62,6 +62,7 @@ export default class TankArea extends PureComponent {
       handleShowVideo,
       chemical: { monitoringDevice },
       bordered,
+      onSecurityClick,
     } = this.props;
     const { areaName, location, tmList = [], videoList = [], id, chineNameList, companyId } = data;
     const meList = monitoringDevice[id] || [];
@@ -97,8 +98,21 @@ export default class TankArea extends PureComponent {
               chineNameList.length > 0 && (
                 <div
                   className={styles.extra}
-                  onClick={() => this.handleClickSecurity({ unitId: companyId, targetId: id })}
+                  // onClick={() => this.handleClickSecurity({ unitId: companyId, targetId: id })}
                   style={{ top: 0, bottom: 'auto' }}
+                  onClick={() =>
+                    onSecurityClick(
+                      (tmList || [])
+                        .map(
+                          item =>
+                            item.storageMedium && {
+                              key: item.storageMedium,
+                              value: item.chineName,
+                            }
+                        )
+                        .filter(v => v)
+                    )
+                  }
                 >
                   安防措施>>
                 </div>
@@ -175,6 +189,7 @@ export default class TankArea extends PureComponent {
                         </div>
                       </Fragment>
                     }
+                    onSecurityClick={onSecurityClick}
                   />
                 );
               })

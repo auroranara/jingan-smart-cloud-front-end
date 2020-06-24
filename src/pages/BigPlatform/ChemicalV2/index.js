@@ -27,6 +27,7 @@ import iconAlarm from '@/assets/icon-alarm.png';
 import Lightbox from 'react-images';
 import TankMonitorDrawer from './sections/TankMonitorDrawer';
 import AreaMonitorDrawer from './sections/AreaMonitorDrawer';
+import SecurityDrawer from './components/SecurityDrawer';
 
 import {
   DangerSourceInfoDrawer,
@@ -255,6 +256,10 @@ export default class Chemical extends PureComponent {
       fireDetail: {},
       newMonitorDrawerVisible: false,
       monitorTabDrawerVisible: false,
+      // 安防措施抽屉是否显示
+      securityDrawerVisible: false,
+      // 安防措施抽屉数据
+      securityDrawerData: undefined,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -1361,6 +1366,16 @@ export default class Chemical extends PureComponent {
     );
   };
 
+  // 安防措施点击事件
+  onSecurityClick = securityDrawerData => {
+    this.setState({ securityDrawerVisible: true, securityDrawerData });
+  };
+
+  // 安防措施抽屉关闭事件
+  onSecurityDrawerClose = () => {
+    this.setState({ securityDrawerVisible: false });
+  };
+
   /**
    * 渲染
    */
@@ -1463,6 +1478,8 @@ export default class Chemical extends PureComponent {
       fireDetail,
       newMonitorDrawerVisible,
       monitorTabDrawerVisible,
+      securityDrawerVisible,
+      securityDrawerData,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1679,6 +1696,7 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           handleShowVideo={this.handleShowVideo}
           loading={targetLoading}
+          onSecurityClick={this.onSecurityClick}
         />
 
         <MonitorTabDrawer
@@ -1692,6 +1710,7 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           handleShowVideo={this.handleShowVideo}
           loading={targetLoading}
+          onSecurityClick={this.onSecurityClick}
         />
 
         {/* <StorageDrawer
@@ -1941,6 +1960,13 @@ export default class Chemical extends PureComponent {
           }}
           fireDetail={fireDetail}
           handleShowVideo={this.handleShowVideo}
+        />
+
+        {/* 安防措施抽屉 */}
+        <SecurityDrawer
+          data={securityDrawerData}
+          visible={securityDrawerVisible}
+          onClose={this.onSecurityDrawerClose}
         />
       </BigPlatformLayout>
     );
