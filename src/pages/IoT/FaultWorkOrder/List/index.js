@@ -141,6 +141,9 @@ export default connect(
         component: 'Select',
         props: {
           preset: 'monitorType',
+          params: {
+            type: 4,
+          },
           allowClear: true,
         },
       },
