@@ -449,6 +449,7 @@ export default class Chemical extends PureComponent {
           messageContent = '{}',
           itemId,
           messageFlag,
+          pointId,
         } = data;
         // 更新消息
         this.fetchScreenMessage(data);
@@ -478,7 +479,7 @@ export default class Chemical extends PureComponent {
           // 主机复位
           this.childMap.handleUpdateFire();
         } else if ([13, 14, 15, 16, 17].includes(+type)) {
-          this.childMap.handleUpdateRiskPoint(itemId);
+          this.childMap.handleUpdateRiskPoint(itemId || pointId);
         }
       } catch (error) {
         console.log('error', error);
