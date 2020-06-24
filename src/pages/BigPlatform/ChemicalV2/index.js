@@ -565,8 +565,8 @@ export default class Chemical extends PureComponent {
           className={styles.notificationBody}
           onClick={() => {
             monitorEquipmentType === '1'
-              ? this.handleClickFireMsg(monitorEquipmentId)
-              : this.handleClickMsgEquip(monitorEquipmentId);
+              ? this.handleClickFireMsg(monitorEquipmentId, true)
+              : this.handleClickMsgEquip(monitorEquipmentId, true);
           }}
         >
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
@@ -1295,14 +1295,16 @@ export default class Chemical extends PureComponent {
     }
   };
 
-  handleClickMsgEquip = equipmentId => {
+  handleClickMsgEquip = (equipmentId, showVideo) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'alarmWorkOrder/getDeviceDetail',
       payload: { id: equipmentId },
       callback: (success, deviceDetail) => {
         if (success) {
+          const { videoList } = deviceDetail;
           this.handleClickMonitorIcon(deviceDetail);
+          showVideo && this.handleShowVideo(videoList);
         }
       },
     });
@@ -1337,7 +1339,7 @@ export default class Chemical extends PureComponent {
   };
 
   // 点击消防主机消息
-  handleClickFireMsg = monitorEquipmentId => {
+  handleClickFireMsg = (monitorEquipmentId, showVideo) => {
     // return null;
     const {
       match: {
@@ -1357,6 +1359,7 @@ export default class Chemical extends PureComponent {
           const { list: fireDeviceList = [] } = data;
           const fireDeviceDetail = fireDeviceList[0] || {};
           this.handleClickFireMonitor(fireDeviceDetail);
+          showVideo && this.handleShowVideo(fireDeviceDetail.videoList);
         }
       }
     );
