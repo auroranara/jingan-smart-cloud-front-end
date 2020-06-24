@@ -15,7 +15,7 @@ const SocketOptions = {
 };
 
 const DELAY = 60000 * 10;
-const SWITCH_DELAY = 20000;
+const SWITCH_DELAY = 11000;
 const YES_OR_NO = ['否', '是'];
 
 @connect(({ loading, bigPlatform, twoInformManagement }) => ({

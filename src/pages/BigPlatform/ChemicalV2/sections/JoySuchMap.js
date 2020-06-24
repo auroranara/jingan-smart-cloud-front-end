@@ -15,6 +15,7 @@ import monitorActive from '../imgs/monitor-active.png';
 import monitorGray from '../imgs/monitor-gray.png';
 import riskPointActive from '../imgs/risk-point-active.png';
 import riskPointGray from '../imgs/risk-point-gray.png';
+import riskPointAlarm from '../imgs/risk-point-alarm.png';
 import videoActive from '../imgs/video-active.png';
 import videoGray from '../imgs/video-gray.png';
 import position from '../imgs/position.png';
@@ -46,7 +47,13 @@ const StrokeColor = [
 let map;
 let popInfoWindow;
 const controls = [
-  { label: '风险点', icon: riskPointGray, activeIcon: riskPointActive, markerIcon: riskPoint },
+  {
+    label: '风险点',
+    icon: riskPointGray,
+    activeIcon: riskPointActive,
+    markerIcon: riskPoint,
+    alarmIcon: riskPointAlarm,
+  },
   { label: '视频监控', icon: videoGray, activeIcon: videoActive, markerIcon: video },
   {
     label: '监测设备',
@@ -289,6 +296,9 @@ export default class Map extends PureComponent {
           if (+fire_state > 0) url = controls[iconType].alarmIcon;
           else controls[iconType].markerIcon;
         } else if (warnStatus === -1) url = controls[iconType].alarmIcon;
+      }
+      if (iconType === 0 && +status === 2) {
+        url = controls[iconType].alarmIcon;
       }
       const marker = this.addMarkers({
         image: url, //图片路径
@@ -675,6 +685,19 @@ export default class Map extends PureComponent {
       },
     });
     return null;
+  };
+
+  handleUpdateRiskPoint = itemId => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'chemical/fetchSingleRiskPoint',
+      payload: { companyId, itemId, pageSize: 1, pageNum: 1 },
+      callback: (suc, res) => {
+        if (!map) return;
+        map.removeMarkerByFilter(jsmap.JSMarkerType.IMAGE_MARKER, `itemId == '${itemId}'`);
+        if (suc) this.renderPoints([res], 0);
+      },
+    });
   };
 
   addMarkers = (markerProps = {}) => {

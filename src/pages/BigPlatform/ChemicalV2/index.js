@@ -364,6 +364,20 @@ export default class Chemical extends PureComponent {
     // this.fetchHiddenDangerList();
     // 四色图分区
     // this.fetchFourColorPolygons();
+
+    this.fetchCurrentHiddenDanger();
+  };
+
+  fetchCurrentHiddenDanger = () => {
+    const { dispatch, companyId } = this.props;
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
   };
 
   // 获取特种设备列表（全部）
@@ -433,6 +447,8 @@ export default class Chemical extends PureComponent {
           type,
           monitorMessageDto: { monitorEquipmentId, statusType, fireDeviceCode, fixType } = {},
           messageContent = '{}',
+          itemId,
+          messageFlag,
         } = data;
         // 更新消息
         this.fetchScreenMessage(data);
@@ -461,6 +477,8 @@ export default class Chemical extends PureComponent {
         } else if (+type === 52) {
           // 主机复位
           this.childMap.handleUpdateFire();
+        } else if ([13, 14, 15, 16, 17].includes(+type)) {
+          this.childMap.handleUpdateRiskPoint(itemId);
         }
       } catch (error) {
         console.log('error', error);
@@ -1526,6 +1544,7 @@ export default class Chemical extends PureComponent {
                   onRef={this.onRef}
                   handleClickRiskPoint={this.handleClickRiskPoint}
                   companyId={companyId}
+                  currentHiddenDanger={newUnitFireControl.currentHiddenDanger.list || []}
                   handleClickTank={this.handleClickTank}
                   handleShowAreaDrawer={this.handleShowAreaDrawer}
                   handleClickMonitorIcon={this.handleClickMonitorIcon}
