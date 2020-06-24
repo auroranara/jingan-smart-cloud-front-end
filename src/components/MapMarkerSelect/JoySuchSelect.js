@@ -16,6 +16,7 @@ const levelColor = {
   '4': 'rgba(30, 96, 255, 0.5)', // 蓝
 };
 let tool = null;
+let isLoadComplete = false;
 
 @connect(({ map }) => ({
   map,
@@ -76,6 +77,7 @@ export default class JoySuchSelect extends PureComponent {
   initData = () => {
     const { onChange } = this.props;
     this.map = null;
+    document.getElementById('joySuchMap').innerHTML = '';
     this.btnFloorControl = null; // 楼层控件实例
     this.polygonMarkers = []; // 保存区域实例
     this.otherMarkers = []; // 保存区域实例
@@ -86,8 +88,8 @@ export default class JoySuchSelect extends PureComponent {
   renderOtherMarkers = (markerProps = {}) => {
     const { markerList, otherMarkersOption = {}, markerId } = this.props;
     const { otherMarkersVisible } = this.state;
-    if (!this.map || !markerList || markerList.length === 0) return;
-    // this.removeOtherMarker();
+    if (!this.map || !markerList || markerList.length === 0 || !isLoadComplete) return;
+    this.removeOtherMarker();
     this.otherMarkers = [];
     markerList.map(item => {
       if (
@@ -133,7 +135,7 @@ export default class JoySuchSelect extends PureComponent {
           list.forEach(({ coordinateList, groupId, id, zoneLevel }) => {
             this.drawPolygon({
               groupId,
-              coords: coordinateList,
+              coords: tool.MercatorToWGS84(coordinateList),
               id,
               color: levelColor[zoneLevel],
             });
@@ -169,7 +171,7 @@ export default class JoySuchSelect extends PureComponent {
     this.map.on('mapClickNode', event => {
       const { onChange, readonly, markerOption = {} } = this.props;
       const clickedObj = event;
-      // console.log('clickedObj', clickedObj);
+      console.log('clickedObj', clickedObj);
       if (!clickedObj || !clickedObj.nodeType || readonly) return;
       const {
         eventInfo: { coord },
@@ -188,11 +190,13 @@ export default class JoySuchSelect extends PureComponent {
       this.removeSelectedMarker();
       this.selectedMarker = this.addImgMarker({
         groupId: fId || floorId,
-        coord: { ...coord, z: 0 },
+        coord,
         ...markerOption,
       });
       // this.renderOtherMarkers();
       const point = tool.WGS84ToMercator(coord);
+      console.log('areaId', areaId);
+
       onChange &&
         onChange({
           groupId: fId || floorId,
@@ -205,6 +209,7 @@ export default class JoySuchSelect extends PureComponent {
     //地图加载完回调事件
     this.map.on('loadComplete', event => {
       if (!this.map) return;
+      isLoadComplete = true;
       const { value: { groupId, coord } = {}, markerOption = {}, markerList } = this.props;
       //加载按钮型楼层切换控件
       this.loadBtnFloorCtrl(isInit ? groupId : 1);
@@ -264,16 +269,17 @@ export default class JoySuchSelect extends PureComponent {
     const imageMarker = new jsmap.JSImageMarker({
       // id: 'selectedMarker', //id
       image: url || defaultMarkrtIcon, //图片路径
-      position: new jsmap.JSPoint(coord.x, coord.y, 0), //坐标位置
+      // position: new jsmap.JSPoint(coord.x, coord.y, 0), //坐标位置
+      position: coord,
       width: size, //尺寸-宽
       height: size, //尺寸-高
-      floorId: groupId, //楼层 id
+      floorId: +groupId, //楼层 id
       offset: jsmap.JSControlPosition.RIGHT_BOTTOM, //偏移位置
       depthTest: false, //是否开启深度检测
       properties: props, //属性设置
-      // callback: node => {
-      //   console.log('node', node);
-      // }, //回调
+      callback: node => {
+        console.log('node', node);
+      }, //回调
     });
     this.map.addMarker(imageMarker);
     return imageMarker;
@@ -282,7 +288,11 @@ export default class JoySuchSelect extends PureComponent {
   // 删除所选点
   removeSelectedMarker = () => {
     if (!this.map || !this.selectedMarker) return;
+    // ?????   我也不晓得为什么 执行一次remove不掉也是鸡儿6666
     this.map.removeMarker(this.selectedMarker);
+    // setTimeout(() => {
+    //   this.map.removeMarker(this.selectedMarker);
+    // }, 0);
   };
 
   // 删除其他点

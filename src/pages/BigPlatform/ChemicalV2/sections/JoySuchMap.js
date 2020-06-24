@@ -9,6 +9,7 @@ import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPla
 import TruckModal from '../components/TruckModal';
 import { MINUTE_FORMAT, TYPES, WORKING_STATUSES } from '@/pages/DataAnalysis/WorkingBill/config';
 import { isPointInPolygon } from '@/utils/map';
+import { MonitorIcons } from '../utils';
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';
@@ -461,7 +462,7 @@ export default class Map extends PureComponent {
         this.removeMarkersByType(-1);
         this.fourColorPolygons.map(polygon => {
           const properties = polygon.getProperties();
-          const coordinateList = properties.get('coordinateList');
+          const position = polygon.position;
           const id = properties.get('id');
           const floorId = +properties.get('groupId');
           if (JSON.stringify(warningList).indexOf(id) < 0) {
@@ -476,7 +477,7 @@ export default class Map extends PureComponent {
           }
           this.addMarkers({
             image: iconTips, //图片路径
-            position: new jsmap.JSPoint(+coordinateList[0].x, +coordinateList[0].y, 0),
+            position: position[0],
             floorId, //楼
             properties: { zoneId: id, iconType: -1 },
             width: 25,
@@ -500,7 +501,7 @@ export default class Map extends PureComponent {
     // if (!pointsInfo.length) return;
     const { visibles } = this.state;
     filterMarkerList(pointsInfo).map(item => {
-      const { warnStatus, status, deviceCode, pointCountMap, id } = item;
+      const { warnStatus, status, deviceCode, pointCountMap, id, equipmentType } = item;
       const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
       const position = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 0));
       if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
@@ -510,8 +511,8 @@ export default class Map extends PureComponent {
           // 消防主机
           const { fire_state } = pointCountMap || {};
           if (+fire_state > 0) url = controls[iconType].alarmIcon;
-          else controls[iconType].markerIcon;
         } else if (warnStatus === -1) url = controls[iconType].alarmIcon;
+        else url = MonitorIcons[equipmentType] || controls[iconType].markerIcon;
       }
       const marker = this.addMarkers({
         image: url, //图片路径
@@ -1083,11 +1084,21 @@ export default class Map extends PureComponent {
 
   handleShowPositionInfo = (info, floorId, position) => {
     const {
-      hgFaceInfo: { id, name, sex, entranceNumber, icnumber, companyJobName, photoDetails = [] },
+      hgFaceInfo: {
+        id,
+        name,
+        sex,
+        entranceNumber,
+        icnumber,
+        companyJobName,
+        personType,
+        photoDetails = [],
+      },
     } = info;
     const photo = (photoDetails || [])[0] || {};
     const avatar = photo.webUrl || imgNoAvatar;
     const noData = '--';
+    const postName = (+personType === 2 && '外协人员') || (+personType === 3 && '临时人员');
     const content = `
       <div class="specContainer">
         <div class="top">
@@ -1106,7 +1117,9 @@ export default class Map extends PureComponent {
             </div>
             <div class="specWrapper">
               <div class="specLabel">人员类型：</div>
-              <div class="specValue">${companyJobName || noData}</div>
+              <div class="specValue">${(+personType === 2 || +personType === 3
+                ? postName
+                : companyJobName) || noData}</div>
             </div>
             <div class="specWrapper">
               <div class="specLabel">区域：</div>
@@ -1527,8 +1540,8 @@ export default class Map extends PureComponent {
         item.show = true;
         return;
       }
-      const { companyJob } = item.getProperties().get('hgFaceInfo');
-      if (companyJob === id) item.show = true;
+      const { companyJob, personType } = item.getProperties().get('hgFaceInfo');
+      if (+personType === id || companyJob === id) item.show = true;
       else item.show = false;
       return null;
     });
@@ -1538,8 +1551,8 @@ export default class Map extends PureComponent {
         item.show = true;
         return;
       }
-      const { companyJob } = item.getProperties().get('hgFaceInfo');
-      if (companyJob === id) item.show = true;
+      const { companyJob, personType } = item.getProperties().get('hgFaceInfo');
+      if (+personType === id || companyJob === id) item.show = true;
       else item.show = false;
       return null;
     });
@@ -1585,7 +1598,12 @@ export default class Map extends PureComponent {
 
     const menu = (
       <Menu>
-        {[{ id: 0, jobName: '全部人员' }, ...postList].map(item => (
+        {[
+          { id: 0, jobName: '全部人员' },
+          ...postList,
+          { id: 2, jobName: '外协人员' },
+          { id: 3, jobName: '临时人员' },
+        ].map(item => (
           <Menu.Item key={item.id} onClick={() => this.onFilterJob(item)}>
             {item.jobName}
           </Menu.Item>
@@ -1633,7 +1651,7 @@ export default class Map extends PureComponent {
                   </div>
                   {index === 4 &&
                     visibles[4] &&
-                    postList.length > 1 && (
+                    postList.length > 0 && (
                       <Dropdown overlay={menu} overlayClassName={styles.dropdown}>
                         <div
                           className={classnames(styles.controlItem, styles.active)}

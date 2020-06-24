@@ -514,7 +514,7 @@ export default class Chemical extends PureComponent {
       try {
         const data = JSON.parse(e.data);
         const { type, data: postionData } = data;
-        console.log('socket', data);
+        // console.log('socket', data);
         switch (type) {
           case 'location':
             this.childMap.handleUpdatePosition(postionData);

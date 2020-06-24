@@ -67,6 +67,11 @@ export default class JoySuchMap extends React.Component {
         points: tool.MercatorToWGS84(points),
         color: COLORS[4],
       });
+    this.addPoint(+points[0].floorId, tool.MercatorToWGS84(points)[0], {
+      image: billImg,
+      width: 46,
+      height: 46,
+    });
   };
 
   handleDispose = () => {
@@ -366,18 +371,6 @@ export default class JoySuchMap extends React.Component {
   render() {
     const { readonly, style, mode } = this.props;
     const isNotDetail = mode !== 'detail';
-    // if (!isDrawing && linePoints.length > 0) {
-    //   const groupId = linePoints.map(item => item.floorId)[0];
-    //   const currColor = levelId ? COLORS[levelId - 1] : COLORS[4];
-    //   // doDraw
-    //   drawedPolygon = this.drawPolygon({
-    //     floorId: +groupId,
-    //     points: linePoints,
-    //     color: currColor,
-    //   });
-    //   map.removeMarker(lineMarker);
-    //   linePoints = [];
-    // }
     return (
       <div className={styles.container} style={style}>
         {isNotDetail && this.renderDrawBtns()}
@@ -388,6 +381,5 @@ export default class JoySuchMap extends React.Component {
         />
       </div>
     );
-    // return <div style={style || { height: '70vh' }} id="joySuchMap" />;
   }
 }

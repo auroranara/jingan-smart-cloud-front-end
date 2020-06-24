@@ -22,6 +22,7 @@ let map;
 let Points = [];
 let naviLines = [];
 let PolygonMarker = null;
+let BillMarker = null;
 
 export default class Map extends React.Component {
   constructor(props) {
@@ -147,6 +148,7 @@ export default class Map extends React.Component {
     if (!map || !points || !points.length) return;
     const groupId = points.map(item => item.groupID)[0];
     this.drawPolygon(groupId, points, COLORS[4]);
+    this.addPoint(groupId, points[0], { url: billImg, size: 46 });
   };
 
   handleClickModel = clickedObj => {
@@ -208,6 +210,7 @@ export default class Map extends React.Component {
       ...props,
     });
     layer.addMarker(im);
+    return im;
   }
 
   drawPolygon(groupId, points, color) {
@@ -305,8 +308,8 @@ export default class Map extends React.Component {
     const group = map.getFMGroup(groupId);
     group.removeLayer(PolygonMarker);
     // this.setModelDefault(groupId, Points);
-    const layerImg = group.getOrCreateLayer('imageMarker');
-    group.removeLayer(layerImg);
+    // const layerImg = group.getOrCreateLayer('imageMarker');
+    group.removeLayer(BillMarker);
     Points = [];
     // handleChangeMapSelect && handleChangeMapSelect([], []);
     onChange && onChange(this.props.value || []);
@@ -383,7 +386,7 @@ export default class Map extends React.Component {
     const group = map.getFMGroup(groupId);
     const layerImg = group.getOrCreateLayer('imageMarker');
     layerImg.removeMarker(layerImg.markers[0]);
-    this.addPoint(groupId, Points[0], { url: billImg, size: 46 });
+    BillMarker = this.addPoint(groupId, Points[0], { url: billImg, size: 46 });
 
     // handleChangeMapSelect && handleChangeMapSelect(Points, models);
     onChange && onChange(Points);

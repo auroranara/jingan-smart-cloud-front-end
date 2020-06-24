@@ -23,6 +23,24 @@ import icon413 from './imgs/icon-413.png';
 import icon414 from './imgs/icon-414.png';
 import icon415 from './imgs/icon-415.png';
 import icon416 from './imgs/icon-416.png';
+
+import monitor1 from './imgs/monitor/monitor-1.png';
+import monitor401 from './imgs/monitor/monitor-401.png';
+import monitor402 from './imgs/monitor/monitor-402.png';
+import monitor403 from './imgs/monitor/monitor-403.png';
+import monitor404 from './imgs/monitor/monitor-404.png';
+import monitor405 from './imgs/monitor/monitor-405.png';
+import monitor406 from './imgs/monitor/monitor-406.png';
+import monitor407 from './imgs/monitor/monitor-407.png';
+// import monitor408 from './imgs/monitor/monitor-408.png';
+// import monitor409 from './imgs/monitor/monitor-409.png';
+import monitor410 from './imgs/monitor/monitor-410.png';
+import monitor411 from './imgs/monitor/monitor-411.png';
+import monitor412 from './imgs/monitor/monitor-412.png';
+import monitor413 from './imgs/monitor/monitor-413.png';
+// import monitor414 from './imgs/monitor/monitor-414.png';
+// import monitor415 from './imgs/monitor/monitor-415.png';
+// import monitor416 from './imgs/monitor/monitor-416.png';
 import warehouse from './imgs/warehouse.png';
 
 import drawer1 from './imgs/drawer/drawer-1.png';
@@ -933,6 +951,26 @@ export const MonitorEquipmentIcons = {
   '416': icon416,
 };
 
+export const MonitorIcons = {
+  '1': monitor1,
+  '401': monitor401,
+  '402': monitor402,
+  '403': monitor403,
+  '404': monitor404,
+  '405': monitor405,
+  '406': monitor406,
+  '407': monitor407,
+  // '408': monitor408,
+  // '409': monitor409,
+  '410': monitor410,
+  '411': monitor411,
+  '412': monitor412,
+  '413': monitor413,
+  // '414': monitor414,
+  // '415': monitor415,
+  // '416': monitor416,
+};
+
 export const DrawerIcons = {
   '1': drawer1,
   '401': drawer401,
@@ -965,8 +1003,13 @@ export function getPersonList(persons, label, list) {
 
 function convertListToPersons(list) {
   return list.reduce(function(result, current) {
-    const { hgFaceInfo } = current;
-    const job = hgFaceInfo.companyJobName || '暂无岗位';
+    const {
+      hgFaceInfo,
+      hgFaceInfo: { personType },
+    } = current;
+    const postName = (+personType === 2 && '外协人员') || (+personType === 3 && '临时人员');
+    const job =
+      (+personType === 2 || +personType === 3 ? postName : hgFaceInfo.companyJobName) || '暂无岗位';
     // if (job) {
     //   const lst = result[job];
     //   if (lst) result[job].push(hgFaceInfo);
