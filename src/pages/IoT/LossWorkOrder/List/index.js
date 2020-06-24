@@ -251,7 +251,11 @@ export default connect(
         width: 88,
         fixed: 'right',
         render: (_, { id }) => (
-          <Link to={`/company-iot/loss-work-order/detail/${id}`} disabled={!hasDetailAuthority}>
+          <Link
+            to={`/company-iot/loss-work-order/detail/${id}`}
+            target="_blank"
+            disabled={!hasDetailAuthority}
+          >
             查看详情
           </Link>
         ),
@@ -266,6 +270,7 @@ export default connect(
             <span className={styles.text}>已发送</span>
             <Link
               to={`/company-iot/loss-work-order/detail/${id}?flag`}
+              target="_blank"
               disabled={!hasDetailAuthority || !value}
             >
               {`${value || 0}条`}
