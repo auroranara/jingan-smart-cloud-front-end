@@ -216,7 +216,7 @@ export default connect(
             <Fragment>
               <DescriptionList className={styles.descriptionList} gutter={24}>
                 <Description term="处理状态">
-                  {STATUSES.find(item => item.key === `${current}`).value}
+                  {STATUSES.find(item => item.key === `${status || 0}`).value}
                 </Description>
                 {isFinished && (
                   <Description term="耗时">
