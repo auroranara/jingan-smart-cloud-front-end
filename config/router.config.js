@@ -689,7 +689,7 @@ module.exports = env => {
           code: 'majorHazardInfo',
           name: 'majorHazardInfo',
           icon: 'fire',
-          systemType: 0,
+          systemType: 1,
           routes: [
             {
               name: 'majorHazard', // 重大危险源管理
@@ -1145,7 +1145,7 @@ module.exports = env => {
         //   code: 'iot',
         //   name: 'iot',
         //   icon: 'wifi',
-        //   systemType: 0,
+        //   systemType: 1,
         //   routes: [
         //     {
         //       path: '/iot/major-hazard', // 重大危险源监测及报表
@@ -1265,7 +1265,7 @@ module.exports = env => {
           code: 'safetyKnowledgeBase',
           icon: 'database',
           name: 'safetyKnowledgeBase',
-          systemType: 0,
+          systemType: 1,
           routes: [
             {
               path: '/safety-knowledge-base/msds', // 化学品安全说明书
@@ -1343,7 +1343,7 @@ module.exports = env => {
           code: 'monitoringAndEarlyWarning',
           name: 'monitoringAndEarlyWarning',
           icon: 'monitor',
-          systemType: 0,
+          systemType: 1,
           routes: [
             {
               path: '/monitoring-and-early-warning/major-hazard-distribution', // 重大危险源分布
@@ -1386,7 +1386,7 @@ module.exports = env => {
           code: 'gasIot',
           name: 'gasIot',
           icon: 'wifi',
-          systemType: 1,
+          systemType: 2,
           routes: [
             {
               name: 'realtimeMonitor', // 可燃有毒气体实时监测
@@ -1409,7 +1409,7 @@ module.exports = env => {
           code: 'riskControl',
           icon: 'control',
           name: 'riskControl',
-          systemType: 2,
+          systemType: 3,
           routes: [
             {
               path: '/risk-control/risk-point-manage', // 风险点管理
@@ -1631,7 +1631,7 @@ module.exports = env => {
           code: 'controlMeasuresFollowUp',
           name: 'controlMeasuresFollowUp',
           icon: 'select',
-          systemType: 2,
+          systemType: 3,
           routes: [
             {
               path: '/control-measures-follow-up/company-report', // 企业风险点自查报表
@@ -1697,7 +1697,7 @@ module.exports = env => {
           code: 'twoInformationManagement',
           icon: 'bell',
           name: 'twoInformationManagement',
-          systemType: 2,
+          systemType: 3,
           routes: [
             {
               name: 'dangerFactorsList', // 危险（有害）因素排查辨识清单
@@ -1781,7 +1781,7 @@ module.exports = env => {
           code: 'cardsInfo',
           icon: 'idcard',
           name: 'cardsInfo',
-          systemType: 2,
+          systemType: 3,
           routes: [
             {
               name: 'commitmentCard', // 承诺卡
@@ -1903,7 +1903,7 @@ module.exports = env => {
           code: 'personnelManagement',
           icon: 'file-text',
           name: 'personnelManagement',
-          systemType: 3,
+          systemType: 4,
           routes: [
             {
               path: '/personnel-management/tag-card', // 标签卡管理
@@ -2141,7 +2141,7 @@ module.exports = env => {
           name: 'personnelPosition',
           icon: 'environment',
           code: 'personnelPosition',
-          systemType: 3,
+          systemType: 4,
           hideInMenu: false,
           routes: [
             {
@@ -2386,7 +2386,7 @@ module.exports = env => {
         //   code: 'securityManage',
         //   icon: 'security-scan',
         //   name: 'securityManage',
-        //   systemType: 3,
+        //   systemType: 4,
         //   routes: [
         //     {
         //       path: '/security-manage/video-identity', // 视频智能识别管理
@@ -2497,7 +2497,7 @@ module.exports = env => {
           code: 'baseInfo',
           name: 'baseInfo',
           icon: 'file-text',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               path: '/base-info/company', // 单位管理
@@ -2709,7 +2709,7 @@ module.exports = env => {
           code: 'unitLicense',
           name: 'unitLicense',
           icon: 'picture',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               name: 'industrialProductLicence', // 工业产品生产许可证
@@ -2781,7 +2781,7 @@ module.exports = env => {
           code: 'facilityManagement',
           name: 'facilityManagement',
           icon: 'laptop',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               name: 'threeSimultaneity', // 三同时审批记录
@@ -3046,7 +3046,7 @@ module.exports = env => {
           path: '/electronic-inspection',
           code: 'electronicInspection',
           icon: 'fileSearch',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               name: 'productionArea',
@@ -3091,7 +3091,7 @@ module.exports = env => {
           code: 'targetResponsibility',
           name: 'targetResponsibility',
           icon: 'flag',
-          systemType: 4,
+          systemType: 0,
           // developing: true,
           routes: [
             {
@@ -3264,7 +3264,7 @@ module.exports = env => {
           code: 'safetyProductionRegulation',
           name: 'safetyProductionRegulation',
           icon: 'block',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               name: 'safetySystem', // 安全制度管理
@@ -3455,7 +3455,7 @@ module.exports = env => {
           name: 'training',
           icon: 'read',
           code: 'training',
-          systemType: 4,
+          systemType: 0,
           hideInMenu: false,
           routes: [
             {
@@ -3782,7 +3782,7 @@ module.exports = env => {
           code: 'safetyRiskControl',
           icon: 'control',
           name: 'safetyRiskControl',
-          systemType: 4,
+          systemType: 0,
           routes: [
             // {
             //   path: '/safety-risk-control/risk-grading', // 风险辨识分级(风险点管理子集)
@@ -3873,7 +3873,7 @@ module.exports = env => {
           code: 'hiddenDangerControl',
           name: 'hiddenDangerControl',
           icon: 'thunderbolt',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               name: 'dangerStandardDatabase', // 隐患标准管理数据库
@@ -3966,7 +3966,7 @@ module.exports = env => {
           code: 'operationSafety',
           name: 'operationSafety',
           icon: 'team',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               name: 'specialOperationPermit', // 特种作业操作证人员
@@ -4396,7 +4396,7 @@ module.exports = env => {
           code: 'deviceManagement',
           icon: 'laptop',
           name: 'deviceManagement',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               path: '/device-management/video-monitor', // 监控摄像头
@@ -4843,7 +4843,7 @@ module.exports = env => {
           code: 'companyIot',
           name: 'companyIot',
           icon: 'wifi',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               path: '/company-iot/IOT-abnormal-data', // IOT监测及趋势统计(IOT数据分析)
@@ -4991,7 +4991,7 @@ module.exports = env => {
           icon: 'fire',
           name: 'majorHazardMonitor',
           developing: true,
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               name: 'alarm', // 报警管理功能
@@ -5017,7 +5017,7 @@ module.exports = env => {
           code: 'emergencyManagement',
           icon: 'snippets',
           name: 'emergencyManagement',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               path: '/emergency-management',
@@ -5392,7 +5392,7 @@ module.exports = env => {
           code: 'accidentManagement',
           icon: 'bg-colors',
           name: 'accidentManagement',
-          systemType: 4,
+          systemType: 0,
           routes: [
             {
               name: 'quickReport', // 事故快报
@@ -5511,7 +5511,7 @@ module.exports = env => {
         //   code: 'changeManagement',
         //   icon: 'tag',
         //   name: 'changeManagement',
-        //   systemType: 4,
+        //   systemType: 0,
         //   developing: true,
         //   routes: [
         //     {
@@ -5530,7 +5530,7 @@ module.exports = env => {
           code: 'licensePlateRecognitionSystem',
           name: 'licensePlateRecognitionSystem',
           icon: 'car',
-          systemType: 3,
+          systemType: 4,
           routes: [
             {
               path: '/license-plate-recognition-system',
@@ -5901,7 +5901,7 @@ module.exports = env => {
           code: 'realNameCertification',
           icon: 'tag',
           name: 'realNameCertification',
-          systemType: 3,
+          systemType: 4,
           routes: [
             {
               name: 'personnelManagement', // 人员管理
