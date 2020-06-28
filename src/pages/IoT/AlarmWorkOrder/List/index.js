@@ -55,7 +55,7 @@ export default class AlarmWorkOrderList extends Component {
       label: '设备名称/主机编号',
       transform: value => value.trim(),
       render: ({ handleSearch }) => (
-        <Input placeholder="请输入监测设备名称" onPressEnter={handleSearch} maxLength={50} />
+        <Input placeholder="请输入设备名称/主机编号" onPressEnter={handleSearch} maxLength={50} />
       ),
     },
     {

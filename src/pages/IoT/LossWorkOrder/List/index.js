@@ -127,7 +127,7 @@ export default connect(
         ? [
             {
               name: 'companyName',
-              label: '企业名称',
+              label: '单位名称',
               component: 'Input',
               props: {
                 allowClear: true,
@@ -149,7 +149,7 @@ export default connect(
       },
       {
         name: 'deviceName',
-        label: '监测设备名称',
+        label: '设备名称/主机编号',
         component: 'Input',
         props: {
           allowClear: true,
