@@ -228,10 +228,11 @@ export default connect(
                 )}
                 {isHost &&
                   !isFinished && (
-                    <Fragment>
-                      <Description term="消防主机">{deviceName || <EmptyText />}</Description>
-                      <Description term="部件类型">{unitTypeName || <EmptyText />}</Description>
-                    </Fragment>
+                    <Description term="消防主机">{deviceName || <EmptyText />}</Description>
+                  )}
+                {isHost &&
+                  !isFinished && (
+                    <Description term="部件类型">{unitTypeName || <EmptyText />}</Description>
                   )}
               </DescriptionList>
               <DescriptionList className={styles.descriptionList} gutter={24}>
