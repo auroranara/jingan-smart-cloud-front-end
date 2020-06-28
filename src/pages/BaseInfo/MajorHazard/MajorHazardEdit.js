@@ -36,6 +36,23 @@ const {
   },
 } = codes;
 
+function getLevelByR(r) {
+  if (!r)
+    return;
+
+  const v = Number(r);
+  let lel;
+  if (!Number.isNaN(v) && v >= 0) {
+    if (v >= 100) lel = '1';
+    else if (v >= 50) lel = '2';
+    else if (v >= 10) lel = '3';
+    else lel = '4';
+  }
+
+  console.log(v, lel);
+  return lel;
+}
+
 @connect(
   ({
     reservoirRegion,
@@ -713,6 +730,16 @@ export default class MajorHazardEdit extends PureComponent {
     );
   };
 
+  handleRChange = e => {
+    const { form: { setFieldsValue } } = this.props;
+
+    const v = e.target.value;
+    let level = getLevelByR(v);
+    console.log(v, level);
+
+    setFieldsValue({ dangerLevel: level });
+  };
+
   renderInfo() {
     const {
       form: { getFieldDecorator },
@@ -745,6 +772,7 @@ export default class MajorHazardEdit extends PureComponent {
     };
     const itemStyles = { style: { width: '70%', marginRight: '10px' } };
     const ThreeDMap = +remarks === 1 ? Map : JoySuchMap;
+    const initDangerLevel = getLevelByR(detailList.r); // 修正老数据
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -834,6 +862,7 @@ export default class MajorHazardEdit extends PureComponent {
                 {...itemStyles}
                 placeholder="请填入此重大危险源由专家评估的R值"
                 maxLength={15}
+                onChange={this.handleRChange}
               />
             )}
             <div style={{ color: '#999' }}>
@@ -842,7 +871,8 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="重大危险源等级">
             {getFieldDecorator('dangerLevel', {
-              initialValue: detailList.dangerLevel,
+              // initialValue: detailList.dangerLevel,
+              initialValue: initDangerLevel,
               rules: [
                 {
                   required: true,
@@ -850,7 +880,7 @@ export default class MajorHazardEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择重大危险源等级">
+              <Select {...itemStyles} disabled placeholder="请选择重大危险源等级">
                 {dangerTypeList.map(({ key, value }) => (
                   <Option key={key} value={key}>
                     {value}
