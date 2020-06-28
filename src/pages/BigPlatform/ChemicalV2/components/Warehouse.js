@@ -18,7 +18,14 @@ export default class Warehouse extends PureComponent {
   };
 
   render() {
-    const { data = {}, handleShowVideo, outBorder, style = {}, isChemical } = this.props;
+    const {
+      data = {},
+      handleShowVideo,
+      outBorder,
+      style = {},
+      isChemical,
+      onSecurityClick,
+    } = this.props;
     const fields = [
       ...(isChemical
         ? []
@@ -38,8 +45,19 @@ export default class Warehouse extends PureComponent {
                 <div
                   className={styles.extra}
                   // style={{ right: 0, top: 0 }}
+                  // onClick={() => {
+                  //   window.open(`${window.publicPath}#/security/${companyId}/detail/${id}`);
+                  // }}
                   onClick={() => {
-                    window.open(`${window.publicPath}#/security/${companyId}/detail/${id}`);
+                    if (data.materialsName && data.materialsName.startsWith('[')) {
+                      const list = JSON.parse(data.materialsName);
+                      onSecurityClick(
+                        list.map(item => ({
+                          key: item.materialId,
+                          value: item.chineName,
+                        }))
+                      );
+                    }
                   }}
                 >
                   安防措施>>

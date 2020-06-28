@@ -29,6 +29,7 @@ import TankMonitorDrawer from './sections/TankMonitorDrawer';
 import AreaMonitorDrawer from './sections/AreaMonitorDrawer';
 import Distribution from './sections/Distribution';
 import ProductionOfficerDrawer from './sections/Drawers/ProductionOfficerDrawer';
+import SecurityDrawer from './components/SecurityDrawer';
 
 import {
   DangerSourceInfoDrawer,
@@ -262,6 +263,10 @@ export default class Chemical extends PureComponent {
       personLabel: null,
       personList: [],
       showDistribution: false,
+      // 安防措施抽屉是否显示
+      securityDrawerVisible: false,
+      // 安防措施抽屉数据
+      securityDrawerData: undefined,
     };
     this.itemId = 'DXx842SFToWxksqR1BhckA';
     this.ws = null;
@@ -377,6 +382,19 @@ export default class Chemical extends PureComponent {
     // 四色图分区
     // this.fetchFourColorPolygons();
     this.getLEDPersonCount();
+    this.fetchCurrentHiddenDanger();
+  };
+
+  fetchCurrentHiddenDanger = () => {
+    const { dispatch, companyId } = this.props;
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
   };
 
   // 获取特种设备列表（全部）
@@ -446,6 +464,9 @@ export default class Chemical extends PureComponent {
           type,
           monitorMessageDto: { monitorEquipmentId, statusType, fireDeviceCode, fixType } = {},
           messageContent = '{}',
+          itemId,
+          messageFlag,
+          pointId,
         } = data;
         // 更新消息
         this.fetchScreenMessage(data);
@@ -474,6 +495,8 @@ export default class Chemical extends PureComponent {
         } else if (+type === 52) {
           // 主机复位
           this.childMap.handleUpdateFire();
+        } else if ([13, 14, 15, 16, 17].includes(+type)) {
+          this.childMap.handleUpdateRiskPoint(itemId || pointId);
         }
       } catch (error) {
         console.log('error', error);
@@ -649,8 +672,8 @@ export default class Chemical extends PureComponent {
           className={styles.notificationBody}
           onClick={() => {
             monitorEquipmentType === '1'
-              ? this.handleClickFireMsg(monitorEquipmentId)
-              : this.handleClickMsgEquip(monitorEquipmentId);
+              ? this.handleClickFireMsg(monitorEquipmentId, true)
+              : this.handleClickMsgEquip(monitorEquipmentId, true);
           }}
         >
           {/* <div>{`发生时间：${happenTime ? moment(happenTime).format(DEFAULT_FORMAT) : ''}`}</div> */}
@@ -1379,14 +1402,16 @@ export default class Chemical extends PureComponent {
     }
   };
 
-  handleClickMsgEquip = equipmentId => {
+  handleClickMsgEquip = (equipmentId, showVideo) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'alarmWorkOrder/getDeviceDetail',
       payload: { id: equipmentId },
       callback: (success, deviceDetail) => {
         if (success) {
+          const { videoList } = deviceDetail;
           this.handleClickMonitorIcon(deviceDetail);
+          showVideo && this.handleShowVideo(videoList);
         }
       },
     });
@@ -1421,7 +1446,7 @@ export default class Chemical extends PureComponent {
   };
 
   // 点击消防主机消息
-  handleClickFireMsg = monitorEquipmentId => {
+  handleClickFireMsg = (monitorEquipmentId, showVideo) => {
     // return null;
     const {
       match: {
@@ -1441,6 +1466,7 @@ export default class Chemical extends PureComponent {
           const { list: fireDeviceList = [] } = data;
           const fireDeviceDetail = fireDeviceList[0] || {};
           this.handleClickFireMonitor(fireDeviceDetail);
+          showVideo && this.handleShowVideo(fireDeviceDetail.videoList);
         }
       }
     );
@@ -1482,6 +1508,16 @@ export default class Chemical extends PureComponent {
 
   handleFocusPosition = id => {
     this.childMap && this.childMap.handleFocusPosition(id);
+  };
+
+  // 安防措施点击事件
+  onSecurityClick = securityDrawerData => {
+    this.setState({ securityDrawerVisible: true, securityDrawerData });
+  };
+
+  // 安防措施抽屉关闭事件
+  onSecurityDrawerClose = () => {
+    this.setState({ securityDrawerVisible: false });
   };
 
   /**
@@ -1593,6 +1629,8 @@ export default class Chemical extends PureComponent {
       personLabel,
       personList,
       showDistribution,
+      securityDrawerVisible,
+      securityDrawerData,
     } = this.state;
     const mhList = [
       { list: tankManages, type: 302 },
@@ -1674,6 +1712,7 @@ export default class Chemical extends PureComponent {
                   onRef={this.onRef}
                   handleClickRiskPoint={this.handleClickRiskPoint}
                   companyId={companyId}
+                  currentHiddenDanger={newUnitFireControl.currentHiddenDanger.list || []}
                   handleClickTank={this.handleClickTank}
                   handleShowAreaDrawer={this.handleShowAreaDrawer}
                   handleClickMonitorIcon={this.handleClickMonitorIcon}
@@ -1819,6 +1858,7 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           handleShowVideo={this.handleShowVideo}
           loading={targetLoading}
+          onSecurityClick={this.onSecurityClick}
         />
 
         <MonitorTabDrawer
@@ -1832,6 +1872,7 @@ export default class Chemical extends PureComponent {
           setDrawerVisible={this.setDrawerVisible}
           handleShowVideo={this.handleShowVideo}
           loading={targetLoading}
+          onSecurityClick={this.onSecurityClick}
         />
 
         {/* <StorageDrawer
@@ -2091,6 +2132,13 @@ export default class Chemical extends PureComponent {
           handleLocatationClick={this.handleFocusPosition}
           onClose={this.handleProductionClose}
           title={personLabel === 'position' ? '人员列表' : '生产区域人员统计'}
+        />
+
+        {/* 安防措施抽屉 */}
+        <SecurityDrawer
+          data={securityDrawerData}
+          visible={securityDrawerVisible}
+          onClose={this.onSecurityDrawerClose}
         />
       </BigPlatformLayout>
     );

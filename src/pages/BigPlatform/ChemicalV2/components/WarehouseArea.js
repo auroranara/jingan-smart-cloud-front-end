@@ -55,6 +55,7 @@ export default class WarehouseArea extends PureComponent {
       data = {},
       handleShowVideo,
       chemical: { monitoringDevice },
+      onSecurityClick,
     } = this.props;
 
     const { name, position, warehouseInfos = [], videoList = [], id, companyId } = data;
@@ -100,8 +101,24 @@ export default class WarehouseArea extends PureComponent {
               materialList.length > 0 && (
                 <div
                   className={styles.extra}
-                  onClick={() => this.handleClickSecurity({ unitId: companyId, targetId: id })}
+                  // onClick={() => this.handleClickSecurity({ unitId: companyId, targetId: id })}
                   style={{ top: 0, bottom: 'auto' }}
+                  onClick={() =>
+                    onSecurityClick(
+                      (warehouseInfos || []).reduce((result, item) => {
+                        if (item.materialsName && item.materialsName.startsWith('[')) {
+                          const list = JSON.parse(item.materialsName);
+                          result = result.concat(
+                            list.map(item => ({
+                              key: item.materialId,
+                              value: item.chineName,
+                            }))
+                          );
+                        }
+                        return result;
+                      }, [])
+                    )
+                  }
                 >
                   安防措施>>
                 </div>
@@ -121,7 +138,13 @@ export default class WarehouseArea extends PureComponent {
             <div className={styles.wrapperTitle}>库房 ({warehouseInfos.length})</div>
             {warehouseInfos.length > 0 ? (
               warehouseInfos.map((item, index) => (
-                <Warehouse key={index} data={item} handleShowVideo={handleShowVideo} outBorder />
+                <Warehouse
+                  key={index}
+                  data={item}
+                  handleShowVideo={handleShowVideo}
+                  outBorder
+                  onSecurityClick={onSecurityClick}
+                />
               ))
             ) : (
               <NoData

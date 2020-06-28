@@ -47,6 +47,12 @@ const itemColWrapper = {
 // 菜单模块分类配置
 const blockClassification = [
   {
+    name: '企业生产全流程管理系统',
+    splitIndex: 4,
+    blocks: [],
+    icon: 'http://data.jingan-china.cn/v2/new-menu/icon-security-production.png',
+  },
+  {
     name: '重大危险源监测预警系统',
     splitIndex: 5,
     blocks: [],
@@ -69,12 +75,6 @@ const blockClassification = [
     splitIndex: 4,
     blocks: [],
     icon: 'http://data.jingan-china.cn/v2/new-menu/icon-Staff.png',
-  },
-  {
-    name: '企业生产全流程管理系统',
-    splitIndex: 4,
-    blocks: [],
-    icon: 'http://data.jingan-china.cn/v2/new-menu/icon-security-production.png',
   },
 ];
 

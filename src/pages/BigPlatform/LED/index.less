@@ -1,3 +1,8 @@
+@keyframes move {
+  from { top: 0; }
+  to { top: -100%; }
+}
+
 .content {
   width: 480px;
   height: 320px;
@@ -16,8 +21,24 @@
   justify-content: center;
 }
 
-.seaction {
+.sectionsContainer {
   height: 82%;
+  position: relative;
+  overflow: hidden;
+}
+
+.sections {
+  width: 200%;
+  position: absolute;
+  display: flex;
+  transition: left 2s;
+}
+
+.section, .section1 {
+  width: 50%;
+}
+
+.section {
   display: flex;
 }
 
@@ -59,5 +80,17 @@
   .itemExtra {
     display: flex;
     justify-content: flex-end;
+  }
+}
+
+.table {
+  width: 100%;
+  th, td {
+    font-size: 13px;
+    border: 1px solid red;
+  }
+
+  th {
+    text-align: center;
   }
 }

@@ -554,6 +554,15 @@ export default {
       }
       callback && callback(response);
     },
+    *fetchSingleRiskPoint({ payload, callback }, { call, put }) {
+      const response = yield call(riskPointForPage, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        callback && callback(true, data.list[0]);
+      } else {
+        callback && callback(false, response);
+      }
+    },
   },
 
   reducers: {
