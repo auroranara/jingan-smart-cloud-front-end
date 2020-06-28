@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
+// import router from 'umi/router';
 import { Card, message, Input, Button, DatePicker } from 'antd';
 import moment from 'moment';
 import { Form } from '@ant-design/compatible';
@@ -85,14 +85,21 @@ export default class Edit extends PureComponent {
           run: arrayData[1],
           stop: arrayData[2],
           checking: arrayData[3],
-          specialWork: arrayData[4],
+          levelTwo: arrayData[4],
           levelOne: arrayData[5],
-          levelTwo: arrayData[6],
-          limitedSpace: arrayData[7],
-          pilot: +arrayData[8],
-          driving: +arrayData[9],
-          safe: +arrayData[10],
-          submitter: arrayData[11],
+          specialWork: arrayData[6],
+          high: arrayData[7],
+          limitedSpace: arrayData[8],
+          ground: arrayData[9],
+          short: arrayData[10],
+          breaker: arrayData[11],
+          wall: arrayData[12],
+          electricity: arrayData[13],
+          other: arrayData[14],
+          pilot: +arrayData[15],
+          driving: +arrayData[16],
+          safe: +arrayData[17],
+          submitter: arrayData[18],
         };
         this.setState(
           {
@@ -138,7 +145,14 @@ export default class Edit extends PureComponent {
           specialWork,
           levelOne,
           levelTwo,
+          high,
           limitedSpace,
+          ground,
+          short,
+          breaker,
+          wall,
+          electricity,
+          other,
           pilot,
           driving,
           safe,
@@ -156,13 +170,27 @@ export default class Edit extends PureComponent {
             ',' +
             checking +
             ',' +
-            specialWork +
+            levelTwo +
             ',' +
             levelOne +
             ',' +
-            levelTwo +
+            specialWork +
+            ',' +
+            high +
             ',' +
             limitedSpace +
+            ',' +
+            ground +
+            ',' +
+            short +
+            ',' +
+            breaker +
+            ',' +
+            wall +
+            ',' +
+            electricity +
+            ',' +
+            other +
             ',' +
             pilot +
             ',' +

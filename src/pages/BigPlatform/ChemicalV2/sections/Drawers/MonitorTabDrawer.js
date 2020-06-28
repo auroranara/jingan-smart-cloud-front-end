@@ -35,7 +35,15 @@ export default class MonitorTabDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, onClose, monitorData, monitorType, handleShowVideo, loading } = this.props;
+    const {
+      visible,
+      onClose,
+      monitorData,
+      monitorType,
+      handleShowVideo,
+      loading,
+      onSecurityClick,
+    } = this.props;
     const { active, page } = this.state;
     const list = monitorData[monitorType] || [];
     const { title, drawerIcon } = MonitorConfig[monitorType] || {};
@@ -112,13 +120,25 @@ export default class MonitorTabDrawer extends PureComponent {
               {list.length > 0 ? (
                 <Fragment>
                   {monitorType === '304' && (
-                    <Warehouse data={list[active]} handleShowVideo={handleShowVideo} />
+                    <Warehouse
+                      data={list[active]}
+                      handleShowVideo={handleShowVideo}
+                      onSecurityClick={onSecurityClick}
+                    />
                   )}
                   {monitorType === '303' && (
-                    <WarehouseArea data={list[active]} handleShowVideo={handleShowVideo} />
+                    <WarehouseArea
+                      data={list[active]}
+                      handleShowVideo={handleShowVideo}
+                      onSecurityClick={onSecurityClick}
+                    />
                   )}
                   {monitorType === '301' && (
-                    <TankArea data={list[active]} handleShowVideo={handleShowVideo} />
+                    <TankArea
+                      data={list[active]}
+                      handleShowVideo={handleShowVideo}
+                      onSecurityClick={onSecurityClick}
+                    />
                   )}
                 </Fragment>
               ) : (

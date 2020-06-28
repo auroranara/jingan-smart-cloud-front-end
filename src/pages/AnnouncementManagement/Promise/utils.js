@@ -35,7 +35,7 @@ export const BREADCRUMBLIST = [
 ];
 
 const DEVICES = ['总：', '运行：', '停产：', '检修：'];
-const SPECIAL = ['特种作业：', '一级动火作业：', '二级动火作业：', '进入受限空间作业：'];
+const SPECIAL = ['二级动火作业：', '一级动火作业：', '特种作业：', '进入受限空间作业：'];
 const PILOT = ['否', '是'];
 const DRIVING = ['否', '是'];
 
@@ -105,7 +105,7 @@ export const TABLE_COLUMNS = [
     width: 160,
     render: (val, row) => {
       const { allContent } = row;
-      return <span>{PILOT[allContent.split(',')[8]]}</span>;
+      return <span>{PILOT[allContent.split(',')[15]]}</span>;
     },
   },
   {
@@ -116,7 +116,7 @@ export const TABLE_COLUMNS = [
     width: 160,
     render: (val, row) => {
       const { allContent } = row;
-      return <span>{DRIVING[allContent.split(',')[9]]}</span>;
+      return <span>{DRIVING[allContent.split(',')[16]]}</span>;
     },
   },
   {
@@ -133,7 +133,7 @@ export const TABLE_COLUMNS = [
         <div>
           <p>
             提交者：
-            {`${allContent.split(',')[11]}`}
+            {`${allContent.split(',')[18]}`}
           </p>
           <p>
             提交时间：
@@ -154,10 +154,17 @@ export const EDIT_FORMITEMS = [
   { name: 'run', label: '其中运行', placeholder: '请输入数量', required: true },
   { name: 'stop', label: '停产', placeholder: '请输入数量', required: true },
   { name: 'checking', label: '检修', placeholder: '请输入数量', required: true },
-  { name: 'specialWork', label: '特殊动火作业', placeholder: '请输入数量', required: true },
-  { name: 'levelOne', label: '一级动火作业', placeholder: '请输入数量', required: true },
   { name: 'levelTwo', label: '二级动火作业', placeholder: '请输入数量', required: true },
+  { name: 'levelOne', label: '一级动火作业', placeholder: '请输入数量', required: true },
+  { name: 'specialWork', label: '特殊动火作业', placeholder: '请输入数量', required: true },
+  { name: 'high', label: '高处作业', placeholder: '请输入数量', required: true },
   { name: 'limitedSpace', label: '进入受限空间作业', placeholder: '请输入数量', required: true },
+  { name: 'ground', label: '动土作业', placeholder: '请输入数量', required: true },
+  { name: 'short', label: '短路作业', placeholder: '请输入数量', required: true },
+  { name: 'breaker', label: '断路作业', placeholder: '请输入数量', required: true },
+  { name: 'wall', label: '盲板抽堵', placeholder: '请输入数量', required: true },
+  { name: 'electricity', label: '临时用电', placeholder: '请输入数量', required: true },
+  { name: 'other', label: '其他作业', placeholder: '请输入数量', required: true },
   { name: 'pilot', label: '是否处于试生产', type: 'radio', options: PILOT, required: true },
   { name: 'driving', label: '是否处于开停车状态', type: 'radio', options: DRIVING, required: true },
   {

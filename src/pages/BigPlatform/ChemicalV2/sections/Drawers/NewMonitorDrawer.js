@@ -39,6 +39,7 @@ export default class NewMonitorDrawer extends PureComponent {
       monitorType,
       handleShowVideo,
       loading,
+      onSecurityClick,
     } = this.props;
     const { inputValue, searchVisible } = this.state;
     const {
@@ -145,6 +146,7 @@ export default class NewMonitorDrawer extends PureComponent {
                           )}
                         </Fragment>
                       }
+                      onSecurityClick={onSecurityClick}
                     />
                   );
                 })

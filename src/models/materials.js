@@ -27,10 +27,12 @@ export default {
     dangerSourceModal: { list: [], pagination: defaultPagination },
     msdsModal: { list: [], pagination: defaultPagination },
     monitorModal: { list: [], pagination: defaultPagination },
+    // 物料列表（另开的，与之前的区分）
+    materialDetail: {},
   },
   effects: {
     // 查询物料列表
-    *fetchMaterialsList ({ payload, callback }, { call, put }) {
+    *fetchMaterialsList({ payload, callback }, { call, put }) {
       const response = yield call(queryMaterialsList, payload);
       if (response.code === 200) {
         yield put({
@@ -42,8 +44,22 @@ export default {
         }
       }
     },
+    // 获取物料列表（为了不影响之前的，所以另开一个）
+    *getMaterialDetail({ payload }, { call, put }) {
+      const response = yield call(queryMaterialsList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list && data.list[0]) {
+        const materialDetail = data.list[0];
+        yield put({
+          type: 'save',
+          payload: {
+            materialDetail,
+          },
+        });
+      }
+    },
     // 新建物料
-    *addMaterials ({ payload, success, error }, { call }) {
+    *addMaterials({ payload, success, error }, { call }) {
       const response = yield call(addMaterials, payload);
       const {
         data: { id },
@@ -59,7 +75,7 @@ export default {
       }
     },
     // 修改物料
-    *editMaterials ({ payload, success, error }, { call }) {
+    *editMaterials({ payload, success, error }, { call }) {
       const response = yield call(updateMaterials, payload);
       const { code, msg } = response;
       if (code === 200) {
@@ -71,7 +87,7 @@ export default {
       }
     },
     // 删除物料
-    *deleteMaterials ({ payload, success, error }, { call, put }) {
+    *deleteMaterials({ payload, success, error }, { call, put }) {
       const response = yield call(deleteMaterials, payload);
       const { code, msg } = response;
       if (code === 200) {
@@ -83,7 +99,7 @@ export default {
       }
     },
     // 重大危险源模态框
-    *fetchDangerSourceModel ({ payload, callback }, { call, put }) {
+    *fetchDangerSourceModel({ payload, callback }, { call, put }) {
       const response = yield call(queryDangerSourceList, payload);
       if (response.code === 200) {
         yield put({
@@ -96,7 +112,7 @@ export default {
       }
     },
     // 重大危险源模态框
-    *fetchMsdsModel ({ payload, callback }, { call, put }) {
+    *fetchMsdsModel({ payload, callback }, { call, put }) {
       const response = yield call(queryMsdsList, payload);
       if (response.code === 200) {
         yield put({
@@ -109,7 +125,7 @@ export default {
       }
     },
     // 根据CAS号获取信息
-    *fetchInfoByCas ({ payload, callback }, { call }) {
+    *fetchInfoByCas({ payload, callback }, { call }) {
       const res = yield call(fetchInfoByCas, payload);
       if (res && res.code === 200) {
         callback && callback(res.data.list.length ? '1' : '0');
@@ -129,7 +145,7 @@ export default {
     },
   },
   reducers: {
-    saveList (state, { payload }) {
+    saveList(state, { payload }) {
       const { list, pagination: { pageNum, pageSize, total } = {}, companyNum } = payload;
       return {
         ...state,
@@ -143,13 +159,13 @@ export default {
       };
     },
     // 库区弹出框
-    saveDangerSourceModel (state, { payload }) {
+    saveDangerSourceModel(state, { payload }) {
       return {
         ...state,
         dangerSourceModal: payload,
       };
     },
-    saveMsdsModel (state, { payload }) {
+    saveMsdsModel(state, { payload }) {
       return {
         ...state,
         msdsModal: payload,
@@ -161,5 +177,9 @@ export default {
         monitorModal: payload,
       };
     },
+    save: (state, { payload }) => ({
+      ...state,
+      ...payload,
+    }),
   },
 };

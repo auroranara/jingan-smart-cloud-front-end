@@ -1,6 +1,7 @@
 import React from 'react';
+import classNames from 'classnames';
 import styles from './index.less';
 
-export default function EmptyText() {
-  return <div className={styles.container}>---</div>;
+export default function EmptyText({ className }) {
+  return <div className={classNames(styles.container, className)}>---</div>;
 }

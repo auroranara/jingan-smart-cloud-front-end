@@ -56,7 +56,7 @@ export default class Remind extends PureComponent {
             return (
               <div className={styles.tip} key={index}>
                 {moment(createTime).format('YYYY年MM月DD日')}
-                <span>{allContent.split(',')[11]}</span>
+                <span>{allContent.split(',')[18]}</span>
                 <span>
                   安全承诺：
                   {content}

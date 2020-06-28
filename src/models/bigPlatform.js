@@ -44,11 +44,12 @@ import {
   getListForMapForHidden,
   getSecurityCheck,
   getHiddenDangerListForPage,
-  hiddenDangerListByDateForPage,
+  // hiddenDangerListByDateForPage,
   getSelfCheckPointDataForPage,
   getCompanyInfo,
   getMapLocationByParent,
   getLedData,
+  getLedPromise,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -307,6 +308,7 @@ export default {
     // 手机号是否可见
     phoneVisible: false,
     ledData: [],
+    ledPromise: {},
   },
 
   effects: {
@@ -1167,6 +1169,17 @@ export default {
       });
       if (callback) callback(response);
     },
+    *fetchLedPromise({ payload, callback }, { call, put }) {
+      const response = yield call(getLedPromise, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({
+          type: 'saveLedPromise',
+          payload: data || {},
+        });
+        callback && callback(data);
+      }
+    },
   },
 
   reducers: {
@@ -1555,6 +1568,10 @@ export default {
         ...state,
         phoneVisible,
       };
+    },
+
+    saveLedPromise(state, action) {
+      return { ...state, ledPromise: action.payload };
     },
   },
 };
