@@ -5,7 +5,9 @@ import { Spin, Tag, Menu, Dropdown, Avatar, Tooltip, message /*Button*/ } from '
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import toUpper from 'lodash/toUpper';
+
 import styles from './index.less';
+import { OPE } from '@/pages/RoleAuthorization/Role/utils';
 
 const url = `/gsafe/console`;
 
@@ -148,8 +150,7 @@ export default class GlobalHeaderRight extends PureComponent {
               </span>
             </Dropdown>
           )}
-        {/* {currentUser && currentUser.unitType === 3 && ( */}
-        {true && (
+        {currentUser && currentUser.unitType === OPE && (
           <Tooltip title="数据维护">
             <span
               target="_blank"
