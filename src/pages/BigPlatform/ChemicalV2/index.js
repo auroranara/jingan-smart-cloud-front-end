@@ -1763,6 +1763,7 @@ export default class Chemical extends PureComponent {
           handleShowVideo={this.handleShowVideo}
           companyId={companyId}
           loading={dangerSourceLoading}
+          onSecurityClick={this.onSecurityClick}
         />
 
         <DangerSourceInfoDrawer

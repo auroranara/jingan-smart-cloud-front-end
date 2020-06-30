@@ -92,6 +92,7 @@ export default class DangerSourceDrawer extends PureComponent {
         },
       },
       loading,
+      onSecurityClick,
     } = this.props;
     const BasicFields = [
       {
@@ -251,7 +252,7 @@ export default class DangerSourceDrawer extends PureComponent {
                     </div>
                   </div>
                   {tankArea.map((item, index) => (
-                    <TankArea key={index} data={item} handleShowVideo={handleShowVideo} bordered />
+                    <TankArea key={index} data={item} handleShowVideo={handleShowVideo} bordered onSecurityClick={onSecurityClick} />
                   ))}
                 </Fragment>
               ) : (
