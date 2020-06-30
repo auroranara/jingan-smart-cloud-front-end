@@ -49,6 +49,9 @@ const configs = {
   },
   five: {
     projectKey: 'huagong_pro',
+    code: 'http://data.jingan-china.cn/v2/login/code/five_code.png',
+    ios: 'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/chemicalAppDownload/OfficialAPP/official_version/ChemicalCloud.plist&ran=',
+    android: 'http://five.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
   cmw: {
     projectKey: 'cmw_pro',
