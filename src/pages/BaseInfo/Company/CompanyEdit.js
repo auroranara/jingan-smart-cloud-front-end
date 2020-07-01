@@ -126,7 +126,7 @@ const tabList = [
 ];
 // 默认选中一般企业
 // const defaultCompanyNature = '一般企业';
-const defaultCompanyNature = '生产企业';
+const defaultCompanyNatures = ['一般企业', '生产企业'];
 // 默认经纬度坐标
 const defaultPosition = { longitude: 120.30, latitude: 31.57 };
 
@@ -1105,6 +1105,15 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
+  handleNatureSelect = value => {
+    const { company: { companyNatures } } = this.props;
+    const target = companyNatures.find(item => item.id === value);
+
+    this.setState({
+      isCompany: target ? defaultCompanyNatures.includes(target.label) : false,
+    });
+  };
+
   /* 渲染基础信息 */
   renderBasicInfo () {
     const {
@@ -1142,6 +1151,8 @@ export default class CompanyDetail extends PureComponent {
     } = this.props;
     const { ichnographyList, firePictureList, unitPhotoList, isCompany, gridTree } = this.state;
     const warningCallType = getFieldValue('warningCallType');
+    const defaultCompanyNature = companyNatures.find(item =>  defaultCompanyNatures.includes(item.label));
+
     return (
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
@@ -1159,23 +1170,22 @@ export default class CompanyDetail extends PureComponent {
               <Form.Item label={fieldLabels.companyNature}>
                 {getFieldDecorator('companyNature', {
                   initialValue:
-                    companyNature ||
-                    (companyNatures.length > 0
-                      ? companyNatures.filter(item => item.label === defaultCompanyNature)[0].id
-                      : undefined),
+                    companyNature || (defaultCompanyNature ? defaultCompanyNature.id : undefined),
+                    // (companyNatures.length > 0
+                    //   ? companyNatures.filter(item => defaultCompanyNatures.includes(item.label))[0].id
+                    //   : undefined),
                   // initialValue: companyNature || undefined,
                   rules: [{ required: true, message: '请选择单位性质' }],
                 })(
                   <Select
                     placeholder="请选择单位性质"
                     getPopupContainer={getRootChild}
-                    onChange={value => {
-                      this.setState({
-                        isCompany:
-                          companyNatures.filter(item => item.id === value)[0].label ===
-                          defaultCompanyNature,
-                      });
-                    }}
+                    onChange={this.handleNatureSelect}
+                    // onChange={value => {
+                    //   this.setState({
+                    //     isCompany: defaultCompanyNatures.includes(companyNatures.filter(item => item.id === value)[0].label),
+                    //   });
+                    // }}
                   >
                     {companyNatures.map(item => (
                       <Option value={item.id} key={item.id}>
