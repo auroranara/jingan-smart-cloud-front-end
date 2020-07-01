@@ -125,7 +125,7 @@ const tabList = [
   // },
 ];
 // 默认选中一般企业
-const defaultCompanyNature = '生产企业';
+const defaultCompanyNature = '一般企业';
 // 默认经纬度坐标
 const defaultPosition = { longitude: 120.30, latitude: 31.57 };
 
