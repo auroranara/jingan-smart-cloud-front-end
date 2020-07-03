@@ -147,11 +147,23 @@ export default {
       }
     },
     // 获取监测类型列表
-    *getMonitorTypeList({ payload, callback }, { call, put }) {
+    *getMonitorTypeList(
+      {
+        payload: { hack, ...payload },
+        callback,
+      },
+      { call, put }
+    ) {
       const response = yield call(getMonitorTypeList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         const monitorTypeList = data.list.map(({ id, name }) => ({ key: id, value: name }));
+        if (hack) {
+          monitorTypeList.push({
+            key: '2',
+            value: '人工报修',
+          });
+        }
         yield put({
           type: 'save',
           payload: {
