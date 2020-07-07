@@ -4211,6 +4211,26 @@ module.exports = env => {
               ],
             },
 
+            // 承包商人员资质管理
+            {
+              path: '/operation-safety/contractor-qualification',
+              code: 'operationSafety.contractorQualification',
+              name: 'contractorQualification',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/operation-safety/contractor-qualification',
+                  redirect: '/operation-safety/contractor-qualification/list',
+                },
+                {
+                  path: '/operation-safety/contractor-qualification/list',
+                  code: 'operationSafety.contractorQualification.listView',
+                  name: 'list',
+                  component: './DataAnalysis/ContractorQualification/List',
+                },
+              ],
+            },
+
             // 承包商施工管理
             {
               path: '/operation-safety/contractor-construction',

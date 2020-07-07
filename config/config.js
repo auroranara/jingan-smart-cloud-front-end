@@ -39,6 +39,7 @@ const hosts = {
   nanxiao: '58.215.178.100:12084',
   sk: '192.168.10.21',
   ly: '192.168.10.19:8080',
+  gzl: '192.168.10.41:8080',
   show: 'www.jinganyun.net',
   five: 'five.jinganyun.net',
   demo: 'demo.jinganyun.net',
@@ -48,12 +49,12 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gzl}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gzl}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -78,12 +79,12 @@ export default {
         dynamicImport: true,
         ...(os.platform() === 'darwin'
           ? {
-              dll: {
-                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-                exclude: ['@babel/runtime'],
-              },
-              hardSource: false,
-            }
+            dll: {
+              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+              exclude: ['@babel/runtime'],
+            },
+            hardSource: false,
+          }
           : {}),
       },
     ],
