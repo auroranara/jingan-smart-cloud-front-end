@@ -601,12 +601,12 @@ export default class GatewayOther extends Component {
               render: () => <MarkerSelect companyId={unitId || realCompanyId} isBuildingFloorEntryForm={isBuildingFloorEntryForm} buildingFloor={values.buildingFloor} readonly={!isNotDetail} />,
               options: {
                 initialValue: marker || [],
-                rules: isNotDetail ? [
-                  {
-                    required: true,
-                    validator: this.validateMarker,
-                  },
-                ] : undefined,
+                // rules: isNotDetail ? [
+                //   {
+                //     // required: true,
+                //     validator: this.validateMarker,
+                //   },
+                // ] : undefined,
               },
             },
           ],
