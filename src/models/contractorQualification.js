@@ -20,13 +20,14 @@ export default {
 
   effects: {
     // 获取承包商人员资质列表
-    *fetchList ({ payload }, { call, put }) {
+    *fetchList ({ payload, callback }, { call, put }) {
       const res = yield call(fetchList, payload);
       if (res && res.code === 200 && res.data) {
         yield put({
           type: 'saveData',
           payload: res.data,
-        })
+        });
+        callback && callback(res.data);
       }
     },
     // 新增承包商人员资质

@@ -73,7 +73,7 @@ export default class specialOperationPermitHandle extends PureComponent {
     if (id) {
       // 如果编辑
       dispatch({
-        type: 'baseInfo/fetchSpecialWorkPerson',
+        type: 'contractorQualification/fetchList',
         payload: { id, pageNum: 1, pageSize: 10 },
         callback: ({ list }) => {
           const detail = list[0] || {};
@@ -267,24 +267,25 @@ export default class specialOperationPermitHandle extends PureComponent {
       };
       console.log('submit', payload);
       const tag = id ? '编辑' : '新增';
-      const success = () => {
-        message.success(`${tag}成功`);
-        setTimeout(this.goBack, 1000);
+      const callback = (success, res) => {
+        if (success) {
+          message.success(`${tag}成功`);
+          setTimeout(this.goBack, 1000);
+        } else {
+          message.error(res ? res.msg : `${tag}失败`);
+        }
       };
-      const error = res => { message.error(res ? res.msg : `${tag}失败`) };
       if (id) {
         dispatch({
-          type: 'baseInfo/editSpecialWorkPerson',
+          type: 'contractorQualification/editQualification',
           payload: { ...payload, id },
-          success,
-          error,
+          callback,
         })
       } else {
         dispatch({
-          type: 'baseInfo/addSpecialWorkPerson',
+          type: 'contractorQualification/addQualification',
           payload,
-          success,
-          error,
+          callback,
         })
       }
     })
@@ -498,6 +499,10 @@ export default class specialOperationPermitHandle extends PureComponent {
     const title = id ? isDetail ? '详情' : '编辑' : '新增';
     const breadcrumbList = [
       ...listBreadcrumbList,
+      {
+        ...listBreadcrumbList[listBreadcrumbList.length - 1],
+        url: listUrl,
+      },
       {
         title,
         name: title,

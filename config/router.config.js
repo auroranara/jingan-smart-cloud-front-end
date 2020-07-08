@@ -4228,6 +4228,18 @@ module.exports = env => {
                   name: 'list',
                   component: './DataAnalysis/ContractorQualification/List',
                 },
+                {
+                  path: '/operation-safety/contractor-qualification/add',
+                  code: 'operationSafety.contractorQualification.add',
+                  name: 'add',
+                  component: './DataAnalysis/ContractorQualification/Handle',
+                },
+                {
+                  path: '/operation-safety/contractor-qualification/edit/:id',
+                  code: 'operationSafety.contractorQualification.edit',
+                  name: 'edit',
+                  component: './DataAnalysis/ContractorQualification/Handle',
+                },
               ],
             },
 

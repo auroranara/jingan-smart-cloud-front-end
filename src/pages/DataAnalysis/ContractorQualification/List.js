@@ -27,7 +27,7 @@ const FormItem = Form.Item;
 // const { Panel } = Collapse;
 const {
   baseInfo: {
-    specialOperationPermit: {
+    contractorQualification: {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
@@ -130,7 +130,7 @@ export default class ContractorQualification extends PureComponent {
 
   // 点击新增
   handleToAdd = () => {
-    router.push('/operation-safety/special-operation-permit/add')
+    router.push('/operation-safety/contractor-qualification/add')
   }
 
   // 格式化作业列别选项
@@ -365,8 +365,7 @@ export default class ContractorQualification extends PureComponent {
           <Fragment>
             <AuthA
               code={editCode}
-              // onClick={() => { router.push(`/operation-safety/special-operation-permit/edit/${row.id}`) }}
-              onClick={e => window.open(`${window.publicPath}#/operation-safety/special-operation-permit/edit/${row.id}`)}
+              onClick={e => window.open(`${window.publicPath}#/operation-safety/contractor-qualification/edit/${row.id}`)}
             >
               编辑
             </AuthA>
