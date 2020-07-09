@@ -681,8 +681,14 @@ export default {
       edit: 'operationSafety.specialEquipmentOperators.edit',
       delete: 'operationSafety.specialEquipmentOperators.delete',
     },
-
-    // 生产装置
+    //
+    // 生产装置承包商人员资质管理
+    contractorQualification: {
+      list: 'operationSafety.contractorQualification.listView',
+      add: 'operationSafety.contractorQualification.add',
+      edit: 'operationSafety.contractorQualification.edit',
+      delete: 'operationSafety.contractorQualification.delete',
+    },
     productionEquipments: {
       list: 'majorHazardInfo.productionEquipments.listView',
       view: 'majorHazardInfo.productionEquipments.view',
