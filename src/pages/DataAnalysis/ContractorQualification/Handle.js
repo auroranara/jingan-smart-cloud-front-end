@@ -33,11 +33,12 @@ const uploadAction = '/acloud_new/v2/uploadFile';
 // const BUTTON_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
-@connect(({ baseInfo, sensor, user, loading }) => ({
+@connect(({ baseInfo, sensor, user, contractor, loading }) => ({
   baseInfo,
   sensor,
   user,
-  companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
+  contractor,
+  companyLoading: loading.effects['contractor/getList'], // 选择单位加载状态
 }))
 export default class specialOperationPermitHandle extends PureComponent {
   constructor(props) {
@@ -122,16 +123,21 @@ export default class specialOperationPermitHandle extends PureComponent {
     dispatch({ type: 'sensor/fetchModelList', ...actions });
   };
 
+  // 获取承包商列表
+  fetchContractor = actions => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'contractor/getList', ...actions });
+  };
+
   /**
    * 选择企业
    */
-  handleSelectCompany = selectedCompany => {
+  handleSelectCompany = ({ id, contractorName }) => {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const companyId = selectedCompany.id
-    this.setState({ selectedCompany, companyModalVisible: false });
-    setFieldsValue({ companyId });
+    this.setState({ selectedCompany: { id, name: contractorName }, companyModalVisible: false });
+    setFieldsValue({ companyId: id });
   };
 
   /**
@@ -139,7 +145,7 @@ export default class specialOperationPermitHandle extends PureComponent {
    */
   handleViewCompanyModal = () => {
     this.setState({ companyModalVisible: true });
-    this.fetchCompany({
+    this.fetchContractor({
       payload: {
         pageSize: 10,
         pageNum: 1,
@@ -491,7 +497,8 @@ export default class specialOperationPermitHandle extends PureComponent {
       companyLoading,
       match: { params: { id } },
       route: { name },
-      sensor: { companyModal }, // companyModal { list , pagination:{} }
+      // sensor: { companyModal }, // companyModal { list , pagination:{} }
+      contractor: { list: listData }, // { list , pagination:{} }
     } = this.props;
     const { companyModalVisible } = this.state;
 
@@ -546,12 +553,25 @@ export default class specialOperationPermitHandle extends PureComponent {
           title="选择单位"
           loading={companyLoading}
           visible={companyModalVisible}
-          modal={companyModal}
-          fetch={this.fetchCompany}
+          modal={listData}
+          fetch={this.fetchContractor}
           onSelect={this.handleSelectCompany}
           onClose={() => {
             this.setState({ companyModalVisible: false });
           }}
+          field={[
+            {
+              id: 'contractorName',
+              render: () => <Input placeholder="单位名称" />,
+            },
+          ]}
+          columns={[
+            {
+              title: '单位名称',
+              dataIndex: 'contractorName',
+              key: 'contractorName',
+            },
+          ]}
         />
       </PageHeaderLayout>
     );

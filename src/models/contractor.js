@@ -5,12 +5,15 @@ export default {
   namespace: 'contractor',
 
   state: {
-    list: {},
+    list: {
+      list: [],
+      pagination: { total: 0, pageNum: 1, pageSize: 10 },
+    },
     detail: {},
   },
 
   effects: {
-    *getList({ payload, callback }, { call, put }) {
+    *getList ({ payload, callback }, { call, put }) {
       const response = yield call(getList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
@@ -27,7 +30,7 @@ export default {
         callback && callback(false, msg);
       }
     },
-    *getDetail({ payload, callback }, { call, put }) {
+    *getDetail ({ payload, callback }, { call, put }) {
       const response = yield call(getDetail, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data) {
@@ -44,7 +47,7 @@ export default {
         callback && callback(false, msg);
       }
     },
-    *add({ payload, callback }, { call, put }) {
+    *add ({ payload, callback }, { call, put }) {
       const response = yield call(add, payload);
       const { code, msg } = response || {};
       if (code === 200) {
@@ -55,7 +58,7 @@ export default {
         callback && callback(false, msg);
       }
     },
-    *edit({ payload, callback }, { call, put }) {
+    *edit ({ payload, callback }, { call, put }) {
       const response = yield call(edit, payload);
       const { code, msg } = response || {};
       if (code === 200) {
@@ -66,7 +69,7 @@ export default {
         callback && callback(false, msg);
       }
     },
-    *delete({ payload, callback }, { call, put }) {
+    *delete ({ payload, callback }, { call, put }) {
       const response = yield call(remove, payload);
       const { code, msg } = response || {};
       if (code === 200) {
