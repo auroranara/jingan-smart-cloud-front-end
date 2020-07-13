@@ -710,8 +710,9 @@ export default class WorkingBillOther extends Component {
                           <Select
                             mode={mode}
                             preset="contractor"
-                            params={{ companyId }}
+                            params={{ companyId, certificateExpireStatus: companyId && 4 }}
                             labelInValue
+                            key={companyId}
                           />
                         ),
                         options: {
@@ -1182,7 +1183,13 @@ export default class WorkingBillOther extends Component {
                   key: 'workingCompany',
                   label: '作业单位名称',
                   component: (
-                    <Select mode={mode} preset="contractor" params={{ companyId }} labelInValue />
+                    <Select
+                      mode={mode}
+                      preset="contractor"
+                      params={{ companyId, certificateExpireStatus: companyId && 4 }}
+                      labelInValue
+                      key={companyId}
+                    />
                   ),
                   options: {
                     initialValue: detail.workingCompany,
@@ -1339,6 +1346,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
+                      key={values.workingCompanyType}
                     />
                   ),
                   options: {
@@ -1374,6 +1382,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
+                      key={values.workingCompanyType}
                     />
                   ),
                   options: {
@@ -1559,7 +1568,7 @@ export default class WorkingBillOther extends Component {
                 },
               ]
             : []),
-            ...([TYPES[2].key].includes(values.billType)
+          ...([TYPES[2].key].includes(values.billType)
             ? [
                 {
                   key: 'workingPersonnelId',
@@ -1579,6 +1588,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
+                      key={values.workingCompanyType}
                     />
                   ),
                   options: {
@@ -1614,6 +1624,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
+                      key={values.workingCompanyType}
                     />
                   ),
                   options: {
