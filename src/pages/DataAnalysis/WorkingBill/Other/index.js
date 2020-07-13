@@ -710,8 +710,9 @@ export default class WorkingBillOther extends Component {
                           <Select
                             mode={mode}
                             preset="contractor"
-                            params={{ companyId }}
+                            params={{ companyId, certificateExpireStatus: companyId && 4 }}
                             labelInValue
+                            key={companyId}
                           />
                         ),
                         options: {
@@ -1182,7 +1183,13 @@ export default class WorkingBillOther extends Component {
                   key: 'workingCompany',
                   label: '作业单位名称',
                   component: (
-                    <Select mode={mode} preset="contractor" params={{ companyId }} labelInValue />
+                    <Select
+                      mode={mode}
+                      preset="contractor"
+                      params={{ companyId, certificateExpireStatus: companyId && 4 }}
+                      labelInValue
+                      key={companyId}
+                    />
                   ),
                   options: {
                     initialValue: detail.workingCompany,
