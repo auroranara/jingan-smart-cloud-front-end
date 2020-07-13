@@ -163,6 +163,51 @@ const PRESETS = {
     initializeParams: 'ids',
     pagination: false,
   },
+  // 特种作业操作证人员（假设不会很多，所以不分页并做本地筛选）
+  specialOperator: {
+    fieldNames: {
+      key: 'id',
+      value: 'name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'specialOperatorList',
+      getList: 'getSpecialOperatorList',
+    },
+    showSearch: true,
+    // filterOption: false,
+    pagination: false,
+  },
+  // 承包商人员资质（假设不会很多，所以不分页并做本地筛选）
+  contractorPersonnelQualification: {
+    fieldNames: {
+      key: 'id',
+      value: 'name',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'contractorPersonnelQualificationList',
+      getList: 'getContractorPersonnelQualificationList',
+    },
+    showSearch: true,
+    // filterOption: false,
+    pagination: false,
+  },
+  // 承包商（假设不会很多，所以不分页并做本地筛选）
+  contractor: {
+    fieldNames: {
+      key: 'id',
+      value: 'contractorName',
+    },
+    mapper: {
+      namespace: 'common',
+      list: 'contractorList',
+      getList: 'getContractorList',
+    },
+    showSearch: true,
+    // filterOption: false,
+    pagination: false,
+  },
 };
 
 // 整体思路：data随着value变化而变化，所以onChange时先设置data以防止value变化导致的一系列额外操作
