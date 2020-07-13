@@ -125,8 +125,18 @@ export default class specialOperationPermitHandle extends PureComponent {
 
   // 获取承包商列表
   fetchContractor = actions => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'contractor/getList', ...actions });
+    const {
+      dispatch,
+      user: { isCompany, currentUser },
+    } = this.props;
+    dispatch({
+      type: 'contractor/getList',
+      ...actions,
+      payload: {
+        ...(actions.payload || {}),
+        companyId: isCompany ? currentUser.unitId : undefined,
+      },
+    });
   };
 
   /**
@@ -370,7 +380,7 @@ export default class specialOperationPermitHandle extends PureComponent {
         <FormItem label="出生年月" {...formItemLayout}>
           {getFieldDecorator('birthday', {
             initialValue: id && detail.birthday ? moment(detail.birthday) : undefined,
-            // rules: [{ required: true, message: '请选择出生年月' }],
+            rules: [{ required: true, message: '请选择出生年月' }],
           })(
             <DatePicker
               placeholder="请选择"
@@ -382,7 +392,7 @@ export default class specialOperationPermitHandle extends PureComponent {
           {getFieldDecorator('telephone', {
             initialValue: id ? detail.telephone : undefined,
             rules: [
-              // { required: true, message: '请输入联系电话' },
+              { required: true, message: '请输入联系电话' },
               { pattern: phoneReg, message: '联系电话格式不正确' },
             ],
           })(<Input placeholder="请输入" {...itemStyles} />)}
@@ -505,10 +515,10 @@ export default class specialOperationPermitHandle extends PureComponent {
     const isDetail = name === 'view';
     const title = id ? isDetail ? '详情' : '编辑' : '新增';
     const breadcrumbList = [
-      ...listBreadcrumbList,
+      ...listBreadcrumbList.slice(0, -1),
       {
         ...listBreadcrumbList[listBreadcrumbList.length - 1],
-        url: listUrl,
+        href: listUrl,
       },
       {
         title,

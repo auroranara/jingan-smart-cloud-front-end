@@ -117,7 +117,11 @@ export default class ContractorQualification extends PureComponent {
     const payload = { ...(workType && workType.length ? { workType: workType.join(',') } : {}), ...resValues };
     dispatch({
       type: 'contractorQualification/fetchList',
-      payload: { ...payload, pageNum, pageSize },
+      payload: {
+        ...payload,
+        pageNum,
+        pageSize,
+      },
     })
   }
 
@@ -232,15 +236,13 @@ export default class ContractorQualification extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            {!isCompany && (
-              <Col {...colWrapper}>
-                <FormItem {...formItemStyle}>
-                  {getFieldDecorator('companyName')(
-                    <Input placeholder="单位名称" />
-                  )}
-                </FormItem>
-              </Col>
-            )}
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('companyName')(
+                  <Input placeholder="单位名称" />
+                )}
+              </FormItem>
+            </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
@@ -266,15 +268,15 @@ export default class ContractorQualification extends PureComponent {
           pagination: { total = 0, pageNum = 1, pageSize = 10 },
         },
       },
-      user: { isCompany },
+      // user: { isCompany },
     } = this.props
     const columns = [
-      ...(isCompany ? [] : [{
+      {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
-      }]),
+      },
       {
         title: '基本信息',
         key: '基本信息',
