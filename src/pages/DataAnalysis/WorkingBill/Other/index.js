@@ -1339,6 +1339,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
+                      key={values.workingCompanyType}
                     />
                   ),
                   options: {
@@ -1374,6 +1375,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
+                      key={values.workingCompanyType}
                     />
                   ),
                   options: {
@@ -1559,7 +1561,7 @@ export default class WorkingBillOther extends Component {
                 },
               ]
             : []),
-            ...([TYPES[2].key].includes(values.billType)
+          ...([TYPES[2].key].includes(values.billType)
             ? [
                 {
                   key: 'workingPersonnelId',
@@ -1579,6 +1581,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
+                      key={values.workingCompanyType}
                     />
                   ),
                   options: {
@@ -1614,6 +1617,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
+                      key={values.workingCompanyType}
                     />
                   ),
                   options: {
