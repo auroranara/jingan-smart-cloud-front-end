@@ -178,6 +178,20 @@ export default {
           isStaticWarn: !!data.staticWarn,
           isStrandedWarn: !!data.strandedWarn,
           crossWarn: data.crossWarn ? data.crossWarn.split(',') : undefined,
+          workingCompany: data.workingCompanyId
+            ? {
+                key: data.workingCompanyId,
+                value: data.workingCompanyId,
+                label: data.workingCompanyLabel,
+              }
+            : undefined,
+          workingPersonnelId: data.workingPersonnelId
+            ? data.workingPersonnelId.split(',').map((item, index) => ({
+                key: item,
+                value: item,
+                label: data.workingPersonnelName[index],
+              }))
+            : undefined,
         };
 
         yield put({

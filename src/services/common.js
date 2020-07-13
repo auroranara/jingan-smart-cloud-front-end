@@ -165,3 +165,13 @@ export async function getDepartmentTreeByCompany(params) {
 export async function getPerformanceMeasurementStandardList(params) {
   return request(`/acloud_new/v2/performance/performanceExam/page?${stringify(params)}`);
 }
+
+// 获取特种作业操作证人员列表
+export async function getSpecialOperatorList(params) {
+  return request(`/acloud_new/v2/specialworkPerson/specialworkPersonForPage?${stringify(params)}`);
+}
+
+// 获取承包商人员资质列表
+export async function getContractorPersonnelQualificationList(params) {
+  return request(`/acloud_new/v2/contractorPerson/contractorPerson/page?${stringify(params)}`);
+}

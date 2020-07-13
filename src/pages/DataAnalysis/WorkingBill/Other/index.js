@@ -304,6 +304,8 @@ export default class WorkingBillOther extends Component {
           staticWarn,
           isStrandedWarn,
           strandedWarn,
+          workingCompany,
+          workingPersonnelId,
           ...fields
         } = values;
         const payload = {
@@ -321,6 +323,9 @@ export default class WorkingBillOther extends Component {
           staticWarn: isStaticWarn ? staticWarn : '',
           strandedWarn: isStrandedWarn ? strandedWarn : '',
           isSetWarn,
+          workingCompanyId: workingCompany && workingCompany.key,
+          workingPersonnelId:
+            workingPersonnelId && workingPersonnelId.map(item => item.key).join(','),
         };
         submit(payload);
       }
@@ -407,6 +412,8 @@ export default class WorkingBillOther extends Component {
       (values.locationFileList || []).some(({ status }) => status !== 'done');
     const isMapShow = +values.isSetWarn === 1 && (isUnit || values.company);
     const alarmDisabled = !values.mapAddress || values.mapAddress.length === 0;
+    const companyId = isUnit ? unitId : values.company && values.company.key;
+    const workingCompanyId = values.workingCompany && values.workingCompany.key;
 
     const fields = [
       {
@@ -511,7 +518,7 @@ export default class WorkingBillOther extends Component {
                   component: (
                     <TreeSelect
                       key={isUnit ? unitId : values.company.key}
-                      params={{ companyId: isUnit ? unitId : values.company.key }}
+                      params={{ companyId }}
                       mapper={DEPARTMENT_LIST_MAPPER}
                       fieldNames={DEPARTMENT_LIST_FIELDNAMES}
                       mode={mode}
@@ -697,16 +704,23 @@ export default class WorkingBillOther extends Component {
                 ...(values.workingCompanyType === UNIT_TYPES[1].key
                   ? [
                       {
-                        key: 'workingCompanyName',
+                        key: 'workingCompany',
                         label: '作业单位名称',
-                        component: <Input mode={mode} />,
+                        component: (
+                          <Select
+                            mode={mode}
+                            preset="contractor"
+                            params={{ companyId }}
+                            labelInValue
+                          />
+                        ),
                         options: {
-                          initialValue: detail.workingCompanyName,
+                          initialValue: detail.workingCompany,
                           rules: [
                             {
+                              type: 'object',
                               required: true,
                               message: '作业单位名称不能为空',
-                              whitespace: true,
                             },
                           ],
                         },
@@ -1148,14 +1162,7 @@ export default class WorkingBillOther extends Component {
               ]
             : []),
           ...(values.workingCompanyType === UNIT_TYPES[1].key &&
-          [
-            TYPES[0].key,
-            TYPES[1].key,
-            TYPES[2].key,
-            TYPES[4].key,
-            TYPES[7].key,
-            TYPES[8].key,
-          ].includes(values.billType)
+          [TYPES[1].key, TYPES[7].key, TYPES[8].key].includes(values.billType)
             ? [
                 {
                   key: 'workingCompanyName',
@@ -1169,6 +1176,28 @@ export default class WorkingBillOther extends Component {
               ]
             : []),
           ...(values.workingCompanyType === UNIT_TYPES[1].key &&
+          [TYPES[0].key, TYPES[2].key, TYPES[4].key].includes(values.billType)
+            ? [
+                {
+                  key: 'workingCompany',
+                  label: '作业单位名称',
+                  component: (
+                    <Select mode={mode} preset="contractor" params={{ companyId }} labelInValue />
+                  ),
+                  options: {
+                    initialValue: detail.workingCompany,
+                    rules: [
+                      {
+                        type: 'object',
+                        required: true,
+                        message: '作业单位名称不能为空',
+                      },
+                    ],
+                  },
+                },
+              ]
+            : []),
+          ...(values.workingCompanyType === UNIT_TYPES[1].key &&
           [TYPES[5].key].includes(values.billType)
             ? [
                 {
@@ -1177,7 +1206,7 @@ export default class WorkingBillOther extends Component {
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingCompanyName,
-                    rules: [{ required: true, message: '作业单位名称不能为空', whitespace: true }],
+                    rules: [{ required: true, message: '维修单位名称不能为空', whitespace: true }],
                   },
                 },
               ]
@@ -1191,7 +1220,7 @@ export default class WorkingBillOther extends Component {
                     values.workingCompanyType === UNIT_TYPES[0].key ? (
                       <TreeSelect
                         key={isUnit ? unitId : values.company.key}
-                        params={{ companyId: isUnit ? unitId : values.company.key }}
+                        params={{ companyId }}
                         mapper={DEPARTMENT_LIST_MAPPER}
                         fieldNames={DEPARTMENT_LIST_FIELDNAMES}
                         mode={mode}
@@ -1293,22 +1322,28 @@ export default class WorkingBillOther extends Component {
           ...([TYPES[0].key].includes(values.billType)
             ? [
                 {
-                  key: 'workingPersonnel',
+                  key: 'workingPersonnelId',
                   label: '动火人',
                   component: (
                     <Select
-                      placeholder="请输入"
-                      originalMode="tags"
-                      notFoundContent={null}
-                      showArrow={false}
                       mode={mode}
-                      showSearch
+                      preset={
+                        values.workingCompanyType === UNIT_TYPES[0].key
+                          ? 'specialOperator'
+                          : 'contractorPersonnelQualification'
+                      }
+                      params={
+                        values.workingCompanyType === UNIT_TYPES[0].key
+                          ? { companyId, paststatus: companyId && 3 }
+                          : { companyId: workingCompanyId, paststatus: workingCompanyId && 3 }
+                      }
+                      labelInValue
+                      originalMode="multiple"
                     />
                   ),
                   options: {
-                    initialValue: detail.workingPersonnel,
-                    getValueFromEvent: this.getWorkingPersonnelFromEvent,
-                    rules: [{ required: true, message: '动火人不能为空' }],
+                    initialValue: detail.workingPersonnelId,
+                    rules: [{ type: 'array', min: 1, required: true, message: '动火人不能为空' }],
                   },
                   grid: {
                     xl: 12,
@@ -1319,7 +1354,42 @@ export default class WorkingBillOther extends Component {
                 },
               ]
             : []),
-          ...([TYPES[4].key, TYPES[8].key].includes(values.billType)
+          ...([TYPES[4].key].includes(values.billType)
+            ? [
+                {
+                  key: 'workingPersonnelId',
+                  label: '作业人',
+                  component: (
+                    <Select
+                      mode={mode}
+                      preset={
+                        values.workingCompanyType === UNIT_TYPES[0].key
+                          ? 'specialOperator'
+                          : 'contractorPersonnelQualification'
+                      }
+                      params={
+                        values.workingCompanyType === UNIT_TYPES[0].key
+                          ? { companyId, paststatus: companyId && 3 }
+                          : { companyId: workingCompanyId, paststatus: workingCompanyId && 3 }
+                      }
+                      labelInValue
+                      originalMode="multiple"
+                    />
+                  ),
+                  options: {
+                    initialValue: detail.workingPersonnelId,
+                    rules: [{ type: 'array', min: 1, required: true, message: '作业人不能为空' }],
+                  },
+                  grid: {
+                    xl: 12,
+                    sm: 24,
+                    xs: 24,
+                  },
+                  standalone: true,
+                },
+              ]
+            : []),
+          ...([TYPES[8].key].includes(values.billType)
             ? [
                 {
                   key: 'workingPersonnel',
@@ -1460,7 +1530,7 @@ export default class WorkingBillOther extends Component {
                 },
               ]
             : []),
-          ...([TYPES[1].key, TYPES[2].key].includes(values.billType)
+          ...([TYPES[1].key].includes(values.billType)
             ? [
                 {
                   key: 'workingPersonnel',
@@ -1489,25 +1559,66 @@ export default class WorkingBillOther extends Component {
                 },
               ]
             : []),
-          ...([TYPES[3].key].includes(values.billType)
+            ...([TYPES[2].key].includes(values.billType)
             ? [
                 {
-                  key: 'workingPersonnel',
-                  label: '吊装人员',
+                  key: 'workingPersonnelId',
+                  label: '作业人',
                   component: (
                     <Select
-                      placeholder="请输入"
-                      originalMode="tags"
-                      notFoundContent={null}
-                      showArrow={false}
                       mode={mode}
-                      showSearch
+                      preset={
+                        values.workingCompanyType === UNIT_TYPES[0].key
+                          ? 'specialOperator'
+                          : 'contractorPersonnelQualification'
+                      }
+                      params={
+                        values.workingCompanyType === UNIT_TYPES[0].key
+                          ? { companyId, paststatus: companyId && 3 }
+                          : { companyId: workingCompanyId, paststatus: workingCompanyId && 3 }
+                      }
+                      labelInValue
+                      originalMode="multiple"
                     />
                   ),
                   options: {
-                    initialValue: detail.workingPersonnel,
-                    getValueFromEvent: this.getWorkingPersonnelFromEvent,
-                    rules: [{ required: true, message: '吊装人员不能为空' }],
+                    initialValue: detail.workingPersonnelId,
+                    rules: [{ type: 'array', min: 1, required: true, message: '作业人不能为空' }],
+                  },
+                  grid: {
+                    xl: 12,
+                    sm: 24,
+                    xs: 24,
+                  },
+                  standalone: true,
+                },
+              ]
+            : []),
+          ...([TYPES[3].key].includes(values.billType)
+            ? [
+                {
+                  key: 'workingPersonnelId',
+                  label: '吊装人员',
+                  component: (
+                    <Select
+                      mode={mode}
+                      preset={
+                        values.workingCompanyType === UNIT_TYPES[0].key
+                          ? 'specialOperator'
+                          : 'contractorPersonnelQualification'
+                      }
+                      params={
+                        values.workingCompanyType === UNIT_TYPES[0].key
+                          ? { companyId, paststatus: companyId && 3 }
+                          : { companyId: workingCompanyId, paststatus: workingCompanyId && 3 }
+                      }
+                      labelInValue
+                      originalMode="multiple"
+                    />
+                  ),
+                  options: {
+                    initialValue: detail.workingPersonnelId,
+                    rules: [{ type: 'array', min: 1, required: true, message: '吊装人员不能为空' }],
                   },
                   grid: {
                     xl: 12,

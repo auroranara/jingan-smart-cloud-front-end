@@ -31,6 +31,8 @@ import {
   getPersonListByCompany,
   getDepartmentTreeByCompany,
   getPerformanceMeasurementStandardList,
+  getSpecialOperatorList,
+  getContractorPersonnelQualificationList,
 } from '@/services/common';
 
 export default {
@@ -78,6 +80,8 @@ export default {
     departmentTreeByCompany: [],
     // 绩效考核标准列表
     performanceMeasurementStandardList: {},
+    specialOperatorList: {},
+    contractorPersonnelQualificationList: {},
   },
 
   effects: {
@@ -684,6 +688,40 @@ export default {
           },
         });
         callback && callback(true, performanceMeasurementStandardList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取特种作业操作证人员列表
+    *getSpecialOperatorList({ payload, callback }, { call, put }) {
+      const response = yield call(getSpecialOperatorList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const specialOperatorList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            specialOperatorList,
+          },
+        });
+        callback && callback(true, specialOperatorList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取承包商人员资质列表
+    *getContractorPersonnelQualificationList({ payload, callback }, { call, put }) {
+      const response = yield call(getContractorPersonnelQualificationList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const contractorPersonnelQualificationList = data;
+        yield put({
+          type: 'save',
+          payload: {
+            contractorPersonnelQualificationList,
+          },
+        });
+        callback && callback(true, contractorPersonnelQualificationList);
       } else {
         callback && callback(false, msg);
       }
