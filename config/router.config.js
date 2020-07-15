@@ -1673,6 +1673,25 @@ module.exports = env => {
                 },
               ],
             },
+            // 作业危害-JHA分析
+            {
+              path: '/risk-control/operation-hazards',
+              code: 'riskControl.operationHazards',
+              name: 'operationHazards',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/operation-hazards',
+                  redirect: '/risk-control/operation-hazards/list',
+                },
+                {
+                  path: '/risk-control/operation-hazards/list',
+                  name: 'list',
+                  code: 'riskControl.operationHazards.listView',
+                  component: './RiskControl/OperationHazards/List',
+                },
+              ],
+            },
           ],
         },
 

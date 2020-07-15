@@ -215,6 +215,8 @@ export default {
   'menu.riskControl.change.add': '变更申请',
   'menu.riskControl.change.edit': '变更申请',
   'menu.riskControl.change.approve': '变更申请',
+  'menu.riskControl.operationHazards': '作业危害-JHA分析',
+  'menu.riskControl.operationHazards.list': '作业危害-JHA分析',
   'menu.controlMeasuresFollowUp': '管控措施跟进信息管理',
   'menu.controlMeasuresFollowUp.companyReport': '企业风险点自查报表',
   'menu.controlMeasuresFollowUp.companyReport.list': '企业风险点自查报表',

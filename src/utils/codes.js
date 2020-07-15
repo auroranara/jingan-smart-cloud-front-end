@@ -424,6 +424,20 @@ export default {
       view: 'riskControl.changeManagement.view',
       approve: 'riskControl.changeManagement.approve',
     },
+    operationHazards: {
+      list: 'riskControl.operationHazards.listView',
+      add: 'riskControl.operationHazards.add',
+      edit: 'riskControl.operationHazards.edit',
+      delete: 'riskControl.operationHazards.delete',
+      view: 'riskControl.operationHazards.view',
+      import: 'riskControl.operationHazards.import',
+      evaluationRecord: {
+        add: 'riskControl.operationHazards.evaluationRecord.add',
+        edit: 'riskControl.operationHazards.evaluationRecord.edit',
+        delete: 'riskControl.operationHazards.evaluationRecord.delete',
+        view: 'riskControl.operationHazards.evaluationRecord.view',
+      },
+    },
   },
 
   /** 安防管理 */
