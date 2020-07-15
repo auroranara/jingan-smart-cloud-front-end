@@ -754,7 +754,7 @@ export default class SpecialEquipment extends PureComponent {
           </FormItem>
           <FormItem label="规格型号" {...formItemLayout}>
             {getFieldDecorator('specification', {
-              rules: [{ required: true, message: '请选择规格型号' }],
+              // rules: [{ required: true, message: '请选择规格型号' }],
             })(
               // <Select placeholder="请选择规格型号" {...itemStyles} allowClear>
               //   {brand &&
@@ -770,7 +770,7 @@ export default class SpecialEquipment extends PureComponent {
           <FormItem label="出厂编号" {...formItemLayout}>
             {getFieldDecorator('factoryNumber', {
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入出厂编号' }],
+              // rules: [{ required: true, message: '请输入出厂编号' }],
             })(<Input placeholder="请输入出厂编号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="设备名称" {...formItemLayout}>
