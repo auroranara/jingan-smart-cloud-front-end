@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Spin } from 'antd';
+import { Spin, Button, Upload, message, Modal } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -7,6 +7,7 @@ import styles from './CheckContent.less';
 import CheckContent from './CheckContent';
 import codesMap from '@/utils/codes';
 import { AuthButton } from '@/utils/customAuth';
+import { getToken } from '@/utils/authority';
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -29,13 +30,14 @@ export default class riskPointList extends PureComponent {
     this.state = {
       activeKey: null,
       visible: false,
+      importLoading: false, // 是否上传中
     };
   }
 
   /**
    * 挂载后
    */
-  componentDidMount() {
+  componentDidMount () {
     const {
       match: {
         params: { type = 'all' },
@@ -46,13 +48,12 @@ export default class riskPointList extends PureComponent {
   }
 
   // 获取列表
-  getRiskList = type => {
+  getRiskList = key => {
     const {
-      match: {
-        params: { id: companyId },
-      },
+      match: { params: { id: companyId, type: paramsType } },
       dispatch,
     } = this.props;
+    const type = key || paramsType;
     if (type === 'all') {
       dispatch({
         type: 'riskPointManage/fetchRiskList',
@@ -90,12 +91,8 @@ export default class riskPointList extends PureComponent {
    */
   handleTabChange = key => {
     const {
-      match: {
-        params: { id },
-      },
-      location: {
-        query: { companyName },
-      },
+      match: { params: { id } },
+      location: { query: { companyName } },
     } = this.props;
     this.setState({ activeKey: key }, () => {
       router.push(
@@ -105,8 +102,47 @@ export default class riskPointList extends PureComponent {
     this.getRiskList(key);
   };
 
+  handleImportChange = info => {
+    const res = info.file.response;
+    if (info.file.status === 'uploading') {
+      this.setState({ importLoading: true });
+    }
+
+    if (info.file.status === undefined) {
+      this.setState({ importLoading: false });
+    }
+    if (info.file.status === 'done' && res) {
+      if (res.code && res.code === 200) {
+        message.success(res.msg);
+        this.getRiskList();
+      } else {
+        res.data.errorMasssge.length === 0
+          ? message.error(res.msg)
+          : Modal.error({
+            title: '错误信息',
+            content: res.data.errorMasssge,
+            okText: '确定',
+          });
+      }
+      this.handleQuery();
+      this.setState({ importLoading: false });
+    }
+  }
+
+  handleBeforeUpload = file => {
+    const { importLoading } = this.state;
+    const isExcel = /xls|xlsx/.test(file.name);
+    if (importLoading) {
+      message.error('尚未上传结束');
+    }
+    if (!isExcel) {
+      message.error('上传失败，请上传.xls或者.xlsx格式');
+    }
+    return !importLoading || isExcel;
+  }
+
   // 渲染页面
-  render() {
+  render () {
     const {
       loading,
       riskPointManage: {
@@ -125,7 +161,7 @@ export default class riskPointList extends PureComponent {
       },
     } = this.props;
 
-    const { activeKey } = this.state;
+    const { activeKey, importLoading } = this.state;
 
     const count = list.map(item => item.pointCount);
 
@@ -172,15 +208,37 @@ export default class riskPointList extends PureComponent {
               风险点总数：
               {count[0]}
             </span>
-            <AuthButton
-              code={codesMap.riskControl.riskPointManage.add}
-              style={{ position: 'absolute', right: '66px', top: '209px' }}
-              codes={codes}
-              type="primary"
-              href={`#/risk-control/risk-point-manage/risk-point-add?companyId=${companyId}&companyName=${companyName}`}
-            >
-              新增
+            <div style={{ position: 'absolute', right: '66px', top: '209px' }}>
+              <AuthButton
+                code={codesMap.riskControl.riskPointManage.add}
+                codes={codes}
+                type="primary"
+                href={`#/risk-control/risk-point-manage/risk-point-add?companyId=${companyId}&companyName=${companyName}`}
+                className={styles.mr10}
+              >
+                新增
             </AuthButton>
+              <Button
+                href="http://data.jingan-china.cn/import/excel/风险点.xls"
+                target="_blank"
+                className={styles.mr10}
+              >
+                模板下载
+              </Button>
+              <Upload
+                name="file"
+                accept=".xls,.xlsx"
+                headers={{ 'JA-Token': getToken() }}
+                action={`/acloud_new/v2/pointManage/importRiskPoint/${companyId}`} // 上传地址
+                onChange={this.handleImportChange}
+                beforeUpload={this.handleBeforeUpload}
+                showUploadList={false}
+              >
+                <Button disabled={importLoading} loading={importLoading}>
+                  批量导入
+                </Button>
+              </Upload>
+            </div>
           </div>
         }
         tabList={tabList}

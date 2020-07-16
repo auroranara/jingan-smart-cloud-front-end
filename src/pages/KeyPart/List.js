@@ -7,10 +7,11 @@ import CustomUpload from '@/jingan-components/CustomUpload';
 import { connect } from 'dva';
 import router from 'umi/router';
 // import moment from 'moment';
-import codes from '@/utils/codes'
+import codes from '@/utils/codes';
 import CompanySelect from '@/jingan-components/CompanySelect';
 // 审核弹窗
 import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
+import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
 
 const FormItem = Form.Item;
 const { TreeNode: TreeSelectNode } = TreeSelect;
@@ -238,9 +239,6 @@ export default class KeypartList extends Component {
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
                 </Button>
-                <AuthButton code={addCode} type="primary" onClick={this.handleToAdd}>
-                  新增
-                </AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -326,6 +324,27 @@ export default class KeypartList extends Component {
 
     return list && list.length ? (
       <Card style={{ marginTop: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            code={addCode}
+            type="primary"
+            onClick={this.handleToAdd}
+            style={{ marginRight: '10px' }}
+          >
+            新增
+          </AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/import/excel/关键装置重点部位.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/ci/hgKeyFacility/importHgKeyFacility/${companyId}`}
+            onUploadSuccess={this.handleQuery}
+          />
+        </div>
         <Table
           rowKey="id"
           // loading={loading}

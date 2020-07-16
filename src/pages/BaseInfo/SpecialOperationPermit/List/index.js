@@ -22,6 +22,7 @@ import router from 'umi/router';
 import codes from '@/utils/codes';
 import { AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import moment from 'moment';
+import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
 
 const FormItem = Form.Item;
 // const { Panel } = Collapse;
@@ -167,7 +168,7 @@ export default class specialOperationPermitList extends PureComponent {
     })
   }
 
-  getColorVal(status) {
+  getColorVal (status) {
     switch (+status) {
       case 0:
         return 'rgba(0, 0, 0, 0.65)';
@@ -243,7 +244,7 @@ export default class specialOperationPermitList extends PureComponent {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <AuthButton code={addCode} type="primary" onClick={this.handleToAdd}>新增</AuthButton>
+                {/* <AuthButton code={addCode} type="primary" onClick={this.handleToAdd}>新增</AuthButton> */}
               </FormItem>
             </Col>
           </Row>
@@ -329,26 +330,26 @@ export default class specialOperationPermitList extends PureComponent {
             <Row style={{ marginBottom: '10px' }}>
               正面附件：
               {certificatePositiveFileList.map(({ fileName, webUrl, id }) => (
-                <div
-                  style={{ color: '#1890ff', cursor: 'pointer' }}
-                  key={id}
-                  onClick={() => { window.open(webUrl, '_blank') }}
-                >
-                  {fileName}
-                </div>
-              ))}
+              <div
+                style={{ color: '#1890ff', cursor: 'pointer' }}
+                key={id}
+                onClick={() => { window.open(webUrl, '_blank') }}
+              >
+                {fileName}
+              </div>
+            ))}
             </Row>
             <Row>
               反面附件：
               {certificateReverseFileList.map(({ fileName, webUrl, id }) => (
-                <div
-                  style={{ color: '#1890ff', cursor: 'pointer' }}
-                  key={id}
-                  onClick={() => { window.open(webUrl, '_blank') }}
-                >
-                  {fileName}
-                </div>
-              ))}
+              <div
+                style={{ color: '#1890ff', cursor: 'pointer' }}
+                key={id}
+                onClick={() => { window.open(webUrl, '_blank') }}
+              >
+                {fileName}
+              </div>
+            ))}
             </Row>
           </div>
         ),
@@ -382,6 +383,25 @@ export default class specialOperationPermitList extends PureComponent {
     ]
     return list && list.length ? (
       <Card style={{ marginTop: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            code={addCode}
+            type="primary"
+            onClick={this.handleToAdd}
+            style={{ marginRight: '10px' }}
+          >新增</AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/import/excel/特种设备操作证人员.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/specialequipPerson/importSpecialequipPerson/${companyId}`}
+            onUploadSuccess={this.handleQuery}
+          />
+        </div>
         <Table
           rowKey="id"
           loading={tableLoading}

@@ -7,8 +7,10 @@ import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import moment from 'moment';
 import styles from './TableList.less';
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+
 const { Option } = Select;
 // 标题
 const title = '安全设施';
@@ -84,11 +86,12 @@ export default class TableList extends PureComponent {
       categoryOneList: [], // 分类一列表
       categoryTwoList: [], // 分类二列表
       facilitiesNameList: [], // 安全设施名称列表
+
     };
   }
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     const {
       user: {
         currentUser: { id },
@@ -289,10 +292,10 @@ export default class TableList extends PureComponent {
         },
       },
       user: {
+        currentUser,
         currentUser: { permissionCodes, unitType },
       },
     } = this.props;
-
     // 权限
     const viewCode = hasAuthority(viewAuth, permissionCodes);
     const editCode = hasAuthority(editAuth, permissionCodes);
@@ -374,8 +377,8 @@ export default class TableList extends PureComponent {
               </span> */}
             </div>
           ) : (
-            '-'
-          );
+              '-'
+            );
         },
       },
       {
@@ -402,8 +405,8 @@ export default class TableList extends PureComponent {
               查看详情
             </a>
           ) : (
-            <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看详情</span>
-          ),
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看详情</span>
+            ),
       },
       {
         title: '操作',
@@ -416,22 +419,22 @@ export default class TableList extends PureComponent {
             {viewCode ? (
               <Link to={`${ROUTER}/view/${row.id}`} target="_blank">查看</Link>
             ) : (
-              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
-            )}
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
+              )}
             <Divider type="vertical" />
             {editCode ? (
               <Link to={`${ROUTER}/edit/${row.id}`} target="_blank">编辑</Link>
             ) : (
-              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
-            )}
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+              )}
             <Divider type="vertical" />
             {deleteCode ? (
               <Popconfirm title="确认要删除数据吗？" onConfirm={() => this.handleDelete(row.id)}>
                 <a>删除</a>
               </Popconfirm>
             ) : (
-              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
-            )}
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
+              )}
           </Fragment>
         ),
       },
@@ -439,6 +442,27 @@ export default class TableList extends PureComponent {
 
     return list && list.length ? (
       <Card style={{ marginTop: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            style={{ marginRight: '10px' }}
+            type="primary"
+            code={addAuth}
+            href={`#${ROUTER}/add`}
+          >
+            新增
+          </AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/import/excel/安全设施.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/ci/safeFacilities/importSafeFacility/${companyId}`}
+            onUploadSuccess={this.handleSearch}
+          />
+        </div>
         <Table
           rowKey="id"
           loading={loading}
@@ -461,20 +485,17 @@ export default class TableList extends PureComponent {
         />
       </Card>
     ) : (
-      <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
-    );
+        <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+      );
   };
 
-  renderForm() {
+  renderForm () {
     const {
       form: { getFieldDecorator },
       user: {
         currentUser: { permissionCodes, unitType },
       },
     } = this.props;
-
-    const addCode = hasAuthority(addAuth, permissionCodes);
-
     const {
       categoryOneList,
       categoryTwoList,
@@ -578,14 +599,6 @@ export default class TableList extends PureComponent {
                 <Button onClick={this.handleReset} style={{ marginLeft: 12 }}>
                   重置
                 </Button>
-                <Button
-                  style={{ marginLeft: 12 }}
-                  type="primary"
-                  disabled={!addCode}
-                  href={`#${ROUTER}/add`}
-                >
-                  新增
-                </Button>
               </Form.Item>
             </Col>
           </Row>
@@ -594,14 +607,13 @@ export default class TableList extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       safeFacilities: {
         safeFacData: { a },
         // facNameList = [],
       },
     } = this.props;
-
     return (
       <PageHeaderLayout
         title={title}
