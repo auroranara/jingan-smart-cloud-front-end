@@ -473,9 +473,9 @@ export default class WorkingBillOther extends Component {
                   label: '申请人',
                   component: (
                     <Select
-                      key={isUnit ? unitId : values.company.key}
+                      key={companyId}
                       showSearch
-                      params={{ unitId: isUnit ? unitId : values.company.key }}
+                      params={{ unitId: companyId }}
                       mapper={PERSON_MAPPER}
                       fieldNames={PERSON_FILEDNAMES}
                       mode={mode}
@@ -517,7 +517,7 @@ export default class WorkingBillOther extends Component {
                   label: '申请部门',
                   component: (
                     <TreeSelect
-                      key={isUnit ? unitId : values.company.key}
+                      key={companyId}
                       params={{ companyId }}
                       mapper={DEPARTMENT_LIST_MAPPER}
                       fieldNames={DEPARTMENT_LIST_FIELDNAMES}
@@ -1226,7 +1226,7 @@ export default class WorkingBillOther extends Component {
                   component:
                     values.workingCompanyType === UNIT_TYPES[0].key ? (
                       <TreeSelect
-                        key={isUnit ? unitId : values.company.key}
+                        key={companyId}
                         params={{ companyId }}
                         mapper={DEPARTMENT_LIST_MAPPER}
                         fieldNames={DEPARTMENT_LIST_FIELDNAMES}
