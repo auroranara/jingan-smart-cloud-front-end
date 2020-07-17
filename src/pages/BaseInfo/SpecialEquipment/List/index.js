@@ -418,14 +418,14 @@ export default class SpecialEquipmentList extends PureComponent {
         render: (val, row) => {
           const { code } = row;
           let treeData = specialEquipment;
-          const string = val
+          const string = val ? val
             .split(',')
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};
               treeData = val.children || [];
               return val.label;
             })
-            .join('/');
+            .join('/') : '';
           return (
             <div className={styles.multi}>
               <div>
@@ -587,7 +587,7 @@ export default class SpecialEquipmentList extends PureComponent {
                 新增
               </AuthButton>
               <Button
-                href="http://data.jingan-china.cn/import/excel/特种设备管理.xls"
+                href="http://data.jingan-china.cn/v2/chem/file/特种设备管理.xls"
                 target="_blank"
                 style={{ marginRight: '10px' }}
               >
