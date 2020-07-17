@@ -39,11 +39,11 @@ export default class ImportModal extends Component {
       if (res.code && res.code === 200) {
         message.success(res.msg);
       } else {
-        res.data.errorMesssge.length === 0
+        res.data.errorMessage.length === 0
           ? message.error(res.msg)
           : Modal.error({
             title: '错误信息',
-            content: res.data.errorMesssge,
+            content: res.data.errorMessage,
             okText: '确定',
           });
       }
