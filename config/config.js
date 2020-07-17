@@ -42,17 +42,18 @@ const hosts = {
   show: 'www.jinganyun.net',
   five: 'five.jinganyun.net',
   demo: 'demo.jinganyun.net',
+  glz: '192.168.10.41:8080',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.tg}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/gsafe': {
-      target: `http://${hosts.tg}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

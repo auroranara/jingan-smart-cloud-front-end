@@ -372,7 +372,6 @@ export default class SpecialEquipmentList extends PureComponent {
       },
       emergencyManagement: { specialEquipment = [] },
     } = this.props;
-
     const columns = [
       {
         title: '单位名称',
@@ -577,7 +576,7 @@ export default class SpecialEquipmentList extends PureComponent {
         }
       >
         {this.renderForm()}
-        {list && list.length ? (
+        <Spin spinning={loading}>
           <Card style={{ marginTop: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
               <AuthButton
@@ -599,33 +598,31 @@ export default class SpecialEquipmentList extends PureComponent {
                 onUploadSuccess={() => this.fetchList(this.pageNum, this.pageSize, { ...this.state.formData })}
               />
             </div>
-            <Table
-              rowKey="id"
-              loading={loading}
-              columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
-              dataSource={list}
-              pagination={false}
-              scroll={{ x: 'max-content' }}
-            />
-            <Pagination
-              style={{ marginTop: '20px', float: 'right' }}
-              showQuickJumper
-              showSizeChanger
-              // pageSizeOptions={['5', '10', '15', '20']}
-              pageSize={pageSize}
-              current={pageNum}
-              total={total}
-              onChange={this.handleTableChange}
-              onShowSizeChange={this.handleTableChange}
-            />
+            {list && list.length ? (
+              <div>
+                <Table
+                  rowKey="id"
+                  loading={loading}
+                  columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
+                  dataSource={list}
+                  pagination={false}
+                  scroll={{ x: 'max-content' }}
+                />
+                <Pagination
+                  style={{ marginTop: '20px', float: 'right' }}
+                  showQuickJumper
+                  showSizeChanger
+                  // pageSizeOptions={['5', '10', '15', '20']}
+                  pageSize={pageSize}
+                  current={pageNum}
+                  total={total}
+                  onChange={this.handleTableChange}
+                  onShowSizeChange={this.handleTableChange}
+                />
+              </div>
+            ) : (<div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>)}
           </Card>
-        ) : (
-            <Spin spinning={loading}>
-              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-                <span>暂无数据</span>
-              </Card>
-            </Spin>
-          )}
+        </Spin>
       </PageHeaderLayout>
     );
   }

@@ -431,28 +431,28 @@ export default class ProductionFacilityList extends PureComponent {
     ];
 
     return (
-      list && list.length > 0 ? (
-        <Card className={styles.card} bordered={false}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-            <AuthButton
-              type="primary"
-              onClick={this.handleAddClick}
-              style={{ marginRight: '10px' }}
-              code={ADD_CODE}>
-              新增
+      <Card className={styles.card} bordered={false}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            type="primary"
+            onClick={this.handleAddClick}
+            style={{ marginRight: '10px' }}
+            code={ADD_CODE}>
+            新增
             </AuthButton>
-            <Button
-              href="http://data.jingan-china.cn/import/excel/生产设施.xls"
-              target="_blank"
-              style={{ marginRight: '10px' }}
-            >
-              模板下载
+          <Button
+            href="http://data.jingan-china.cn/import/excel/生产设施.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
           </Button>
-            <ImportModal
-              action={(companyId) => `/acloud_new/v2/productFacility/importProductFacility/${companyId}`}
-              onUploadSuccess={() => this.handleSearch(this.form && this.form.getFieldsValue())}
-            />
-          </div>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/productFacility/importProductFacility/${companyId}`}
+            onUploadSuccess={() => this.handleSearch(this.form && this.form.getFieldsValue())}
+          />
+        </div>
+        {list && list.length > 0 ? (
           <Table
             className={styles.table}
             dataSource={list}
@@ -474,12 +474,8 @@ export default class ProductionFacilityList extends PureComponent {
               showSizeChanger: true,
             }}
           />
-        </Card>
-      ) : (
-          <Card className={styles.card} bordered={false}>
-            <Empty />
-          </Card>
-        )
+        ) : (<Empty />)}
+      </Card>
     );
   };
 

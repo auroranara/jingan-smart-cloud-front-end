@@ -350,8 +350,9 @@ export default class lawDatabaseList extends PureComponent {
             模板下载
           </Button>
           <ImportModal
-            action={(companyId) => `/acloud_new/v2/ci/hgLawsAndRegulations/importHgLawsAndRegulations/${companyId}`}
+            action="/acloud_new/v2/ci/hgLawsAndRegulations/importHgLawsAndRegulations"
             onUploadSuccess={this.handleQuery}
+            showCompanySelect={false}
           />
         </div>
         {list && list.length ? (

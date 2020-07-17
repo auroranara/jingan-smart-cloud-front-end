@@ -31,13 +31,12 @@ export default class ImportModal extends Component {
     const res = info.file.response;
     if (info.file.status === 'uploading') {
       this.setState({ importLoading: true });
-    }
-    if (info.file.status === undefined) {
-      this.setState({ importLoading: false });
-    }
-    if (info.file.status === 'done' && res) {
+    } else if (info.file.status === 'done' && res) {
       if (res.code && res.code === 200) {
         message.success(res.msg);
+        onUploadSuccess();
+      } else if (res.code && res.code === 500) {
+        message.error(res.msg)
       } else {
         res.data.errorMessage.length === 0
           ? message.error(res.msg)
@@ -47,9 +46,8 @@ export default class ImportModal extends Component {
             okText: '确定',
           });
       }
-      onUploadSuccess();
       this.setState({ importLoading: false });
-    }
+    } else this.setState({ importLoading: false });
   }
 
   handleCompanyChange = company => {
@@ -67,11 +65,13 @@ export default class ImportModal extends Component {
   render () {
     const {
       user: { isCompany, currentUser },
-      action,
-      importAuth = true,
+      action, // 导入接口路径
+      importAuth = true, // 导入权限
+      showCompanySelect = true, // 是否显示选择单位
     } = this.props;
     const { importModalVisible, importLoading, company } = this.state;
     const companyId = isCompany ? currentUser.companyId : company ? company.key : undefined;
+    const disabled = !importAuth || importLoading || (showCompanySelect && !isCompany && !(company && company.key));
     const uploadProps = {
       name: 'file',
       accept: ".xls,.xlsx",
@@ -80,18 +80,18 @@ export default class ImportModal extends Component {
       onChange: this.handleImportChange,
       beforeUpload: this.handleBeforeUpload,
       showUploadList: false,
-      disabled: !importAuth && !isCompany && !(company && company.key),
+      disabled,
     };
     return (
       <div>
         {isCompany ? (
           <Upload {...uploadProps} >
-            <Button type="primary" disabled={importLoading} loading={importLoading}>
+            <Button type="primary" disabled={!importAuth || importLoading} loading={importLoading}>
               批量导入
-          </Button>
+            </Button>
           </Upload>
         ) : (
-            <Button disabled={!importAuth} onClick={this.handleOpenImportModal}>
+            <Button disabled={!importAuth || importLoading} onClick={this.handleOpenImportModal}>
               批量导入
             </Button>
           )}
@@ -109,7 +109,7 @@ export default class ImportModal extends Component {
             />
           </Row>
           <Upload {...uploadProps}>
-            <Button disabled={importLoading || (!isCompany && !(company && company.key))} loading={importLoading}>
+            <Button disabled={disabled} loading={importLoading}>
               批量导入
             </Button>
           </Upload>

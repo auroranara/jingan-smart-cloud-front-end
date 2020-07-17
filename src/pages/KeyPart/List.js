@@ -322,7 +322,7 @@ export default class KeypartList extends Component {
       },
     ];
 
-    return list && list.length ? (
+    return (
       <Card style={{ marginTop: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
           <AuthButton
@@ -345,32 +345,34 @@ export default class KeypartList extends Component {
             onUploadSuccess={this.handleQuery}
           />
         </div>
-        <Table
-          rowKey="id"
-          // loading={loading}
-          columns={columns}
-          dataSource={list}
-          bordered
-          scroll={{ x: 'max-content' }}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            // pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: (pageNum, pageSize) => {
-              this.handleQuery({ pageNum, pageSize });
-            },
-            onShowSizeChange: (pageNum, pageSize) => {
-              this.handleQuery({ pageNum, pageSize });
-            },
-          }}
-        />
+        {list && list.length ? (
+          <Table
+            rowKey="id"
+            // loading={loading}
+            columns={columns}
+            dataSource={list}
+            bordered
+            scroll={{ x: 'max-content' }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              // pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: (pageNum, pageSize) => {
+                this.handleQuery({ pageNum, pageSize });
+              },
+              onShowSizeChange: (pageNum, pageSize) => {
+                this.handleQuery({ pageNum, pageSize });
+              },
+            }}
+          />
+        ) : (
+            <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+          )}
       </Card>
-    ) : (
-        <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
-      );
+    )
   }
 
   render () {

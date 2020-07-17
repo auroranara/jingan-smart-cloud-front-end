@@ -107,10 +107,6 @@ export default class riskPointList extends PureComponent {
     if (info.file.status === 'uploading') {
       this.setState({ importLoading: true });
     }
-
-    if (info.file.status === undefined) {
-      this.setState({ importLoading: false });
-    }
     if (info.file.status === 'done' && res) {
       if (res.code && res.code === 200) {
         message.success(res.msg);
@@ -124,19 +120,18 @@ export default class riskPointList extends PureComponent {
             okText: '确定',
           });
       }
-      this.handleQuery();
       this.setState({ importLoading: false });
-    }
+    } else this.setState({ importLoading: false });
   }
 
   handleBeforeUpload = file => {
     const { importLoading } = this.state;
-    const isExcel = /xls|xlsx/.test(file.name);
+    const isExcel = /xls/.test(file.name);
     if (importLoading) {
       message.error('尚未上传结束');
     }
     if (!isExcel) {
-      message.error('上传失败，请上传.xls或者.xlsx格式');
+      message.error('上传失败，请上传.xls格式');
     }
     return !importLoading || isExcel;
   }
@@ -208,7 +203,7 @@ export default class riskPointList extends PureComponent {
               风险点总数：
               {count[0]}
             </span>
-            <div style={{ position: 'absolute', right: '66px', top: '209px' }}>
+            <div style={{ position: 'absolute', right: '66px', top: '209px', zIndex: 99 }}>
               <AuthButton
                 code={codesMap.riskControl.riskPointManage.add}
                 codes={codes}

@@ -440,7 +440,7 @@ export default class TableList extends PureComponent {
       },
     ];
 
-    return list && list.length ? (
+    return (
       <Card style={{ marginTop: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
           <AuthButton
@@ -463,30 +463,32 @@ export default class TableList extends PureComponent {
             onUploadSuccess={this.handleSearch}
           />
         </div>
-        <Table
-          rowKey="id"
-          loading={loading}
-          columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
-          dataSource={list}
-          bordered
-          scroll={{ x: 1400 }}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            // pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: this.handlePageChange,
-            onShowSizeChange: (num, size) => {
-              this.handlePageChange(1, size);
-            },
-          }}
-        />
+        {list && list.length ? (
+          <Table
+            rowKey="id"
+            loading={loading}
+            columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
+            dataSource={list}
+            bordered
+            scroll={{ x: 1400 }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              // pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handlePageChange,
+              onShowSizeChange: (num, size) => {
+                this.handlePageChange(1, size);
+              },
+            }}
+          />
+        ) : (
+            <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+          )}
       </Card>
-    ) : (
-        <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
-      );
+    )
   };
 
   renderForm () {
