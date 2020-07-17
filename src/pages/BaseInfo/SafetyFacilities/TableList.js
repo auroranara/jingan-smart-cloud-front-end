@@ -453,7 +453,7 @@ export default class TableList extends PureComponent {
             新增
           </AuthButton>
           <Button
-            href="http://data.jingan-china.cn/v2/chem/file1/安全设施.xls"
+            href="http://data.jingan-china.cn/v2/chem/file2/安全设施.xls"
             target="_blank"
             style={{ marginRight: '10px' }}
           >
