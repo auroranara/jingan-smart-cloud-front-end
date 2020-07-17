@@ -126,6 +126,7 @@ const tabList = [
 ];
 // 默认选中一般企业
 const defaultCompanyNature = '一般企业';
+const defaultCompanyNature1 = '生产企业';
 // 默认经纬度坐标
 const defaultPosition = { longitude: 120.30, latitude: 31.57 };
 
@@ -1160,7 +1161,7 @@ export default class CompanyDetail extends PureComponent {
                   initialValue:
                     companyNature ||
                     (companyNatures.length > 0
-                      ? companyNatures.filter(item => item.label === defaultCompanyNature)[0].id
+                      ? companyNatures.filter(item => item.label === defaultCompanyNature || item.label === defaultCompanyNature1)[0].id
                       : undefined),
                   rules: [{ required: true, message: '请选择单位性质' }],
                 })(
@@ -1170,8 +1171,8 @@ export default class CompanyDetail extends PureComponent {
                     onChange={value => {
                       this.setState({
                         isCompany:
-                          companyNatures.filter(item => item.id === value)[0].label ===
-                          defaultCompanyNature,
+                          companyNatures.filter(item => item.id === value)[0].label === defaultCompanyNature
+                          || companyNatures.filter(item => item.id === value)[0].label === defaultCompanyNature1,
                       });
                     }}
                   >
