@@ -343,7 +343,7 @@ export default class lawDatabaseList extends PureComponent {
             新增
           </AuthButton>
           <Button
-            href="http://data.jingan-china.cn/import/excel/安全生产法律法规.xls"
+            href="http://data.jingan-china.cn/v2/chem/file/安全生产法律法规.xls"
             target="_blank"
             style={{ marginRight: '10px' }}
           >
@@ -353,6 +353,7 @@ export default class lawDatabaseList extends PureComponent {
             action="/acloud_new/v2/ci/hgLawsAndRegulations/importHgLawsAndRegulations"
             onUploadSuccess={this.handleQuery}
             showCompanySelect={false}
+            code={codesMap.lawEnforcement.laws.import}
           />
         </div>
         {list && list.length ? (

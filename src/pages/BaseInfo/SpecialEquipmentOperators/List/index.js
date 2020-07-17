@@ -37,6 +37,7 @@ const {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
+      import: importCode,
     },
   },
 } = codes;
@@ -423,6 +424,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
           <ImportModal
             action={(companyId) => `/acloud_new/v2/specialequipPerson/importSpecialequipPerson/${companyId}`}
             onUploadSuccess={this.handleQuery}
+            code={importCode}
           />
         </div>
         {list && list.length ? (

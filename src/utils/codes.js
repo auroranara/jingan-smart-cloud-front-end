@@ -284,6 +284,7 @@ export default {
       edit: 'safetyProductionRegulation.laws.edit',
       detail: 'safetyProductionRegulation.laws.view',
       delete: 'safetyProductionRegulation.laws.delete',
+      import: 'safetyProductionRegulation.laws.import',
     },
     illegal: {
       listView: 'lawEnforcement.illegal.listView',
@@ -299,6 +300,7 @@ export default {
     edit: 'facilityManagement.keyPart.edit',
     delete: 'facilityManagement.keyPart.delete',
     detail: 'facilityManagement.keyPart.view',
+    import: 'facilityManagement.keyPart.import',
   },
   training: {
     examinationPaper: {
@@ -402,6 +404,7 @@ export default {
       delete: 'riskControl.riskPointManage.delete',
       riskAssessmentView: 'riskControl.riskPointManage.riskAssessmentView',
       riskCardView: 'riskControl.riskPointManage.riskCardView',
+      import: 'riskControl.riskPointManage.import',
     },
     // 风险点管理
     gridPointManage: {
@@ -597,6 +600,7 @@ export default {
       detail: 'facilityManagement.specialEquipment.detail',
       delete: 'facilityManagement.specialEquipment.delete',
       inspection: 'facilityManagement.specialEquipment.inspectionReport',
+      import: 'facilityManagement.specialEquipment.import',
     },
 
     // 库区管理
@@ -656,6 +660,7 @@ export default {
       edit: 'facilityManagement.safetyFacilities.edit',
       delete: 'facilityManagement.safetyFacilities.delete',
       report: 'facilityManagement.safetyFacilities.report',
+      import: 'facilityManagement.safetyFacilities.import',
     },
     // 储罐管理
     storageManagement: {
@@ -680,6 +685,7 @@ export default {
       add: 'operationSafety.specialEquipmentOperators.add',
       edit: 'operationSafety.specialEquipmentOperators.edit',
       delete: 'operationSafety.specialEquipmentOperators.delete',
+      import: 'operationSafety.specialEquipmentOperators.import',
     },
 
     // 生产装置

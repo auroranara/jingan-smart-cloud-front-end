@@ -6,7 +6,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CheckContent.less';
 import CheckContent from './CheckContent';
 import codesMap from '@/utils/codes';
-import { AuthButton } from '@/utils/customAuth';
+import { AuthButton, hasAuthority } from '@/utils/customAuth';
 import { getToken } from '@/utils/authority';
 
 // 默认页面显示数量
@@ -112,13 +112,12 @@ export default class riskPointList extends PureComponent {
         message.success(res.msg);
         this.getRiskList();
       } else {
-        res.data.errorMasssge.length === 0
-          ? message.error(res.msg)
-          : Modal.error({
+        res && res.data && res.data.errorMessage && res.data.errorMessage.length > 0
+          ? Modal.error({
             title: '错误信息',
-            content: res.data.errorMasssge,
+            content: res.data.errorMessage,
             okText: '确定',
-          });
+          }) : message.error(res.msg);
       }
       this.setState({ importLoading: false });
     } else this.setState({ importLoading: false });
@@ -159,7 +158,7 @@ export default class riskPointList extends PureComponent {
     const { activeKey, importLoading } = this.state;
 
     const count = list.map(item => item.pointCount);
-
+    const importAuth = hasAuthority(codesMap.riskControl.riskPointManage.import, codes);
     const tabList = [
       {
         key: 'all',
@@ -228,8 +227,9 @@ export default class riskPointList extends PureComponent {
                 onChange={this.handleImportChange}
                 beforeUpload={this.handleBeforeUpload}
                 showUploadList={false}
+                disabled={!importAuth || importLoading}
               >
-                <Button disabled={importLoading} loading={importLoading}>
+                <Button disabled={!importAuth || importLoading} loading={importLoading}>
                   批量导入
                 </Button>
               </Upload>

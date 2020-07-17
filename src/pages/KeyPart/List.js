@@ -22,6 +22,7 @@ const {
     edit: editCode,
     delete: deleteCode,
     detail: detailCode,
+    import: importCode,
   },
 } = codes;
 const TITLE = '关键装置重点部位';
@@ -343,6 +344,7 @@ export default class KeypartList extends Component {
           <ImportModal
             action={(companyId) => `/acloud_new/v2/ci/hgKeyFacility/importHgKeyFacility/${companyId}`}
             onUploadSuccess={this.handleQuery}
+            code={importCode}
           />
         </div>
         {list && list.length ? (

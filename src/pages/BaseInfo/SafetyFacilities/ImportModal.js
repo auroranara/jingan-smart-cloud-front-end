@@ -3,6 +3,7 @@ import { Modal, Upload, Button, message, Row } from 'antd';
 import { connect } from 'dva';
 import { getToken } from '@/utils/authority';
 import CompanySelect from '@/jingan-components/CompanySelect';
+import { hasAuthority } from '@/utils/customAuth';
 
 @connect(({ user }) => ({ user }))
 export default class ImportModal extends Component {
@@ -38,13 +39,12 @@ export default class ImportModal extends Component {
       } else if (res.code && res.code === 500) {
         message.error(res.msg)
       } else {
-        res.data.errorMessage.length === 0
-          ? message.error(res.msg)
-          : Modal.error({
+        res && res.data && res.data.errorMessage && res.data.errorMessage.length > 0
+          ? Modal.error({
             title: '错误信息',
             content: res.data.errorMessage,
             okText: '确定',
-          });
+          }) : message.error(res.msg);
       }
       this.setState({ importLoading: false });
     } else this.setState({ importLoading: false });
@@ -66,10 +66,12 @@ export default class ImportModal extends Component {
     const {
       user: { isCompany, currentUser },
       action, // 导入接口路径
-      importAuth = true, // 导入权限
+      code, // 导入权限代码
+      auth, // 导入权限
       showCompanySelect = true, // 是否显示选择单位
     } = this.props;
     const { importModalVisible, importLoading, company } = this.state;
+    const importAuth = typeof auth === 'boolean' ? auth : hasAuthority(code, currentUser.permissionCodes);
     const companyId = isCompany ? currentUser.companyId : company ? company.key : undefined;
     const disabled = !importAuth || importLoading || (showCompanySelect && !isCompany && !(company && company.key));
     const uploadProps = {
@@ -84,7 +86,7 @@ export default class ImportModal extends Component {
     };
     return (
       <div>
-        {isCompany ? (
+        {isCompany || !showCompanySelect ? (
           <Upload {...uploadProps} >
             <Button type="primary" disabled={!importAuth || importLoading} loading={importLoading}>
               批量导入
@@ -101,13 +103,15 @@ export default class ImportModal extends Component {
           onCancel={() => this.setState({ importModalVisible: false })}
           footer={(<Button onClick={() => this.setState({ importModalVisible: false })}>关闭</Button>)}
         >
-          <Row style={{ marginBottom: '20px' }}>
-            <CompanySelect
-              style={{ width: '300px' }}
-              onChange={this.handleCompanyChange}
-              value={company}
-            />
-          </Row>
+          {showCompanySelect && (
+            <Row style={{ marginBottom: '20px' }}>
+              <CompanySelect
+                style={{ width: '300px' }}
+                onChange={this.handleCompanyChange}
+                value={company}
+              />
+            </Row>
+          )}
           <Upload {...uploadProps}>
             <Button disabled={disabled} loading={importLoading}>
               批量导入

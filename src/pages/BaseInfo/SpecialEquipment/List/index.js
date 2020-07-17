@@ -33,6 +33,7 @@ const {
       add: addCode,
       delete: deleteCode,
       inspection: inspectionCode,
+      import: importCode,
     },
   },
 } = codes;
@@ -587,7 +588,7 @@ export default class SpecialEquipmentList extends PureComponent {
                 新增
               </AuthButton>
               <Button
-                href="http://data.jingan-china.cn/v2/chem/file/特种设备管理.xls"
+                href="http://data.jingan-china.cn/v2/chem/file1/特种设备管理.xls"
                 target="_blank"
                 style={{ marginRight: '10px' }}
               >
@@ -596,6 +597,7 @@ export default class SpecialEquipmentList extends PureComponent {
               <ImportModal
                 action={(companyId) => `/acloud_new/v2/ci/specialEquip/importSpecialEquip/${companyId}`}
                 onUploadSuccess={() => this.fetchList(this.pageNum, this.pageSize, { ...this.state.formData })}
+                code={importCode}
               />
             </div>
             {list && list.length ? (

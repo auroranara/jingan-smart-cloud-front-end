@@ -45,6 +45,7 @@ const {
       edit: editAuth,
       delete: deleteAuth,
       report: reportAuth,
+      import: importCode,
     },
   },
 } = codes;
@@ -461,6 +462,7 @@ export default class TableList extends PureComponent {
           <ImportModal
             action={(companyId) => `/acloud_new/v2/ci/safeFacilities/importSafeFacility/${companyId}`}
             onUploadSuccess={this.handleSearch}
+            code={importCode}
           />
         </div>
         {list && list.length ? (

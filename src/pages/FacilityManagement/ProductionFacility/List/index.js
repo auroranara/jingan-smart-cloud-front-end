@@ -38,6 +38,7 @@ export const ADD_CODE = 'facilityManagement.productionFacility.add';
 export const EDIT_CODE = 'facilityManagement.productionFacility.edit';
 export const DELETE_CODE = 'facilityManagement.productionFacility.delete';
 export const CHECK_CODE = 'facilityManagement.productionFacility.check.list';
+export const IMPORT_CODE = 'facilityManagement.productionFacility.import';
 export const LIST_PATH = '/facility-management/production-facility/list';
 export const ADD_PATH = '/facility-management/production-facility/add';
 export const EDIT_PATH = '/facility-management/production-facility/edit';
@@ -450,6 +451,7 @@ export default class ProductionFacilityList extends PureComponent {
           <ImportModal
             action={(companyId) => `/acloud_new/v2/productFacility/importProductFacility/${companyId}`}
             onUploadSuccess={() => this.handleSearch(this.form && this.form.getFieldsValue())}
+            code={IMPORT_CODE}
           />
         </div>
         {list && list.length > 0 ? (
