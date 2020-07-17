@@ -42,6 +42,7 @@ const hosts = {
   show: 'www.jinganyun.net',
   five: 'five.jinganyun.net',
   demo: 'demo.jinganyun.net',
+  glz: '192.168.10.41:8080',
 };
 
 export default {

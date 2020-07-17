@@ -8,6 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codesMap from '@/utils/codes';
 import { AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import moment from 'moment';
+import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -57,6 +58,7 @@ export default class lawDatabaseList extends PureComponent {
 
   state = {
     currentPage: 1,
+    importLoading: false, // 是否上传中
   };
 
   // 挂载后
@@ -209,14 +211,7 @@ export default class lawDatabaseList extends PureComponent {
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>
                   查询
               </Button>
-                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <AuthButton
-                  type="primary"
-                  code={codesMap.lawEnforcement.laws.add}
-                  href="#/safety-production-regulation/laws/add"
-                >
-                  新增
-              </AuthButton>
+                <Button onClick={this.handleReset}>重置</Button>
               </FormItem>
             </Col>
           </Row>
@@ -239,7 +234,6 @@ export default class lawDatabaseList extends PureComponent {
         judgeDict,
       },
     } = this.props;
-
     /* 配置描述 */
     const COLUMNS = [
       {
@@ -339,6 +333,29 @@ export default class lawDatabaseList extends PureComponent {
 
     return (
       <Card style={{ marginTop: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            type="primary"
+            code={codesMap.lawEnforcement.laws.add}
+            href="#/safety-production-regulation/laws/add"
+            style={{ marginRight: '10px' }}
+          >
+            新增
+          </AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/v2/chem/file/安全生产法律法规.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action="/acloud_new/v2/ci/hgLawsAndRegulations/importHgLawsAndRegulations"
+            onUploadSuccess={this.handleQuery}
+            showCompanySelect={false}
+            code={codesMap.lawEnforcement.laws.import}
+          />
+        </div>
         {list && list.length ? (
           <Table
             loading={tableLoading}

@@ -17,12 +17,13 @@ import moment from 'moment';
 import router from 'umi/router';
 // import Link from 'umi/link';
 
-import { hasAuthority, AuthA, AuthUmiLink as AuthLink } from '@/utils/customAuth';
+import { hasAuthority, AuthA, AuthUmiLink as AuthLink, AuthButton } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 import styles from './index.less';
 import { getColorVal, paststatusVal } from '../utils';
+import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
 
 const {
   baseInfo: {
@@ -32,6 +33,7 @@ const {
       add: addCode,
       delete: deleteCode,
       inspection: inspectionCode,
+      import: importCode,
     },
   },
 } = codes;
@@ -78,7 +80,7 @@ export default class SpecialEquipmentList extends PureComponent {
     this.pageSize = 10;
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchDict({ type: 'specialEquipment' });
     this.fetchBrand(brandPayload);
     this.fetchList();
@@ -131,7 +133,7 @@ export default class SpecialEquipmentList extends PureComponent {
     const fields = [
       {
         id: 'code',
-        render() {
+        render () {
           return <Input placeholder="请输入代码" />;
         },
       },
@@ -202,7 +204,7 @@ export default class SpecialEquipmentList extends PureComponent {
       // },
       {
         id: 'factoryNumber',
-        render() {
+        render () {
           return <Input placeholder="请输入设备编号" />;
         },
         transform,
@@ -252,7 +254,7 @@ export default class SpecialEquipmentList extends PureComponent {
       },
       {
         id: 'paststatus',
-        render() {
+        render () {
           const options = [
             { value: '0', name: '未到期' },
             { value: '1', name: '即将到期' },
@@ -280,7 +282,7 @@ export default class SpecialEquipmentList extends PureComponent {
       },
       {
         id: 'companyName',
-        render() {
+        render () {
           return <Input placeholder="请输入单位名称" />;
         },
         transform,
@@ -297,11 +299,11 @@ export default class SpecialEquipmentList extends PureComponent {
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={
-            <Button type="primary" onClick={this.goToAdd} disabled={!hasAddAuthority}>
-              新增
-            </Button>
-          }
+        // action={
+        //   <Button type="primary" onClick={this.goToAdd} disabled={!hasAddAuthority}>
+        //     新增
+        //   </Button>
+        // }
         />
       </Card>
     );
@@ -358,7 +360,7 @@ export default class SpecialEquipmentList extends PureComponent {
     this.fetchList(pageNum, pageSize, { ...formData });
   };
 
-  render() {
+  render () {
     const {
       loading = false,
       specialEquipment: {
@@ -371,7 +373,6 @@ export default class SpecialEquipmentList extends PureComponent {
       },
       emergencyManagement: { specialEquipment = [] },
     } = this.props;
-
     const columns = [
       {
         title: '单位名称',
@@ -418,14 +419,14 @@ export default class SpecialEquipmentList extends PureComponent {
         render: (val, row) => {
           const { code } = row;
           let treeData = specialEquipment;
-          const string = val
+          const string = val ? val
             .split(',')
             .map(id => {
               const val = treeData.find(item => item.id === id) || {};
               treeData = val.children || [];
               return val.label;
             })
-            .join('/');
+            .join('/') : '';
           return (
             <div className={styles.multi}>
               <div>
@@ -468,8 +469,8 @@ export default class SpecialEquipmentList extends PureComponent {
               <div>{moment(endDate).format('YYYY年MM月DD日')}</div>
             </div>
           ) : (
-            '-'
-          );
+              '-'
+            );
         },
       },
       // {
@@ -576,35 +577,54 @@ export default class SpecialEquipmentList extends PureComponent {
         }
       >
         {this.renderForm()}
-        {list && list.length ? (
+        <Spin spinning={loading}>
           <Card style={{ marginTop: '24px' }}>
-            <Table
-              rowKey="id"
-              loading={loading}
-              columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
-              dataSource={list}
-              pagination={false}
-              scroll={{ x: 'max-content' }}
-            />
-            <Pagination
-              style={{ marginTop: '20px', float: 'right' }}
-              showQuickJumper
-              showSizeChanger
-              // pageSizeOptions={['5', '10', '15', '20']}
-              pageSize={pageSize}
-              current={pageNum}
-              total={total}
-              onChange={this.handleTableChange}
-              onShowSizeChange={this.handleTableChange}
-            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+              <AuthButton
+                type="primary"
+                onClick={this.goToAdd}
+                style={{ marginRight: '10px' }}
+                code={addCode}>
+                新增
+              </AuthButton>
+              <Button
+                href="http://data.jingan-china.cn/v2/chem/file1/特种设备管理.xls"
+                target="_blank"
+                style={{ marginRight: '10px' }}
+              >
+                模板下载
+              </Button>
+              <ImportModal
+                action={(companyId) => `/acloud_new/v2/ci/specialEquip/importSpecialEquip/${companyId}`}
+                onUploadSuccess={() => this.fetchList(this.pageNum, this.pageSize, { ...this.state.formData })}
+                code={importCode}
+              />
+            </div>
+            {list && list.length ? (
+              <div>
+                <Table
+                  rowKey="id"
+                  loading={loading}
+                  columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
+                  dataSource={list}
+                  pagination={false}
+                  scroll={{ x: 'max-content' }}
+                />
+                <Pagination
+                  style={{ marginTop: '20px', float: 'right' }}
+                  showQuickJumper
+                  showSizeChanger
+                  // pageSizeOptions={['5', '10', '15', '20']}
+                  pageSize={pageSize}
+                  current={pageNum}
+                  total={total}
+                  onChange={this.handleTableChange}
+                  onShowSizeChange={this.handleTableChange}
+                />
+              </div>
+            ) : (<div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>)}
           </Card>
-        ) : (
-          <Spin spinning={loading}>
-            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-              <span>暂无数据</span>
-            </Card>
-          </Spin>
-        )}
+        </Spin>
       </PageHeaderLayout>
     );
   }
