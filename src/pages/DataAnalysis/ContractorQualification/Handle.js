@@ -62,7 +62,7 @@ export default class specialOperationPermitHandle extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
-      user: { isCompany, currentUser },
+      // user: { isCompany, currentUser },
     } = this.props
     // 获取作业类别
     this.fetchDict({
@@ -98,12 +98,13 @@ export default class specialOperationPermitHandle extends PureComponent {
           setFieldsValue({ companyId })
         },
       })
-    } else if (isCompany) {
-      // 如果企业账号
-      const { companyId, companyName } = currentUser;
-      this.setState({ selectedCompany: { id: companyId, name: companyName } })
-      // setFieldsValue({ companyId })
     }
+    // else if (isCompany) {
+    //   // 如果企业账号
+    //   const { companyId, companyName } = currentUser;
+    //   this.setState({ selectedCompany: { id: companyId, name: companyName } })
+    //   // setFieldsValue({ companyId })
+    // }
   }
 
   // 获取字典
@@ -332,7 +333,7 @@ export default class specialOperationPermitHandle extends PureComponent {
     const {
       match: { params: { id } },
       form: { getFieldDecorator },
-      user: { isCompany },
+      // user: { isCompany },
     } = this.props;
     const {
       frontPhotoList,
@@ -345,18 +346,16 @@ export default class specialOperationPermitHandle extends PureComponent {
     } = this.state;
     return (
       <Form>
-        {!isCompany && (
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位' }],
-            })(
-              <Fragment>
-                <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择单位" />
-                <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
-              </Fragment>
-            )}
-          </FormItem>
-        )}
+        <FormItem label="单位名称" {...formItemLayout}>
+          {getFieldDecorator('companyId', {
+            rules: [{ required: true, message: '请选择单位' }],
+          })(
+            <Fragment>
+              <Input value={selectedCompany.name} {...itemStyles} disabled placeholder="请选择单位" />
+              <Button onClick={this.handleViewCompanyModal} type="primary">选择单位</Button>
+            </Fragment>
+          )}
+        </FormItem>
         <FormItem label="姓名" {...formItemLayout}>
           {getFieldDecorator('name', {
             initialValue: id ? detail.name : undefined,
