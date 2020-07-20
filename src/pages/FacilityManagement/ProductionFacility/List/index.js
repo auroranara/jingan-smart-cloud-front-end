@@ -16,7 +16,7 @@ import {
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
-import SelectOrSpan from '@/jingan-components/SelectOrSpan';
+// import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 import { connect } from 'dva';
@@ -25,6 +25,9 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
+import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+import { AuthButton } from '@/utils/customAuth';
+
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
 const GET_LIST = 'productionFacility/getList';
@@ -35,6 +38,7 @@ export const ADD_CODE = 'facilityManagement.productionFacility.add';
 export const EDIT_CODE = 'facilityManagement.productionFacility.edit';
 export const DELETE_CODE = 'facilityManagement.productionFacility.delete';
 export const CHECK_CODE = 'facilityManagement.productionFacility.check.list';
+export const IMPORT_CODE = 'facilityManagement.productionFacility.import';
 export const LIST_PATH = '/facility-management/production-facility/list';
 export const ADD_PATH = '/facility-management/production-facility/add';
 export const EDIT_PATH = '/facility-management/production-facility/edit';
@@ -57,7 +61,7 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
     loading: loading.effects[GET_LIST],
   }),
   dispatch => ({
-    getList(payload, callback) {
+    getList (payload, callback) {
       dispatch({
         type: GET_LIST,
         payload: {
@@ -68,21 +72,21 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
         callback,
       });
     },
-    remove(payload, callback) {
+    remove (payload, callback) {
       dispatch({
         type: REMOVE,
         payload,
         callback,
       });
     },
-    scrap(payload, callback) {
+    scrap (payload, callback) {
       dispatch({
         type: SCRAP,
         payload,
         callback,
       });
     },
-    fetchDepartmentDict(payload, callback) {
+    fetchDepartmentDict (payload, callback) {
       dispatch({
         type: 'productionFacility/fetchDepartmentDict',
         payload,
@@ -99,7 +103,7 @@ export default class ProductionFacilityList extends PureComponent {
 
   prevValues = null;
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       user: {
         currentUser: { unitType, unitId },
@@ -219,18 +223,18 @@ export default class ProductionFacilityList extends PureComponent {
             {this.renderTreeNodes(children)}
           </TreeNode>
         ) : (
-          <TreeNode title={value} key={key} value={key} />
-        )
+            <TreeNode title={value} key={key} value={key} />
+          )
     );
 
-  renderForm() {
+  renderForm () {
     const {
       user: {
         currentUser: { unitType, permissionCodes },
       },
     } = this.props;
     const isNotCompany = +unitType !== 4;
-    const hasAddAuthority = permissionCodes.includes(ADD_CODE);
+    // const hasAddAuthority = permissionCodes.includes(ADD_CODE);
     const FIELDS = [
       {
         id: 'facilitiesName',
@@ -269,19 +273,19 @@ export default class ProductionFacilityList extends PureComponent {
       },
       ...(isNotCompany
         ? [
-            {
-              id: 'companyName',
-              label: '单位名称',
-              transform: value => value.trim(),
-              render: _this => (
-                <Input
-                  placeholder="请输入单位名称"
-                  onPressEnter={_this.handleSearch}
-                  maxLength={50}
-                />
-              ),
-            },
-          ]
+          {
+            id: 'companyName',
+            label: '单位名称',
+            transform: value => value.trim(),
+            render: _this => (
+              <Input
+                placeholder="请输入单位名称"
+                onPressEnter={_this.handleSearch}
+                maxLength={50}
+              />
+            ),
+          },
+        ]
         : []),
     ];
 
@@ -291,11 +295,11 @@ export default class ProductionFacilityList extends PureComponent {
           fields={FIELDS}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={
-            <Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>
-              新增
-            </Button>
-          }
+          // action={
+          //   <Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>
+          //     新增
+          //   </Button>
+          // }
           ref={this.setFormReference}
         />
       </Card>
@@ -321,11 +325,11 @@ export default class ProductionFacilityList extends PureComponent {
     const COLUMNS = [
       ...(isNotCompany
         ? [
-            {
-              title: '单位名称',
-              dataIndex: 'companyName',
-            },
-          ]
+          {
+            title: '单位名称',
+            dataIndex: 'companyName',
+          },
+        ]
         : []),
       {
         title: '装置设施位号',
@@ -408,19 +412,19 @@ export default class ProductionFacilityList extends PureComponent {
                   <span className={styles.operation}>删除</span>
                 </Popconfirm>
               ) : (
-                <span className={classNames(styles.operation, styles.disabled)}>删除</span>
-              )}
+                  <span className={classNames(styles.operation, styles.disabled)}>删除</span>
+                )}
               {isScrap ? (
                 <span className={classNames(styles.operation, styles.disabled)}>已报废</span>
               ) : (
-                <span
-                  className={classNames(styles.operation, !hasEditAuthority && styles.disabled)}
-                  onClick={hasEditAuthority ? () => this.handleShowModal(id) : undefined}
-                  data-id={id}
-                >
-                  去报废
-                </span>
-              )}
+                  <span
+                    className={classNames(styles.operation, !hasEditAuthority && styles.disabled)}
+                    onClick={hasEditAuthority ? () => this.handleShowModal(id) : undefined}
+                    data-id={id}
+                  >
+                    去报废
+                  </span>
+                )}
             </Fragment>
           );
         },
@@ -429,6 +433,27 @@ export default class ProductionFacilityList extends PureComponent {
 
     return (
       <Card className={styles.card} bordered={false}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            type="primary"
+            onClick={this.handleAddClick}
+            style={{ marginRight: '10px' }}
+            code={ADD_CODE}>
+            新增
+            </AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/import/excel/生产设施.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/productFacility/importProductFacility/${companyId}`}
+            onUploadSuccess={() => this.handleSearch(this.form && this.form.getFieldsValue())}
+            code={IMPORT_CODE}
+          />
+        </div>
         {list && list.length > 0 ? (
           <Table
             className={styles.table}
@@ -451,9 +476,7 @@ export default class ProductionFacilityList extends PureComponent {
               showSizeChanger: true,
             }}
           />
-        ) : (
-          <Empty />
-        )}
+        ) : (<Empty />)}
       </Card>
     );
   };
@@ -610,7 +633,7 @@ export default class ProductionFacilityList extends PureComponent {
     );
   };
 
-  render() {
+  render () {
     const {
       user: {
         currentUser: { unitType },

@@ -38,7 +38,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const getRootChild = () => document.querySelector('#root>div');
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
-const BTN_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
+// const BTN_STYLE = { marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' };
 
 @Form.create()
 @connect(({ baseInfo, sensor, user, emergencyManagement, loading }) => ({
@@ -485,22 +485,24 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
               {getFieldDecorator('workTypeName', {
                 rules: [{ required: true, message: '请选择作业种类' }],
               })(
-                <Select placeholder="请选择" {...itemStyles} allowClear>
-                  {['特种设备焊接作业'].map(item => (
-                    <Select.Option key={item} value={item}>{item}</Select.Option>
-                  ))}
-                </Select>
+                // <Select placeholder="请选择" {...itemStyles} allowClear>
+                //   {['特种设备焊接作业'].map(item => (
+                //     <Select.Option key={item} value={item}>{item}</Select.Option>
+                //   ))}
+                // </Select>
+                <Input placeholder="请输入" allowClear {...itemStyles} />
               )}
             </FormItem>
             <FormItem label="作业项目" {...formItemLayout}>
               {getFieldDecorator('workProjectName', {
                 rules: [{ required: true, message: '请选择作业项目' }],
               })(
-                <Select placeholder="请选择" {...itemStyles} allowClear>
-                  {['非金属焊接操作', '金属焊接操作'].map(item => (
-                    <Select.Option key={item} value={item}>{item}</Select.Option>
-                  ))}
-                </Select>
+                // <Select placeholder="请选择" {...itemStyles} allowClear>
+                //   {['非金属焊接操作', '金属焊接操作'].map(item => (
+                //     <Select.Option key={item} value={item}>{item}</Select.Option>
+                //   ))}
+                // </Select>
+                <Input placeholder="请输入" allowClear {...itemStyles} />
               )}
             </FormItem>
           </Fragment>

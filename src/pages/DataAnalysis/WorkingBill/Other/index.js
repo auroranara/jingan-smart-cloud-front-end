@@ -473,9 +473,9 @@ export default class WorkingBillOther extends Component {
                   label: '申请人',
                   component: (
                     <Select
-                      key={isUnit ? unitId : values.company.key}
+                      key={companyId}
                       showSearch
-                      params={{ unitId: isUnit ? unitId : values.company.key }}
+                      params={{ unitId: companyId }}
                       mapper={PERSON_MAPPER}
                       fieldNames={PERSON_FILEDNAMES}
                       mode={mode}
@@ -517,7 +517,7 @@ export default class WorkingBillOther extends Component {
                   label: '申请部门',
                   component: (
                     <TreeSelect
-                      key={isUnit ? unitId : values.company.key}
+                      key={companyId}
                       params={{ companyId }}
                       mapper={DEPARTMENT_LIST_MAPPER}
                       fieldNames={DEPARTMENT_LIST_FIELDNAMES}
@@ -1226,7 +1226,7 @@ export default class WorkingBillOther extends Component {
                   component:
                     values.workingCompanyType === UNIT_TYPES[0].key ? (
                       <TreeSelect
-                        key={isUnit ? unitId : values.company.key}
+                        key={companyId}
                         params={{ companyId }}
                         mapper={DEPARTMENT_LIST_MAPPER}
                         fieldNames={DEPARTMENT_LIST_FIELDNAMES}
@@ -2059,7 +2059,7 @@ export default class WorkingBillOther extends Component {
             <Card className={styles.card} title={'作业区域划分及报警设置'}>
               <Form>
                 <Row gutter={24}>
-                  <Col span={12}>
+                  <Col span={24}>
                     <Form.Item>
                       {getFieldDecorator('mapAddress', {
                         initialValue: detail.mapAddress,
@@ -2071,144 +2071,6 @@ export default class WorkingBillOther extends Component {
                         )
                       )}
                     </Form.Item>
-                  </Col>
-                  <Col span={12} style={{ borderLeft: '1px solid #f0f0f0' }}>
-                    <div className={styles.subTitle}>区域报警设置</div>
-                    <Row gutter={24} style={{ marginTop: 5 }}>
-                      <Col span={24}>
-                        <Form.Item className={styles.inlineItem}>
-                          {getFieldDecorator('isCrossWarn', {
-                            initialValue: !!values.crossWarn && values.crossWarn.length > 0,
-                            valuePropName: 'checked',
-                          })(
-                            <CheckboxOrSpan
-                              mode={mode}
-                              disabled={alarmDisabled}
-                              onChange={() => this.handleChangeCheckbox('crossWarn', [])}
-                            >
-                              越界报警
-                            </CheckboxOrSpan>
-                          )}
-                        </Form.Item>
-                        <Form.Item className={styles.inlineItem} style={{ marginLeft: 15 }}>
-                          {getFieldDecorator('crossWarn', {
-                            initialValue: detail.crossWarn,
-                          })(
-                            <Exception
-                              list={personList}
-                              mode={mode}
-                              disabled={alarmDisabled || values.isCrossWarn === false}
-                            />
-                          )}
-                        </Form.Item>
-                        <div className={styles.tags}>
-                          {personList
-                            .filter(item => (values.crossWarn || []).includes(item.id))
-                            .map((item, index) => (
-                              <Tag
-                                key={index}
-                                closable={mode !== 'detail' && !alarmDisabled}
-                                onClose={() => this.handleRemoveTag(item)}
-                                visible={true}
-                                color="#1890ff"
-                                style={{ marginBottom: 10 }}
-                              >
-                                {item.name}
-                              </Tag>
-                            ))}
-                        </div>
-                        <div className={styles.tips}>
-                          设置例外人员后，这有设置人员可以进入，其他人员进入则越界报警
-                        </div>
-                      </Col>
-                    </Row>
-
-                    <Row gutter={24} style={{ marginTop: 24 }}>
-                      <Col span={24}>
-                        <Form.Item className={styles.inlineItem}>
-                          {getFieldDecorator('isStaticWarn', {
-                            initialValue: !!detail.staticWarn,
-                            valuePropName: 'checked',
-                          })(
-                            <CheckboxOrSpan
-                              mode={mode}
-                              onChange={() => this.handleChangeCheckbox('staticWarn', '')}
-                              disabled={alarmDisabled}
-                            >
-                              静止报警：
-                            </CheckboxOrSpan>
-                          )}
-                        </Form.Item>
-                        <Form.Item
-                          className={
-                            alarmDisabled || values.isStaticWarn === false
-                              ? styles.disabled
-                              : styles.inlineItem
-                          }
-                        >
-                          {getFieldDecorator('staticWarn', {
-                            initialValue: detail.staticWarn,
-                            getValueFromEvent: ({ target: { value } }) =>
-                              value.replace(/(\d*).*/, '$1'),
-                          })(
-                            <Input
-                              placeholder=""
-                              mode={mode}
-                              // onChange={e => {
-                              //   this.setState({ isStaticWarn: e.target.value ? true : false });
-                              // }}
-                              disabled={alarmDisabled || values.isStaticWarn === false}
-                            />
-                          )}
-                          分钟
-                        </Form.Item>
-                        <div className={styles.tips}>
-                          设置静止报警时间后，该作业区域人员静止时间超过设定时间后，静止报警
-                        </div>
-                      </Col>
-                    </Row>
-
-                    <Row gutter={24} style={{ marginTop: 24 }}>
-                      <Col span={24}>
-                        <Form.Item className={styles.inlineItem}>
-                          {getFieldDecorator('isStrandedWarn', {
-                            initialValue: !!detail.strandedWarn,
-                            valuePropName: 'checked',
-                          })(
-                            <CheckboxOrSpan
-                              mode={mode}
-                              onChange={() => this.handleChangeCheckbox('strandedWarn', '')}
-                              disabled={alarmDisabled}
-                            >
-                              滞留报警：
-                            </CheckboxOrSpan>
-                          )}
-                        </Form.Item>
-                        <Form.Item
-                          className={
-                            alarmDisabled || values.isStrandedWarn === false
-                              ? styles.disabled
-                              : styles.inlineItem
-                          }
-                        >
-                          {getFieldDecorator('strandedWarn', {
-                            initialValue: detail.strandedWarn,
-                            getValueFromEvent: ({ target: { value } }) =>
-                              value.replace(/(\d*).*/, '$1'),
-                          })(
-                            <Input
-                              placeholder=""
-                              mode={mode}
-                              disabled={alarmDisabled || values.isStrandedWarn === false}
-                            />
-                          )}
-                          分钟
-                        </Form.Item>
-                        <div className={styles.tips}>
-                          设置滞留报警时间后，该作业区域在作业结束后，依然有人员停留在该区域内，超过设定时间后，滞留报警
-                        </div>
-                      </Col>
-                    </Row>
                   </Col>
                 </Row>
               </Form>

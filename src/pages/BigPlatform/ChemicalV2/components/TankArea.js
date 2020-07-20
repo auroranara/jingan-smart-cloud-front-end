@@ -180,13 +180,13 @@ export default class TankArea extends PureComponent {
                           targetName={tankName}
                         />
                         {/* <div className={styles.detail} onClick={() => handleClickMonitorDetail(item)}> */}
-                        <div
+                        {/* <div
                           className={styles.detail}
                           onClick={() => this.handleClickTankDetail(item.id)}
                           style={{ ...moreStyle }}
                         >
                           详情>>
-                        </div>
+                        </div> */}
                       </Fragment>
                     }
                     onSecurityClick={onSecurityClick}
