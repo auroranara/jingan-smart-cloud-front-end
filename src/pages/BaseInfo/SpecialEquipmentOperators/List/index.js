@@ -3,8 +3,8 @@ import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import {
-Card, Button, Table, Input, Select, Divider, Row, Col, // Cascader,
-message,
+  Card, Button, Table, Input, Select, Divider, Row, Col, // Cascader,
+  message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
@@ -14,6 +14,7 @@ import { AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import moment from 'moment';
 import codes from '@/utils/codes';
 import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
+import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
 
 const FormItem = Form.Item;
 
@@ -36,6 +37,7 @@ const {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
+      import: importCode,
     },
   },
 } = codes;
@@ -243,7 +245,6 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <AuthButton code={addCode} type="primary" onClick={this.handleToAdd}>新增</AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -353,26 +354,26 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
             <Row style={{ marginBottom: '10px' }}>
               正面附件：
               {certificatePositiveFileList.map(({ fileName, webUrl, id }) => (
-                <div
-                  style={{ color: '#1890ff', cursor: 'pointer' }}
-                  key={id}
-                  onClick={() => { window.open(webUrl, '_blank') }}
-                >
-                  {fileName}
-                </div>
-              ))}
+              <div
+                style={{ color: '#1890ff', cursor: 'pointer' }}
+                key={id}
+                onClick={() => { window.open(webUrl, '_blank') }}
+              >
+                {fileName}
+              </div>
+            ))}
             </Row>
             <Row>
               反面附件：
               {certificateReverseFileList.map(({ fileName, webUrl, id }) => (
-                <div
-                  style={{ color: '#1890ff', cursor: 'pointer' }}
-                  key={id}
-                  onClick={() => { window.open(webUrl, '_blank') }}
-                >
-                  {fileName}
-                </div>
-              ))}
+              <div
+                style={{ color: '#1890ff', cursor: 'pointer' }}
+                key={id}
+                onClick={() => { window.open(webUrl, '_blank') }}
+              >
+                {fileName}
+              </div>
+            ))}
             </Row>
           </div>
         ),
@@ -404,30 +405,52 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
         ),
       },
     ]
-    return list && list.length ? (
+    return (
       <Card style={{ marginTop: '24px' }}>
-        <Table
-          rowKey="id"
-          loading={tableLoading}
-          columns={columns}
-          dataSource={list}
-          bordered
-          scroll={{ x: 'max-content' }}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            // pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: this.handleQuery,
-            onShowSizeChange: (num, size) => {
-              this.handleQuery(1, size);
-            },
-          }}
-        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            code={addCode}
+            type="primary"
+            onClick={this.handleToAdd}
+            style={{ marginRight: '10px' }}
+          >新增</AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/import/excel/特种设备操作证人员.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/specialequipPerson/importSpecialequipPerson/${companyId}`}
+            onUploadSuccess={this.handleQuery}
+            code={importCode}
+          />
+        </div>
+        {list && list.length ? (
+          <Table
+            rowKey="id"
+            loading={tableLoading}
+            columns={columns}
+            dataSource={list}
+            bordered
+            scroll={{ x: 'max-content' }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              // pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handleQuery,
+              onShowSizeChange: (num, size) => {
+                this.handleQuery(1, size);
+              },
+            }}
+          />
+        ) : (<div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>)}
       </Card>
-    ) : (<div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>)
+    )
   }
 
   render () {

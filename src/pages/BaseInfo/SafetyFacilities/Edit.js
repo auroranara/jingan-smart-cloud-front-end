@@ -545,14 +545,14 @@ export default class Edit extends PureComponent {
           {getFieldDecorator('specifications', {
             initialValue: specifications,
             getValueFromEvent: this.handleTrim,
-            rules: [{ required: true, message: '请输入规格型号' }],
+            // rules: [{ required: true, message: '请输入规格型号' }],
           })(<Input placeholder="请输入" {...itemStyles} />)}
         </FormItem>
         <FormItem label="出厂编号" {...formItemLayout}>
           {getFieldDecorator('leaveProductNumber', {
             initialValue: leaveProductNumber,
             getValueFromEvent: this.handleTrim,
-            rules: [{ required: true, message: '请输入出厂编号' }],
+            // rules: [{ required: true, message: '请输入出厂编号' }],
           })(<Input placeholder="请输入" {...itemStyles} />)}
         </FormItem>
         <FormItem label="设备名称" {...formItemLayout}>

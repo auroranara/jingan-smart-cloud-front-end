@@ -67,7 +67,7 @@ export default class AddOperatingProdures extends Component {
               name,
               linkman,
               type,
-              contingencyPlanContent: contingencyPlanContent ? contingencyPlanContent.map(item => ({ ...item, uid: item.id, url: item.webUrl })) : [],
+              contingencyPlanContent: contingencyPlanContent ? contingencyPlanContent.map(item => ({ ...item, uid: item.id, url: item.webUrl, status: 'done' })) : [],
               dangerFactor: dangerFactor || undefined,
               risk,
               disposalMeasures,

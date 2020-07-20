@@ -167,7 +167,7 @@ export default class specialOperationPermitList extends PureComponent {
     })
   }
 
-  getColorVal(status) {
+  getColorVal (status) {
     switch (+status) {
       case 0:
         return 'rgba(0, 0, 0, 0.65)';
@@ -329,26 +329,26 @@ export default class specialOperationPermitList extends PureComponent {
             <Row style={{ marginBottom: '10px' }}>
               正面附件：
               {certificatePositiveFileList.map(({ fileName, webUrl, id }) => (
-                <div
-                  style={{ color: '#1890ff', cursor: 'pointer' }}
-                  key={id}
-                  onClick={() => { window.open(webUrl, '_blank') }}
-                >
-                  {fileName}
-                </div>
-              ))}
+              <div
+                style={{ color: '#1890ff', cursor: 'pointer' }}
+                key={id}
+                onClick={() => { window.open(webUrl, '_blank') }}
+              >
+                {fileName}
+              </div>
+            ))}
             </Row>
             <Row>
               反面附件：
               {certificateReverseFileList.map(({ fileName, webUrl, id }) => (
-                <div
-                  style={{ color: '#1890ff', cursor: 'pointer' }}
-                  key={id}
-                  onClick={() => { window.open(webUrl, '_blank') }}
-                >
-                  {fileName}
-                </div>
-              ))}
+              <div
+                style={{ color: '#1890ff', cursor: 'pointer' }}
+                key={id}
+                onClick={() => { window.open(webUrl, '_blank') }}
+              >
+                {fileName}
+              </div>
+            ))}
             </Row>
           </div>
         ),
