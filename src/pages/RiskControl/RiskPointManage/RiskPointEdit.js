@@ -172,7 +172,7 @@ export default class RiskPointEdit extends PureComponent {
   handleTrim = e => e.target.value.trim();
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -477,7 +477,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染模态框(RFID)
-  renderRfidModal() {
+  renderRfidModal () {
     const {
       loading,
       riskPointManage: { labelModal },
@@ -487,7 +487,7 @@ export default class RiskPointEdit extends PureComponent {
     const setField = [
       {
         id: 'locationCode',
-        render() {
+        render () {
           return <Input placeholder="请输入标签编号" />;
         },
       },
@@ -549,7 +549,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染模态框(检查内容)
-  renderCheckModal() {
+  renderCheckModal () {
     const {
       illegalDatabase: { checkModal, businessTypes },
       loading,
@@ -623,8 +623,8 @@ export default class RiskPointEdit extends PureComponent {
               {flow_id.map(item => item.flow_id_data).indexOf(record.flow_id) >= 0 ? (
                 <span style={{ color: '#ccc' }}> 已添加</span>
               ) : (
-                '添加'
-              )}
+                  '添加'
+                )}
             </a>
           </span>
         ),
@@ -634,7 +634,7 @@ export default class RiskPointEdit extends PureComponent {
     const checkField = [
       {
         id: 'industry',
-        render() {
+        render () {
           return (
             <Select placeholder="请选择所属行业">
               {list.map(item => (
@@ -648,7 +648,7 @@ export default class RiskPointEdit extends PureComponent {
       },
       {
         id: 'business_type',
-        render() {
+        render () {
           return (
             <Select placeholder="请选择业务分类">
               {businessTypes.map(item => (
@@ -662,10 +662,10 @@ export default class RiskPointEdit extends PureComponent {
       },
       {
         id: 'object_title',
-        render() {
+        render () {
           return <Input placeholder="请输入检查项名称" />;
         },
-        transform(value) {
+        transform (value) {
           return value.trim();
         },
       },
@@ -958,7 +958,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染平面图信息
-  renderPicInfo() {
+  renderPicInfo () {
     const {
       form: { getFieldDecorator, getFieldValue },
       riskPointManage: {
@@ -1094,15 +1094,15 @@ export default class RiskPointEdit extends PureComponent {
                       </span>
                     </span>
                   ) : (
-                    <span
-                      className={styles.picIconSpan}
-                      onClick={() => {
-                        this.handlePicEdit(index);
-                      }}
-                    >
-                      编辑
-                    </span>
-                  )}
+                      <span
+                        className={styles.picIconSpan}
+                        onClick={() => {
+                          this.handlePicEdit(index);
+                        }}
+                      >
+                        编辑
+                      </span>
+                    )}
                 </Col>
               </Row>
             </Col>
@@ -1153,7 +1153,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   /* 渲染table(检查内容) */
-  renderCheckTable() {
+  renderCheckTable () {
     const {
       tableLoading,
       match: {
@@ -1248,14 +1248,14 @@ export default class RiskPointEdit extends PureComponent {
             width={500}
           />
         ) : (
-          <div style={{ textAlign: 'center' }}>暂无数据</div>
-        )}
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
+          )}
       </Card>
     );
   }
 
   // 渲染信息
-  renderInfo() {
+  renderInfo () {
     const {
       location: {
         query: { companyId },
@@ -1384,7 +1384,7 @@ export default class RiskPointEdit extends PureComponent {
                     })(<Input placeholder="请选择RFID" disabled />)}
                   </Form.Item>
                 </Col>
-                <Col span={2} style={{ position: 'relative', marginTop: '2.6%' }}>
+                <Col span={2} style={{ position: 'relative', marginTop: '30px' }}>
                   <Button onClick={this.handleFocus}>选择</Button>
                 </Col>
                 <Col span={8}>
@@ -1486,7 +1486,7 @@ export default class RiskPointEdit extends PureComponent {
   }
 
   // 渲染页面所有信息
-  render() {
+  render () {
     const {
       match: {
         params: { id },
