@@ -57,7 +57,7 @@ export default class JoySuchMap extends React.Component {
   }
 
   getPolygon = points => {
-    console.log('points', points);
+    // console.log('points', points);
 
     if (!map || !points || !points.length) return;
     map.removeAllMarker();

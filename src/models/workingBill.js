@@ -193,7 +193,6 @@ export default {
               }))
             : undefined,
         };
-
         yield put({
           type: 'save',
           payload: {

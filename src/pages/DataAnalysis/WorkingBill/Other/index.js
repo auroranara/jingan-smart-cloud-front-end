@@ -414,7 +414,6 @@ export default class WorkingBillOther extends Component {
     const alarmDisabled = !values.mapAddress || values.mapAddress.length === 0;
     const companyId = isUnit ? unitId : values.company && values.company.key;
     const workingCompanyId = values.workingCompany && values.workingCompany.key;
-
     const fields = [
       {
         key: '作业票信息',
@@ -1346,7 +1345,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
-                      key={values.workingCompanyType}
+                      key={`${companyId}_${workingCompanyId}`}
                     />
                   ),
                   options: {
@@ -1382,7 +1381,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
-                      key={values.workingCompanyType}
+                      key={`${companyId}_${workingCompanyId}`}
                     />
                   ),
                   options: {
@@ -1588,7 +1587,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
-                      key={values.workingCompanyType}
+                      key={`${companyId}_${workingCompanyId}`}
                     />
                   ),
                   options: {
@@ -1624,7 +1623,7 @@ export default class WorkingBillOther extends Component {
                       }
                       labelInValue
                       originalMode="multiple"
-                      key={values.workingCompanyType}
+                      key={`${companyId}_${workingCompanyId}`}
                     />
                   ),
                   options: {
