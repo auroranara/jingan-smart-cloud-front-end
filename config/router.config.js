@@ -1673,6 +1673,118 @@ module.exports = env => {
                 },
               ],
             },
+            // 区域固有风险分析（LS）
+            {
+              path: '/risk-control/LS',
+              code: 'riskControl.LS',
+              name: 'LS',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/LS',
+                  redirect: '/risk-control/LS/list',
+                },
+                {
+                  path: '/risk-control/LS/list',
+                  code: 'riskControl.LS.list',
+                  name: 'list',
+                  component: './RiskControl/LS/List',
+                },
+                {
+                  path: '/risk-control/LS/detail/:id',
+                  code: 'riskControl.LS.detail',
+                  name: 'detail',
+                  component: './RiskControl/LS/Form',
+                },
+                {
+                  path: '/risk-control/LS/add',
+                  code: 'riskControl.LS.add',
+                  name: 'add',
+                  component: './RiskControl/LS/Form',
+                },
+                {
+                  path: '/risk-control/LS/edit/:id',
+                  code: 'riskControl.LS.edit',
+                  name: 'edit',
+                  component: './RiskControl/LS/Form',
+                },
+              ],
+            },
+            // 危险与可操作性分析（HAZOP）
+            {
+              path: '/risk-control/HAZOP',
+              code: 'riskControl.HAZOP',
+              name: 'HAZOP',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/HAZOP',
+                  redirect: '/risk-control/HAZOP/list',
+                },
+                {
+                  path: '/risk-control/HAZOP/list',
+                  code: 'riskControl.HAZOP.list',
+                  name: 'list',
+                  component: './RiskControl/HAZOP/List',
+                  hideInBreadcrumb: true,
+                },
+                {
+                  path: '/risk-control/HAZOP/detail/:id',
+                  code: 'riskControl.HAZOP.detail',
+                  name: 'detail',
+                  component: './RiskControl/HAZOP/Form',
+                },
+                {
+                  path: '/risk-control/HAZOP/add',
+                  code: 'riskControl.HAZOP.add',
+                  name: 'add',
+                  component: './RiskControl/HAZOP/Form',
+                },
+                {
+                  path: '/risk-control/HAZOP/edit/:id',
+                  code: 'riskControl.HAZOP.edit',
+                  name: 'edit',
+                  component: './RiskControl/HAZOP/Form',
+                },
+              ],
+            },
+            // 保护层分析（LOPA）
+            {
+              path: '/risk-control/LOPA',
+              code: 'riskControl.LOPA',
+              name: 'LOPA',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/LOPA',
+                  redirect: '/risk-control/LOPA/list',
+                },
+                {
+                  path: '/risk-control/LOPA/list',
+                  code: 'riskControl.LOPA.list',
+                  name: 'list',
+                  component: './RiskControl/LOPA/List',
+                },
+                {
+                  path: '/risk-control/LOPA/detail/:id',
+                  code: 'riskControl.LOPA.detail',
+                  name: 'detail',
+                  component: './RiskControl/LOPA/Form',
+                },
+                {
+                  path: '/risk-control/LOPA/add',
+                  code: 'riskControl.LOPA.add',
+                  name: 'add',
+                  component: './RiskControl/LOPA/Form',
+                },
+                {
+                  path: '/risk-control/LOPA/edit/:id',
+                  code: 'riskControl.LOPA.edit',
+                  name: 'edit',
+                  component: './RiskControl/LOPA/Form',
+                },
+              ],
+            },
           ],
         },
 
