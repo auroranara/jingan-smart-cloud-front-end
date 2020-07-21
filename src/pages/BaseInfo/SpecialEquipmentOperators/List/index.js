@@ -414,7 +414,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
             onClick={this.handleToAdd}
             style={{ marginRight: '10px' }}
           >新增</AuthButton>
-          <Button
+          {/* <Button
             href="http://data.jingan-china.cn/import/excel/特种设备操作证人员.xls"
             target="_blank"
             style={{ marginRight: '10px' }}
@@ -425,7 +425,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
             action={(companyId) => `/acloud_new/v2/specialequipPerson/importSpecialequipPerson/${companyId}`}
             onUploadSuccess={this.handleQuery}
             code={importCode}
-          />
+          /> */}
         </div>
         {list && list.length ? (
           <Table

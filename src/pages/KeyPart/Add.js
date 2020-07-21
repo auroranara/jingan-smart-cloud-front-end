@@ -67,7 +67,7 @@ export default class AddOperatingProdures extends Component {
               name,
               linkman,
               type,
-              contingencyPlanContent: contingencyPlanContent ? contingencyPlanContent.map(item => ({ ...item, uid: item.id, url: item.webUrl, status: 'done' })) : [],
+              contingencyPlanContent: Array.isArray(contingencyPlanContent) ? contingencyPlanContent.map(item => ({ ...item, uid: item.id, url: item.webUrl, status: 'done' })) : [],
               dangerFactor: dangerFactor || undefined,
               risk,
               disposalMeasures,
@@ -195,6 +195,12 @@ export default class AddOperatingProdures extends Component {
 
   setFormReference = form => {
     this.form = form;
+  }
+
+  validaeFile = (rule, value, callback) => {
+    if (value && value.length && value.every(({ status }) => status === 'done')) {
+      callback();
+    } else callback('相关应急预案不能为空');
   }
 
   render () {
@@ -377,10 +383,9 @@ export default class AddOperatingProdures extends Component {
             options: {
               rules: isNotDetail ? [
                 {
-                  type: 'boolean',
                   required: true,
-                  transform: value => value && value.every(({ status }) => status === 'done'),
                   message: '相关应急预案不能为空',
+                  validator: this.validaeFile,
                 },
               ] : undefined,
             },

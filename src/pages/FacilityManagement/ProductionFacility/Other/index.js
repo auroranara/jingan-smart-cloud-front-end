@@ -60,14 +60,14 @@ const fieldLabels = {};
     loading: loading.effects[GET_DETAIL],
   }),
   dispatch => ({
-    getDetail(payload, callback) {
+    getDetail (payload, callback) {
       dispatch({
         type: GET_DETAIL,
         payload,
         callback,
       });
     },
-    setDetail() {
+    setDetail () {
       dispatch({
         type: 'productionFacility/save',
         payload: {
@@ -75,7 +75,7 @@ const fieldLabels = {};
         },
       });
     },
-    add(payload, callback) {
+    add (payload, callback) {
       dispatch({
         type: ADD,
         payload: {
@@ -84,21 +84,21 @@ const fieldLabels = {};
         callback,
       });
     },
-    edit(payload, callback) {
+    edit (payload, callback) {
       dispatch({
         type: EDIT,
         payload,
         callback,
       });
     },
-    getCompany(payload, callback) {
+    getCompany (payload, callback) {
       dispatch({
         type: GET_COMPANY,
         payload,
         callback,
       });
     },
-    fetchDepartmentDict(payload, callback) {
+    fetchDepartmentDict (payload, callback) {
       dispatch({
         type: 'productionFacility/fetchDepartmentDict',
         payload,
@@ -122,7 +122,7 @@ export default class InjuryReportOther extends Component {
     uploading: false,
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       match: {
         params: { id },
@@ -208,17 +208,17 @@ export default class InjuryReportOther extends Component {
                   supplier, //供应商
                   // useFile, //使用文件
                   // useFileList,
-                  isCheck, //是否检查 0 否 1：是
+                  isCheck: /0|1/.test(isCheck) ? isCheck : undefined, //是否检查 0 否 1：是
                   checkDay: isNumber(checkDay) ? `${checkDay}` : undefined, //检查周期
                   checkRemind: isNumber(checkRemind) ? `${checkRemind}` : undefined, //检查前提醒
                   checkReason, //检查内容
                   checkPart, //检查部门
                   // checkPartName,
                   checkGoal, //检查指标
-                  isExam, //是否检测 0 否 1是
+                  isExam: /0|1/.test(isExam) ? isExam : undefined, //是否检测 0 否 1是
                   examDay: isNumber(examDay) ? `${examDay}` : undefined, //检测时间
                   examRemind: isNumber(examRemind) ? `${examRemind}` : undefined, //检测前提醒
-                  isMiantain, //是否保养 0 否  1：是
+                  isMiantain: /0|1/.test(isMiantain) ? isMiantain : undefined, //是否保养 0 否  1：是
                   status, //是否报废  1：是
                   gridIdList,
                   // lifeCycle, // 0：未使用 1：已使用 2：报废
@@ -270,7 +270,7 @@ export default class InjuryReportOther extends Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { setDetail } = this.props;
     setDetail && setDetail();
   }
@@ -302,7 +302,7 @@ export default class InjuryReportOther extends Component {
 
   @bind()
   @debounce(300)
-  refresh() {
+  refresh () {
     this.forceUpdate();
   }
 
@@ -392,8 +392,8 @@ export default class InjuryReportOther extends Component {
             {this.renderTreeNodes(children)}
           </TreeNode>
         ) : (
-          <TreeNode title={value} key={key} value={key} />
-        )
+            <TreeNode title={value} key={key} value={key} />
+          )
     );
 
   // 上传附件
@@ -417,7 +417,7 @@ export default class InjuryReportOther extends Component {
     return fileList;
   };
 
-  renderForm() {
+  renderForm () {
     const {
       user: {
         currentUser: { unitType },
@@ -439,34 +439,34 @@ export default class InjuryReportOther extends Component {
         fields: [
           ...(isNotCompany
             ? [
-                {
-                  id: 'company',
-                  label: '单位名称',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () =>
-                    isNotDetail ? (
-                      <CompanySelect
-                        disabled={isEdit}
-                        className={styles.item}
-                        onChange={this.handleCompanyChange}
-                      />
-                    ) : (
+              {
+                id: 'company',
+                label: '单位名称',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () =>
+                  isNotDetail ? (
+                    <CompanySelect
+                      disabled={isEdit}
+                      className={styles.item}
+                      onChange={this.handleCompanyChange}
+                    />
+                  ) : (
                       <span>{companyName}</span>
                     ),
-                  options: {
-                    rules: isNotDetail
-                      ? [
-                          {
-                            required: true,
-                            message: '单位名称不能为空',
-                            transform: value => value && value.label,
-                          },
-                        ]
-                      : undefined,
-                  },
+                options: {
+                  rules: isNotDetail
+                    ? [
+                      {
+                        required: true,
+                        message: '单位名称不能为空',
+                        transform: value => value && value.label,
+                      },
+                    ]
+                    : undefined,
                 },
-              ]
+              },
+            ]
             : []),
           {
             id: 'facilitiesName',
@@ -484,12 +484,12 @@ export default class InjuryReportOther extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: '装置设施名称不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '装置设施名称不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
@@ -509,12 +509,12 @@ export default class InjuryReportOther extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: '装置设施位号不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: '装置设施位号不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
@@ -576,8 +576,8 @@ export default class InjuryReportOther extends Component {
                   {this.renderTreeNodes(departmentDict)}
                 </TreeSelect>
               ) : (
-                <span>{partName}</span>
-              ),
+                  <span>{partName}</span>
+                ),
           },
           {
             id: 'usePart',
@@ -645,64 +645,64 @@ export default class InjuryReportOther extends Component {
           },
           ...(!isNotDetail
             ? [
-                {
-                  id: 'lifeCycle',
-                  label: '生命周期',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () => <SelectOrSpan list={LIFE_CYCLE} type="span" />,
-                },
-                ...(status === '1'
-                  ? [
-                      {
-                        id: 'scrapDate',
-                        label: '报废填报日期',
-                        span: SPAN,
-                        labelCol: LABEL_COL,
-                        render: () => (
-                          <DatePickerOrSpan
-                            className={styles.item}
-                            type={isNotDetail ? 'DatePicker' : 'span'}
-                            format={DEFAULT_FORMAT}
-                            placeholder="请选择报废填报日期"
-                            allowClear={false}
-                            unknown={NO_DATA}
-                          />
-                        ),
-                      },
-                      {
-                        id: 'realityScrapDate',
-                        label: '实际报废日期',
-                        span: SPAN,
-                        labelCol: LABEL_COL,
-                        render: () => (
-                          <DatePickerOrSpan
-                            className={styles.item}
-                            type={isNotDetail ? 'DatePicker' : 'span'}
-                            format={DEFAULT_FORMAT}
-                            placeholder="请选择实际报废日期"
-                            allowClear={false}
-                            unknown={NO_DATA}
-                          />
-                        ),
-                      },
-                      {
-                        id: 'scrapReason',
-                        label: '报废理由',
-                        span: SPAN,
-                        labelCol: LABEL_COL,
-                        render: () => (
-                          <InputOrSpan
-                            className={styles.item}
-                            placeholder="请输入报废理由"
-                            type={isNotDetail ? 'TextArea' : 'span'}
-                            autosize={{ minRows: 3 }}
-                          />
-                        ),
-                      },
-                    ]
-                  : []),
-              ]
+              {
+                id: 'lifeCycle',
+                label: '生命周期',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => <SelectOrSpan list={LIFE_CYCLE} type="span" />,
+              },
+              ...(status === '1'
+                ? [
+                  {
+                    id: 'scrapDate',
+                    label: '报废填报日期',
+                    span: SPAN,
+                    labelCol: LABEL_COL,
+                    render: () => (
+                      <DatePickerOrSpan
+                        className={styles.item}
+                        type={isNotDetail ? 'DatePicker' : 'span'}
+                        format={DEFAULT_FORMAT}
+                        placeholder="请选择报废填报日期"
+                        allowClear={false}
+                        unknown={NO_DATA}
+                      />
+                    ),
+                  },
+                  {
+                    id: 'realityScrapDate',
+                    label: '实际报废日期',
+                    span: SPAN,
+                    labelCol: LABEL_COL,
+                    render: () => (
+                      <DatePickerOrSpan
+                        className={styles.item}
+                        type={isNotDetail ? 'DatePicker' : 'span'}
+                        format={DEFAULT_FORMAT}
+                        placeholder="请选择实际报废日期"
+                        allowClear={false}
+                        unknown={NO_DATA}
+                      />
+                    ),
+                  },
+                  {
+                    id: 'scrapReason',
+                    label: '报废理由',
+                    span: SPAN,
+                    labelCol: LABEL_COL,
+                    render: () => (
+                      <InputOrSpan
+                        className={styles.item}
+                        placeholder="请输入报废理由"
+                        type={isNotDetail ? 'TextArea' : 'span'}
+                        autosize={{ minRows: 3 }}
+                      />
+                    ),
+                  },
+                ]
+                : []),
+            ]
             : []),
           {
             id: 'head',
@@ -734,8 +734,8 @@ export default class InjuryReportOther extends Component {
                   {this.renderTreeNodes(departmentDict)}
                 </TreeSelect>
               ) : (
-                <span>{headPartName}</span>
-              ),
+                  <span>{headPartName}</span>
+                ),
           },
           {
             id: 'supplier',
@@ -772,21 +772,21 @@ export default class InjuryReportOther extends Component {
                   {/* <div>支持扩展名：.rar .zip .doc .docx .pdf .jpg...</div> */}
                 </div>
               ) : (
-                <Fragment>
-                  {fileList.map(item => {
-                    const { fileName, url, id } = item;
-                    const fileNames = fileName.split('.');
-                    const name = fileNames.slice(0, fileNames.length - 1).join('.');
-                    return (
-                      <div key={id}>
-                        <a href={url} target="_blank" rel="noopener noreferrer">
-                          {name}
-                        </a>
-                      </div>
-                    );
-                  })}
-                </Fragment>
-              ),
+                  <Fragment>
+                    {fileList.map(item => {
+                      const { fileName, url, id } = item;
+                      const fileNames = fileName.split('.');
+                      const name = fileNames.slice(0, fileNames.length - 1).join('.');
+                      return (
+                        <div key={id}>
+                          <a href={url} target="_blank" rel="noopener noreferrer">
+                            {name}
+                          </a>
+                        </div>
+                      );
+                    })}
+                  </Fragment>
+                ),
           },
         ],
       },
@@ -803,100 +803,100 @@ export default class InjuryReportOther extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      message: '是否检查不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    message: '是否检查不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
           ...(isCheck === '1'
             ? [
-                {
-                  id: 'checkDay',
-                  label: '检查周期（天）',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () => (
-                    <InputOrSpan
-                      className={styles.item}
-                      placeholder="请输入检查周期（天）"
-                      maxLength={50}
-                      type={isNotDetail ? 'Input' : 'span'}
-                    />
-                  ),
-                  options: {
-                    getValueFromEvent: e =>
-                      e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
-                  },
+              {
+                id: 'checkDay',
+                label: '检查周期（天）',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => (
+                  <InputOrSpan
+                    className={styles.item}
+                    placeholder="请输入检查周期（天）"
+                    maxLength={50}
+                    type={isNotDetail ? 'Input' : 'span'}
+                  />
+                ),
+                options: {
+                  getValueFromEvent: e =>
+                    e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
                 },
-                {
-                  id: 'checkRemind',
-                  label: '检查提前提醒（天）',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () => (
-                    <InputOrSpan
-                      className={styles.item}
-                      placeholder="请输入检查提前提醒（天）"
-                      maxLength={50}
-                      type={isNotDetail ? 'Input' : 'span'}
-                    />
-                  ),
-                  options: {
-                    getValueFromEvent: e =>
-                      e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
-                  },
+              },
+              {
+                id: 'checkRemind',
+                label: '检查提前提醒（天）',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => (
+                  <InputOrSpan
+                    className={styles.item}
+                    placeholder="请输入检查提前提醒（天）"
+                    maxLength={50}
+                    type={isNotDetail ? 'Input' : 'span'}
+                  />
+                ),
+                options: {
+                  getValueFromEvent: e =>
+                    e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
                 },
-                {
-                  id: 'checkReason',
-                  label: '检查内容',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () => (
-                    <InputOrSpan
+              },
+              {
+                id: 'checkReason',
+                label: '检查内容',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => (
+                  <InputOrSpan
+                    className={styles.item}
+                    placeholder="请输入检查内容"
+                    type={isNotDetail ? 'TextArea' : 'span'}
+                    autosize={{ minRows: 3 }}
+                  />
+                ),
+              },
+              {
+                id: 'checkPart',
+                label: '检查负责部门',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () =>
+                  isNotDetail ? (
+                    <TreeSelect
+                      placeholder="请选择检查负责部门"
+                      allowClear
                       className={styles.item}
-                      placeholder="请输入检查内容"
-                      type={isNotDetail ? 'TextArea' : 'span'}
-                      autosize={{ minRows: 3 }}
-                    />
-                  ),
-                },
-                {
-                  id: 'checkPart',
-                  label: '检查负责部门',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () =>
-                    isNotDetail ? (
-                      <TreeSelect
-                        placeholder="请选择检查负责部门"
-                        allowClear
-                        className={styles.item}
-                        dropdownClassName={styles.treeSelectDropDown}
-                      >
-                        {this.renderTreeNodes(departmentDict)}
-                      </TreeSelect>
-                    ) : (
+                      dropdownClassName={styles.treeSelectDropDown}
+                    >
+                      {this.renderTreeNodes(departmentDict)}
+                    </TreeSelect>
+                  ) : (
                       <span>{checkPartName}</span>
                     ),
-                },
-                {
-                  id: 'checkGoal',
-                  label: '检查指标',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () => (
-                    <InputOrSpan
-                      className={styles.item}
-                      placeholder="请输入检查指标"
-                      maxLength={50}
-                      type={isNotDetail ? 'Input' : 'span'}
-                    />
-                  ),
-                },
-              ]
+              },
+              {
+                id: 'checkGoal',
+                label: '检查指标',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => (
+                  <InputOrSpan
+                    className={styles.item}
+                    placeholder="请输入检查指标"
+                    maxLength={50}
+                    type={isNotDetail ? 'Input' : 'span'}
+                  />
+                ),
+              },
+            ]
             : []),
           {
             id: 'isExam',
@@ -907,53 +907,53 @@ export default class InjuryReportOther extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      message: '是否检测不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    message: '是否检测不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
           ...(isExam === '1'
             ? [
-                {
-                  id: 'examDay',
-                  label: '检测周期（天）',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () => (
-                    <InputOrSpan
-                      className={styles.item}
-                      placeholder="请输入检查周期（天）"
-                      maxLength={50}
-                      type={isNotDetail ? 'Input' : 'span'}
-                    />
-                  ),
-                  options: {
-                    getValueFromEvent: e =>
-                      e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
-                  },
+              {
+                id: 'examDay',
+                label: '检测周期（天）',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => (
+                  <InputOrSpan
+                    className={styles.item}
+                    placeholder="请输入检查周期（天）"
+                    maxLength={50}
+                    type={isNotDetail ? 'Input' : 'span'}
+                  />
+                ),
+                options: {
+                  getValueFromEvent: e =>
+                    e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
                 },
-                {
-                  id: 'examRemind',
-                  label: '检测提前提醒（天）',
-                  span: SPAN,
-                  labelCol: LABEL_COL,
-                  render: () => (
-                    <InputOrSpan
-                      className={styles.item}
-                      placeholder="请输入检查提前提醒（天）"
-                      maxLength={50}
-                      type={isNotDetail ? 'Input' : 'span'}
-                    />
-                  ),
-                  options: {
-                    getValueFromEvent: e =>
-                      e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
-                  },
+              },
+              {
+                id: 'examRemind',
+                label: '检测提前提醒（天）',
+                span: SPAN,
+                labelCol: LABEL_COL,
+                render: () => (
+                  <InputOrSpan
+                    className={styles.item}
+                    placeholder="请输入检查提前提醒（天）"
+                    maxLength={50}
+                    type={isNotDetail ? 'Input' : 'span'}
+                  />
+                ),
+                options: {
+                  getValueFromEvent: e =>
+                    e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
                 },
-              ]
+              },
+            ]
             : []),
           {
             id: 'isMiantain',
@@ -964,11 +964,11 @@ export default class InjuryReportOther extends Component {
             options: {
               rules: isNotDetail
                 ? [
-                    {
-                      required: true,
-                      message: '是否保养不能为空',
-                    },
-                  ]
+                  {
+                    required: true,
+                    message: '是否保养不能为空',
+                  },
+                ]
                 : undefined,
             },
           },
@@ -985,31 +985,31 @@ export default class InjuryReportOther extends Component {
         ref={this.setFormReference}
         refresh={this.refresh}
         showButtons={false}
-        // action={
-        //   <Fragment>
-        //     <Button onClick={this.handleBackButtonClick}>返回</Button>
-        //     {type !== 'detail' ? (
-        //       <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
-        //         提交
-        //       </Button>
-        //     ) : (
-        //       <Button
-        //         type="primary"
-        //         onClick={this.handleEditButtonClick}
-        //         disabled={!hasEditAuthority}
-        //         loading={uploading}
-        //       >
-        //         编辑
-        //       </Button>
-        //     )}
-        //   </Fragment>
-        // }
+      // action={
+      //   <Fragment>
+      //     <Button onClick={this.handleBackButtonClick}>返回</Button>
+      //     {type !== 'detail' ? (
+      //       <Button type="primary" onClick={this.handleSubmitButtonClick} loading={uploading}>
+      //         提交
+      //       </Button>
+      //     ) : (
+      //       <Button
+      //         type="primary"
+      //         onClick={this.handleEditButtonClick}
+      //         disabled={!hasEditAuthority}
+      //         loading={uploading}
+      //       >
+      //         编辑
+      //       </Button>
+      //     )}
+      //   </Fragment>
+      // }
       />
     );
   }
 
   // 渲染错误信息
-  renderErrorInfo() {
+  renderErrorInfo () {
     if (!this.form) return null;
     const { getFieldsError } = this.form;
     const errors = getFieldsError();
@@ -1052,7 +1052,7 @@ export default class InjuryReportOther extends Component {
   }
 
   // 渲染底部工具栏
-  renderFooterToolbar(isDetail, id) {
+  renderFooterToolbar (isDetail, id) {
     const {
       user: {
         currentUser: { permissionCodes },
@@ -1084,20 +1084,20 @@ export default class InjuryReportOther extends Component {
             </Button>
           )
         ) : (
-          <Button
-            type="primary"
-            size="large"
-            loading={submitting || uploading}
-            onClick={this.handleSubmitButtonClick}
-          >
-            提交
-          </Button>
-        )}
+            <Button
+              type="primary"
+              size="large"
+              loading={submitting || uploading}
+              onClick={this.handleSubmitButtonClick}
+            >
+              提交
+            </Button>
+          )}
       </FooterToolbar>
     );
   }
 
-  render() {
+  render () {
     const {
       loading,
       match: {

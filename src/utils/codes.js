@@ -678,6 +678,7 @@ export default {
       add: 'operationSafety.specialOperationPermit.add',
       edit: 'operationSafety.specialOperationPermit.edit',
       delete: 'operationSafety.specialOperationPermit.delete',
+      import: 'operationSafety.specialOperationPermit.import',
     },
     // 特种设备作业人员
     specialEquipmentOperators: {
