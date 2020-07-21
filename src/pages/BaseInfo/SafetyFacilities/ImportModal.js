@@ -34,10 +34,8 @@ export default class ImportModal extends Component {
       this.setState({ importLoading: true });
     } else if (info.file.status === 'done' && res) {
       if (res.code && res.code === 200) {
-        message.success(res.msg);
-        onUploadSuccess();
-      } else if (res.code && res.code === 500) {
-        message.error(res.msg)
+        message.success('操作成功');
+        onUploadSuccess && onUploadSuccess();
       } else {
         res && res.data && res.data.errorMessage && res.data.errorMessage.length > 0
           ? Modal.error({
@@ -69,6 +67,7 @@ export default class ImportModal extends Component {
       code, // 导入权限代码
       auth, // 导入权限
       showCompanySelect = true, // 是否显示选择单位
+      ...resProps
     } = this.props;
     const { importModalVisible, importLoading, company } = this.state;
     const importAuth = typeof auth === 'boolean' ? auth : hasAuthority(code, currentUser.permissionCodes);
@@ -85,10 +84,10 @@ export default class ImportModal extends Component {
       disabled,
     };
     return (
-      <div>
+      <div style={{ display: 'inline-block' }} {...resProps}>
         {isCompany || !showCompanySelect ? (
           <Upload {...uploadProps} >
-            <Button type="primary" disabled={!importAuth || importLoading} loading={importLoading}>
+            <Button disabled={!importAuth || importLoading} loading={importLoading}>
               批量导入
             </Button>
           </Upload>
