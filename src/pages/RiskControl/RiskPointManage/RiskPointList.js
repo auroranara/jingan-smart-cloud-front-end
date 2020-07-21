@@ -8,6 +8,7 @@ import CheckContent from './CheckContent';
 import codesMap from '@/utils/codes';
 import { AuthButton, hasAuthority } from '@/utils/customAuth';
 import { getToken } from '@/utils/authority';
+import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -102,38 +103,38 @@ export default class riskPointList extends PureComponent {
     this.getRiskList(key);
   };
 
-  handleImportChange = info => {
-    const res = info.file.response;
-    if (info.file.status === 'uploading') {
-      this.setState({ importLoading: true });
-    }
-    if (info.file.status === 'done' && res) {
-      if (res.code && res.code === 200) {
-        message.success(res.msg);
-        this.getRiskList();
-      } else {
-        res && res.data && res.data.errorMessage && res.data.errorMessage.length > 0
-          ? Modal.error({
-            title: '错误信息',
-            content: res.data.errorMessage,
-            okText: '确定',
-          }) : message.error(res.msg);
-      }
-      this.setState({ importLoading: false });
-    } else this.setState({ importLoading: false });
-  }
+  // handleImportChange = info => {
+  //   const res = info.file.response;
+  //   if (info.file.status === 'uploading') {
+  //     this.setState({ importLoading: true });
+  //   }
+  //   if (info.file.status === 'done' && res) {
+  //     if (res.code && res.code === 200) {
+  //       message.success(res.msg);
+  //       this.getRiskList();
+  //     } else {
+  //       res && res.data && res.data.errorMessage && res.data.errorMessage.length > 0
+  //         ? Modal.error({
+  //           title: '错误信息',
+  //           content: res.data.errorMessage,
+  //           okText: '确定',
+  //         }) : message.error(res.msg);
+  //     }
+  //     this.setState({ importLoading: false });
+  //   } else this.setState({ importLoading: false });
+  // }
 
-  handleBeforeUpload = file => {
-    const { importLoading } = this.state;
-    const isExcel = /xls/.test(file.name);
-    if (importLoading) {
-      message.error('尚未上传结束');
-    }
-    if (!isExcel) {
-      message.error('上传失败，请上传.xls格式');
-    }
-    return !importLoading || isExcel;
-  }
+  // handleBeforeUpload = file => {
+  //   const { importLoading } = this.state;
+  //   const isExcel = /xls/.test(file.name);
+  //   if (importLoading) {
+  //     message.error('尚未上传结束');
+  //   }
+  //   if (!isExcel) {
+  //     message.error('上传失败，请上传.xls格式');
+  //   }
+  //   return !importLoading || isExcel;
+  // }
 
   // 渲染页面
   render () {
@@ -219,7 +220,7 @@ export default class riskPointList extends PureComponent {
               >
                 模板下载
               </Button>
-              <Upload
+              {/* <Upload
                 name="file"
                 accept=".xls,.xlsx"
                 headers={{ 'JA-Token': getToken() }}
@@ -232,7 +233,13 @@ export default class riskPointList extends PureComponent {
                 <Button disabled={!importAuth || importLoading} loading={importLoading}>
                   批量导入
                 </Button>
-              </Upload>
+              </Upload> */}
+              <ImportModal
+                action={`/acloud_new/v2/pointManage/importRiskPoint/${companyId}`}
+                onUploadSuccess={this.getRiskList}
+                code={codesMap.riskControl.riskPointManage.import}
+                showCompanySelect={false}
+              />
             </div>
           </div>
         }
