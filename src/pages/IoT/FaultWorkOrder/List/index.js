@@ -143,7 +143,6 @@ export default connect(
           preset: 'monitorType',
           params: {
             type: 4,
-            hack: true,
           },
           allowClear: true,
         },
