@@ -23,6 +23,7 @@ const HandleModal = Form.create()(props => {
     onCancel,
     detail,
     isDetail = false,
+    title,
   } = props;
   const objectId = detail ? detail.objectId : undefined;
   const handleOk = () => {
@@ -33,7 +34,7 @@ const HandleModal = Form.create()(props => {
   }
   return (
     <Modal
-      title={detail && detail.objectId ? '编辑JHA评价记录' : '新增JHA评价记录'}
+      title={detail && detail.objectId ? `编辑${title}` : `新增${title}`}
       visible={visible}
       width={800}
       onOk={handleOk}
@@ -76,7 +77,7 @@ const HandleModal = Form.create()(props => {
             </Select>
           )}
         </FormItem>
-        <FormItem label="作业活动名称" {...formWrapper}>
+        <FormItem label="装置/设备/设施" {...formWrapper}>
           {getFieldDecorator('activityName', {
             initialValue: objectId ? detail.code : undefined,
             getValueFromEvent: e => e.target.value.trim(),

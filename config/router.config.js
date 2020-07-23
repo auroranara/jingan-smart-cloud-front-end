@@ -1692,6 +1692,49 @@ module.exports = env => {
                 },
               ],
             },
+            // 安全检查表-SCL分析
+            {
+              path: '/risk-control/safety-checklist',
+              code: 'riskControl.safetyChecklist',
+              name: 'safetyChecklist',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/safety-checklist',
+                  redirect: '/risk-control/safety-checklist/list',
+                },
+                {
+                  path: '/risk-control/safety-checklist/list',
+                  name: 'list',
+                  code: 'riskControl.safetyChecklist.listView',
+                  component: './RiskControl/SafetyChecklist/List',
+                },
+                {
+                  path: '/risk-control/safety-checklist/:id/record', // 评价记录
+                  name: 'recordList',
+                  code: 'riskControl.safetyChecklist.evaluationRecord',
+                  component: './RiskControl/SafetyChecklist/RecordList',
+                },
+                {
+                  path: '/risk-control/safety-checklist/:id/record/add',
+                  name: 'addRecord',
+                  code: 'riskControl.safetyChecklist.evaluationRecord.add',
+                  component: './RiskControl/SafetyChecklist/RecordHandle',
+                },
+                {
+                  path: '/risk-control/safety-checklist/:id/record/edit/:recordId',
+                  name: 'editRecord',
+                  code: 'riskControl.safetyChecklist.evaluationRecord.edit',
+                  component: './RiskControl/SafetyChecklist/RecordHandle',
+                },
+                {
+                  path: '/risk-control/safety-checklist/:id/record/view/:recordId',
+                  name: 'viewRecord',
+                  code: 'riskControl.safetyChecklist.evaluationRecord.view',
+                  component: './RiskControl/SafetyChecklist/RecordHandle',
+                },
+              ],
+            },
           ],
         },
 
