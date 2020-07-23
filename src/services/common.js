@@ -151,7 +151,7 @@ export async function getGridTreeByUser(params) {
   return request(`/acloud_new/v2/gridInfo/getTreeDataById?${stringify(params)}`);
 }
 
-// 根据企业获取人员列表（汤归）
+// 根据企业获取人员列表（汤归）（支持部门）
 export async function getPersonListByCompany(params) {
   return request(`/acloud_new/v2/performance/getHeader?${stringify(params)}`);
 }

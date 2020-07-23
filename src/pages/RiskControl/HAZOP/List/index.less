@@ -1,3 +1,54 @@
 .formCard {
   margin-bottom: 24px;
 }
+.form {
+  margin-bottom: -24px;
+}
+.tableCard {
+  :global {
+    .ant-card-body {
+      padding-bottom: 8px;
+    }
+  }
+}
+.dropdownSpinContainer {
+  position: relative;
+
+  & > .dropdownSpin {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+.rangePicker {
+  width: 100%;
+}
+.buttonContainer {
+  margin-right: -8px;
+  text-align: right;
+
+  &:global(> .ant-btn) {
+    margin-right: 8px;
+  }
+}
+.table {
+  :global {
+    .ant-table {
+      td,
+      th {
+        white-space: nowrap;
+      }
+    }
+
+    .ant-table-content {
+      overflow-x: auto !important;
+    }
+    .ant-table-body {
+      overflow: auto !important;
+    }
+  }
+}
+.emptyText {
+  color: rgba(0, 0, 0, 0.45);
+}

@@ -726,6 +726,20 @@ export default {
         callback && callback(false, msg);
       }
     },
+    // 追加人员列表
+    *appendPersonList({ payload, callback }, { call, put }) {
+      const response = yield call(getPersonListByCompany, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        yield put({
+          type: 'savePersonList',
+          payload: data,
+        });
+        callback && callback(true, data);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
   },
 
   reducers: {
@@ -743,6 +757,22 @@ export default {
       ...state,
       companyList: {
         list: pageNum === 1 ? list : state.companyList.list.concat(list),
+        pagination,
+      },
+    }),
+    savePersonList: (
+      state,
+      {
+        payload: {
+          list,
+          pagination,
+          pagination: { pageNum },
+        },
+      }
+    ) => ({
+      ...state,
+      personList: {
+        list: pageNum === 1 ? list : state.personList.list.concat(list),
         pagination,
       },
     }),
