@@ -1726,7 +1726,6 @@ module.exports = env => {
                   code: 'riskControl.HAZOP.list',
                   name: 'list',
                   component: './RiskControl/HAZOP/List',
-                  hideInBreadcrumb: true,
                 },
                 {
                   path: '/risk-control/HAZOP/detail/:id',

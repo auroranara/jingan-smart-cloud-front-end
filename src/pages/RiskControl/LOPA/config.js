@@ -1,4 +1,4 @@
-export const NAMESPACE = 'HAZOP';
+export const NAMESPACE = 'LOPA';
 export const LIST_NAME = 'list';
 export const DETAIL_NAME = 'detail';
 export const LIST_API = `${NAMESPACE}/getList`;

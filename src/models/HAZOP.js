@@ -42,7 +42,6 @@ export default {
     *add({ payload, callback }, { call }) {
       const response = yield call(add, payload);
       const { code, msg } = response || {};
-      console.log('model');
       callback && callback(code === 200, msg);
     },
     *edit({ payload, callback }, { call }) {

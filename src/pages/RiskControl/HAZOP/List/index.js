@@ -33,28 +33,19 @@ import {
   DETAIL_PATH,
   ADD_PATH,
   EDIT_PATH,
-  FORMAT,
-  SHOW_TOTAL,
-  GET_VALUE_FROM_EVENT,
 } from '../config';
+import {
+  FORMAT,
+  showTotal,
+  getSelectValueFromEvent,
+  EmptyText,
+  RANGE_PICKER_PLACEHOLDER,
+  LIST_PAGE_COL,
+} from '@/utils';
 import styles from './index.less';
 const { Option } = Select;
-const { TreeNode } = TreeSelect;
 const { RangePicker } = DatePicker;
 
-export const EmptyText = () => <span className={styles.emptyText}>---</span>;
-export const RENDER_DEPARTMENT_LIST = list =>
-  list
-    ? list.map(item => (
-        <TreeNode
-          key={item.id}
-          value={item.id}
-          title={item.name}
-          children={RENDER_DEPARTMENT_LIST(item.children)}
-        />
-      ))
-    : [];
-const RANGE_PICKER_PLACEHOLDER = ['开始时间', '结束时间'];
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '风险分级管控', name: '风险分级管控' },
@@ -63,39 +54,42 @@ const BREADCRUMB_LIST = [
 const GET_PAYLOAD_BY_QUERY = ({
   pageNum,
   pageSize,
-  name,
   company,
+  name,
   department,
-  startDate,
-  endDate,
+  evaluateStartDate,
+  evaluateEndDate,
 }) => ({
   pageNum: pageNum > 0 ? +pageNum : 1,
   pageSize: pageSize > 0 ? +pageSize : 10,
-  name: name ? decodeURIComponent(name) : undefined,
   company: company ? JSON.parse(decodeURIComponent(company)) : undefined,
+  name: name ? decodeURIComponent(name) : undefined,
   department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
-  range: startDate && endDate ? [moment(+startDate), moment(+endDate)] : undefined,
+  range:
+    evaluateStartDate && evaluateEndDate
+      ? [moment(+evaluateStartDate), moment(+evaluateEndDate)]
+      : undefined,
 });
-const GET_QUERY_BY_PAYLOAD = ({ pageNum, pageSize, name, company, department, range }) => {
-  const [startDate, endDate] = range || [];
+const GET_QUERY_BY_PAYLOAD = ({ pageNum, pageSize, company, name, department, range }) => {
+  const [evaluateStartDate, evaluateEndDate] = range || [];
   return {
     pageNum,
     pageSize,
-    name: name ? encodeURIComponent(name.trim()) : undefined,
     company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
+    name: name ? encodeURIComponent(name.trim()) : undefined,
     department: department ? encodeURIComponent(JSON.stringify(department)) : undefined,
-    startDate: startDate ? +startDate : undefined,
-    endDate: endDate ? +endDate : undefined,
+    evaluateStartDate: evaluateStartDate ? +evaluateStartDate : undefined,
+    evaluateEndDate: evaluateEndDate ? +evaluateEndDate : undefined,
   };
 };
 const TRANSFORM_PAYLOAD = ({ company, department, range, ...payload }) => {
-  const [startDate, endDate] = range || [];
+  const [evaluateStartDate, evaluateEndDate] = range || [];
   return {
     ...payload,
     companyId: company && company.key,
-    departmentId: department && department.key,
-    startDate: startDate && startDate.format(FORMAT),
-    endDate: endDate && endDate.format(FORMAT),
+    department: department && department.key,
+    evaluateStartDate: evaluateStartDate && evaluateStartDate.format(FORMAT),
+    evaluateEndDate: evaluateEndDate && evaluateEndDate.format(FORMAT),
   };
 };
 
@@ -107,14 +101,14 @@ export default connect(
       user: {
         currentUser: { unitId, unitType, permissionCodes },
       },
-      common: { companyList, departmentList },
+      dict: { companyList, departmentTree },
       [NAMESPACE]: { [LIST_NAME]: list },
       loading: {
         effects: {
           [LIST_API]: loading,
           [DELETE_API]: deleting,
-          'common/getCompanyList': loadingCompanyList,
-          'common/getDepartmentList': loadingDepartmentList,
+          'dict/getCompanyList': loadingCompanyList,
+          'dict/getDepartmentTree': loadingDepartmentTree,
         },
       },
     },
@@ -134,8 +128,8 @@ export default connect(
       deleting,
       companyList,
       loadingCompanyList,
-      departmentList,
-      loadingDepartmentList,
+      departmentTree,
+      loadingDepartmentTree,
       getList(payload, callback) {
         dispatch({
           type: LIST_API,
@@ -164,7 +158,7 @@ export default connect(
       },
       getCompanyList(payload, callback) {
         dispatch({
-          type: 'common/getCompanyList',
+          type: 'dict/getCompanyList',
           payload: {
             pageNum: 1,
             pageSize: 10,
@@ -178,23 +172,23 @@ export default connect(
           },
         });
       },
-      getDepartmentList(payload, callback) {
+      getDepartmentTree(payload, callback) {
         dispatch({
-          type: 'common/getDepartmentList',
+          type: 'dict/getDepartmentTree',
           payload,
           callback(success, data) {
             if (!success) {
-              message.error('获取部门列表数据失败，请稍后重试！');
+              message.error('获取部门树数据失败，请稍后重试！');
             }
             callback && callback(success, data);
           },
         });
       },
-      setDepartmentList() {
+      setDepartmentTree() {
         dispatch({
-          type: 'common/save',
+          type: 'dict/save',
           payload: {
-            departmentList: [],
+            departmentTree: [],
           },
         });
       },
@@ -211,8 +205,8 @@ export default connect(
         props.deleting === nextProps.deleting &&
         props.companyList === nextProps.companyList &&
         props.loadingCompanyList === nextProps.loadingCompanyList &&
-        props.departmentList === nextProps.departmentList &&
-        props.loadingDepartmentList === nextProps.loadingDepartmentList &&
+        props.departmentTree === nextProps.departmentTree &&
+        props.loadingDepartmentTree === nextProps.loadingDepartmentTree &&
         props.location.query === nextProps.location.query
       );
     },
@@ -231,13 +225,13 @@ export default connect(
     deleting,
     companyList,
     loadingCompanyList,
-    departmentList,
-    loadingDepartmentList,
+    departmentTree,
+    loadingDepartmentTree,
     getList,
     deleteList,
     getCompanyList,
-    getDepartmentList,
-    setDepartmentList,
+    getDepartmentTree,
+    setDepartmentTree,
   }) => {
     const [form] = Form.useForm();
     const [appending, setAppending] = useState(false);
@@ -265,7 +259,7 @@ export default connect(
       }
       // 如果当前账号是单位账号或者已选择单位，则获取部门列表
       if (isUnit || payload.company) {
-        getDepartmentList({
+        getDepartmentTree({
           companyId: isUnit ? unitId : payload.company.key,
         });
       }
@@ -319,6 +313,15 @@ export default connect(
     // 表格配置
     const columns = useMemo(() => {
       return [
+        ...(!isUnit
+          ? [
+              {
+                dataIndex: 'companyName',
+                title: '单位名称',
+                render: value => value || <EmptyText />,
+              },
+            ]
+          : []),
         {
           dataIndex: 'name',
           title: '工艺名称/分析节点',
@@ -330,31 +333,31 @@ export default connect(
           render: value => value || <EmptyText />,
         },
         {
-          dataIndex: 'principleName',
+          dataIndex: 'principalName',
           title: '负责人',
           render: value => value || <EmptyText />,
         },
         {
-          dataIndex: 'phone',
+          dataIndex: 'telphone',
           title: '联系电话',
           render: value => value || <EmptyText />,
         },
         {
-          dataIndex: 'evaluateTime',
+          dataIndex: 'evaluateDate',
           title: '评定时间',
           render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
         },
         {
-          dataIndex: 'fileList',
+          dataIndex: 'accessoryDetails',
           title: '分析报告附件',
           render: value =>
             value && value.length ? (
               <Fragment>
                 {value.map((item, index) => (
                   <div key={index}>
-                    <Link to={item.webUrl} target="_blank">
+                    <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
                       {item.fileName}
-                    </Link>
+                    </a>
                   </div>
                 ))}
               </Fragment>
@@ -436,7 +439,7 @@ export default connect(
         clearTimeout(timer);
         timer = setTimeout(() => {
           getCompanyList({
-            name: value && value.trim(),
+            label: value && value.trim(),
           });
         }, 300);
       };
@@ -445,11 +448,11 @@ export default connect(
     const onCompanySelectChange = useCallback(company => {
       // 如果已选择单位，则获取部门列表，否则清空部门列表
       if (company) {
-        getDepartmentList({
+        getDepartmentTree({
           companyId: company.key,
         });
       } else {
-        setDepartmentList();
+        setDepartmentTree();
       }
       // 清空部门字段值
       form.setFieldsValue({ department: undefined });
@@ -481,28 +484,6 @@ export default connect(
           <Form className={styles.form} form={form} onFinish={onFinish}>
             <Row gutter={24}>
               {[
-                {
-                  name: 'name',
-                  label: '生产工艺名称',
-                  children: <Input placeholder="请输入" maxLength={50} allowClear />,
-                  col: isUnit
-                    ? {
-                        xxl: 6,
-                        xl: 8,
-                        lg: 12,
-                        md: 12,
-                        sm: 24,
-                        xs: 24,
-                      }
-                    : {
-                        xxl: 6,
-                        xl: 8,
-                        lg: 12,
-                        md: 12,
-                        sm: 24,
-                        xs: 24,
-                      },
-                },
                 ...(!isUnit
                   ? [
                       {
@@ -552,59 +533,37 @@ export default connect(
                             )}
                           >
                             {(!loadingCompanyList || appending) && companyList && companyList.list
-                              ? companyList.list.map(item => (
-                                  <Option key={item.id} value={item.id} title={item.name}>
-                                    {item.name}
-                                  </Option>
-                                ))
+                              ? companyList.list.map(item => <Option {...item} />)
                               : []}
                           </Select>
                         ),
-                        getValueFromEvent: GET_VALUE_FROM_EVENT,
-                        col: {
-                          xxl: 6,
-                          xl: 8,
-                          lg: 12,
-                          md: 12,
-                          sm: 24,
-                          xs: 24,
-                        },
+                        getValueFromEvent: getSelectValueFromEvent,
+                        col: LIST_PAGE_COL,
                       },
                     ]
                   : []),
+                {
+                  name: 'name',
+                  label: '生产工艺名称',
+                  children: <Input placeholder="请输入" maxLength={50} allowClear />,
+                  col: LIST_PAGE_COL,
+                },
                 {
                   name: 'department',
                   label: '所属部门',
                   children: (
                     <TreeSelect
                       placeholder="请选择"
+                      treeData={departmentTree}
                       labelInValue
-                      notFoundContent={loadingDepartmentList ? <Spin size="small" /> : undefined}
+                      notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
                       showSearch
                       treeNodeFilterProp="title"
                       allowClear
-                    >
-                      {!loadingDepartmentList && RENDER_DEPARTMENT_LIST(departmentList)}
-                    </TreeSelect>
+                    />
                   ),
-                  getValueFromEvent: GET_VALUE_FROM_EVENT,
-                  col: isUnit
-                    ? {
-                        xxl: 6,
-                        xl: 8,
-                        lg: 12,
-                        md: 12,
-                        sm: 24,
-                        xs: 24,
-                      }
-                    : {
-                        xxl: 6,
-                        xl: 8,
-                        lg: 12,
-                        md: 12,
-                        sm: 24,
-                        xs: 24,
-                      },
+                  getValueFromEvent: getSelectValueFromEvent,
+                  col: LIST_PAGE_COL,
                 },
                 {
                   name: 'range',
@@ -619,23 +578,7 @@ export default connect(
                       allowClear
                     />
                   ),
-                  col: isUnit
-                    ? {
-                        xxl: 6,
-                        xl: 8,
-                        lg: 12,
-                        md: 12,
-                        sm: 24,
-                        xs: 24,
-                      }
-                    : {
-                        xxl: 6,
-                        xl: 8,
-                        lg: 12,
-                        md: 12,
-                        sm: 24,
-                        xs: 24,
-                      },
+                  col: LIST_PAGE_COL,
                 },
                 {
                   children: (
@@ -674,10 +617,7 @@ export default connect(
                         xl: 16,
                         lg: 24,
                         md: 24,
-                        sm: {
-                          order: 4,
-                          span: 12,
-                        },
+                        sm: 24,
                         xs: 24,
                       },
                 },
@@ -703,7 +643,7 @@ export default connect(
               total,
               current: pageNum,
               pageSize,
-              showTotal: SHOW_TOTAL,
+              showTotal,
               showQuickJumper: true,
               showSizeChanger: true,
             }}

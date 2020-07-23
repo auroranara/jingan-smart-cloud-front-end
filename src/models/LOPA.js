@@ -42,17 +42,17 @@ export default {
     *add({ payload, callback }, { call }) {
       const response = yield call(add, payload);
       const { code, msg } = response || {};
-      callback(code === 200, msg);
+      callback && callback(code === 200, msg);
     },
     *edit({ payload, callback }, { call }) {
       const response = yield call(edit, payload);
       const { code, msg } = response || {};
-      callback(code === 200, msg);
+      callback && callback(code === 200, msg);
     },
     *delete({ payload, callback }, { call }) {
       const response = yield call(remove, payload);
       const { code, msg } = response || {};
-      callback(code === 200, msg);
+      callback && callback(code === 200, msg);
     },
   },
 
