@@ -10,19 +10,19 @@ import { connect } from 'dva';
 // import styles from './customAutho.less';
 
 // 为了防止从store.user.currentUser.permissionCodes获取的codes是个undefined
-export function hasAuthority (code, codes = []) {
+export function hasAuthority(code, codes = []) {
   // console.log(code, codes);
   return codes.includes(code);
 }
 
-export function getDisabled (code, codes) {
+export function getDisabled(code, codes) {
   return !hasAuthority(code, codes);
 }
 
 export const ERROR_MSG = '您没有进行当前操作的权限';
 
 // 将router.config.js配置转化成路由，源码中的函数，并未改动
-export function formatter (data, parentPath = '', parentAuthority, parentName) {
+export function formatter(data, parentPath = '', parentAuthority, parentName) {
   return data.map(item => {
     let locale = 'menu';
     if (parentName && item.name) {
@@ -48,14 +48,22 @@ export function formatter (data, parentPath = '', parentAuthority, parentName) {
 }
 
 // 去除url中尾部参数
-const clearParam = url => /\:/.test(url) ? url.split(':').shift() : url
+const clearParam = url => (/\:/.test(url) ? url.split(':').shift() : url);
 
 /**
  * 筛选驾驶舱路由
  * @param {Array} array 需要处理的数组
  * @param {Object} model user模块
  */
-const OPE_SCREENS = ['governmentSafety', 'newFireControl', 'electricityMonitor', 'gas', 'smoke', 'operation', 'personnelPositioning'];
+const OPE_SCREENS = [
+  'governmentSafety',
+  'newFireControl',
+  'electricityMonitor',
+  'gas',
+  'smoke',
+  'operation',
+  'personnelPositioning',
+];
 export const filterBigPlatform = (array, model) => {
   const {
     currentUser: {
@@ -73,7 +81,7 @@ export const filterBigPlatform = (array, model) => {
     grids,
   } = model;
 
-  console.log('personnelPositioning', personnelPositioning);
+  // console.log('personnelPositioning', personnelPositioning);
   // const regulatoryClassification = ['1', '2'];
   const classification =
     (Array.isArray(regulatoryClassification) &&
@@ -84,7 +92,7 @@ export const filterBigPlatform = (array, model) => {
     classification.includes(k)
   );
   return array.reduce((arr, item) => {
-    const { name, code } = item
+    const { name, code } = item;
     // 筛选掉重定向和无权限
     if (item.redirect || !permissionCodes.includes(code)) {
       return arr;
@@ -109,10 +117,19 @@ export const filterBigPlatform = (array, model) => {
     */
     // 处理路径path
     if (['electricityMonitor', 'gas', 'smoke'].includes(name)) {
-      item.path = `${path}${grids.length ? grids[0].value : 'index'}`
+      item.path = `${path}${grids.length ? grids[0].value : 'index'}`;
     } else if (['chemical', 'led'].includes(name)) {
       item.path = path + (companyId || 'DccBRhlrSiu9gMV7fmvizw'); // temp
-    } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
+    } else if (
+      [
+        'companySafety',
+        'fireControl',
+        'fireMaintenance',
+        'dynamicMonitor',
+        'personnelPositioning',
+        'gasStation',
+      ].includes(name)
+    ) {
       item.path = path + (companyId || 'index');
     } else if (['governmentSafety', 'newFireControl'].includes(name)) {
       item.path = path + 'index';
@@ -129,28 +146,28 @@ export const filterBigPlatform = (array, model) => {
       // 政府
       if (name === 'governmentSafety' && safetyProduction && clfcSafetyAuth) return [...arr, item];
       if (name === 'newFireControl' && fireService && clfcFireControlAuth) return [...arr, item];
-      if (['electricityMonitor', 'gas', 'smoke'].includes(name)) return [...arr, item]
+      if (['electricityMonitor', 'gas', 'smoke'].includes(name)) return [...arr, item];
     } else if (unitType === 3) {
       // 运营
-      if (OPE_SCREENS.includes(name)) return [...arr, item]
+      if (OPE_SCREENS.includes(name)) return [...arr, item];
     } else if (unitType === 4) {
       // 企事业
-      if (name === 'companySafety' && safetyProduction && clfcSafetyAuth) return [...arr, item]
-      if (name === 'fireControl' && fireService && clfcFireControlAuth) return [...arr, item]
-      if (name === 'fireMaintenance' && fireService && clfcFireControlAuth) return [...arr, item]
-      if (name === 'dynamicMonitor' && monitorService && clfcSafetyAuth) return [...arr, item]
+      if (name === 'companySafety' && safetyProduction && clfcSafetyAuth) return [...arr, item];
+      if (name === 'fireControl' && fireService && clfcFireControlAuth) return [...arr, item];
+      if (name === 'fireMaintenance' && fireService && clfcFireControlAuth) return [...arr, item];
+      if (name === 'dynamicMonitor' && monitorService && clfcSafetyAuth) return [...arr, item];
       // if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
-      if (name === 'personnelPositioning') return [...arr, item]
-      if (name === 'gasStation') return [...arr, item]
-      if (name === 'chemical') return [...arr, item]
+      if (name === 'personnelPositioning') return [...arr, item];
+      if (name === 'gasStation') return [...arr, item];
+      if (name === 'chemical') return [...arr, item];
     }
     if (name === 'led') return [...arr, item];
     return arr;
-  }, [])
-}
+  }, []);
+};
 
 // 将menus数组中不存在的路径过滤掉，使其再菜单中不显示，codes=[]也是为了防止从store.user.currentUser.permissionCodes获取的是undefined
-export function filterMenus (MenuData, codes = [], codeMap, sysType) {
+export function filterMenus(MenuData, codes = [], codeMap, sysType) {
   const menuData = [];
   for (let m of MenuData) {
     const { path, children, systemType, developing } = m;
@@ -161,7 +178,13 @@ export function filterMenus (MenuData, codes = [], codeMap, sysType) {
     // menuData.push(menu);
 
     // if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (sysType === -1 || systemType === undefined || systemType !== undefined && systemType === sysType)) {
-    if (path === '/' || path !== '/' && !developing && codes.includes(codeMap[path]) && (systemType === undefined || systemType !== undefined && systemType === sysType)) {
+    if (
+      path === '/' ||
+      (path !== '/' &&
+        !developing &&
+        codes.includes(codeMap[path]) &&
+        (systemType === undefined || (systemType !== undefined && systemType === sysType)))
+    ) {
       if (children) menu.children = filterMenus(children, codes, codeMap, sysType);
       menuData.push(menu);
     }
@@ -171,7 +194,7 @@ export function filterMenus (MenuData, codes = [], codeMap, sysType) {
 }
 
 // 根据formatter之后的路由来生成一个path -> code的映射对象及包含所有路径path的数组
-export function getCodeMap (menuData, codeMap, pathArray) {
+export function getCodeMap(menuData, codeMap, pathArray) {
   for (let m of menuData) {
     const { path, code, locale, children } = m;
 
@@ -195,14 +218,13 @@ export function getCodeMap (menuData, codeMap, pathArray) {
   }
 }
 
-function getMenuName (path) {
+function getMenuName(path) {
   const parts = path.split('/').filter(n => n);
-  if (parts.length)
-    return parts[0];
-};
+  if (parts.length) return parts[0];
+}
 
 // 高阶函数，最后的返回值是个函数，来判断当前路径是否在menus中，即当前用户是否有访问权限，因为Authorized组件的authority属性要求传入的值是个函数
-export function generateAuthFn (codes, codeMap, pathArray, rootPaths = []) {
+export function generateAuthFn(codes, codeMap, pathArray, rootPaths = []) {
   // console.log('codes', codes);
   // console.log('codeMap', codeMap);
   // console.log('pathArray', pathArray);
@@ -226,7 +248,7 @@ export function generateAuthFn (codes, codeMap, pathArray, rootPaths = []) {
 }
 
 // 找到路径数组中与当前pathname匹配的路径path，如 company/1 => company/:id，不存在匹配的path，默认返回undefined，这也意味着pathname对应的页面不存在
-export function getPath (pathname, pathArray) {
+export function getPath(pathname, pathArray) {
   for (let path of pathArray) {
     const pathRegexp = pathToRegexp(path);
     const isMatch = pathRegexp.test(pathname);
@@ -235,11 +257,22 @@ export function getPath (pathname, pathArray) {
   }
 }
 
-export function authWrapper (WrappedComponent) {
-  return connect(({ user }) => ({ user }))(function (props) {
+export function authWrapper(WrappedComponent) {
+  return connect(({ user }) => ({ user }))(function(props) {
     // console.log(props);
     // 将需要的属性分离出来
-    const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, hasAuthFn, errMsg, children = null, ...restProps } = props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { permissionCodes },
+      },
+      code,
+      codes,
+      hasAuthFn,
+      errMsg,
+      children = null,
+      ...restProps
+    } = props;
     // 将无权限时需要改变的属性：超链接，样式，onClick等剥离出来
     const { href, to, onClick, style = {}, ...disabledRestProps } = restProps;
 
@@ -248,7 +281,8 @@ export function authWrapper (WrappedComponent) {
     const perCodes = codes || permissionCodes;
     // 如果自定义hasAuthFn，即自己判断是否有权限，则不通过hasAuthority(code, codes)判断是否有权限
     // hasAuthFn(code: string, codes: string[]): boolean
-    if (hasAuthFn !== undefined && typeof hasAuthFn === 'function') authorized = hasAuthFn(perCodes);
+    if (hasAuthFn !== undefined && typeof hasAuthFn === 'function')
+      authorized = hasAuthFn(perCodes);
     else authorized = hasAuthority(code, perCodes);
 
     // console.log(authorized);
@@ -296,8 +330,16 @@ export const AuthLink = authWrapper(Link);
 export const AuthUmiLink = authWrapper(UmiLink);
 
 // 包装antd组件Button
-export const AuthButton = connect(({ user }) => ({ user }))(function (props) {
-  const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, ...restProps } = props;
+export const AuthButton = connect(({ user }) => ({ user }))(function(props) {
+  const {
+    dispatch,
+    user: {
+      currentUser: { permissionCodes },
+    },
+    code,
+    codes,
+    ...restProps
+  } = props;
   // 如果自己传codes，那么就用自己传入的codes代替从currentUser中获取的permissionCodes，主要是为了方便测试
   const perCodes = codes || permissionCodes;
   return <Button {...restProps} disabled={getDisabled(code, perCodes)} />;
@@ -306,7 +348,7 @@ export const AuthButton = connect(({ user }) => ({ user }))(function (props) {
 // 图标
 @connect(({ user }) => ({ user }))
 export class AuthIcon extends PureComponent {
-  render () {
+  render() {
     const {
       dispatch, // 单独拎出来过滤掉，不然传入Link会报warning
       to,
@@ -316,7 +358,9 @@ export class AuthIcon extends PureComponent {
       codes,
       style,
       onClick,
-      user: { currentUser: { permissionCodes } },
+      user: {
+        currentUser: { permissionCodes },
+      },
       ...restProps
     } = this.props;
     const perCodes = codes || permissionCodes;
@@ -339,7 +383,7 @@ export class AuthIcon extends PureComponent {
 }
 
 // 气泡确认框
-export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props) {
+export const AuthPopConfirm = connect(({ user }) => ({ user }))(function(props) {
   const {
     code,
     onConfirm,
@@ -347,29 +391,26 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
     okText = '确认',
     cancelText = '取消',
     codes,
-    user: { currentUser: { permissionCodes } },
+    user: {
+      currentUser: { permissionCodes },
+    },
     children,
     authority, // 权限 { boolean } 最高优先级
     style,
   } = props;
-  const auth = typeof authority === 'boolean' ? authority : hasAuthority(code, codes || permissionCodes);
+  const auth =
+    typeof authority === 'boolean' ? authority : hasAuthority(code, codes || permissionCodes);
   return auth ? (
-    <Popconfirm
-      title={title}
-      onConfirm={onConfirm}
-      okText={okText}
-      cancelText={cancelText}
-    >
+    <Popconfirm title={title} onConfirm={onConfirm} okText={okText} cancelText={cancelText}>
       <a style={style}>{children}</a>
     </Popconfirm>
   ) : (
-      <span style={{ color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed' }}>{children}</span>
-    )
+    <span style={{ color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed' }}>{children}</span>
+  );
 });
 
-export function getSystemType (pathname, route) {
-  if (pathname.includes('/company-workbench'))
-    return -1;
+export function getSystemType(pathname, route) {
+  if (pathname.includes('/company-workbench')) return -1;
 
   const name = pathname.match(/^\/[^/]*/)[0];
   const { routes } = route;
