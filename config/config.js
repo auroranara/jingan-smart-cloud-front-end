@@ -43,12 +43,13 @@ const hosts = {
   five: 'five.jinganyun.net',
   demo: 'demo.jinganyun.net',
   glz: '192.168.10.41:8080',
+  up: '192.168.10.68:58080',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.up}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
