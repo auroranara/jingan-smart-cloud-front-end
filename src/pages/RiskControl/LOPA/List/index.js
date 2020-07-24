@@ -184,14 +184,6 @@ export default connect(
           },
         });
       },
-      setDepartmentTree() {
-        dispatch({
-          type: 'dict/save',
-          payload: {
-            departmentTree: [],
-          },
-        });
-      },
     };
   },
   {
@@ -231,7 +223,6 @@ export default connect(
     deleteList,
     getCompanyList,
     getDepartmentTree,
-    setDepartmentTree,
   }) => {
     const [form] = Form.useForm();
     const [appending, setAppending] = useState(false);
@@ -441,13 +432,11 @@ export default connect(
     }, []);
     // 单位选择器change事件
     const onCompanySelectChange = useCallback(company => {
-      // 如果已选择单位，则获取部门列表，否则清空部门列表
+      // 如果已选择单位，则获取部门列表
       if (company) {
         getDepartmentTree({
           companyId: company.key,
         });
-      } else {
-        setDepartmentTree();
       }
       // 清空部门字段值
       form.setFieldsValue({ department: undefined });
@@ -477,151 +466,170 @@ export default connect(
       >
         <Card className={styles.formCard}>
           <Form className={styles.form} form={form} onFinish={onFinish}>
-            <Row gutter={24}>
-              {[
-                ...(!isUnit
-                  ? [
-                      {
-                        name: 'company',
-                        label: '单位名称',
-                        children: (
-                          <Select
-                            placeholder="请选择"
-                            labelInValue
-                            notFoundContent={loadingCompanyList ? <Spin size="small" /> : undefined}
-                            showSearch
-                            filterOption={false}
-                            allowClear
-                            onSearch={onCompanySelectSearch}
-                            onChange={onCompanySelectChange}
-                            onPopupScroll={
-                              !appending &&
-                              companyList &&
-                              companyList.pagination &&
-                              companyList.pagination.total >
-                                companyList.pagination.pageNum * companyList.pagination.pageSize
-                                ? ({ target: { scrollTop, offsetHeight, scrollHeight } }) => {
-                                    if (scrollTop + offsetHeight === scrollHeight) {
-                                      const {
-                                        pagination: { pageNum },
-                                      } = companyList;
-                                      setAppending(true);
-                                      getCompanyList(
-                                        {
-                                          pageNum: pageNum + 1,
-                                        },
-                                        () => {
-                                          setTimeout(() => {
-                                            setAppending(false);
-                                          });
-                                        }
-                                      );
-                                    }
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, values) =>
+                ['company'].some(dependency => prevValues[dependency] !== values[dependency])
+              }
+            >
+              {({ getFieldsValue }) => {
+                const values = getFieldsValue();
+                return (
+                  <Row gutter={24}>
+                    {[
+                      ...(!isUnit
+                        ? [
+                            {
+                              name: 'company',
+                              label: '单位名称',
+                              children: (
+                                <Select
+                                  placeholder="请选择"
+                                  labelInValue
+                                  notFoundContent={
+                                    loadingCompanyList ? <Spin size="small" /> : undefined
                                   }
-                                : undefined
+                                  showSearch
+                                  filterOption={false}
+                                  allowClear
+                                  onSearch={onCompanySelectSearch}
+                                  onChange={onCompanySelectChange}
+                                  onPopupScroll={
+                                    !appending &&
+                                    companyList &&
+                                    companyList.pagination &&
+                                    companyList.pagination.total >
+                                      companyList.pagination.pageNum *
+                                        companyList.pagination.pageSize
+                                      ? ({ target: { scrollTop, offsetHeight, scrollHeight } }) => {
+                                          if (scrollTop + offsetHeight === scrollHeight) {
+                                            const {
+                                              pagination: { pageNum },
+                                            } = companyList;
+                                            setAppending(true);
+                                            getCompanyList(
+                                              {
+                                                pageNum: pageNum + 1,
+                                              },
+                                              () => {
+                                                setTimeout(() => {
+                                                  setAppending(false);
+                                                });
+                                              }
+                                            );
+                                          }
+                                        }
+                                      : undefined
+                                  }
+                                  dropdownRender={children => (
+                                    <div className={styles.dropdownSpinContainer}>
+                                      {children}
+                                      {appending && <Spin className={styles.dropdownSpin} />}
+                                    </div>
+                                  )}
+                                >
+                                  {(!loadingCompanyList || appending) &&
+                                  companyList &&
+                                  companyList.list
+                                    ? companyList.list.map(item => <Option {...item} />)
+                                    : []}
+                                </Select>
+                              ),
+                              getValueFromEvent: getSelectValueFromEvent,
+                              col: LIST_PAGE_COL,
+                            },
+                          ]
+                        : []),
+                      {
+                        name: 'name',
+                        label: '名称',
+                        children: <Input placeholder="请输入" maxLength={50} allowClear />,
+                        col: LIST_PAGE_COL,
+                      },
+                      {
+                        name: 'department',
+                        label: '所属部门',
+                        children: (
+                          <TreeSelect
+                            placeholder="请选择"
+                            treeData={values.company ? departmentTree : undefined}
+                            labelInValue
+                            notFoundContent={
+                              loadingDepartmentTree ? <Spin size="small" /> : undefined
                             }
-                            dropdownRender={children => (
-                              <div className={styles.dropdownSpinContainer}>
-                                {children}
-                                {appending && <Spin className={styles.dropdownSpin} />}
-                              </div>
-                            )}
-                          >
-                            {(!loadingCompanyList || appending) && companyList && companyList.list
-                              ? companyList.list.map(item => <Option {...item} />)
-                              : []}
-                          </Select>
+                            showSearch
+                            treeNodeFilterProp="title"
+                            allowClear
+                          />
                         ),
                         getValueFromEvent: getSelectValueFromEvent,
                         col: LIST_PAGE_COL,
                       },
-                    ]
-                  : []),
-                {
-                  name: 'name',
-                  label: '名称',
-                  children: <Input placeholder="请输入" maxLength={50} allowClear />,
-                  col: LIST_PAGE_COL,
-                },
-                {
-                  name: 'department',
-                  label: '所属部门',
-                  children: (
-                    <TreeSelect
-                      placeholder="请选择"
-                      treeData={departmentTree}
-                      labelInValue
-                      notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
-                      showSearch
-                      treeNodeFilterProp="title"
-                      allowClear
-                    />
-                  ),
-                  getValueFromEvent: getSelectValueFromEvent,
-                  col: LIST_PAGE_COL,
-                },
-                {
-                  name: 'range',
-                  label: '时间',
-                  children: (
-                    <RangePicker
-                      className={styles.rangePicker}
-                      placeholder={RANGE_PICKER_PLACEHOLDER}
-                      format={FORMAT}
-                      separator="~"
-                      ranges={ranges}
-                      allowClear
-                    />
-                  ),
-                  col: LIST_PAGE_COL,
-                },
-                {
-                  children: (
-                    <div className={styles.buttonContainer}>
-                      <Button type="primary" htmlType="submit">
-                        查询
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          form.resetFields();
-                          form.submit();
-                        }}
-                      >
-                        重置
-                      </Button>
-                      <Button
-                        type="primary"
-                        href={`#${ADD_PATH}${queryString ? `?${queryString}` : ''}`}
-                        disabled={!hasAddAuthority}
-                      >
-                        新增
-                      </Button>
-                    </div>
-                  ),
-                  col: isUnit
-                    ? {
-                        xxl: 6,
-                        xl: 24,
-                        lg: 12,
-                        md: 12,
-                        sm: 24,
-                        xs: 24,
-                      }
-                    : {
-                        xxl: 24,
-                        xl: 16,
-                        lg: 24,
-                        md: 24,
-                        sm: 24,
-                        xs: 24,
+                      {
+                        name: 'range',
+                        label: '时间',
+                        children: (
+                          <RangePicker
+                            className={styles.rangePicker}
+                            placeholder={RANGE_PICKER_PLACEHOLDER}
+                            format={FORMAT}
+                            separator="~"
+                            ranges={ranges}
+                            allowClear
+                          />
+                        ),
+                        col: LIST_PAGE_COL,
                       },
-                },
-              ].map(({ name, col, ...item }, index) => (
-                <Col key={name || index} {...col}>
-                  <Form.Item name={name} {...item} />
-                </Col>
-              ))}
-            </Row>
+                      {
+                        children: (
+                          <div className={styles.buttonContainer}>
+                            <Button type="primary" htmlType="submit">
+                              查询
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                form.resetFields();
+                                form.submit();
+                              }}
+                            >
+                              重置
+                            </Button>
+                            <Button
+                              type="primary"
+                              href={`#${ADD_PATH}${queryString ? `?${queryString}` : ''}`}
+                              disabled={!hasAddAuthority}
+                            >
+                              新增
+                            </Button>
+                          </div>
+                        ),
+                        col: isUnit
+                          ? {
+                              xxl: 6,
+                              xl: 24,
+                              lg: 12,
+                              md: 12,
+                              sm: 24,
+                              xs: 24,
+                            }
+                          : {
+                              xxl: 24,
+                              xl: 16,
+                              lg: 24,
+                              md: 24,
+                              sm: 24,
+                              xs: 24,
+                            },
+                      },
+                    ].map(({ name, col, ...item }, index) => (
+                      <Col key={name || index} {...col}>
+                        <Form.Item name={name} {...item} />
+                      </Col>
+                    ))}
+                  </Row>
+                );
+              }}
+            </Form.Item>
           </Form>
         </Card>
         <Card className={styles.tableCard}>
