@@ -1444,14 +1444,14 @@ export default class AssociatedUnit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-               <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+               {/* <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                   <Form.Item label={fieldLabels.wxId}>
                     {getFieldDecorator('wxId', {
                       initialValue: wxId,
                       getValueFromEvent: this.handleTrim,
                     })(<Input placeholder="请输入微信企业ID" />)}
                   </Form.Item>
-                </Col>
+                </Col> */}
           </Row>
         </Card>
       </Form>
