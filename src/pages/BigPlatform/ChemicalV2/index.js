@@ -588,7 +588,11 @@ export default class Chemical extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data);
-        if (data) this.getLEDPersonCount();
+        if (data) {
+          this.getLEDPersonCount();
+          this.fetchOnDuty({ companyId });
+          this.fetchPostList({ companyId, pageSize: 0, pageNum: 1 });
+        }
       } catch (error) {
         console.log('error', error);
       }
@@ -597,6 +601,16 @@ export default class Chemical extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+  };
+
+  fetchOnDuty = (payload, callback) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'chemical/fetchOnDuty', payload, callback });
+  };
+
+  fetchPostList = (payload, callback) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'chemical/fetchPostList', payload, callback });
   };
 
   /**
