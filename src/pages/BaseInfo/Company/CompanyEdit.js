@@ -100,6 +100,7 @@ const fieldLabels = {
   workPlaceOwn: '生产场所产权',
   storePlaceOwn: '存储场所产权',
   businessLicense: '营业执照附件',
+  wxCorpId: '微信企业ID',
 };
 // 报警接收电话类型
 const phoneTypes = [{ value: 1, label: '手机' }, { value: 0, label: '固话' }];
@@ -1132,6 +1133,7 @@ export default class CompanyDetail extends PureComponent {
             gridId,
             warningCallType: detailCallType,
             warningCallNumber,
+            wxCorpId,
           },
         },
         registerAddress: registerAddressArea,
@@ -1357,6 +1359,14 @@ export default class CompanyDetail extends PureComponent {
                     },
                   ],
                 })(<Input placeholder="电话号码" />)}
+              </Form.Item>
+            </Col>
+            <Col md={12} sm={12}>
+              <Form.Item label={fieldLabels.wxCorpId}>
+                {getFieldDecorator('wxCorpId', {
+                  initialValue: wxCorpId,
+                  getValueFromEvent: this.handleTrim,
+                })(<Input placeholder="请输入微信企业ID" />)}
               </Form.Item>
             </Col>
           </Row>
