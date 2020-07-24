@@ -258,13 +258,10 @@ export default class WorkingBillOther extends Component {
       setTimeout(() => {
         this.forceUpdate();
       });
-      companyId && getMapInfo({ companyId });
-      companyId && getPersonList({ companyId });
+      const cId = isUnit ? unitId : companyId;
+      cId && getMapInfo({ companyId: cId });
+      cId && getPersonList({ companyId: cId });
     });
-    if (isUnit) {
-      getMapInfo({ unitId });
-      getPersonList({ unitId });
-    }
   }
 
   validateSafetyMeasure = (rule, value, callback) => {

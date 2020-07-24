@@ -270,7 +270,7 @@ export default class Map extends PureComponent {
             longitude,
             status,
             floorNo,
-            hgFaceInfo: { id, name, iconID },
+            hgFaceInfo: { id, name, iconID, personType },
             xMillimeter,
             yMillimeter,
           } = item;
@@ -281,7 +281,7 @@ export default class Map extends PureComponent {
           const position = this.calcCoord(xMillimeter, yMillimeter);
           const position2 = new jsmap.JSPoint(position.x, position.y, 3);
           const url = [helmet1, helmet2, helmet3, helmet4, helmet5, helmet6][
-            iconID ? iconID - 1 : 0
+            iconID && ![2, 3].includes(+personType) ? iconID - 1 : 0
           ];
           const alarmUrl = [
             helmetAlarm1,
@@ -290,7 +290,7 @@ export default class Map extends PureComponent {
             helmetAlarm4,
             helmetAlarm5,
             helmetAlarm6,
-          ][iconID ? iconID - 1 : 0];
+          ][iconID && ![2, 3].includes(+personType) ? iconID - 1 : 0];
           const marker = this.addMarkers({
             image: +status === 1 ? alarmUrl : url, //图片路径
             position,
@@ -310,39 +310,6 @@ export default class Map extends PureComponent {
             show: visibles[iconType],
           });
           this.positionLabelMarkers.push(labelMarker);
-          return null;
-        });
-      },
-    });
-  };
-
-  renderPosition2 = () => {
-    // 人员定位
-    const { dispatch, companyId } = this.props;
-    dispatch({
-      type: 'chemical/fetchMonitorEquipment',
-      payload: { companyId, pageNum: 1, pageSize: 0 },
-      callback: res => {
-        const { visibles } = this.state;
-        const iconType = 4;
-        filterMarkerList(res.data.list).map((item, index) => {
-          const { groupId, xnum, ynum, znum } = item.pointFixInfoList[0];
-          const position = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 0));
-          const position2 = tool.MercatorToWGS84(new jsmap.JSPoint(+xnum, +ynum, 3));
-          let url = controls[iconType].markerIcon;
-          const marker = this.addMarkers({
-            image: url, //图片路径
-            position,
-            floorId: +groupId, //楼
-            properties: { ...item, iconType },
-            show: visibles[iconType],
-          });
-          this.renderLabelMarker({
-            text: `name${index}`,
-            position: position2,
-            floorId: +groupId,
-            properties: item,
-          });
           return null;
         });
       },
@@ -518,6 +485,7 @@ export default class Map extends PureComponent {
           // 消防主机
           const { fire_state } = pointCountMap || {};
           if (+fire_state > 0) url = controls[iconType].alarmIcon;
+          else url = MonitorIcons['1'];
         } else if (warnStatus === -1) url = controls[iconType].alarmIcon;
         else url = MonitorIcons[equipmentType] || controls[iconType].markerIcon;
       }
@@ -1444,7 +1412,7 @@ export default class Map extends PureComponent {
     //   properties => +properties.get('iconType') === iconType
     // );
     // map.setMarkerVisibleByFilter(jsmap.JSMarkerType.LABEL_MARKER, !visible, properties => true);
-    handleParentChange({ showDistribution: !visible });
+    handleParentChange({ showDistribution: !visible, distributionVisible: !visible });
 
     if (visibles[5]) {
       if (visible) {
@@ -1747,7 +1715,7 @@ export default class Map extends PureComponent {
             </div>
           </div>
 
-          {/* {permissionCodes.includes('dashboard.personnelPositioningView') && (
+          {permissionCodes.includes('dashboard.personnelPositioningView') && (
             <div
               className={styles.positionBtn}
               style={{
@@ -1755,7 +1723,7 @@ export default class Map extends PureComponent {
               }}
               onClick={this.handlePosition}
             />
-          )} */}
+          )}
           <NewVideoPlay
             showList={true}
             videoList={videoList
