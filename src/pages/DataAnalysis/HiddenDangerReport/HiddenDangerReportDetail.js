@@ -638,7 +638,7 @@ export default class App extends PureComponent {
                   const images = [],
                     audios = [];
                   for (const file of fileList) {
-                    if (/(.jpg|.png)$/.test(file.src)) {
+                    if (/(\.jpe?g|\.png)$/i.test(file.src)) {
                       images.push(file);
                     } else {
                       audios.push(file);
