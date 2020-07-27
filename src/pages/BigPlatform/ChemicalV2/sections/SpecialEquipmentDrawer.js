@@ -31,7 +31,7 @@ export default class SpecialEquipmentDrawer extends PureComponent {
     selectedStatus: 0,
   };
 
-  componentDidUpdate ({ visible: prevVisible }) {
+  componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
       this.scroll && this.scroll.scrollTop();
@@ -55,7 +55,7 @@ export default class SpecialEquipmentDrawer extends PureComponent {
   /**
    * 选择状态
    */
-  renderStatusSelect () {
+  renderStatusSelect() {
     const {
       // unitSafety: {
       //   specialEquipmentList: { allList = [], expiredList = [], unexpiredList = [] } = {},
@@ -116,7 +116,9 @@ export default class SpecialEquipmentDrawer extends PureComponent {
               onClick={() => this.handleStatusChange(index)}
             >
               <span className={styles.statusItemLabel}>{item}</span>
-              <span className={index === 1 ? styles.expiredStatusItemValue : null}>{([list, expired, expiring, notExpired][index]).length}</span>
+              <span className={index === 1 ? styles.expiredStatusItemValue : null}>
+                {[list, expired, expiring, notExpired][index].length}
+              </span>
             </div>
           </div>
         ))}
@@ -124,7 +126,7 @@ export default class SpecialEquipmentDrawer extends PureComponent {
     );
   }
 
-  render () {
+  render() {
     let {
       // 抽屉是否可见
       visible,
@@ -179,12 +181,19 @@ export default class SpecialEquipmentDrawer extends PureComponent {
                   render: ({ category }) => {
                     let dictData = dict;
                     return (
-                      <span style={{ paddingRight: '2em', display: 'inline-block' }}>{category.split(',').reduce((arr, val) => {
-                        const target = dictData.find(item => item.id === val) || {};
-                        dictData = target.children;
-                        return [...arr, target.label];
-                      }, []).join('>>')}</span>
-                    )
+                      <span style={{ paddingRight: '2em', display: 'inline-block' }}>
+                        {category
+                          ? category
+                              .split(',')
+                              .reduce((arr, val) => {
+                                const target = dictData.find(item => item.id === val) || {};
+                                dictData = target.children;
+                                return [...arr, target.label];
+                              }, [])
+                              .join('>>')
+                          : ''}
+                      </span>
+                    );
                   },
                 },
                 {
@@ -206,11 +215,19 @@ export default class SpecialEquipmentDrawer extends PureComponent {
                 },
                 {
                   label: '有效期至',
-                  render: ({ expiryDate, status }) => <span style={{ color: +status === 1 && '#ff4848' }}>{expiryDate && moment(+expiryDate).format(TIME_FORMAT)}</span>,
+                  render: ({ expiryDate, status }) => (
+                    <span style={{ color: +status === 1 && '#ff4848' }}>
+                      {expiryDate && moment(+expiryDate).format(TIME_FORMAT)}
+                    </span>
+                  ),
                 },
               ]}
-              statusLabel={statusSetting[item.paststatus] ? statusSetting[item.paststatus].label : undefined}
-              statusColor={statusSetting[item.paststatus] ? statusSetting[item.paststatus].color : undefined}
+              statusLabel={
+                statusSetting[item.paststatus] ? statusSetting[item.paststatus].label : undefined
+              }
+              statusColor={
+                statusSetting[item.paststatus] ? statusSetting[item.paststatus].color : undefined
+              }
               showStatus={!!item.endDate}
               url={`/facility-management/special-equipment/inspection-report/${item.id}`}
               linkLabel="查看检验报告"

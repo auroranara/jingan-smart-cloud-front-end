@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Row, Col } from 'antd';
 import moment from 'moment';
-import DrawerContainer from '@/pages/BigPlatform/NewUnitFireControl/components/DrawerContainer';
+import DrawerContainer from '../../components/DrawerContainer';
 import styles from './FireMonitorDetailDrawer.less';
 import SignalAnime from '@/pages/BigPlatform/Monitor/components/SignalAnime';
 import fireHost from '@/pages/BigPlatform/NewUnitFireControl/imgs/fire-host.png';

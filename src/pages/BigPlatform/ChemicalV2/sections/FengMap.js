@@ -353,9 +353,18 @@ export default class Map extends PureComponent {
           // 消防主机
           const { fire_state } = pointCountMap || {};
           if (+fire_state > 0) url = controls[iconType].alarmIcon;
-          else controls[iconType].markerIcon;
+          else url = MonitorIcons['1'];
         } else if (warnStatus === -1) url = controls[iconType].alarmIcon;
+        else url = MonitorIcons[equipmentType] || controls[iconType].markerIcon;
       }
+      // if (iconType === 2) {
+      //   if (deviceCode || deviceCode === 0) {
+      //     // 消防主机
+      //     const { fire_state } = pointCountMap || {};
+      //     if (+fire_state > 0) url = controls[iconType].alarmIcon;
+      //     else controls[iconType].markerIcon;
+      //   } else if (warnStatus === -1) url = controls[iconType].alarmIcon;
+      // }
       if (iconType === 0 && +status === 2) {
         url = controls[iconType].alarmIcon;
       }
