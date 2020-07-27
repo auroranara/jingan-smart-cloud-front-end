@@ -383,6 +383,18 @@ export default class WorkingBillOther extends Component {
     setFieldsValue({ [name]: newValue });
   };
 
+  onWorkingCompanyChange = () => {
+    const {
+      form: { getFieldValue, setFieldsValue },
+    } = this.props;
+    const billType = getFieldValue('billType');
+    if ([TYPES[0].key, TYPES[2].key, TYPES[3].key, TYPES[4].key].includes(billType)) {
+      setFieldsValue({
+        workingPersonnelId: undefined,
+      });
+    }
+  };
+
   render() {
     const {
       isUnit,
@@ -709,6 +721,7 @@ export default class WorkingBillOther extends Component {
                             params={{ companyId, certificateExpireStatus: companyId && 4 }}
                             labelInValue
                             key={companyId}
+                            onChange={this.onWorkingCompanyChange}
                           />
                         ),
                         options: {
@@ -1185,6 +1198,7 @@ export default class WorkingBillOther extends Component {
                       params={{ companyId, certificateExpireStatus: companyId && 4 }}
                       labelInValue
                       key={companyId}
+                      onChange={this.onWorkingCompanyChange}
                     />
                   ),
                   options: {
