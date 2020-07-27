@@ -451,6 +451,7 @@ export default {
       import: 'riskControl.safetyChecklist.import',
       copy: 'riskControl.safetyChecklist.copy',
       evaluationRecord: {
+        list: 'riskControl.safetyChecklist.evaluationRecord',
         add: 'riskControl.safetyChecklist.evaluationRecord.add',
         edit: 'riskControl.safetyChecklist.evaluationRecord.edit',
         delete: 'riskControl.safetyChecklist.evaluationRecord.delete',

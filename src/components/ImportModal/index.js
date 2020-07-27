@@ -34,10 +34,8 @@ export default class ImportModal extends Component {
       this.setState({ importLoading: true });
     } else if (info.file.status === 'done' && res) {
       if (res.code && res.code === 200) {
-        message.success(res.msg);
-        onUploadSuccess();
-      } else if (res.code && res.code === 500) {
-        message.error(res.msg)
+        message.success('操作成功');
+        onUploadSuccess && onUploadSuccess();
       } else {
         res && res.data && res.data.errorMessage && res.data.errorMessage.length > 0
           ? Modal.error({
@@ -84,13 +82,12 @@ export default class ImportModal extends Component {
       beforeUpload: this.handleBeforeUpload,
       showUploadList: false,
       disabled,
-      ...resProps,
     };
     return (
-      <div>
+      <div style={{ display: 'inline-block' }} {...resProps}>
         {isCompany || !showCompanySelect ? (
           <Upload {...uploadProps} >
-            <Button type="primary" disabled={!importAuth || importLoading} loading={importLoading}>
+            <Button disabled={!importAuth || importLoading} loading={importLoading}>
               批量导入
             </Button>
           </Upload>
@@ -117,7 +114,7 @@ export default class ImportModal extends Component {
           <Upload {...uploadProps}>
             <Button disabled={disabled} loading={importLoading}>
               批量导入
-            </Button>
+          </Button>
           </Upload>
         </Modal>
       </div>

@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
-import { Card, Input, Button, Select, Row, Upload, message, Table } from 'antd';
+import { Card, Input, Button, Select, Row, Col, Upload, message, Table, DatePicker } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { title as listTitlt } from './List';
+import { title as listTitlt, listPath } from './List';
 import { title as recordTitlt } from './RecordList';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import { PlusOutlined, DownloadOutlined } from '@ant-design/icons';
 import { getToken } from 'utils/authority';
 import SignModal from '@/pages/RiskControl/RiskPointManage/SignModal.js';
 import styles from '@/pages/RiskControl/RiskPointManage/RiskPointEdit.less';
+import standardImgLec from '@/assets/risk-standard-scl-lec.png';
+import standardImgLs from '@/assets/risk-standard-scl-ls.png';
+import router from 'umi/router';
+import moment from 'moment';
+import { lecSettings, lsSettings } from './config';
+import { stringify } from 'qs';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -20,80 +26,11 @@ const folder = 'scl';
 const uploadAction = '/acloud_new/v2/uploadFile';
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const formItemLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 5 },
+  wrapperCol: { span: 13 },
 };
-const eventPossibilityColumns = [
-  {
-    title: '分值',
-    key: 'score',
-    dataIndex: 'score',
-    width: 200,
-  },
-  {
-    title: '事故、事件或偏差发生的可能性',
-    key: 'label',
-    dataIndex: 'label',
-  },
-];
-// 事件发生可能性（L）
-const lList = [
-  {
-    score: 10,
-    label: '完全可以预料',
-  },
-  {
-    score: 6,
-    label: '相当可能；或危害的发生不能被发现（没有监测系统）；或在现场没有采取防范、监测、保护、控制措施；或在正常情况下经常发生此类事故、事件或偏差',
-  },
-  {
-    score: 3,
-    label: '可能，但不经常；或危害的发生不容易被发现；现场没有检测系统或保护措施（如没有保护装置、没有个人防护用品等），也未作过任何监测；或未严格按操作规程执行；或在现场有控制措施，但未有效执行或控制措施不当；或危害在预期情况下发生',
-  },
-  {
-    score: 1,
-    label: '可能性小，完全意外；或危害的发生容易被发现；现场有监测系统或曾经作过监测；或过去曾经发生类似事故、事件或偏差；或在异常情况下发生过类似事故、事件或偏差',
-  },
-  {
-    score: 0.5,
-    label: '很不可能，可以设想；危害一旦发生能及时发现，并能定期进行监测',
-  },
-  {
-    score: 0.2,
-    label: '极不可能；有充分、有效的防范、控制、监测、保护措施；或员工安全卫生意识相当高，严格执行操作规程',
-  },
-  {
-    score: 0.1,
-    label: '实际不可能',
-  },
-];
-// 暴露于危险环境的频繁程度（E）
-const eList = [
-  {
-    score: 10,
-    label: '连续暴露',
-  },
-  {
-    score: 6,
-    label: '连续暴露',
-  },
-  {
-    score: 3,
-    label: '连续暴露',
-  },
-  {
-    score: 2,
-    label: '连续暴露',
-  },
-  {
-    score: 10,
-    label: '连续暴露',
-  },
-  {
-    score: 10,
-    label: '连续暴露',
-  },
-];
+
+
 
 @Form.create()
 @connect(({ riskPointManage, safetyChecklist, loading }) => ({
@@ -107,16 +44,61 @@ export default class RecordHandle extends Component {
     signVisible: false, // 选择标志弹窗是否可见
     selectedSignList: [], // 已选择标志
     signUploadList: [], // 标志自定义上传文件
+    detail: {}, // 详情
   };
 
   componentDidMount () {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: { params: { recordId } },
+      form: { setFieldsValue },
+      location: { query: { riskAnalyze } },
+    } = this.props;
     // 获取易导致的事故类型字典
     dispatch({
       type: 'riskPointManage/fetchAccidentTypeDict',
     });
     // 获取风险标志字典
     this.fetchPointLabel();
+    // 如果编辑/查看 获取详情
+    if (recordId) {
+      dispatch({
+        type: 'safetyChecklist/fetchRecordDetail',
+        payload: { id: recordId },
+        callback: detail => {
+          const {
+            warnSign,
+            l,
+            e,
+            c,
+            s,
+            evaluateProject,
+            majorHidden,
+            hiddenTypeResult,
+            riskMeasures,
+            emergencyMeasures,
+            evaluatePer,
+            evaluateDate,
+            scenePhotoList,
+          } = detail;
+          this.setState({
+            detail,
+            selectedSignList: warnSign ? warnSign.split(',').map(webUrl => ({ webUrl })) : [],
+          });
+          setFieldsValue({
+            ...+riskAnalyze === 1 ? { l, e, c } : { l, s },
+            evaluateProject,
+            majorHidden,
+            hiddenTypeResult: hiddenTypeResult ? hiddenTypeResult.split(',') : [],
+            riskMeasures,
+            emergencyMeasures,
+            evaluatePer,
+            evaluateDate: evaluateDate ? moment(evaluateDate) : undefined,
+            scenePhotoList: Array.isArray ? scenePhotoList.map(item => ({ ...item, uid: item.id, status: 'done', url: item.webUrl, name: item.fileName })) : [],
+          });
+        },
+      });
+    }
   }
 
   // 获取标志字典
@@ -218,14 +200,278 @@ export default class RecordHandle extends Component {
     }
   }
 
+  onClickBack = () => {
+    const path = this.generateBackPath();
+    router.push(path);
+  }
+
+  onClickSubmit = () => {
+    const {
+      dispatch,
+      form: { validateFieldsAndScroll },
+      match: { params: { id, recordId } },
+      location: { query: { riskAnalyze } }, // 风险分析方法 lec-1 ls-2
+    } = this.props;
+    const { selectedSignList } = this.state;
+    validateFieldsAndScroll((error, values) => {
+      if (error) return;
+      const { l, e, c, s, hiddenTypeResult, evaluateDate, ...resValues } = values;
+      const riskItem = l && e && c ? lecSettings.riskLevelList.find(item => item.range(l * e * c)) : undefined;
+      const payload = {
+        ...resValues,
+        safeCheckId: id,
+        riskLevel: riskItem ? riskItem.level : undefined,
+        warnSign: Array.isArray(selectedSignList) ? selectedSignList.map(item => item.webUrl).join(',') : '',
+        hiddenTypeResult: Array.isArray(hiddenTypeResult) && hiddenTypeResult.length ? hiddenTypeResult.join(',') : '',
+        evaluateDate: evaluateDate ? moment(evaluateDate).valueOf() : undefined,
+        ...+riskAnalyze === 1 ? { l, e, c } : { l, s },
+        type: 1,
+      };
+      const path = this.generateBackPath();
+      const callback = (success, res) => {
+        if (success) {
+          message.success('操作成功');
+          router.push(path);
+        } else {
+          message.error(res && res.msg ? res.msg : '操作失败');
+        }
+      }
+      // 新增
+      if (/add/.test(location.href)) {
+        dispatch({
+          type: 'safetyChecklist/addRecord',
+          payload,
+          callback,
+        });
+      } else if (/edit/.test(location.href)) {
+        // 编辑
+        dispatch({
+          type: 'safetyChecklist/editRecord',
+          payload: { ...payload, id: recordId },
+          callback,
+        });
+      }
+    })
+  }
+
+  generateBackPath = () => {
+    const { match: { params: { id } }, location: { query } } = this.props;
+    return `/risk-control/safety-checklist/${id}/record?${stringify(query)}`
+  }
+
+  // 风险分析方法： LEC
+  renderLec = () => {
+    const {
+      form: { getFieldDecorator, setFieldsValue, getFieldsValue },
+    } = this.props;
+    const { detail } = this.state;
+    const { l, e, c } = getFieldsValue();
+    const riskItem = l && e && c ? lecSettings.riskLevelList.find(item => item.range(l * e * c)) : undefined;
+    return (
+      <div>
+        <h2 style={{ textAlign: 'center' }}>风险分析方法： LEC</h2>
+        <FormItem label="事件发生可能性（L）">
+          {getFieldDecorator('l', {
+            rules: [{ required: true, message: '请选择事件发生可能性（L）' }],
+          })(
+            <Table
+              rowKey="score"
+              dataSource={lecSettings.l.list}
+              pagination={false}
+              columns={lecSettings.l.columns}
+              bordered
+              rowSelection={{
+                selectedRowKeys: [l],
+                type: 'radio',
+                onSelect: ({ score }) => {
+                  setFieldsValue({ l: score });
+                },
+              }}
+            />
+          )}
+        </FormItem>
+        <FormItem label="暴露于危险环境的频繁程度（E）">
+          {getFieldDecorator('e', {
+            rules: [{ required: true, message: '请选择暴露于危险环境的频繁程度（E）' }],
+          })(
+            <Table
+              rowKey="score"
+              dataSource={lecSettings.e.list}
+              pagination={false}
+              columns={lecSettings.e.columns}
+              bordered
+              rowSelection={{
+                selectedRowKeys: [e],
+                type: 'radio',
+                onSelect: ({ score }) => {
+                  setFieldsValue({ e: score });
+                },
+              }}
+            />
+          )}
+        </FormItem>
+        <FormItem label="发生事故事件偏差产生的后果严重性（C）">
+          {getFieldDecorator('c', {
+            rules: [{ required: true, message: '请选择发生事故事件偏差产生的后果严重性（C）' }],
+          })(
+            <Table
+              rowKey="score"
+              dataSource={lecSettings.c.list}
+              pagination={false}
+              columns={lecSettings.c.columns}
+              bordered
+              rowSelection={{
+                selectedRowKeys: [c],
+                type: 'radio',
+                onSelect: ({ score }) => {
+                  setFieldsValue({ c: score });
+                },
+              }}
+            />
+          )}
+        </FormItem>
+        <Row>
+          <Col span={12}>
+            <FormItem label="评估风险值（D）：" {...formItemLayout} style={{ margin: '0' }}>
+              {l && e && c ? l * e * c : ''}
+            </FormItem>
+            <span style={{ marginBottom: '24px', display: 'block', fontSize: '13px' }}>（备注：D=L×E×C）</span>
+            <FormItem label="风险级别：" {...formItemLayout}>
+              {riskItem ? riskItem.level + '级' : ''}
+            </FormItem>
+            <FormItem label="风险等级：" {...formItemLayout}>
+              {riskItem ? riskItem.colorName : ''}
+            </FormItem>
+            <FormItem label="风险程度：" {...formItemLayout}>
+              {riskItem ? riskItem.degree : ''}
+            </FormItem>
+            <FormItem label="评估人员：" {...formItemLayout}>
+              {getFieldDecorator('evaluatePer', {
+                rules: [{ required: true, message: '请输入评估人员' }],
+              })(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+            <FormItem label="评估日期：" {...formItemLayout}>
+              {getFieldDecorator('evaluateDate', {
+                rules: [{ required: true, message: '请选择评估日期' }],
+              })(
+                <DatePicker allowClear style={{ width: '100%' }} />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={12}>
+            <FormItem label="风险等级判断标准">
+              <img style={{ width: '680px', height: '260px', objectFit: 'contain' }} src={standardImgLec} alt="standard" />
+            </FormItem>
+          </Col>
+        </Row>
+      </div>
+    )
+  }
+
+  // 风险分析方法： LS
+  renderLs = () => {
+    const {
+      form: { getFieldDecorator, setFieldsValue, getFieldsValue },
+    } = this.props;
+    const { detail } = this.state;
+    const { l, s } = getFieldsValue();
+    const riskItem = l && s ? lsSettings.riskLevelList.find(item => item.range(l * s)) : undefined;
+
+    return (
+      <div>
+        <h2 style={{ textAlign: 'center' }}>风险分析方法： LS</h2>
+        <FormItem label="事件发生可能性（L）">
+          {getFieldDecorator('l', {
+            rules: [{ required: true, message: '请选择事件发生可能性（L）' }],
+          })(
+            <Table
+              rowKey="score"
+              dataSource={lsSettings.l.list}
+              pagination={false}
+              columns={lsSettings.l.columns}
+              bordered
+              rowSelection={{
+                selectedRowKeys: [l],
+                type: 'radio',
+                onSelect: ({ score }) => {
+                  setFieldsValue({ l: score });
+                },
+              }}
+            />
+          )}
+        </FormItem>
+        <FormItem label="事件后果严重性（S）">
+          {getFieldDecorator('s', {
+            rules: [{ required: true, message: '请选择事件后果严重性（S）' }],
+          })(
+            <Table
+              rowKey="score"
+              dataSource={lsSettings.s.list}
+              pagination={false}
+              columns={lsSettings.s.columns}
+              bordered
+              rowSelection={{
+                selectedRowKeys: [s],
+                type: 'radio',
+                onSelect: ({ score }) => {
+                  setFieldsValue({ s: score });
+                },
+              }}
+            />
+          )}
+        </FormItem>
+        <Row>
+          <Col span={12}>
+            <FormItem label="评估风险值（R）" {...formItemLayout} style={{ margin: '0' }}>
+              {l && s ? l * s : ''}
+            </FormItem>
+            <span style={{ marginBottom: '24px', display: 'block', fontSize: '13px' }}>（备注：R=L×S）</span>
+            <FormItem label="风险级别：" {...formItemLayout}>
+              {riskItem ? riskItem.level + '级' : ''}
+            </FormItem>
+            <FormItem label="风险等级：" {...formItemLayout}>
+              {riskItem ? riskItem.colorName : ''}
+            </FormItem>
+            <FormItem label="风险程度：" {...formItemLayout}>
+              {riskItem ? riskItem.degree : ''}
+            </FormItem>
+            <FormItem label="评估人员：" {...formItemLayout}>
+              {getFieldDecorator('evaluatePer', {
+                rules: [{ required: true, message: '请输入评估人员' }],
+              })(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+            <FormItem label="评估日期：" {...formItemLayout}>
+              {getFieldDecorator('evaluateDate', {
+                rules: [{ required: true, message: '请选择评估日期' }],
+              })(
+                <DatePicker allowClear style={{ width: '100%' }} />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={12}>
+            <FormItem label="风险等级判断标准">
+              <img style={{ width: '680px', height: '260px', objectFit: 'contain' }} src={standardImgLs} alt="standard" />
+            </FormItem>
+          </Col>
+        </Row>
+      </div>
+    )
+  }
+
   render () {
     const {
       signLoading,
-      match: { params: { id } },
-      form: { getFieldDecorator, setFieldsValue, getFieldsValue },
+      riskPointManage: {
+        warningSignDict: { list: signList = [] },
+      },
+      location: { query: { riskAnalyze } }, // 风险分析方法
+      form: { getFieldDecorator },
       riskPointManage: {
         accidentTypeDict: { list: accidentTypeList = [] },
-        warningSignDict: { list: signList = [] },
       },
     } = this.props;
     const {
@@ -233,15 +479,14 @@ export default class RecordHandle extends Component {
       selectedSignList,
       signUploadList,
     } = this.state;
-
-    const { l } = getFieldsValue();
+    const isAdd = /add/.test(location.href);
     const isDetail = /view/.test(location.href);
-    const title = (/add/.test(location.href) && '新增评价记录') || (/edit/.test(location.href) && '编辑评价记录') || (/view/.test(location.href) && '查看评价记录');
+    const title = (isAdd && '新增评价记录') || (/edit/.test(location.href) && '编辑评价记录') || (isDetail && '查看评价记录');
     const BREADCRUMB_LIST = [
       { title: '首页', name: '首页', href: '/' },
       { title: '风险分级管控', name: '风险分级管控' },
-      { title: listTitlt, name: listTitlt },
-      { title: recordTitlt, name: recordTitlt, href: `` },
+      { title: listTitlt, name: listTitlt, href: listPath },
+      { title: recordTitlt, name: recordTitlt, href: this.generateBackPath() },
       { title, name: title },
     ];
     const setField = [
@@ -255,18 +500,18 @@ export default class RecordHandle extends Component {
     return (
       <PageHeaderLayout title={title} breadcrumbList={BREADCRUMB_LIST}>
         <Card bordered={false}>
-          <Form>
-            <FormItem label="评估项目" {...formItemLayout}>
+          <Form layout="vertical">
+            <FormItem label="评估项目">
               {getFieldDecorator('evaluateProject', {
                 rules: [{ required: true, message: '请输入评估项目' }],
               })(<Input.TextArea rows={3} {...itemStyles} />)}
             </FormItem>
-            <FormItem label="主要危险因素（人、物、作业环境、管理）" {...formItemLayout}>
+            <FormItem label="主要危险因素（人、物、作业环境、管理）">
               {getFieldDecorator('majorHidden', {
                 rules: [{ required: true, message: '请输主要危险因素（人、物、作业环境、管理）' }],
               })(<Input.TextArea rows={3} {...itemStyles} />)}
             </FormItem>
-            <FormItem label="可能发生的事故类型及后果" {...formItemLayout}>
+            <FormItem label="可能发生的事故类型及后果">
               {getFieldDecorator('hiddenTypeResult', {
                 rules: [{ required: true, message: '请输入可能发生的事故类型及后果' }],
               })(
@@ -284,23 +529,23 @@ export default class RecordHandle extends Component {
                 </Select>
               )}
             </FormItem>
-            <FormItem label="风险管控措施" {...formItemLayout}>
+            <FormItem label="风险管控措施">
               {getFieldDecorator('riskMeasures', {
                 rules: [{ required: true, message: '请输入风险管控措施' }],
-                initialValue: '工程技术措施：\n 管理措施：\n 培训教育措施： \n 应急处置措施：',
+                initialValue: isAdd ? '工程技术措施：\n 管理措施：\n 培训教育措施： \n 应急处置措施：' : undefined,
               })(<Input.TextArea rows={5} {...itemStyles} />)}
             </FormItem>
-            <FormItem label="应急处置措施" {...formItemLayout}>
+            <FormItem label="应急处置措施">
               {getFieldDecorator('emergencyMeasures', {
                 rules: [{ required: true, message: '请输入应急处置措施' }],
               })(<Input.TextArea rows={5} {...itemStyles} />)}
             </FormItem>
-            <FormItem label="现场图片" {...formItemLayout}>
+            <FormItem label="现场图片">
               {getFieldDecorator('scenePhotoList')(
                 <CustomUpload folder={folder} type={isDetail ? 'span' : 'select'} />
               )}
             </FormItem>
-            <FormItem label="警示标志" {...formItemLayout}>
+            <FormItem label="警示标志">
               {Array.isArray(selectedSignList) && selectedSignList.length > 0 && (
                 <Row style={{ marginBottom: '10px' }}>
                   {selectedSignList.map((item, index) => {
@@ -337,25 +582,20 @@ export default class RecordHandle extends Component {
                 )}
               </Row>
             </FormItem>
-            <h2 style={{ textAlign: 'center' }}>风险分析方法： LEC</h2>
-            <FormItem label="事件发生可能性（L）" {...formItemLayout}>
-              {getFieldDecorator('l')(
-                <Table
-                  rowKey="score"
-                  dataSource={lList}
-                  pagination={false}
-                  columns={eventPossibilityColumns}
-                  bordered
-                  rowSelection={{
-                    selectedRowKeys: l,
-                    type: 'radio',
-                    onSelect: ({ score }) => {
-                      setFieldsValue({ l: [score] });
-                    },
-                  }}
-                />
+            {/* 风险分析方法： LEC */}
+            {+riskAnalyze === 1 && this.renderLec()}
+            {/* 风险分析方法： LS */}
+            {+riskAnalyze === 2 && this.renderLs()}
+            <div style={{ textAlign: 'center', marginTop: 30 }}>
+              {!isDetail && (
+                <Button style={{ marginRight: '20px' }} size="large" type="primary" onClick={this.onClickSubmit}>
+                  提交
+                </Button>
               )}
-            </FormItem>
+              <Button size="large" onClick={this.onClickBack}>
+                返回
+            </Button>
+            </div>
           </Form>
         </Card>
 
