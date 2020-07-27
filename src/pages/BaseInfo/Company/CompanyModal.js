@@ -18,10 +18,10 @@ const fields = [
     //   //   message: `请输入${fieldList.name}`,
     //   // }],
     // },
-    render() {
+    render () {
       return <Input placeholder={fieldList.name} />;
     },
-    transform(value) {
+    transform (value) {
       return value.trim();
     },
   },
@@ -49,7 +49,7 @@ export default class CompanyModal extends PureComponent {
     name: undefined,
   };
 
-  getSnapshotBeforeUpdate(prevProps, prevState) {
+  getSnapshotBeforeUpdate (prevProps, prevState) {
     return (
       this.props.visible === true &&
       !!this.props.rowSelection &&
@@ -57,7 +57,7 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps, prevState, snapshot) {
     if (snapshot) {
       this.setState({ selectedRowKeys: this.props.rowSelection.selectedRowKeys });
     }
@@ -117,16 +117,17 @@ export default class CompanyModal extends PureComponent {
       onSelect,
       isId,
       multiSelect,
+      rowKey = 'id',
     } = this.props;
     let selectedData;
     if (multiSelect) {
       selectedData = selectedRowKeys.map(data => {
         return list.find(item => {
-          return isId ? item.loginId === data : item.id === data;
+          return isId ? item.loginId === data : item[rowKey] === data;
         });
       });
     } else {
-      selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
+      selectedData = list.filter(item => item[rowKey] === selectedRowKeys[0])[0];
     }
     if (onSelect) {
       onSelect(selectedData);
@@ -195,7 +196,7 @@ export default class CompanyModal extends PureComponent {
   };
 
   /* 渲染选择按钮 */
-  renderSelectButton() {
+  renderSelectButton () {
     const { selectedRowKeys } = this.state;
 
     return (
@@ -205,7 +206,7 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       visible,
       width,
@@ -263,15 +264,15 @@ export default class CompanyModal extends PureComponent {
             pagination === false
               ? false
               : {
-                  total,
-                  current: pageNum,
-                  pageSize,
-                  showQuickJumper: true,
-                  showSizeChanger: true,
-                  showTotal: t => `共 ${t} 条记录`,
-                  // pageSizeOptions: defaultPageSizeOptions,
-                  ...pagination,
-                }
+                total,
+                current: pageNum,
+                pageSize,
+                showQuickJumper: true,
+                showSizeChanger: true,
+                showTotal: t => `共 ${t} 条记录`,
+                // pageSizeOptions: defaultPageSizeOptions,
+                ...pagination,
+              }
           }
           rowSelection={{
             selectedRowKeys,

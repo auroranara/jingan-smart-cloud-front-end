@@ -427,6 +427,37 @@ export default {
       view: 'riskControl.changeManagement.view',
       approve: 'riskControl.changeManagement.approve',
     },
+    operationHazards: {
+      list: 'riskControl.operationHazards.listView',
+      add: 'riskControl.operationHazards.add',
+      edit: 'riskControl.operationHazards.edit',
+      delete: 'riskControl.operationHazards.delete',
+      view: 'riskControl.operationHazards.view',
+      import: 'riskControl.operationHazards.import',
+      copy: 'riskControl.operationHazards.copy',
+      evaluationRecord: {
+        add: 'riskControl.operationHazards.evaluationRecord.add',
+        edit: 'riskControl.operationHazards.evaluationRecord.edit',
+        delete: 'riskControl.operationHazards.evaluationRecord.delete',
+        view: 'riskControl.operationHazards.evaluationRecord.view',
+      },
+    },
+    safetyChecklist: {
+      list: 'riskControl.safetyChecklist.listView',
+      add: 'riskControl.safetyChecklist.add',
+      edit: 'riskControl.safetyChecklist.edit',
+      delete: 'riskControl.safetyChecklist.delete',
+      view: 'riskControl.safetyChecklist.view',
+      import: 'riskControl.safetyChecklist.import',
+      copy: 'riskControl.safetyChecklist.copy',
+      evaluationRecord: {
+        list: 'riskControl.safetyChecklist.evaluationRecord',
+        add: 'riskControl.safetyChecklist.evaluationRecord.add',
+        edit: 'riskControl.safetyChecklist.evaluationRecord.edit',
+        delete: 'riskControl.safetyChecklist.evaluationRecord.delete',
+        view: 'riskControl.safetyChecklist.evaluationRecord.view',
+      },
+    },
   },
 
   /** 安防管理 */

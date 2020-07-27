@@ -50,12 +50,12 @@ export default class CustomUpload extends Component {
     const hasType =
       types && types.length
         ? types.some(type => {
-            let lowerCaseType = type.toLowerCase();
-            if (lowerCaseType === 'jpg') {
-              lowerCaseType = 'jpeg';
-            }
-            return file.type.includes(lowerCaseType);
-          })
+          let lowerCaseType = type.toLowerCase();
+          if (lowerCaseType === 'jpg') {
+            lowerCaseType = 'jpeg';
+          }
+          return file.type.includes(lowerCaseType);
+        })
         : true;
     if (!hasType) {
       message.error(`文件上传只支持${types.join('/')}格式!`);
@@ -67,7 +67,7 @@ export default class CustomUpload extends Component {
     return hasType && isLtSize;
   };
 
-  render() {
+  render () {
     const {
       className,
       style,
@@ -77,6 +77,11 @@ export default class CustomUpload extends Component {
       type,
       types,
       length,
+      children = (
+        <Button type="primary">
+          <LegacyIcon type="upload" /> 点击上传
+        </Button>
+      ),
       ...restProps
     } = this.props;
 
@@ -96,26 +101,24 @@ export default class CustomUpload extends Component {
         headers={{ 'JA-Token': getToken() }}
         {...restProps}
       >
-        <Button type="primary">
-          <LegacyIcon type="upload" /> 点击上传
-        </Button>
+        {children}
       </Upload>
     ) : (
-      <div className={classNames(styles.fileList, className)} style={style}>
-        {value &&
-          value.map(({ webUrl, fileName }, index) => (
-            <div key={index}>
-              <a
-                className={styles.clickable}
-                href={webUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {fileName}
-              </a>
-            </div>
-          ))}
-      </div>
-    );
+        <div className={classNames(styles.fileList, className)} style={style}>
+          {value &&
+            value.map(({ webUrl, fileName }, index) => (
+              <div key={index}>
+                <a
+                  className={styles.clickable}
+                  href={webUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {fileName}
+                </a>
+              </div>
+            ))}
+        </div>
+      );
   }
 }
