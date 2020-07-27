@@ -20,6 +20,9 @@ export const LIST_PAGE_COL = {
   sm: 24,
   xs: 24,
 };
+export const HIDDEN_COL = {
+  span: 0,
+};
 export const FORMAT = 'YYYY-MM-DD';
 export const RANGE_PICKER_PLACEHOLDER = ['开始时间', '结束时间'];
 // 空值

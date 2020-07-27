@@ -28,6 +28,7 @@ import {
   WRAPPER_COL,
   COL,
   BUTTON_WRAPPER_COL,
+  HIDDEN_COL,
 } from '@/utils';
 import styles from './index.less';
 const { Option } = Select;
@@ -103,7 +104,7 @@ export default connect(
   (
     {
       user: {
-        currentUser: { unitId, unitType },
+        currentUser: { unitId, unitName, unitType },
       },
       dict: { companyList, departmentTree, personList },
       [NAMESPACE]: { [DETAIL_NAME]: detail },
@@ -124,6 +125,7 @@ export default connect(
     return {
       ...ownProps,
       unitId,
+      unitName,
       isUnit: unitType === 4,
       detail,
       loading,
@@ -249,6 +251,7 @@ export default connect(
     route: { name },
     location: { query },
     unitId,
+    unitName,
     isUnit,
     detail = {},
     loading,
@@ -270,7 +273,9 @@ export default connect(
     const [form] = Form.useForm();
     const [appendingCompanyList, setAppendingCompanyList] = useState(false);
     const [appendingPersonList, setAppendingPersonList] = useState(false);
-    const [initialValues, setInitialValues] = useState(undefined);
+    const [initialValues] = useState({
+      company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
+    });
     // 初始化
     useEffect(
       () => {
@@ -283,7 +288,7 @@ export default connect(
               if (success) {
                 const { companyId } = data;
                 // 重置初始值
-                setInitialValues(GET_VALUES_BY_DETAIL(data));
+                form.setFieldsValue(GET_VALUES_BY_DETAIL(data));
                 // 如果companyId存在或者当前账号是单位账号，则获取部门列表和人员列表
                 if (companyId || isUnit) {
                   getDepartmentTree({
@@ -295,7 +300,7 @@ export default connect(
                 }
               } else {
                 // 重置初始值
-                setInitialValues(undefined);
+                form.resetFields();
                 // 如果当前账号是单位账号，则获取部门列表和人员列表
                 if (isUnit) {
                   getDepartmentTree({
@@ -310,7 +315,7 @@ export default connect(
           );
         } else {
           // 重置初始值
-          setInitialValues(undefined);
+          form.resetFields();
           // 如果当前账号是单位账号，则获取部门列表和人员列表
           if (isUnit) {
             getDepartmentTree({
@@ -459,78 +464,72 @@ export default connect(
                   return (
                     <Row gutter={24}>
                       {[
-                        ...(!isUnit
-                          ? [
-                              {
-                                name: 'company',
-                                label: '单位名称',
-                                children:
-                                  name !== 'detail' ? (
-                                    <Select
-                                      placeholder="请选择"
-                                      labelInValue
-                                      notFoundContent={
-                                        loadingCompanyList ? <Spin size="small" /> : undefined
-                                      }
-                                      showSearch
-                                      filterOption={false}
-                                      onSearch={onCompanySelectSearch}
-                                      onChange={onCompanySelectChange}
-                                      onPopupScroll={
-                                        !appendingCompanyList &&
-                                        companyList &&
-                                        companyList.pagination &&
-                                        companyList.pagination.total >
-                                          companyList.pagination.pageNum *
-                                            companyList.pagination.pageSize
-                                          ? ({
-                                              target: { scrollTop, offsetHeight, scrollHeight },
-                                            }) => {
-                                              if (scrollTop + offsetHeight === scrollHeight) {
-                                                const {
-                                                  pagination: { pageNum },
-                                                } = companyList;
-                                                setAppendingCompanyList(true);
-                                                getCompanyList(
-                                                  {
-                                                    pageNum: pageNum + 1,
-                                                  },
-                                                  () => {
-                                                    setTimeout(() => {
-                                                      setAppendingCompanyList(false);
-                                                    });
-                                                  }
-                                                );
-                                              }
+                        {
+                          name: 'company',
+                          label: '单位名称',
+                          children:
+                            name !== 'detail' ? (
+                              <Select
+                                placeholder="请选择"
+                                labelInValue
+                                notFoundContent={
+                                  loadingCompanyList ? <Spin size="small" /> : undefined
+                                }
+                                showSearch
+                                filterOption={false}
+                                disabled={name === 'edit' || isUnit}
+                                onSearch={onCompanySelectSearch}
+                                onChange={onCompanySelectChange}
+                                onPopupScroll={
+                                  !appendingCompanyList &&
+                                  companyList &&
+                                  companyList.pagination &&
+                                  companyList.pagination.total >
+                                    companyList.pagination.pageNum * companyList.pagination.pageSize
+                                    ? ({ target: { scrollTop, offsetHeight, scrollHeight } }) => {
+                                        if (scrollTop + offsetHeight === scrollHeight) {
+                                          const {
+                                            pagination: { pageNum },
+                                          } = companyList;
+                                          setAppendingCompanyList(true);
+                                          getCompanyList(
+                                            {
+                                              pageNum: pageNum + 1,
+                                            },
+                                            () => {
+                                              setTimeout(() => {
+                                                setAppendingCompanyList(false);
+                                              });
                                             }
-                                          : undefined
+                                          );
+                                        }
                                       }
-                                      dropdownRender={children => (
-                                        <div className={styles.dropdownSpinContainer}>
-                                          {children}
-                                          {appendingCompanyList && (
-                                            <Spin className={styles.dropdownSpin} />
-                                          )}
-                                        </div>
-                                      )}
-                                    >
-                                      {(!loadingCompanyList || appendingCompanyList) &&
-                                      companyList &&
-                                      companyList.list
-                                        ? companyList.list.map(item => <Option {...item} />)
-                                        : []}
-                                    </Select>
-                                  ) : detail.companyName ? (
-                                    <span>{detail.companyName}</span>
-                                  ) : (
-                                    <EmptyText />
-                                  ),
-                                getValueFromEvent: getSelectValueFromEvent,
-                                rules: [{ required: true, message: '请选择单位名称' }],
-                                col: COL,
-                              },
-                            ]
-                          : []),
+                                    : undefined
+                                }
+                                dropdownRender={children => (
+                                  <div className={styles.dropdownSpinContainer}>
+                                    {children}
+                                    {appendingCompanyList && (
+                                      <Spin className={styles.dropdownSpin} />
+                                    )}
+                                  </div>
+                                )}
+                              >
+                                {(!loadingCompanyList || appendingCompanyList) &&
+                                companyList &&
+                                companyList.list
+                                  ? companyList.list.map(item => <Option {...item} />)
+                                  : []}
+                              </Select>
+                            ) : detail.companyName ? (
+                              <span>{detail.companyName}</span>
+                            ) : (
+                              <EmptyText />
+                            ),
+                          getValueFromEvent: getSelectValueFromEvent,
+                          rules: [{ required: true, message: '请选择单位名称' }],
+                          col: !isUnit ? COL : HIDDEN_COL,
+                        },
                         {
                           name: 'name',
                           label: '风险区域名称',

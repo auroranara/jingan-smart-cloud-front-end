@@ -41,6 +41,7 @@ import {
   EmptyText,
   RANGE_PICKER_PLACEHOLDER,
   LIST_PAGE_COL,
+  HIDDEN_COL,
 } from '@/utils';
 import styles from './index.less';
 const { Option } = Select;
@@ -99,7 +100,7 @@ export default connect(
   (
     {
       user: {
-        currentUser: { unitId, unitType, permissionCodes },
+        currentUser: { unitId, unitName, unitType, permissionCodes },
       },
       dict: { companyList, departmentTree },
       [NAMESPACE]: { [LIST_NAME]: list },
@@ -118,6 +119,7 @@ export default connect(
     return {
       ...ownProps,
       unitId,
+      unitName,
       isUnit: unitType === 4,
       hasDetailAuthority: permissionCodes.includes(DETAIL_CODE),
       hasAddAuthority: permissionCodes.includes(ADD_CODE),
@@ -207,6 +209,7 @@ export default connect(
   ({
     location: { pathname, query },
     unitId,
+    unitName,
     isUnit,
     hasDetailAuthority,
     hasAddAuthority,
@@ -226,6 +229,9 @@ export default connect(
   }) => {
     const [form] = Form.useForm();
     const [appending, setAppending] = useState(false);
+    const [initialValues] = useState({
+      company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
+    });
     // 当query发生变化时重新请求接口
     useEffect(
       () => {
@@ -234,9 +240,12 @@ export default connect(
         // 根据payload获取数据
         getList(payload);
         // 根据payload获取values
-        const { pageNum, pageSize, ...values } = payload;
+        const { pageNum, pageSize, company, ...values } = payload;
         // 根据values设置表单值
         form.setFieldsValue(values);
+        if (!isUnit) {
+          form.setFieldsValue({ company });
+        }
       },
       [query]
     );
@@ -470,7 +479,12 @@ export default connect(
         title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
       >
         <Card className={styles.formCard}>
-          <Form className={styles.form} form={form} onFinish={onFinish}>
+          <Form
+            className={styles.form}
+            form={form}
+            initialValues={initialValues}
+            onFinish={onFinish}
+          >
             <Form.Item
               noStyle
               shouldUpdate={(prevValues, values) =>
@@ -482,69 +496,61 @@ export default connect(
                 return (
                   <Row gutter={24}>
                     {[
-                      ...(!isUnit
-                        ? [
-                            {
-                              name: 'company',
-                              label: '单位名称',
-                              children: (
-                                <Select
-                                  placeholder="请选择"
-                                  labelInValue
-                                  notFoundContent={
-                                    loadingCompanyList ? <Spin size="small" /> : undefined
-                                  }
-                                  showSearch
-                                  filterOption={false}
-                                  allowClear
-                                  onSearch={onCompanySelectSearch}
-                                  onChange={onCompanySelectChange}
-                                  onPopupScroll={
-                                    !appending &&
-                                    companyList &&
-                                    companyList.pagination &&
-                                    companyList.pagination.total >
-                                      companyList.pagination.pageNum *
-                                        companyList.pagination.pageSize
-                                      ? ({ target: { scrollTop, offsetHeight, scrollHeight } }) => {
-                                          if (scrollTop + offsetHeight === scrollHeight) {
-                                            const {
-                                              pagination: { pageNum },
-                                            } = companyList;
-                                            setAppending(true);
-                                            getCompanyList(
-                                              {
-                                                pageNum: pageNum + 1,
-                                              },
-                                              () => {
-                                                setTimeout(() => {
-                                                  setAppending(false);
-                                                });
-                                              }
-                                            );
-                                          }
+                      {
+                        name: 'company',
+                        label: '单位名称',
+                        children: (
+                          <Select
+                            placeholder="请选择"
+                            labelInValue
+                            notFoundContent={loadingCompanyList ? <Spin size="small" /> : undefined}
+                            showSearch
+                            filterOption={false}
+                            allowClear
+                            disabled={isUnit}
+                            onSearch={onCompanySelectSearch}
+                            onChange={onCompanySelectChange}
+                            onPopupScroll={
+                              !appending &&
+                              companyList &&
+                              companyList.pagination &&
+                              companyList.pagination.total >
+                                companyList.pagination.pageNum * companyList.pagination.pageSize
+                                ? ({ target: { scrollTop, offsetHeight, scrollHeight } }) => {
+                                    if (scrollTop + offsetHeight === scrollHeight) {
+                                      const {
+                                        pagination: { pageNum },
+                                      } = companyList;
+                                      setAppending(true);
+                                      getCompanyList(
+                                        {
+                                          pageNum: pageNum + 1,
+                                        },
+                                        () => {
+                                          setTimeout(() => {
+                                            setAppending(false);
+                                          });
                                         }
-                                      : undefined
+                                      );
+                                    }
                                   }
-                                  dropdownRender={children => (
-                                    <div className={styles.dropdownSpinContainer}>
-                                      {children}
-                                      {appending && <Spin className={styles.dropdownSpin} />}
-                                    </div>
-                                  )}
-                                >
-                                  {(!loadingCompanyList || appending) &&
-                                  companyList &&
-                                  companyList.list
-                                    ? companyList.list.map(item => <Option {...item} />)
-                                    : []}
-                                </Select>
-                              ),
-                              getValueFromEvent: getSelectValueFromEvent,
-                              col: LIST_PAGE_COL,
-                            },
-                          ]
-                        : []),
+                                : undefined
+                            }
+                            dropdownRender={children => (
+                              <div className={styles.dropdownSpinContainer}>
+                                {children}
+                                {appending && <Spin className={styles.dropdownSpin} />}
+                              </div>
+                            )}
+                          >
+                            {(!loadingCompanyList || appending) && companyList && companyList.list
+                              ? companyList.list.map(item => <Option {...item} />)
+                              : []}
+                          </Select>
+                        ),
+                        getValueFromEvent: getSelectValueFromEvent,
+                        col: !isUnit ? LIST_PAGE_COL : HIDDEN_COL,
+                      },
                       {
                         name: 'name',
                         label: '生产工艺名称',
