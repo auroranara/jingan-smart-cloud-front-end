@@ -264,7 +264,7 @@ export async function getCompanyInfo(params) {
 
 // 获取led数据
 export async function getLedData(params) {
-  return request(`/acloud_new/v2/ci/HGFace/getJobCountInProductArea?${stringify(params)}`);
+  return request(`/acloud_new/v2/ci/HGFace/getJobCountInProductArea?${stringify(params)}`, { headers: { Accept: 'text/plain' } });
 }
 
 // 获取企业最后一个安全承诺公告

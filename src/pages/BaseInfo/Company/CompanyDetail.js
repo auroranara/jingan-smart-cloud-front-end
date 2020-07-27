@@ -97,6 +97,7 @@ const fieldLabels = {
   businessLicense: '营业执照附件',
   ciCompanyType: '化工企业类型',
   workCompanyType: '生产经营活动类型',
+  wxCorpId: '微信企业ID',
 };
 // tab列表
 const tabList = [
@@ -272,6 +273,7 @@ export default class CompanyDetail extends PureComponent {
             practicalTownLabel,
             companyType,
             warningCallNumber,
+            wxCorpId,
           },
         },
       },
@@ -332,6 +334,9 @@ export default class CompanyDetail extends PureComponent {
           </Description>
           <Description term={fieldLabels.warningCall} style={{ height: 38 }}>
             {warningCallNumber || getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.wxCorpId} style={{ height: 38 }}>
+            {wxCorpId || getEmptyData()}
           </Description>
         </DescriptionList>
         {/* <DescriptionList col={3} style={{ marginBottom: 16 }}>

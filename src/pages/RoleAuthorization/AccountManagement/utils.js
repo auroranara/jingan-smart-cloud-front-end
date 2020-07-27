@@ -32,6 +32,7 @@ export const FIELD_LABELS = {
   attached: '学历附件',
   major: '专业',
   avatar: '头像',
+  wxId: '企业微信账号',
 };
 
 export const DEFAULT_PAGE_SIZE = 20;

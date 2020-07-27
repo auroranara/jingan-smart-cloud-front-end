@@ -45,6 +45,7 @@ const hosts = {
   demo: 'demo.jinganyun.net',
   cmw: 'cmw.jinganyun.net',
   glz: '192.168.10.41:8080',
+  up: '192.168.10.68:58080',
 };
 
 export default {

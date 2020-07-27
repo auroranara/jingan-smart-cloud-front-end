@@ -60,10 +60,11 @@ export default class KeyPoints extends PureComponent {
   };
 
   render() {
-    const { monitorList, dangerSourceCount, monitorEquipList, handleShowMonitorList } = this.props;
+    const { monitorList, dangerSourceCount, monitorEquipList, handleShowMonitorList, companyId } = this.props;
     const { active } = this.state;
     const monitorData = monitorList
       .filter(item => item.monitorCount && item.type !== '305') // 去掉高危工艺
+      .filter(item => companyId === 'g0msm84ssx1s5zy7' && item.type !== '302')
       .map(item => {
         const { count, monitorCount, typeName, warningCount, webUrl } = item;
         return {

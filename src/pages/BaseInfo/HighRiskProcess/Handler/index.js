@@ -741,7 +741,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             {getFieldDecorator('sis', {
               initialValue: id ? detail.sis : undefined,
               rules: [
-                { required: true, message: '请输入安全仪表系统' },
+                // { required: true, message: '请输入安全仪表系统' },
                 { max: 50, message: '请输入不超过50个字符' },
               ],
               getValueFromEvent: this.trim,
@@ -752,7 +752,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
           <FormItem label="SIL等级" {...formItemLayout}>
             {getFieldDecorator('sisLevel', {
               initialValue: id ? detail.sisLevel : undefined,
-              rules: [{ required: true, message: '请选择SIL等级' }],
+              // rules: [{ required: true, message: '请选择SIL等级' }],
             })(
               // <Select placeholder="请选择SIL等级" {...itemStyles}>
               //   {SILLevelDict.map(({ value, label }) => (
