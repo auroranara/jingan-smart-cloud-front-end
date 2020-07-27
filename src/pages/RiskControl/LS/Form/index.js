@@ -203,14 +203,6 @@ export default connect(
           },
         });
       },
-      setDepartmentTree() {
-        dispatch({
-          type: 'dict/save',
-          payload: {
-            departmentTree: [],
-          },
-        });
-      },
       getPersonList(payload, callback) {
         dispatch({
           type: 'dict/getPersonList',
@@ -224,14 +216,6 @@ export default connect(
               message.error('获取人员列表数据失败，请稍后重试！');
             }
             callback && callback(success, data);
-          },
-        });
-      },
-      setPersonList() {
-        dispatch({
-          type: 'dict/save',
-          payload: {
-            personList: [],
           },
         });
       },
@@ -281,9 +265,7 @@ export default connect(
     edit,
     getCompanyList,
     getDepartmentTree,
-    setDepartmentTree,
     getPersonList,
-    setPersonList,
   }) => {
     const [form] = Form.useForm();
     const [appendingCompanyList, setAppendingCompanyList] = useState(false);
@@ -299,52 +281,45 @@ export default connect(
             },
             (success, data) => {
               if (success) {
-                const { companyId, departmentId } = data;
+                const { companyId } = data;
                 // 重置初始值
                 setInitialValues(GET_VALUES_BY_DETAIL(data));
-                // 如果companyId存在或者当前账号是单位账号，则获取部门列表
+                // 如果companyId存在或者当前账号是单位账号，则获取部门列表和人员列表
                 if (companyId || isUnit) {
                   getDepartmentTree({
                     companyId: companyId || unitId,
                   });
-                } else {
-                  setDepartmentTree();
-                }
-                // 如果departmentId存在，则获取人员列表
-                if (departmentId) {
                   getPersonList({
-                    departmentId,
+                    companyId: companyId || unitId,
                   });
-                } else {
-                  setPersonList();
                 }
               } else {
                 // 重置初始值
                 setInitialValues(undefined);
-                // 如果当前账号是单位账号，则获取部门列表
+                // 如果当前账号是单位账号，则获取部门列表和人员列表
                 if (isUnit) {
                   getDepartmentTree({
                     companyId: unitId,
                   });
-                } else {
-                  setDepartmentTree();
+                  getPersonList({
+                    companyId: unitId,
+                  });
                 }
-                setPersonList();
               }
             }
           );
         } else {
           // 重置初始值
           setInitialValues(undefined);
-          // 如果当前账号是单位账号，则获取部门列表
+          // 如果当前账号是单位账号，则获取部门列表和人员列表
           if (isUnit) {
             getDepartmentTree({
               companyId: unitId,
             });
-          } else {
-            setDepartmentTree();
+            getPersonList({
+              companyId: unitId,
+            });
           }
-          setPersonList();
         }
         // 如果当前账号不是单位账号时，则获取单位列表
         if (!isUnit) {
@@ -377,7 +352,10 @@ export default connect(
     // 表单finish事件
     const onFinish = useCallback(
       values => {
-        const payload = GET_PAYLOAD_BY_VALUES(values);
+        const payload = GET_PAYLOAD_BY_VALUES({
+          ...values,
+          company: isUnit ? { key: unitId } : values.company,
+        });
         if (name === 'add') {
           add(payload, success => {
             if (success) {
@@ -417,32 +395,18 @@ export default connect(
     }, []);
     // 单位选择器change事件
     const onCompanySelectChange = useCallback(company => {
-      // 如果已选择单位，则获取部门列表，否则清空部门列表
+      // 如果已选择单位，则获取部门列表
       if (company) {
         getDepartmentTree({
           companyId: company.key,
         });
-      } else {
-        setDepartmentTree();
+        getPersonList({
+          companyId: company.key,
+        });
       }
       // 清空部门和人员字段值
       form.setFieldsValue({
         department: undefined,
-        person: undefined,
-      });
-    }, []);
-    // 部门选择器change事件
-    const onDepartmentSelectChange = useCallback(department => {
-      // 如果已选择部门，则获取人员列表，否则清空人员列表
-      if (department) {
-        getPersonList({
-          departmentId: department.key || department.value,
-        });
-      } else {
-        setPersonList();
-      }
-      // 清空人员字段值
-      form.setFieldsValue({
         person: undefined,
       });
     }, []);
@@ -484,44 +448,165 @@ export default connect(
               wrapperCol={WRAPPER_COL}
               onFinish={onFinish}
             >
-              <Row gutter={24}>
-                {[
-                  ...(!isUnit
-                    ? [
+              <Form.Item
+                noStyle
+                shouldUpdate={(prevValues, values) =>
+                  ['company'].some(dependency => prevValues[dependency] !== values[dependency])
+                }
+              >
+                {({ getFieldsValue }) => {
+                  const values = getFieldsValue();
+                  return (
+                    <Row gutter={24}>
+                      {[
+                        ...(!isUnit
+                          ? [
+                              {
+                                name: 'company',
+                                label: '单位名称',
+                                children:
+                                  name !== 'detail' ? (
+                                    <Select
+                                      placeholder="请选择"
+                                      labelInValue
+                                      notFoundContent={
+                                        loadingCompanyList ? <Spin size="small" /> : undefined
+                                      }
+                                      showSearch
+                                      filterOption={false}
+                                      onSearch={onCompanySelectSearch}
+                                      onChange={onCompanySelectChange}
+                                      onPopupScroll={
+                                        !appendingCompanyList &&
+                                        companyList &&
+                                        companyList.pagination &&
+                                        companyList.pagination.total >
+                                          companyList.pagination.pageNum *
+                                            companyList.pagination.pageSize
+                                          ? ({
+                                              target: { scrollTop, offsetHeight, scrollHeight },
+                                            }) => {
+                                              if (scrollTop + offsetHeight === scrollHeight) {
+                                                const {
+                                                  pagination: { pageNum },
+                                                } = companyList;
+                                                setAppendingCompanyList(true);
+                                                getCompanyList(
+                                                  {
+                                                    pageNum: pageNum + 1,
+                                                  },
+                                                  () => {
+                                                    setTimeout(() => {
+                                                      setAppendingCompanyList(false);
+                                                    });
+                                                  }
+                                                );
+                                              }
+                                            }
+                                          : undefined
+                                      }
+                                      dropdownRender={children => (
+                                        <div className={styles.dropdownSpinContainer}>
+                                          {children}
+                                          {appendingCompanyList && (
+                                            <Spin className={styles.dropdownSpin} />
+                                          )}
+                                        </div>
+                                      )}
+                                    >
+                                      {(!loadingCompanyList || appendingCompanyList) &&
+                                      companyList &&
+                                      companyList.list
+                                        ? companyList.list.map(item => <Option {...item} />)
+                                        : []}
+                                    </Select>
+                                  ) : detail.companyName ? (
+                                    <span>{detail.companyName}</span>
+                                  ) : (
+                                    <EmptyText />
+                                  ),
+                                getValueFromEvent: getSelectValueFromEvent,
+                                rules: [{ required: true, message: '请选择单位名称' }],
+                                col: COL,
+                              },
+                            ]
+                          : []),
                         {
-                          name: 'company',
-                          label: '单位名称',
+                          name: 'name',
+                          label: '风险区域名称',
+                          children:
+                            name !== 'detail' ? (
+                              <Input placeholder="请输入" maxLength={50} />
+                            ) : detail.name ? (
+                              <span>{detail.name}</span>
+                            ) : (
+                              <EmptyText />
+                            ),
+                          rules: [
+                            { required: true, massage: '请输入风险区域名称' },
+                            { whitespace: true, message: '风险区域名称不能为空格' },
+                          ],
+                          col: COL,
+                        },
+                        {
+                          name: 'department',
+                          label: '所属部门',
+                          children:
+                            name !== 'detail' ? (
+                              <TreeSelect
+                                placeholder="请选择"
+                                treeData={values.company ? departmentTree : undefined}
+                                labelInValue
+                                notFoundContent={
+                                  loadingDepartmentTree ? <Spin size="small" /> : undefined
+                                }
+                                showSearch
+                                treeNodeFilterProp="title"
+                              />
+                            ) : detail.departmentName ? (
+                              <span>{detail.departmentName}</span>
+                            ) : (
+                              <EmptyText />
+                            ),
+                          getValueFromEvent: getSelectValueFromEvent,
+                          col: COL,
+                        },
+                        {
+                          name: 'person',
+                          label: '区域负责人',
                           children:
                             name !== 'detail' ? (
                               <Select
                                 placeholder="请选择"
                                 labelInValue
                                 notFoundContent={
-                                  loadingCompanyList ? <Spin size="small" /> : undefined
+                                  loadingPersonList ? <Spin size="small" /> : undefined
                                 }
                                 showSearch
                                 filterOption={false}
-                                onSearch={onCompanySelectSearch}
-                                onChange={onCompanySelectChange}
+                                onSearch={onPersonSelectSearch}
+                                onChange={onPersonSelectChange}
                                 onPopupScroll={
-                                  !appendingCompanyList &&
-                                  companyList &&
-                                  companyList.pagination &&
-                                  companyList.pagination.total >
-                                    companyList.pagination.pageNum * companyList.pagination.pageSize
+                                  !appendingPersonList &&
+                                  personList &&
+                                  personList.pagination &&
+                                  personList.pagination.total >
+                                    personList.pagination.pageNum * personList.pagination.pageSize
                                     ? ({ target: { scrollTop, offsetHeight, scrollHeight } }) => {
                                         if (scrollTop + offsetHeight === scrollHeight) {
                                           const {
                                             pagination: { pageNum },
-                                          } = companyList;
-                                          setAppendingCompanyList(true);
-                                          getCompanyList(
+                                          } = personList;
+                                          const { department } = form.getFieldsValue();
+                                          setAppendingPersonList(true);
+                                          getPersonList(
                                             {
+                                              departmentId: department.key,
                                               pageNum: pageNum + 1,
                                             },
                                             () => {
                                               setTimeout(() => {
-                                                setAppendingCompanyList(false);
+                                                setAppendingPersonList(false);
                                               });
                                             }
                                           );
@@ -532,223 +617,129 @@ export default connect(
                                 dropdownRender={children => (
                                   <div className={styles.dropdownSpinContainer}>
                                     {children}
-                                    {appendingCompanyList && (
+                                    {appendingPersonList && (
                                       <Spin className={styles.dropdownSpin} />
                                     )}
                                   </div>
                                 )}
                               >
-                                {(!loadingCompanyList || appendingCompanyList) &&
-                                companyList &&
-                                companyList.list
-                                  ? companyList.list.map(item => <Option {...item} />)
+                                {(!loadingPersonList || appendingPersonList) &&
+                                values.company &&
+                                personList &&
+                                personList.list
+                                  ? personList.list.map(item => <Option {...item} />)
                                   : []}
                               </Select>
-                            ) : detail.companyName ? (
-                              <span>{detail.companyName}</span>
+                            ) : detail.personName ? (
+                              <span>{detail.personName}</span>
                             ) : (
                               <EmptyText />
                             ),
                           getValueFromEvent: getSelectValueFromEvent,
-                          rules: [{ required: true, message: '请选择单位名称' }],
+                          rules: [{ required: true, message: '请选择区域负责人' }],
                           col: COL,
                         },
-                      ]
-                    : []),
-                  {
-                    name: 'name',
-                    label: '风险区域名称',
-                    children:
-                      name !== 'detail' ? (
-                        <Input placeholder="请输入" maxLength={50} />
-                      ) : detail.name ? (
-                        <span>{detail.name}</span>
-                      ) : (
-                        <EmptyText />
-                      ),
-                    rules: [
-                      { required: true, massage: '请输入风险区域名称' },
-                      { whitespace: true, message: '风险区域名称不能为空格' },
-                    ],
-                    col: COL,
-                  },
-                  {
-                    name: 'department',
-                    label: '所属部门',
-                    children:
-                      name !== 'detail' ? (
-                        <TreeSelect
-                          placeholder="请选择"
-                          treeData={departmentTree}
-                          labelInValue
-                          notFoundContent={
-                            loadingDepartmentTree ? <Spin size="small" /> : undefined
-                          }
-                          showSearch
-                          treeNodeFilterProp="title"
-                          onChange={onDepartmentSelectChange}
-                        />
-                      ) : detail.departmentName ? (
-                        <span>{detail.departmentName}</span>
-                      ) : (
-                        <EmptyText />
-                      ),
-                    getValueFromEvent: getSelectValueFromEvent,
-                    rules: [{ required: true, message: '请选择所属部门' }],
-                    col: COL,
-                  },
-                  {
-                    name: 'person',
-                    label: '区域负责人',
-                    children:
-                      name !== 'detail' ? (
-                        <Select
-                          placeholder="请选择"
-                          labelInValue
-                          notFoundContent={loadingPersonList ? <Spin size="small" /> : undefined}
-                          showSearch
-                          filterOption={false}
-                          onSearch={onPersonSelectSearch}
-                          onChange={onPersonSelectChange}
-                          onPopupScroll={
-                            !appendingPersonList &&
-                            personList &&
-                            personList.pagination &&
-                            personList.pagination.total >
-                              personList.pagination.pageNum * personList.pagination.pageSize
-                              ? ({ target: { scrollTop, offsetHeight, scrollHeight } }) => {
-                                  if (scrollTop + offsetHeight === scrollHeight) {
-                                    const {
-                                      pagination: { pageNum },
-                                    } = personList;
-                                    const { department } = form.getFieldsValue();
-                                    setAppendingPersonList(true);
-                                    getPersonList(
-                                      {
-                                        departmentId: department.key,
-                                        pageNum: pageNum + 1,
-                                      },
-                                      () => {
-                                        setTimeout(() => {
-                                          setAppendingPersonList(false);
-                                        });
-                                      }
-                                    );
-                                  }
-                                }
-                              : undefined
-                          }
-                          dropdownRender={children => (
-                            <div className={styles.dropdownSpinContainer}>
-                              {children}
-                              {appendingPersonList && <Spin className={styles.dropdownSpin} />}
+                        {
+                          name: 'telphone',
+                          label: '联系电话',
+                          children:
+                            name !== 'detail' ? (
+                              <Input placeholder="请输入" maxLength={50} />
+                            ) : detail.telphone ? (
+                              <span>{detail.telphone}</span>
+                            ) : (
+                              <EmptyText />
+                            ),
+                          rules: [
+                            { required: true, massage: '请输入联系电话' },
+                            { whitespace: true, message: '联系电话不能为空格' },
+                          ],
+                          col: COL,
+                        },
+                        {
+                          name: 'evaluateTime',
+                          label: '评定时间',
+                          children:
+                            name !== 'detail' ? (
+                              <DatePicker
+                                className={styles.rangePicker}
+                                placeholder="请选择"
+                                format={FORMAT}
+                                allowClear={false}
+                              />
+                            ) : detail.evaluateTime ? (
+                              <span>{moment(detail.evaluateTime).format(FORMAT)}</span>
+                            ) : (
+                              <EmptyText />
+                            ),
+                          rules: [{ required: true, message: '请选择评定时间' }],
+                          col: COL,
+                        },
+                        {
+                          name: 'fileList',
+                          label: '分析报告附件',
+                          children:
+                            name !== 'detail' ? (
+                              <Upload folder="HAZOP" />
+                            ) : detail.fileList && detail.fileList.length ? (
+                              <div className={styles.fileList}>
+                                {detail.fileList.map((item, index) => (
+                                  <div key={index}>
+                                    <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
+                                      {item.fileName}
+                                    </a>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <EmptyText />
+                            ),
+                          rules: [
+                            {
+                              required: true,
+                              type: 'array',
+                              min: 1,
+                              message: '请上传分析报告附件',
+                            },
+                          ],
+                          col: COL,
+                        },
+                        {
+                          children: (
+                            <div className={styles.buttonContainer}>
+                              {(name === 'add' || name === 'edit') && (
+                                <Button
+                                  type="primary"
+                                  htmlType="submit"
+                                  loading={adding || editing}
+                                >
+                                  提交
+                                </Button>
+                              )}
+                              <Button
+                                onClick={() => {
+                                  router.replace({
+                                    pathname: LIST_PATH,
+                                    query,
+                                  });
+                                }}
+                              >
+                                返回
+                              </Button>
                             </div>
-                          )}
-                        >
-                          {(!loadingPersonList || appendingPersonList) &&
-                          personList &&
-                          personList.list
-                            ? personList.list.map(item => <Option {...item} />)
-                            : []}
-                        </Select>
-                      ) : detail.personName ? (
-                        <span>{detail.personName}</span>
-                      ) : (
-                        <EmptyText />
-                      ),
-                    getValueFromEvent: getSelectValueFromEvent,
-                    rules: [{ required: true, message: '请选择区域负责人' }],
-                    col: COL,
-                  },
-                  {
-                    name: 'telphone',
-                    label: '联系电话',
-                    children:
-                      name !== 'detail' ? (
-                        <Input placeholder="请输入" maxLength={50} />
-                      ) : detail.telphone ? (
-                        <span>{detail.telphone}</span>
-                      ) : (
-                        <EmptyText />
-                      ),
-                    rules: [
-                      { required: true, massage: '请输入联系电话' },
-                      { whitespace: true, message: '联系电话不能为空格' },
-                    ],
-                    col: COL,
-                  },
-                  {
-                    name: 'evaluateTime',
-                    label: '评定时间',
-                    children:
-                      name !== 'detail' ? (
-                        <DatePicker
-                          className={styles.rangePicker}
-                          placeholder="请选择"
-                          format={FORMAT}
-                          allowClear={false}
-                        />
-                      ) : detail.evaluateTime ? (
-                        <span>{moment(detail.evaluateTime).format(FORMAT)}</span>
-                      ) : (
-                        <EmptyText />
-                      ),
-                    rules: [{ required: true, message: '请选择评定时间' }],
-                    col: COL,
-                  },
-                  {
-                    name: 'fileList',
-                    label: '分析报告附件',
-                    children:
-                      name !== 'detail' ? (
-                        <Upload folder="HAZOP" />
-                      ) : detail.fileList && detail.fileList.length ? (
-                        <div className={styles.fileList}>
-                          {detail.fileList.map((item, index) => (
-                            <div key={index}>
-                              <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
-                                {item.fileName}
-                              </a>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <EmptyText />
-                      ),
-                    rules: [
-                      { required: true, type: 'array', min: 1, message: '请上传分析报告附件' },
-                    ],
-                    col: COL,
-                  },
-                  {
-                    children: (
-                      <div className={styles.buttonContainer}>
-                        {(name === 'add' || name === 'edit') && (
-                          <Button type="primary" htmlType="submit" loading={adding || editing}>
-                            提交
-                          </Button>
-                        )}
-                        <Button
-                          onClick={() => {
-                            router.replace({
-                              pathname: LIST_PATH,
-                              query,
-                            });
-                          }}
-                        >
-                          返回
-                        </Button>
-                      </div>
-                    ),
-                    wrapperCol: BUTTON_WRAPPER_COL,
-                    col: COL,
-                  },
-                ].map(({ name, col, ...item }, index) => (
-                  <Col key={name || index} {...col}>
-                    <Form.Item name={name} {...item} />
-                  </Col>
-                ))}
-              </Row>
+                          ),
+                          wrapperCol: BUTTON_WRAPPER_COL,
+                          col: COL,
+                        },
+                      ].map(({ name, col, ...item }, index) => (
+                        <Col key={name || index} {...col}>
+                          <Form.Item name={name} {...item} />
+                        </Col>
+                      ))}
+                    </Row>
+                  );
+                }}
+              </Form.Item>
             </Form>
           )}
         </Card>

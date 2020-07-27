@@ -620,7 +620,6 @@ export default connect(
                               <EmptyText />
                             ),
                           getValueFromEvent: getSelectValueFromEvent,
-                          rules: [{ required: true, message: '请选择所属部门' }],
                           col: COL,
                         },
                         {
