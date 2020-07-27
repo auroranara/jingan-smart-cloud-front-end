@@ -59,6 +59,12 @@ const configs = {
     ios: 'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/chemicalAppDownload/KXBHAPP/official_version/KXBHChemicalCloud.plist&ran=',
     android: 'http://cmw.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
+  quechen: {
+    projectKey: 'huagong_pro',
+    code: 'http://data.jingan-china.cn/v2/login/code/quechen_code.png',
+    ios: 'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/chemicalAppDownload/QueChenAPP/official_version/QueChenChemicalCloud.plist&ran=',
+    android: 'http://hse.quechen.com/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+  },
 };
 
 export default class Config {
