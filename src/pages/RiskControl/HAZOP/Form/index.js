@@ -232,7 +232,7 @@ export default connect(
       params: { id },
     },
     route: { name },
-    location: { query },
+    location: { pathname, query },
     unitId,
     unitName,
     isUnit,
@@ -365,7 +365,7 @@ export default connect(
           );
         }
       },
-      [id, name]
+      [pathname]
     );
     // 单位选择器search事件
     const onCompanySelectSearch = useMemo(() => {
@@ -374,7 +374,7 @@ export default connect(
         clearTimeout(timer);
         timer = setTimeout(() => {
           getCompanyList({
-            label: value && value.trim(),
+            name: value && value.trim(),
           });
         }, 300);
       };
@@ -406,7 +406,7 @@ export default connect(
           if (department) {
             getPersonList({
               departmentId: department.key,
-              label: value && value.trim(),
+              name: value && value.trim(),
             });
           }
         }, 300);

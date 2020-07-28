@@ -10,8 +10,8 @@ export default {
   },
 
   effects: {
-    *getCompanyList({ payload: { label, ...payload } = {}, callback }, { call, put }) {
-      const response = yield call(getCompanyList, { name: label, ...payload });
+    *getCompanyList({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyList, payload);
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         const companyList = {
@@ -60,8 +60,8 @@ export default {
         callback && callback(false, msg);
       }
     },
-    *getPersonList({ payload: { label, ...payload } = {}, callback }, { call, put }) {
-      const response = yield call(getPersonList, { userName: label, ...payload });
+    *getPersonList({ payload: { name, ...payload } = {}, callback }, { call, put }) {
+      const response = yield call(getPersonList, { userName: name, ...payload });
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
         const personList = {

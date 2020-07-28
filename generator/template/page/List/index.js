@@ -10,6 +10,7 @@ import {
   Input,
   Select,
   TreeSelect,
+  DatePicker,
   Button,
   Table,
   Divider,
@@ -32,45 +33,65 @@ import {
   DETAIL_PATH,
   ADD_PATH,
   EDIT_PATH,
-  LEVEL_MAP,
+  PARENT_LOCALE,
+  LIST_LOCALE,
 } from '../config';
 import {
   FORMAT,
   showTotal,
   getSelectValueFromEvent,
   EmptyText,
+  RANGE_PICKER_PLACEHOLDER,
   LIST_PAGE_COL,
   HIDDEN_COL,
 } from '@/utils';
 import styles from './index.less';
 const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '风险分级管控', name: '风险分级管控' },
-  { title: '区域固有风险分析（LS）', name: '区域固有风险分析（LS）' },
+  { title: PARENT_LOCALE, name: PARENT_LOCALE },
+  { title: LIST_LOCALE, name: LIST_LOCALE },
 ];
-const GET_PAYLOAD_BY_QUERY = ({ pageNum, pageSize, name, company, department, principalName }) => ({
-  pageNum: pageNum > 0 ? +pageNum : 1,
-  pageSize: pageSize > 0 ? +pageSize : 10,
-  name: name ? decodeURIComponent(name) : undefined,
-  company: company ? JSON.parse(decodeURIComponent(company)) : undefined,
-  department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
-  principalName: principalName ? decodeURIComponent(principalName) : undefined,
-});
-const GET_QUERY_BY_PAYLOAD = ({ pageNum, pageSize, name, company, department, principalName }) => ({
+const GET_PAYLOAD_BY_QUERY = ({
   pageNum,
   pageSize,
-  name: name ? encodeURIComponent(name.trim()) : undefined,
-  company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
-  department: department ? encodeURIComponent(JSON.stringify(department)) : undefined,
-  principalName: principalName ? encodeURIComponent(principalName.trim()) : undefined,
+  company,
+  name,
+  department,
+  startDate,
+  endDate,
+}) => ({
+  pageNum: pageNum > 0 ? +pageNum : 1,
+  pageSize: pageSize > 0 ? +pageSize : 10,
+  company: company ? JSON.parse(decodeURIComponent(company)) : undefined,
+  name: name ? decodeURIComponent(name) : undefined,
+  department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
+  range: startDate && endDate ? [moment(+startDate), moment(+endDate)] : undefined,
 });
-const TRANSFORM_PAYLOAD = ({ company, department, ...payload }) => ({
-  ...payload,
-  companyId: company && company.key,
-  departmentId: department && department.key,
-});
+const GET_QUERY_BY_PAYLOAD = ({ pageNum, pageSize, company, name, department, range }) => {
+  const [startDate, endDate] = range || [];
+  return {
+    pageNum,
+    pageSize,
+    company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
+    name: name ? encodeURIComponent(name.trim()) : undefined,
+    department: department ? encodeURIComponent(JSON.stringify(department)) : undefined,
+    startDate: startDate ? +startDate : undefined,
+    endDate: endDate ? +endDate : undefined,
+  };
+};
+const TRANSFORM_PAYLOAD = ({ company, department, range, ...payload }) => {
+  const [startDate, endDate] = range || [];
+  return {
+    ...payload,
+    companyId: company && company.key,
+    departmentId: department && department.key,
+    startDate: startDate && startDate.format(FORMAT),
+    endDate: endDate && endDate.format(FORMAT),
+  };
+};
 
 export default connect(
   state => state,
@@ -243,6 +264,50 @@ export default connect(
         });
       }
     }, []);
+    // 时间范围选择器的预设
+    const ranges = useMemo(
+      () => {
+        return {
+          今天: [moment().startOf('day'), moment().endOf('day')],
+          最近一周: [
+            moment()
+              .startOf('day')
+              .subtract(1, 'weeks')
+              .add(1, 'days'),
+            moment().endOf('day'),
+          ],
+          最近一个月: [
+            moment()
+              .startOf('day')
+              .subtract(1, 'months')
+              .add(1, 'days'),
+            moment().endOf('day'),
+          ],
+          最近三个月: [
+            moment()
+              .startOf('day')
+              .subtract(1, 'quarters')
+              .add(1, 'days'),
+            moment().endOf('day'),
+          ],
+          最近半年: [
+            moment()
+              .startOf('day')
+              .subtract(6, 'months')
+              .add(1, 'days'),
+            moment().endOf('day'),
+          ],
+          最近一年: [
+            moment()
+              .startOf('day')
+              .subtract(1, 'years')
+              .add(1, 'days'),
+            moment().endOf('day'),
+          ],
+        };
+      },
+      [+moment().startOf('day')]
+    );
     // query字符串
     const queryString = stringify(query);
     // 表格配置
@@ -258,70 +323,23 @@ export default connect(
             ]
           : []),
         {
-          dataIndex: 'code',
-          title: '区域编号',
-          render: value => value || <EmptyText />,
-        },
-        {
           dataIndex: 'name',
-          title: '风险区域名称',
+          title: '名称',
           render: value => value || <EmptyText />,
         },
         {
-          dataIndex: 'principalName',
-          title: '区域负责人',
+          dataIndex: 'departmentName',
+          title: '部门',
           render: value => value || <EmptyText />,
         },
         {
-          dataIndex: 'phone',
-          title: '联系电话',
-          render: value => value || <EmptyText />,
-        },
-        {
-          dataIndex: '固有风险分析（LS)',
-          title: '固有风险分析（LS)',
-          render: (_, data) => (
-            <Fragment>
-              <div className={styles.tdRow}>
-                <span>可能性(L)：</span>
-                <span>{data.L || <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>严重性(S)：</span>
-                <span>{data.S || <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>评估风险值(R)：</span>
-                <span>{data.L * data.S || <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>风险级别：</span>
-                <span>{data.L * data.S ? `${4 - (data.L * data.S) / 4} 级` : <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>评估人员：</span>
-                <span>{data.evaluatorName || <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>评估日期：</span>
-                <span>
-                  {data.evaluateDate ? moment(data.evaluateDate).format(FORMAT) : <EmptyText />}
-                </span>
-              </div>
-            </Fragment>
-          ),
-        },
-        {
-          dataIndex: '固有风险等级',
-          title: '固有风险等级',
-          render: (_, data) => {
-            const map = LEVEL_MAP[4 - (data.L * data.S) / 4];
-            return map ? <span style={{ color: map.color }}>{map.label}</span> : <EmptyText />;
-          },
+          dataIndex: 'date',
+          title: '时间',
+          render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
         },
         {
           dataIndex: 'fileList',
-          title: '分析报告附件',
+          title: '附件',
           render: value =>
             value && value.length ? (
               <Fragment>
@@ -525,7 +543,7 @@ export default connect(
                       },
                       {
                         name: 'name',
-                        label: '区域名称',
+                        label: '名称',
                         children: <Input placeholder="请输入" maxLength={50} allowClear />,
                         col: LIST_PAGE_COL,
                       },
@@ -549,9 +567,18 @@ export default connect(
                         col: LIST_PAGE_COL,
                       },
                       {
-                        name: 'principalName',
-                        label: '负责人姓名',
-                        children: <Input placeholder="请输入" maxLength={50} allowClear />,
+                        name: 'range',
+                        label: '时间',
+                        children: (
+                          <RangePicker
+                            className={styles.rangePicker}
+                            placeholder={RANGE_PICKER_PLACEHOLDER}
+                            format={FORMAT}
+                            separator="~"
+                            ranges={ranges}
+                            allowClear
+                          />
+                        ),
                         col: LIST_PAGE_COL,
                       },
                       {

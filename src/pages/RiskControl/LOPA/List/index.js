@@ -236,16 +236,17 @@ export default connect(
     useEffect(
       () => {
         // 根据query获取payload
-        const payload = GET_PAYLOAD_BY_QUERY(query);
+        let payload = GET_PAYLOAD_BY_QUERY(query);
+        payload = {
+          ...payload,
+          company: isUnit ? initialValues.company : payload.company,
+        };
         // 根据payload获取数据
         getList(payload);
         // 根据payload获取values
-        const { pageNum, pageSize, company, ...values } = payload;
+        const { pageNum, pageSize, ...values } = payload;
         // 根据values设置表单值
         form.setFieldsValue(values);
-        if (!isUnit) {
-          form.setFieldsValue({ company });
-        }
       },
       [query]
     );
@@ -434,7 +435,7 @@ export default connect(
         clearTimeout(timer);
         timer = setTimeout(() => {
           getCompanyList({
-            label: value && value.trim(),
+            name: value && value.trim(),
           });
         }, 300);
       };

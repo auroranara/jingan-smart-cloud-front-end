@@ -19,7 +19,19 @@ import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
 import { stringify } from 'qs';
-import { NAMESPACE, DETAIL_NAME, DETAIL_API, ADD_API, EDIT_API, LIST_PATH } from '../config';
+import {
+  NAMESPACE,
+  DETAIL_NAME,
+  DETAIL_API,
+  ADD_API,
+  EDIT_API,
+  LIST_PATH,
+  PARENT_LOCALE,
+  LIST_LOCALE,
+  DETAIL_LOCALE,
+  ADD_LOCALE,
+  EDIT_LOCALE,
+} from '../config';
 import {
   FORMAT,
   getSelectValueFromEvent,
@@ -33,37 +45,24 @@ import {
 import styles from './index.less';
 const { Option } = Select;
 
-const INITIAL_VALUES = {
-  L: '',
-  S: '',
-};
 const GET_VALUES_BY_DETAIL = ({
   companyId,
   companyName,
   name,
-  code,
   departmentId,
   departmentName,
-  personId,
-  personName,
-  telphone,
-  L,
-  S,
-  evaluator,
-  evaluateTime,
+  principal,
+  principalName,
+  date,
   fileList,
 }) => ({
   company: companyId ? { key: companyId, value: companyId, label: companyName } : undefined,
   name: name || undefined,
-  code: code || undefined,
   department: departmentId
     ? { key: departmentId, value: departmentId, label: departmentName }
     : undefined,
-  person: personId ? { key: personId, value: personId, label: personName } : undefined,
-  telphone: telphone || undefined,
-  L: L || undefined,
-  S: S || undefined,
-  evaluateTime: evaluateTime ? moment(evaluateTime) : undefined,
+  principal: principal ? { key: principal, value: principal, label: principalName } : undefined,
+  date: date ? moment(date) : undefined,
   fileList: fileList
     ? fileList.map((item, index) => ({
         ...item,
@@ -74,27 +73,12 @@ const GET_VALUES_BY_DETAIL = ({
       }))
     : undefined,
 });
-const GET_PAYLOAD_BY_VALUES = ({
-  company,
-  name,
-  code,
-  department,
-  person,
-  telphone,
-  L,
-  S,
-  evaluateTime,
-  fileList,
-}) => ({
+const GET_PAYLOAD_BY_VALUES = ({ company, name, department, principal, date, fileList }) => ({
   companyId: company && company.key,
   name: name && name.trim(),
-  code: code && code.trim(),
   departmentId: department && department.key,
-  personId: person && person.key,
-  telphone: telphone && telphone.trim(),
-  L,
-  S,
-  evaluateTime: evaluateTime && evaluateTime.format(FORMAT),
+  principal: principal && principal.key,
+  date: date && date.format(FORMAT),
   fileList,
 });
 
@@ -337,16 +321,16 @@ export default connect(
     const breadcrumbList = useMemo(
       () => {
         const title = {
-          detail: '分区评估详情',
-          add: '新增分区评估',
-          edit: '编辑分区评估',
+          detail: DETAIL_LOCALE,
+          add: ADD_LOCALE,
+          edit: EDIT_LOCALE,
         }[name];
         return [
           { title: '首页', name: '首页', href: '/' },
-          { title: '风险分级管控', name: '风险分级管控' },
+          { title: PARENT_LOCALE, name: PARENT_LOCALE },
           {
-            title: '区域固有风险分析（LS）',
-            name: '区域固有风险分析（LS）',
+            title: LIST_LOCALE,
+            name: LIST_LOCALE,
             href: `${LIST_PATH}${query ? `?${stringify(query)}` : ''}`,
           },
           { title: title, name: title },
@@ -357,10 +341,8 @@ export default connect(
     // 表单finish事件
     const onFinish = useCallback(
       values => {
-        const payload = GET_PAYLOAD_BY_VALUES({
-          ...values,
-          company: isUnit ? { key: unitId } : values.company,
-        });
+        console.log(values);
+        const payload = GET_PAYLOAD_BY_VALUES(values);
         if (name === 'add') {
           add(payload, success => {
             if (success) {
@@ -400,7 +382,7 @@ export default connect(
     }, []);
     // 单位选择器change事件
     const onCompanySelectChange = useCallback(company => {
-      // 如果已选择单位，则获取部门列表
+      // 如果已选择单位，则获取部门列表和人员列表
       if (company) {
         getDepartmentTree({
           companyId: company.key,
@@ -412,7 +394,7 @@ export default connect(
       // 清空部门和人员字段值
       form.setFieldsValue({
         department: undefined,
-        person: undefined,
+        principal: undefined,
       });
     }, []);
     // 人员选择器search事件
@@ -432,8 +414,12 @@ export default connect(
       };
     }, []);
     // 人员选择器change事件
-    const onPersonSelectChange = useCallback((_, option) => {
-      console.log(option);
+    const onPersonSelectChange = useCallback((_, { data: { departmentId, departmentName } }) => {
+      form.setFieldsValue({
+        department: departmentId
+          ? { key: departmentId, value: departmentId, label: departmentName }
+          : undefined,
+      });
     }, []);
     return (
       <PageHeaderLayout
@@ -532,7 +518,7 @@ export default connect(
                         },
                         {
                           name: 'name',
-                          label: '风险区域名称',
+                          label: '名称',
                           children:
                             name !== 'detail' ? (
                               <Input placeholder="请输入" maxLength={50} />
@@ -542,37 +528,14 @@ export default connect(
                               <EmptyText />
                             ),
                           rules: [
-                            { required: true, massage: '请输入风险区域名称' },
-                            { whitespace: true, message: '风险区域名称不能为空格' },
+                            { required: true, massage: '请输入工艺名称/分析节点' },
+                            { whitespace: true, message: '工艺名称/分析节点不能为空格' },
                           ],
                           col: COL,
                         },
                         {
-                          name: 'department',
-                          label: '所属部门',
-                          children:
-                            name !== 'detail' ? (
-                              <TreeSelect
-                                placeholder="请选择"
-                                treeData={values.company ? departmentTree : undefined}
-                                labelInValue
-                                notFoundContent={
-                                  loadingDepartmentTree ? <Spin size="small" /> : undefined
-                                }
-                                showSearch
-                                treeNodeFilterProp="title"
-                              />
-                            ) : detail.departmentName ? (
-                              <span>{detail.departmentName}</span>
-                            ) : (
-                              <EmptyText />
-                            ),
-                          getValueFromEvent: getSelectValueFromEvent,
-                          col: COL,
-                        },
-                        {
-                          name: 'person',
-                          label: '区域负责人',
+                          name: 'principal',
+                          label: '负责人',
                           children:
                             name !== 'detail' ? (
                               <Select
@@ -629,35 +592,41 @@ export default connect(
                                   ? personList.list.map(item => <Option {...item} />)
                                   : []}
                               </Select>
-                            ) : detail.personName ? (
-                              <span>{detail.personName}</span>
+                            ) : detail.principalName ? (
+                              <span>{detail.principalName}</span>
                             ) : (
                               <EmptyText />
                             ),
                           getValueFromEvent: getSelectValueFromEvent,
-                          rules: [{ required: true, message: '请选择区域负责人' }],
+                          rules: [{ required: true, message: '请选择负责人' }],
                           col: COL,
                         },
                         {
-                          name: 'telphone',
-                          label: '联系电话',
+                          name: 'department',
+                          label: '所属部门',
                           children:
                             name !== 'detail' ? (
-                              <Input placeholder="请输入" maxLength={50} />
-                            ) : detail.telphone ? (
-                              <span>{detail.telphone}</span>
+                              <TreeSelect
+                                placeholder="请选择"
+                                treeData={values.company ? departmentTree : undefined}
+                                labelInValue
+                                notFoundContent={
+                                  loadingDepartmentTree ? <Spin size="small" /> : undefined
+                                }
+                                showSearch
+                                treeNodeFilterProp="title"
+                              />
+                            ) : detail.departmentName ? (
+                              <span>{detail.departmentName}</span>
                             ) : (
                               <EmptyText />
                             ),
-                          rules: [
-                            { required: true, massage: '请输入联系电话' },
-                            { whitespace: true, message: '联系电话不能为空格' },
-                          ],
+                          getValueFromEvent: getSelectValueFromEvent,
                           col: COL,
                         },
                         {
-                          name: 'evaluateTime',
-                          label: '评定时间',
+                          name: 'date',
+                          label: '时间',
                           children:
                             name !== 'detail' ? (
                               <DatePicker
@@ -666,17 +635,17 @@ export default connect(
                                 format={FORMAT}
                                 allowClear={false}
                               />
-                            ) : detail.evaluateTime ? (
-                              <span>{moment(detail.evaluateTime).format(FORMAT)}</span>
+                            ) : detail.date ? (
+                              <span>{moment(detail.date).format(FORMAT)}</span>
                             ) : (
                               <EmptyText />
                             ),
-                          rules: [{ required: true, message: '请选择评定时间' }],
+                          rules: [{ required: true, message: '请选择时间' }],
                           col: COL,
                         },
                         {
                           name: 'fileList',
-                          label: '分析报告附件',
+                          label: '附件',
                           children:
                             name !== 'detail' ? (
                               <Upload folder="HAZOP" />
@@ -698,7 +667,7 @@ export default connect(
                               required: true,
                               type: 'array',
                               min: 1,
-                              message: '请上传分析报告附件',
+                              message: '请上传附件',
                             },
                           ],
                           col: COL,
