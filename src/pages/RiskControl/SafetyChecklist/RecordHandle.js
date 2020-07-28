@@ -264,7 +264,6 @@ export default class RecordHandle extends Component {
     const {
       form: { getFieldDecorator, setFieldsValue, getFieldsValue },
     } = this.props;
-    const { detail } = this.state;
     const { l, e, c } = getFieldsValue();
     const riskItem = l && e && c ? lecSettings.riskLevelList.find(item => item.range(l * e * c)) : undefined;
     return (
@@ -331,9 +330,9 @@ export default class RecordHandle extends Component {
           )}
         </FormItem>
         <Row>
-          <Col span={12}>
+          <Col flex="auto">
             <FormItem label="评估风险值（D）：" {...formItemLayout} style={{ margin: '0' }}>
-              {l && e && c ? l * e * c : ''}
+              {l && e && c ? `${l}×${e}×${c}=${l * e * c}` : ''}
             </FormItem>
             <span style={{ marginBottom: '24px', display: 'block', fontSize: '13px' }}>（备注：D=L×E×C）</span>
             <FormItem label="风险级别：" {...formItemLayout}>
@@ -360,9 +359,9 @@ export default class RecordHandle extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={12}>
-            <FormItem label="风险等级判断标准">
-              <img style={{ width: '680px', height: '260px', objectFit: 'contain' }} src={standardImgLec} alt="standard" />
+          <Col flex="680px">
+            <FormItem label="风险等级判断标准：">
+              <img style={{ width: '680px', height: '280px', objectFit: 'contain' }} src={standardImgLec} alt="standard" />
             </FormItem>
           </Col>
         </Row>
@@ -375,7 +374,6 @@ export default class RecordHandle extends Component {
     const {
       form: { getFieldDecorator, setFieldsValue, getFieldsValue },
     } = this.props;
-    const { detail } = this.state;
     const { l, s } = getFieldsValue();
     const riskItem = l && s ? lsSettings.riskLevelList.find(item => item.range(l * s)) : undefined;
 
@@ -423,9 +421,9 @@ export default class RecordHandle extends Component {
           )}
         </FormItem>
         <Row>
-          <Col span={12}>
-            <FormItem label="评估风险值（R）" {...formItemLayout} style={{ margin: '0' }}>
-              {l && s ? l * s : ''}
+          <Col flex="auto">
+            <FormItem label="评估风险值（R）：" {...formItemLayout} style={{ margin: '0' }}>
+              {l && s ? `${l}×${s}=${l * s}` : ''}
             </FormItem>
             <span style={{ marginBottom: '24px', display: 'block', fontSize: '13px' }}>（备注：R=L×S）</span>
             <FormItem label="风险级别：" {...formItemLayout}>
@@ -452,9 +450,9 @@ export default class RecordHandle extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={12}>
-            <FormItem label="风险等级判断标准">
-              <img style={{ width: '680px', height: '260px', objectFit: 'contain' }} src={standardImgLs} alt="standard" />
+          <Col flex="680px">
+            <FormItem label="风险等级判断标准：">
+              <img style={{ width: '680px', height: '280px', objectFit: 'contain' }} src={standardImgLs} alt="standard" />
             </FormItem>
           </Col>
         </Row>
@@ -519,6 +517,7 @@ export default class RecordHandle extends Component {
                   mode="multiple"
                   placeholder="请选择可能发生的事故类型及后果"
                   onChange={this.onHiddenTypeChange}
+                  filterOption={(value, option) => new RegExp(option.children).test(value)}
                   {...itemStyles}
                 >
                   {accidentTypeList.map(({ typeId, typeName }) => (

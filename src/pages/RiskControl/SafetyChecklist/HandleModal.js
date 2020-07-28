@@ -4,6 +4,7 @@ import { Modal, Input, Select, Button } from 'antd';
 import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { connect } from 'dva';
+import { analysisFunDict } from './List';
 
 const FormItem = Form.Item;
 
@@ -12,15 +13,10 @@ const formWrapper = {
   wrapperCol: { span: 18 },
 }
 const itemProps = { style: { width: '70%', marginRight: '10px' } };
-// 风险分析方法字典
-const analysisFunDict = [
-  { label: 'LEC法', value: '1' },
-  { label: 'LS法', value: '2' },
-];
-const fields = [
+const field = [
   {
     id: 'objectTitle',
-    render: <Input placeholder="风险点名称" />,
+    render: () => <Input placeholder="风险点名称" />,
   },
 ];
 const columns = [
@@ -33,8 +29,9 @@ const columns = [
 ];
 
 // 新增/编辑弹窗
-@connect(({ riskPointManage, loading }) => ({
+@connect(({ riskPointManage, user, loading }) => ({
   riskPointManage,
+  user,
   modalLoading: loading.effects['riskPointManage/fetchRiskList'],
 }))
 @Form.create()
@@ -75,10 +72,20 @@ export default class HandleModal extends Component {
 
   // 获取风险点列表
   fetchRiskPointList = (action = {}) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      form: { getFieldValue },
+      user: { isCompany },
+    } = this.props;
+    const company = isCompany ? undefined : getFieldValue('company');
     dispatch({
       type: 'riskPointManage/fetchRiskList',
-      payload: { pageNum: 1, pageSize: 10, ...(action.payload || {}) },
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        companyId: company ? company.value : undefined,
+        ...(action.payload || {}),
+      },
     });
   }
 
@@ -114,6 +121,7 @@ export default class HandleModal extends Component {
       riskPointManage: {
         riskPointData: riskPointModal,
       },
+      user: { isCompany },
     } = this.props;
     const { modalVisible } = this.state;
     const id = detail ? detail.id : undefined;
@@ -128,20 +136,22 @@ export default class HandleModal extends Component {
         {...isDetail ? [{ footer: null }] : []}
       >
         <Form>
-          <FormItem label="单位名称" {...formWrapper}>
-            {isDetail ? detail.companyName : getFieldDecorator('company', {
-              rules: [
-                {
-                  required: true,
-                  message: '单位名称不能为空',
-                  transform: value => value && value.label,
-                },
-              ],
-              initialValue: id ? { value: detail.companyId, label: detail.companyName } : undefined,
-            })(
-              <CompanySelect {...itemProps} type={isDetail ? 'span' : 'select'} onChange={this.onCompanyChange} />
-            )}
-          </FormItem>
+          {!isCompany && (
+            <FormItem label="单位名称" {...formWrapper}>
+              {isDetail ? detail.companyName : getFieldDecorator('company', {
+                rules: [
+                  {
+                    required: true,
+                    message: '单位名称不能为空',
+                    transform: value => value && value.label,
+                  },
+                ],
+                initialValue: id ? { value: detail.companyId, label: detail.companyName } : undefined,
+              })(
+                <CompanySelect {...itemProps} type={isDetail ? 'span' : 'select'} onChange={this.onCompanyChange} />
+              )}
+            </FormItem>
+          )}
           <FormItem label="编号" {...formWrapper}>
             {isDetail ? detail.code : getFieldDecorator('code', {
               rules: [{ required: true, message: '请输入编号' }],
@@ -156,7 +166,7 @@ export default class HandleModal extends Component {
               rules: [{ required: true, message: '请选择风险点' }],
               initialValue: id ? detail.riskPointName : undefined,
             })(
-              <Input placeholder="请输入" disabled {...itemProps} />
+              <Input placeholder="请选择" disabled {...itemProps} />
             )}
             {!isDetail && (<Button type="primary" onClick={this.handleViewModal}>选择</Button>)}
           </FormItem>
@@ -166,8 +176,8 @@ export default class HandleModal extends Component {
               initialValue: id ? detail.riskAnalyze : undefined,
             })(
               <Select allowClear placeholder="请选择" {...itemProps}>
-                {analysisFunDict.map(({ value, label }) => (
-                  <Select.Option key={value} value={value}>{label}</Select.Option>
+                {analysisFunDict.map(({ value, shortLabel }) => (
+                  <Select.Option key={value} value={value}>{shortLabel + '法'}</Select.Option>
                 ))}
               </Select>
             )}
@@ -192,7 +202,7 @@ export default class HandleModal extends Component {
           onClose={() => {
             this.setState({ modalVisible: false });
           }}
-          fields={fields}
+          field={field}
           columns={columns}
         />
       </Modal>

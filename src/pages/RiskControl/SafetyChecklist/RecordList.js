@@ -183,7 +183,7 @@ export default class SafetyChecklist extends Component {
             <div style={{ textAgin: 'left' }}>
               <p>可能性（L)：{l}</p>
               <p>频次(S)：{s}</p>
-              <p>评估风险值(D)：{l * s}</p>
+              <p>评估风险值(R)：{l * s}</p>
               <p>评价级别：{riskLevel ? riskLevel + '级' : ''}</p>
               <p>评估人员：{evaluatePer}</p>
               <p>评估日期：{evaluateDate ? moment(evaluateDate).format('YYYY-MM-DD') : ''}</p>

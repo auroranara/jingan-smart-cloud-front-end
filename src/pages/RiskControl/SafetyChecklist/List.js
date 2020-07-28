@@ -11,6 +11,7 @@ import codes from '@/utils/codes';
 import HandleModal from './HandleModal';
 import router from 'umi/router';
 import ImportModal from '@/components/ImportModal';
+import { lecSettings } from './config';
 
 export const FORMAT = 'YYYY-MM-DD';
 export const title = '安全检查表-SCL分析';
@@ -19,6 +20,11 @@ const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '风险分级管控', name: '风险分级管控' },
   { title, name: title },
+];
+// 风险分析方法字典
+export const analysisFunDict = [
+  { shortLabel: 'LEC', label: '作业条件危险性分析法（LEC）', value: '1' },
+  { shortLabel: 'LS', label: '风险矩阵分析法（LS）', value: '2' },
 ];
 const {
   riskControl: {
@@ -36,6 +42,7 @@ const {
     },
   },
 } = codes;
+const { riskLevelList } = lecSettings;
 
 @connect(({ safetyChecklist, user }) => ({
   user,
@@ -106,8 +113,10 @@ export default class SafetyChecklist extends Component {
       callback: (data) => {
         // 如果存在，询问是否同步
         if (data && data.id) {
+          const { code, riskAnalyze } = data;
+          const label = this.generateriskAnalyzeLabel(riskAnalyze);
           Modal.confirm({
-            title: `系统检测到上一次评价记录，编号为20190628150346，评估法（LS),是否需要同步该信息？`,
+            title: `系统检测到上一次评价记录，编号为${code}，评估法（${label}),是否需要同步该信息？`,
             okText: '确定',
             cancelText: '取消',
             onOk: () => {
@@ -185,6 +194,9 @@ export default class SafetyChecklist extends Component {
   handleView = row => {
     this.setState({ detail: row, handleModalVisible: true, isDetail: true });
   }
+
+  // 根据key生成风险分析方法
+  generateriskAnalyzeLabel = (value, key = 'shortLabel') => analysisFunDict[value - 1][key];
 
   render () {
     const {
@@ -273,12 +285,12 @@ export default class SafetyChecklist extends Component {
       {
         dataIndex: 'riskAnalyze',
         title: '风险分析方法',
-        render: value => value || <EmptyText />,
+        render: value => value ? this.generateriskAnalyzeLabel(value, 'label') : <EmptyText />,
       },
       {
         dataIndex: 'highRiskLevel',
         title: '最高风险等级',
-        render: value => value || <EmptyText />,
+        render: value => value ? (<span style={{ color: (riskLevelList.find(item => item.colorName === value + '色') || {}).color }}>{value}</span>) : <EmptyText />,
       },
       {
         dataIndex: 'evaluateNum',
@@ -345,13 +357,13 @@ export default class SafetyChecklist extends Component {
               >
                 新增SCL评价记录
               </AuthButton>,
-              // <Button
-              //   href=""
-              //   target="_blank"
-              //   style={{ marginRight: '10px' }}
-              // >
-              //   模板下载
-              // </Button>,
+              <Button
+                href="http://data.jingan-china.cn/v2/chem/file/SCL分析.xls"
+                target="_blank"
+                style={{ marginRight: '10px' }}
+              >
+                模板下载
+              </Button>,
               <ImportModal
                 action={'/acloud_new/v2/safeCheck/importSafeCheck'}
                 onUploadSuccess={this.handleSearch}

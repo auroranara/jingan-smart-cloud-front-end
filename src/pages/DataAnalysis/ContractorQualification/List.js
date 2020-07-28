@@ -192,7 +192,7 @@ export default class ContractorQualification extends PureComponent {
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
-      user: { isCompany },
+      // user: { isCompany },
     } = this.props;
     const { operationCategory } = this.state;
     return (
