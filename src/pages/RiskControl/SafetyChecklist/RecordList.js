@@ -45,10 +45,25 @@ export default class SafetyChecklist extends Component {
 
   state = {
     formData: {},
+    info: {},
   };
 
   componentDidMount () {
+    const {
+      dispatch,
+      match: { params: { id } },
+    } = this.props;
     this.onSearch();
+    // 获取评价记录信息
+    dispatch({
+      type: 'safetyChecklist/fetchSafeChecklist',
+      payload: { pageNum: 1, pageSize: 10, id },
+      callback: data => {
+        if (data && data.list) {
+          this.setState({ info: data.list[0] });
+        }
+      },
+    });
   }
 
   onSearch = values => {
@@ -122,7 +137,7 @@ export default class SafetyChecklist extends Component {
       },
       location: { query: { riskAnalyze } }, // 风险分析方法 lec:1 ls:2
     } = this.props;
-    const { formData } = this.state;
+    const { formData, info } = this.state;
     // 表单配置对象
     const fields = [
       {
@@ -219,6 +234,12 @@ export default class SafetyChecklist extends Component {
       <PageHeaderLayout
         breadcrumbList={BREADCRUMB_LIST}
         title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
+        content={(
+          <div>
+            <span style={{ marginRight: '30px' }}>风险点：{info.riskPointName}</span>
+            <span>装置/设备/设施：{info.equip}</span>
+          </div>
+        )}
       >
         <Form ref={form => this.form = form} fields={fields} onSearch={this.onSearch} onReset={this.onSearch} />
         <Table

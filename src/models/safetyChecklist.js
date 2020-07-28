@@ -28,12 +28,14 @@ export default {
   },
   effects: {
     // 获取安全检查表-SCL分析列表
-    *fetchSafeChecklist ({ payload }, { call, put }) {
+    *fetchSafeChecklist ({ payload, callback }, { call, put }) {
       const res = yield call(fetchSafeChecklist, payload);
+      const data = res && res.code === 200 && res.data ? res.data : defaultData;
       yield put({
         type: 'saveChecklist',
-        payload: res && res.code === 200 && res.data ? res.data : defaultData,
-      })
+        payload: data,
+      });
+      callback && callback(data);
     },
     // 判断风险点是否存在
     *judgeRiskPoint ({ payload, callback }, { call }) {

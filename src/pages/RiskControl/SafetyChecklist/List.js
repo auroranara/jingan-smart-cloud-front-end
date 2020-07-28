@@ -79,6 +79,10 @@ export default class SafetyChecklist extends Component {
       if (success) {
         message.success('操作成功');
         this.setState({ handleModalVisible: false });
+        if (!(detail && detail.id) && res.data.id) {
+          router.push(`/risk-control/safety-checklist/${res.data.id}/record/add`)
+          return;
+        }
         this.onSearch(formData);
       } else {
         message.error(res && res.msg ? res.msg : '操作失败');
@@ -148,6 +152,11 @@ export default class SafetyChecklist extends Component {
 
   // 跳转到新增评价项
   jumpToAddRecord = row => {
+    router.push(`/risk-control/safety-checklist/${row.id}/record/add?riskAnalyze=${row.riskAnalyze}`);
+  }
+
+  // 跳转到评价项列表
+  jumpToRecordList = row => {
     router.push(`/risk-control/safety-checklist/${row.id}/record?riskAnalyze=${row.riskAnalyze}`);
   }
 
@@ -269,7 +278,7 @@ export default class SafetyChecklist extends Component {
       },
       {
         dataIndex: 'evaluateDate',
-        title: '评价日期',
+        title: '创建时间',
         render: value => value ? moment(value).format('YYYY-MM-DD') : <EmptyText />,
       },
       {
@@ -295,7 +304,7 @@ export default class SafetyChecklist extends Component {
       {
         dataIndex: 'evaluateNum',
         title: '评价项目',
-        render: (value, row) => isNaN(value) ? <EmptyText /> : (<AuthA code={recordListCode} onClick={() => this.jumpToAddRecord(row)}>{value}</AuthA>),
+        render: (value, row) => isNaN(value) ? <EmptyText /> : (<AuthA code={recordListCode} onClick={() => this.jumpToRecordList(row)}>{value}</AuthA>),
       },
       {
         dataIndex: '操作',

@@ -511,7 +511,7 @@ export default class RecordHandle extends Component {
             </FormItem>
             <FormItem label="可能发生的事故类型及后果">
               {getFieldDecorator('hiddenTypeResult', {
-                rules: [{ required: true, message: '请输入可能发生的事故类型及后果' }],
+                rules: [{ required: true, message: '请选择可能发生的事故类型及后果' }],
               })(
                 <Select
                   mode="multiple"

@@ -75,9 +75,9 @@ export default class HandleModal extends Component {
     const {
       dispatch,
       form: { getFieldValue },
-      user: { isCompany },
+      user: { isCompany, currentUser },
     } = this.props;
-    const company = isCompany ? undefined : getFieldValue('company');
+    const company = isCompany ? { value: currentUser.companyId } : getFieldValue('company');
     dispatch({
       type: 'riskPointManage/fetchRiskList',
       payload: {
