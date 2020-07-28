@@ -160,9 +160,8 @@ rl.question('模块英文名（必填）：', answer => {
                 0,
                 hasParentLocale
                   ? insertContent
-                  : `
-            '${parentLocale}': '${parentLabel}',
-          ${insertContent}`
+                  : `  '${parentLocale}': '${parentLabel}',
+${insertContent}`
               );
               const content = list.join('\n');
               fs.writeFile('../src/locales/zh-CN.js', content, err => {
