@@ -8,7 +8,6 @@ export const DETAIL_API = `$namespace/getDetail`;
 export const ADD_API = `$namespace/add`;
 export const EDIT_API = `$namespace/edit`;
 export const DELETE_API = `$namespace/delete`;
-export const LIST_CODE = '$listCode';
 export const DETAIL_CODE = '$detailCode';
 export const ADD_CODE = '$addCode';
 export const EDIT_CODE = '$editCode';

@@ -40,6 +40,9 @@ rl.question('模块英文名（必填）：', answer => {
           const detailLocale = `${locale}.detail`;
           const addLocale = `${locale}.add`;
           const editLocale = `${locale}.edit`;
+          const pageDir = `${parentNamespace[0].toUpperCase()}${parentNamespace.slice(
+            1
+          )}/${namespace[0].toUpperCase()}${namespace.slice(1)}`;
 
           // 创建model
           fs.readFile('./template/model.js', (err, data) => {
@@ -69,9 +72,6 @@ rl.question('模块英文名（必填）：', answer => {
           });
 
           // 创建页面
-          const pageDir = `${parentNamespace[0].toUpperCase()}${parentNamespace.slice(
-            1
-          )}/${namespace[0].toUpperCase()}${namespace.slice(1)}`;
           const from = './template/page';
           const to = `../src/pages/${pageDir}`;
           const cb = (from, to) => {
@@ -140,16 +140,17 @@ rl.question('模块英文名（必填）：', answer => {
   '${detailLocale}': '${label}详情',
   '${addLocale}': '新增${label}',
   '${editLocale}': '编辑${label}',`;
-              const list = data.toString().split('\r\n');
+              const list = data.toString().split('\n');
               let insertIndex = list.length,
                 hasParentLocale = false;
               for (let i = 0; i < list.length; i++) {
-                if (list[i].includes(parentNamespace)) {
+                const arr = list[i].split('.');
+                if (arr[1] === parentNamespace) {
                   insertIndex = i + 1;
                   hasParentLocale = true;
                 } else if (insertIndex !== list.length) {
                   break;
-                } else if (list[i].includes('app.')) {
+                } else if (arr[0].includes('app')) {
                   insertIndex = i;
                   break;
                 }
@@ -160,10 +161,10 @@ rl.question('模块英文名（必填）：', answer => {
                 hasParentLocale
                   ? insertContent
                   : `
-  '${parentLocale}': '${parentLabel}',
-${insertContent}`
+            '${parentLocale}': '${parentLabel}',
+          ${insertContent}`
               );
-              const content = list.join('\r\n');
+              const content = list.join('\n');
               fs.writeFile('../src/locales/zh-CN.js', content, err => {
                 if (!err) {
                   console.log('../src/locales/zh-CN.js修改成功');
@@ -179,25 +180,31 @@ ${insertContent}`
           // 修改router
           fs.readFile('../config/router.config.js', (err, data) => {
             if (!err) {
-              const list = data.toString().split('\r\n');
+              const list = data.toString().split('\n');
               let count = 0,
                 flag = false,
-                insertIndex = 0,
+                insertIndex = list.length,
                 hasParentRouter = false;
               for (let i = 0; i < list.length; i++) {
                 if (list[i].includes('BasicLayout')) {
                   flag = true;
                 } else if (flag) {
+                  if (list[i].trim().startsWith('/') || list[i].trim().startsWith('*')) {
+                    continue;
+                  }
                   if (list[i].includes(`'${parentNamespace}'`)) {
                     count = 0;
                     hasParentRouter = true;
-                  } else if (list[i].includes('[')) {
-                    count += 1;
-                  } else if (list[i].includes(']')) {
-                    count -= 1;
-                    if (count === 0) {
-                      insertIndex = i;
-                      break;
+                  } else {
+                    if (list[i].includes('[')) {
+                      count += 1;
+                    }
+                    if (list[i].includes(']')) {
+                      count -= 1;
+                      if (count === 0) {
+                        insertIndex = i;
+                        break;
+                      }
                     }
                   }
                 }
@@ -258,7 +265,7 @@ ${insertContent}
           ],
         },`
               );
-              const content = list.join('\r\n');
+              const content = list.join('\n');
               fs.writeFile('../config/router.config.js', content, err => {
                 if (!err) {
                   console.log('../config/router.config.js修改成功');
