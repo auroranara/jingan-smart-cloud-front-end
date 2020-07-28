@@ -513,7 +513,10 @@ export default connect(
                               <EmptyText />
                             ),
                           getValueFromEvent: getSelectValueFromEvent,
-                          rules: [{ required: true, message: '请选择单位名称' }],
+                          rules:
+                            name !== 'detail'
+                              ? [{ required: true, message: '请选择单位名称' }]
+                              : undefined,
                           col: !isUnit ? COL : HIDDEN_COL,
                         },
                         {
@@ -527,10 +530,13 @@ export default connect(
                             ) : (
                               <EmptyText />
                             ),
-                          rules: [
-                            { required: true, massage: '请输入工艺名称/分析节点' },
-                            { whitespace: true, message: '工艺名称/分析节点不能为空格' },
-                          ],
+                          rules:
+                            name !== 'detail'
+                              ? [
+                                  { required: true, message: '请输入工艺名称/分析节点' },
+                                  { whitespace: true, message: '工艺名称/分析节点不能为空格' },
+                                ]
+                              : undefined,
                           col: COL,
                         },
                         {
@@ -598,7 +604,10 @@ export default connect(
                               <EmptyText />
                             ),
                           getValueFromEvent: getSelectValueFromEvent,
-                          rules: [{ required: true, message: '请选择负责人' }],
+                          rules:
+                            name !== 'detail'
+                              ? [{ required: true, message: '请选择负责人' }]
+                              : undefined,
                           col: COL,
                         },
                         {
@@ -630,7 +639,7 @@ export default connect(
                           children:
                             name !== 'detail' ? (
                               <DatePicker
-                                className={styles.rangePicker}
+                                className={styles.datePicker}
                                 placeholder="请选择"
                                 format={FORMAT}
                                 allowClear={false}
@@ -640,7 +649,10 @@ export default connect(
                             ) : (
                               <EmptyText />
                             ),
-                          rules: [{ required: true, message: '请选择时间' }],
+                          rules:
+                            name !== 'detail'
+                              ? [{ required: true, message: '请选择时间' }]
+                              : undefined,
                           col: COL,
                         },
                         {
@@ -648,7 +660,7 @@ export default connect(
                           label: '附件',
                           children:
                             name !== 'detail' ? (
-                              <Upload folder="HAZOP" />
+                              <Upload />
                             ) : detail.fileList && detail.fileList.length ? (
                               <div className={styles.fileList}>
                                 {detail.fileList.map((item, index) => (
@@ -662,14 +674,17 @@ export default connect(
                             ) : (
                               <EmptyText />
                             ),
-                          rules: [
-                            {
-                              required: true,
-                              type: 'array',
-                              min: 1,
-                              message: '请上传附件',
-                            },
-                          ],
+                          rules:
+                            name !== 'detail'
+                              ? [
+                                  {
+                                    required: true,
+                                    type: 'array',
+                                    min: 1,
+                                    message: '请上传附件',
+                                  },
+                                ]
+                              : undefined,
                           col: COL,
                         },
                         {
