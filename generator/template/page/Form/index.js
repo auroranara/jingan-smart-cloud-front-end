@@ -403,10 +403,10 @@ export default connect(
       return value => {
         clearTimeout(timer);
         timer = setTimeout(() => {
-          const { department } = form.getFieldsValue();
-          if (department) {
+          const { company } = form.getFieldsValue();
+          if (company) {
             getPersonList({
-              departmentId: department.key,
+              companyId: company.key,
               name: value && value.trim(),
             });
           }
@@ -559,11 +559,11 @@ export default connect(
                                           const {
                                             pagination: { pageNum },
                                           } = personList;
-                                          const { department } = form.getFieldsValue();
+                                          const { company } = form.getFieldsValue();
                                           setAppendingPersonList(true);
                                           getPersonList(
                                             {
-                                              departmentId: department.key,
+                                              companyId: company.key,
                                               pageNum: pageNum + 1,
                                             },
                                             () => {
