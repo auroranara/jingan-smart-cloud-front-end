@@ -228,7 +228,7 @@ export default connect(
       params: { id },
     },
     route: { name },
-    location: { query },
+    location: { pathname, query },
     unitId,
     unitName,
     isUnit,
@@ -363,7 +363,7 @@ export default connect(
           );
         }
       },
-      [id, name]
+      [pathname]
     );
     // 单位选择器search事件
     const onCompanySelectSearch = useMemo(() => {
@@ -372,7 +372,7 @@ export default connect(
         clearTimeout(timer);
         timer = setTimeout(() => {
           getCompanyList({
-            label: value && value.trim(),
+            name: value && value.trim(),
           });
         }, 300);
       };
@@ -400,11 +400,11 @@ export default connect(
       return value => {
         clearTimeout(timer);
         timer = setTimeout(() => {
-          const { department } = form.getFieldsValue();
-          if (department) {
+          const { company } = form.getFieldsValue();
+          if (company) {
             getPersonList({
-              departmentId: department.key,
-              label: value && value.trim(),
+              companyId: company.key,
+              name: value && value.trim(),
             });
           }
         }, 300);
@@ -510,7 +510,10 @@ export default connect(
                               <EmptyText />
                             ),
                           getValueFromEvent: getSelectValueFromEvent,
-                          rules: [{ required: true, message: '请选择单位名称' }],
+                          rules:
+                            name !== 'detail'
+                              ? [{ required: true, message: '请选择单位名称' }]
+                              : undefined,
                           col: !isUnit ? COL : HIDDEN_COL,
                         },
                         {
@@ -524,10 +527,13 @@ export default connect(
                             ) : (
                               <EmptyText />
                             ),
-                          rules: [
-                            { required: true, massage: '请输入名称' },
-                            { whitespace: true, message: '名称不能为空格' },
-                          ],
+                          rules:
+                            name !== 'detail'
+                              ? [
+                                  { required: true, message: '请输入名称' },
+                                  { whitespace: true, message: '名称不能为空格' },
+                                ]
+                              : undefined,
                           col: COL,
                         },
                         {
@@ -556,11 +562,11 @@ export default connect(
                                           const {
                                             pagination: { pageNum },
                                           } = personList;
-                                          const { department } = form.getFieldsValue();
+                                          const { company } = form.getFieldsValue();
                                           setAppendingPersonList(true);
                                           getPersonList(
                                             {
-                                              departmentId: department.key,
+                                              companyId: company.key,
                                               pageNum: pageNum + 1,
                                             },
                                             () => {
@@ -595,7 +601,10 @@ export default connect(
                               <EmptyText />
                             ),
                           getValueFromEvent: getSelectValueFromEvent,
-                          rules: [{ required: true, message: '请选择负责人' }],
+                          rules:
+                            name !== 'detail'
+                              ? [{ required: true, message: '请选择负责人' }]
+                              : undefined,
                           col: COL,
                         },
                         {
@@ -627,7 +636,7 @@ export default connect(
                           children:
                             name !== 'detail' ? (
                               <DatePicker
-                                className={styles.rangePicker}
+                                className={styles.datePicker}
                                 placeholder="请选择"
                                 format={FORMAT}
                                 allowClear={false}
@@ -637,7 +646,10 @@ export default connect(
                             ) : (
                               <EmptyText />
                             ),
-                          rules: [{ required: true, message: '请选择评定时间' }],
+                          rules:
+                            name !== 'detail'
+                              ? [{ required: true, message: '请选择评定时间' }]
+                              : undefined,
                           col: COL,
                         },
                         {
@@ -645,7 +657,7 @@ export default connect(
                           label: '分析报告附件',
                           children:
                             name !== 'detail' ? (
-                              <Upload folder="HAZOP" />
+                              <Upload />
                             ) : detail.otherFileList && detail.otherFileList.length ? (
                               <div className={styles.fileList}>
                                 {detail.otherFileList.map((item, index) => (
@@ -659,14 +671,17 @@ export default connect(
                             ) : (
                               <EmptyText />
                             ),
-                          rules: [
-                            {
-                              required: true,
-                              type: 'array',
-                              min: 1,
-                              message: '请上传分析报告附件',
-                            },
-                          ],
+                          rules:
+                            name !== 'detail'
+                              ? [
+                                  {
+                                    required: true,
+                                    type: 'array',
+                                    min: 1,
+                                    message: '请上传分析报告附件',
+                                  },
+                                ]
+                              : undefined,
                           col: COL,
                         },
                         {
