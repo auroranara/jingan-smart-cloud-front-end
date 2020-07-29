@@ -4,20 +4,19 @@ import { isPointInPolygon } from '@/utils/map';
 import styles from './Map.less';
 
 import dotImg from './img/dot.png';
-import billImg from './img/icon-bill.png';
 
 // 风险等级1红 2橙 3黄 4蓝
 const COLORS = [
   'rgba(254, 0, 3, 0.5)',
   'rgba(236, 106, 52, 0.5)',
   'rgba(236, 242, 65, 0.5)',
-  'rgba(20, 35, 196, 0.5)',
+  'rgba(0, 0, 0, 0.25)',
 ];
 const StrokeColors = {
   'rgba(254, 0, 3, 0.5)': 'rgba(254, 0, 3, 1)',
   'rgba(236, 106, 52, 0.5)': 'rgba(236, 106, 52, 1)',
   'rgba(236, 242, 65, 0.5)': 'rgba(236, 242, 65, 1)',
-  'rgba(20, 35, 196, 0.5)': 'rgba(20, 35, 196, 1)',
+  'rgba(0, 0, 0, 0.25)': 'rgba(0, 0, 0, 1)',
 };
 const selectedColor = 'rgb(245,245,245, 0.5)';
 
@@ -52,6 +51,7 @@ export default class JoySuchMap extends React.Component {
     const { mapInfo: prevMapInfo } = prevProps;
     const { mapInfo } = this.props;
     if (JSON.stringify(prevMapInfo) !== JSON.stringify(mapInfo)) {
+      this.handleDispose();
       this.initMap(mapInfo);
     }
   }
@@ -67,11 +67,11 @@ export default class JoySuchMap extends React.Component {
         points: tool.MercatorToWGS84(points),
         color: COLORS[3],
       });
-    this.addPoint(+points[0].floorId, tool.MercatorToWGS84(points)[0], {
-      image: billImg,
-      width: 46,
-      height: 46,
-    });
+    // this.addPoint(+points[0].floorId, tool.MercatorToWGS84(points)[0], {
+    //   image: billImg,
+    //   width: 46,
+    //   height: 46,
+    // });
   };
 
   handleDispose = () => {
@@ -326,18 +326,9 @@ export default class JoySuchMap extends React.Component {
       color: currColor,
     });
     map.removeMarker(lineMarker);
-    map.removeMarker(pointMarkers[0]);
-    // pointMarkers.shift();
-    const pointMarker = this.addPoint(groupId, linePoints[0], {
-      image: billImg,
-      width: 46,
-      height: 46,
-    });
-    // pointMarkers.push(pointMarker);
-    pointMarkers[0] = pointMarker;
 
     onChange &&
-      onChange(tool.WGS84ToMercator(linePoints).map(item => ({ x: item.x, y: item.y, z: 0 })));
+      onChange(tool.WGS84ToMercator(linePoints).map(item => ({ x: item.x, y: item.y, z: 0, floorId: +groupId })));
     // handleChangeMapSelect && handleChangeMapSelect(linePoints, []);
   };
 

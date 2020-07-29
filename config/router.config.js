@@ -1846,6 +1846,43 @@ module.exports = env => {
                 },
               ],
             },
+            // 风险区域划分
+            {
+              path: '/risk-control/risk-area',
+              code: 'riskControl.riskArea',
+              name: 'riskArea',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/risk-area',
+                  redirect: '/risk-control/risk-area/list',
+                },
+                {
+                  path: '/risk-control/risk-area/list',
+                  code: 'riskControl.riskArea.list',
+                  name: 'list',
+                  component: './RiskControl/RiskArea',
+                },
+                {
+                  path: '/risk-control/risk-area/detail/:id',
+                  code: 'riskControl.riskArea.view',
+                  name: 'detail',
+                  component: './RiskControl/RiskArea/Edit',
+                },
+                {
+                  path: '/risk-control/risk-area/add',
+                  code: 'riskControl.riskArea.add',
+                  name: 'add',
+                  component: './RiskControl/RiskArea/Edit',
+                },
+                {
+                  path: '/risk-control/risk-area/edit/:id',
+                  code: 'riskControl.riskArea.edit',
+                  name: 'edit',
+                  component: './RiskControl/RiskArea/Edit',
+                },
+              ],
+            },
           ],
         },
 
