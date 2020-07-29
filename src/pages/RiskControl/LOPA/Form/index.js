@@ -18,7 +18,6 @@ import Upload from '@/jingan-components/Form/Upload';
 import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
-import { stringify } from 'qs';
 import { NAMESPACE, DETAIL_NAME, DETAIL_API, ADD_API, EDIT_API, LIST_PATH } from '../config';
 import {
   FORMAT,
@@ -218,7 +217,8 @@ export default connect(
         props.loadingDepartmentTree === nextProps.loadingDepartmentTree &&
         props.personList === nextProps.personList &&
         props.loadingPersonList === nextProps.loadingPersonList &&
-        props.location.pathname === nextProps.location.pathname
+        props.location.pathname === nextProps.location.pathname &&
+        props.location.search === nextProps.location.search
       );
     },
   }
@@ -228,7 +228,7 @@ export default connect(
       params: { id },
     },
     route: { name },
-    location: { pathname, query },
+    location: { pathname, search, query },
     unitId,
     unitName,
     isUnit,
@@ -280,15 +280,6 @@ export default connect(
               } else {
                 // 重置初始值
                 form.resetFields();
-                // 如果当前账号是单位账号，则获取部门列表和人员列表
-                if (isUnit) {
-                  getDepartmentTree({
-                    companyId: unitId,
-                  });
-                  getPersonList({
-                    companyId: unitId,
-                  });
-                }
               }
             }
           );
@@ -310,7 +301,7 @@ export default connect(
           getCompanyList();
         }
       },
-      [id]
+      [pathname]
     );
     // 面包屑
     const breadcrumbList = useMemo(
@@ -326,12 +317,12 @@ export default connect(
           {
             title: '保护层分析（LOPA）',
             name: '保护层分析（LOPA）',
-            href: `${LIST_PATH}${query ? `?${stringify(query)}` : ''}`,
+            href: `${LIST_PATH}${search}`,
           },
           { title: title, name: title },
         ];
       },
-      [name]
+      [name, search]
     );
     // 表单finish事件
     const onFinish = useCallback(
@@ -363,7 +354,7 @@ export default connect(
           );
         }
       },
-      [pathname]
+      [pathname, search]
     );
     // 单位选择器search事件
     const onCompanySelectSearch = useMemo(() => {
@@ -420,7 +411,7 @@ export default connect(
     }, []);
     return (
       <PageHeaderLayout
-        key={name}
+        key={`${name}${search}`}
         breadcrumbList={breadcrumbList}
         title={breadcrumbList[breadcrumbList.length - 1].title}
       >

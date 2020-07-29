@@ -24,6 +24,7 @@ export const HIDDEN_COL = {
   span: 0,
 };
 export const FORMAT = 'YYYY-MM-DD';
+export const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const RANGE_PICKER_PLACEHOLDER = ['开始时间', '结束时间'];
 // 空值
 export const EmptyText = () => <span style={{ color: 'rgba(0, 0, 0, 0.45)' }}>---</span>;

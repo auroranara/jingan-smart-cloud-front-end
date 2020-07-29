@@ -1,4 +1,10 @@
-import { getCompanyList, getDepartmentTree, getPersonList } from '@/services/dict';
+import {
+  getCompanyList,
+  getDepartmentTree,
+  getPersonList,
+  getGridTree,
+  getCompanyNatureList,
+} from '@/services/dict';
 
 export default {
   namespace: 'dict',
@@ -7,6 +13,8 @@ export default {
     companyList: {},
     departmentTree: [],
     personList: {},
+    gridTree: [],
+    companyNatureList: [],
   },
 
   effects: {
@@ -81,6 +89,53 @@ export default {
           },
         });
         callback && callback(true, personList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getGridTree({ payload, callback }, { call, put }) {
+      const response = yield call(getGridTree, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const transform = list =>
+          list
+            ? list.map(item => ({
+                key: item.grid_id,
+                value: item.grid_id,
+                title: item.grid_name,
+                children: transform(item.children),
+              }))
+            : [];
+        const gridTree = transform(data.list);
+        yield put({
+          type: 'save',
+          payload: {
+            gridTree,
+          },
+        });
+        callback && callback(true, gridTree);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getCompanyNatureList({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyNatureList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const companyNatureList = data.list.map(item => ({
+          key: item.id,
+          value: item.id,
+          label: item.label,
+          children: item.label,
+          data: item,
+        }));
+        yield put({
+          type: 'save',
+          payload: {
+            companyNatureList,
+          },
+        });
+        callback && callback(true, companyNatureList);
       } else {
         callback && callback(false, msg);
       }
