@@ -187,14 +187,14 @@ export const lecSettings = {
       range: value => value >= 160 && value <= 319,
       level: '2',
       colorName: '橙色',
-      color: '#ffc000',
+      color: 'orange',
       degree: '较大风险',
     },
     {
       range: value => value >= 70 && value <= 159,
       level: '3',
       colorName: '黄色',
-      color: '#ffff00',
+      color: '#FFCC33',
       degree: '一般风险',
     },
     {
@@ -339,14 +339,14 @@ export const lsSettings = {
       range: value => value >= 15 && value <= 16,
       level: '2',
       colorName: '橙色',
-      color: '#ffc000',
+      color: 'orange',
       degree: '较大风险',
     },
     {
       range: value => value >= 9 && value <= 12,
       level: '3',
       colorName: '黄色',
-      color: '#ffff00',
+      color: '#FFCC33',
       degree: '一般风险',
     },
     {
