@@ -338,7 +338,7 @@ export default connect(
           {
             title: '区域固有风险分析（LS）',
             name: '区域固有风险分析（LS）',
-            href: `${LIST_PATH}${search}`,
+            href: `${LIST_PATH}${search && (search.startsWith('?') ? search : `?${search}`)}`,
           },
           { title: title, name: title },
         ];

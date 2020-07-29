@@ -364,11 +364,19 @@ export default connect(
             title: '操作',
             render: (_, data) => (
               <Fragment>
-                <Link to={`${DETAIL_PATH}/${data.id}${search}`} disabled={!hasDetailAuthority}>
+                <Link
+                  to={`${DETAIL_PATH}/${data.id}${search &&
+                    (search.startsWith('?') ? search : `?${search}`)}`}
+                  disabled={!hasDetailAuthority}
+                >
                   查看
                 </Link>
                 <Divider type="vertical" />
-                <Link to={`${EDIT_PATH}/${data.id}${search}`} disabled={!hasEditAuthority}>
+                <Link
+                  to={`${EDIT_PATH}/${data.id}${search &&
+                    (search.startsWith('?') ? search : `?${search}`)}`}
+                  disabled={!hasEditAuthority}
+                >
                   编辑
                 </Link>
                 <Divider type="vertical" />
@@ -603,7 +611,8 @@ export default connect(
                             </Button>
                             <Button
                               type="primary"
-                              href={`#${ADD_PATH}${search}`}
+                              href={`#${ADD_PATH}${search &&
+                                (search.startsWith('?') ? search : `?${search}`)}`}
                               disabled={!hasAddAuthority}
                             >
                               新增
