@@ -180,20 +180,14 @@ export default class SpecialEquipmentDrawer extends PureComponent {
                   label: '分类',
                   render: ({ category }) => {
                     let dictData = dict;
+                    const cat = typeof category === 'string' ? category.split(',').filter(s => s) : []
                     return (
-                      <span style={{ paddingRight: '2em', display: 'inline-block' }}>
-                        {category
-                          ? category
-                              .split(',')
-                              .reduce((arr, val) => {
-                                const target = dictData.find(item => item.id === val) || {};
-                                dictData = target.children;
-                                return [...arr, target.label];
-                              }, [])
-                              .join('>>')
-                          : ''}
-                      </span>
-                    );
+                      <span style={{ paddingRight: '2em', display: 'inline-block' }}>{cat.reduce((arr, val) => {
+                        const target = dictData.find(item => item.id === val) || {};
+                        dictData = target.children;
+                        return [...arr, target.label];
+                      }, []).join('>>')}</span>
+                    )
                   },
                 },
                 {

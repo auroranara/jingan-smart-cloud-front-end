@@ -135,7 +135,7 @@ export default class Edit extends PureComponent {
         coordinate,
         note,
       } = values;
-      const [longitude, latitude] = coordinate ? coordinate.split(',') : [];
+      const [latitude, longitude] = coordinate ? coordinate.split(',') : [];
       const vals = {
         companyId: companyId.key,
         environmentType,
@@ -164,7 +164,7 @@ export default class Edit extends PureComponent {
       const success = () => {
         const msg = id ? '编辑成功' : '新增成功';
         message.success(msg, 1);
-        setTimeout(this.goBack, 1000);
+        // setTimeout(this.goBack, 1000);
       };
 
       const error = () => {
@@ -225,12 +225,12 @@ export default class Edit extends PureComponent {
     // 获取坐标，值可能为undefined或"135.12123,141.4142"这样的格式
     const coordinate = getFieldValue('coordinate');
     const temp = coordinate && coordinate.split(',');
-    return temp && { longitude: +temp[0], latitude: +temp[1] };
+    return temp && { latitude: +temp[0], longitude: +temp[1] };
   };
 
   /**显示地图 */
   handleShowMap = () => {
-    const coord = this.getCoordinateFromInput();
+    let coord = this.getCoordinateFromInput();
     this.setState(({ map }) => ({
       map: {
         visible: true,
@@ -261,7 +261,7 @@ export default class Edit extends PureComponent {
       },
     } = this.state;
     // 将选中点的坐标放入输入框
-    setFieldsValue({ coordinate: `${longitude},${latitude}` });
+    setFieldsValue({ coordinate: `${latitude},${longitude}` });
     // 隐藏地图模态框
     this.handleHideMap();
   };

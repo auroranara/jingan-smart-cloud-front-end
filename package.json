@@ -16,6 +16,7 @@
     "build:demo": "cross-env PROJECT_ENV=demo ESLINT=none umi build",
     "build:cmw": "cross-env PROJECT_ENV=cmw ESLINT=none umi build",
     "build:five": "cross-env PROJECT_ENV=five ESLINT=none umi build",
+    "build:quechen": "cross-env PROJECT_ENV=quechen ESLINT=none umi build",
     "site": "npm run presite && npm run build && firebase deploy",
     "analyze": "cross-env ESLINT=none ANALYZE=1 umi build",
     "lint:style": "stylelint \"src/**/*.less\" --syntax less",
