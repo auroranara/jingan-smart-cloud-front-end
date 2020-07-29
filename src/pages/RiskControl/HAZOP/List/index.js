@@ -657,7 +657,7 @@ export default connect(
             pagination={{
               total,
               current: pageNum,
-              pageSize,
+              pageSize: 3,
               showTotal,
               showQuickJumper: true,
               showSizeChanger: true,
