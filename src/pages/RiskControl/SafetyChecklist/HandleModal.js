@@ -75,9 +75,8 @@ export default class HandleModal extends Component {
     const {
       dispatch,
       form: { getFieldValue },
-      user: { isCompany, currentUser },
     } = this.props;
-    const company = isCompany ? { value: currentUser.companyId } : getFieldValue('company');
+    const company = getFieldValue('company');
     dispatch({
       type: 'riskPointManage/fetchRiskList',
       payload: {
@@ -121,7 +120,7 @@ export default class HandleModal extends Component {
       riskPointManage: {
         riskPointData: riskPointModal,
       },
-      user: { isCompany },
+      user: { isCompany, currentUser },
     } = this.props;
     const { modalVisible } = this.state;
     const id = detail ? detail.id : undefined;
@@ -136,22 +135,20 @@ export default class HandleModal extends Component {
         {...isDetail ? [{ footer: null }] : []}
       >
         <Form>
-          {!isCompany && (
-            <FormItem label="单位名称" {...formWrapper}>
-              {isDetail ? detail.companyName : getFieldDecorator('company', {
-                rules: [
-                  {
-                    required: true,
-                    message: '单位名称不能为空',
-                    transform: value => value && value.label,
-                  },
-                ],
-                initialValue: id ? { value: detail.companyId, label: detail.companyName } : undefined,
-              })(
-                <CompanySelect {...itemProps} type={isDetail ? 'span' : 'select'} onChange={this.onCompanyChange} />
-              )}
-            </FormItem>
-          )}
+          <FormItem label="单位名称" {...formWrapper} style={isCompany ? { display: 'none' } : null} >
+            {isDetail ? detail.companyName : getFieldDecorator('company', {
+              rules: [
+                {
+                  required: true,
+                  message: '单位名称不能为空',
+                  transform: value => value && value.label,
+                },
+              ],
+              initialValue: isCompany ? { value: currentUser.companyId, label: currentUser.companyName } : id ? { value: detail.companyId, label: detail.companyName } : undefined,
+            })(
+              <CompanySelect {...itemProps} type={isDetail ? 'span' : 'select'} onChange={this.onCompanyChange} />
+            )}
+          </FormItem>
           <FormItem label="编号" {...formWrapper}>
             {isDetail ? detail.code : getFieldDecorator('code', {
               rules: [{ required: true, message: '请输入编号' }],

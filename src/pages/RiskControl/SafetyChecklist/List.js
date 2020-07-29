@@ -80,7 +80,7 @@ export default class SafetyChecklist extends Component {
         message.success('操作成功');
         this.setState({ handleModalVisible: false });
         if (!(detail && detail.id) && res.data.id) {
-          router.push(`/risk-control/safety-checklist/${res.data.id}/record/add`)
+          this.jumpToAddRecord(res.data);
           return;
         }
         this.onSearch(formData);
