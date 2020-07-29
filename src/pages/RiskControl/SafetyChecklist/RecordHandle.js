@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
-import { Card, Input, Button, Select, Row, Col, Upload, message, Table, DatePicker } from 'antd';
+import { Card, Input, Button, Select, Row, Col, Upload, message, Table, DatePicker, Divider, Tooltip } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { title as listTitlt, listPath } from './List';
 import { title as recordTitlt } from './RecordList';
 import CustomUpload from '@/jingan-components/CustomUpload';
-import { PlusOutlined, DownloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, DownloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { getToken } from 'utils/authority';
 import SignModal from '@/pages/RiskControl/RiskPointManage/SignModal.js';
 import styles from '@/pages/RiskControl/RiskPointManage/RiskPointEdit.less';
@@ -26,8 +26,8 @@ const folder = 'scl';
 const uploadAction = '/acloud_new/v2/uploadFile';
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const formItemLayout = {
-  labelCol: { span: 5 },
-  wrapperCol: { span: 13 },
+  labelCol: { span: 7 },
+  wrapperCol: { span: 15 },
 };
 
 
@@ -268,7 +268,7 @@ export default class RecordHandle extends Component {
     const riskItem = l && e && c ? lecSettings.riskLevelList.find(item => item.range(l * e * c)) : undefined;
     return (
       <div>
-        <h2 style={{ textAlign: 'center' }}>风险分析方法： LEC</h2>
+        <h2 style={{ display: 'inline-block', transform: 'translateX(-100%)', marginLeft: '31%' }}>风险分析方法： LEC</h2>
         <FormItem label="事件发生可能性（L）">
           {getFieldDecorator('l', {
             rules: [{ required: true, message: '请选择事件发生可能性（L）' }],
@@ -329,42 +329,36 @@ export default class RecordHandle extends Component {
             />
           )}
         </FormItem>
-        <Row>
-          <Col flex="auto">
-            <FormItem label="评估风险值（D）：" {...formItemLayout} style={{ margin: '0' }}>
-              {l && e && c ? `${l}×${e}×${c}=${l * e * c}` : ''}
-            </FormItem>
-            <span style={{ marginBottom: '24px', display: 'block', fontSize: '13px' }}>（备注：D=L×E×C）</span>
-            <FormItem label="风险级别：" {...formItemLayout}>
-              {riskItem ? riskItem.level + '级' : ''}
-            </FormItem>
-            <FormItem label="风险等级：" {...formItemLayout}>
-              {riskItem ? riskItem.colorName : ''}
-            </FormItem>
-            <FormItem label="风险程度：" {...formItemLayout}>
-              {riskItem ? riskItem.degree : ''}
-            </FormItem>
-            <FormItem label="评估人员：" {...formItemLayout}>
-              {getFieldDecorator('evaluatePer', {
-                rules: [{ required: true, message: '请输入评估人员' }],
-              })(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-            <FormItem label="评估日期：" {...formItemLayout}>
-              {getFieldDecorator('evaluateDate', {
-                rules: [{ required: true, message: '请选择评估日期' }],
-              })(
-                <DatePicker allowClear style={{ width: '100%' }} />
-              )}
-            </FormItem>
-          </Col>
-          <Col flex="680px">
-            <FormItem label="风险等级判断标准：">
-              <img style={{ width: '680px', height: '280px', objectFit: 'contain' }} src={standardImgLec} alt="standard" />
-            </FormItem>
-          </Col>
-        </Row>
+        <FormItem label={(<span>评估风险值（D）：<Tooltip title="备注：D=L×E×C"><InfoCircleOutlined style={{ color: 'gray', cursor: 'pointer', verticalAlign: 'middle' }} /></Tooltip></span>)} {...formItemLayout}>
+          <Input value={l && e && c ? `${l}×${e}×${c}=${l * e * c}` : ''} disabled style={{ width: '300px' }} />
+        </FormItem>
+        <FormItem label="风险级别：" {...formItemLayout}>
+          <Input value={riskItem ? riskItem.level + '级' : ''} disabled style={{ width: '300px' }} />
+        </FormItem>
+        <FormItem label="风险等级：" {...formItemLayout}>
+          <Input value={riskItem ? riskItem.colorName : ''} disabled style={{ width: '300px' }} />
+        </FormItem>
+        <FormItem label="风险程度：" {...formItemLayout}>
+          <Input value={riskItem ? riskItem.degree : ''} disabled style={{ width: '300px' }} />
+        </FormItem>
+        <FormItem label="风险等级判断标准：">
+          <img style={{ width: '760px', height: '260px', objectFit: 'contain' }} src={standardImgLec} alt="standard" />
+        </FormItem>
+        <Divider type="horizontal" />
+        <FormItem label="评估人员：" {...formItemLayout}>
+          {getFieldDecorator('evaluatePer', {
+            rules: [{ required: true, message: '请输入评估人员' }],
+          })(
+            <Input placeholder="请输入" {...itemStyles} />
+          )}
+        </FormItem>
+        <FormItem label="评估日期：" {...formItemLayout}>
+          {getFieldDecorator('evaluateDate', {
+            rules: [{ required: true, message: '请选择评估日期' }],
+          })(
+            <DatePicker allowClear {...itemStyles} />
+          )}
+        </FormItem>
       </div>
     )
   }
@@ -379,7 +373,7 @@ export default class RecordHandle extends Component {
 
     return (
       <div>
-        <h2 style={{ textAlign: 'center' }}>风险分析方法： LS</h2>
+        <h2 style={{ display: 'inline-block', transform: 'translateX(-100%)', marginLeft: '31%' }}>风险分析方法： LS</h2>
         <FormItem label="事件发生可能性（L）">
           {getFieldDecorator('l', {
             rules: [{ required: true, message: '请选择事件发生可能性（L）' }],
@@ -420,42 +414,38 @@ export default class RecordHandle extends Component {
             />
           )}
         </FormItem>
-        <Row>
-          <Col flex="auto">
-            <FormItem label="评估风险值（R）：" {...formItemLayout} style={{ margin: '0' }}>
-              {l && s ? `${l}×${s}=${l * s}` : ''}
-            </FormItem>
-            <span style={{ marginBottom: '24px', display: 'block', fontSize: '13px' }}>（备注：R=L×S）</span>
-            <FormItem label="风险级别：" {...formItemLayout}>
-              {riskItem ? riskItem.level + '级' : ''}
-            </FormItem>
-            <FormItem label="风险等级：" {...formItemLayout}>
-              {riskItem ? riskItem.colorName : ''}
-            </FormItem>
-            <FormItem label="风险程度：" {...formItemLayout}>
-              {riskItem ? riskItem.degree : ''}
-            </FormItem>
-            <FormItem label="评估人员：" {...formItemLayout}>
-              {getFieldDecorator('evaluatePer', {
-                rules: [{ required: true, message: '请输入评估人员' }],
-              })(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-            <FormItem label="评估日期：" {...formItemLayout}>
-              {getFieldDecorator('evaluateDate', {
-                rules: [{ required: true, message: '请选择评估日期' }],
-              })(
-                <DatePicker allowClear style={{ width: '100%' }} />
-              )}
-            </FormItem>
-          </Col>
-          <Col flex="680px">
-            <FormItem label="风险等级判断标准：">
-              <img style={{ width: '680px', height: '280px', objectFit: 'contain' }} src={standardImgLs} alt="standard" />
-            </FormItem>
-          </Col>
-        </Row>
+        <FormItem
+          label={(<span>评估风险值（R）：<Tooltip title="备注：R=L×S"><InfoCircleOutlined style={{ color: 'gray', cursor: 'pointer', verticalAlign: 'middle' }} /></Tooltip></span>)}
+          {...formItemLayout}>
+          <Input value={l && s ? `${l}×${s}=${l * s}` : ''} disabled style={{ width: '300px' }} />
+        </FormItem>
+        <FormItem label="风险级别：" {...formItemLayout}>
+          <Input value={riskItem ? riskItem.level + '级' : ''} disabled style={{ width: '300px' }} />
+        </FormItem>
+        <FormItem label="风险等级：" {...formItemLayout}>
+          <Input value={riskItem ? riskItem.colorName : ''} disabled style={{ width: '300px' }} />
+        </FormItem>
+        <FormItem label="风险程度：" {...formItemLayout}>
+          <Input value={riskItem ? riskItem.degree : ''} disabled style={{ width: '300px' }} />
+        </FormItem>
+        <FormItem label="风险等级判断标准：">
+          <img style={{ width: '760px', height: '260px', objectFit: 'contain' }} src={standardImgLs} alt="standard" />
+        </FormItem>
+        <Divider type="horizontal" />
+        <FormItem label="评估人员：" {...formItemLayout}>
+          {getFieldDecorator('evaluatePer', {
+            rules: [{ required: true, message: '请输入评估人员' }],
+          })(
+            <Input placeholder="请输入" {...itemStyles} />
+          )}
+        </FormItem>
+        <FormItem label="评估日期：" {...formItemLayout}>
+          {getFieldDecorator('evaluateDate', {
+            rules: [{ required: true, message: '请选择评估日期' }],
+          })(
+            <DatePicker allowClear {...itemStyles} />
+          )}
+        </FormItem>
       </div>
     )
   }
@@ -498,7 +488,7 @@ export default class RecordHandle extends Component {
     return (
       <PageHeaderLayout title={title} breadcrumbList={BREADCRUMB_LIST}>
         <Card bordered={false}>
-          <Form layout="vertical">
+          <Form {...formItemLayout}>
             <FormItem label="评估项目">
               {getFieldDecorator('evaluateProject', {
                 rules: [{ required: true, message: '请输入评估项目' }],
@@ -563,10 +553,8 @@ export default class RecordHandle extends Component {
                   })}
                 </Row>
               )}
-              <Row style={{ marginBottom: '10px' }}>
-                <Button type="primary" onClick={() => this.setState({ signVisible: true })}><PlusOutlined />选择国际标志</Button>
-              </Row>
               <Row>
+                <Button type="primary" style={{ margin: '4px 10px 4px 0' }} onClick={() => this.setState({ signVisible: true })}><PlusOutlined />选择国际标志</Button>
                 {getFieldDecorator('warnSign')(
                   <Upload
                     name="files"
@@ -576,11 +564,12 @@ export default class RecordHandle extends Component {
                     fileList={signUploadList}
                     onChange={this.onSignUploadChange}
                   >
-                    <Button type="primary"><DownloadOutlined />自定义上传</Button>
+                    <Button><DownloadOutlined />自定义上传</Button>
                   </Upload>
                 )}
               </Row>
             </FormItem>
+            <Divider type="horizontal" />
             {/* 风险分析方法： LEC */}
             {+riskAnalyze === 1 && this.renderLec()}
             {/* 风险分析方法： LS */}

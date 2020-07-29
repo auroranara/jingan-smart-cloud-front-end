@@ -26,6 +26,8 @@ export const analysisFunDict = [
   { shortLabel: 'LEC', label: '作业条件危险性分析法（LEC）', value: '1' },
   { shortLabel: 'LS', label: '风险矩阵分析法（LS）', value: '2' },
 ];
+// 根据key生成风险分析方法
+export const generateriskAnalyzeLabel = (value, key = 'shortLabel') => value ? analysisFunDict[value - 1][key] : '';
 const {
   riskControl: {
     safetyChecklist: {
@@ -118,7 +120,7 @@ export default class SafetyChecklist extends Component {
         // 如果存在，询问是否同步
         if (data && data.id) {
           const { code, riskAnalyze } = data;
-          const label = this.generateriskAnalyzeLabel(riskAnalyze);
+          const label = generateriskAnalyzeLabel(riskAnalyze);
           Modal.confirm({
             title: `系统检测到上一次评价记录，编号为${code}，评估法（${label}),是否需要同步该信息？`,
             okText: '确定',
@@ -203,9 +205,6 @@ export default class SafetyChecklist extends Component {
   handleView = row => {
     this.setState({ detail: row, handleModalVisible: true, isDetail: true });
   }
-
-  // 根据key生成风险分析方法
-  generateriskAnalyzeLabel = (value, key = 'shortLabel') => analysisFunDict[value - 1][key];
 
   render () {
     const {
@@ -294,7 +293,7 @@ export default class SafetyChecklist extends Component {
       {
         dataIndex: 'riskAnalyze',
         title: '风险分析方法',
-        render: value => value ? this.generateriskAnalyzeLabel(value, 'label') : <EmptyText />,
+        render: value => value ? generateriskAnalyzeLabel(value, 'label') : <EmptyText />,
       },
       {
         dataIndex: 'highRiskLevel',
@@ -375,7 +374,7 @@ export default class SafetyChecklist extends Component {
               </Button>,
               <ImportModal
                 action={'/acloud_new/v2/safeCheck/importSafeCheck'}
-                onUploadSuccess={this.handleSearch}
+                onUploadSuccess={this.onSearch}
                 code={importCode}
                 showCompanySelect={false}
                 data={{ type: 1, file: 'scl' }}

@@ -5,6 +5,8 @@ import CompanySelect from '@/jingan-components/CompanySelect';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import { connect } from 'dva';
 import { analysisFunDict } from './List';
+import moment from 'moment';
+import { generateriskAnalyzeLabel } from './List';
 
 const FormItem = Form.Item;
 
@@ -152,10 +154,10 @@ export default class HandleModal extends Component {
           <FormItem label="编号" {...formWrapper}>
             {isDetail ? detail.code : getFieldDecorator('code', {
               rules: [{ required: true, message: '请输入编号' }],
-              initialValue: id ? detail.code : undefined,
+              initialValue: id ? detail.code : moment().valueOf(),
               getValueFromEvent: e => e.target.value.trim(),
             })(
-              <Input placeholder="请输入" {...itemProps} />
+              <Input placeholder="请输入" {...itemProps} disabled />
             )}
           </FormItem>
           <FormItem label="风险点" {...formWrapper}>
@@ -168,7 +170,7 @@ export default class HandleModal extends Component {
             {!isDetail && (<Button type="primary" onClick={this.handleViewModal}>选择</Button>)}
           </FormItem>
           <FormItem label="风险分析方法" {...formWrapper}>
-            {isDetail ? detail.riskAnalyze : getFieldDecorator('riskAnalyze', {
+            {isDetail ? generateriskAnalyzeLabel(detail.riskAnalyze) + '法' : getFieldDecorator('riskAnalyze', {
               rules: [{ required: true, message: '请选择风险分析方法' }],
               initialValue: id ? detail.riskAnalyze : undefined,
             })(

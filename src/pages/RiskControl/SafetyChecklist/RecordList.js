@@ -177,7 +177,7 @@ export default class SafetyChecklist extends Component {
         width: 400,
         render: value => value ? (<div style={{ whiteSpace: 'pre-line' }}>{value}</div>) : <EmptyText />,
       },
-      riskAnalyze === 1 ? {
+      +riskAnalyze === 1 ? {
         dataIndex: 'highRiskLevel',
         title: '风险评价结果（LEC)',
         render: (value, { l, e, c, riskLevel, evaluatePer, evaluateDate }) => (
