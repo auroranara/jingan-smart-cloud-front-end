@@ -15,6 +15,7 @@ import { lecSettings } from './config';
 
 export const title = '安全检查表-SCL分析';
 export const listPath = '/risk-control/safety-checklist/list';
+export const basePath = '/risk-control/safety-checklist';
 const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '风险分级管控', name: '风险分级管控' },
@@ -69,7 +70,7 @@ export default class SafetyChecklist extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'safetyChecklist/fetchSafeChecklist',
-      payload: { pageNum: 1, pageSize: 10, ...values },
+      payload: { pageNum: 1, pageSize: 10, type, ...values },
     });
     this.setState({ formData: values });
   }
@@ -156,12 +157,12 @@ export default class SafetyChecklist extends Component {
 
   // 跳转到新增评价项
   jumpToAddRecord = row => {
-    router.push(`/risk-control/safety-checklist/${row.id}/record/add?riskAnalyze=${row.riskAnalyze}`);
+    router.push(`${basePath}/${row.id}/record/add?riskAnalyze=${row.riskAnalyze}`);
   }
 
   // 跳转到评价项列表
   jumpToRecordList = row => {
-    router.push(`/risk-control/safety-checklist/${row.id}/record?riskAnalyze=${row.riskAnalyze}`);
+    router.push(`${basePath}/${row.id}/record?riskAnalyze=${row.riskAnalyze}`);
   }
 
   // 删除

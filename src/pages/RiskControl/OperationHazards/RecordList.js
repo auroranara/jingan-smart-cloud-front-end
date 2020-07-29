@@ -239,7 +239,7 @@ export default class SafetyChecklist extends Component {
         content={(
           <div>
             <span style={{ marginRight: '30px' }}>风险点：{info.riskPointName}</span>
-            <span>装置/设备/设施：{info.equip}</span>
+            <span>作业活动名称：{info.equip}</span>
           </div>
         )}
       >

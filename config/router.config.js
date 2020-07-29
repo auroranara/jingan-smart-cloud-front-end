@@ -1785,24 +1785,48 @@ module.exports = env => {
               ],
             },
             // 作业危害-JHA分析
-            // {
-            //   path: '/risk-control/operation-hazards',
-            //   code: 'riskControl.operationHazards',
-            //   name: 'operationHazards',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/risk-control/operation-hazards',
-            //       redirect: '/risk-control/operation-hazards/list',
-            //     },
-            //     {
-            //       path: '/risk-control/operation-hazards/list',
-            //       name: 'list',
-            //       code: 'riskControl.operationHazards.listView',
-            //       component: './RiskControl/OperationHazards/List',
-            //     },
-            //   ],
-            // },
+            {
+              path: '/risk-control/operation-hazards',
+              code: 'riskControl.operationHazards',
+              name: 'operationHazards',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/operation-hazards',
+                  redirect: '/risk-control/operation-hazards/list',
+                },
+                {
+                  path: '/risk-control/operation-hazards/list',
+                  name: 'list',
+                  code: 'riskControl.operationHazards.listView',
+                  component: './RiskControl/OperationHazards/List',
+                },
+                {
+                  path: '/risk-control/operation-hazards/:id/record', // 评价记录
+                  name: 'recordList',
+                  code: 'riskControl.operationHazards.evaluationRecord',
+                  component: './RiskControl/OperationHazards/RecordList',
+                },
+                {
+                  path: '/risk-control/operation-hazards/:id/record/add',
+                  name: 'addRecord',
+                  code: 'riskControl.operationHazards.evaluationRecord.add',
+                  component: './RiskControl/OperationHazards/RecordHandle',
+                },
+                {
+                  path: '/risk-control/operation-hazards/:id/record/edit/:recordId',
+                  name: 'editRecord',
+                  code: 'riskControl.operationHazards.evaluationRecord.edit',
+                  component: './RiskControl/OperationHazards/RecordHandle',
+                },
+                {
+                  path: '/risk-control/operation-hazards/:id/record/view/:recordId',
+                  name: 'viewRecord',
+                  code: 'riskControl.operationHazards.evaluationRecord.view',
+                  component: './RiskControl/OperationHazards/RecordHandle',
+                },
+              ],
+            },
             // 安全检查表-SCL分析
             {
               path: '/risk-control/safety-checklist',

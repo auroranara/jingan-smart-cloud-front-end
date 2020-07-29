@@ -1,198 +1,332 @@
-import React, { Component, Fragment } from 'react';
-import { connect } from 'dva';
-import router from 'umi/router';
-import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
-import { getToken } from 'utils/authority';
-import { Input, Table, Button, Card, Upload, Modal, message, Divider } from 'antd';
-import ToolBar from '@/components/ToolBar';
+import React, { Fragment, Component } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { AuthA, AuthPopConfirm, AuthButton } from '@/utils/customAuth';
+import Form from '@/jingan-components/Form';
+import Table from '@/jingan-components/View/Table';
+import EmptyText from '@/jingan-components/View/EmptyText';
+import { Divider, Modal, message, Button } from 'antd';
+import { connect } from 'dva';
+import moment from 'moment';
+import { AuthLink, AuthButton, AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import HandleModal from './HandleModal';
+import router from 'umi/router';
+import ImportModal from '@/components/ImportModal';
+import { lecSettings } from './config';
 
-const title = '作业危害-JHA分析';
-const breadcrumbList = [
+export const title = '作业危害-JHA分析';
+export const listPath = '/risk-control/operation-hazards/list';
+export const basePath = '/risk-control/operation-hazards';
+const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '风险分级管控', name: '风险分级管控' },
   { title, name: title },
-]
-const fields = [
-  {
-    id: 'dangerName',
-    label: '风险点名称',
-    render: () => <Input placeholder="请输入" allowClear />,
-  },
-  {
-    id: 'code',
-    label: '编号',
-    render: () => <Input placeholder="请输入" allowClear />,
-  },
-  {
-    id: 'activityName',
-    label: '作业活动名称',
-    render: () => <Input placeholder="请输入" allowClear />,
-  },
-  {
-    id: 'companyName',
-    label: '单位名称：',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
 ];
+// 风险分析方法字典
+export const analysisFunDict = [
+  { shortLabel: 'LEC', label: '作业条件危险性分析法（LEC）', value: '1' },
+  { shortLabel: 'LS', label: '风险矩阵分析法（LS）', value: '2' },
+];
+// 根据key生成风险分析方法
+export const generateriskAnalyzeLabel = (value, key = 'shortLabel') => value ? analysisFunDict[value - 1][key] : '';
+export const FORMAT = 'YYYY-MM-DD';
+export const type = 2;
+
 const {
   riskControl: {
-    operationHazards: {
+    safetyChecklist: {
       add: addCode,
       edit: editCode,
-      view: viewCode,
       delete: deleteCode,
+      view: viewCode,
+      copy: copyCode,
+      import: importCode,
+      evaluationRecord: {
+        list: recordListCode,
+        add: addRecordCode,
+      },
     },
   },
 } = codes;
+const { riskLevelList } = lecSettings;
 
-@connect(({ user }) => ({
+@connect(({ safetyChecklist, user }) => ({
   user,
+  safetyChecklist,
 }))
-export default class TableList extends Component {
+export default class SafetyChecklist extends Component {
 
   state = {
-    handleModalVisible: false, // 新增/编辑
+    formData: {},
+    handleModalVisible: false,
+    detail: {},
+    isDetail: false,
   };
 
-  // 获取列表
-  fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
-
+  componentDidMount () {
+    this.onSearch();
   }
 
-  handleSearch = values => {
-    this.setState({ formData: { ...values } });
-    this.fetchList(1, this.pageSize, { ...values });
+  onSearch = values => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'safetyChecklist/fetchSafeChecklist',
+      payload: { pageNum: 1, pageSize: 10, type, ...values },
+    });
+    this.setState({ formData: values });
   }
 
-  handleReset = () => {
-    this.setState({ formData: {} });
-    this.fetchList(1, this.pageSize);
+  // 新增/编辑
+  onSubmitHnaldeModal = values => {
+    // console.log('modal submit', values);
+    const { dispatch } = this.props;
+    const { detail, formData } = this.state;
+    const callback = (success, res) => {
+      if (success) {
+        message.success('操作成功');
+        this.setState({ handleModalVisible: false });
+        if (!(detail && detail.id) && res.data.id) {
+          this.jumpToAddRecord(res.data);
+          return;
+        }
+        this.onSearch(formData);
+      } else {
+        message.error(res && res.msg ? res.msg : '操作失败');
+      }
+    }
+    // 如果编辑
+    if (detail && detail.id) {
+      dispatch({
+        type: 'safetyChecklist/editSafeChecklist',
+        payload: { ...values, type },
+        callback,
+      });
+    } else {
+      // 新增
+      dispatch({
+        type: 'safetyChecklist/addSafeChecklist',
+        payload: { ...values, type },
+        callback,
+      });
+    }
   }
 
-  handlePageChange = (pageNum, pageSize) => {
-    const { formData } = this.state;
-    this.pageNum = pageNum;
-    this.pageSize = pageSize;
-    this.fetchList(pageNum, pageSize, { ...formData });
-  };
+  // 选择风险点
+  onSelectRiskPoint = riskId => {
+    const {
+      dispatch,
+    } = this.props;
+    // 判断判断是否有已评价记录
+    dispatch({
+      type: 'safetyChecklist/judgeRiskPoint',
+      payload: { riskId, type },
+      callback: (data) => {
+        // 如果存在，询问是否同步
+        if (data && data.id) {
+          const { code, riskAnalyze } = data;
+          const label = generateriskAnalyzeLabel(riskAnalyze);
+          Modal.confirm({
+            title: `系统检测到上一次评价记录，编号为${code}，评估法（${label}),是否需要同步该信息？`,
+            okText: '确定',
+            cancelText: '取消',
+            onOk: () => {
+              // 同步
+              dispatch({
+                type: 'safetyChecklist/synchronize',
+                payload: { id: data.id },
+                callback: (success) => {
+                  if (success) {
+                    message.success('同步成功');
+                    this.setState({ handleModalVisible: false });
+                    this.onSearch(this.state.formData);
+                  } else {
+                    message.success('同步失败');
+                  }
+                },
+              });
+            },
+          })
+        }
+      },
+    });
+  }
 
   // 点击新增
   onClickAdd = () => {
     this.setState({ handleModalVisible: true, detail: {}, isDetail: false })
   }
 
-  // 点击编辑
-  onClickEdit = detail => {
-    this.setState({ detail, handleModalVisible: true, isDetail: false });
+  // 跳转到新增评价项
+  jumpToAddRecord = row => {
+    router.push(`${basePath}/${row.id}/record/add?riskAnalyze=${row.riskAnalyze}`);
   }
 
-  // 点击查看
-  onClickView = detail => {
-    this.setState({ detail, handleModalVisible: true, isDetail: true });
-  }
-
-  // 点击提交新增/编辑弹窗
-  onSubmitHnaldeModal = payload => {
-
+  // 跳转到评价项列表
+  jumpToRecordList = row => {
+    router.push(`${basePath}/${row.id}/record?riskAnalyze=${row.riskAnalyze}`);
   }
 
   // 删除
-  handleDelete = () => { }
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'safetyChecklist/deleteSafeChecklist',
+      payload: { id },
+      callback: (success, res) => {
+        if (success) {
+          message.success('操作成功');
+          this.onSearch(this.state.formData);
+        } else {
+          message.error(res && res.msg ? res.msg : '操作失败');
+        }
+      },
+    });
+  }
+
+  // 复制
+  handleCopy = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'safetyChecklist/copySafeChecklist',
+      payload: { id },
+      callback: (success, res) => {
+        if (success) {
+          message.success('操作成功');
+          this.onSearch(this.state.formData);
+        } else {
+          message.error(res && res.msg ? res.msg : '操作失败');
+        }
+      },
+    });
+  }
+
+  // 点击编辑
+  handleViewEdit = row => {
+    this.setState({ detail: row, handleModalVisible: true, isDetail: false });
+  }
+
+  // 点击查看
+  handleView = row => {
+    this.setState({ detail: row, handleModalVisible: true, isDetail: true });
+  }
 
   render () {
     const {
-      user: { currentUser: { unitType } },
+      safetyChecklist: {
+        data,
+        data: {
+          pagination: {
+            pageNum: prePageNum,
+            pageSize: prePageSize,
+          },
+        },
+      },
+      loading,
+      user: { isCompany },
     } = this.props;
-    const { handleModalVisible, isDetail } = this.state;
-    const list = [], pageNum = 1, pageSize = 10, total = 0, detail = {};
-    const toolBarAction = (
-      <Fragment>
-        <AuthButton
-          code={addCode}
-          type="primary"
-          style={{ marginTop: '8px', marginRight: '10px' }}
-          onClick={this.onClickAdd}
-        >
-          新增SCL评价记录
-        </AuthButton>
-        <Button type="primary" style={{ marginTop: '8px', marginRight: '10px' }}>
-          <a href="">下载模板</a>
-        </Button>
-        <Button type="primary" style={{ marginTop: '8px' }}>
-          导入
-        </Button>
-      </Fragment>
-    );
+    const { handleModalVisible, detail, isDetail, formData } = this.state;
+    // 表单配置对象
+    const fields = [
+      {
+        name: 'riskPointName',
+        label: '风险点名称',
+        component: 'Input',
+        props: {
+          allowClear: true,
+        },
+      },
+      {
+        name: 'code',
+        label: '编号',
+        component: 'Input',
+        props: {
+          allowClear: true,
+        },
+      },
+      {
+        name: 'equip',
+        label: '作业活动名称',
+        component: 'Input',
+        props: {
+          allowClear: true,
+        },
+      },
+      ...(!isCompany
+        ? [
+          {
+            name: 'companyName',
+            label: '单位名称',
+            component: 'Input',
+            props: {
+              allowClear: true,
+            },
+          },
+        ]
+        : []),
+    ];
     const columns = [
+      ...(!isCompany
+        ? [
+          {
+            dataIndex: 'companyName',
+            title: '单位名称',
+            render: value => value || <EmptyText />,
+          },
+        ]
+        : []),
       {
-        title: '单位名称',
-        dataIndex: 'companyName',
-        key: 'companyName',
-        align: 'center',
-      },
-      {
-        title: '编号',
         dataIndex: 'code',
-        key: 'code',
-        align: 'center',
+        title: '编号',
+        render: value => value || <EmptyText />,
       },
       {
-        title: '评价日期',
-        dataIndex: 'date',
-        key: 'date',
-        align: 'center',
+        dataIndex: 'evaluateDate',
+        title: '创建时间',
+        render: value => value ? moment(value).format('YYYY-MM-DD') : <EmptyText />,
       },
       {
+        dataIndex: 'riskPointName',
         title: '风险点',
-        dataIndex: 'point',
-        key: 'point',
-        align: 'center',
+        render: value => value || <EmptyText />,
       },
       {
+        dataIndex: 'equip',
         title: '作业活动名称',
-        dataIndex: 'activityName',
-        key: 'activityName',
-        align: 'center',
+        render: value => value || <EmptyText />,
       },
       {
+        dataIndex: 'riskAnalyze',
         title: '风险分析方法',
-        dataIndex: 'funName',
-        key: 'funName',
-        align: 'center',
+        render: value => value ? generateriskAnalyzeLabel(value, 'label') : <EmptyText />,
       },
       {
+        dataIndex: 'highRiskLevel',
         title: '最高风险等级',
-        dataIndex: 'level',
-        key: 'level',
-        align: 'center',
+        render: value => value ? (<span style={{ color: (riskLevelList.find(item => item.colorName === value + '色') || {}).color }}>{value}</span>) : <EmptyText />,
       },
       {
+        dataIndex: 'evaluateNum',
         title: '评价项目',
-        dataIndex: 'object',
-        key: 'object',
-        align: 'center',
+        render: (value, row) => isNaN(value) ? <EmptyText /> : (<AuthA code={recordListCode} onClick={() => this.jumpToRecordList(row)}>{value}</AuthA>),
       },
       {
+        dataIndex: '操作',
         title: '操作',
-        dataIndex: 'object',
-        key: 'object',
-        align: 'center',
-        render: (val, row) => (
+        fixed: 'right',
+        width: 164,
+        render: (_, row) => (
           <Fragment>
-            <AuthA>添加评价项</AuthA>
-            <AuthA>复制</AuthA>
-            <AuthA onClick={() => this.onClickView(row)}>查看</AuthA>
-            <AuthA onClick={() => this.onClickEdit(row)}>编辑</AuthA>
+            <AuthA code={addRecordCode} onClick={() => this.jumpToAddRecord(row)}>添加评价项</AuthA>
+            <Divider type="vertical" />
+            <AuthLink code={copyCode} onClick={() => this.handleCopy(row.id)}>复制</AuthLink>
+            <Divider type="vertical" />
+            <AuthA code={viewCode} onClick={() => this.handleView(row)}>查看</AuthA>
+            <Divider type="vertical" />
+            <AuthA code={editCode} onClick={() => this.handleViewEdit(row)}>编辑</AuthA>
+            <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
               title="确认要删除该数据吗？"
-              onConfirm={() => this.handleDelete()}
+              onConfirm={() => this.handleDelete(row.id)}
             >删除</AuthPopConfirm>
           </Fragment>
         ),
@@ -200,51 +334,65 @@ export default class TableList extends Component {
     ];
     return (
       <PageHeaderLayout
+        breadcrumbList={BREADCRUMB_LIST}
         title={title}
-        breadcrumbList={breadcrumbList}
       >
-        <Card style={{ marginBottom: 15 }}>
-          <ToolBar
-            fields={unitType === 4 ? fields.slice(1, fields.length) : fields}
-            action={toolBarAction}
-            onSearch={this.handleSearch}
-            onReset={this.handleReset}
-          />
-        </Card>
-        <div className={styles1.container}>
-          {list && list.length > 0 ? (
-            <Table
-              bordered
-              rowKey="id"
-              // loading={loading}
-              columns={columns}
-              dataSource={list}
-              // scroll={{ x: 1200 }} // 项目不多时注掉
-              pagination={{
-                current: pageNum,
-                pageSize,
-                total,
-                showQuickJumper: true,
-                showSizeChanger: true,
-                // pageSizeOptions: ['5', '10', '15', '20'],
-                onChange: this.handlePageChange,
-                onShowSizeChange: (num, size) => {
-                  this.handlePageChange(1, size);
-                },
-              }}
-            />
-          ) : (
-              <Card bordered={false} style={{ textAlign: 'center' }}>
-                <span>暂无数据</span>
-              </Card>
-            )}
-        </div>
+        <Form ref={form => this.form = form} fields={fields} onSearch={this.onSearch} onReset={this.onSearch} />
+        <Table
+          list={data}
+          loading={loading}
+          columns={columns}
+          onChange={({ current, pageSize }) => {
+            this.onSearch({
+              ...formData,
+              pageNum: pageSize !== prePageSize ? 1 : current,
+              pageSize,
+            })
+            this.form.setFieldsValue(formData);
+          }}
+          onReload={() => {
+            this.onSearch({
+              ...formData,
+              pageNum: prePageNum,
+              pageSize: prePageSize,
+            })
+            this.form.setFieldsValue(formData);
+          }}
+          showAddButton={false}
+          operation={
+            [
+              <AuthButton
+                type="primary"
+                code={addCode}
+                onClick={this.onClickAdd}
+              >
+                新增JHA评价记录
+              </AuthButton>,
+              <Button
+                href="http://data.jingan-china.cn/v2/chem/file/SCL分析.xls"
+                target="_blank"
+                style={{ marginRight: '10px' }}
+              >
+                模板下载
+              </Button>,
+              <ImportModal
+                action={'/acloud_new/v2/safeCheck/importSafeCheck'}
+                onUploadSuccess={this.onSearch}
+                code={importCode}
+                showCompanySelect={false}
+                data={{ type, file: 'scl' }}
+              />,
+            ]
+          }
+        />
         <HandleModal
+          title="JHA评价记录"
           visible={handleModalVisible}
           onOk={this.onSubmitHnaldeModal}
           onCancel={() => { this.setState({ handleModalVisible: false }) }}
           detail={detail || {}}
           isDetail={isDetail}
+          onSelectRiskPoint={this.onSelectRiskPoint}
         />
       </PageHeaderLayout>
     )
