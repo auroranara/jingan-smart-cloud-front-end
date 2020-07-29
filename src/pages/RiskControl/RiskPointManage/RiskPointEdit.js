@@ -28,6 +28,7 @@ import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point.png';
 import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-risk-point-gray.png';
 import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point-gray.png';
 import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point-active.png';
+import { OPE } from '@/pages/RoleAuthorization/Role/utils';
 
 const { Group: RadioGroup } = Radio;
 
@@ -1260,7 +1261,7 @@ export default class RiskPointEdit extends PureComponent {
       location: {
         query: { companyId },
       },
-      form,
+      // form,
       form: { getFieldDecorator },
       riskPointManage: {
         checkCycleList,
@@ -1269,9 +1270,12 @@ export default class RiskPointEdit extends PureComponent {
         detail: { data = {} },
       },
       chemical: { riskPoint },
+      user: { currentUser: { unitType } },
     } = this.props;
     // const { isDisabled, groupId, coord } = this.state;
-    const { picList } = this.state;
+    // const { picList } = this.state;
+
+    const isAdmin = unitType === OPE;
 
     const formItemLayout = {
       labelCol: {
@@ -1374,7 +1378,7 @@ export default class RiskPointEdit extends PureComponent {
               </Row>
             </Col>
             <Col span={24}>
-              <Row gutter={12}>
+              <Row gutter={12} style={{ display: isAdmin ? 'flex' : 'none' }}>
                 <Col span={6}>
                   <Form.Item label={fieldLabels.bindRFID}>
                     {getFieldDecorator('locationCode', {
