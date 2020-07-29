@@ -322,7 +322,7 @@ export default connect(
           {
             title: LIST_LOCALE,
             name: LIST_LOCALE,
-            href: `${LIST_PATH}${search}`,
+            href: `${LIST_PATH}${search && (search.startsWith('?') ? search : `?${search}`)}`,
           },
           { title, name: title },
         ];

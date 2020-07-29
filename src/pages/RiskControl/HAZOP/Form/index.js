@@ -321,7 +321,7 @@ export default connect(
           {
             title: '危险与可操作性分析（HAZOP）',
             name: '危险与可操作性分析（HAZOP）',
-            href: `${LIST_PATH}${search}`,
+            href: `${LIST_PATH}${search && (search.startsWith('?') ? search : `?${search}`)}`,
           },
           { title: title, name: title },
         ];

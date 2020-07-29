@@ -25,3 +25,8 @@ export async function getGridTree(params) {
 export async function getCompanyNatureList() {
   return request(`/acloud_new/v2/sys/dictDataForSelect?type=company_nature`);
 }
+
+/* 获取单位详情 */
+export async function getCompanyDetail({ id }) {
+  return request(`/acloud_new/v2/baseInfo/company/${id}`);
+}

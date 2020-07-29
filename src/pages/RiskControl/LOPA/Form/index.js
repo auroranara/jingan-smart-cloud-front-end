@@ -317,7 +317,7 @@ export default connect(
           {
             title: '保护层分析（LOPA）',
             name: '保护层分析（LOPA）',
-            href: `${LIST_PATH}${search}`,
+            href: `${LIST_PATH}${search && (search.startsWith('?') ? search : `?${search}`)}`,
           },
           { title: title, name: title },
         ];

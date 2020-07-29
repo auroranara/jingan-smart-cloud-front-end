@@ -4,6 +4,7 @@ import {
   getPersonList,
   getGridTree,
   getCompanyNatureList,
+  getCompanyDetail,
 } from '@/services/dict';
 
 export default {
@@ -15,6 +16,7 @@ export default {
     personList: {},
     gridTree: [],
     companyNatureList: [],
+    companyDetail: {},
   },
 
   effects: {
@@ -136,6 +138,22 @@ export default {
           },
         });
         callback && callback(true, companyNatureList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getCompanyDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyDetail, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const companyDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            companyDetail,
+          },
+        });
+        callback && callback(true, companyDetail);
       } else {
         callback && callback(false, msg);
       }
