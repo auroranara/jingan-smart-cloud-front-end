@@ -66,7 +66,6 @@ export default class HandleModal extends Component {
         ...resValues,
         riskPoint: riskPoint ? riskPoint.itemId : undefined,
         companyId: company ? company.value : undefined,
-        type: 1,
         id: detail && detail.id ? detail.id : undefined,
       });
     })
@@ -134,7 +133,7 @@ export default class HandleModal extends Component {
         onOk={this.handleOk}
         onCancel={onCancel}
         destroyOnClose
-        {...isDetail ? [{ footer: null }] : []}
+        {...isDetail ? { footer: null } : {}}
       >
         <Form>
           <FormItem label="单位名称" {...formWrapper} style={isCompany ? { display: 'none' } : null} >
@@ -154,7 +153,7 @@ export default class HandleModal extends Component {
           <FormItem label="编号" {...formWrapper}>
             {isDetail ? detail.code : getFieldDecorator('code', {
               rules: [{ required: true, message: '请输入编号' }],
-              initialValue: id ? detail.code : moment().valueOf(),
+              initialValue: id ? detail.code : moment().format('YYYYMMDDHHmmss'),
               getValueFromEvent: e => e.target.value.trim(),
             })(
               <Input placeholder="请输入" {...itemProps} disabled />

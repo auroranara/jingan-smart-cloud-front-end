@@ -13,7 +13,6 @@ import router from 'umi/router';
 import ImportModal from '@/components/ImportModal';
 import { lecSettings } from './config';
 
-export const FORMAT = 'YYYY-MM-DD';
 export const title = '安全检查表-SCL分析';
 export const listPath = '/risk-control/safety-checklist/list';
 const BREADCRUMB_LIST = [
@@ -28,6 +27,9 @@ export const analysisFunDict = [
 ];
 // 根据key生成风险分析方法
 export const generateriskAnalyzeLabel = (value, key = 'shortLabel') => value ? analysisFunDict[value - 1][key] : '';
+export const FORMAT = 'YYYY-MM-DD';
+export const type = 1;
+
 const {
   riskControl: {
     safetyChecklist: {
@@ -94,14 +96,14 @@ export default class SafetyChecklist extends Component {
     if (detail && detail.id) {
       dispatch({
         type: 'safetyChecklist/editSafeChecklist',
-        payload: values,
+        payload: { ...values, type },
         callback,
       });
     } else {
       // 新增
       dispatch({
         type: 'safetyChecklist/addSafeChecklist',
-        payload: values,
+        payload: { ...values, type },
         callback,
       });
     }
@@ -115,7 +117,7 @@ export default class SafetyChecklist extends Component {
     // 判断判断是否有已评价记录
     dispatch({
       type: 'safetyChecklist/judgeRiskPoint',
-      payload: { riskId, type: 1 },
+      payload: { riskId, type },
       callback: (data) => {
         // 如果存在，询问是否同步
         if (data && data.id) {
@@ -377,7 +379,7 @@ export default class SafetyChecklist extends Component {
                 onUploadSuccess={this.onSearch}
                 code={importCode}
                 showCompanySelect={false}
-                data={{ type: 1, file: 'scl' }}
+                data={{ type, file: 'scl' }}
               />,
             ]
           }

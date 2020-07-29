@@ -61,7 +61,7 @@ export default class SafetyChecklist extends Component {
       payload: { pageNum: 1, pageSize: 10, id },
       callback: data => {
         if (data && data.list) {
-          this.setState({ info: data.list[0] });
+          this.setState({ info: data.list[0] || {} });
         }
       },
     });

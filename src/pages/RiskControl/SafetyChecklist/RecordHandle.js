@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Form } from '@ant-design/compatible';
-import { Card, Input, Button, Select, Row, Col, Upload, message, Table, DatePicker, Divider, Tooltip } from 'antd';
+import { Card, Input, Button, Select, Row, Upload, message, Table, DatePicker, Divider, Tooltip } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { title as listTitlt, listPath } from './List';
+import { title as listTitlt, listPath, type } from './List';
 import { title as recordTitlt } from './RecordList';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import { PlusOutlined, DownloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -227,7 +227,7 @@ export default class RecordHandle extends Component {
         hiddenTypeResult: Array.isArray(hiddenTypeResult) && hiddenTypeResult.length ? hiddenTypeResult.join(',') : '',
         evaluateDate: evaluateDate ? moment(evaluateDate).valueOf() : undefined,
         ...+riskAnalyze === 1 ? { l, e, c } : { l, s },
-        type: 1,
+        type,
       };
       const path = this.generateBackPath();
       const callback = (success, res) => {
@@ -494,12 +494,12 @@ export default class RecordHandle extends Component {
             <FormItem label="评估项目">
               {getFieldDecorator('evaluateProject', {
                 rules: [{ required: true, message: '请输入评估项目' }],
-              })(<Input.TextArea rows={3} {...itemStyles} />)}
+              })(<Input.TextArea placeholder="请输入" rows={3} {...itemStyles} />)}
             </FormItem>
             <FormItem label="主要危险因素（人、物、作业环境、管理）">
               {getFieldDecorator('majorHidden', {
                 rules: [{ required: true, message: '请输主要危险因素（人、物、作业环境、管理）' }],
-              })(<Input.TextArea rows={3} {...itemStyles} />)}
+              })(<Input.TextArea placeholder="请输入" rows={3} {...itemStyles} />)}
             </FormItem>
             <FormItem label="可能发生的事故类型及后果">
               {getFieldDecorator('hiddenTypeResult', {
@@ -507,7 +507,7 @@ export default class RecordHandle extends Component {
               })(
                 <Select
                   mode="multiple"
-                  placeholder="请选择可能发生的事故类型及后果"
+                  placeholder="请选择"
                   onChange={this.onHiddenTypeChange}
                   filterOption={(value, option) => new RegExp(option.children).test(value)}
                   {...itemStyles}
@@ -524,12 +524,12 @@ export default class RecordHandle extends Component {
               {getFieldDecorator('riskMeasures', {
                 rules: [{ required: true, message: '请输入风险管控措施' }],
                 initialValue: isAdd ? '工程技术措施：\n 管理措施：\n 培训教育措施： \n 应急处置措施：' : undefined,
-              })(<Input.TextArea rows={5} {...itemStyles} />)}
+              })(<Input.TextArea placeholder="请输入" rows={5} {...itemStyles} />)}
             </FormItem>
             <FormItem label="应急处置措施">
               {getFieldDecorator('emergencyMeasures', {
                 rules: [{ required: true, message: '请输入应急处置措施' }],
-              })(<Input.TextArea rows={5} {...itemStyles} />)}
+              })(<Input.TextArea placeholder="请输入" rows={5} {...itemStyles} />)}
             </FormItem>
             <FormItem label="现场图片">
               {getFieldDecorator('scenePhotoList')(
