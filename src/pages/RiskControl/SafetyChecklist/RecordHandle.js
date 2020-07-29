@@ -216,7 +216,9 @@ export default class RecordHandle extends Component {
     validateFieldsAndScroll((error, values) => {
       if (error) return;
       const { l, e, c, s, hiddenTypeResult, evaluateDate, ...resValues } = values;
-      const riskItem = l && e && c ? lecSettings.riskLevelList.find(item => item.range(l * e * c)) : undefined;
+      const riskItemLec = l && e && c ? lecSettings.riskLevelList.find(item => item.range(l * e * c)) : undefined;
+      const riskItemLs = l && s ? lsSettings.riskLevelList.find(item => item.range(l * s)) : undefined;
+      const riskItem = +riskAnalyze === 1 ? riskItemLec : riskItemLs;
       const payload = {
         ...resValues,
         safeCheckId: id,

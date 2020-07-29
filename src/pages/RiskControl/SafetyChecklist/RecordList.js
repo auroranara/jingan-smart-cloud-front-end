@@ -13,6 +13,7 @@ import { title as listTitlt, listPath } from './List';
 import router from 'umi/router';
 import { stringify } from 'qs';
 import { lecSettings } from './config';
+import Ellipsis from '@/components/Ellipsis';
 
 export const FORMAT = 'YYYY-MM-DD';
 export const title = '评价项目';
@@ -175,7 +176,7 @@ export default class SafetyChecklist extends Component {
         dataIndex: 'emergencyMeasures',
         title: '应急处置措施',
         width: 400,
-        render: value => value ? (<div style={{ whiteSpace: 'pre-line' }}>{value}</div>) : <EmptyText />,
+        render: value => value ? (<Ellipsis tooltip length={25}>{value}</Ellipsis>) : <EmptyText />,
       },
       +riskAnalyze === 1 ? {
         dataIndex: 'highRiskLevel',
