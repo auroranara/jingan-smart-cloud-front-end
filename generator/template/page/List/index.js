@@ -199,7 +199,7 @@ export default connect(
         props.loadingCompanyList === nextProps.loadingCompanyList &&
         props.departmentTree === nextProps.departmentTree &&
         props.loadingDepartmentTree === nextProps.loadingDepartmentTree &&
-        props.location.search === nextProps.location.search
+        props.location.query === nextProps.location.query
       );
     },
   }
@@ -246,7 +246,7 @@ export default connect(
         // 根据values设置表单值
         form.setFieldsValue(values);
       },
-      [search]
+      [query]
     );
     // 初始化下拉框
     useEffect(() => {
