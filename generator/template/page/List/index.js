@@ -20,7 +20,6 @@ import Link from 'umi/link';
 import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
-import { stringify } from 'qs';
 import {
   NAMESPACE,
   LIST_NAME,
@@ -200,13 +199,13 @@ export default connect(
         props.loadingCompanyList === nextProps.loadingCompanyList &&
         props.departmentTree === nextProps.departmentTree &&
         props.loadingDepartmentTree === nextProps.loadingDepartmentTree &&
-        props.location.query === nextProps.location.query
+        props.location.search === nextProps.location.search
       );
     },
   }
 )(
   ({
-    location: { pathname, query },
+    location: { pathname, search, query },
     unitId,
     unitName,
     isUnit,
@@ -247,7 +246,7 @@ export default connect(
         // 根据values设置表单值
         form.setFieldsValue(values);
       },
-      [query]
+      [search]
     );
     // 初始化下拉框
     useEffect(() => {
@@ -308,120 +307,118 @@ export default connect(
       },
       [+moment().startOf('day')]
     );
-    // query字符串
-    const queryString = stringify(query);
     // 表格配置
-    const columns = useMemo(() => {
-      return [
-        ...(!isUnit
-          ? [
-              {
-                dataIndex: 'companyName',
-                title: '单位名称',
-                render: value => value || <EmptyText />,
-              },
-            ]
-          : []),
-        {
-          dataIndex: 'name',
-          title: '名称',
-          render: value => value || <EmptyText />,
-        },
-        {
-          dataIndex: 'departmentName',
-          title: '部门',
-          render: value => value || <EmptyText />,
-        },
-        {
-          dataIndex: 'date',
-          title: '时间',
-          render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
-        },
-        {
-          dataIndex: 'fileList',
-          title: '附件',
-          render: value =>
-            value && value.length ? (
+    const columns = useMemo(
+      () => {
+        return [
+          ...(!isUnit
+            ? [
+                {
+                  dataIndex: 'companyName',
+                  title: '单位名称',
+                  render: value => value || <EmptyText />,
+                },
+              ]
+            : []),
+          {
+            dataIndex: 'name',
+            title: '名称',
+            render: value => value || <EmptyText />,
+          },
+          {
+            dataIndex: 'departmentName',
+            title: '部门',
+            render: value => value || <EmptyText />,
+          },
+          {
+            dataIndex: 'date',
+            title: '时间',
+            render: value => (value ? moment(value).format(FORMAT) : <EmptyText />),
+          },
+          {
+            dataIndex: 'fileList',
+            title: '附件',
+            render: value =>
+              value && value.length ? (
+                <Fragment>
+                  {value.map((item, index) => (
+                    <div key={index}>
+                      <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
+                        {item.fileName}
+                      </a>
+                    </div>
+                  ))}
+                </Fragment>
+              ) : (
+                <EmptyText />
+              ),
+          },
+          {
+            dataIndex: '操作',
+            title: '操作',
+            render: (_, data) => (
               <Fragment>
-                {value.map((item, index) => (
-                  <div key={index}>
-                    <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
-                      {item.fileName}
-                    </a>
-                  </div>
-                ))}
-              </Fragment>
-            ) : (
-              <EmptyText />
-            ),
-        },
-        {
-          dataIndex: '操作',
-          title: '操作',
-          render: (_, data) => (
-            <Fragment>
-              <Link
-                to={`${DETAIL_PATH}/${data.id}${queryString ? `?${queryString}` : ''}`}
-                disabled={!hasDetailAuthority}
-              >
-                查看
-              </Link>
-              <Divider type="vertical" />
-              <Link
-                to={`${EDIT_PATH}/${data.id}${queryString ? `?${queryString}` : ''}`}
-                disabled={!hasEditAuthority}
-              >
-                编辑
-              </Link>
-              <Divider type="vertical" />
-              <Popconfirm
-                title="您确定要删除这条数据吗？"
-                onConfirm={() => {
-                  deleteList(
-                    {
-                      id: data.id,
-                    },
-                    success => {
-                      if (success) {
-                        router.replace({
-                          pathname,
-                          query: {
-                            ...query,
-                          },
-                        });
-                      }
-                    }
-                  );
-                }}
-                disabled={!hasDeleteAuthority}
-              >
-                <Link to="/" disabled={!hasDeleteAuthority}>
-                  删除
+                <Link to={`${DETAIL_PATH}/${data.id}${search}`} disabled={!hasDetailAuthority}>
+                  查看
                 </Link>
-              </Popconfirm>
-            </Fragment>
-          ),
-        },
-      ];
-    }, []);
+                <Divider type="vertical" />
+                <Link to={`${EDIT_PATH}/${data.id}${search}`} disabled={!hasEditAuthority}>
+                  编辑
+                </Link>
+                <Divider type="vertical" />
+                <Popconfirm
+                  title="您确定要删除这条数据吗？"
+                  onConfirm={() => {
+                    deleteList(
+                      {
+                        id: data.id,
+                      },
+                      success => {
+                        if (success) {
+                          router.replace({
+                            pathname,
+                            query: {
+                              ...query,
+                            },
+                          });
+                        }
+                      }
+                    );
+                  }}
+                  disabled={!hasDeleteAuthority}
+                >
+                  <Link to="/" disabled={!hasDeleteAuthority}>
+                    删除
+                  </Link>
+                </Popconfirm>
+              </Fragment>
+            ),
+          },
+        ];
+      },
+      [search]
+    );
     // 表单finish事件
-    const onFinish = values => {
-      // 根据query获取payload
-      const payload = GET_PAYLOAD_BY_QUERY(query);
-      // 生成新的payload
-      const newPayload = {
-        ...payload,
-        ...values,
-        pageNum: 1,
-      };
-      // 根据新的payload获取新的query
-      const newQuery = GET_QUERY_BY_PAYLOAD(newPayload);
-      // 根据query生成新的路由
-      router.replace({
-        pathname,
-        query: newQuery,
-      });
-    };
+    const onFinish = useCallback(
+      values => {
+        // 根据query获取payload
+        const payload = GET_PAYLOAD_BY_QUERY(query);
+        // 生成新的payload
+        const newPayload = {
+          ...payload,
+          ...values,
+          pageNum: 1,
+        };
+        // 根据新的payload获取新的query
+        const newQuery = GET_QUERY_BY_PAYLOAD(newPayload);
+        // 根据query生成新的路由
+        router.replace({
+          pathname,
+          query: newQuery,
+        });
+      },
+      [search]
+    );
     // 单位选择器search事件
     const onCompanySelectSearch = useMemo(() => {
       let timer;
@@ -446,23 +443,26 @@ export default connect(
       form.setFieldsValue({ department: undefined });
     }, []);
     // 表格change事件
-    const onTableChange = ({ current: pageNum, pageSize }) => {
-      // 根据query获取payload
-      const payload = GET_PAYLOAD_BY_QUERY(query);
-      // 生成新的payload
-      const newPayload = {
-        ...payload,
-        pageNum: pageSize === payload.pageSize ? pageNum : 1,
-        pageSize,
-      };
-      // 根据新的payload获取新的query
-      const newQuery = GET_QUERY_BY_PAYLOAD(newPayload);
-      // 根据新的query生成新的路由
-      router.replace({
-        pathname,
-        query: newQuery,
-      });
-    };
+    const onTableChange = useCallback(
+      ({ current: pageNum, pageSize }) => {
+        // 根据query获取payload
+        const payload = GET_PAYLOAD_BY_QUERY(query);
+        // 生成新的payload
+        const newPayload = {
+          ...payload,
+          pageNum: pageSize === payload.pageSize ? pageNum : 1,
+          pageSize,
+        };
+        // 根据新的payload获取新的query
+        const newQuery = GET_QUERY_BY_PAYLOAD(newPayload);
+        // 根据新的query生成新的路由
+        router.replace({
+          pathname,
+          query: newQuery,
+        });
+      },
+      [search]
+    );
     return (
       <PageHeaderLayout
         breadcrumbList={BREADCRUMB_LIST}
@@ -597,7 +597,7 @@ export default connect(
                             </Button>
                             <Button
                               type="primary"
-                              href={`#${ADD_PATH}${queryString ? `?${queryString}` : ''}`}
+                              href={`#${ADD_PATH}${search}`}
                               disabled={!hasAddAuthority}
                             >
                               新增
@@ -633,7 +633,7 @@ export default connect(
             </Form.Item>
           </Form>
         </Card>
-        <Card className={styles.tableCard}>
+        <Card>
           <Table
             className={styles.table}
             rowKey="id"

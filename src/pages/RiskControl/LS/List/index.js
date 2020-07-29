@@ -19,7 +19,6 @@ import Link from 'umi/link';
 import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
-import { stringify } from 'qs';
 import {
   NAMESPACE,
   LIST_NAME,
@@ -179,13 +178,13 @@ export default connect(
         props.loadingCompanyList === nextProps.loadingCompanyList &&
         props.departmentTree === nextProps.departmentTree &&
         props.loadingDepartmentTree === nextProps.loadingDepartmentTree &&
-        props.location.query === nextProps.location.query
+        props.location.search === nextProps.location.search
       );
     },
   }
 )(
   ({
-    location: { pathname, query },
+    location: { pathname, search, query },
     unitId,
     unitName,
     isUnit,
@@ -226,7 +225,7 @@ export default connect(
         // 根据values设置表单值
         form.setFieldsValue(values);
       },
-      [query]
+      [search]
     );
     // 初始化下拉框
     useEffect(() => {
@@ -243,167 +242,165 @@ export default connect(
         });
       }
     }, []);
-    // query字符串
-    const queryString = stringify(query);
     // 表格配置
-    const columns = useMemo(() => {
-      return [
-        ...(!isUnit
-          ? [
-              {
-                dataIndex: 'companyName',
-                title: '单位名称',
-                render: value => value || <EmptyText />,
-              },
-            ]
-          : []),
-        {
-          dataIndex: 'code',
-          title: '区域编号',
-          render: value => value || <EmptyText />,
-        },
-        {
-          dataIndex: 'name',
-          title: '风险区域名称',
-          render: value => value || <EmptyText />,
-        },
-        {
-          dataIndex: 'principalName',
-          title: '区域负责人',
-          render: value => value || <EmptyText />,
-        },
-        {
-          dataIndex: 'phone',
-          title: '联系电话',
-          render: value => value || <EmptyText />,
-        },
-        {
-          dataIndex: '固有风险分析（LS)',
-          title: '固有风险分析（LS)',
-          render: (_, data) => (
-            <Fragment>
-              <div className={styles.tdRow}>
-                <span>可能性(L)：</span>
-                <span>{data.L || <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>严重性(S)：</span>
-                <span>{data.S || <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>评估风险值(R)：</span>
-                <span>{data.L * data.S || <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>风险级别：</span>
-                <span>{data.L * data.S ? `${4 - (data.L * data.S) / 4} 级` : <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>评估人员：</span>
-                <span>{data.evaluatorName || <EmptyText />}</span>
-              </div>
-              <div className={styles.tdRow}>
-                <span>评估日期：</span>
-                <span>
-                  {data.evaluateDate ? moment(data.evaluateDate).format(FORMAT) : <EmptyText />}
-                </span>
-              </div>
-            </Fragment>
-          ),
-        },
-        {
-          dataIndex: '固有风险等级',
-          title: '固有风险等级',
-          render: (_, data) => {
-            const map = LEVEL_MAP[4 - (data.L * data.S) / 4];
-            return map ? <span style={{ color: map.color }}>{map.label}</span> : <EmptyText />;
+    const columns = useMemo(
+      () => {
+        return [
+          ...(!isUnit
+            ? [
+                {
+                  dataIndex: 'companyName',
+                  title: '单位名称',
+                  render: value => value || <EmptyText />,
+                },
+              ]
+            : []),
+          {
+            dataIndex: 'code',
+            title: '区域编号',
+            render: value => value || <EmptyText />,
           },
-        },
-        {
-          dataIndex: 'fileList',
-          title: '分析报告附件',
-          render: value =>
-            value && value.length ? (
+          {
+            dataIndex: 'name',
+            title: '风险区域名称',
+            render: value => value || <EmptyText />,
+          },
+          {
+            dataIndex: 'principalName',
+            title: '区域负责人',
+            render: value => value || <EmptyText />,
+          },
+          {
+            dataIndex: 'phone',
+            title: '联系电话',
+            render: value => value || <EmptyText />,
+          },
+          {
+            dataIndex: '固有风险分析（LS)',
+            title: '固有风险分析（LS)',
+            render: (_, data) => (
               <Fragment>
-                {value.map((item, index) => (
-                  <div key={index}>
-                    <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
-                      {item.fileName}
-                    </a>
-                  </div>
-                ))}
+                <div className={styles.tdRow}>
+                  <span>可能性(L)：</span>
+                  <span>{data.L || <EmptyText />}</span>
+                </div>
+                <div className={styles.tdRow}>
+                  <span>严重性(S)：</span>
+                  <span>{data.S || <EmptyText />}</span>
+                </div>
+                <div className={styles.tdRow}>
+                  <span>评估风险值(R)：</span>
+                  <span>{data.L * data.S || <EmptyText />}</span>
+                </div>
+                <div className={styles.tdRow}>
+                  <span>风险级别：</span>
+                  <span>{data.L * data.S ? `${4 - (data.L * data.S) / 4} 级` : <EmptyText />}</span>
+                </div>
+                <div className={styles.tdRow}>
+                  <span>评估人员：</span>
+                  <span>{data.evaluatorName || <EmptyText />}</span>
+                </div>
+                <div className={styles.tdRow}>
+                  <span>评估日期：</span>
+                  <span>
+                    {data.evaluateDate ? moment(data.evaluateDate).format(FORMAT) : <EmptyText />}
+                  </span>
+                </div>
               </Fragment>
-            ) : (
-              <EmptyText />
             ),
-        },
-        {
-          dataIndex: '操作',
-          title: '操作',
-          render: (_, data) => (
-            <Fragment>
-              <Link
-                to={`${DETAIL_PATH}/${data.id}${queryString ? `?${queryString}` : ''}`}
-                disabled={!hasDetailAuthority}
-              >
-                查看
-              </Link>
-              <Divider type="vertical" />
-              <Link
-                to={`${EDIT_PATH}/${data.id}${queryString ? `?${queryString}` : ''}`}
-                disabled={!hasEditAuthority}
-              >
-                编辑
-              </Link>
-              <Divider type="vertical" />
-              <Popconfirm
-                title="您确定要删除这条数据吗？"
-                onConfirm={() => {
-                  deleteList(
-                    {
-                      id: data.id,
-                    },
-                    success => {
-                      if (success) {
-                        router.replace({
-                          pathname,
-                          query: {
-                            ...query,
-                          },
-                        });
-                      }
-                    }
-                  );
-                }}
-                disabled={!hasDeleteAuthority}
-              >
-                <Link to="/" disabled={!hasDeleteAuthority}>
-                  删除
+          },
+          {
+            dataIndex: '固有风险等级',
+            title: '固有风险等级',
+            render: (_, data) => {
+              const map = LEVEL_MAP[4 - (data.L * data.S) / 4];
+              return map ? <span style={{ color: map.color }}>{map.label}</span> : <EmptyText />;
+            },
+          },
+          {
+            dataIndex: 'fileList',
+            title: '分析报告附件',
+            render: value =>
+              value && value.length ? (
+                <Fragment>
+                  {value.map((item, index) => (
+                    <div key={index}>
+                      <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
+                        {item.fileName}
+                      </a>
+                    </div>
+                  ))}
+                </Fragment>
+              ) : (
+                <EmptyText />
+              ),
+          },
+          {
+            dataIndex: '操作',
+            title: '操作',
+            render: (_, data) => (
+              <Fragment>
+                <Link to={`${DETAIL_PATH}/${data.id}${search}`} disabled={!hasDetailAuthority}>
+                  查看
                 </Link>
-              </Popconfirm>
-            </Fragment>
-          ),
-        },
-      ];
-    }, []);
+                <Divider type="vertical" />
+                <Link to={`${EDIT_PATH}/${data.id}${search}`} disabled={!hasEditAuthority}>
+                  编辑
+                </Link>
+                <Divider type="vertical" />
+                <Popconfirm
+                  title="您确定要删除这条数据吗？"
+                  onConfirm={() => {
+                    deleteList(
+                      {
+                        id: data.id,
+                      },
+                      success => {
+                        if (success) {
+                          router.replace({
+                            pathname,
+                            query: {
+                              ...query,
+                            },
+                          });
+                        }
+                      }
+                    );
+                  }}
+                  disabled={!hasDeleteAuthority}
+                >
+                  <Link to="/" disabled={!hasDeleteAuthority}>
+                    删除
+                  </Link>
+                </Popconfirm>
+              </Fragment>
+            ),
+          },
+        ];
+      },
+      [search]
+    );
     // 表单finish事件
-    const onFinish = values => {
-      // 根据query获取payload
-      const payload = GET_PAYLOAD_BY_QUERY(query);
-      // 生成新的payload
-      const newPayload = {
-        ...payload,
-        ...values,
-        pageNum: 1,
-      };
-      // 根据新的payload获取新的query
-      const newQuery = GET_QUERY_BY_PAYLOAD(newPayload);
-      // 根据query生成新的路由
-      router.replace({
-        pathname,
-        query: newQuery,
-      });
-    };
+    const onFinish = useCallback(
+      values => {
+        // 根据query获取payload
+        const payload = GET_PAYLOAD_BY_QUERY(query);
+        // 生成新的payload
+        const newPayload = {
+          ...payload,
+          ...values,
+          pageNum: 1,
+        };
+        // 根据新的payload获取新的query
+        const newQuery = GET_QUERY_BY_PAYLOAD(newPayload);
+        // 根据query生成新的路由
+        router.replace({
+          pathname,
+          query: newQuery,
+        });
+      },
+      [search]
+    );
     // 单位选择器search事件
     const onCompanySelectSearch = useMemo(() => {
       let timer;
@@ -428,23 +425,26 @@ export default connect(
       form.setFieldsValue({ department: undefined });
     }, []);
     // 表格change事件
-    const onTableChange = ({ current: pageNum, pageSize }) => {
-      // 根据query获取payload
-      const payload = GET_PAYLOAD_BY_QUERY(query);
-      // 生成新的payload
-      const newPayload = {
-        ...payload,
-        pageNum: pageSize === payload.pageSize ? pageNum : 1,
-        pageSize,
-      };
-      // 根据新的payload获取新的query
-      const newQuery = GET_QUERY_BY_PAYLOAD(newPayload);
-      // 根据新的query生成新的路由
-      router.replace({
-        pathname,
-        query: newQuery,
-      });
-    };
+    const onTableChange = useCallback(
+      ({ current: pageNum, pageSize }) => {
+        // 根据query获取payload
+        const payload = GET_PAYLOAD_BY_QUERY(query);
+        // 生成新的payload
+        const newPayload = {
+          ...payload,
+          pageNum: pageSize === payload.pageSize ? pageNum : 1,
+          pageSize,
+        };
+        // 根据新的payload获取新的query
+        const newQuery = GET_QUERY_BY_PAYLOAD(newPayload);
+        // 根据新的query生成新的路由
+        router.replace({
+          pathname,
+          query: newQuery,
+        });
+      },
+      [search]
+    );
     return (
       <PageHeaderLayout
         breadcrumbList={BREADCRUMB_LIST}
@@ -570,7 +570,7 @@ export default connect(
                             </Button>
                             <Button
                               type="primary"
-                              href={`#${ADD_PATH}${queryString ? `?${queryString}` : ''}`}
+                              href={`#${ADD_PATH}${search}`}
                               disabled={!hasAddAuthority}
                             >
                               新增
@@ -606,7 +606,7 @@ export default connect(
             </Form.Item>
           </Form>
         </Card>
-        <Card className={styles.tableCard}>
+        <Card>
           <Table
             className={styles.table}
             rowKey="id"
