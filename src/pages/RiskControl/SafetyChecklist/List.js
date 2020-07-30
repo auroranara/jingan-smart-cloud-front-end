@@ -369,7 +369,7 @@ export default class SafetyChecklist extends Component {
                 新增SCL评价记录
               </AuthButton>,
               <Button
-                href="http://data.jingan-china.cn/v2/chem/file/SCL分析.xls"
+                href="http://data.jingan-china.cn/v2/chem/file1/SCL分析.xls"
                 target="_blank"
                 style={{ marginRight: '10px' }}
               >
