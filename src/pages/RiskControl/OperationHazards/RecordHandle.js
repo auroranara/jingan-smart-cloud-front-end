@@ -358,7 +358,7 @@ export default class RecordHandle extends Component {
           {getFieldDecorator('evaluateDate', {
             rules: [{ required: true, message: '请选择评估日期' }],
           })(
-            <DatePicker allowClear {...itemStyles} />
+            <DatePicker allowClear disabledDate={current => current && current > moment().endOf('day')} {...itemStyles} />
           )}
         </FormItem>
       </div>
@@ -445,7 +445,7 @@ export default class RecordHandle extends Component {
           {getFieldDecorator('evaluateDate', {
             rules: [{ required: true, message: '请选择评估日期' }],
           })(
-            <DatePicker allowClear {...itemStyles} />
+            <DatePicker allowClear disabledDate={current => current && current > moment().endOf('day')} {...itemStyles} />
           )}
         </FormItem>
       </div>

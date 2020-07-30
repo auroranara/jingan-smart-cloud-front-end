@@ -75,7 +75,7 @@ export default class specialOperationPermitHandle extends PureComponent {
     this.fetchDict({
       payload: { type: 'workType', parentId: 0 },
       callback: list => {
-        this.setState({ operationCategory: this.generateOperationCategory(list) })
+        this.setState({ operationCategory: list })
       },
     })
     if (id) {
@@ -85,7 +85,7 @@ export default class specialOperationPermitHandle extends PureComponent {
         payload: { id, pageNum: 1, pageSize: 10 },
         callback: ({ list }) => {
           const detail = list[0] || {};
-          const { companyId, companyName, certificatePositiveFileList, certificateReverseFileList } = detail;
+          const { companyId, companyName, certificatePositiveFileList, certificateReverseFileList, workType } = detail;
           this.setState({
             detail,
             selectedCompany: { id: companyId, name: companyName },
@@ -102,7 +102,21 @@ export default class specialOperationPermitHandle extends PureComponent {
               name: item.fileName,
             })) : [],
           })
-          setFieldsValue({ companyId })
+          setFieldsValue({ companyId });
+          const temp = workType ? workType.split(',') : [];
+          // 获取作业类别
+          this.fetchDict({
+            payload: { type: 'workType' },
+            callback: list => {
+              const children = temp.length > 1 ? list.filter(item => item.parentId === temp[0]) : undefined;
+              const root = list.reduce((arr, item) => {
+                if (item.parentId === '0') {
+                  return temp.length > 1 && item.id === temp[0] ? [...arr, { ...item, isLeaf: !Number(item.hasChild), children }] : [...arr, { ...item, isLeaf: !Number(item.hasChild) }]
+                } else return arr;
+              }, [])
+              this.setState({ operationCategory: root });
+            },
+          })
         },
       })
     } else if (isCompany) {
@@ -300,16 +314,16 @@ export default class specialOperationPermitHandle extends PureComponent {
   };
 
   // 格式化作业列别选项
-  generateOperationCategory = list => list.length ? list.map(({ id, label, hasChild }) => ({ value: id, label, isLeaf: !Number(hasChild) })) : []
+  // generateOperationCategory = list => list.length ? list.map(({ id, label, hasChild }) => ({ value: id, label, isLeaf: !Number(hasChild) })) : []
 
   // 加载作业类别下级选项
   loadOperationCategory = selectedOptions => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
     this.fetchDict({
-      payload: { type: 'workType', parentId: targetOption.value },
+      payload: { type: 'workType', parentId: targetOption.id },
       callback: list => {
-        const children = this.generateOperationCategory(list);
+        const children = list;
         targetOption.loading = false;
         targetOption.children = children;
         this.setState({ operationCategory: [...this.state.operationCategory] })
@@ -399,6 +413,7 @@ export default class specialOperationPermitHandle extends PureComponent {
               options={operationCategory}
               loadData={this.loadOperationCategory}
               changeOnSelect
+              fieldNames={{ value: 'id' }}
               {...itemStyles}
             />
           )}
@@ -546,8 +561,8 @@ export default class specialOperationPermitHandle extends PureComponent {
                   onClick={this.handleSubmit}
                 >
                   提交
-              </Button>
-            )}
+                </Button>
+              )}
             <Button
               style={{ marginLeft: 20 }}
               onClick={this.goBack}
