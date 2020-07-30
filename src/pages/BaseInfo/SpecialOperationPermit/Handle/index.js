@@ -447,7 +447,7 @@ export default class specialOperationPermitHandle extends PureComponent {
         </FormItem>
         <FormItem label="有效日期" {...formItemLayout}>
           {getFieldDecorator('effectiveDate', {
-            initialValue: id ? [moment(detail.startDate), moment(detail.endDate)] : undefined,
+            initialValue: id && detail.startDate && detail.endDate ? [moment(detail.startDate), moment(detail.endDate)] : undefined,
             rules: [{ required: true, message: '请选择有效日期' }],
           })(
             <RangePicker
