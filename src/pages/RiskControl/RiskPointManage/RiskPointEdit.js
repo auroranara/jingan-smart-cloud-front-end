@@ -1384,7 +1384,7 @@ export default class RiskPointEdit extends PureComponent {
                     {getFieldDecorator('locationCode', {
                       initialValue: data.locationCode,
                       getValueFromEvent: this.handleTrim,
-                      rules: [{ required: true, message: '请选择RFID' }],
+                      // rules: [{ required: true, message: '请选择RFID' }],
                     })(<Input placeholder="请选择RFID" disabled />)}
                   </Form.Item>
                 </Col>
@@ -1396,7 +1396,7 @@ export default class RiskPointEdit extends PureComponent {
                     {getFieldDecorator('qrCode', {
                       initialValue: data.qrCode,
                       getValueFromEvent: this.handleTrim,
-                      rules: [{ required: true, message: '请选择二维码' }],
+                      // rules: [{ required: true, message: '请选择二维码' }],
                     })(<Input placeholder="请选择二维码" disabled />)}
                   </Form.Item>
                 </Col>
@@ -1405,7 +1405,7 @@ export default class RiskPointEdit extends PureComponent {
                     {getFieldDecorator('nfcCode', {
                       initialValue: data.nfcCode,
                       getValueFromEvent: this.handleTrim,
-                      rules: [{ required: true, message: '请选择NFC' }],
+                      // rules: [{ required: true, message: '请选择NFC' }],
                     })(<Input placeholder="请选择NFC" disabled />)}
                   </Form.Item>
                 </Col>
