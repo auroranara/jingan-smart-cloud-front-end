@@ -354,6 +354,7 @@ export default class TrainingProgramOther extends Component {
             labelCol: LABEL_COL,
             render: () => (
               <SelectOrSpan
+                mode="multiple"
                 className={styles.item}
                 placeholder="请选择培训类型"
                 list={TrainingType}
@@ -380,6 +381,7 @@ export default class TrainingProgramOther extends Component {
             labelCol: LABEL_COL,
             render: () => (
               <SelectOrSpan
+                mode="multiple"
                 className={styles.item}
                 placeholder="请选择培训形式"
                 list={FORMS}
@@ -654,16 +656,16 @@ export default class TrainingProgramOther extends Component {
             ),
             options: {
               initialValue: planFileList || [],
-              rules: isNotDetail
-                ? [
-                    {
-                      required: true,
-                      type: 'array',
-                      min: 1,
-                      message: '计划扫描件不能为空',
-                    },
-                  ]
-                : undefined,
+              // rules: isNotDetail
+              //   ? [
+              //       {
+              //         required: true,
+              //         type: 'array',
+              //         min: 1,
+              //         message: '计划扫描件不能为空',
+              //       },
+              //     ]
+              //   : undefined,
             },
           },
           ...(!isNotDetail && +planStatus === 1
