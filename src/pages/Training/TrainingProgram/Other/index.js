@@ -30,7 +30,7 @@ import {
 import styles from './index.less';
 import { genGoBack } from '@/utils/utils';
 
-const USER_ID_TYPES = ['', 'userInput', 'userIds'];
+const USER_ID_TYPES = ['', 'userIds', 'userInput'];
 @connect(
   ({ trainingProgram, user, loading }) => ({
     trainingProgram,
@@ -100,7 +100,9 @@ export default class TrainingProgramOther extends Component {
       setDetail();
       if (type !== 'add') {
         // 不考虑id不存在的情况，由request来跳转到500
-        getDetail && getDetail({ id });
+        getDetail && getDetail({ id }, ({ userIdType }) => {
+          userIdType && this.setState({ userIdType })
+        });
       }
     } else {
       router.replace('/404');
@@ -175,6 +177,8 @@ export default class TrainingProgramOther extends Component {
         const {
           company,
           range: [trainingStartTime, trainingEndTime],
+          trainingType,
+          trainingWay,
           ...rest
         } = values;
         const payload = {
@@ -182,6 +186,8 @@ export default class TrainingProgramOther extends Component {
           companyId: +unitType !== 4 ? company.key : unitId,
           trainingStartTime,
           trainingEndTime,
+          trainingType: trainingType.join(','),
+          trainingWay: trainingWay.join(','),
           ...rest,
         };
         (id ? edit : add)(payload, isSuccess => {
@@ -370,12 +376,13 @@ export default class TrainingProgramOther extends Component {
               />
             ),
             options: {
-              initialValue: trainingType && `${trainingType}`,
+              // initialValue: trainingType && `${trainingType}`,
+              initialValue: trainingType ? trainingType.toString().split(',') : [],
               rules: isNotDetail
                 ? [
                     {
                       required: true,
-                      whitespace: true,
+                      // whitespace: true,
                       message: '培训类型不能为空',
                     },
                   ]
@@ -397,7 +404,8 @@ export default class TrainingProgramOther extends Component {
               />
             ),
             options: {
-              initialValue: trainingWay && `${trainingWay}`,
+              // initialValue: trainingWay && `${trainingWay}`,
+              initialValue: trainingWay ? trainingWay.toString().split(',') : [],
               rules: isNotDetail
                 ? [
                     {

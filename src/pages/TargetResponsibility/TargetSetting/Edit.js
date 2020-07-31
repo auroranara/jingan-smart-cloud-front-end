@@ -15,10 +15,11 @@ import {
   DatePicker,
   // AutoComplete,
   Spin,
+  TreeSelect,
 } from 'antd';
 import debounce from 'lodash/debounce';
 import moment from 'moment';
-import router from 'umi/router';
+// import router from 'umi/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -56,6 +57,14 @@ const {
     targetSetting: { edit: editAuth },
   },
 } = codes;
+
+function getTreeNodes(list) {
+  return Array.isArray(list) ? list.map(({ id, name, children }) => ({
+    title: name,
+    value: id,
+    children: getTreeNodes(children),
+  })) : [];
+}
 
 @Form.create()
 @connect(({ targetResponsibility, account, department, user, loading }) => ({
@@ -698,19 +707,27 @@ export default class Edit extends PureComponent {
                   />
                 )}
                 {+dutyStatus === 2 && (
-                  <Select
+                  // <Select
+                  //   value={departmentId}
+                  //   placeholder="请选择"
+                  //   {...itemStyles}
+                  //   style={{ width: '50%' }}
+                  //   onChange={e => this.handleIdChange(e)}
+                  // >
+                  //   {departmentList.map(({ id, name }) => (
+                  //     <Option key={id} value={id}>
+                  //       {name}
+                  //     </Option>
+                  //   ))}
+                  // </Select>
+                  <TreeSelect
                     value={departmentId}
                     placeholder="请选择"
                     {...itemStyles}
                     style={{ width: '50%' }}
                     onChange={e => this.handleIdChange(e)}
-                  >
-                    {departmentList.map(({ id, name }) => (
-                      <Option key={id} value={id}>
-                        {name}
-                      </Option>
-                    ))}
-                  </Select>
+                    treeData={getTreeNodes(departmentList)}
+                  />
                 )}
                 {+dutyStatus === 3 && (
                   <Select
