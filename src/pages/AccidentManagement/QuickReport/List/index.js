@@ -26,6 +26,7 @@ export const LEVELS = [
   { key: '1', value: '重大' },
   { key: '2', value: '较大' },
   { key: '3', value: '一般' },
+  { key: '4', value: '其他' },
 ];
 export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
