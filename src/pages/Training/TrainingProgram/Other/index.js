@@ -747,6 +747,8 @@ export default class TrainingProgramOther extends Component {
     ];
 
     fields[0].fields = fields[0].fields.filter(({ id }) => id !== USER_ID_TYPES[this.state.userIdType]);
+    if (!isNotDetail)
+      fields[0].fields = fields[0].fields.filter(({ id }) => id !== 'userIdType')
 
     return (
       <CustomForm
