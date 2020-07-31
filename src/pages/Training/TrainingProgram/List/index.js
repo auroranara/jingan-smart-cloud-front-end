@@ -33,6 +33,18 @@ import styles from './index.less';
 
 const { Option } = Select;
 
+function getLabels(options, value) {
+  if (!value)
+    return '';
+  
+  const map = options.reduce((accum, { key, value }) => {
+    accum[key] = value;
+    return accum;
+  }, {})
+
+  return value.toString().split(',').map(v => map[v]).join('、');
+}
+
 @connect(
   ({ trainingProgram, user, loading }) => ({
     trainingProgram,
@@ -315,12 +327,14 @@ export default class TrainingProgramList extends Component {
         title: '培训类型',
         dataIndex: 'trainingType',
         align: 'center',
-        render: value => <SelectOrSpan list={TrainingType} value={`${value}`} type="span" />,
+        // render: value => <SelectOrSpan list={TrainingType} value={`${value}`} type="span" />,
+        render: value => getLabels(TrainingType, value),
       },
       {
         title: '培训形式',
         dataIndex: 'trainingWay',
-        render: value => <SelectOrSpan list={FORMS} value={`${value}`} type="span" />,
+        // render: value => <SelectOrSpan list={FORMS} value={`${value}`} type="span" />,
+        render: value => getLabels(FORMS, value),
         align: 'center',
       },
       {

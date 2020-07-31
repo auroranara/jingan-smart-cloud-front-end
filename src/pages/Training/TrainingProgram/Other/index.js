@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Spin, message } from 'antd';
+import { Button, Radio, Spin, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
@@ -30,6 +30,7 @@ import {
 import styles from './index.less';
 import { genGoBack } from '@/utils/utils';
 
+const USER_ID_TYPES = ['', 'userIds', 'userInput'];
 @connect(
   ({ trainingProgram, user, loading }) => ({
     trainingProgram,
@@ -74,6 +75,7 @@ export default class TrainingProgramOther extends Component {
   constructor(props) {
     super(props);
     this.goBack = genGoBack(props, LIST_PATH);
+    this.state = { userIdType: '2' }; // 1 手填 2 选择
   }
 
   componentDidMount() {
@@ -98,7 +100,9 @@ export default class TrainingProgramOther extends Component {
       setDetail();
       if (type !== 'add') {
         // 不考虑id不存在的情况，由request来跳转到500
-        getDetail && getDetail({ id });
+        getDetail && getDetail({ id }, ({ userIdType }) => {
+          userIdType && this.setState({ userIdType })
+        });
       }
     } else {
       router.replace('/404');
@@ -173,6 +177,8 @@ export default class TrainingProgramOther extends Component {
         const {
           company,
           range: [trainingStartTime, trainingEndTime],
+          trainingType,
+          trainingWay,
           ...rest
         } = values;
         const payload = {
@@ -180,6 +186,8 @@ export default class TrainingProgramOther extends Component {
           companyId: +unitType !== 4 ? company.key : unitId,
           trainingStartTime,
           trainingEndTime,
+          trainingType: trainingType.join(','),
+          trainingWay: trainingWay.join(','),
           ...rest,
         };
         (id ? edit : add)(payload, isSuccess => {
@@ -242,6 +250,10 @@ export default class TrainingProgramOther extends Component {
     });
   };
 
+  handleUserIdTypeChange = e => {
+    this.setState({ userIdType: e.target.value })
+  };
+
   renderForm() {
     const {
       match: {
@@ -267,6 +279,8 @@ export default class TrainingProgramOther extends Component {
           trainingAddress,
           trainingContent,
           planFileList,
+          userIdType,
+          userInput,
           userIds,
           planStatus,
           resultFileList,
@@ -354,6 +368,7 @@ export default class TrainingProgramOther extends Component {
             labelCol: LABEL_COL,
             render: () => (
               <SelectOrSpan
+                mode="multiple"
                 className={styles.item}
                 placeholder="请选择培训类型"
                 list={TrainingType}
@@ -361,12 +376,13 @@ export default class TrainingProgramOther extends Component {
               />
             ),
             options: {
-              initialValue: trainingType && `${trainingType}`,
+              // initialValue: trainingType && `${trainingType}`,
+              initialValue: trainingType ? trainingType.toString().split(',') : [],
               rules: isNotDetail
                 ? [
                     {
                       required: true,
-                      whitespace: true,
+                      // whitespace: true,
                       message: '培训类型不能为空',
                     },
                   ]
@@ -380,6 +396,7 @@ export default class TrainingProgramOther extends Component {
             labelCol: LABEL_COL,
             render: () => (
               <SelectOrSpan
+                mode="multiple"
                 className={styles.item}
                 placeholder="请选择培训形式"
                 list={FORMS}
@@ -387,7 +404,8 @@ export default class TrainingProgramOther extends Component {
               />
             ),
             options: {
-              initialValue: trainingWay && `${trainingWay}`,
+              // initialValue: trainingWay && `${trainingWay}`,
+              initialValue: trainingWay ? trainingWay.toString().split(',') : [],
               rules: isNotDetail
                 ? [
                     {
@@ -615,6 +633,45 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
+            id: 'userIdType',
+            label: '培训对象输入模式',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => (
+              <Radio.Group onChange={this.handleUserIdTypeChange}>
+                <Radio key="0" value="2">选择</Radio>
+                <Radio key="1" value="1">输入</Radio>
+              </Radio.Group>
+            ),
+            options: { initialValue: userIdType || '2' },
+          },
+          {
+            id: 'userInput',
+            label: '培训对象',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入培训对象"
+                type={isNotDetail ? 'Input' : 'span'}
+                maxLength={50}
+              />
+            ),
+            options: {
+              initialValue: userInput,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '培训对象不能为空',
+                    },
+                  ]
+                : undefined,
+            },
+          },
+          {
             id: 'userIds',
             label: '培训对象',
             span: SPAN,
@@ -654,16 +711,16 @@ export default class TrainingProgramOther extends Component {
             ),
             options: {
               initialValue: planFileList || [],
-              rules: isNotDetail
-                ? [
-                    {
-                      required: true,
-                      type: 'array',
-                      min: 1,
-                      message: '计划扫描件不能为空',
-                    },
-                  ]
-                : undefined,
+              // rules: isNotDetail
+              //   ? [
+              //       {
+              //         required: true,
+              //         type: 'array',
+              //         min: 1,
+              //         message: '计划扫描件不能为空',
+              //       },
+              //     ]
+              //   : undefined,
             },
           },
           ...(!isNotDetail && +planStatus === 1
@@ -696,6 +753,10 @@ export default class TrainingProgramOther extends Component {
         ],
       },
     ];
+
+    fields[0].fields = fields[0].fields.filter(({ id }) => id !== USER_ID_TYPES[this.state.userIdType]);
+    if (!isNotDetail)
+      fields[0].fields = fields[0].fields.filter(({ id }) => id !== 'userIdType')
 
     return (
       <CustomForm
