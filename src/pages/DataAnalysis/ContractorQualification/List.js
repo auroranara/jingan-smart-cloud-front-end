@@ -112,6 +112,7 @@ export default class ContractorQualification extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      user: { isCompany, currentUser },
     } = this.props;
     const { workType, ...resValues } = getFieldsValue();
     const payload = { ...(workType && workType.length ? { workType: workType.join(',') } : {}), ...resValues };
@@ -121,6 +122,7 @@ export default class ContractorQualification extends PureComponent {
         ...payload,
         pageNum,
         pageSize,
+        companyCode: isCompany ? currentUser.companyId : undefined,
       },
     })
   }
