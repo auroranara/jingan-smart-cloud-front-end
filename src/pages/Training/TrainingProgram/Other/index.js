@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Spin, message } from 'antd';
+import { Button, Radio, Spin, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
@@ -74,6 +74,7 @@ export default class TrainingProgramOther extends Component {
   constructor(props) {
     super(props);
     this.goBack = genGoBack(props, LIST_PATH);
+    this.state = { userIdType: '0' };
   }
 
   componentDidMount() {
@@ -242,6 +243,10 @@ export default class TrainingProgramOther extends Component {
     });
   };
 
+  handleUserIdTypeChange = e => {
+    this.setState({ userIdType: e.target.value })
+  };
+
   renderForm() {
     const {
       match: {
@@ -267,6 +272,7 @@ export default class TrainingProgramOther extends Component {
           trainingAddress,
           trainingContent,
           planFileList,
+          userIdType,
           userIds,
           planStatus,
           resultFileList,
@@ -617,7 +623,48 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
+            id: 'userIdType',
+            label: '培训对象输入模式',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => (
+              <Radio.Group onChange={this.handleUserIdTypeChange}>
+                <Radio key="0" value="0">选择</Radio>
+                <Radio key="1" value="1">输入</Radio>
+              </Radio.Group>
+            ),
+            options: { initialValue: userIdType || '0' },
+          },
+          {
             id: 'userIds',
+            userIdType: '0',
+            label: '培训对象',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => (
+              <InputOrSpan
+                className={styles.item}
+                placeholder="请输入培训对象"
+                type={isNotDetail ? 'Input' : 'span'}
+                maxLength={50}
+              />
+            ),
+            options: {
+              initialValue: userIds,
+              rules: isNotDetail
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: '培训对象不能为空',
+                    },
+                  ]
+                : undefined,
+            },
+          },
+          {
+            id: 'userIds',
+            userIdType: '1',
             label: '培训对象',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -698,6 +745,8 @@ export default class TrainingProgramOther extends Component {
         ],
       },
     ];
+
+    fields[0].fields = fields[0].fields.filter(({ userIdType }) => userIdType !== this.state.userIdType);
 
     return (
       <CustomForm

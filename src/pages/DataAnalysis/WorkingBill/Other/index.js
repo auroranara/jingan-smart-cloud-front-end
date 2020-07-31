@@ -298,6 +298,7 @@ export default class WorkingBillOther extends Component {
       form: { getFieldDecorator, getFieldsValue },
     } = this.props;
     const isNotDetail = mode !== 'detail';
+    const isQCG = !!unitName && ['确成硅', '东沃化能'].some(u => unitName.includes(u)); // 是否是确成硅或东沃化能
     const values = getFieldsValue();
     const uploading =
       (values.certificatesFileList || []).some(({ status }) => status !== 'done') ||
@@ -688,11 +689,11 @@ export default class WorkingBillOther extends Component {
             ? [
                 {
                   key: 'manager',
-                  label: '负责人',
+                  label: `${isQCG ? '属地' : ''}负责人`,
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.manager,
-                    rules: [{ required: true, message: '负责人不能为空', whitespace: true }],
+                    rules: [{ required: true, message: `${isQCG ? '属地' : ''}负责人不能为空`, whitespace: true }],
                   },
                 },
               ]
@@ -1124,11 +1125,11 @@ export default class WorkingBillOther extends Component {
             ? [
                 {
                   key: 'workingManager',
-                  label: '动火负责人',
+                  label: `${isQCG ? '作业单位' : '动火'}负责人`,
                   component: <Input mode={mode} />,
                   options: {
                     initialValue: detail.workingManager,
-                    rules: [{ required: true, message: '动火负责人不能为空', whitespace: true }],
+                    rules: [{ required: true, message: `${isQCG ? '作业单位' : '动火'}负责人不能为空`, whitespace: true }],
                   },
                 },
               ]
