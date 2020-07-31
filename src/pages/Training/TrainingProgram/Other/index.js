@@ -30,6 +30,7 @@ import {
 import styles from './index.less';
 import { genGoBack } from '@/utils/utils';
 
+const USER_ID_TYPES = ['', 'userInput', 'userIds'];
 @connect(
   ({ trainingProgram, user, loading }) => ({
     trainingProgram,
@@ -74,7 +75,7 @@ export default class TrainingProgramOther extends Component {
   constructor(props) {
     super(props);
     this.goBack = genGoBack(props, LIST_PATH);
-    this.state = { userIdType: '0' };
+    this.state = { userIdType: '2' }; // 1 手填 2 选择
   }
 
   componentDidMount() {
@@ -273,6 +274,7 @@ export default class TrainingProgramOther extends Component {
           trainingContent,
           planFileList,
           userIdType,
+          userInput,
           userIds,
           planStatus,
           resultFileList,
@@ -629,15 +631,14 @@ export default class TrainingProgramOther extends Component {
             labelCol: LABEL_COL,
             render: () => (
               <Radio.Group onChange={this.handleUserIdTypeChange}>
-                <Radio key="0" value="0">选择</Radio>
+                <Radio key="0" value="2">选择</Radio>
                 <Radio key="1" value="1">输入</Radio>
               </Radio.Group>
             ),
-            options: { initialValue: userIdType || '0' },
+            options: { initialValue: userIdType || '2' },
           },
           {
-            id: 'userIds',
-            userIdType: '0',
+            id: 'userInput',
             label: '培训对象',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -650,7 +651,7 @@ export default class TrainingProgramOther extends Component {
               />
             ),
             options: {
-              initialValue: userIds,
+              initialValue: userInput,
               rules: isNotDetail
                 ? [
                     {
@@ -664,7 +665,6 @@ export default class TrainingProgramOther extends Component {
           },
           {
             id: 'userIds',
-            userIdType: '1',
             label: '培训对象',
             span: SPAN,
             labelCol: LABEL_COL,
@@ -746,7 +746,7 @@ export default class TrainingProgramOther extends Component {
       },
     ];
 
-    fields[0].fields = fields[0].fields.filter(({ userIdType }) => userIdType !== this.state.userIdType);
+    fields[0].fields = fields[0].fields.filter(({ id }) => id !== USER_ID_TYPES[this.state.userIdType]);
 
     return (
       <CustomForm
