@@ -14,11 +14,11 @@ import { AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import moment from 'moment';
 import codes from '@/utils/codes';
 import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
-import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+// import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
 
 const FormItem = Form.Item;
 
-const title = '特种设备作业人员';
+const title = '特种设备操作证';
 const defaultPageSize = 10;
 const {
   home: homeUrl,

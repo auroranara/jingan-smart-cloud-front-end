@@ -12,6 +12,7 @@ const configs = {
   show: '晶安智慧云',
   czey: '常州二院智慧云',
   huishan: '惠山街道智慧云',
+  five: '五位一体信息化管理平台',
 };
 module.exports = (env = 'default') => {
   return configs[env];

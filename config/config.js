@@ -69,7 +69,7 @@ export default {
           hmr: true,
         },
         title: {
-          defaultTitle: projectShortName || '晶安智慧云',
+          defaultTitle: projectShortName || '五位一体信息化管理平台',
         },
         locale: {
           enable: true, // default false

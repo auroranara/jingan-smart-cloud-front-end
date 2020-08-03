@@ -45,9 +45,9 @@ export default {
   },
   specialEquipmentOperators: {
     menu: '作业安全管理',
-    list: '特种设备作业人员',
-    add: '新增作业人员',
-    edit: '编辑作业人员',
+    list: '特种设备操作证',
+    add: '新增特种设备操作证',
+    edit: '编辑特种设备操作证',
   },
   dangerChemicalsPermit: {
     menu: '单位证照管理',

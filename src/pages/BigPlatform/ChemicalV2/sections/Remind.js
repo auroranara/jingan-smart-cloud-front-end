@@ -39,7 +39,7 @@ const list = [
     url: 'operation-safety/special-operation-permit/list',
   },
   {
-    name: '特种设备作业人员证',
+    name: '特种设备操作证',
     key: 'specialequipPerson',
     url: 'operation-safety/special-equipment-operators/list',
   },
