@@ -146,7 +146,7 @@ export default class TableList extends PureComponent {
               共计：
               {total}
             </p>
-            <p style={{ margin: 0, color: '#F00' }}>
+            {/* <p style={{ margin: 0, color: '#F00' }}>
               请对变更所属的风险区域重新进行风险评价，评价完成后可对变更进行审批（
               <a
                 href={`${window.publicPath}#/risk-control/change-management/list`}
@@ -156,7 +156,7 @@ export default class TableList extends PureComponent {
                 变更管理
               </a>
               ）
-            </p>
+            </p> */}
           </Fragment>
         }
       >
