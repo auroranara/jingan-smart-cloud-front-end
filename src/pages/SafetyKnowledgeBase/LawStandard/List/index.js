@@ -182,6 +182,7 @@ export default class AlarmMessage extends Component {
 
   render () {
     const props = {
+      key: this.state.key,
       fields: this.getFields,
       // action: this.getAction,
       columns: this.getColumns,
