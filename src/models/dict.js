@@ -5,6 +5,7 @@ import {
   getGridTree,
   getCompanyNatureList,
   getCompanyDetail,
+  getCompanyStatusList,
 } from '@/services/dict';
 
 export default {
@@ -17,6 +18,7 @@ export default {
     gridTree: [],
     companyNatureList: [],
     companyDetail: {},
+    companyStatusList: [],
   },
 
   effects: {
@@ -30,9 +32,10 @@ export default {
             key: item.id,
             value: item.id,
             label: item.name,
-            children: item.name,
+            title: item.name,
             data: item,
           })),
+          payload,
         };
         yield put({
           type: 'append',
@@ -41,6 +44,22 @@ export default {
           },
         });
         callback && callback(true, companyList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getCompanyDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyDetail, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const companyDetail = data;
+        yield put({
+          type: 'save',
+          payload: {
+            companyDetail,
+          },
+        });
+        callback && callback(true, companyDetail);
       } else {
         callback && callback(false, msg);
       }
@@ -54,8 +73,10 @@ export default {
             ? list.map(item => ({
                 key: item.id,
                 value: item.id,
+                label: item.name,
                 title: item.name,
                 children: transform(item.children),
+                data: item,
               }))
             : [];
         const departmentTree = transform(data.list);
@@ -80,9 +101,10 @@ export default {
             key: item.id,
             value: item.id,
             label: item.userName,
-            children: item.userName,
+            title: item.userName,
             data: item,
           })),
+          payload,
         };
         yield put({
           type: 'append',
@@ -104,8 +126,10 @@ export default {
             ? list.map(item => ({
                 key: item.grid_id,
                 value: item.grid_id,
+                label: item.grid_name,
                 title: item.grid_name,
                 children: transform(item.children),
+                data: item,
               }))
             : [];
         const gridTree = transform(data.list);
@@ -128,7 +152,7 @@ export default {
           key: item.id,
           value: item.id,
           label: item.label,
-          children: item.label,
+          title: item.label,
           data: item,
         }));
         yield put({
@@ -142,18 +166,24 @@ export default {
         callback && callback(false, msg);
       }
     },
-    *getCompanyDetail({ payload, callback }, { call, put }) {
-      const response = yield call(getCompanyDetail, payload);
+    *getCompanyStatusList({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyStatusList, payload);
       const { code, data, msg } = response || {};
-      if (code === 200 && data) {
-        const companyDetail = data;
+      if (code === 200 && data && data.list) {
+        const companyStatusList = data.list.map(item => ({
+          key: item.key,
+          value: item.key,
+          label: item.value,
+          title: item.value,
+          data: item,
+        }));
         yield put({
           type: 'save',
           payload: {
-            companyDetail,
+            companyStatusList,
           },
         });
-        callback && callback(true, companyDetail);
+        callback && callback(true, companyStatusList);
       } else {
         callback && callback(false, msg);
       }
@@ -164,26 +194,17 @@ export default {
     save: (state, { payload }) => ({ ...state, ...payload }),
     append: (state, { payload }) => ({
       ...state,
-      ...Object.entries(payload).reduce(
-        (
-          result,
-          [
-            key,
-            {
-              list,
-              pagination,
-              pagination: { pageNum },
-            },
-          ]
-        ) => {
-          result[key] = {
-            list: pageNum > 1 ? state[key].list.concat(list) : list,
-            pagination,
-          };
-          return result;
-        },
-        {}
-      ),
+      ...Object.entries(payload).reduce((result, [key, value]) => {
+        const {
+          list,
+          pagination: { pageNum },
+        } = value;
+        result[key] = {
+          ...value,
+          list: pageNum > 1 ? state[key].list.concat(list) : list,
+        };
+        return result;
+      }, {}),
     }),
   },
 };

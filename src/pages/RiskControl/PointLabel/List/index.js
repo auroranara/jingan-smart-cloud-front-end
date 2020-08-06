@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback, Fragment } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, Fragment, Component } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import {
   message,
@@ -6,19 +6,15 @@ import {
   Form,
   Row,
   Col,
-  Spin,
   Input,
-  TreeSelect,
-  DatePicker,
+  Select,
   Button,
   Table,
   Divider,
   Popconfirm,
 } from 'antd';
-import PagingSelect from '@/jingan-components/PagingSelect';
 import Link from 'umi/link';
 import { connect } from 'dva';
-import moment from 'moment';
 import { stringify } from 'qs';
 import {
   modelName,
@@ -34,19 +30,17 @@ import {
   editPath,
   parentLocale,
   listLocale,
+  typeList,
+  statusList,
 } from '../config';
 import {
-  dateFormat,
-  dateRangePickerPlaceholder,
-  getRanges,
-  getSelectValueFromEvent,
   showTotal,
   EmptyText,
   listPageCol,
   hiddenCol,
 } from '@/utils';
+import { isNumber } from '@/utils/utils';
 import styles from './index.less';
-const { RangePicker } = DatePicker;
 
 // 面包屑
 const breadcrumbList = [
@@ -58,124 +52,65 @@ const breadcrumbList = [
 const getPayloadByQuery = ({
   pageNum,
   pageSize,
-  company,
-  name,
-  department,
-  startDate,
-  endDate,
+  bindStatus,
 }) => ({
   pageNum: pageNum > 0 ? +pageNum : 1,
   pageSize: pageSize > 0 ? +pageSize : 10,
-  company: company ? JSON.parse(decodeURIComponent(company)) : undefined,
-  name: name ? decodeURIComponent(name) : undefined,
-  department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
-  range: startDate && endDate ? [moment(+startDate), moment(+endDate)] : undefined,
+  bindStatus,
 });
 // 根据payload获取search（用于路由跳转）
-const getSearchByPayload = ({ pageNum, pageSize, company, name, department, range }) => {
-  const [startDate, endDate] = range || [];
+const getSearchByPayload = ({ pageNum, pageSize }) => {
   const query = {
     pageNum,
     pageSize,
-    company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
-    name: name ? encodeURIComponent(name) : undefined,
-    department: department ? encodeURIComponent(JSON.stringify(department)) : undefined,
-    startDate: startDate ? +startDate : undefined,
-    endDate: endDate ? +endDate : undefined,
   };
   const search = stringify(query);
   return search && `?${search}`;
 };
 // 转换payload为接口需要的格式
-const transformPayload = ({ company, department, range, ...payload }) => {
-  const [startDate, endDate] = range || [];
+const transformPayload = ({  ...payload }) => {
   return {
     ...payload,
-    companyId: company && company.key,
-    departmentId: department && department.key,
-    startDate: startDate && startDate.format(dateFormat),
-    endDate: endDate && endDate.format(dateFormat),
   };
 };
 // 转换values为payload需要的格式（基本上只对输入框的值进行trim操作）
-const transformValues = ({ name, ...rest }) => ({
+const transformValues = ({ ...rest }) => ({
   ...rest,
-  name: name ? name.trim() : undefined,
 });
 // 获取表单配置
 const getFields = ({
   isUnit,
-  values,
   form,
   search,
   hasAddAuthority,
-  companyList,
-  loadingCompanyList,
-  setCompanyPayload,
-  onCompanySelectChange,
-  departmentTree,
-  loadingDepartmentTree,
-  ranges,
 }) => [
   {
-    name: 'company',
+    name: 'companyName',
     label: '单位名称',
     children: (
-      <PagingSelect
-        options={companyList.list}
-        loading={loadingCompanyList}
-        allowClear
-        disabled={isUnit}
-        hasMore={
-          companyList.pagination &&
-          companyList.pagination.total >
-            companyList.pagination.pageNum * companyList.pagination.pageSize
-        }
-        onSearch={name => setCompanyPayload(payload => ({ ...payload, pageNum: 1, name }))}
-        loadMore={() =>
-          setCompanyPayload(payload => ({ ...payload, pageNum: payload.pageNum + 1 }))
-        }
-        onChange={onCompanySelectChange}
-      />
+      <Input placeholder="请输入" maxLength={50} allowClear />
     ),
-    getValueFromEvent: getSelectValueFromEvent,
     col: !isUnit ? listPageCol : hiddenCol,
   },
   {
-    name: 'name',
-    label: '名称',
+    name: 'itemType',
+    label: '类型',
+    children: (
+      <Select placeholder="请选择" options={typeList} allowClear />
+    ),
+    col: listPageCol,
+  },
+  {
+    name: 'locationCode',
+    label: '标签编号',
     children: <Input placeholder="请输入" maxLength={50} allowClear />,
     col: listPageCol,
   },
   {
-    name: 'department',
-    label: '所属部门',
+    name: 'bindStatus',
+    label: '绑定状态',
     children: (
-      <TreeSelect
-        placeholder="请选择"
-        treeData={values.company ? departmentTree : undefined}
-        labelInValue
-        notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
-        showSearch
-        treeNodeFilterProp="title"
-        allowClear
-      />
-    ),
-    getValueFromEvent: getSelectValueFromEvent,
-    col: listPageCol,
-  },
-  {
-    name: 'range',
-    label: '时间',
-    children: (
-      <RangePicker
-        className={styles.rangePicker}
-        placeholder={dateRangePickerPlaceholder}
-        format={dateFormat}
-        separator="~"
-        ranges={ranges}
-        allowClear
-      />
+      <Select placeholder="请选择" options={statusList} allowClear />
     ),
     col: listPageCol,
   },
@@ -200,14 +135,13 @@ const getFields = ({
     ),
     col: isUnit
       ? {
-          xxl: 6,
-          xl: 24,
-          lg: 12,
-          md: 12,
-          sm: 24,
-          xs: 24,
-        }
-      : {
+        xxl: 6,
+        xl: 24,
+        lg: 12,
+        md: 12,
+        sm: 24,
+        xs: 24,
+      } : {
           xxl: 24,
           xl: 16,
           lg: 24,
@@ -238,37 +172,34 @@ const getColumns = ({
         ]
       : []),
     {
-      dataIndex: 'name',
-      title: '名称',
+      dataIndex: 'locationCode',
+      title: '标签编号',
       render: value => value || <EmptyText />,
     },
     {
-      dataIndex: 'departmentName',
-      title: '部门',
+      dataIndex: 'qrCode',
+      title: '二维码',
       render: value => value || <EmptyText />,
     },
     {
-      dataIndex: 'date',
-      title: '时间',
-      render: value => (value ? moment(value).format(dateFormat) : <EmptyText />),
+      dataIndex: 'nfcCode',
+      title: 'NFC',
+      render: value => value || <EmptyText />,
     },
     {
-      dataIndex: 'fileList',
-      title: '附件',
-      render: value =>
-        value && value.length ? (
-          <Fragment>
-            {value.map((item, index) => (
-              <div key={index}>
-                <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
-                  {item.fileName}
-                </a>
-              </div>
-            ))}
-          </Fragment>
-        ) : (
-          <EmptyText />
-        ),
+      dataIndex: 'itemType',
+      title: '类型',
+      render: value =>  (value === 1 || value === '1') ? '监督点' : '风险点',
+    },
+    {
+      dataIndex: 'bindPointCount',
+      title: '绑定状态',
+      render: value => isNumber(value) ? (value > 0 ? '已绑定'  : '未绑定' ) : <EmptyText />,
+    },
+    {
+      dataIndex: 'bindPointCount',
+      title: '绑定点位数量',
+      render: value => isNumber(value) ? value : <EmptyText />,
     },
     {
       dataIndex: '操作',
@@ -315,16 +246,13 @@ export default connect(
   (
     {
       user: {
-        currentUser: { unitId, unitName, unitType, permissionCodes },
+        currentUser: { unitType, permissionCodes },
       },
-      dict: { companyList, departmentTree },
       [modelName]: { [listName]: list },
       loading: {
         effects: {
           [listApi]: loading,
           [deleteApi]: deleting,
-          'dict/getCompanyList': loadingCompanyList,
-          'dict/getDepartmentTree': loadingDepartmentTree,
         },
       },
     },
@@ -333,8 +261,6 @@ export default connect(
   ) => {
     return {
       ...ownProps,
-      unitId,
-      unitName,
       isUnit: unitType === 4,
       hasDetailAuthority: permissionCodes.includes(detailCode),
       hasAddAuthority: permissionCodes.includes(addCode),
@@ -343,10 +269,6 @@ export default connect(
       list,
       loading,
       deleting,
-      companyList,
-      loadingCompanyList,
-      departmentTree,
-      loadingDepartmentTree,
       getList(payload, callback) {
         dispatch({
           type: listApi,
@@ -373,30 +295,6 @@ export default connect(
           },
         });
       },
-      getCompanyList(payload, callback) {
-        dispatch({
-          type: 'dict/getCompanyList',
-          payload,
-          callback(success, data) {
-            if (!success) {
-              message.error('获取单位列表数据失败，请稍后重试！');
-            }
-            callback && callback(success, data);
-          },
-        });
-      },
-      getDepartmentTree(payload, callback) {
-        dispatch({
-          type: 'dict/getDepartmentTree',
-          payload,
-          callback(success, data) {
-            if (!success) {
-              message.error('获取部门树数据失败，请稍后重试！');
-            }
-            callback && callback(success, data);
-          },
-        });
-      },
     };
   },
   {
@@ -407,19 +305,13 @@ export default connect(
       return (
         props.list === nextProps.list &&
         props.loading === nextProps.loading &&
-        props.deleting === nextProps.deleting &&
-        props.companyList === nextProps.companyList &&
-        props.loadingCompanyList === nextProps.loadingCompanyList &&
-        props.departmentTree === nextProps.departmentTree &&
-        props.loadingDepartmentTree === nextProps.loadingDepartmentTree
+        props.deleting === nextProps.deleting
       );
     },
   }
 )(
   ({
     location: { query },
-    unitId,
-    unitName,
     isUnit,
     hasDetailAuthority,
     hasAddAuthority,
@@ -428,24 +320,20 @@ export default connect(
     list: { list = [], pagination: { total, pageNum, pageSize } = {} } = {},
     loading,
     deleting,
-    companyList,
-    loadingCompanyList,
-    departmentTree,
-    loadingDepartmentTree,
     getList,
     deleteList,
-    getCompanyList,
-    getDepartmentTree,
   }) => {
     const [form] = Form.useForm();
-    const [initialValues] = useState({
-      company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
-    });
     // 列表接口的参数
-    const [payload, setPayload] = useState(getPayloadByQuery({ ...initialValues, ...query }));
-    // 单位列表接口的参数
-    const [companyPayload, setCompanyPayload] = useState(undefined);
+    const [payload, setPayload] = useState(getPayloadByQuery(query));
     const search = useMemo(() => getSearchByPayload(payload), [payload]);
+    // 表单配置
+    const fields = useMemo(() => getFields({
+      isUnit,
+      form,
+      search,
+      hasAddAuthority,
+    }), []);
     // 表格配置
     const columns = useMemo(
       () =>
@@ -459,8 +347,6 @@ export default connect(
         }),
       [search]
     );
-    // 时间范围选择器的预设
-    const ranges = useMemo(() => getRanges(), [+moment().startOf('day')]);
     // 当payload发生变化时重新请求接口
     useEffect(
       () => {
@@ -473,43 +359,10 @@ export default connect(
       },
       [payload]
     );
-    // 初始化下拉框（单位列表由下面的hook去获取）
-    useEffect(() => {
-      // 如果当前账号不是单位账号，则获取单位列表
-      if (!isUnit) {
-        setCompanyPayload({ pageNum: 1, pageSize: 10 });
-      }
-      // 如果当前账号是单位账号或者已选择单位，则获取部门列表
-      if (isUnit || payload.company) {
-        getDepartmentTree({
-          companyId: isUnit ? unitId : payload.company.key,
-        });
-      }
-    }, []);
-    // 当companyPayload发生变化时获取单位列表
-    useEffect(
-      () => {
-        if (companyPayload) {
-          getCompanyList(companyPayload);
-        }
-      },
-      [companyPayload]
-    );
     // 表单finish事件
     const onFinish = useCallback(values => {
       // 设置payload
       setPayload(payload => ({ ...payload, ...transformValues(values), pageNum: 1 }));
-    }, []);
-    // 单位选择器change事件
-    const onCompanySelectChange = useCallback(company => {
-      // 如果已选择单位，则获取部门列表
-      if (company) {
-        getDepartmentTree({
-          companyId: company.key,
-        });
-      }
-      // 清空部门字段值
-      form.setFieldsValue({ department: undefined });
     }, []);
     // 表格change事件
     const onTableChange = useCallback(({ current: pageNum, pageSize }) => {
@@ -526,39 +379,14 @@ export default connect(
         title={breadcrumbList[breadcrumbList.length - 1].title}
       >
         <Card className={styles.formCard}>
-          <Form form={form} initialValues={initialValues} onFinish={onFinish}>
-            <Form.Item
-              noStyle
-              shouldUpdate={(prevValues, values) =>
-                ['company'].some(dependency => prevValues[dependency] !== values[dependency])
-              }
-            >
-              {({ getFieldsValue }) => {
-                const values = getFieldsValue();
-                return (
+          <Form form={form} onFinish={onFinish}>
                   <Row gutter={24}>
-                    {getFields({
-                      isUnit,
-                      values,
-                      form,
-                      search,
-                      hasAddAuthority,
-                      companyList,
-                      loadingCompanyList,
-                      setCompanyPayload,
-                      onCompanySelectChange,
-                      departmentTree,
-                      loadingDepartmentTree,
-                      ranges,
-                    }).map(({ name, col, ...item }, index) => (
+                    {fields.map(({ name, col, ...item }, index) => (
                       <Col key={name || index} {...col}>
                         <Form.Item name={name} {...item} />
                       </Col>
                     ))}
                   </Row>
-                );
-              }}
-            </Form.Item>
           </Form>
         </Card>
         <Card>

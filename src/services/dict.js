@@ -30,3 +30,8 @@ export async function getCompanyNatureList() {
 export async function getCompanyDetail({ id }) {
   return request(`/acloud_new/v2/baseInfo/company/${id}`);
 }
+
+/* 获取单位状态列表 */
+export async function getCompanyStatusList() {
+  return request(`/gsafe/dict/listForSelect.do?type=companyState`);
+}

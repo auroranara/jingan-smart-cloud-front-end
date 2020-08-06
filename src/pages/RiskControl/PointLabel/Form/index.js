@@ -1,23 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import {
-  message,
-  Card,
-  Skeleton,
-  Spin,
-  Form,
-  Row,
-  Col,
-  Input,
-  TreeSelect,
-  DatePicker,
-  Button,
-} from 'antd';
-import Upload from '@/jingan-components/Form/Upload';
 import PagingSelect from '@/jingan-components/PagingSelect';
+import { message, Card, Skeleton, Form, Row, Col, Input, Select, Button } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
-import moment from 'moment';
 import {
   modelName,
   detailName,
@@ -30,17 +16,18 @@ import {
   detailLocale,
   addLocale,
   editLocale,
+  typeList,
 } from '../config';
 import {
-  dateFormat,
-  getSelectValueFromEvent,
   Text,
   labelCol,
   wrapperCol,
   col,
   buttonWrapperCol,
   hiddenCol,
+  getSelectValueFromEvent,
 } from '@/utils';
+import { isNumber } from '@/utils/utils';
 import styles from './index.less';
 
 // 获取面包屑
@@ -65,44 +52,34 @@ const getBreadcrumbList = ({ name, search }) => {
 const getValuesByDetail = ({
   companyId,
   companyName,
-  name,
-  departmentId,
-  departmentName,
-  principal,
-  principalName,
-  date,
-  fileList,
+  locationCode,
+  qrCode,
+  nfcCode,
+  itemType,
 }) => ({
   company: companyId ? { key: companyId, value: companyId, label: companyName } : undefined,
-  name: name || undefined,
-  department: departmentId
-    ? { key: departmentId, value: departmentId, label: departmentName }
-    : undefined,
-  principal: principal ? { key: principal, value: principal, label: principalName } : undefined,
-  date: date ? moment(date) : undefined,
-  fileList: fileList
-    ? fileList.map((item, index) => ({
-        ...item,
-        url: item.webUrl,
-        status: 'done',
-        uid: -index - 1,
-        name: item.fileName,
-      }))
-    : undefined,
+  locationCode: locationCode || undefined,
+  qrCode: qrCode || undefined,
+  nfcCode: nfcCode || undefined,
+  itemType: isNumber(itemType) ? `${itemType}` : undefined,
 });
 // 根据values获取payload（用于提交）
-const getPayloadByValues = ({ company, name, department, principal, date, fileList }) => ({
+const getPayloadByValues = ({
+  company,
+  locationCode,
+  qrCode,
+  nfcCode,
+  itemType,
+}) => ({
   companyId: company && company.key,
-  name: name && name.trim(),
-  departmentId: department && department.key,
-  principal: principal && principal.key,
-  date: date && date.format(dateFormat),
-  fileList,
+  locationCode,
+  qrCode,
+  nfcCode,
+  itemType,
 });
 // 获取表单配置
 const getFields = ({
   isUnit,
-  values,
   name,
   search,
   adding,
@@ -110,13 +87,6 @@ const getFields = ({
   companyList,
   loadingCompanyList,
   setCompanyPayload,
-  onCompanySelectChange,
-  personList,
-  loadingPersonList,
-  setPersonPayload,
-  onPersonSelectChange,
-  departmentTree,
-  loadingDepartmentTree,
 }) => [
   {
     name: 'company',
@@ -136,7 +106,6 @@ const getFields = ({
           loadMore={() =>
             setCompanyPayload(payload => ({ ...payload, pageNum: payload.pageNum + 1 }))
           }
-          onChange={onCompanySelectChange}
         />
       ) : (
         <Text type="Select" labelInValue />
@@ -146,95 +115,37 @@ const getFields = ({
     col: !isUnit ? col : hiddenCol,
   },
   {
-    name: 'name',
-    label: '名称',
+    name: 'locationCode',
+    label: '标签编号：',
     children: name !== 'detail' ? <Input placeholder="请输入" maxLength={50} /> : <Text />,
     rules:
       name !== 'detail'
         ? [
-            { required: true, message: '请输入名称' },
-            { whitespace: true, message: '名称不能为空格' },
+            { required: true, message: '请输入标签编号' },
+            { whitespace: true, message: '标签编号不能为空格' },
           ]
         : undefined,
     col,
   },
   {
-    name: 'principal',
-    label: '负责人',
-    children:
-      name !== 'detail' ? (
-        <PagingSelect
-          options={personList.list}
-          loading={loadingPersonList}
-          hasMore={
-            personList.pagination &&
-            personList.pagination.total >
-              personList.pagination.pageNum * personList.pagination.pageSize
-          }
-          onSearch={name => setPersonPayload(payload => ({ ...payload, pageNum: 1, name }))}
-          loadMore={() =>
-            setPersonPayload(payload => ({ ...payload, pageNum: payload.pageNum + 1 }))
-          }
-          onChange={onPersonSelectChange}
-        />
-      ) : (
-        <Text type="Select" labelInValue />
-      ),
-    getValueFromEvent: getSelectValueFromEvent,
-    rules: name !== 'detail' ? [{ required: true, message: '请选择负责人' }] : undefined,
+    name: 'qrCode',
+    label: '二维码：',
+    children: name !== 'detail' ? <Input placeholder="请输入" maxLength={50} /> : <Text />,
+    rules: name !== 'detail' ? [{ whitespace: true, message: '二维码不能为空格' }] : undefined,
     col,
   },
   {
-    name: 'department',
-    label: '所属部门',
-    children:
-      name !== 'detail' ? (
-        <TreeSelect
-          placeholder="请选择"
-          treeData={values.company ? departmentTree : undefined}
-          labelInValue
-          notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
-          showSearch
-          treeNodeFilterProp="title"
-        />
-      ) : (
-        <Text type="TreeSelect" labelInValue />
-      ),
-    getValueFromEvent: getSelectValueFromEvent,
+    name: 'nfcCode',
+    label: 'NFC：',
+    children: name !== 'detail' ? <Input placeholder="请输入" maxLength={50} /> : <Text />,
+    rules: name !== 'detail' ? [{ whitespace: true, message: 'NFC不能为空格' }] : undefined,
     col,
   },
   {
-    name: 'date',
-    label: '时间',
-    children:
-      name !== 'detail' ? (
-        <DatePicker
-          className={styles.datePicker}
-          placeholder="请选择"
-          format={dateFormat}
-          allowClear={false}
-        />
-      ) : (
-        <Text type="DatePicker" format={dateFormat} />
-      ),
-    rules: name !== 'detail' ? [{ required: true, message: '请选择时间' }] : undefined,
-    col,
-  },
-  {
-    name: 'fileList',
-    label: '附件',
-    children: name !== 'detail' ? <Upload /> : <Text type="Upload" />,
-    rules:
-      name !== 'detail'
-        ? [
-            {
-              required: true,
-              type: 'array',
-              min: 1,
-              message: '请上传附件',
-            },
-          ]
-        : undefined,
+    name: 'itemType',
+    label: '类型',
+    children: name !== 'detail' ? <Select placeholder="请选择" options={typeList} /> : <Text type="Select" options={typeList} />,
+    rules: name !== 'detail' ? [{ required: true, message: '请选择类型' }] : undefined,
     col,
   },
   {
@@ -261,7 +172,7 @@ export default connect(
       user: {
         currentUser: { unitId, unitName, unitType },
       },
-      dict: { companyList, departmentTree, personList },
+      dict: { companyList },
       [modelName]: { [detailName]: detail },
       loading: {
         effects: {
@@ -269,8 +180,6 @@ export default connect(
           [addApi]: adding,
           [editApi]: editing,
           'dict/getCompanyList': loadingCompanyList,
-          'dict/getDepartmentTree': loadingDepartmentTree,
-          'dict/getPersonList': loadingPersonList,
         },
       },
     },
@@ -288,10 +197,6 @@ export default connect(
       editing,
       companyList,
       loadingCompanyList,
-      departmentTree,
-      loadingDepartmentTree,
-      personList,
-      loadingPersonList,
       getDetail(payload, callback) {
         dispatch({
           type: detailApi,
@@ -344,30 +249,6 @@ export default connect(
           },
         });
       },
-      getDepartmentTree(payload, callback) {
-        dispatch({
-          type: 'dict/getDepartmentTree',
-          payload,
-          callback(success, data) {
-            if (!success) {
-              message.error('获取部门树数据失败，请稍后重试！');
-            }
-            callback && callback(success, data);
-          },
-        });
-      },
-      getPersonList(payload, callback) {
-        dispatch({
-          type: 'dict/getPersonList',
-          payload,
-          callback(success, data) {
-            if (!success) {
-              message.error('获取人员列表数据失败，请稍后重试！');
-            }
-            callback && callback(success, data);
-          },
-        });
-      },
     };
   },
   {
@@ -383,10 +264,6 @@ export default connect(
         props.editing === nextProps.editing &&
         props.companyList === nextProps.companyList &&
         props.loadingCompanyList === nextProps.loadingCompanyList &&
-        props.departmentTree === nextProps.departmentTree &&
-        props.loadingDepartmentTree === nextProps.loadingDepartmentTree &&
-        props.personList === nextProps.personList &&
-        props.loadingPersonList === nextProps.loadingPersonList &&
         props.location.pathname === nextProps.location.pathname
       );
     },
@@ -407,28 +284,36 @@ export default connect(
     editing,
     companyList,
     loadingCompanyList,
-    departmentTree,
-    loadingDepartmentTree,
-    personList,
-    loadingPersonList,
     getDetail,
     add,
     edit,
     getCompanyList,
-    getDepartmentTree,
-    getPersonList,
   }) => {
     const [form] = Form.useForm();
     const [initialValues] = useState({
       company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
+      itemType: typeList[0].key,
     });
-    // 单位列表接口的参数
-    const [companyPayload, setCompanyPayload] = useState(undefined);
-    // 人员列表接口的参数
-    const [personPayload, setPersonPayload] = useState(undefined);
     const search = useMemo(
       () => unsafeSearch && (unsafeSearch.startsWith('?') ? unsafeSearch : `?${unsafeSearch}`),
       []
+    );
+    // 单位列表接口的参数
+    const [companyPayload, setCompanyPayload] = useState(undefined);
+    // 表单配置
+    const fields = useMemo(
+      () =>
+        getFields({
+          isUnit,
+          name,
+          search,
+          adding,
+          editing,
+          companyList,
+          loadingCompanyList,
+          setCompanyPayload,
+        }),
+      [name, adding, editing, companyList, loadingCompanyList]
     );
     // 面包屑
     const breadcrumbList = useMemo(() => getBreadcrumbList({ name, search }), [name]);
@@ -442,16 +327,8 @@ export default connect(
             },
             (success, data) => {
               if (success) {
-                const { companyId } = data;
                 // 设置初始值
                 form.setFieldsValue(getValuesByDetail(data));
-                // 如果companyId存在或者当前账号是单位账号，则获取部门列表和人员列表
-                if (companyId || isUnit) {
-                  getDepartmentTree({
-                    companyId: companyId || unitId,
-                  });
-                  setCompanyPayload({ pageNum: 1, pageSize: 10, companyId: companyId || unitId });
-                }
               } else {
                 // 重置初始值
                 form.resetFields();
@@ -461,13 +338,6 @@ export default connect(
         } else {
           // 重置初始值
           form.resetFields();
-          // 如果当前账号是单位账号，则获取部门列表和人员列表
-          if (isUnit) {
-            getDepartmentTree({
-              companyId: unitId,
-            });
-            setCompanyPayload({ pageNum: 1, pageSize: 10, companyId: unitId });
-          }
         }
         // 如果当前账号不是单位账号时，则获取单位列表
         if (!isUnit) {
@@ -484,15 +354,6 @@ export default connect(
         }
       },
       [companyPayload]
-    );
-    // 当personPayload发生变化时获取人员列表
-    useEffect(
-      () => {
-        if (personPayload) {
-          getPersonList(personPayload);
-        }
-      },
-      [personPayload]
     );
     // 表单finish事件
     const onFinish = useCallback(
@@ -520,29 +381,6 @@ export default connect(
       },
       [pathname]
     );
-    // 单位选择器change事件
-    const onCompanySelectChange = useCallback(company => {
-      // 如果已选择单位，则获取部门列表和人员列表
-      if (company) {
-        getDepartmentTree({
-          companyId: company.key,
-        });
-        setCompanyPayload({ pageNum: 1, pageSize: 10, companyId: company.key });
-      }
-      // 清空部门和人员字段值
-      form.setFieldsValue({
-        department: undefined,
-        principal: undefined,
-      });
-    }, []);
-    // 人员选择器change事件
-    const onPersonSelectChange = useCallback((_, { data: { departmentId, departmentName } }) => {
-      form.setFieldsValue({
-        department: departmentId
-          ? { key: departmentId, value: departmentId, label: departmentName }
-          : undefined,
-      });
-    }, []);
     return (
       <PageHeaderLayout
         key={name}
@@ -561,42 +399,13 @@ export default connect(
               wrapperCol={wrapperCol}
               onFinish={onFinish}
             >
-              <Form.Item
-                noStyle
-                shouldUpdate={(prevValues, values) =>
-                  ['company'].some(dependency => prevValues[dependency] !== values[dependency])
-                }
-              >
-                {({ getFieldsValue }) => {
-                  const values = getFieldsValue();
-                  return (
-                    <Row gutter={24}>
-                      {getFields({
-                        isUnit,
-                        values,
-                        name,
-                        search,
-                        adding,
-                        editing,
-                        companyList,
-                        loadingCompanyList,
-                        setCompanyPayload,
-                        onCompanySelectChange,
-                        personList,
-                        loadingPersonList,
-                        setPersonPayload,
-                        onPersonSelectChange,
-                        departmentTree,
-                        loadingDepartmentTree,
-                      }).map(({ name, col, ...item }, index) => (
-                        <Col key={name || index} {...col}>
-                          <Form.Item name={name} {...item} />
-                        </Col>
-                      ))}
-                    </Row>
-                  );
-                }}
-              </Form.Item>
+              <Row gutter={24}>
+                {fields.map(({ name, col, ...item }, index) => (
+                  <Col key={name || index} {...col}>
+                    <Form.Item name={name} {...item} />
+                  </Col>
+                ))}
+              </Row>
             </Form>
           )}
         </Card>

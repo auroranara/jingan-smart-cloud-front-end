@@ -1907,6 +1907,43 @@ module.exports = env => {
                 },
               ],
             },
+            // 点位标签库
+            {
+              path: '/risk-control/point-label',
+              name: 'pointLabel',
+              code: 'riskControl.pointLabel',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/point-label',
+                  redirect: '/risk-control/point-label/list',
+                },
+                {
+                  path: '/risk-control/point-label/list',
+                  name: 'list',
+                  code: 'riskControl.pointLabel.list',
+                  component: './RiskControl/PointLabel/List',
+                },
+                {
+                  path: '/risk-control/point-label/detail/:id',
+                  name: 'detail',
+                  code: 'riskControl.pointLabel.detail',
+                  component: './RiskControl/PointLabel/Form',
+                },
+                {
+                  path: '/risk-control/point-label/add',
+                  name: 'add',
+                  code: 'riskControl.pointLabel.add',
+                  component: './RiskControl/PointLabel/Form',
+                },
+                {
+                  path: '/risk-control/point-label/edit/:id',
+                  name: 'edit',
+                  code: 'riskControl.pointLabel.edit',
+                  component: './RiskControl/PointLabel/Form',
+                },
+              ],
+            },
           ],
         },
 
