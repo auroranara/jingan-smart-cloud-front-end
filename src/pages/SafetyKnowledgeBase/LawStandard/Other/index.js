@@ -125,6 +125,9 @@ export default class OperationRecordOther extends Component {
       label: '废止日期',
       required: true,
       component: 'DatePicker',
+      props: {
+        unknown: '',
+      },
     }] : []),
     {
       id: 'identifyDate',
