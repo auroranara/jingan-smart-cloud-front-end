@@ -8,7 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codesMap from '@/utils/codes';
 import { AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import moment from 'moment';
-import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+import ImportModal from '@/components/ImportModal';
 
 const FormItem = Form.Item;
 const Option = Select.Option;

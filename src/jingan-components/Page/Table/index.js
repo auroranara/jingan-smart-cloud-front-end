@@ -32,6 +32,7 @@ const TablePage = props => {
     initialValues,
     codes,
     banner,
+    operation,
   } = props;
   const [values, setValues] = useState(initialValues);
   const form = useRef(null);
@@ -41,13 +42,13 @@ const TablePage = props => {
     getList({
       ...(transform
         ? transform({
-            isUnit,
-            isOperation,
-            unitId,
-            unitType,
-            currentUser,
-            ...values,
-          })
+          isUnit,
+          isOperation,
+          unitId,
+          unitType,
+          currentUser,
+          ...values,
+        })
         : values),
       pageSize,
     });
@@ -59,114 +60,114 @@ const TablePage = props => {
     getList({
       ...(transform
         ? transform({
-            isUnit,
-            isOperation,
-            unitId,
-            unitType,
-            currentUser,
-            ...values,
-          })
+          isUnit,
+          isOperation,
+          unitId,
+          unitType,
+          currentUser,
+          ...values,
+        })
         : values),
     });
   }, []);
   const columnList =
     typeof columns === 'function'
       ? columns({
-          isUnit,
-          isOperation,
-          unitId,
-          unitType,
-          currentUser,
-          list,
-          renderEditButton: (data, { children, disabled, ...rest } = {}) => (
-            <Link
-              to={`${props.editPath}/${data.id || data}`}
-              disabled={!props.hasEditAuthority || disabled}
-              target="_blank"
-              {...rest}
-            >
-              {children || '编辑'}
+        isUnit,
+        isOperation,
+        unitId,
+        unitType,
+        currentUser,
+        list,
+        renderEditButton: (data, { children, disabled, ...rest } = {}) => (
+          <Link
+            to={`${props.editPath}/${data.id || data}`}
+            disabled={!props.hasEditAuthority || disabled}
+            target="_blank"
+            {...rest}
+          >
+            {children || '编辑'}
+          </Link>
+        ),
+        renderDetailButton: (data, { children, disabled, ...rest } = {}) => (
+          <Link
+            to={`${props.detailPath}/${data.id || data}`}
+            disabled={!props.hasDetailAuthority || disabled}
+            target="_blank"
+            {...rest}
+          >
+            {children || '查看'}
+          </Link>
+        ),
+        renderDeleteButton: (data, { children, disabled, ...rest } = {}) => (
+          <Popconfirm
+            title="您确定要删除吗?"
+            placement="topRight"
+            onConfirm={() =>
+              props.delete(data, success => {
+                if (success) {
+                  reload();
+                }
+              })
+            }
+            disabled={!props.hasDeleteAuthority || disabled}
+          >
+            <Link to="/" disabled={!props.hasDeleteAuthority || disabled} {...rest}>
+              {children || '删除'}
             </Link>
-          ),
-          renderDetailButton: (data, { children, disabled, ...rest } = {}) => (
-            <Link
-              to={`${props.detailPath}/${data.id || data}`}
-              disabled={!props.hasDetailAuthority || disabled}
-              target="_blank"
-              {...rest}
-            >
-              {children || '查看'}
-            </Link>
-          ),
-          renderDeleteButton: (data, { children, disabled, ...rest } = {}) => (
-            <Popconfirm
-              title="您确定要删除吗?"
-              placement="topRight"
-              onConfirm={() =>
-                props.delete(data, success => {
-                  if (success) {
-                    reload();
-                  }
-                })
-              }
-              disabled={!props.hasDeleteAuthority || disabled}
-            >
-              <Link to="/" disabled={!props.hasDeleteAuthority || disabled} {...rest}>
-                {children || '删除'}
+          </Popconfirm>
+        ),
+        ...(codes || []).reduce((result, codeName) => {
+          const upperName = codeName.includes('.')
+            ? codeName
+              .split('.')
+              .slice(-2)
+              .map(v => `${v[0].toUpperCase()}${v.slice(1)}`)
+              .join('')
+            : `${codeName[0].toUpperCase()}${codeName.slice(1)}`;
+          result[`render${upperName}Button`] = (
+            data,
+            { children, disabled, onClick, to, popconfirm, ...rest } = {}
+          ) => {
+            const realDisabled = !props[`has${upperName}Authority`] || disabled;
+            const link = (
+              <Link
+                to={
+                  !onClick
+                    ? typeof to === 'function'
+                      ? to(data, props[`${codeName}Path`])
+                      : `${to || props[`${codeName}Path`]}/${data.id || data}`
+                    : '/'
+                }
+                onClick={onClick}
+                disabled={realDisabled}
+                {...rest}
+              >
+                {children}
               </Link>
-            </Popconfirm>
-          ),
-          ...(codes || []).reduce((result, codeName) => {
-            const upperName = codeName.includes('.')
-              ? codeName
-                  .split('.')
-                  .slice(-2)
-                  .map(v => `${v[0].toUpperCase()}${v.slice(1)}`)
-                  .join('')
-              : `${codeName[0].toUpperCase()}${codeName.slice(1)}`;
-            result[`render${upperName}Button`] = (
-              data,
-              { children, disabled, onClick, to, popconfirm, ...rest } = {}
-            ) => {
-              const realDisabled = !props[`has${upperName}Authority`] || disabled;
-              const link = (
-                <Link
-                  to={
-                    !onClick
-                      ? typeof to === 'function'
-                        ? to(data, props[`${codeName}Path`])
-                        : `${to || props[`${codeName}Path`]}/${data.id || data}`
-                      : '/'
-                  }
-                  onClick={onClick}
-                  disabled={realDisabled}
-                  {...rest}
-                >
-                  {children}
-                </Link>
-              );
-              return popconfirm ? (
-                <Popconfirm
-                  placement="topRight"
-                  onConfirm={() =>
-                    props[codeName](data, success => {
-                      if (success) {
-                        reload();
-                      }
-                    })
-                  }
-                  disabled={realDisabled}
-                  {...popconfirm}
-                >
-                  {link}
-                </Popconfirm>
-              ) : (
+            );
+            return popconfirm ? (
+              <Popconfirm
+                placement="topRight"
+                onConfirm={() =>
+                  props[codeName](data, success => {
+                    if (success) {
+                      reload();
+                    }
+                  })
+                }
+                disabled={realDisabled}
+                {...popconfirm}
+              >
+                {link}
+              </Popconfirm>
+            ) : (
                 link
               );
-            };
-            return result;
-          }, {}),
-        })
+          };
+          return result;
+        }, {}),
+      })
       : columns;
   return (
     <PageHeaderLayout
@@ -190,13 +191,13 @@ const TablePage = props => {
           getList({
             ...(transform
               ? transform({
-                  isUnit,
-                  isOperation,
-                  unitId,
-                  unitType,
-                  currentUser,
-                  ...values,
-                })
+                isUnit,
+                isOperation,
+                unitId,
+                unitType,
+                currentUser,
+                ...values,
+              })
               : values),
             pageSize,
           });
@@ -207,13 +208,13 @@ const TablePage = props => {
           getList({
             ...(transform
               ? transform({
-                  isUnit,
-                  isOperation,
-                  unitId,
-                  unitType,
-                  currentUser,
-                  ...values,
-                })
+                isUnit,
+                isOperation,
+                unitId,
+                unitType,
+                currentUser,
+                ...values,
+              })
               : values),
             pageSize,
           });
@@ -229,14 +230,14 @@ const TablePage = props => {
           getList({
             ...(transform
               ? transform({
-                  isUnit,
-                  isOperation,
-                  unitId,
-                  unitType,
-                  currentUser,
-                  sorter,
-                  ...values,
-                })
+                isUnit,
+                isOperation,
+                unitId,
+                unitType,
+                currentUser,
+                sorter,
+                ...values,
+              })
               : values),
             pageNum: pageSize !== prevPageSize || sorter.field ? 1 : current,
             pageSize,
@@ -250,6 +251,7 @@ const TablePage = props => {
         addPath={props.addPath}
         hasAddAuthority={props.hasAddAuthority}
         banner={typeof banner === 'function' ? banner({ list }) : banner}
+        operation={operation}
       />
       {children}
     </PageHeaderLayout>
@@ -286,18 +288,18 @@ export default connect(
       breadcrumbList =
         typeof b === 'function'
           ? b({
-              isUnit,
-              isOperation,
-              unitId,
-              unitType,
-              title:
-                locales[
-                  `menu.${code
-                    .split('.')
-                    .slice(0, -1)
-                    .join('.')}.${name}`
-                ],
-            })
+            isUnit,
+            isOperation,
+            unitId,
+            unitType,
+            title:
+              locales[
+              `menu.${code
+                .split('.')
+                .slice(0, -1)
+                .join('.')}.${name}`
+              ],
+          })
           : b;
     } else {
       let count = 0;
@@ -383,7 +385,7 @@ export default connect(
       export: e = 'export',
     } = mapper || {};
     return {
-      getList(payload, callback) {
+      getList (payload, callback) {
         dispatch({
           type: `${namespace}/${gl}`,
           payload: {
@@ -395,14 +397,14 @@ export default connect(
           callback,
         });
       },
-      delete(payload, callback) {
+      delete (payload, callback) {
         dispatch({
           type: `${namespace}/${d}`,
           payload,
           callback,
         });
       },
-      export(payload, callback) {
+      export (payload, callback) {
         dispatch({
           type: `${namespace}/${e}`,
           payload,

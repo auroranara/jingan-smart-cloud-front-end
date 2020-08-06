@@ -23,7 +23,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 import styles from './index.less';
 import { getColorVal, paststatusVal } from '../utils';
-import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+import ImportModal from '@/components/ImportModal';
 
 const {
   baseInfo: {

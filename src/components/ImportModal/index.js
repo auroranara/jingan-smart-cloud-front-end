@@ -82,10 +82,9 @@ export default class ImportModal extends Component {
       beforeUpload: this.handleBeforeUpload,
       showUploadList: false,
       disabled,
-      ...resProps,
     };
     return (
-      <div style={{ display: 'inline-block' }}>
+      <div style={{ display: 'inline-block' }} {...resProps}>
         {isCompany || !showCompanySelect ? (
           <Upload {...uploadProps} >
             <Button disabled={!importAuth || importLoading} loading={importLoading}>
@@ -115,7 +114,7 @@ export default class ImportModal extends Component {
           <Upload {...uploadProps}>
             <Button disabled={disabled} loading={importLoading}>
               批量导入
-          </Button>
+            </Button>
           </Upload>
         </Modal>
       </div>

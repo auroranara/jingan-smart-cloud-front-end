@@ -11,7 +11,7 @@ import codes from '@/utils/codes';
 import CompanySelect from '@/jingan-components/CompanySelect';
 // 审核弹窗
 import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
-import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+import ImportModal from '@/components/ImportModal';
 
 const FormItem = Form.Item;
 const { TreeNode: TreeSelectNode } = TreeSelect;
