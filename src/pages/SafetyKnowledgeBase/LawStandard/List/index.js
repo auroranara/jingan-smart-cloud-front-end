@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Tooltip, Input } from 'antd';
+import { Tooltip, Input, Button } from 'antd';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
 // import RadioOrSpan from '@/jingan-components/RadioOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
@@ -9,6 +9,7 @@ import moment from 'moment';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import Ellipsis from '@/components/Ellipsis';
 import styles from './index.less';
+import ImportModal from '@/components/ImportModal';
 
 export const DEFAULT_FORMAT = 'YYYY-MM-DD';
 export const RESULTS = [{ key: '0', value: '符合' }, { key: '1', value: '不符合' }];
@@ -40,6 +41,11 @@ export const RESULTDICT = [
 ];
 
 export default class AlarmMessage extends Component {
+
+  state = {
+    key: Date.now(),
+  };
+
   getFields = ({ unitId }) => [
     ...(!unitId
       ? [
@@ -177,8 +183,25 @@ export default class AlarmMessage extends Component {
   render () {
     const props = {
       fields: this.getFields,
-      action: this.getAction,
+      // action: this.getAction,
       columns: this.getColumns,
+      operation: ({ renderAddButton }) => (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          {renderAddButton({ style: { marginRight: '10px' } })}
+          <Button
+            href="http://data.jingan-china.cn/v2/chem/file1/特种设备管理.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/ci/hgLawsAndRegulations/importHgLawsStandardEvaluation/${companyId}`}
+            onUploadSuccess={() => { this.setState({ key: Date.now() }) }}
+            code="safetyProductionRegulation.lawStandard.import"
+          />
+        </div>
+      ),
       ...this.props,
     };
 

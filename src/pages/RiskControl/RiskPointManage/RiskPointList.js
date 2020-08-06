@@ -8,7 +8,7 @@ import CheckContent from './CheckContent';
 import codesMap from '@/utils/codes';
 import { AuthButton, hasAuthority } from '@/utils/customAuth';
 import { getToken } from '@/utils/authority';
-import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+import ImportModal from '@/components/ImportModal';
 
 // 默认页面显示数量
 const pageSize = 18;

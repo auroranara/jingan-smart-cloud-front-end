@@ -25,7 +25,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
-import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+import ImportModal from '@/components/ImportModal';
 import { AuthButton } from '@/utils/customAuth';
 
 const { Option } = Select;

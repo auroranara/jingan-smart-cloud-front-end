@@ -28,15 +28,18 @@ import {
   ADD_PATH,
   TrainingType,
   DETAIL_PATH,
+  IMPORT_CODE,
 } from '../const';
 import styles from './index.less';
+import ImportModal from '@/components/ImportModal';
+import { AuthButton } from '@/utils/customAuth';
 
 const { Option } = Select;
 
-function getLabels(options, value) {
+function getLabels (options, value) {
   if (!value)
     return '';
-  
+
   const map = options.reduce((accum, { key, value }) => {
     accum[key] = value;
     return accum;
@@ -53,21 +56,21 @@ function getLabels(options, value) {
     executing: loading.effects['trainingProgram/execute'],
   }),
   dispatch => ({
-    getList(payload, callback) {
+    getList (payload, callback) {
       dispatch({
         type: 'trainingProgram/fetchList',
         payload,
         callback,
       });
     },
-    remove(payload, callback) {
+    remove (payload, callback) {
       dispatch({
         type: 'trainingProgram/remove',
         payload,
         callback,
       });
     },
-    execute(payload, callback) {
+    execute (payload, callback) {
       dispatch({
         type: 'trainingProgram/execute',
         payload,
@@ -82,7 +85,7 @@ export default class TrainingProgramList extends Component {
     data: undefined,
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.getList();
   }
 
@@ -200,31 +203,31 @@ export default class TrainingProgramList extends Component {
     });
   };
 
-  renderForm() {
+  renderForm () {
     const {
       user: {
         currentUser: { unitType, permissionCodes },
       },
     } = this.props;
     const isNotCompany = +unitType !== 4;
-    const hasAddAuthority = permissionCodes.includes(ADD_CODE);
+    // const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const FIELDS = [
       ...(isNotCompany
         ? [
-            {
-              id: 'companyName',
-              label: '单位名称',
-              transform: value => value.trim(),
-              render: _this => (
-                <Input
-                  placeholder="请输入单位名称"
-                  onPressEnter={_this.handleSearch}
-                  maxLength={50}
-                />
-              ),
-            },
-          ]
+          {
+            id: 'companyName',
+            label: '单位名称',
+            transform: value => value.trim(),
+            render: _this => (
+              <Input
+                placeholder="请输入单位名称"
+                onPressEnter={_this.handleSearch}
+                maxLength={50}
+              />
+            ),
+          },
+        ]
         : []),
       {
         id: 'trainingPlanName',
@@ -279,11 +282,11 @@ export default class TrainingProgramList extends Component {
           fields={FIELDS}
           onSearch={this.getList}
           onReset={this.getList}
-          action={
-            <Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>
-              新增
-            </Button>
-          }
+          // action={
+          //   <Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>
+          //     新增
+          //   </Button>
+          // }
           ref={this.setFormReference}
         />
       </Card>
@@ -310,12 +313,12 @@ export default class TrainingProgramList extends Component {
 
     const COLUMNS = (isNotCompany
       ? [
-          {
-            title: '单位名称',
-            dataIndex: 'companyName',
-            align: 'center',
-          },
-        ]
+        {
+          title: '单位名称',
+          dataIndex: 'companyName',
+          align: 'center',
+        },
+      ]
       : []
     ).concat([
       {
@@ -451,8 +454,8 @@ export default class TrainingProgramList extends Component {
                     <span className={styles.operation}>删除</span>
                   </Popconfirm>
                 ) : (
-                  <span className={classNames(styles.operation, styles.disabled)}>删除</span>
-                ))}
+                    <span className={classNames(styles.operation, styles.disabled)}>删除</span>
+                  ))}
             </Fragment>
           );
         },
@@ -462,6 +465,28 @@ export default class TrainingProgramList extends Component {
 
     return (
       <Card className={styles.card} bordered={false}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            type="primary"
+            onClick={this.handleAddClick}
+            style={{ marginRight: '10px' }}
+            code={ADD_CODE}
+          >
+            新增
+        </AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/v2/chem/file1/特种设备管理.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+              </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/performance/importPerformanceExam/${companyId}`}
+            onUploadSuccess={this.getList}
+            code={IMPORT_CODE}
+          />
+        </div>
         <Spin spinning={loading || false}>
           {list && list.length > 0 ? (
             <Table
@@ -484,14 +509,14 @@ export default class TrainingProgramList extends Component {
               }}
             />
           ) : (
-            <Empty />
-          )}
+              <Empty />
+            )}
         </Spin>
       </Card>
     );
   };
 
-  renderModal() {
+  renderModal () {
     const { visible, data } = this.state;
     const { trainingPlanName } = data || {};
     const fields = [
@@ -539,7 +564,7 @@ export default class TrainingProgramList extends Component {
     );
   }
 
-  render() {
+  render () {
     const {
       trainingProgram: { list: { pagination: { total = 0 } = {} } = {} } = {},
       user: {
