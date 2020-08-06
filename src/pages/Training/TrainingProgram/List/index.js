@@ -475,7 +475,7 @@ export default class TrainingProgramList extends Component {
             新增
         </AuthButton>
           <Button
-            href="http://data.jingan-china.cn/v2/chem/file1/特种设备管理.xls"
+            href="http://data.jingan-china.cn/v2/chem/file/安全生产培训计划模板.xls"
             target="_blank"
             style={{ marginRight: '10px' }}
           >

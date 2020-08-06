@@ -119,7 +119,7 @@ export default ({ route, match, location }) => {
     ],
     operation: [
       <Button
-        href="http://data.jingan-china.cn/v2/chem/file1/特种设备管理.xls"
+        href="http://data.jingan-china.cn/v2/chem/file/绩效考核标准模板.xls"
         target="_blank"
         style={{ marginRight: '10px' }}
       >

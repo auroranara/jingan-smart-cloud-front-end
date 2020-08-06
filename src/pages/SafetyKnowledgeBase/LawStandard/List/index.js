@@ -190,7 +190,7 @@ export default class AlarmMessage extends Component {
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
           {renderAddButton({ style: { marginRight: '10px' } })}
           <Button
-            href="http://data.jingan-china.cn/v2/chem/file1/特种设备管理.xls"
+            href="http://data.jingan-china.cn/v2/chem/file/法律法规标准评价模板.xls"
             target="_blank"
             style={{ marginRight: '10px' }}
           >
