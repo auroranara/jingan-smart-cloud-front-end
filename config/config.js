@@ -21,7 +21,7 @@ const hosts = {
   lm1: '192.168.14.241:8080',
   sj: '192.168.10.3', // 沈杰
   gjm: '192.168.10.55', // 顾家铭
-  ct: '192.168.10.29:8080', //陈涛
+  ct: '192.168.10.29', //陈涛
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18081', // 开发
   test: 'test.jinganyun.net', // 测试
@@ -51,12 +51,12 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.ct}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.ct}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
