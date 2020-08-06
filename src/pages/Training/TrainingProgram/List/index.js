@@ -480,9 +480,9 @@ export default class TrainingProgramList extends Component {
             style={{ marginRight: '10px' }}
           >
             模板下载
-              </Button>
+          </Button>
           <ImportModal
-            action={(companyId) => `/acloud_new/v2/performance/importPerformanceExam/${companyId}`}
+            action={(companyId) => `/acloud_new/v2/education/importTrainingPlan/${companyId}`}
             onUploadSuccess={this.getList}
             code={IMPORT_CODE}
           />
