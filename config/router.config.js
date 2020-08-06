@@ -4290,7 +4290,7 @@ module.exports = env => {
               ],
             },
             {
-              name: 'specialEquipmentOperators', // 特种设备作业人员
+              name: 'specialEquipmentOperators', // 特种设备操作证
               code: 'operationSafety.specialEquipmentOperators',
               path: '/operation-safety/special-equipment-operators',
               hideChildrenInMenu: true,

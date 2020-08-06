@@ -711,7 +711,7 @@ export default {
       delete: 'operationSafety.specialOperationPermit.delete',
       import: 'operationSafety.specialOperationPermit.import',
     },
-    // 特种设备作业人员
+    // 特种设备操作证
     specialEquipmentOperators: {
       list: 'operationSafety.specialEquipmentOperators.listView',
       add: 'operationSafety.specialEquipmentOperators.add',

@@ -94,10 +94,10 @@ export default class NewMonitorDrawer extends PureComponent {
               {filterList.length > 0 ? (
                 filterList.map((item, index) => {
                   const {
-                    monitorParams,
-                    allMonitorParam,
+                    // monitorParams,
+                    // allMonitorParam,
                     videoList,
-                    meList = [],
+                    meList: mList,
                     id,
                     name,
                     tankName,
@@ -106,7 +106,9 @@ export default class NewMonitorDrawer extends PureComponent {
                     ...item,
                     icon: typeof icon === 'function' ? icon(item) : icon,
                   };
-                  const paramList = monitorParams || allMonitorParam || {};
+
+                  const meList = Array.isArray(mList) ? mList : [];
+                  // const paramList = monitorParams || allMonitorParam || {};
                   const { id: monitorEquipmentId } = meList[0] || {};
                   const noFinishWarningProcessId = !meList.every(item => {
                     const { noFinishWarningProcessId } = item;
