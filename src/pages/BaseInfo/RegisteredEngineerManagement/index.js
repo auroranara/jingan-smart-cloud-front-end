@@ -303,7 +303,7 @@ export default class RegSafetyEngList extends PureComponent {
               </p>
               <p>
                 出生年月:
-                {moment(+birth).format('YYYY-MM-DD')}
+                {birth ? moment(+birth).format('YYYY-MM-DD') : '-'}
               </p>
               <p>
                 联系电话:
