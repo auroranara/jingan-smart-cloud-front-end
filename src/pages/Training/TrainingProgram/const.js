@@ -21,6 +21,7 @@ export const DETAIL_CODE = 'training.trainingProgram.detail';
 export const ADD_CODE = 'training.trainingProgram.add';
 export const EDIT_CODE = 'training.trainingProgram.edit';
 export const DELETE_CODE = 'training.trainingProgram.delete';
+export const IMPORT_CODE = 'training.trainingProgram.import';
 export const STATUSES = [
   {
     key: '0',

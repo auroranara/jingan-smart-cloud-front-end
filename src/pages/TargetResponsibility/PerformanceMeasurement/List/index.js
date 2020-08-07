@@ -1,18 +1,23 @@
-import React, { Fragment } from 'react';
-import { Divider } from 'antd';
+import React, { Fragment, useState } from 'react';
+import { Divider, Button } from 'antd';
 import TablePage from '@/jingan-components/Page/Table';
 import { EmptyText, TextAreaEllipsis } from '@/jingan-components/View';
 import moment from 'moment';
 import { CLASSIFICATIONS, FORMAT } from '../config';
 import { isNumber } from '@/utils/utils';
 import styles from './index.less';
+import ImportModal from '@/components/ImportModal';
+
+const importCode = 'targetResponsibility.performanceMeasurement.import';
 
 export default ({ route, match, location }) => {
+  const [key, setKey] = useState(Date.now());
   const props = {
+    key,
     route,
     match,
     location,
-    transform({ isUnit, unitId, companyId, standardTitle }) {
+    transform ({ isUnit, unitId, companyId, standardTitle }) {
       return {
         companyId: isUnit ? unitId : companyId,
         standardTitle: standardTitle && standardTitle.trim(),
@@ -27,7 +32,7 @@ export default ({ route, match, location }) => {
           preset: 'company',
           allowClear: true,
         },
-        hide({ isUnit }) {
+        hide ({ isUnit }) {
           return isUnit;
         },
       },
@@ -43,12 +48,12 @@ export default ({ route, match, location }) => {
     columns: ({ isUnit, renderDetailButton, renderEditButton, renderDeleteButton }) => [
       ...(!isUnit
         ? [
-            {
-              dataIndex: 'companyName',
-              title: '单位名称',
-              render: value => value || <EmptyText />,
-            },
-          ]
+          {
+            dataIndex: 'companyName',
+            title: '单位名称',
+            render: value => value || <EmptyText />,
+          },
+        ]
         : []),
       {
         dataIndex: 'standardTitle',
@@ -111,6 +116,20 @@ export default ({ route, match, location }) => {
           </Fragment>
         ),
       },
+    ],
+    operation: [
+      <Button
+        href="http://data.jingan-china.cn/v2/chem/file1/特种设备管理.xls"
+        target="_blank"
+        style={{ marginRight: '10px' }}
+      >
+        模板下载
+      </Button>,
+      <ImportModal
+        action={(companyId) => `/acloud_new/v2/performance/importPerformanceExam/${companyId}`}
+        onUploadSuccess={() => { setKey(Date.now()) }}
+        code={importCode}
+      />,
     ],
   };
   return <TablePage {...props} />;

@@ -109,7 +109,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
     const { namespace: n, getList: gl, remove: r, exportList: el } = mapper || {};
     const namespace = n || code.replace(/.*\.(.*)\..*/, '$1');
     return {
-      getList(payload, callback) {
+      getList (payload, callback) {
         dispatch({
           type: `${namespace}/${gl || 'getList'}`,
           payload: {
@@ -125,7 +125,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
           },
         });
       },
-      remove(payload, callback) {
+      remove (payload, callback) {
         dispatch({
           type: `${namespace}/${r || 'remove'}`,
           payload,
@@ -139,7 +139,7 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
           },
         });
       },
-      exportList(payload, callback) {
+      exportList (payload, callback) {
         dispatch({
           type: `${namespace}/${el || 'exportList'}`,
           payload,
@@ -151,14 +151,14 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
           },
         });
       },
-      goToAdd() {
+      goToAdd () {
         router.push(pathname.replace(new RegExp(`${name}.*`), 'add'));
       },
-      goToEdit(data) {
+      goToEdit (data) {
         // router.push(pathname.replace(new RegExp(`${name}.*`), `edit/${(data && data.id) || data}`));
         window.open(`${window.publicPath}#` + pathname.replace(new RegExp(`${name}.*`), `edit/${(data && data.id) || data}`));
       },
-      goToDetail(data) {
+      goToDetail (data) {
         // router.push(pathname.replace(new RegExp(`${name}.*`), `detail/${(data && data.id) || data}`));
         window.open(`${window.publicPath}#` + pathname.replace(new RegExp(`${name}.*`), `detail/${(data && data.id) || data}`));
       },
@@ -167,13 +167,13 @@ const GET_METHOD_NAME = (targetName, result, after = 2) => {
           return onClick
             ? result
             : {
-                ...result,
-                [`goTo${codeName[0].toUpperCase()}${codeName.slice(1)}`](data) {
-                  const id = (data && data.id) || data;
-                  // router.push(pathname.replace(new RegExp(`${name}.*`),`${kebabCase(codeName)}${id ? `/${id}` : ''}`));
-                  window.open(`${window.publicPath}#` + pathname.replace(new RegExp(`${name}.*`),`${kebabCase(codeName)}${id ? `/${id}` : ''}`));
-                },
-              };
+              ...result,
+              [`goTo${codeName[0].toUpperCase()}${codeName.slice(1)}`] (data) {
+                const id = (data && data.id) || data;
+                // router.push(pathname.replace(new RegExp(`${name}.*`),`${kebabCase(codeName)}${id ? `/${id}` : ''}`));
+                window.open(`${window.publicPath}#` + pathname.replace(new RegExp(`${name}.*`), `${kebabCase(codeName)}${id ? `/${id}` : ''}`));
+              },
+            };
         }, {})),
     };
   },
@@ -190,7 +190,7 @@ export default class TablePage extends Component {
   // 除了用来保存控件值以外，还可以用来初始化
   prevValues = null;
 
-  componentDidMount() {
+  componentDidMount () {
     const { initialize, getList, transform, withUnitId, unitId, initialValues } = this.props;
     this.prevValues = initialValues || null;
     const payload = withUnitId ? { unitId, ...initialValues } : { ...initialValues };
@@ -199,7 +199,7 @@ export default class TablePage extends Component {
     initialValues && this.form && this.form.setFieldsValue(initialValues);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     return (
       nextProps.list !== this.props.list ||
       nextProps.loading !== this.props.loading ||
@@ -337,15 +337,15 @@ export default class TablePage extends Component {
     );
   };
 
-  renderForm() {
+  renderForm () {
     const { fields, action, unitId } = this.props;
     const Fields = typeof fields === 'function' ? fields({ unitId }) : fields;
     const Action =
       typeof action === 'function'
         ? action({
-            renderAddButton: this.renderAddButton,
-            renderExportButton: this.renderExportButton,
-          })
+          renderAddButton: this.renderAddButton,
+          renderExportButton: this.renderExportButton,
+        })
         : action;
 
     return (
@@ -395,11 +395,11 @@ export default class TablePage extends Component {
         <span className={styles.operation}>删除</span>
       </Popconfirm>
     ) : (
-      <span className={classNames(styles.operation, styles.disabled)}>删除</span>
-    );
+        <span className={classNames(styles.operation, styles.disabled)}>删除</span>
+      );
   };
 
-  renderTable() {
+  renderTable () {
     const {
       hasExportAuthority,
       list: { list = [], pagination: { total, pageNum, pageSize } = {} } = {},
@@ -408,52 +408,57 @@ export default class TablePage extends Component {
       unitId,
       otherOperation,
       showTotal = true,
+      operation = null,
     } = this.props;
     const { selectedRowKeys } = this.state;
 
     const Columns =
       typeof columns === 'function'
         ? columns({
-            unitId,
-            list,
-            ...(otherOperation || []).reduce(
-              (result, { code, name, onClick, disabled }) => {
-                const upperCode = `${code[0].toUpperCase()}${code.slice(1)}`;
-                const hasAuthority = this.props[`has${upperCode}Authority`];
-                const methodName = GET_METHOD_NAME(`render${upperCode}Button`, result);
-                return {
-                  ...result,
-                  [methodName]: id => {
-                    const enabled =
-                      hasAuthority && !(typeof disabled === 'function' ? disabled(id) : disabled);
-                    return (
-                      <span
-                        className={classNames(styles.operation, !enabled && styles.disabled)}
-                        onClick={
-                          enabled
-                            ? onClick
-                              ? () => onClick(id)
-                              : () => this.props[`goTo${upperCode}`](id)
-                            : undefined
-                        }
-                      >
-                        {typeof name === 'function' ? name(id) : name}
-                      </span>
-                    );
-                  },
-                };
-              },
-              {
-                renderDetailButton: this.renderDetailButton,
-                renderEditButton: this.renderEditButton,
-                renderDeleteButton: this.renderDeleteButton,
-              }
-            ),
-          })
+          unitId,
+          list,
+          ...(otherOperation || []).reduce(
+            (result, { code, name, onClick, disabled }) => {
+              const upperCode = `${code[0].toUpperCase()}${code.slice(1)}`;
+              const hasAuthority = this.props[`has${upperCode}Authority`];
+              const methodName = GET_METHOD_NAME(`render${upperCode}Button`, result);
+              return {
+                ...result,
+                [methodName]: id => {
+                  const enabled =
+                    hasAuthority && !(typeof disabled === 'function' ? disabled(id) : disabled);
+                  return (
+                    <span
+                      className={classNames(styles.operation, !enabled && styles.disabled)}
+                      onClick={
+                        enabled
+                          ? onClick
+                            ? () => onClick(id)
+                            : () => this.props[`goTo${upperCode}`](id)
+                          : undefined
+                      }
+                    >
+                      {typeof name === 'function' ? name(id) : name}
+                    </span>
+                  );
+                },
+              };
+            },
+            {
+              renderDetailButton: this.renderDetailButton,
+              renderEditButton: this.renderEditButton,
+              renderDeleteButton: this.renderDeleteButton,
+            }
+          ),
+        })
         : columns;
 
     return (
       <Card className={styles.card}>
+        {typeof operation === 'function' ? operation({
+          renderAddButton: this.renderAddButton,
+          renderExportButton: this.renderExportButton,
+        }) : operation}
         <Spin spinning={loading}>
           {list && list.length > 0 ? (
             <Table
@@ -477,21 +482,21 @@ export default class TablePage extends Component {
               rowSelection={
                 hasExportAuthority
                   ? {
-                      selectedRowKeys,
-                      onChange: this.handleSelectedRowKeysChange,
-                    }
+                    selectedRowKeys,
+                    onChange: this.handleSelectedRowKeysChange,
+                  }
                   : undefined
               }
             />
           ) : (
-            <Empty />
-          )}
+              <Empty />
+            )}
         </Spin>
       </Card>
     );
   }
 
-  render() {
+  render () {
     const { breadcrumbList, content, children, list } = this.props;
 
     return (

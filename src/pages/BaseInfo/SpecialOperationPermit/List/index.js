@@ -22,7 +22,7 @@ import router from 'umi/router';
 import codes from '@/utils/codes';
 import { AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import moment from 'moment';
-import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+import ImportModal from '@/components/ImportModal';
 
 const FormItem = Form.Item;
 // const { Panel } = Collapse;

@@ -9,7 +9,7 @@ import moment from 'moment';
 import styles from './TableList.less';
 import { hasAuthority, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
-import ImportModal from '@/pages/BaseInfo/SafetyFacilities/ImportModal.js';
+import ImportModal from '@/components/ImportModal';
 
 const { Option } = Select;
 // 标题
