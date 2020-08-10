@@ -35,3 +35,8 @@ export async function getCompanyDetail({ id }) {
 export async function getCompanyStatusList() {
   return request(`/gsafe/dict/listForSelect.do?type=companyState`);
 }
+
+/* 获取风险区域列表 */
+export async function getRiskyAreaList(params) {
+  return request(`/acloud_new/v2/riskArea/riskArea/page?${stringify(params)}`);
+}

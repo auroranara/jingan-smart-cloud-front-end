@@ -164,7 +164,7 @@ const getFields = ({
     children:
       name !== 'detail' ? (
         <PagingSelect
-          options={personList.list}
+          options={values.company ? personList.list : []}
           loading={loadingPersonList}
           hasMore={
             personList.pagination &&
@@ -191,7 +191,7 @@ const getFields = ({
       name !== 'detail' ? (
         <TreeSelect
           placeholder="请选择"
-          treeData={values.company ? departmentTree : undefined}
+          treeData={values.company ? departmentTree : []}
           labelInValue
           notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
           showSearch
@@ -201,6 +201,7 @@ const getFields = ({
         <Text type="TreeSelect" labelInValue />
       ),
     getValueFromEvent: getSelectValueFromEvent,
+    rules: name !== 'detail' ? [{ required: true, message: '请选择所属部门' }] : undefined,
     col,
   },
   {
@@ -418,19 +419,22 @@ export default connect(
     getDepartmentTree,
     getPersonList,
   }) => {
+    // 创建表单引用
     const [form] = Form.useForm();
+    // 创建表单初始值
     const [initialValues] = useState({
       company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
     });
-    // 单位列表接口的参数
+    // 创建单位列表接口对应的payload（通过监听payload的变化来请求接口）
     const [companyPayload, setCompanyPayload] = useState(undefined);
-    // 人员列表接口的参数
+    // 创建人员列表接口对应的payload（同上）
     const [personPayload, setPersonPayload] = useState(undefined);
+    // 获取search（用于路由跳转）
     const search = useMemo(
       () => unsafeSearch && (unsafeSearch.startsWith('?') ? unsafeSearch : `?${unsafeSearch}`),
       []
     );
-    // 面包屑
+    // 获取面包屑
     const breadcrumbList = useMemo(() => getBreadcrumbList({ name, search }), [name]);
     // 初始化
     useEffect(
@@ -450,7 +454,7 @@ export default connect(
                   getDepartmentTree({
                     companyId: companyId || unitId,
                   });
-                  setCompanyPayload({ pageNum: 1, pageSize: 10, companyId: companyId || unitId });
+                  setPersonPayload({ pageNum: 1, pageSize: 10, companyId: companyId || unitId });
                 }
               } else {
                 // 重置初始值
@@ -466,7 +470,7 @@ export default connect(
             getDepartmentTree({
               companyId: unitId,
             });
-            setCompanyPayload({ pageNum: 1, pageSize: 10, companyId: unitId });
+            setPersonPayload({ pageNum: 1, pageSize: 10, companyId: unitId });
           }
         }
         // 如果当前账号不是单位账号时，则获取单位列表
@@ -488,7 +492,8 @@ export default connect(
     // 当personPayload发生变化时获取人员列表
     useEffect(
       () => {
-        if (personPayload) {
+        // 当前账号是单位账号或者已选择单位时才请求接口
+        if (personPayload && personPayload.companyId) {
           getPersonList(personPayload);
         }
       },
@@ -527,7 +532,7 @@ export default connect(
         getDepartmentTree({
           companyId: company.key,
         });
-        setCompanyPayload({ pageNum: 1, pageSize: 10, companyId: company.key });
+        setPersonPayload({ pageNum: 1, pageSize: 10, companyId: company.key });
       }
       // 清空部门和人员字段值
       form.setFieldsValue({

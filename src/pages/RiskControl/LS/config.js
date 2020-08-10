@@ -1,34 +1,41 @@
-export const NAMESPACE = 'LS';
-export const LIST_NAME = 'list';
-export const DETAIL_NAME = 'detail';
-export const LIST_API = `${NAMESPACE}/getList`;
-export const DETAIL_API = `${NAMESPACE}/getDetail`;
-export const ADD_API = `${NAMESPACE}/add`;
-export const EDIT_API = `${NAMESPACE}/edit`;
-export const DELETE_API = `${NAMESPACE}/delete`;
-export const DETAIL_CODE = `riskControl.${NAMESPACE}.detail`;
-export const ADD_CODE = `riskControl.${NAMESPACE}.add`;
-export const EDIT_CODE = `riskControl.${NAMESPACE}.edit`;
-export const DELETE_CODE = `riskControl.${NAMESPACE}.delete`;
-export const LIST_PATH = `/risk-control/${NAMESPACE}/list`;
-export const DETAIL_PATH = `/risk-control/${NAMESPACE}/detail`;
-export const ADD_PATH = `/risk-control/${NAMESPACE}/add`;
-export const EDIT_PATH = `/risk-control/${NAMESPACE}/edit`;
-export const LEVEL_MAP = {
+import locale from '@/locales/zh-CN';
+
+export const modelName = 'LS';
+export const listName = 'list';
+export const detailName = 'detail';
+export const listApi = 'LS/getList';
+export const detailApi = 'LS/getDetail';
+export const addApi = 'LS/add';
+export const editApi = 'LS/edit';
+export const deleteApi = 'LS/delete';
+export const detailCode = 'riskControl.LS.detail';
+export const addCode = 'riskControl.LS.add';
+export const editCode = 'riskControl.LS.edit';
+export const deleteCode = 'riskControl.LS.delete';
+export const listPath = '/risk-control/LS/list';
+export const detailPath = '/risk-control/LS/detail';
+export const addPath = '/risk-control/LS/add';
+export const editPath = '/risk-control/LS/edit';
+export const parentLocale = locale['menu.riskControl'];
+export const listLocale = locale['menu.riskControl.LS.list'];
+export const detailLocale = locale['menu.riskControl.LS.detail'];
+export const addLocale = locale['menu.riskControl.LS.add'];
+export const editLocale = locale['menu.riskControl.LS.edit'];
+export const levelMap = {
   1: {
-    color: 'red',
+    color: '#f5222d',
     label: '红',
   },
   2: {
-    color: 'orange',
+    color: '#fa8c16',
     label: '橙',
   },
   3: {
-    color: 'yellow',
+    color: '#fadb14',
     label: '黄',
   },
   4: {
-    color: 'blue',
+    color: '#1890ff',
     label: '蓝',
   },
 };

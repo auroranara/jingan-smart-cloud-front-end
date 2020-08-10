@@ -72,11 +72,10 @@ const getPayloadByQuery = ({
   range: startDate && endDate ? [moment(+startDate), moment(+endDate)] : undefined,
 });
 // 根据payload获取search（用于路由跳转）
-const getSearchByPayload = ({ pageNum, pageSize, company, name, department, range }) => {
+const getSearchByPayload = ({ company, name, department, range, ...rest } = {}) => {
   const [startDate, endDate] = range || [];
   const query = {
-    pageNum,
-    pageSize,
+    ...rest,
     company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
     name: name ? encodeURIComponent(name) : undefined,
     department: department ? encodeURIComponent(JSON.stringify(department)) : undefined,
@@ -87,10 +86,10 @@ const getSearchByPayload = ({ pageNum, pageSize, company, name, department, rang
   return search && `?${search}`;
 };
 // 转换payload为接口需要的格式
-const transformPayload = ({ company, department, range, ...payload }) => {
+const transformPayload = ({ company, department, range, ...rest }) => {
   const [startDate, endDate] = range || [];
   return {
-    ...payload,
+    ...rest,
     companyId: company && company.key,
     departmentId: department && department.key,
     startDate: startDate && startDate.format(dateFormat),
@@ -153,7 +152,7 @@ const getFields = ({
     children: (
       <TreeSelect
         placeholder="请选择"
-        treeData={values.company ? departmentTree : undefined}
+        treeData={values.company ? departmentTree : []}
         labelInValue
         notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
         showSearch
@@ -437,19 +436,23 @@ export default connect(
     getCompanyList,
     getDepartmentTree,
   }) => {
+    // 创建表单引用
     const [form] = Form.useForm();
+    // 创建表单初始值
     const [initialValues] = useState({
       company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
     });
-    // 列表接口的参数
-    const [payload, setPayload] = useState(getPayloadByQuery({ ...initialValues, ...query }));
-    // 单位列表接口的参数
+    // 创建列表接口对应的payload（通过监听payload的变化来请求接口）
+    const [payload, setPayload] = useState(undefined);
+    // 创建单位列表接口对应的payload（同上）
     const [companyPayload, setCompanyPayload] = useState(undefined);
+    // 根据payload获取search（用于路由跳转）
     const search = useMemo(() => getSearchByPayload(payload), [payload]);
-    // 表格配置
+    // 获取表格配置
     const columns = useMemo(
       () =>
         getColumns({
+          isUnit,
           search,
           hasDetailAuthority,
           hasEditAuthority,
@@ -459,22 +462,14 @@ export default connect(
         }),
       [search]
     );
-    // 时间范围选择器的预设
+    // 获取时间范围选择器的快捷选项
     const ranges = useMemo(() => getRanges(), [+moment().startOf('day')]);
-    // 当payload发生变化时重新请求接口
-    useEffect(
-      () => {
-        // 请求接口
-        getList(payload);
-        // 获取values
-        const { pageNum, pageSize, ...values } = payload;
-        // 设置表单
-        form.setFieldsValue(values);
-      },
-      [payload]
-    );
-    // 初始化下拉框（单位列表由下面的hook去获取）
+    // 初始化
     useEffect(() => {
+      // 获取payload
+      const payload = getPayloadByQuery({ ...initialValues, ...query });
+      // 获取列表
+      setPayload(payload);
       // 如果当前账号不是单位账号，则获取单位列表
       if (!isUnit) {
         setCompanyPayload({ pageNum: 1, pageSize: 10 });
@@ -486,6 +481,20 @@ export default connect(
         });
       }
     }, []);
+    // 当payload发生变化时获取列表
+    useEffect(
+      () => {
+        if (payload) {
+          // 请求接口
+          getList(payload);
+          // 获取values
+          const { pageNum, pageSize, ...values } = payload;
+          // 设置表单值
+          form.setFieldsValue(values);
+        }
+      },
+      [payload]
+    );
     // 当companyPayload发生变化时获取单位列表
     useEffect(
       () => {
@@ -495,11 +504,6 @@ export default connect(
       },
       [companyPayload]
     );
-    // 表单finish事件
-    const onFinish = useCallback(values => {
-      // 设置payload
-      setPayload(payload => ({ ...payload, ...transformValues(values), pageNum: 1 }));
-    }, []);
     // 单位选择器change事件
     const onCompanySelectChange = useCallback(company => {
       // 如果已选择单位，则获取部门列表
@@ -511,15 +515,21 @@ export default connect(
       // 清空部门字段值
       form.setFieldsValue({ department: undefined });
     }, []);
+    // 表单finish事件
+    const onFinish = useCallback(
+      values => setPayload(payload => ({ ...payload, ...transformValues(values), pageNum: 1 })),
+      []
+    );
     // 表格change事件
-    const onTableChange = useCallback(({ current: pageNum, pageSize }) => {
-      // 设置payload
-      setPayload(payload => ({
-        ...payload,
-        pageNum: pageSize === payload.pageSize ? pageNum : 1,
-        pageSize,
-      }));
-    }, []);
+    const onTableChange = useCallback(
+      ({ current: pageNum, pageSize }) =>
+        setPayload(payload => ({
+          ...payload,
+          pageNum: pageSize === payload.pageSize ? pageNum : 1,
+          pageSize,
+        })),
+      []
+    );
     return (
       <PageHeaderLayout
         breadcrumbList={breadcrumbList}

@@ -6,6 +6,7 @@ import {
   getCompanyNatureList,
   getCompanyDetail,
   getCompanyStatusList,
+  getRiskyAreaList,
 } from '@/services/dict';
 
 export default {
@@ -19,6 +20,7 @@ export default {
     companyNatureList: [],
     companyDetail: {},
     companyStatusList: [],
+    riskyAreaList: {},
   },
 
   effects: {
@@ -184,6 +186,32 @@ export default {
           },
         });
         callback && callback(true, companyStatusList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getRiskyAreaList({ payload: { name, ...payload } = {}, callback }, { call, put }) {
+      const response = yield call(getRiskyAreaList, { areaName: name, ...payload });
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const riskyAreaList = {
+          ...data,
+          list: data.list.map(item => ({
+            key: item.id,
+            value: item.id,
+            label: item.areaName,
+            title: item.areaName,
+            data: item,
+          })),
+          payload,
+        };
+        yield put({
+          type: 'append',
+          payload: {
+            riskyAreaList,
+          },
+        });
+        callback && callback(true, riskyAreaList);
       } else {
         callback && callback(false, msg);
       }
