@@ -4,7 +4,7 @@ import '@ant-design/compatible/assets/index.css';
 import { Modal, Table, Button, Row, Col, Input, Divider, Card, Select, message } from 'antd';
 import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
 import { connect } from 'dva';
-import router from 'umi/router';
+// import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import codes from '@/utils/codes';
 import urls from '@/utils/urls';
@@ -19,7 +19,9 @@ const {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
-      process: processCode,
+      process: {
+        list: processViewCode,
+      },
     },
   },
 } = codes;
@@ -66,7 +68,7 @@ const HandleModal = Form.create()(props => {
   }
   return (
     <Modal
-      title={detail && detail.objectId ? '编辑隐患标准' : '新增隐患标准'}
+      title={detail && detail.objectId ? '编辑检查项' : '新增检查项'}
       visible={visible}
       width={800}
       onOk={handleOk}
@@ -81,6 +83,18 @@ const HandleModal = Form.create()(props => {
             getValueFromEvent: e => e.target.value.trim(),
           })(
             <Input placeholder="请输入" />
+          )}
+        </FormItem>
+        <FormItem label="检查项类型" {...formWrapper}>
+          {getFieldDecorator('objectGroupId', {
+            rules: [{ required: true, message: '请选择检查项类型' }],
+            initialValue: detail.objectGroupId || undefined,
+          })(
+            <Select placeholder="请选择" allowClear disabled>
+              {projectCategoryOptions.map(({ value, label }) => (
+                <Select.Option key={value} value={value}>{label}</Select.Option>
+              ))}
+            </Select>
           )}
         </FormItem>
         <FormItem label="业务分类" {...formWrapper}>
@@ -107,21 +121,10 @@ const HandleModal = Form.create()(props => {
             </Select>
           )}
         </FormItem>
-        <FormItem label="检查项类型" {...formWrapper}>
-          {getFieldDecorator('objectGroupId', {
-            rules: [{ required: true, message: '请选择检查项类型' }],
-            initialValue: objectId ? detail.objectGroupId : undefined,
-          })(
-            <Select placeholder="请选择" allowClear>
-              {projectCategoryOptions.map(({ value, label }) => (
-                <Select.Option key={value} value={value}>{label}</Select.Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
         <FormItem label="备注" {...formWrapper}>
           {getFieldDecorator('remark', {
             initialValue: objectId ? detail.remark : undefined,
+            getValueFromEvent: e => e.target.value.trim(),
           })(
             <TextArea rows={2} placeholder="请输入" />
           )}
@@ -132,19 +135,23 @@ const HandleModal = Form.create()(props => {
 })
 
 @Form.create()
-@connect(({ hiddenDangerControl, loading }) => ({
+@connect(({ hiddenDangerControl, user, loading }) => ({
   hiddenDangerControl,
+  user,
   tableLoading: loading.effects['hiddenDangerControl/fetchHiddenDangerStandardList'],
 }))
 export default class StandardDatabase extends Component {
 
   constructor(props) {
     super(props);
+    const { user: { currentUser } } = this.props;
     this.modalRef = null;
     this.state = {
       detail: {},
       handleModalVisible: false, // 新增/编辑弹窗是否显示
-    }
+    };
+    this.isCompany = currentUser.unitType === 4; // 企业
+    this.isWb = currentUser.unitType === 3; // 维保
   }
 
   componentDidMount () {
@@ -191,7 +198,16 @@ export default class StandardDatabase extends Component {
 
   // 打开新增弹窗
   handleViewAdd = () => {
-    this.setState({ handleModalVisible: true, detail: {} })
+    let detail = {};
+    if (this.isWb) { // 维保
+      detail.objectGroupId = '1'; // 标准库
+    } else if (this.isCompany) { // 企业
+      detail.objectGroupId = '2'; // 自定义库
+    }
+    this.setState({
+      handleModalVisible: true,
+      detail,
+    })
   }
 
   // 打开编辑弹窗
@@ -245,12 +261,12 @@ export default class StandardDatabase extends Component {
   }
 
   // 跳转到检查流程列表页面
-  jumpToProcess = ({ objectId, objectTitle }) => {
+  jumpToProcess = ({ objectId, objectTitle, objectGroupId }) => {
     // router.push({
     //   pathname: processUrl + objectId,
     //   query: { checkItemTitle: objectTitle },
     // })
-    window.open(`${window.publicPath}#${processUrl}${objectId}?checkItemTitle=${objectTitle}`);
+    window.open(`${window.publicPath}#${processUrl}${objectId}?checkItemTitle=${objectTitle}&objectGroupId=${objectGroupId}`);
   }
 
   /**
@@ -349,7 +365,7 @@ export default class StandardDatabase extends Component {
         width: 200,
       },
       {
-        title: '检查项类型', // 项目分类
+        title: '项目分类', // 项目分类
         dataIndex: 'objectGroupName',
         align: 'center',
         width: 200,
@@ -368,15 +384,24 @@ export default class StandardDatabase extends Component {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={processCode} onClick={() => this.jumpToProcess(row)}>检查流程</AuthA>
-            <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleViewEdit(row)}>编辑</AuthA>
-            <Divider type="vertical" />
-            <AuthPopConfirm
-              code={deleteCode}
-              title="确定要删除该数据嘛？"
-              onConfirm={() => this.handleDelete(row.objectId)}
-            >删除</AuthPopConfirm>
+            <AuthA code={processViewCode} onClick={() => this.jumpToProcess(row)}>检查流程</AuthA>
+            {/* 企业对自定义库可编辑删除 */}
+            {+row.objectGroupId === 2 && this.isCompany && (
+              <Fragment>
+                <Divider type="vertical" />
+                <AuthA code={editCode} onClick={() => this.handleViewEdit(row)}>编辑</AuthA>
+              </Fragment>
+            )}
+            {+row.objectGroupId === 2 && this.isCompany && (
+              <Fragment>
+                <Divider type="vertical" />
+                <AuthPopConfirm
+                  code={deleteCode}
+                  title="确定要删除该数据嘛？"
+                  onConfirm={() => this.handleDelete(row.objectId)}
+                >删除</AuthPopConfirm>
+              </Fragment>
+            )}
           </Fragment>
         ),
       },
