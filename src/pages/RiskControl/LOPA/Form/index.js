@@ -133,7 +133,7 @@ const getFields = ({
         <PagingSelect
           options={companyList.list}
           loading={loadingCompanyList}
-          disabled={isUnit}
+          disabled={isUnit || name === 'edit'}
           hasMore={
             companyList.pagination &&
             companyList.pagination.total >

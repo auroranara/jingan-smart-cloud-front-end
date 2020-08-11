@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { message, Card, Skeleton, Form, Row, Col, Input, DatePicker, Button } from 'antd';
+import { message, Card, Skeleton, Form, Row, Col, Input, DatePicker, Button, Radio } from 'antd';
 import Upload from '@/jingan-components/Form/Upload';
 import PagingSelect from '@/jingan-components/PagingSelect';
 import router from 'umi/router';
@@ -18,6 +18,10 @@ import {
   detailLocale,
   addLocale,
   editLocale,
+  possibilityList,
+  severityList,
+  RiskLevel,
+  Color,
 } from '../config';
 import {
   dateFormat,
@@ -29,6 +33,7 @@ import {
   buttonWrapperCol,
   hiddenCol,
 } from '@/utils';
+import { isNumber } from '@/utils/utils';
 import styles from './index.less';
 
 // 获取面包屑
@@ -49,36 +54,51 @@ const getBreadcrumbList = ({ name, search }) => {
     { title, name: title },
   ];
 };
+// 根据LS获取计算值
+const getCalculatedValueByLS = (L, S) => {
+  const evaluateValue = L * S;
+  const riskLevel = 4 - Math.floor(Math.min(evaluateValue, 15) / 4);
+  return {
+    evaluateValue,
+    riskLevel,
+    inherentRiskLevel: riskLevel,
+  };
+};
 // 根据detail获取values（用于初始化）
 const getValuesByDetail = ({
   companyId,
   companyName,
-  name,
-  code,
-  departmentId,
-  departmentName,
-  personId,
-  personName,
-  telphone,
-  L,
-  S,
-  evaluator,
-  evaluateTime,
-  fileList,
+  areaId,
+  areaName,
+  areaCode,
+  areaHeadId,
+  areaHead,
+  belongPartId,
+  belongPart,
+  tel,
+  accidentPossibility,
+  accidentResultSeverity,
+  riskLevel,
+  evaluatePer,
+  evaluateDate,
+  otherFileList,
 }) => ({
+  ...getCalculatedValueByLS(accidentPossibility, accidentResultSeverity),
   company: companyId ? { key: companyId, value: companyId, label: companyName } : undefined,
-  name: name || undefined,
-  code: code || undefined,
-  department: departmentId
-    ? { key: departmentId, value: departmentId, label: departmentName }
+  area: areaId ? { key: areaId, value: areaId, label: areaName } : undefined,
+  areaCode: areaCode || undefined,
+  areaHead: areaHeadId ? { key: areaHeadId, value: areaHeadId, label: areaHead } : undefined,
+  belongPart: belongPartId
+    ? { key: belongPartId, value: belongPartId, label: belongPart }
     : undefined,
-  person: personId ? { key: personId, value: personId, label: personName } : undefined,
-  telphone: telphone || undefined,
-  L: L || undefined,
-  S: S || undefined,
-  evaluateTime: evaluateTime ? moment(evaluateTime) : undefined,
-  fileList: fileList
-    ? fileList.map((item, index) => ({
+  tel: tel || undefined,
+  accidentPossibility: isNumber(accidentPossibility) ? accidentPossibility : undefined,
+  accidentResultSeverity: isNumber(accidentResultSeverity) ? accidentResultSeverity : undefined,
+  riskLevel: isNumber(riskLevel) ? riskLevel : undefined,
+  evaluatePer: evaluatePer || undefined,
+  evaluateDate: evaluateDate ? moment(evaluateDate) : undefined,
+  otherFileList: otherFileList
+    ? otherFileList.map((item, index) => ({
         ...item,
         url: item.webUrl,
         status: 'done',
@@ -90,26 +110,22 @@ const getValuesByDetail = ({
 // 根据values获取payload（用于提交）
 const getPayloadByValues = ({
   company,
-  name,
-  code,
-  department,
-  person,
-  telphone,
-  L,
-  S,
-  evaluateTime,
-  fileList,
+  area,
+  accidentPossibility,
+  accidentResultSeverity,
+  riskLevel,
+  evaluatePer,
+  evaluateDate,
+  otherFileList,
 }) => ({
   companyId: company && company.key,
-  name: name && name.trim(),
-  code: code && code.trim(),
-  departmentId: department && department.key,
-  personId: person && person.key,
-  telphone: telphone && telphone.trim(),
-  L,
-  S,
-  evaluateTime: evaluateTime && evaluateTime.format(dateFormat),
-  fileList,
+  areaId: area && area.key,
+  accidentPossibility,
+  accidentResultSeverity,
+  riskLevel,
+  evaluatePer: evaluatePer && evaluatePer.trim(),
+  evaluateDate: evaluateDate && evaluateDate.format(dateFormat),
+  otherFileList,
 });
 // 获取表单配置
 const getFields = ({
@@ -127,6 +143,8 @@ const getFields = ({
   loadingRiskyAreaList,
   setRiskyAreaPayload,
   onRiskyAreaSelectChange,
+  onPossibilityChange,
+  onSeverityChange,
 }) => [
   {
     name: 'company',
@@ -136,7 +154,7 @@ const getFields = ({
         <PagingSelect
           options={companyList.list}
           loading={loadingCompanyList}
-          disabled={isUnit}
+          disabled={isUnit || name === 'edit'}
           hasMore={
             companyList.pagination &&
             companyList.pagination.total >
@@ -188,15 +206,15 @@ const getFields = ({
     col: values.area ? col : hiddenCol,
   },
   {
-    name: 'areaHeader',
+    name: 'areaHead',
     label: '区域负责人',
     children: <Text type="Select" labelInValue />,
     col: values.area ? col : hiddenCol,
   },
   {
-    name: 'department',
+    name: 'belongPart',
     label: '所属部门',
-    children: <Text type="Select" labelInValue />,
+    children: <Text type="TreeSelect" labelInValue />,
     col: values.area ? col : hiddenCol,
   },
   {
@@ -207,18 +225,63 @@ const getFields = ({
   },
   {
     label: <span className={styles.bold}>固有区域分析（LS）</span>,
+    colon: false,
+    col,
+  },
+  {
+    name: 'accidentPossibility',
+    label: '事故发生的可能性（L）',
+    children:
+      name !== 'detail' ? (
+        <Radio.Group options={possibilityList} onChange={onPossibilityChange} />
+      ) : (
+        <Text type="Radio" options={possibilityList} />
+      ),
+    rules:
+      name !== 'detail' ? [{ required: true, message: '请选择事故发生的可能性（L）' }] : undefined,
+    col,
+  },
+  {
+    name: 'accidentResultSeverity',
+    label: '事故后果的严重性（S）',
+    children:
+      name !== 'detail' ? (
+        <Radio.Group options={severityList} onChange={onSeverityChange} />
+      ) : (
+        <Text type="Radio" options={severityList} />
+      ),
+    rules:
+      name !== 'detail' ? [{ required: true, message: '请选择事故后果的严重性（S）' }] : undefined,
+    col,
+  },
+  {
+    name: 'evaluateValue',
+    label: '评估风险值（R）',
+    children: <Text />,
+    col,
+  },
+  {
+    name: 'riskLevel',
+    label: '风险级别',
+    children: <RiskLevel />,
+    col,
+  },
+  {
+    name: 'inherentRiskLevel',
+    label: '固有风险等级',
+    children: <Color />,
     col,
   },
   {
     label: <span className={styles.bold}>区域固有风险矩阵准则</span>,
     children: (
-      <table>
+      <table className={styles.table}>
         <tbody>
           <tr>
-            <td rowspan="2" colspan="2">
+            <td rowSpan="2" colSpan="2">
               风险矩阵（R）
             </td>
-            <td colspan="4">事故后果的严重性（S）</td>
+            <td colSpan="4">事故后果的严重性（S）</td>
           </tr>
           <tr>
             <td>1</td>
@@ -227,37 +290,38 @@ const getFields = ({
             <td>4</td>
           </tr>
           <tr>
-            <td rowspan="4">事故发生的可能性（L）</td>
+            <td rowSpan="4">事故发生的可能性（L）</td>
             <td>1</td>
-            <td class="blue">IV</td>
-            <td class="blue">IV</td>
-            <td class="blue">IV</td>
-            <td class="yellow">III</td>
+            <td className={styles.blue}>IV</td>
+            <td className={styles.blue}>IV</td>
+            <td className={styles.blue}>IV</td>
+            <td className={styles.yellow}>III</td>
           </tr>
           <tr>
             <td>2</td>
-            <td class="blue">IV</td>
-            <td class="yellow">III</td>
-            <td class="yellow">III</td>
-            <td class="orange">II</td>
+            <td className={styles.blue}>IV</td>
+            <td className={styles.yellow}>III</td>
+            <td className={styles.yellow}>III</td>
+            <td className={styles.orange}>II</td>
           </tr>
           <tr>
             <td>3</td>
-            <td class="blue">IV</td>
-            <td class="yellow">III</td>
-            <td class="orange">II</td>
-            <td class="orange">II</td>
+            <td className={styles.blue}>IV</td>
+            <td className={styles.yellow}>III</td>
+            <td className={styles.orange}>II</td>
+            <td className={styles.orange}>II</td>
           </tr>
           <tr>
             <td>4</td>
-            <td class="yellow">III</td>
-            <td class="orange">II</td>
-            <td class="red">I</td>
-            <td class="red">I</td>
+            <td className={styles.yellow}>III</td>
+            <td className={styles.orange}>II</td>
+            <td className={styles.red}>I</td>
+            <td className={styles.red}>I</td>
           </tr>
         </tbody>
       </table>
     ),
+    colon: false,
     wrapperCol: col,
     col,
   },
@@ -292,7 +356,7 @@ const getFields = ({
     col,
   },
   {
-    name: 'accessoryDetails',
+    name: 'otherFileList',
     label: '附件',
     children: name !== 'detail' ? <Upload /> : <Text type="Upload" />,
     col,
@@ -461,7 +525,10 @@ export default connect(
     const [form] = Form.useForm();
     // 创建表单初始值
     const [initialValues] = useState({
+      ...getCalculatedValueByLS(possibilityList[0].key, severityList[0].key),
       company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
+      accidentPossibility: possibilityList[0].key,
+      accidentResultSeverity: severityList[0].key,
     });
     // 创建单位列表接口对应的payload（通过监听payload的变化来请求接口）
     const [companyPayload, setCompanyPayload] = useState(undefined);
@@ -569,19 +636,29 @@ export default connect(
     }, []);
     // 风险区域选择器change事件
     const onRiskyAreaSelectChange = useCallback(
-      (_, { areaCode, areaHeader, areaHeaderName, partId, partName, tel }) => {
+      (_, { data: { areaCode, areaHeader, areaHeaderName, partId, partName, tel } }) => {
         // 清空风险区域名称字段值
         form.setFieldsValue({
           areaCode: areaCode || undefined,
-          areaHeader: areaHeader
+          areaHead: areaHeader
             ? { key: areaHeader, value: areaHeader, label: areaHeaderName }
             : undefined,
-          department: partId ? { key: partId, value: partId, label: partName } : undefined,
+          belongPart: partId ? { key: partId, value: partId, label: partName } : undefined,
           tel: tel || undefined,
         });
       },
       []
     );
+    // 事故发生的可能性（L）change事件
+    const onPossibilityChange = useCallback(({ target: { value } }) => {
+      const severity = form.getFieldValue('accidentResultSeverity');
+      form.setFieldsValue(getCalculatedValueByLS(value, severity));
+    }, []);
+    // 事故发生的严重性（S）change事件
+    const onSeverityChange = useCallback(({ target: { value } }) => {
+      const possibility = form.getFieldValue('accidentPossibility');
+      form.setFieldsValue(getCalculatedValueByLS(possibility, value));
+    }, []);
     return (
       <PageHeaderLayout
         key={name}
@@ -603,7 +680,9 @@ export default connect(
               <Form.Item
                 noStyle
                 shouldUpdate={(prevValues, values) =>
-                  ['company'].some(dependency => prevValues[dependency] !== values[dependency])
+                  ['company', 'area'].some(
+                    dependency => prevValues[dependency] !== values[dependency]
+                  )
                 }
               >
                 {({ getFieldsValue }) => {
@@ -625,6 +704,8 @@ export default connect(
                         loadingRiskyAreaList,
                         setRiskyAreaPayload,
                         onRiskyAreaSelectChange,
+                        onPossibilityChange,
+                        onSeverityChange,
                       }).map(({ name, col, ...item }, index) => (
                         <Col key={name || index} {...col}>
                           <Form.Item name={name} {...item} />

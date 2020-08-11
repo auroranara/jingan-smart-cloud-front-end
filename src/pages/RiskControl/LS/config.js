@@ -1,3 +1,5 @@
+import React from 'react';
+import { EmptyText } from '@/utils';
 import locale from '@/locales/zh-CN';
 
 export const modelName = 'LS';
@@ -38,4 +40,53 @@ export const levelMap = {
     color: '#1890ff',
     label: '蓝',
   },
+};
+export const possibilityList = [
+  {
+    key: '4',
+    value: '4',
+    label: '4',
+  },
+  {
+    key: '3',
+    value: '3',
+    label: '3',
+  },
+  {
+    key: '2',
+    value: '2',
+    label: '2',
+  },
+  {
+    key: '1',
+    value: '1',
+    label: '1',
+  },
+];
+export const severityList = [
+  {
+    key: '4',
+    value: '4',
+    label: '4',
+  },
+  {
+    key: '3',
+    value: '3',
+    label: '3',
+  },
+  {
+    key: '2',
+    value: '2',
+    label: '2',
+  },
+  {
+    key: '1',
+    value: '1',
+    label: '1',
+  },
+];
+export const RiskLevel = ({ value }) => (value ? <span>{`${value} 级`}</span> : <EmptyText />);
+export const Color = ({ value }) => {
+  const map = levelMap[value];
+  return map ? <span style={{ color: map.color }}>{map.label}</span> : <EmptyText />;
 };

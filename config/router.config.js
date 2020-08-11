@@ -1673,43 +1673,43 @@ module.exports = env => {
                 },
               ],
             },
-            // // 区域固有风险分析（LS）
-            // {
-            //   path: '/risk-control/LS',
-            //   code: 'riskControl.LS',
-            //   name: 'LS',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/risk-control/LS',
-            //       redirect: '/risk-control/LS/list',
-            //     },
-            //     {
-            //       path: '/risk-control/LS/list',
-            //       code: 'riskControl.LS.list',
-            //       name: 'list',
-            //       component: './RiskControl/LS/List',
-            //     },
-            //     {
-            //       path: '/risk-control/LS/detail/:id',
-            //       code: 'riskControl.LS.detail',
-            //       name: 'detail',
-            //       component: './RiskControl/LS/Form',
-            //     },
-            //     {
-            //       path: '/risk-control/LS/add',
-            //       code: 'riskControl.LS.add',
-            //       name: 'add',
-            //       component: './RiskControl/LS/Form',
-            //     },
-            //     {
-            //       path: '/risk-control/LS/edit/:id',
-            //       code: 'riskControl.LS.edit',
-            //       name: 'edit',
-            //       component: './RiskControl/LS/Form',
-            //     },
-            //   ],
-            // },
+            // 区域固有风险分析（LS）
+            {
+              path: '/risk-control/LS',
+              code: 'riskControl.LS',
+              name: 'LS',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/LS',
+                  redirect: '/risk-control/LS/list',
+                },
+                {
+                  path: '/risk-control/LS/list',
+                  code: 'riskControl.LS.list',
+                  name: 'list',
+                  component: './RiskControl/LS/List',
+                },
+                {
+                  path: '/risk-control/LS/detail/:id',
+                  code: 'riskControl.LS.detail',
+                  name: 'detail',
+                  component: './RiskControl/LS/Form',
+                },
+                {
+                  path: '/risk-control/LS/add',
+                  code: 'riskControl.LS.add',
+                  name: 'add',
+                  component: './RiskControl/LS/Form',
+                },
+                {
+                  path: '/risk-control/LS/edit/:id',
+                  code: 'riskControl.LS.edit',
+                  name: 'edit',
+                  component: './RiskControl/LS/Form',
+                },
+              ],
+            },
             // 危险与可操作性分析（HAZOP）
             {
               path: '/risk-control/HAZOP',

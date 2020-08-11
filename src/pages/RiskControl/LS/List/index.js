@@ -33,7 +33,8 @@ import {
   editPath,
   parentLocale,
   listLocale,
-  levelMap,
+  RiskLevel,
+  Color,
 } from '../config';
 import {
   dateFormat,
@@ -52,37 +53,37 @@ const breadcrumbList = [
   { title: listLocale, name: listLocale },
 ];
 // 根据query获取payload（用于初始化）
-const getPayloadByQuery = ({ pageNum, pageSize, company, name, department, principalName }) => ({
+const getPayloadByQuery = ({ pageNum, pageSize, company, areaName, belongPart, areaHead }) => ({
   pageNum: pageNum > 0 ? +pageNum : 1,
   pageSize: pageSize > 0 ? +pageSize : 10,
   company: company ? JSON.parse(decodeURIComponent(company)) : undefined,
-  name: name ? decodeURIComponent(name) : undefined,
-  department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
-  principalName: principalName ? decodeURIComponent(principalName) : undefined,
+  areaName: areaName ? decodeURIComponent(areaName) : undefined,
+  belongPart: belongPart ? JSON.parse(decodeURIComponent(belongPart)) : undefined,
+  areaHead: areaHead ? decodeURIComponent(areaHead) : undefined,
 });
 // 根据payload获取search（用于路由跳转）
-const getSearchByPayload = ({ company, name, department, principalName, ...rest }) => {
+const getSearchByPayload = ({ company, areaName, belongPart, areaHead, ...rest } = {}) => {
   const query = {
     ...rest,
     company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
-    name: name ? encodeURIComponent(name) : undefined,
-    department: department ? encodeURIComponent(JSON.stringify(department)) : undefined,
-    principalName: principalName ? encodeURIComponent(principalName) : undefined,
+    areaName: areaName ? encodeURIComponent(areaName) : undefined,
+    belongPart: belongPart ? encodeURIComponent(JSON.stringify(belongPart)) : undefined,
+    areaHead: areaHead ? encodeURIComponent(areaHead) : undefined,
   };
   const search = stringify(query);
   return search && `?${search}`;
 };
 // 转换payload为接口需要的格式
-const transformPayload = ({ company, department, ...rest }) => ({
+const transformPayload = ({ company, belongPart, ...rest }) => ({
   ...rest,
   companyId: company && company.key,
-  departmentId: department && department.key,
+  belongPartId: belongPart && belongPart.key,
 });
 // 转换values为payload需要的格式（基本上只对输入框值进行trim）
-const transformValues = ({ name, principalName, ...rest }) => ({
+const transformValues = ({ areaName, areaHead, ...rest }) => ({
   ...rest,
-  name: name && name.trim(),
-  principalName: principalName && principalName.trim(),
+  areaName: areaName && areaName.trim(),
+  areaHead: areaHead && areaHead.trim(),
 });
 // 获取表单配置
 const getFields = ({
@@ -123,13 +124,13 @@ const getFields = ({
     col: !isUnit ? listPageCol : hiddenCol,
   },
   {
-    name: 'name',
+    name: 'areaName',
     label: '区域名称',
     children: <Input placeholder="请输入" maxLength={50} allowClear />,
     col: listPageCol,
   },
   {
-    name: 'department',
+    name: 'belongPart',
     label: '所属部门',
     children: (
       <TreeSelect
@@ -146,7 +147,7 @@ const getFields = ({
     col: listPageCol,
   },
   {
-    name: 'principalName',
+    name: 'areaHead',
     label: '负责人姓名',
     children: <Input placeholder="请输入" maxLength={50} allowClear />,
     col: listPageCol,
@@ -209,70 +210,68 @@ const getColumns = ({
       ]
     : []),
   {
-    dataIndex: 'code',
+    dataIndex: 'areaCode',
     title: '区域编号',
     render: value => value || <EmptyText />,
   },
   {
-    dataIndex: 'name',
+    dataIndex: 'areaName',
     title: '风险区域名称',
     render: value => value || <EmptyText />,
   },
   {
-    dataIndex: 'principalName',
+    dataIndex: 'areaHead',
     title: '区域负责人',
     render: value => value || <EmptyText />,
   },
   {
-    dataIndex: 'phone',
+    dataIndex: 'tel',
     title: '联系电话',
     render: value => value || <EmptyText />,
   },
   {
     dataIndex: '固有风险分析（LS)',
     title: '固有风险分析（LS)',
-    render: (_, data) => (
+    render: (
+      _,
+      { accidentPossibility, accidentResultSeverity, riskLevel, evaluatePer, evaluateDate }
+    ) => (
       <Fragment>
         <div className={styles.tdRow}>
           <span>可能性(L)：</span>
-          <span>{data.L || <EmptyText />}</span>
+          <span>{accidentPossibility || <EmptyText />}</span>
         </div>
         <div className={styles.tdRow}>
           <span>严重性(S)：</span>
-          <span>{data.S || <EmptyText />}</span>
+          <span>{accidentResultSeverity || <EmptyText />}</span>
         </div>
         <div className={styles.tdRow}>
           <span>评估风险值(R)：</span>
-          <span>{data.L * data.S || <EmptyText />}</span>
+          <span>{accidentPossibility * accidentResultSeverity || <EmptyText />}</span>
         </div>
         <div className={styles.tdRow}>
           <span>风险级别：</span>
-          <span>{data.L * data.S ? `${4 - (data.L * data.S) / 4} 级` : <EmptyText />}</span>
+          <RiskLevel value={riskLevel} />
         </div>
         <div className={styles.tdRow}>
           <span>评估人员：</span>
-          <span>{data.evaluatorName || <EmptyText />}</span>
+          <span>{evaluatePer || <EmptyText />}</span>
         </div>
         <div className={styles.tdRow}>
           <span>评估日期：</span>
-          <span>
-            {data.evaluateDate ? moment(data.evaluateDate).format(dateFormat) : <EmptyText />}
-          </span>
+          <span>{evaluateDate ? moment(evaluateDate).format(dateFormat) : <EmptyText />}</span>
         </div>
       </Fragment>
     ),
   },
   {
-    dataIndex: '固有风险等级',
+    dataIndex: 'riskLevel',
     title: '固有风险等级',
-    render: (_, data) => {
-      const map = levelMap[4 - (data.L * data.S) / 4];
-      return map ? <span style={{ color: map.color }}>{map.label}</span> : <EmptyText />;
-    },
+    render: value => <Color value={value} />,
   },
   {
-    dataIndex: 'fileList',
-    title: '分析报告附件',
+    dataIndex: 'otherFileList',
+    title: '附件',
     render: value =>
       value && value.length ? (
         <Fragment>
