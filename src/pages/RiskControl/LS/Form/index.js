@@ -206,6 +206,62 @@ const getFields = ({
     col: values.area ? col : hiddenCol,
   },
   {
+    label: <span className={styles.bold}>固有区域分析（LS）</span>,
+    col,
+  },
+  {
+    label: <span className={styles.bold}>区域固有风险矩阵准则</span>,
+    children: (
+      <table>
+        <tbody>
+          <tr>
+            <td rowspan="2" colspan="2">
+              风险矩阵（R）
+            </td>
+            <td colspan="4">事故后果的严重性（S）</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td rowspan="4">事故发生的可能性（L）</td>
+            <td>1</td>
+            <td class="blue">IV</td>
+            <td class="blue">IV</td>
+            <td class="blue">IV</td>
+            <td class="yellow">III</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td class="blue">IV</td>
+            <td class="yellow">III</td>
+            <td class="yellow">III</td>
+            <td class="orange">II</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td class="blue">IV</td>
+            <td class="yellow">III</td>
+            <td class="orange">II</td>
+            <td class="orange">II</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td class="yellow">III</td>
+            <td class="orange">II</td>
+            <td class="red">I</td>
+            <td class="red">I</td>
+          </tr>
+        </tbody>
+      </table>
+    ),
+    wrapperCol: col,
+    col,
+  },
+  {
     name: 'evaluatePer',
     label: '评估人员',
     children: name !== 'detail' ? <Input placeholder="请输入" maxLength={50} /> : <Text />,
