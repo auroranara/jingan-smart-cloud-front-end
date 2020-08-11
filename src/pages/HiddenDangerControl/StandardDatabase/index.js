@@ -8,6 +8,7 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import codes from '@/utils/codes';
 import urls from '@/utils/urls';
+import Ellipsis from '@/components/Ellipsis';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -139,6 +140,7 @@ const HandleModal = Form.create()(props => {
   hiddenDangerControl,
   user,
   tableLoading: loading.effects['hiddenDangerControl/fetchHiddenDangerStandardList'],
+  loading: loading.models.hiddenDangerControl,
 }))
 export default class StandardDatabase extends Component {
 
@@ -217,7 +219,11 @@ export default class StandardDatabase extends Component {
 
   // 新增/编辑提交
   handleSubmit = (payload) => {
-    const { dispatch } = this.props;
+    const { dispatch, loading } = this.props;
+    if (loading) {
+      message.warning('请勿重复提交！');
+      return;
+    }
     const { detail } = this.state;
     const objectId = detail ? detail.objectId : undefined;
     const tag = objectId ? '编辑' : '新增';
@@ -365,10 +371,15 @@ export default class StandardDatabase extends Component {
         width: 200,
       },
       {
-        title: '项目分类', // 项目分类
+        title: '项目分类',
         dataIndex: 'objectGroupName',
         align: 'center',
         width: 200,
+        render: (val, { objectGroupName, companyName }) => (
+          <Ellipsis lines={1} tooltip>
+            {objectGroupName}{companyName ? `（${companyName}）` : ''}
+          </Ellipsis>
+        ),
       },
       {
         title: '备注',
