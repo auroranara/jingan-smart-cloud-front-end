@@ -19,6 +19,8 @@ import { connect } from 'dva';
 // import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import urls from '@/utils/urls';
+import codes from '@/utils/codes';
+import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -30,6 +32,17 @@ const {
     },
   },
 } = urls;
+const {
+  hiddenDangerControl: {
+    dangerStandardDatabase: {
+      process: {
+        add: addCode,
+        edit: editCode,
+        delete: deleteCode,
+      },
+    },
+  },
+} = codes;
 
 const title = '检查流程';
 const breadcrumbList = [
@@ -127,14 +140,23 @@ const HandleModal = Form.create()(props => {
 })
 
 @Form.create()
-@connect(({ hiddenDangerControl, loading }) => ({
+@connect(({ hiddenDangerControl, user, loading }) => ({
   hiddenDangerControl,
+  user,
   tableLoading: loading.effects['hiddenDangerControl/fetchStandardProcessList'],
 }))
 export default class StandardProcessList extends Component {
   state = {
     detail: {},
     handleModalVisible: false, // 新增/编辑弹窗是否显示
+  }
+
+  constructor(props) {
+    super(props);
+    const { user: { currentUser }, location: { query: { objectGroupId } } } = this.props;
+    const isCompany = currentUser.unitType === 4; // 企业
+    const isWb = currentUser.unitType === 3; // 维保
+    this.isShowHandle = (+objectGroupId === 1 && isWb) || (+objectGroupId === 2 && isCompany);
   }
 
   componentDidMount () {
@@ -239,7 +261,9 @@ export default class StandardProcessList extends Component {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" onClick={this.handleViewAdd}>新增</Button>
+                {this.isShowHandle && (
+                  <AuthButton code={addCode} type="primary" onClick={this.handleViewAdd}>新增</AuthButton>
+                )}
               </FormItem>
             </Col>
           </Row>
@@ -288,7 +312,7 @@ export default class StandardProcessList extends Component {
         align: 'center',
         width: 350,
       },
-      {
+      ...this.isShowHandle ? [{
         title: '操作',
         key: '操作',
         align: 'center',
@@ -296,16 +320,17 @@ export default class StandardProcessList extends Component {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <a onClick={() => this.handleViewEdit(row)}>编辑</a>
+            <AuthA code={editCode} onClick={() => this.handleViewEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
-            <Popconfirm
+            <AuthPopConfirm
+              code={deleteCode}
               title="确定要删除该数据嘛？"
               onConfirm={() => this.handleDelete(row.flowId)}>
-              <a>删除</a>
-            </Popconfirm>
+              删除
+            </AuthPopConfirm>
           </Fragment>
         ),
-      },
+      }] : [],
     ]
     return (
       <Card style={{ marginTop: '24px' }}>

@@ -844,7 +844,12 @@ export default {
       add: 'hiddenDangerControl.dangerStandardDatabase.add',
       edit: 'hiddenDangerControl.dangerStandardDatabase.edit',
       delete: 'hiddenDangerControl.dangerStandardDatabase.delete',
-      process: 'hiddenDangerControl.dangerStandardDatabase.process',
+      process: {
+        list: 'hiddenDangerControl.dangerStandardDatabase.process.listView',
+        add: 'hiddenDangerControl.dangerStandardDatabase.process.add',
+        edit: 'hiddenDangerControl.dangerStandardDatabase.process.edit',
+        delete: 'hiddenDangerControl.dangerStandardDatabase.process.delete',
+      },
     },
   },
   // 设备设施管理
