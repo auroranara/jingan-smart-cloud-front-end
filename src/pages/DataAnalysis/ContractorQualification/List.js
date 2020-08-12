@@ -405,6 +405,7 @@ export default class ContractorQualification extends PureComponent {
             onShowSizeChange: (num, size) => {
               this.handleQuery(1, size);
             },
+            showTotal: (total) => `共 ${total} 条数据`,
           }}
         />
       </Card>
@@ -412,19 +413,19 @@ export default class ContractorQualification extends PureComponent {
   }
 
   render () {
-    const {
-      contractorQualification: {
-        data: {
-          a = 0,
-          pagination: { total = 0 },
-        },
-      },
-    } = this.props;
+    // const {
+    //   contractorQualification: {
+    //     data: {
+    //       a = 0,
+    //       pagination: { total = 0 },
+    //     },
+    //   },
+    // } = this.props;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位数量：${a} 人员数量：${total}`}
+      // content={`单位数量：${a} 人员数量：${total}`}
       >
         {this.renderFilter()}
         {this.renderTable()}
