@@ -760,6 +760,7 @@ export default {
       view: 'safetyRiskControl.promise.view',
       delete: 'safetyRiskControl.promise.delete',
       edit: 'safetyRiskControl.promise.edit',
+      import: 'safetyRiskControl.promise.import',
     },
   },
 
@@ -904,6 +905,7 @@ export default {
     edit: 'safetyProductionRegulation.operatingProcedures.edit',
     review: 'safetyProductionRegulation.operatingProcedures.review',
     publish: 'safetyProductionRegulation.operatingProcedures.publish',
+    import: 'safetyProductionRegulation.operatingProcedures.import',
   },
   // 检查表维护
   checkListMaintenance: {
@@ -913,6 +915,7 @@ export default {
     edit: 'safetyProductionRegulation.checkListMaintenance.edit',
     review: 'safetyProductionRegulation.checkListMaintenance.review',
     publish: 'safetyProductionRegulation.checkListMaintenance.publish',
+    import: 'safetyProductionRegulation.checkListMaintenance.import',
   },
   // 电子巡检
   electronicInspection: {
