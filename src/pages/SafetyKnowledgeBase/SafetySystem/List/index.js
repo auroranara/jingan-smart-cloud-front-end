@@ -5,14 +5,15 @@ import CustomForm from '@/jingan-components/CustomForm';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import CustomUpload from '@/jingan-components/CustomUpload';
 import { getPageSize, setPageSize } from '@/utils/utils';
-import classNames from 'classnames';
+// import classNames from 'classnames';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import styles from './index.less';
 // 审核弹窗
 import ReviewModal from '@/pages/EmergencyManagement/EmergencyPlan/ReviewModal';
-import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
+import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
+import ImportModal from '@/components/ImportModal';
 
 export const TITLE = '安全制度管理';
 export const LIST_PATH = '/safety-production-regulation/safety-system/list';
@@ -25,6 +26,7 @@ export const DETAIL_CODE = 'safetyProductionRegulation.safetySystem.view';
 export const DELETE_CODE = 'safetyProductionRegulation.safetySystem.delete';
 export const AUDIT_CODE = 'safetyProductionRegulation.safetySystem.audit';
 export const PUBLISH_CODE = 'safetyProductionRegulation.safetySystem.publish';
+export const IMPORT_CODE = 'safetyProductionRegulation.safetySystem.import';
 export const EXPIRE_STATUSES = [
   { key: '0', value: '未到期' /* , color: '#52c41a' */ },
   { key: '1', value: '即将到期', color: '#faad14' },
@@ -74,7 +76,7 @@ const PUBLISH = 'safetySystem/publish';
     loadingHistory: loading.effects[GET_HISTORY_LIST],
   }),
   dispatch => ({
-    getList(payload, callback) {
+    getList (payload, callback) {
       dispatch({
         type: GET_LIST,
         payload: {
@@ -85,7 +87,7 @@ const PUBLISH = 'safetySystem/publish';
         callback,
       });
     },
-    getHistoryList(payload, callback) {
+    getHistoryList (payload, callback) {
       dispatch({
         type: GET_HISTORY_LIST,
         payload: {
@@ -96,21 +98,21 @@ const PUBLISH = 'safetySystem/publish';
         callback,
       });
     },
-    remove(payload, callback) {
+    remove (payload, callback) {
       dispatch({
         type: REMOVE,
         payload,
         callback,
       });
     },
-    audit(payload, callback) {
+    audit (payload, callback) {
       dispatch({
         type: AUDIT,
         payload,
         callback,
       });
     },
-    publish(payload, callback) {
+    publish (payload, callback) {
       dispatch({
         type: PUBLISH,
         payload,
@@ -130,7 +132,7 @@ export default class SafetySystemList extends Component {
 
   prevValues = null;
 
-  componentDidMount() {
+  componentDidMount () {
     const { getList } = this.props;
     getList();
   }
@@ -339,7 +341,7 @@ export default class SafetySystemList extends Component {
   };
 
   // 历史版本
-  renderHistory() {
+  renderHistory () {
     const {
       safetySystem: {
         historyList: { list = [], pagination: { total, pageSize, pageNum } = {} },
@@ -441,7 +443,7 @@ export default class SafetySystemList extends Component {
     );
   }
 
-  renderForm() {
+  renderForm () {
     const {
       user: {
         currentUser: { unitType, permissionCodes },
@@ -453,15 +455,15 @@ export default class SafetySystemList extends Component {
     const fields = [
       ...(isNotCompany
         ? [
-            {
-              id: 'companyName',
-              label: '单位名称',
-              transform: value => value.trim(),
-              render: ({ handleSearch }) => (
-                <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
-              ),
-            },
-          ]
+          {
+            id: 'companyName',
+            label: '单位名称',
+            transform: value => value.trim(),
+            render: ({ handleSearch }) => (
+              <Input placeholder="请输入单位名称" onPressEnter={handleSearch} maxLength={50} />
+            ),
+          },
+        ]
         : []),
       {
         id: 'safetyName',
@@ -498,18 +500,18 @@ export default class SafetySystemList extends Component {
           fields={fields}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={
-            <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>
-              新增
-            </Button>
-          }
+          // action={
+          //   <Button type="primary" onClick={this.handleAddButtonClick} disabled={!hasAddAuthority}>
+          //     新增
+          //   </Button>
+          // }
           ref={this.setFormReference}
         />
       </Card>
     );
   }
 
-  renderTable() {
+  renderTable () {
     const {
       safetySystem: { list: { list = [], pagination: { total, pageNum, pageSize } = {} } = {} },
       user: {
@@ -523,12 +525,12 @@ export default class SafetySystemList extends Component {
     const columns = [
       ...(isNotCompany
         ? [
-            {
-              title: '单位名称',
-              dataIndex: 'companyName',
-              align: 'center',
-            },
-          ]
+          {
+            title: '单位名称',
+            dataIndex: 'companyName',
+            align: 'center',
+          },
+        ]
         : []),
       {
         title: '安全制度名称',
@@ -645,10 +647,30 @@ export default class SafetySystemList extends Component {
       },
     ];
 
-    console.log(this.props.safetySystem);
-
     return (
       <Card className={styles.card} bordered={false}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            style={{ marginRight: '10px' }}
+            type="primary"
+            onClick={this.handleAddButtonClick}
+            code={ADD_CODE}
+          >
+            新增
+        </AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/v2/chem/file5/安全设施.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/securityRuleManage/importSecurityRuleManage/${companyId}`}
+            onUploadSuccess={() => this.handleSearch({ ...this.prevValues, pageNum: 1 })}
+            code={IMPORT_CODE}
+          />
+        </div>
         {list && list.length > 0 ? (
           <Table
             className={styles.table}
@@ -671,13 +693,13 @@ export default class SafetySystemList extends Component {
             }}
           />
         ) : (
-          <Empty />
-        )}
+            <Empty />
+          )}
       </Card>
     );
   }
 
-  render() {
+  render () {
     const {
       user: {
         currentUser: { unitType },

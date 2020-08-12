@@ -13,6 +13,7 @@ import styles from './List.less';
 // 审核弹窗
 import ReviewModal from '@/pages/EmergencyManagement/EmergencyPlan/ReviewModal';
 import { AuthPopConfirm, AuthA, AuthButton } from '@/utils/customAuth';
+import ImportModal from '@/components/ImportModal';
 
 export const LIST_PATH = '/safety-production-regulation/check-list-maintenance/list';
 export const ADD_PATH = '/safety-production-regulation/check-list-maintenance/add'
@@ -56,6 +57,7 @@ const {
     edit: editCode,
     review: reviewCode,
     publish: publishCode,
+    import: importCode,
   },
 } = codes;
 
@@ -293,9 +295,6 @@ export default class CheckListMaintenance extends Component {
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                   重置
                 </Button>
-                <AuthButton code={addCode} type="primary" onClick={this.handleToAdd}>
-                  新增
-                </AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -447,34 +446,57 @@ export default class CheckListMaintenance extends Component {
         ),
       },
     ];
-    return list && list.length ? (
+    return (
       <Card style={{ marginTop: '24px' }}>
-        <Table
-          rowKey="id"
-          // loading={loading}
-          columns={columns}
-          dataSource={list}
-          bordered
-          scroll={{ x: 'max-content' }}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            // pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: (pageNum, pageSize) => {
-              this.handleQuery({ pageNum, pageSize });
-            },
-            onShowSizeChange: (pageNum, pageSize) => {
-              this.handleQuery({ pageNum, pageSize });
-            },
-          }}
-        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <AuthButton
+            style={{ marginRight: '10px' }}
+            code={addCode}
+            type="primary"
+            onClick={this.handleToAdd}>
+            新增
+                </AuthButton>
+          <Button
+            href="http://data.jingan-china.cn/v2/chem/file5/安全设施.xls"
+            target="_blank"
+            style={{ marginRight: '10px' }}
+          >
+            模板下载
+          </Button>
+          <ImportModal
+            action={(companyId) => `/acloud_new/v2/ci/hgCheckList/importHgCheckList/${companyId}`}
+            onUploadSuccess={this.handleQuery}
+            code={importCode}
+          />
+        </div>
+        {list && list.length ? (
+          <Table
+            rowKey="id"
+            // loading={loading}
+            columns={columns}
+            dataSource={list}
+            bordered
+            scroll={{ x: 'max-content' }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              // pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: (pageNum, pageSize) => {
+                this.handleQuery({ pageNum, pageSize });
+              },
+              onShowSizeChange: (pageNum, pageSize) => {
+                this.handleQuery({ pageNum, pageSize });
+              },
+            }}
+          />
+        ) : (
+            <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+          )}
       </Card>
-    ) : (
-        <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
-      );
+    )
   }
 
   // 历史版本
