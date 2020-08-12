@@ -61,15 +61,17 @@ const getPayloadByQuery = ({ pageNum, pageSize, company, areaName, belongPart, a
   belongPart: belongPart ? JSON.parse(decodeURIComponent(belongPart)) : undefined,
   areaHead: areaHead ? decodeURIComponent(areaHead) : undefined,
 });
+// 根据payload获取query（前置）
+const getQueryByPayload = ({ company, areaName, belongPart, areaHead, ...rest } = {}) => ({
+  ...rest,
+  company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
+  areaName: areaName ? encodeURIComponent(areaName) : undefined,
+  belongPart: belongPart ? encodeURIComponent(JSON.stringify(belongPart)) : undefined,
+  areaHead: areaHead ? encodeURIComponent(areaHead) : undefined,
+});
 // 根据payload获取search（用于路由跳转）
-const getSearchByPayload = ({ company, areaName, belongPart, areaHead, ...rest } = {}) => {
-  const query = {
-    ...rest,
-    company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
-    areaName: areaName ? encodeURIComponent(areaName) : undefined,
-    belongPart: belongPart ? encodeURIComponent(JSON.stringify(belongPart)) : undefined,
-    areaHead: areaHead ? encodeURIComponent(areaHead) : undefined,
-  };
+const getSearchByPayload = payload => {
+  const query = getQueryByPayload(payload);
   const search = stringify(query);
   return search && `?${search}`;
 };
@@ -482,7 +484,7 @@ export default connect(
     // 初始化
     useEffect(() => {
       // 获取payload
-      const payload = getPayloadByQuery({ ...initialValues, ...query });
+      const payload = getPayloadByQuery({ ...getQueryByPayload(initialValues), ...query });
       // 获取列表
       setPayload(payload);
       // 如果当前账号不是单位账号，则获取单位列表

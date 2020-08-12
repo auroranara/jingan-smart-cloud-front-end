@@ -71,10 +71,10 @@ const getPayloadByQuery = ({
   department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
   range: startDate && endDate ? [moment(+startDate), moment(+endDate)] : undefined,
 });
-// 根据payload获取search（用于路由跳转）
-const getSearchByPayload = ({ company, name, department, range, ...rest } = {}) => {
+// 根据payload获取query（前置）
+const getQueryByPayload = ({ company, name, department, range, ...rest } = {}) => {
   const [startDate, endDate] = range || [];
-  const query = {
+  return {
     ...rest,
     company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
     name: name ? encodeURIComponent(name) : undefined,
@@ -82,6 +82,10 @@ const getSearchByPayload = ({ company, name, department, range, ...rest } = {}) 
     startDate: startDate ? +startDate : undefined,
     endDate: endDate ? +endDate : undefined,
   };
+};
+// 根据payload获取search（用于路由跳转）
+const getSearchByPayload = payload => {
+  const query = getQueryByPayload(payload);
   const search = stringify(query);
   return search && `?${search}`;
 };
@@ -467,7 +471,7 @@ export default connect(
     // 初始化
     useEffect(() => {
       // 获取payload
-      const payload = getPayloadByQuery({ ...initialValues, ...query });
+      const payload = getPayloadByQuery({ ...getQueryByPayload(initialValues), ...query });
       // 获取列表
       setPayload(payload);
       // 如果当前账号不是单位账号，则获取单位列表
