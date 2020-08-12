@@ -284,6 +284,7 @@ export default class StandardDatabase extends Component {
       hiddenDangerControl: {
         budinessCategoryOptions,  // 业务分类
         IndustryOptions, // 所属行业
+        projectCategoryOptions,
       },
     } = this.props;
     return (
@@ -313,6 +314,17 @@ export default class StandardDatabase extends Component {
                 {getFieldDecorator('industry')(
                   <Select placeholder="所属行业" allowClear>
                     {IndustryOptions.map(({ value, label }) => (
+                      <Select.Option key={value} value={value}>{label}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('objectGroupId')(
+                  <Select placeholder="检查项类型" allowClear>
+                    {projectCategoryOptions.map(({ value, label }) => (
                       <Select.Option key={value} value={value}>{label}</Select.Option>
                     ))}
                   </Select>
