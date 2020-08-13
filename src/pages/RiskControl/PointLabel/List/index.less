@@ -1,0 +1,37 @@
+.formCard {
+  margin-bottom: 24px;
+
+  :global {
+    .ant-card-body {
+      padding-bottom: 0;
+    }
+  }
+}
+.rangePicker {
+  width: 100%;
+}
+.buttonContainer {
+  margin-right: -8px;
+  text-align: right;
+
+  &:global(> .ant-btn) {
+    margin-right: 8px;
+  }
+}
+.table {
+  :global {
+    .ant-table {
+      td,
+      th {
+        white-space: nowrap;
+      }
+    }
+
+    .ant-table-content {
+      overflow-x: auto !important;
+    }
+    .ant-table-body {
+      overflow: auto !important;
+    }
+  }
+}
