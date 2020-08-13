@@ -32,6 +32,7 @@ import {
   queryGridPointDetail,
   deleteGridPoint,
 } from '../services/riskPointManage.js';
+import { getList as getLabelList } from '@/services/pointLabel';
 
 export default {
   namespace: 'riskPointManage',
@@ -205,6 +206,14 @@ export default {
     count: '',
     assessLevelData: {},
     labelModal: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    },
+    newLabelModal: {
       list: [],
       pagination: {
         total: 0,
@@ -426,6 +435,16 @@ export default {
           payload: response.data,
         });
       }
+    },
+
+    *fetchNewLabelDict({ payload }, { call, put }) { // 新标签列表
+      const response = yield call(getLabelList, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({
+          type: 'saveNewLabelDict',
+          payload: data,
+        });
     },
 
     // 获取行业类别字典
@@ -828,6 +847,15 @@ export default {
         ...state,
         list,
         labelModal: payload,
+      };
+    },
+
+    saveNewLabelDict(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        newLabelModal: payload,
       };
     },
 

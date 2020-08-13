@@ -22,7 +22,7 @@ export const detailLocale = locale['menu.riskControl.pointLabel.detail'];
 export const addLocale = locale['menu.riskControl.pointLabel.add'];
 export const editLocale = locale['menu.riskControl.pointLabel.edit'];
 export const typeList = [
-    { key: '1', value: '1', label: '监督点', title: '监督点' },
+    // { key: '1', value: '1', label: '监督点', title: '监督点' },
     { key: '2', value: '2', label: '风险点', title: '风险点' },
 ];
 export const statusList = [

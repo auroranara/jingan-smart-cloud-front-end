@@ -28,7 +28,7 @@ import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point.png';
 import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-risk-point-gray.png';
 import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point-gray.png';
 import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point-active.png';
-import { OPE } from '@/pages/RoleAuthorization/Role/utils';
+// import { OPE } from '@/pages/RoleAuthorization/Role/utils';
 
 const { Group: RadioGroup } = Radio;
 
@@ -64,39 +64,71 @@ const fieldLabels = {
   isShow: '该点位是否在化工安全生产驾驶舱显示',
 };
 
+// const COLUMNS = [
+//   {
+//     title: '标签编号',
+//     dataIndex: 'location_code',
+//     key: 'location_code',
+//     align: 'center',
+//     width: 120,
+//   },
+//   {
+//     title: '二维码',
+//     dataIndex: 'qr_code',
+//     key: 'qr_code',
+//     align: 'center',
+//     width: 90,
+//   },
+//   {
+//     title: 'NFC',
+//     dataIndex: 'nfc_code',
+//     key: 'nfc_code',
+//     align: 'center',
+//     width: 150,
+//   },
+//   {
+//     title: '绑定的点位',
+//     dataIndex: 'objectTitles',
+//     key: 'objectTitles',
+//     align: 'center',
+//     width: 200,
+//     render: val => {
+//       return val && val.length > 0 ? val.join('、') : '————';
+//     },
+//   },
+// ];
+
 const COLUMNS = [
   {
     title: '标签编号',
-    dataIndex: 'location_code',
-    key: 'location_code',
+    dataIndex: 'locationCode',
+    key: 'locationCode',
     align: 'center',
     width: 120,
   },
   {
     title: '二维码',
-    dataIndex: 'qr_code',
-    key: 'qr_code',
+    dataIndex: 'qrCode',
+    key: 'qrCode',
     align: 'center',
     width: 90,
   },
   {
     title: 'NFC',
-    dataIndex: 'nfc_code',
-    key: 'nfc_code',
+    dataIndex: 'nfcCode',
+    key: 'nfcCode',
     align: 'center',
     width: 150,
   },
   {
-    title: '绑定的点位',
-    dataIndex: 'objectTitles',
-    key: 'objectTitles',
+    title: '绑定点位数量',
+    dataIndex: 'bindPointCount',
+    key: 'bindPointCount',
     align: 'center',
-    width: 200,
-    render: val => {
-      return val && val.length > 0 ? val.join('、') : '————';
-    },
+    width: 100,
   },
 ];
+
 
 const getCycleType = i => {
   switch (i) {
@@ -417,13 +449,15 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
     const { checked } = this.state;
+    const pyd = {
+      // noBind: checked === true ? 1 : '',
+      companyId,
+      ...payload,
+    };
+    if (checked) pyd.bindStatus = 0;
     dispatch({
-      type: 'riskPointManage/fetchLabelDict',
-      payload: {
-        noBind: checked === true ? 1 : '',
-        companyId,
-        ...payload,
-      },
+      type: 'riskPointManage/fetchNewLabelDict',
+      payload: pyd,
     });
   };
 
@@ -441,9 +475,12 @@ export default class RiskPointEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({
-      locationCode: value.location_code,
-      qrCode: value.qr_code,
-      nfcCode: value.nfc_code,
+      // locationCode: value.location_code,
+      // qrCode: value.qr_code,
+      // nfcCode: value.nfc_code,
+      locationCode: value.locationCode,
+      qrCode: value.qrCode,
+      nfcCode: value.nfcCode,
     });
     this.handleClose();
   };
@@ -463,14 +500,17 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
     const isChecked = e.target.checked;
+    const payload = {
+      companyId,
+      // noBind: isChecked === true ? 1 : '',
+      pageNum: 1,
+      pageSize: 10,
+    };
+    if (isChecked) payload.bindStatus = 0;
+
     dispatch({
-      type: 'riskPointManage/fetchLabelDict',
-      payload: {
-        companyId,
-        noBind: isChecked === true ? 1 : '',
-        pageNum: 1,
-        pageSize: 10,
-      },
+      type: 'riskPointManage/fetchNewLabelDict',
+      payload,
     });
     this.setState({
       checked: isChecked,
@@ -481,7 +521,7 @@ export default class RiskPointEdit extends PureComponent {
   renderRfidModal () {
     const {
       loading,
-      riskPointManage: { labelModal },
+      riskPointManage: { newLabelModal: labelModal },
     } = this.props;
     const { rfidVisible, checked } = this.state;
 
@@ -1270,12 +1310,12 @@ export default class RiskPointEdit extends PureComponent {
         detail: { data = {} },
       },
       chemical: { riskPoint },
-      user: { currentUser: { unitType } },
+      // user: { currentUser: { unitType } },
     } = this.props;
     // const { isDisabled, groupId, coord } = this.state;
     // const { picList } = this.state;
 
-    const isAdmin = unitType === OPE;
+    // const isAdmin = unitType === OPE;
 
     const formItemLayout = {
       labelCol: {
@@ -1378,7 +1418,8 @@ export default class RiskPointEdit extends PureComponent {
               </Row>
             </Col>
             <Col span={24}>
-              <Row gutter={12} style={{ display: isAdmin ? 'flex' : 'none' }}>
+              {/* <Row gutter={12} style={{ display: isAdmin ? 'flex' : 'none' }}> */}
+              <Row gutter={12}>
                 <Col span={6}>
                   <Form.Item label={fieldLabels.bindRFID}>
                     {getFieldDecorator('locationCode', {
