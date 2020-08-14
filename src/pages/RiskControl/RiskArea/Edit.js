@@ -266,16 +266,14 @@ export default class RiskAreaEdit extends Component {
     _,
     {
       props: {
-        data: { phoneNumber },
+        data: { phoneNumber, departmentName },
       },
     }
   ) => {
     const {
       form: { setFieldsValue },
     } = this.props;
-    if (phoneNumber) {
-      setFieldsValue({ tel: phoneNumber });
-    }
+    setFieldsValue({ tel: phoneNumber, partName: departmentName });
   };
 
   render() {
@@ -356,11 +354,11 @@ export default class RiskAreaEdit extends Component {
           rules: [{ required: true, message: '区域负责人不能为空' }],
         },
       },
-      // {
-      //   key: 'partName',
-      //   label: '所属部门',
-      //   component: <Input mode={mode} disabled />,
-      // },
+      {
+        key: 'partName',
+        label: '所属部门',
+        component: <Input mode={mode} disabled />,
+      },
       {
         key: 'tel',
         label: '联系电话',

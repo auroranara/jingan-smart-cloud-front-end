@@ -32,7 +32,21 @@ import {
   queryGridPointDetail,
   deleteGridPoint,
 } from '../services/riskPointManage.js';
+import { getList as getLabelList } from '@/services/pointLabel';
+import { queryProductEquipList } from '@/services/productionEquipments.js';
+import { getList as getFacilityList } from '@/services/productionFacility';
+import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
+import { fetchKeyPartList } from '@/services/keyPart';
+import { querySafeFacilitiesList } from '../services/company/reservoirRegion';
 
+const DefaultListProps = {
+  list: [],
+  pagination: {
+    total: 0,
+    pageSize: 10,
+    pageNum: 1,
+  },
+};
 export default {
   namespace: 'riskPointManage',
 
@@ -195,6 +209,29 @@ export default {
         value: '每年一次',
       },
     ],
+    // 设备类型
+    equipmentTypeList: [
+      {
+        key: 1,
+        value: '生产装置',
+      },
+      {
+        key: 2,
+        value: '生产设施',
+      },
+      {
+        key: 3,
+        value: '特种设备',
+      },
+      {
+        key: 4,
+        value: '关键装置重点部位',
+      },
+      {
+        key: 5,
+        value: '安全设施',
+      },
+    ],
     // lec字典
     lecData: {
       llist: [],
@@ -205,6 +242,14 @@ export default {
     count: '',
     assessLevelData: {},
     labelModal: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    },
+    newLabelModal: {
       list: [],
       pagination: {
         total: 0,
@@ -316,6 +361,11 @@ export default {
         value: '2级',
       },
     ],
+    productEquipList: DefaultListProps,
+    facilityList: DefaultListProps,
+    specialEquipList: DefaultListProps,
+    keyPartList: DefaultListProps,
+    safeFacilitiesList: DefaultListProps,
   },
 
   effects: {
@@ -426,6 +476,17 @@ export default {
           payload: response.data,
         });
       }
+    },
+
+    *fetchNewLabelDict({ payload }, { call, put }) {
+      // 新标签列表
+      const response = yield call(getLabelList, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({
+          type: 'saveNewLabelDict',
+          payload: data,
+        });
     },
 
     // 获取行业类别字典
@@ -716,10 +777,98 @@ export default {
         error(response.msg);
       }
     },
+
+    // 生产装置
+    *getProductEquipList({ payload, callback }, { call, put }) {
+      const response = yield call(queryProductEquipList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        yield put({
+          type: 'save',
+          payload: {
+            productEquipList: data,
+          },
+        });
+        callback && callback(data);
+      }
+    },
+    // 生产设施
+    *getFacilityList({ payload, callback }, { call, put }) {
+      const response = yield call(getFacilityList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const newData = {
+          ...data,
+          list: data.list.map(item => ({ ...item, name: item.facilitiesName })),
+        };
+        yield put({
+          type: 'save',
+          payload: {
+            facilityList: newData,
+          },
+        });
+        callback && callback(newData);
+      }
+    },
+    // 特种设备
+    *getSpecialEquipList({ payload, callback }, { call, put }) {
+      const response = yield call(querySpecialEquipList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const newData = {
+          ...data,
+          list: data.list.map(item => ({ ...item, name: item.equipName })),
+        };
+        yield put({
+          type: 'save',
+          payload: {
+            specialEquipList: newData,
+          },
+        });
+        callback && callback(newData);
+      }
+    },
+    // 关键装置重点部位
+    *getKeyPartList({ payload, callback }, { call, put }) {
+      const response = yield call(fetchKeyPartList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const newData = {
+          ...data,
+          list: data.list.map(item => ({ ...item, name: item.facilityName })),
+        };
+        yield put({
+          type: 'save',
+          payload: {
+            keyPartList: newData,
+          },
+        });
+        callback && callback(newData);
+      }
+    },
+    // 关键装置重点部位
+    *getSafeFacilitiesList({ payload, callback }, { call, put }) {
+      const response = yield call(querySafeFacilitiesList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data) {
+        const newData = {
+          ...data,
+          list: data.list.map(item => ({ ...item, name: item.safeFacilitiesLabel })),
+        };
+        yield put({
+          type: 'save',
+          payload: {
+            safeFacilitiesList: newData,
+          },
+        });
+        callback && callback(newData);
+      }
+    },
   },
 
   reducers: {
     /**---风险点--- */
+    save: (state, { payload }) => ({ ...state, ...payload }),
     // 获取企业列表
     saveCompaniesList(state, { payload }) {
       const {
@@ -828,6 +977,15 @@ export default {
         ...state,
         list,
         labelModal: payload,
+      };
+    },
+
+    saveNewLabelDict(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        newLabelModal: payload,
       };
     },
 

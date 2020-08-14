@@ -226,6 +226,7 @@ export default class CompanyModal extends PureComponent {
       onChangeCheckBox,
       checked,
       butonStyles,
+      buttonSpan,
     } = this.props;
     const { selectedRowKeys } = this.state;
 
@@ -250,7 +251,7 @@ export default class CompanyModal extends PureComponent {
           onChangeCheckBox={onChangeCheckBox}
           checked={checked}
           butonStyles={butonStyles}
-          buttonSpan={{ xl: 16, md: 12, sm: 24 }}
+          buttonSpan={{ xl: 16, md: 12, sm: 24, ...buttonSpan }}
         />
         <Table
           style={{ marginTop: '16px' }}

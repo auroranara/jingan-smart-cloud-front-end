@@ -1427,13 +1427,13 @@ module.exports = env => {
                 {
                   path: '/risk-control/risk-point-manage',
                   name: 'riskPointManage',
-                  redirect: '/risk-control/risk-point-manage/index',
+                  redirect: '/risk-control/risk-point-manage/list/all',
                 },
                 {
-                  path: '/risk-control/risk-point-manage/index',
+                  path: '/risk-control/risk-point-manage/list/:type',
                   code: 'riskControl.riskPointManage.listView',
                   name: 'listView',
-                  component: './RiskControl/RiskPointManage/index',
+                  component: './RiskControl/RiskPointManage/List',
                 },
                 {
                   path: '/risk-control/risk-point-manage/risk-point-List/:id',
@@ -1448,13 +1448,13 @@ module.exports = env => {
                   component: './RiskControl/RiskPointManage/RiskPointList',
                 },
                 {
-                  path: '/risk-control/risk-point-manage/risk-point-add',
+                  path: '/risk-control/risk-point-manage/add',
                   code: 'riskControl.riskPointManage.add',
                   name: 'add',
                   component: './RiskControl/RiskPointManage/RiskPointEdit',
                 },
                 {
-                  path: '/risk-control/risk-point-manage/risk-point-edit/:id',
+                  path: '/risk-control/risk-point-manage/edit/:id',
                   code: 'riskControl.riskPointManage.edit',
                   name: 'edit',
                   component: './RiskControl/RiskPointManage/RiskPointEdit',
