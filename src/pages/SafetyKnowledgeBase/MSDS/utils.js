@@ -177,12 +177,12 @@ function genFormItem(field, getFieldDecorator) {
           />
         );
         break;
+      // case 'radio':
+      //   component = (
+      //     <RadioGroup disabled={disabled} options={getOptions(options, ['value', 'label'])} />
+      //   );
+      //   break;
       case 'radio':
-        component = (
-          <RadioGroup disabled={disabled} options={getOptions(options, ['value', 'label'])} />
-        );
-        break;
-      case 'radios':
         component = (
           <RadioGroup disabled={disabled}>
             {getOptions(options, ['value', 'label']).map(({ value, label }) => <Radio key={value} value={value}>{label}</Radio>)}
