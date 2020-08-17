@@ -187,8 +187,8 @@ export const EquipColumns = {
     },
     {
       title: '设备名称',
-      dataIndex: 'safeFacilitiesLabel',
-      key: 'safeFacilitiesLabel',
+      dataIndex: 'equipName',
+      key: 'equipName',
       ellipsis: {
         showTitle: false,
       },

@@ -518,7 +518,7 @@ export default class riskPointList extends PureComponent {
               // to={`/risk-control/risk-point-manage/risk-card-list/${record.itemId}`}
               target="_blank"
             >
-              {record.safeCheck ? '复评' : '评价'}
+              {record.safeCheck ? '复评' : '评估'}
             </AuthLink>
             <Divider type="vertical" />
             <AuthLink

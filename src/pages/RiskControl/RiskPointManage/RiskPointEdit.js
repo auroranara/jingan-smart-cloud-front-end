@@ -240,8 +240,9 @@ export default class RiskPointEdit extends PureComponent {
         query: { type = 'all' },
       },
     } = this.props;
-    if (id) window.close();
-    else dispatch(routerRedux.push(`/risk-control/risk-point-manage/list/${type}`));
+    // if (id) window.close();
+    // else 
+    dispatch(routerRedux.push(`/risk-control/risk-point-manage/list/${type}`));
   };
 
   /* 去除左右两边空白 */
@@ -1371,9 +1372,9 @@ export default class RiskPointEdit extends PureComponent {
     const grid = { xs: { span: 20 }, sm: { span: 20 }, xxl: { span: 10 } };
     const gridOffset = { xs: { span: 20 }, sm: { span: 20 }, xxl: { span: 10, offset: 2 } };
 
-    const { riskPointType, equipmentType, safeCheck } = getFieldsValue();
+    const { riskPointType, equipmentType } = getFieldsValue();
     const companyId = selectedCompany.id;
-    const isAnalyzed = !!safeCheck;
+    const isAnalyzed = !!data.safeCheck;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -1415,7 +1416,7 @@ export default class RiskPointEdit extends PureComponent {
                 {getFieldDecorator('itemCode', {
                   initialValue: data.itemCode,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ message: '请输入编号' }],
+                  rules: [{ message: '请输入编号', required: true }],
                 })(<Input placeholder="请输入编号" maxLength={50} />)}
               </Form.Item>
             </Col>
@@ -1979,7 +1980,7 @@ export default class RiskPointEdit extends PureComponent {
     const columns = EquipColumns[equipmentType] || [];
     const field = [
       {
-        id: 'name',
+        id: (columns[2] || {}).key || 'name',
         render() {
           return <Input placeholder="设备名称" />;
         },
