@@ -334,9 +334,6 @@ export default class riskPointList extends PureComponent {
         lecData,
         equipmentTypeList = [],
       },
-      match: {
-        params: { id: companyId },
-      },
       user: {
         currentUser: { permissionCodes: codes, unitType },
       },
@@ -395,12 +392,13 @@ export default class riskPointList extends PureComponent {
         dataIndex: 'itemCode',
         key: 'itemCode',
         width: 200,
+        render: val => val || NO_DATA,
       },
       {
         title: '风险点类型',
         dataIndex: 'riskPointType',
         key: 'riskPointType',
-        render: val => (+val === 1 ? '设备设施' : '作业活动'),
+        render: val => (val ? (+val === 1 ? '设备设施' : '作业活动') : NO_DATA),
         width: 200,
       },
       {
@@ -412,6 +410,7 @@ export default class riskPointList extends PureComponent {
           val,
           { riskPointType, equipmentType, equipmentName, workName, workContent, workFrequency }
         ) => {
+          if (!riskPointType) return NO_DATA;
           return +riskPointType === 1 ? (
             <div>
               <div>
@@ -446,6 +445,7 @@ export default class riskPointList extends PureComponent {
         title: '所属区域',
         dataIndex: 'areaName',
         key: 'areaName',
+        render: val => val || NO_DATA,
       },
       {
         title: '复评信息',
@@ -455,7 +455,7 @@ export default class riskPointList extends PureComponent {
           <div>
             <div>
               复评周期(月)：
-              {val}
+              {val || NO_DATA}
             </div>
             <div>
               应复评时间：
@@ -478,6 +478,7 @@ export default class riskPointList extends PureComponent {
         title: '管控责任人',
         dataIndex: 'header',
         key: 'header',
+        render: val => val || NO_DATA,
       },
       {
         title: '分析评估来源',
@@ -485,17 +486,21 @@ export default class riskPointList extends PureComponent {
         key: 'safeCheck',
         width: 200,
         render: val => {
-          const { code, type, riskAnalyze } = val || {};
-          return (
-            <div>
-              <div>{+type === 1 ? 'SCL分析' : 'JHA分析'}</div>
+          if (val) {
+            const { code, type, riskAnalyze } = val || {};
+            return (
               <div>
-                编号：
-                {code}
+                <div>{+type === 1 ? 'SCL分析' : 'JHA分析'}</div>
+                <div>
+                  编号：
+                  {code}
+                </div>
+                <div>{+riskAnalyze === 1 ? 'LEC评价法' : 'LS评价法'}</div>
               </div>
-              <div>{+riskAnalyze === 1 ? 'LEC评价法' : 'LS评价法'}</div>
-            </div>
-          );
+            );
+          } else {
+            return NO_DATA;
+          }
         },
       },
       {
@@ -513,7 +518,7 @@ export default class riskPointList extends PureComponent {
               // to={`/risk-control/risk-point-manage/risk-card-list/${record.itemId}`}
               target="_blank"
             >
-              复评
+              {record.safeCheck ? '复评' : '评价'}
             </AuthLink>
             <Divider type="vertical" />
             <AuthLink
@@ -583,7 +588,7 @@ export default class riskPointList extends PureComponent {
                 模板下载
               </Button>
               <ImportModal
-                action={`/acloud_new/v2/pointManage/importRiskPoint/${companyId}`}
+                action={companyId => `/acloud_new/v2/pointManage/importRiskPoint/${companyId}`}
                 onUploadSuccess={this.getRiskList}
                 code={codesMap.riskControl.riskPointManage.import}
                 // showCompanySelect={false}
