@@ -186,7 +186,7 @@ export default class HandleModal extends Component {
               initialValue: id ? detail.equip : undefined,
               getValueFromEvent: e => e.target.value.trim(),
             })(
-              <Input placeholder="请输入" {...itemProps} disabled />
+              <Input {...itemProps} disabled />
             )}
           </FormItem>
         </Form>
