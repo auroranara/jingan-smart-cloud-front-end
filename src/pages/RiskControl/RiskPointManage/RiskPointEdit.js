@@ -255,6 +255,9 @@ export default class RiskPointEdit extends PureComponent {
         params: { id },
       },
       form: { setFieldsValue },
+      user: {
+        currentUser: { unitType, unitId, unitName },
+      },
     } = this.props;
     const payload = { pageSize: PageSize, pageNum: 1 };
     // 获取业务分类
@@ -269,6 +272,8 @@ export default class RiskPointEdit extends PureComponent {
     this.fetchCheckContent({ payload });
     // 清空
     flow_id = [];
+
+    if (+unitType === 4) this.setState({ selectedCompany: { id: unitId, name: unitName } });
 
     if (id) {
       // 根据id获取详情
@@ -367,6 +372,9 @@ export default class RiskPointEdit extends PureComponent {
       },
       dispatch,
       riskPointManage: { checkCycleData },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
 
     const { picList, isDisabled, selectedArea, selectedEquip, selectedCompany } = this.state;
@@ -407,6 +415,7 @@ export default class RiskPointEdit extends PureComponent {
         let payload = {
           ...values,
           id,
+          companyId: selectedCompany.id,
           objectTitle,
           locationCode,
           checkCycle,
