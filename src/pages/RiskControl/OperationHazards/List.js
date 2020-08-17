@@ -97,14 +97,14 @@ export default class SafetyChecklist extends Component {
     if (detail && detail.id) {
       dispatch({
         type: 'safetyChecklist/editSafeChecklist',
-        payload: { ...values, type, riskPoint: 2 },
+        payload: { ...values, type },
         callback,
       });
     } else {
       // 新增
       dispatch({
         type: 'safetyChecklist/addSafeChecklist',
-        payload: { ...values, type, riskPoint: 2 },
+        payload: { ...values, type },
         callback,
       });
     }
