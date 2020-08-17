@@ -84,7 +84,7 @@ export default class HandleModal extends Component {
         pageNum: 1,
         pageSize: 10,
         companyId: company ? company.value : undefined,
-        riskPoint: 1,
+        riskPointType: 1,
         ...(action.payload || {}),
       },
     });
