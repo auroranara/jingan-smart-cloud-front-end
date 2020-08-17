@@ -74,6 +74,7 @@ export default class Map extends React.Component {
       // mapThemeURL: './data/theme',
       //设置主题
       defaultThemeName: '2001',
+      mapThemeURL: './data/theme',
       modelSelectedEffect: false,
       //默认背景颜色,十六进制颜色值或CSS颜色样式 0xff00ff, '#00ff00'
       // defaultBackgroundColor: '#f7f4f4',

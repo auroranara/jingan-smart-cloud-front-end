@@ -156,6 +156,7 @@ export default class FengMapSelect extends PureComponent {
       defaultViewMode: fengMap.FMViewMode.MODE_2D,
       //设置主题
       defaultThemeName: '2001',
+      mapThemeURL: './data/theme',
       modelSelectedEffect: false,
       appName,
       key,

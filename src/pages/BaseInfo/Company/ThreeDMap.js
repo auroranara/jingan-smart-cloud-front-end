@@ -343,6 +343,7 @@ export default class ThreeDMap extends PureComponent {
       defaultMapScaleLevel,
       // mapScaleLevelRange: scaleRange,
       defaultThemeName: theme, // 设置主题
+      mapThemeURL: './data/theme',
       modelSelectedEffect: false,
     };
 
