@@ -49,3 +49,8 @@ export async function submitReview (body) {
     body,
   })
 }
+
+// 启动应急预案
+export async function start(params) {
+  return request(`/acloud_new/v2/emergency/emergencyPlan/start?${stringify(params)}`);
+}

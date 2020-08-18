@@ -23,6 +23,7 @@ import {
   SECRET_CODES,
   STATUSES,
   DATE_STATUS,
+  START_CODE,
 } from './config';
 import styles from './index.less';
 import { getColorVal, paststatusVal } from '@/pages/BaseInfo/SpecialEquipment/utils';
@@ -30,6 +31,7 @@ import ReviewModal from '../ReviewModal';
 import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
 
 const { Option } = Select;
+const { confirm } = Modal;
 
 @connect(({ emergencyPlan, user, loading }) => ({
   emergencyPlan,
@@ -288,6 +290,26 @@ export default class EmergencyPlanList extends Component {
     })
   }
 
+  handleStartClick = id => {
+    confirm({
+      title: '系统提示',
+      content: '应急预案一旦启动后，系统会自动通知应急队伍成员，你确定要启动该预案？',
+      onOk: () => this.startPlan(id),
+    });
+  };
+
+  startPlan = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyPlan/startPlan',
+      payload: { id },
+      callback: (code, msg) => {
+        if (code === 200) message.success('应急预案启动成功！');
+        else message.error(`${msg}，应急预案启动失败!`);
+      },
+    })
+  };
+
   renderForm () {
     const {
       user: {
@@ -506,24 +528,65 @@ export default class EmergencyPlanList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         align: 'center',
         width: 195,
+        // render: (_, { id, status }) => (
+        //   <div style={{ textAlign: 'left' }}>
+        //     <AuthA code={DETAIL_CODE} onClick={this.handleViewClick} data-id={id}>查看</AuthA>
+        //     <Divider type="vertical" />
+        //     <AuthA
+        //       hasAuthFn={() => +status === 1 && hasAuditAuthority}
+        //       onClick={() => this.handleViewReviewModal(id)}
+        //     >审核</AuthA>
+        //     <Divider type="vertical" />
+        //     <AuthPopConfirm
+        //       title="你确定要发布这个应急预案吗?"
+        //       authority={+status === 2 && hasPublishAuthority}
+        //       onConfirm={() => this.handlePublishConfirm(id)}
+        //     >发布</AuthPopConfirm>
+        //     {(+status === 3 || +status === 4) && (
+        //       <Fragment>
+        //         <Divider type="vertical" />
+        //         <AuthA code={EDIT_CODE} onClick={this.handleEditClick} data-id={id}>编辑</AuthA>
+        //       </Fragment>
+        //     )}
+        //   </div>
+        // ),
         render: (_, { id, status }) => (
           <div style={{ textAlign: 'left' }}>
             <AuthA code={DETAIL_CODE} onClick={this.handleViewClick} data-id={id}>查看</AuthA>
-            <Divider type="vertical" />
-            <AuthA
-              hasAuthFn={() => +status === 1 && hasAuditAuthority}
-              onClick={() => this.handleViewReviewModal(id)}
-            >审核</AuthA>
-            <Divider type="vertical" />
-            <AuthPopConfirm
-              title="你确定要发布这个应急预案吗?"
-              authority={+status === 2 && hasPublishAuthority}
-              onConfirm={() => this.handlePublishConfirm(id)}
-            >发布</AuthPopConfirm>
+
+            {+status === 1 && (
+              <Fragment>
+                <Divider type="vertical" />
+                <AuthA
+                hasAuthFn={() => hasAuditAuthority}
+                onClick={() => this.handleViewReviewModal(id)}
+                >
+                  审核
+                </AuthA>
+              </Fragment>
+            )}
+            {+status === 2 && (
+              <Fragment>
+                <Divider type="vertical" />
+                <AuthPopConfirm
+                  title="你确定要发布这个应急预案吗?"
+                  authority={hasPublishAuthority}
+                  onConfirm={() => this.handlePublishConfirm(id)}
+                >
+                  发布
+                </AuthPopConfirm>
+              </Fragment>
+            )}
             {(+status === 3 || +status === 4) && (
               <Fragment>
                 <Divider type="vertical" />
                 <AuthA code={EDIT_CODE} onClick={this.handleEditClick} data-id={id}>编辑</AuthA>
+              </Fragment>
+            )}
+            {+status === 4 && (
+              <Fragment>
+                <Divider type="vertical" />
+                <AuthA code={START_CODE} onClick={e => this.handleStartClick(id)}>启动</AuthA>
               </Fragment>
             )}
           </div>
