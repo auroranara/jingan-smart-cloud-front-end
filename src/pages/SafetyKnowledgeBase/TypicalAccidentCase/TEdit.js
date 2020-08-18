@@ -481,7 +481,7 @@ export default class TEdit extends PureComponent {
             })(<TextArea {...itemStyles} placeholder="请输入事故概述" rows={4} maxLength="2000" />)}
           </FormItem>
 
-          <FormItem {...formItemLayout} label="事故经过">
+          {/* <FormItem {...formItemLayout} label="事故经过">
             {getFieldDecorator('accidProcess', {
               initialValue: accidentPicList,
               rules: [
@@ -567,9 +567,9 @@ export default class TEdit extends PureComponent {
                 </Button>
               </Upload>
             )}
-          </FormItem>
+          </FormItem> */}
 
-          <FormItem {...formItemLayout} label="其他附件">
+          <FormItem {...formItemLayout} label="附件">
             {getFieldDecorator('otherFile', {
               initialValue: adjunctPicList,
               rules: [
