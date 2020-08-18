@@ -40,7 +40,6 @@ const {
   tableLoading: loading.effects['baseInfo/fetchThreeSimultaneity'],
 }))
 export default class TableList extends PureComponent {
-
   componentDidMount () {
     this.handleQuery()
   }

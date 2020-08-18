@@ -141,6 +141,7 @@ const COLUMNS = [
   },
 ];
 
+
 const getCycleType = i => {
   switch (i) {
     case 'every_day':
@@ -580,24 +581,22 @@ export default class RiskPointEdit extends PureComponent {
 
   // 显示模态框(检查内容)
   handleContentModal = e => {
-    const { dispatch } = this.props;
+    const { dispatch, location: { query: { companyId } } } = this.props;
     e.target.blur();
     this.setState({ checkVisible: true });
     // 初始化表格
     dispatch({
       type: 'illegalDatabase/fetchDtoList',
-      payload: {
-        ...defaultPagination,
-      },
+      payload: { ...defaultPagination, companyId },
     });
   };
 
   // 获取内容（检查内容）
   fetchCheckContent = ({ payload }) => {
-    const { dispatch } = this.props;
+    const { dispatch, location: { query: { companyId } } } = this.props;
     dispatch({
       type: 'illegalDatabase/fetchDtoList',
-      payload,
+      payload: { ...payload, companyId },
     });
   };
 

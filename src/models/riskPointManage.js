@@ -478,8 +478,7 @@ export default {
       }
     },
 
-    *fetchNewLabelDict({ payload }, { call, put }) {
-      // 新标签列表
+    *fetchNewLabelDict({ payload }, { call, put }) { // 新标签列表
       const response = yield call(getLabelList, payload);
       const { code, data } = response || {};
       if (code === 200)

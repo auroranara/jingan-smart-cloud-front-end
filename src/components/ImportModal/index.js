@@ -34,7 +34,7 @@ export default class ImportModal extends Component {
       this.setState({ importLoading: true });
     } else if (info.file.status === 'done' && res) {
       if (res.code && res.code === 200) {
-        message.success('操作成功');
+        message.success(typeof res.data === 'string' ? res.data : '操作成功');
         onUploadSuccess && onUploadSuccess();
       } else {
         res && res.data && res.data.errorMessage && res.data.errorMessage.length > 0
