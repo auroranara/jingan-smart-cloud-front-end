@@ -1,9 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
+// import router from 'umi/router';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Card, message, Tooltip, Input, Divider, Upload } from 'antd';
+import { Button, Card, message, Tooltip, Input, Divider, Upload, Select } from 'antd';
+import { debounce } from 'lodash';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
@@ -12,25 +13,37 @@ import { getFileList } from '@/pages/BaseInfo/utils';
 import { getToken } from '@/utils/authority';
 import { isCompanyUser } from '@/pages/RoleAuthorization/Role/utils';
 import styles from '@/pages/CardsInfo/EmergencyCard/TableList.less';
-import { hasAuthority } from '@/utils/customAuth';
-import codes from '@/utils/codes';
+// import { hasAuthority } from '@/utils/customAuth';
+// import codes from '@/utils/codes';
 import style from './index.less';
 import { genGoBack } from '@/utils/utils';
 
 // 权限
-const {
-  emergencyManagement: {
-    emergencyTeam: { edit: editCode },
-  },
-} = codes;
+// const {
+//   emergencyManagement: {
+//     emergencyTeam: { edit: editCode },
+//   },
+// } = codes;
 
 const FOLDER = 'emergencyInfo';
 const uploadAction = '/acloud_new/v2/uploadFile';
 
-@connect(({ user, emergencyTeam, department, loading }) => ({
+const { Option } = Select;
+
+function getDepartList(list) {
+  if (!Array.isArray(list)) return [];
+  return list.map(({ id, name, children }) => ({
+    title: name,
+    value: id,
+    children: getDepartList(children),
+  }));
+}
+
+@connect(({ user, emergencyTeam, department, riskPointManage, loading }) => ({
   user,
   department,
   emergencyTeam,
+  riskPointManage,
   loading: loading.models.emergencyTeam,
 }))
 @Form.create()
@@ -38,6 +51,7 @@ export default class Edit extends PureComponent {
   constructor(props) {
     super(props);
     this.goBack = genGoBack(props, LIST_URL);
+    this.debouncedHandleUserSearch = debounce(this.handleUserSearch, 300);
   }
 
   state = {
@@ -62,6 +76,7 @@ export default class Edit extends PureComponent {
       setFieldsValue({ companyId: { key: companyId, label: companyName } });
       this.fetchDepartList({ companyId });
     }
+    this.getUserList();
   }
 
   // 获取部门
@@ -132,7 +147,7 @@ export default class Edit extends PureComponent {
         telNumber: fixedPhone,
         treamName,
         treamLevel,
-        treamHead,
+        treamHead: treamHead.value || treamHead.key,
         headPart,
         headPhone,
         treamDescription,
@@ -220,6 +235,35 @@ export default class Edit extends PureComponent {
     this.fetchDepartList({ companyId: unitType === 4 ? unitId : id.key });
   };
 
+  getUserList(userName) {
+    const {
+      dispatch,
+      location: { query: { companyId } },
+    } = this.props;
+    const payload = { companyId, pageNum: 1, pageSize: 50 };
+    if (userName) payload.name = userName;
+
+    dispatch({
+      type: 'riskPointManage/fetchUserList',
+      payload,
+    });
+  }
+
+  handleUserSearch = value => {
+    this.getUserList(value);
+  };
+
+  handleSelect = (labeledValue, option) => {
+    const {
+      form: { setFieldsValue },
+      riskPointManage: { userList },
+    } = this.props;
+    const { value } = labeledValue;
+    const target = userList.find(({ studentId }) => studentId === value);
+
+    target && setFieldsValue({ headPart: target.departmentId, headPhone: target.phoneNumber });
+  }
+
   render() {
     const {
       loading,
@@ -233,12 +277,14 @@ export default class Edit extends PureComponent {
       department: {
         data: { list: departmentList = [] },
       },
+      riskPointManage: { userList },
     } = this.props;
 
-    const departList = departmentList.map(({ id, name }) => ({ key: id, value: name }));
+    // const departList = departmentList.map(({ id, name }) => ({ key: id, value: name }));
+    const departList = getDepartList(departmentList);
 
     const { photoList, areaCode, fixedPhone, fileLoading } = this.state;
-    const editAuth = hasAuthority(editCode, permissionCodes);
+    // const editAuth = hasAuthority(editCode, permissionCodes);
 
     const isDet = this.isDetail();
     const title = isDet ? '详情' : id ? '编辑' : '新增';
@@ -277,12 +323,31 @@ export default class Edit extends PureComponent {
         type: 'select',
         options: teamType,
       },
-      { name: 'treamHead', label: '队伍负责人' },
+      {
+        name: 'treamHead',
+        label: '队伍负责人',
+        type: 'compt',
+        component: (
+          <Select
+            showSearch
+            labelInValue
+            placeholder="请选择负责人"
+            defaultActiveFirstOption={false}
+            showArrow={false}
+            filterOption={false}
+            onSearch={this.debouncedHandleUserSearch}
+            onSelect={this.handleSelect}
+            notFoundContent={null}
+          >
+            {userList.map(({ studentId: id, name }) => <Option key={id}>{name}</Option>)}
+          </Select>
+        ),
+      },
       {
         name: 'headPart',
         label: '负责人部门',
-        type: 'select',
-        options: departList,
+        type: 'treeSelect',
+        treeData: departList,
       },
       { name: 'headPhone', label: '负责人手机', phoneRule: true },
       {

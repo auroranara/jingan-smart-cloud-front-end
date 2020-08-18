@@ -218,12 +218,18 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
 }
 
 export function handleDetails(values, deletedProps = ['companyName']) {
-  const { companyId, companyName } = values;
+  const { companyId, companyName, treamHead, treamHeadName } = values;
   // console.log('values', values);
+  let treamHeadItem = null;
+  if (treamHead) {
+    if (treamHeadName) treamHeadItem = { key: treamHead, value: treamHead, label: treamHeadName };
+    else treamHeadItem = { key: treamHead, value: treamHead, label: treamHead };
+  }
 
   return {
     ...values,
-    companyId: { key: companyId, label: companyName },
+    companyId: { key: companyId, value: companyId, label: companyName },
+    treamHead: treamHeadItem,
   };
 }
 

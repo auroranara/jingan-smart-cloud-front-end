@@ -38,6 +38,7 @@ import { getList as getFacilityList } from '@/services/productionFacility';
 import { querySpecialEquipList } from '@/services/baseInfo/specialEquipment';
 import { fetchKeyPartList } from '@/services/keyPart';
 import { querySafeFacilitiesList } from '../services/company/reservoirRegion';
+import { fetchExamStudents } from '@/services/examinationMission.js';
 
 const DefaultListProps = {
   list: [],
@@ -366,6 +367,7 @@ export default {
     specialEquipList: DefaultListProps,
     keyPartList: DefaultListProps,
     safeFacilitiesList: DefaultListProps,
+    userList: [],
   },
 
   effects: {
@@ -863,6 +865,20 @@ export default {
         callback && callback(newData);
       }
     },
+    *fetchUserList({ payload, success, error }, { call, put }) { // 账号列表
+      const response = yield call(fetchExamStudents, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        yield put({
+          type: 'saveUserList',
+          payload: list,
+        });
+        success && success(list);
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
@@ -1259,6 +1275,9 @@ export default {
           list: state.GridListData.list.filter(item => item.id !== id),
         },
       };
+    },
+    saveUserList(state, action) {
+      return { ...state, userList: action.payload };
     },
   },
 };
