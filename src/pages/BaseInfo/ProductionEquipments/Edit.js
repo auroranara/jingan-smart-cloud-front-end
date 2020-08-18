@@ -514,7 +514,7 @@ export default class Edit extends PureComponent {
             initialValue: dangerTechnologyList
               ? dangerTechnologyList.map(item => item.processName).join(',')
               : undefined,
-            rules: [{ required: true, message: '请选择' }],
+            // rules: [{ required: true, message: '请选择' }],
           })(<Input placeholder="请选择" disabled {...itemStyles} />)}
           {!isDet && (
             <Button type="primary" onClick={this.handleTechnologyModal}>
