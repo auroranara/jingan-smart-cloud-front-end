@@ -1411,12 +1411,12 @@ export default class RiskPointEdit extends PureComponent {
             </Col>
 
             <Col {...gridOffset}>
-              <Form.Item label={fieldLabels.number} {...formItemLayout1}>
+              <Form.Item label={'风险点编号'} {...formItemLayout1}>
                 {getFieldDecorator('itemCode', {
                   initialValue: data.itemCode,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ message: '请输入编号', required: true }],
-                })(<Input placeholder="请输入编号" maxLength={50} />)}
+                  rules: [{ message: '请输入风险点编号', required: true }],
+                })(<Input placeholder="请输入风险点编号" maxLength={50} />)}
               </Form.Item>
             </Col>
 

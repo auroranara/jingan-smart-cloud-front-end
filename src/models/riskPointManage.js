@@ -852,7 +852,7 @@ export default {
       if (code === 200 && data) {
         const newData = {
           ...data,
-          list: data.list.map(item => ({ ...item, name: item.safeFacilitiesLabel })),
+          list: data.list.map(item => ({ ...item, name: item.equipName })),
         };
         yield put({
           type: 'save',
