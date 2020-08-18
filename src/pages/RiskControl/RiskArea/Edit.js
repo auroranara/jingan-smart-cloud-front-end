@@ -295,6 +295,7 @@ export default class RiskAreaEdit extends Component {
     } = this.props;
     const isNotDetail = mode !== 'detail';
     const values = getFieldsValue();
+    const company = detail.company || values.company;
     const fields = [
       ...(isUnit
         ? []
@@ -341,7 +342,7 @@ export default class RiskAreaEdit extends Component {
         label: '区域负责人',
         component: (
           <Select
-            list={personList}
+            list={company ? personList : []}
             fieldNames={{ key: 'userId', value: 'userName' }}
             mode={mode}
             showSearch
@@ -381,7 +382,7 @@ export default class RiskAreaEdit extends Component {
                     {getFieldDecorator('coordinate', {
                       initialValue: detail.coordinate,
                     })(
-                      !mapInfo || !mapInfo.remarks ? (
+                      !company || !mapInfo || !mapInfo.remarks ? (
                         <NoData
                           msg={'请先选择单位或添加地图配置'}
                           style={{ filter: 'grayscale(1)', opacity: 0.8 }}
