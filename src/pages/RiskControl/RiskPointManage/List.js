@@ -49,6 +49,8 @@ const defaultFormData = {
   departmentId: undefined,
   companyName: undefined,
 };
+const ReviewStatusList = ['未到期', '即将到期', '已过期'];
+const ReviewColors = [undefined, 'rgb(250, 173, 20)', 'rgb(245, 34, 45)'];
 
 export const treeData = data => {
   return data.map(item => {
@@ -451,7 +453,7 @@ export default class riskPointList extends PureComponent {
         title: '复评信息',
         dataIndex: 'reviewCycle',
         key: 'reviewCycle',
-        render: (val, { reviewTime }) => (
+        render: (val, { reviewTime, reviewStatus }) => (
           <div>
             <div>
               复评周期(月)：
@@ -459,7 +461,23 @@ export default class riskPointList extends PureComponent {
             </div>
             <div>
               应复评时间：
-              {reviewTime ? moment(reviewTime).format('YYYY-MM-DD') : NO_DATA}
+              {reviewTime ? (
+                <span style={{ color: ReviewColors[reviewStatus - 1] }}>
+                  {moment(reviewTime).format('YYYY-MM-DD')}
+                </span>
+              ) : (
+                NO_DATA
+              )}
+            </div>
+            <div>
+              预警状态：
+              {reviewStatus ? (
+                <span style={{ color: ReviewColors[reviewStatus - 1] }}>
+                  {ReviewStatusList[reviewStatus - 1]}
+                </span>
+              ) : (
+                NO_DATA
+              )}
             </div>
           </div>
         ),
