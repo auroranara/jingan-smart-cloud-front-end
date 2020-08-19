@@ -333,8 +333,8 @@ export default class TEdit extends PureComponent {
 
     validateFieldsAndScroll((errors, values) => {
       if (
-        accidentPicList.length === 0 ||
-        directPicList.length === 0 ||
+        // accidentPicList.length === 0 ||
+        // directPicList.length === 0 ||
         adjunctPicList.length === 0
       ) {
         return message.error('请先上传！');

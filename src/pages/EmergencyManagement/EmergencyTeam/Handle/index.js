@@ -75,8 +75,8 @@ export default class Edit extends PureComponent {
     else if (isCompanyUser(+unitType)) {
       setFieldsValue({ companyId: { key: companyId, label: companyName } });
       this.fetchDepartList({ companyId });
+      this.getUserList();
     }
-    this.getUserList();
   }
 
   // 获取部门
@@ -110,6 +110,7 @@ export default class Edit extends PureComponent {
         det.photo = list.length ? { fileList: list } : null;
         setFieldsValue(handleDetails(det));
         this.fetchDepartList({ companyId });
+        this.getUserList(null, companyId);
         this.setState({
           photoList: list,
           areaCode,
@@ -231,26 +232,31 @@ export default class Edit extends PureComponent {
       },
       form: { setFieldsValue },
     } = this.props;
-    setFieldsValue({ headPart: undefined });
+    setFieldsValue({ treamHead: undefined, headPart: undefined, headPhone: undefined });
     this.fetchDepartList({ companyId: unitType === 4 ? unitId : id.key });
+    this.getUserList(null, id.key);
   };
 
-  getUserList(userName) {
+  getUserList(userName, comId) {
     const {
       dispatch,
-      location: { query: { companyId } },
+      user: { currentUser: { unitType, companyId } },
     } = this.props;
-    const payload = { companyId, pageNum: 1, pageSize: 50 };
+    let cId = comId;
+    if (isCompanyUser(unitType)) cId = companyId; // 企业用户就用currentUser里的companyId，不是企业用户就用给定的companyId
+    const payload = { companyId: cId, pageNum: 1, pageSize: 50 };
     if (userName) payload.name = userName;
 
-    dispatch({
+    cId && dispatch({
       type: 'riskPointManage/fetchUserList',
       payload,
     });
   }
 
   handleUserSearch = value => {
-    this.getUserList(value);
+    const { form: { getFieldValue } } = this.props;
+    const v = getFieldValue('companyId');
+    this.getUserList(value, v ? v.key : null);
   };
 
   handleSelect = (labeledValue, option) => {
