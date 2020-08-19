@@ -39,9 +39,9 @@ export default {
   },
   specialOperationPermit: {
     menu: '作业安全管理',
-    list: '特种作业操作证人员',
-    add: '新增操作证人员',
-    edit: '编辑操作证人员',
+    list: '特种作业操作人员证',
+    add: '新增操作人员证',
+    edit: '编辑操作人员证',
   },
   specialEquipmentOperators: {
     menu: '作业安全管理',

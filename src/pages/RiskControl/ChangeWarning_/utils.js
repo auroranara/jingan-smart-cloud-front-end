@@ -16,7 +16,7 @@ export const CHANGE_TYPE_LIST = [
 export const DATA_TYPE_LIST = [
   { key: 'dept', value: '部门' },
   { key: 'safeEng', value: '注册安全工程师' },
-  { key: 'secm', value: '特种作业操作证人员' },
+  { key: 'secm', value: '特种作业操作人员证' },
   { key: 'sewm', value: '特种设备操作证' },
   { key: 'gwgy', value: '高危工艺' },
   { key: 'se', value: '特种设备' },

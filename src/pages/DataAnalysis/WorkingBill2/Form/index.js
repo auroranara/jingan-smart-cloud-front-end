@@ -230,7 +230,7 @@ export default connect(
           },
           callback(success, data) {
             if (!success) {
-              message.error('获取特种作业操作证人员列表数据失败，请稍后重试！');
+              message.error('获取特种作业操作人员证列表数据失败，请稍后重试！');
             }
             callback && callback(success, data);
           },
