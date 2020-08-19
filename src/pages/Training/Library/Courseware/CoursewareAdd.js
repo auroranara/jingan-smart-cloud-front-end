@@ -405,7 +405,7 @@ export default class CoursewareAdd extends PureComponent {
                   <Fragment>
                     <Upload
                       name="files"
-                      accept={type === '2' ? '.mp4' : '.ppt,.pdf,.doc,.docx'}
+                      accept={type === '2' ? '.mp4' : '.ppt,.pptx,.pdf,.doc,.docx'}
                       headers={{ 'JA-Token': getToken() }}
                       data={{ folder: 'courseWare' }} // 附带的参数
                       action={uploadUrl} // 上传地址
