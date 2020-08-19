@@ -168,8 +168,8 @@ const GET_FIELDS = ({
         treeData={values.company ? departmentTree : []}
         notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
         treeNodeFilterProp="title"
-        labelInValue
         showSearch
+        labelInValue
         allowClear
       />
     ),
@@ -449,7 +449,7 @@ export default connect(
     );
     // 单位选择器change事件
     const onCompanySelectChange = useCallback(company => {
-      // 如果已选择单位，则获取部门列表
+      // 如果已选择单位，则获取部门树
       if (company) {
         setDepartmentPayload({
           companyId: company.key,
@@ -501,7 +501,7 @@ export default connect(
       if (!isUnit) {
         setCompanyPayload({ pageNum: 1, pageSize: PAGE_SIZE });
       }
-      // 如果已选择单位，则获取部门列表
+      // 如果已选择单位，则获取部门树
       if (payload.company) {
         setCompanyPayload({
           companyId: payload.company.key,
@@ -536,7 +536,7 @@ export default connect(
     // 当departmentPayload发生变化时获取部门树
     useEffect(
       () => {
-        if (departmentPayload) {
+        if (departmentPayload && departmentPayload.companyId) {
           getDepartmentTree(departmentPayload);
         }
       },
@@ -556,7 +556,7 @@ export default connect(
               }
             >
               {({ getFieldsValue }) => {
-                const values = getFieldsValue();
+                const values = { ...initialValues, ...getFieldsValue() };
                 return (
                   <Row gutter={24}>
                     {GET_FIELDS({

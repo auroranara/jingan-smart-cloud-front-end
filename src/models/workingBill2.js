@@ -123,7 +123,7 @@ export default {
       callback && callback(code === 200, msg);
     },
     // 删除
-    *remove({ payload, callback }, { call }) {
+    *delete({ payload, callback }, { call }) {
       const response = yield call(remove, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
