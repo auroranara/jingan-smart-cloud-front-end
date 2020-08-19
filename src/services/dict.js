@@ -40,3 +40,18 @@ export async function getCompanyStatusList() {
 export async function getRiskyAreaList(params) {
   return request(`/acloud_new/v2/riskArea/riskArea/page?${stringify(params)}`);
 }
+
+/* 获取承包商列表 */
+export async function getContractorList(params) {
+  return request(`/acloud_new/v2/safetyWork/contractor/page?${stringify(params)}`);
+}
+
+/* 获取特种作业操作证人员列表 */
+export async function getSpecialOperatorList(params) {
+  return request(`/acloud_new/v2/specialworkPerson/specialworkPersonForPage?${stringify(params)}`);
+}
+
+/* 获取承包商人员资质列表 */
+export async function getContractorPersonnelQualificationList(params) {
+  return request(`/acloud_new/v2/contractorPerson/contractorPerson/page?${stringify(params)}`);
+}

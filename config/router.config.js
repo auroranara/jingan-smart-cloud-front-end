@@ -4395,8 +4395,58 @@ module.exports = env => {
                 },
               ],
             },
+            // {
+            //   path: '/operation-safety/working-bill', // 作业票管理(作业许可管理/危险作业管理)
+            //   code: 'operationSafety.workingBill',
+            //   name: 'workingBill',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/operation-safety/working-bill',
+            //       redirect: '/operation-safety/working-bill/list',
+            //     },
+            //     {
+            //       path: '/operation-safety/working-bill/:type?/list',
+            //       code: 'operationSafety.workingBill.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/WorkingBill/List',
+            //     },
+            //     {
+            //       path: '/operation-safety/working-bill/:type?/map',
+            //       code: 'operationSafety.workingBill.list',
+            //       name: 'list',
+            //       component: './DataAnalysis/WorkingBill/Map',
+            //     },
+            //     {
+            //       path: '/operation-safety/working-bill/:type?/detail/:id',
+            //       code: 'operationSafety.workingBill.detail',
+            //       name: 'detail',
+            //       component: './DataAnalysis/WorkingBill/Other',
+            //     },
+            //     {
+            //       path: '/operation-safety/working-bill/:type?/add',
+            //       code: 'operationSafety.workingBill.add',
+            //       name: 'add',
+            //       component: './DataAnalysis/WorkingBill/Other',
+            //     },
+            //     {
+            //       path: '/operation-safety/working-bill/:type?/edit/:id',
+            //       code: 'operationSafety.workingBill.edit',
+            //       name: 'edit',
+            //       component: './DataAnalysis/WorkingBill/Other',
+            //     },
+            //     {
+            //       path: '/operation-safety/working-bill/:type?/reapply/:id',
+            //       code: 'operationSafety.workingBill.add',
+            //       name: 'reapply',
+            //       component: './DataAnalysis/WorkingBill/Other',
+            //     },
+            //   ],
+            // },
+
+            // 作业票
             {
-              path: '/operation-safety/working-bill', // 作业票管理(作业许可管理/危险作业管理)
+              path: '/operation-safety/working-bill',
               code: 'operationSafety.workingBill',
               name: 'workingBill',
               hideChildrenInMenu: true,
@@ -4406,40 +4456,34 @@ module.exports = env => {
                   redirect: '/operation-safety/working-bill/list',
                 },
                 {
-                  path: '/operation-safety/working-bill/:type?/list',
+                  path: '/operation-safety/working-bill/list',
                   code: 'operationSafety.workingBill.list',
                   name: 'list',
-                  component: './DataAnalysis/WorkingBill/List',
+                  component: './DataAnalysis/WorkingBill2/List',
                 },
                 {
-                  path: '/operation-safety/working-bill/:type?/map',
-                  code: 'operationSafety.workingBill.list',
-                  name: 'list',
-                  component: './DataAnalysis/WorkingBill/Map',
-                },
-                {
-                  path: '/operation-safety/working-bill/:type?/detail/:id',
+                  path: '/operation-safety/working-bill/detail/:id',
                   code: 'operationSafety.workingBill.detail',
                   name: 'detail',
-                  component: './DataAnalysis/WorkingBill/Other',
+                  component: './DataAnalysis/WorkingBill2/Form',
                 },
                 {
-                  path: '/operation-safety/working-bill/:type?/add',
+                  path: '/operation-safety/working-bill/add',
                   code: 'operationSafety.workingBill.add',
                   name: 'add',
-                  component: './DataAnalysis/WorkingBill/Other',
+                  component: './DataAnalysis/WorkingBill2/Form',
                 },
                 {
-                  path: '/operation-safety/working-bill/:type?/edit/:id',
+                  path: '/operation-safety/working-bill/edit/:id',
                   code: 'operationSafety.workingBill.edit',
                   name: 'edit',
-                  component: './DataAnalysis/WorkingBill/Other',
+                  component: './DataAnalysis/WorkingBill2/Form',
                 },
                 {
-                  path: '/operation-safety/working-bill/:type?/reapply/:id',
+                  path: '/operation-safety/working-bill/reapply/:id',
                   code: 'operationSafety.workingBill.add',
                   name: 'reapply',
-                  component: './DataAnalysis/WorkingBill/Other',
+                  component: './DataAnalysis/WorkingBill2/Form',
                 },
               ],
             },

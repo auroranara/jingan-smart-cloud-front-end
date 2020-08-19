@@ -192,6 +192,7 @@ export default class PageHeader extends PureComponent {
       tabBarExtraContent,
       loading = false,
       wide = false,
+      tabsProps,
     } = this.props;
     const { breadcrumb } = this.state;
 
@@ -233,6 +234,7 @@ export default class PageHeader extends PureComponent {
                 {...activeKeyProps}
                 onChange={this.onChange}
                 tabBarExtraContent={tabBarExtraContent}
+                {...tabsProps}
               >
                 {tabList.map(item => (
                   <TabPane tab={item.tab} key={item.key} />

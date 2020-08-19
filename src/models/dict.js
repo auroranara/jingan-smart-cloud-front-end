@@ -7,6 +7,9 @@ import {
   getCompanyDetail,
   getCompanyStatusList,
   getRiskyAreaList,
+  getContractorList,
+  getSpecialOperatorList,
+  getContractorPersonnelQualificationList,
 } from '@/services/dict';
 
 export default {
@@ -15,12 +18,17 @@ export default {
   state: {
     companyList: {},
     departmentTree: [],
+    // 这个是为了同一个页面有2个部门选择的时候用的
+    departmentTree2: [],
     personList: {},
     gridTree: [],
     companyNatureList: [],
     companyDetail: {},
     companyStatusList: [],
     riskyAreaList: {},
+    contractorList: {},
+    specialOperatorList: {},
+    contractorPersonnelQualificationList: {},
   },
 
   effects: {
@@ -89,6 +97,33 @@ export default {
           },
         });
         callback && callback(true, departmentTree);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getDepartmentTree2({ payload, callback }, { call, put }) {
+      const response = yield call(getDepartmentTree, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const transform = list =>
+          list
+            ? list.map(item => ({
+                key: item.id,
+                value: item.id,
+                label: item.name,
+                title: item.name,
+                children: transform(item.children),
+                data: item,
+              }))
+            : [];
+        const departmentTree2 = transform(data.list);
+        yield put({
+          type: 'save',
+          payload: {
+            departmentTree2,
+          },
+        });
+        callback && callback(true, departmentTree2);
       } else {
         callback && callback(false, msg);
       }
@@ -212,6 +247,84 @@ export default {
           },
         });
         callback && callback(true, riskyAreaList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getContractorList({ payload: { name, ...payload } = {}, callback }, { call, put }) {
+      const response = yield call(getContractorList, { contractorName: name, ...payload });
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const contractorList = {
+          ...data,
+          list: data.list.map(item => ({
+            key: item.id,
+            value: item.id,
+            label: item.contractorName,
+            title: item.contractorName,
+            data: item,
+          })),
+          payload,
+        };
+        yield put({
+          type: 'append',
+          payload: {
+            contractorList,
+          },
+        });
+        callback && callback(true, contractorList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getSpecialOperatorList({ payload, callback }, { call, put }) {
+      const response = yield call(getSpecialOperatorList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const specialOperatorList = {
+          ...data,
+          list: data.list.map(item => ({
+            key: item.id,
+            value: item.id,
+            label: item.name,
+            title: item.name,
+            data: item,
+          })),
+          payload,
+        };
+        yield put({
+          type: 'append',
+          payload: {
+            specialOperatorList,
+          },
+        });
+        callback && callback(true, specialOperatorList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getContractorPersonnelQualificationList({ payload, callback }, { call, put }) {
+      const response = yield call(getContractorPersonnelQualificationList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const contractorPersonnelQualificationList = {
+          ...data,
+          list: data.list.map(item => ({
+            key: item.id,
+            value: item.id,
+            label: item.name,
+            title: item.name,
+            data: item,
+          })),
+          payload,
+        };
+        yield put({
+          type: 'append',
+          payload: {
+            contractorPersonnelQualificationList,
+          },
+        });
+        callback && callback(true, contractorPersonnelQualificationList);
       } else {
         callback && callback(false, msg);
       }

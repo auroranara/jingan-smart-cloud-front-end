@@ -1,0 +1,73 @@
+.layout {
+  :global {
+    .ant-tabs {
+      margin-bottom: -17px;
+    }
+  }
+}
+.formCard {
+  margin-bottom: 24px;
+
+  :global {
+    .ant-card-body {
+      padding-bottom: 0;
+    }
+  }
+}
+.table {
+  :global {
+    .ant-table {
+      td,
+      th {
+        white-space: nowrap;
+      }
+    }
+
+    .ant-table-content {
+      overflow-x: auto !important;
+    }
+    .ant-table-body {
+      overflow: auto !important;
+    }
+  }
+}
+.buttonTag {
+  margin-right: 8px;
+}
+.datePicker {
+  width: 100%;
+}
+.countList {
+  display: flex;
+  align-items: center;
+
+  & > .countTitle {
+    flex: none;
+    padding-right: 1em;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  & > .countItem {
+    flex: none;
+    padding: 0 2em;
+    text-align: right;
+    border-left: 1px solid #d9d9d9;
+
+    & > .countItemLabel {
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    & > .countItemValue {
+      & > span {
+        font-size: 24px;
+      }
+    }
+  }
+}
+.modal {
+  :global {
+    .ant-modal-body {
+      padding-bottom: 0;
+    }
+  }
+}

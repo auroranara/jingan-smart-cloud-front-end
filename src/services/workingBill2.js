@@ -46,3 +46,18 @@ export async function approve(body) {
     body,
   });
 }
+
+/* 获取手写签名 */
+export async function getSignature(params) {
+  return request(`/acloud_new/v2/rolePermission/getSignature?${stringify(params)}`);
+}
+
+/* 获取地图数据 */
+export async function getMap(params) {
+  return request(`/acloud_new/v2/ThreedMap/threedMap?${stringify(params)}`);
+}
+
+/* 获取近半年统计 */
+export async function getApproveCount(params) {
+  return request(`/acloud_new/v2/workingBill/countApproveInfo?${stringify(params)}`);
+}

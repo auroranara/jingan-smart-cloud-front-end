@@ -24,32 +24,70 @@ export const listPageCol = {
 export const hiddenCol = {
   span: 0,
 };
+export const timeRangePickerCol = {
+  xxl: 12,
+  xl: 16,
+  lg: 24,
+  md: 24,
+  sm: 24,
+  xs: 24,
+};
 // 日期格式
 export const dateFormat = 'YYYY-MM-DD';
 // 时间格式
 export const timeFormat = 'YYYY-MM-DD HH:mm:ss';
+// 精确到分钟的格式
+export const minuteFormat = 'YYYY-MM-DD HH:mm';
 // 日期范围选择器提示文字
 export const dateRangePickerPlaceholder = ['开始日期', '结束日期'];
 // 时间范围选择器提示文字
 export const timeRangePickerPlaceholder = ['开始时间', '结束时间'];
+// 分页
+export const pagination = {
+  pageNum: 1,
+  pageSize: 10,
+};
 // 空值
 export const EmptyText = () => <span style={{ color: 'rgba(0, 0, 0, 0.45)' }}>---</span>;
 // 文本值
-export const Text = ({ type, value, options, labelInValue, mode, format, treeData, multiple }) => {
+export const Text = ({
+  type,
+  value,
+  addonAfter,
+  options,
+  labelInValue,
+  mode,
+  format,
+  treeData,
+  multiple,
+}) => {
   if (value) {
     let result;
     switch (type) {
       case 'Select':
-        // 暂时先不做tags的判断，有点麻烦，以后遇到了再来
         if (mode === 'multiple') {
           if (value.length) {
             if (labelInValue) {
-              result = value.map(item => item.label).join(',');
+              result = value.map(item => item.label).join('、');
             } else if (options && options.length) {
               result = value
                 .map(item => (options.find(option => option.value === item) || {}).label)
                 .filter(v => v)
-                .join(',');
+                .join('、');
+            }
+          }
+        } else if (mode === 'tags') {
+          if (value.length) {
+            if (labelInValue) {
+              result = value.map(item => item.label).join('、');
+            } else {
+              result = value
+                .map(
+                  item =>
+                    ((options || []).find(option => option.value === item) || {}).label || item
+                )
+                .filter(v => v)
+                .join('、');
             }
           }
         } else {
@@ -64,7 +102,7 @@ export const Text = ({ type, value, options, labelInValue, mode, format, treeDat
         // 暂时先不做不为labelInValue的判断
         if (multiple) {
           if (labelInValue) {
-            result = result = value.map(item => item.label).join(',');
+            result = result = value.map(item => item.label).join('、');
           }
         } else {
           if (labelInValue) {
@@ -77,8 +115,11 @@ export const Text = ({ type, value, options, labelInValue, mode, format, treeDat
         break;
       case 'RangePicker':
         if (value[0] && value[1]) {
-          result = `${value[0].format(format)}~${value[1].format(format)}`;
+          result = `${value[0].format(format)} ~ ${value[1].format(format)}`;
         }
+        break;
+      case 'Radio':
+        result = (options.find(option => option.value === value) || {}).label;
         break;
       case 'TextArea':
         result = <div style={{ whiteSpace: 'pre-wrap' }}>{value}</div>;
@@ -98,7 +139,14 @@ export const Text = ({ type, value, options, labelInValue, mode, format, treeDat
         result = value;
         break;
     }
-    return result ? <div style={{ padding: '5px 0' }}>{result}</div> : <EmptyText />;
+    return result ? (
+      <div style={{ padding: '5px 0' }}>
+        {result}
+        {addonAfter}
+      </div>
+    ) : (
+      <EmptyText />
+    );
   }
   return <EmptyText />;
 };
@@ -107,6 +155,12 @@ export const showTotal = total => `共 ${total} 条记录`;
 // 获取选择器值
 export const getSelectValueFromEvent = value =>
   value && { ...value, key: value.key || value.value, value: value.key || value.value };
+// 获取多选选择器值
+export const getMultipleSelectValueFromEvent = value =>
+  value &&
+  value.map(item => ({ ...item, key: item.key || item.value, value: item.key || item.value }));
+// 获取输入框值
+export const getInputValue = ({ target: { value } }) => value && value.trim();
 // 获取预设时间范围快捷选择
 export const getRanges = (
   rangeList = ['今天', '最近一周', '最近一个月', '最近三个月', '最近半年', '最近一年']
