@@ -1419,6 +1419,42 @@ module.exports = env => {
           systemType: 3,
           routes: [
             {
+              path: '/risk-control/risk-area', // 风险区域划分
+              code: 'riskControl.riskArea',
+              name: 'riskArea',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/risk-area',
+                  redirect: '/risk-control/risk-area/list',
+                },
+                {
+                  path: '/risk-control/risk-area/list',
+                  code: 'riskControl.riskArea.list',
+                  name: 'list',
+                  component: './RiskControl/RiskArea',
+                },
+                {
+                  path: '/risk-control/risk-area/detail/:id',
+                  code: 'riskControl.riskArea.view',
+                  name: 'detail',
+                  component: './RiskControl/RiskArea/Edit',
+                },
+                {
+                  path: '/risk-control/risk-area/add',
+                  code: 'riskControl.riskArea.add',
+                  name: 'add',
+                  component: './RiskControl/RiskArea/Edit',
+                },
+                {
+                  path: '/risk-control/risk-area/edit/:id',
+                  code: 'riskControl.riskArea.edit',
+                  name: 'edit',
+                  component: './RiskControl/RiskArea/Edit',
+                },
+              ],
+            },
+            {
               path: '/risk-control/risk-point-manage', // 风险点管理
               code: 'riskControl.riskPointManage',
               name: 'riskPointManage',
@@ -1427,13 +1463,13 @@ module.exports = env => {
                 {
                   path: '/risk-control/risk-point-manage',
                   name: 'riskPointManage',
-                  redirect: '/risk-control/risk-point-manage/index',
+                  redirect: '/risk-control/risk-point-manage/list/all',
                 },
                 {
-                  path: '/risk-control/risk-point-manage/index',
+                  path: '/risk-control/risk-point-manage/list/:type',
                   code: 'riskControl.riskPointManage.listView',
                   name: 'listView',
-                  component: './RiskControl/RiskPointManage/index',
+                  component: './RiskControl/RiskPointManage/List',
                 },
                 {
                   path: '/risk-control/risk-point-manage/risk-point-List/:id',
@@ -1448,13 +1484,13 @@ module.exports = env => {
                   component: './RiskControl/RiskPointManage/RiskPointList',
                 },
                 {
-                  path: '/risk-control/risk-point-manage/risk-point-add',
+                  path: '/risk-control/risk-point-manage/add',
                   code: 'riskControl.riskPointManage.add',
                   name: 'add',
                   component: './RiskControl/RiskPointManage/RiskPointEdit',
                 },
                 {
-                  path: '/risk-control/risk-point-manage/risk-point-edit/:id',
+                  path: '/risk-control/risk-point-manage/edit/:id',
                   code: 'riskControl.riskPointManage.edit',
                   name: 'edit',
                   component: './RiskControl/RiskPointManage/RiskPointEdit',
@@ -1578,7 +1614,6 @@ module.exports = env => {
               name: 'changeManagement', // 变更管理
               code: 'riskControl.changeManagement',
               path: '/risk-control/change-management',
-              // developing: true,
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -1594,45 +1629,7 @@ module.exports = env => {
               ],
             },
             {
-              name: 'riskFlags', // 国际风险标志库
-              code: 'riskControl.riskFlags',
-              path: '/risk-control/risk-flags',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  name: 'list',
-                  path: '/risk-control/risk-flags',
-                  redirect: '/risk-control/risk-flags/list',
-                },
-                {
-                  name: 'list',
-                  code: 'riskControl.riskFlags.list',
-                  path: '/risk-control/risk-flags/list',
-                  component: './RiskControl/RiskFlag/TableList',
-                },
-                {
-                  name: 'view',
-                  code: 'riskControl.riskFlags.view',
-                  path: '/risk-control/risk-flags/view/:id',
-                  component: './RiskControl/RiskFlag/Edit',
-                },
-                {
-                  name: 'add',
-                  code: 'riskControl.riskFlags.add',
-                  path: '/risk-control/risk-flags/add',
-                  component: './RiskControl/RiskFlag/Edit',
-                },
-                {
-                  name: 'edit',
-                  code: 'riskControl.riskFlags.edit',
-                  path: '/risk-control/risk-flags/edit/:id',
-                  component: './RiskControl/RiskFlag/Edit',
-                },
-              ],
-            },
-            // 变更管理-新
-            {
-              path: '/risk-control/change',
+              path: '/risk-control/change', // 新变更管理
               code: 'riskControl.change',
               name: 'change',
               hideChildrenInMenu: true,
@@ -1673,9 +1670,8 @@ module.exports = env => {
                 },
               ],
             },
-            // 区域固有风险分析（LS）
             {
-              path: '/risk-control/LS',
+              path: '/risk-control/LS', // 区域固有风险分析（LS）
               code: 'riskControl.LS',
               name: 'LS',
               hideChildrenInMenu: true,
@@ -1710,83 +1706,8 @@ module.exports = env => {
                 },
               ],
             },
-            // 危险与可操作性分析（HAZOP）
             {
-              path: '/risk-control/HAZOP',
-              code: 'riskControl.HAZOP',
-              name: 'HAZOP',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/risk-control/HAZOP',
-                  redirect: '/risk-control/HAZOP/list',
-                },
-                {
-                  path: '/risk-control/HAZOP/list',
-                  code: 'riskControl.HAZOP.list',
-                  name: 'list',
-                  component: './RiskControl/HAZOP/List',
-                },
-                {
-                  path: '/risk-control/HAZOP/detail/:id',
-                  code: 'riskControl.HAZOP.detail',
-                  name: 'detail',
-                  component: './RiskControl/HAZOP/Form',
-                },
-                {
-                  path: '/risk-control/HAZOP/add',
-                  code: 'riskControl.HAZOP.add',
-                  name: 'add',
-                  component: './RiskControl/HAZOP/Form',
-                },
-                {
-                  path: '/risk-control/HAZOP/edit/:id',
-                  code: 'riskControl.HAZOP.edit',
-                  name: 'edit',
-                  component: './RiskControl/HAZOP/Form',
-                },
-              ],
-            },
-            // 保护层分析（LOPA）
-            {
-              path: '/risk-control/LOPA',
-              code: 'riskControl.LOPA',
-              name: 'LOPA',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/risk-control/LOPA',
-                  redirect: '/risk-control/LOPA/list',
-                },
-                {
-                  path: '/risk-control/LOPA/list',
-                  code: 'riskControl.LOPA.list',
-                  name: 'list',
-                  component: './RiskControl/LOPA/List',
-                },
-                {
-                  path: '/risk-control/LOPA/detail/:id',
-                  code: 'riskControl.LOPA.detail',
-                  name: 'detail',
-                  component: './RiskControl/LOPA/Form',
-                },
-                {
-                  path: '/risk-control/LOPA/add',
-                  code: 'riskControl.LOPA.add',
-                  name: 'add',
-                  component: './RiskControl/LOPA/Form',
-                },
-                {
-                  path: '/risk-control/LOPA/edit/:id',
-                  code: 'riskControl.LOPA.edit',
-                  name: 'edit',
-                  component: './RiskControl/LOPA/Form',
-                },
-              ],
-            },
-            // 作业危害-JHA分析
-            {
-              path: '/risk-control/operation-hazards',
+              path: '/risk-control/operation-hazards', // 作业危害-JHA分析
               code: 'riskControl.operationHazards',
               name: 'operationHazards',
               hideChildrenInMenu: true,
@@ -1827,9 +1748,8 @@ module.exports = env => {
                 },
               ],
             },
-            // 安全检查表-SCL分析
             {
-              path: '/risk-control/safety-checklist',
+              path: '/risk-control/safety-checklist', // 安全检查表-SCL分析
               code: 'riskControl.safetyChecklist',
               name: 'safetyChecklist',
               hideChildrenInMenu: true,
@@ -1870,46 +1790,117 @@ module.exports = env => {
                 },
               ],
             },
-            // 风险区域划分
             {
-              path: '/risk-control/risk-area',
-              code: 'riskControl.riskArea',
-              name: 'riskArea',
+              path: '/risk-control/HAZOP', // 危险与可操作性分析（HAZOP）
+              code: 'riskControl.HAZOP',
+              name: 'HAZOP',
               hideChildrenInMenu: true,
               routes: [
                 {
-                  path: '/risk-control/risk-area',
-                  redirect: '/risk-control/risk-area/list',
+                  path: '/risk-control/HAZOP',
+                  redirect: '/risk-control/HAZOP/list',
                 },
                 {
-                  path: '/risk-control/risk-area/list',
-                  code: 'riskControl.riskArea.list',
+                  path: '/risk-control/HAZOP/list',
+                  code: 'riskControl.HAZOP.list',
                   name: 'list',
-                  component: './RiskControl/RiskArea',
+                  component: './RiskControl/HAZOP/List',
                 },
                 {
-                  path: '/risk-control/risk-area/detail/:id',
-                  code: 'riskControl.riskArea.view',
+                  path: '/risk-control/HAZOP/detail/:id',
+                  code: 'riskControl.HAZOP.detail',
                   name: 'detail',
-                  component: './RiskControl/RiskArea/Edit',
+                  component: './RiskControl/HAZOP/Form',
                 },
                 {
-                  path: '/risk-control/risk-area/add',
-                  code: 'riskControl.riskArea.add',
+                  path: '/risk-control/HAZOP/add',
+                  code: 'riskControl.HAZOP.add',
                   name: 'add',
-                  component: './RiskControl/RiskArea/Edit',
+                  component: './RiskControl/HAZOP/Form',
                 },
                 {
-                  path: '/risk-control/risk-area/edit/:id',
-                  code: 'riskControl.riskArea.edit',
+                  path: '/risk-control/HAZOP/edit/:id',
+                  code: 'riskControl.HAZOP.edit',
                   name: 'edit',
-                  component: './RiskControl/RiskArea/Edit',
+                  component: './RiskControl/HAZOP/Form',
                 },
               ],
             },
-            // 点位标签库
             {
-              path: '/risk-control/point-label',
+              path: '/risk-control/LOPA', // 保护层分析（LOPA）
+              code: 'riskControl.LOPA',
+              name: 'LOPA',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/LOPA',
+                  redirect: '/risk-control/LOPA/list',
+                },
+                {
+                  path: '/risk-control/LOPA/list',
+                  code: 'riskControl.LOPA.list',
+                  name: 'list',
+                  component: './RiskControl/LOPA/List',
+                },
+                {
+                  path: '/risk-control/LOPA/detail/:id',
+                  code: 'riskControl.LOPA.detail',
+                  name: 'detail',
+                  component: './RiskControl/LOPA/Form',
+                },
+                {
+                  path: '/risk-control/LOPA/add',
+                  code: 'riskControl.LOPA.add',
+                  name: 'add',
+                  component: './RiskControl/LOPA/Form',
+                },
+                {
+                  path: '/risk-control/LOPA/edit/:id',
+                  code: 'riskControl.LOPA.edit',
+                  name: 'edit',
+                  component: './RiskControl/LOPA/Form',
+                },
+              ],
+            },
+            {
+              name: 'riskFlags', // 国际风险标志库
+              code: 'riskControl.riskFlags',
+              path: '/risk-control/risk-flags',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/risk-control/risk-flags',
+                  redirect: '/risk-control/risk-flags/list',
+                },
+                {
+                  name: 'list',
+                  code: 'riskControl.riskFlags.list',
+                  path: '/risk-control/risk-flags/list',
+                  component: './RiskControl/RiskFlag/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'riskControl.riskFlags.view',
+                  path: '/risk-control/risk-flags/view/:id',
+                  component: './RiskControl/RiskFlag/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'riskControl.riskFlags.add',
+                  path: '/risk-control/risk-flags/add',
+                  component: './RiskControl/RiskFlag/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'riskControl.riskFlags.edit',
+                  path: '/risk-control/risk-flags/edit/:id',
+                  component: './RiskControl/RiskFlag/Edit',
+                },
+              ],
+            },
+            {
+              path: '/risk-control/point-label', // 点位标签库
               name: 'pointLabel',
               code: 'riskControl.pointLabel',
               hideChildrenInMenu: true,

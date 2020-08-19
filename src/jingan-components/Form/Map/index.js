@@ -246,6 +246,7 @@ export default class FormMap extends Component {
       container: document.getElementById('mapContainer'),
       mapServerURL: './data/' + mapId,
       theme: theme || '2001',
+      mapThemeURL: './data/theme',
       defaultMapScaleLevel: defaultMapScaleLevel || undefined,
       modelSelectedEffect: modelSelectedEffect || false,
       defaultViewMode:

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import { Form } from '@ant-design/compatible';
@@ -16,11 +16,13 @@ import {
   message,
   Radio,
 } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-
+import PagingSelect from '@/jingan-components/PagingSelect';
 import Coordinate from './Coordinate/index';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import CheckModal from '../../LawEnforcement/Illegal/checkModal';
+import Upload from '@/jingan-components/Form/Upload';
 // 地图定位
 import MapMarkerSelect from '@/components/MapMarkerSelect';
 import styles from './RiskPointEdit.less';
@@ -28,9 +30,11 @@ import MarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point.png';
 import OtherMarkerImg from '@/pages/BigPlatform/ChemicalV2/imgs/marker-risk-point-gray.png';
 import MarkerGrayImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point-gray.png';
 import MarkerActiveImg from '@/pages/BigPlatform/ChemicalV2/imgs/risk-point-active.png';
-import { OPE } from '@/pages/RoleAuthorization/Role/utils';
+// import { OPE } from '@/pages/RoleAuthorization/Role/utils';
+import { EquipColumns } from './utils';
 
 const { Group: RadioGroup } = Radio;
+const { TextArea } = Input;
 
 const fengMap = fengmap; // eslint-disable-line
 const { Option } = Select;
@@ -58,45 +62,85 @@ const fieldLabels = {
   checkContent: '检查内容',
   picLocation: '平面图定位',
   checkCycle: '检查周期方案：',
-  cycleType: '自定义检查周期：',
+  cycleType: '自定义周期：',
   RecommendCycle: '推荐检查周期:',
   mapLocation: '地图定位',
   isShow: '该点位是否在化工安全生产驾驶舱显示',
 };
 
+const EquipTypes = {
+  1: 'getProductEquipList',
+  2: 'getFacilityList',
+  3: 'getSpecialEquipList',
+  4: 'getKeyPartList',
+  5: 'getSafeFacilitiesList',
+};
+
+// const COLUMNS = [
+//   {
+//     title: '标签编号',
+//     dataIndex: 'location_code',
+//     key: 'location_code',
+//     align: 'center',
+//     width: 120,
+//   },
+//   {
+//     title: '二维码',
+//     dataIndex: 'qr_code',
+//     key: 'qr_code',
+//     align: 'center',
+//     width: 90,
+//   },
+//   {
+//     title: 'NFC',
+//     dataIndex: 'nfc_code',
+//     key: 'nfc_code',
+//     align: 'center',
+//     width: 150,
+//   },
+//   {
+//     title: '绑定的点位',
+//     dataIndex: 'objectTitles',
+//     key: 'objectTitles',
+//     align: 'center',
+//     width: 200,
+//     render: val => {
+//       return val && val.length > 0 ? val.join('、') : '————';
+//     },
+//   },
+// ];
+
 const COLUMNS = [
   {
     title: '标签编号',
-    dataIndex: 'location_code',
-    key: 'location_code',
+    dataIndex: 'locationCode',
+    key: 'locationCode',
     align: 'center',
     width: 120,
   },
   {
     title: '二维码',
-    dataIndex: 'qr_code',
-    key: 'qr_code',
+    dataIndex: 'qrCode',
+    key: 'qrCode',
     align: 'center',
     width: 90,
   },
   {
     title: 'NFC',
-    dataIndex: 'nfc_code',
-    key: 'nfc_code',
+    dataIndex: 'nfcCode',
+    key: 'nfcCode',
     align: 'center',
     width: 150,
   },
   {
-    title: '绑定的点位',
-    dataIndex: 'objectTitles',
-    key: 'objectTitles',
+    title: '绑定点位数量',
+    dataIndex: 'bindPointCount',
+    key: 'bindPointCount',
     align: 'center',
-    width: 200,
-    render: val => {
-      return val && val.length > 0 ? val.join('、') : '————';
-    },
+    width: 100,
   },
 ];
+
 
 const getCycleType = i => {
   switch (i) {
@@ -118,16 +162,47 @@ const getCycleType = i => {
 };
 
 // let imgTypes = [];
-
-@connect(({ illegalDatabase, buildingsInfo, riskPointManage, user, map, chemical, loading }) => ({
-  illegalDatabase,
-  riskPointManage,
-  buildingsInfo,
-  user,
-  chemical,
-  map,
-  loading: loading.models.riskPointManage,
-}))
+@connect(
+  ({
+    illegalDatabase,
+    buildingsInfo,
+    riskPointManage,
+    company,
+    user,
+    map,
+    chemical,
+    riskArea,
+    productionEquipments,
+    productionFacility,
+    specialEquipment,
+    keyPart,
+    safeFacilities,
+    loading,
+  }) => ({
+    illegalDatabase,
+    riskPointManage,
+    buildingsInfo,
+    company,
+    user,
+    chemical,
+    map,
+    riskArea,
+    productionEquipments,
+    productionFacility,
+    specialEquipment,
+    keyPart,
+    safeFacilities,
+    loading: loading.models.riskPointManage,
+    areaLoading: loading.models.riskArea,
+    equipLoading:
+      loading.effects['riskPointManage/getProductEquipList'] ||
+      loading.effects['riskPointManage/getFacilityList'] ||
+      loading.effects['riskPointManage/getSpecialEquipList'] ||
+      loading.effects['riskPointManage/getKeyPartList'] ||
+      loading.effects['riskPointManage/getSafeFacilitiesList'] ||
+      false,
+  })
+)
 @Form.create()
 export default class RiskPointEdit extends PureComponent {
   state = {
@@ -147,54 +222,46 @@ export default class RiskPointEdit extends PureComponent {
     isImgSelect: true,
     imgTypes: [],
     imgIndex: '',
+    areaModalVisible: false,
+    selectedArea: {},
+    selectedEquip: {},
+    equipModalVisible: false,
+    selectedCompany: {},
+    companyModalVisible: false,
   };
 
   // 返回到列表页面
   goBack = () => {
     const {
       dispatch,
-      location: {
-        query: { companyId, companyName },
-      },
       match: {
         params: { id },
       },
+      location: {
+        query: { type = 'all' },
+      },
     } = this.props;
-    if (id) window.close();
-    else
-      dispatch(
-        routerRedux.push(
-          `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`
-        )
-      );
+    // if (id) window.close();
+    // else 
+    dispatch(routerRedux.push(`/risk-control/risk-point-manage/list/${type}`));
   };
 
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
 
   // 挂载后
-  componentDidMount () {
+  componentDidMount() {
     const {
       dispatch,
       match: {
         params: { id },
       },
-      location: {
-        query: { companyId },
-      },
       form: { setFieldsValue },
+      user: {
+        currentUser: { unitType, unitId, unitName },
+      },
     } = this.props;
     const payload = { pageSize: PageSize, pageNum: 1 };
-    if (!id) {
-      // 获取推荐检查周期
-      dispatch({
-        type: 'riskPointManage/fetchCheckCycle',
-        payload: {
-          companyId,
-          type: 2,
-        },
-      });
-    }
     // 获取业务分类
     dispatch({
       type: 'illegalDatabase/fetchOptions',
@@ -203,11 +270,12 @@ export default class RiskPointEdit extends PureComponent {
     dispatch({
       type: 'riskPointManage/fetchIndustryDict',
     });
-    this.fetchPointLabel({ payload });
+    // this.fetchPointLabel({ payload });
     this.fetchCheckContent({ payload });
-    this.fetchMarkers(companyId);
     // 清空
     flow_id = [];
+
+    if (+unitType === 4) this.setState({ selectedCompany: { id: unitId, name: unitName } });
 
     if (id) {
       // 根据id获取详情
@@ -217,11 +285,22 @@ export default class RiskPointEdit extends PureComponent {
           id,
         },
         callback: response => {
-          const { itemFlowList, pointFixInfoList } = response;
+          const {
+            itemFlowList,
+            pointFixInfoList,
+            companyId,
+            companyName,
+            areaName,
+            areaId,
+            equipmentId,
+            equipmentName,
+            equipmentType,
+          } = response;
 
           // const buildingList = pointFixInfoList.filter(item => item.imgType === 2);
           // const buildingId = buildingList.map(item => item.buildingId).join('');
           // const floorId = buildingList.map(item => item.floorId).join('');
+          this.fetchMarkers(companyId);
 
           this.setState({ flowList: itemFlowList });
           if (pointFixInfoList && pointFixInfoList.length) {
@@ -244,41 +323,27 @@ export default class RiskPointEdit extends PureComponent {
             },
           });
 
-          this.setState(
-            {
-              picList: pointFixInfoList.map(item => {
-                return {
-                  ...item,
-                  isEdit: false,
-                  isDisabled: true,
-                };
-              }),
+          dispatch({
+            type: `riskPointManage/${EquipTypes[equipmentType]}`,
+            payload: { companyId, pageSize: 1, pageNum: 1, id: equipmentId },
+            callback: res => {
+              const list = res.list || [];
+              const equip = list[0] || {};
+              this.setState({ selectedEquip: equip });
             },
-            () => {
-              // if (buildingList.length > 0) {
-              //   dispatch({
-              //     type: 'buildingsInfo/fetchBuildingList',
-              //     payload: {
-              //       company_id: companyId,
-              //       pageSize: 0,
-              //       pageNum: 1,
-              //     },
-              //   });
-              //   dispatch({
-              //     type: 'buildingsInfo/fetchFloorList',
-              //     payload: {
-              //       building_id: buildingId,
-              //       pageSize: 0,
-              //       pageNum: 1,
-              //     },
-              //   });
-              // }
-            }
-          );
+          });
+
           this.setState({
-            // buildingId: buildingId,
-            // floorId: floorId,
-            // imgTypes: pointFixInfoList.map(item => item.imgType),
+            selectedCompany: { id: companyId, name: companyName },
+            selectedArea: { id: areaId, areaName },
+            // selectedEquip: { id: equipmentId, name: equipmentName },
+            // picList: pointFixInfoList.map(item => {
+            //   return {
+            //     ...item,
+            //     isEdit: false,
+            //     isDisabled: true,
+            //   };
+            // }),
           });
         },
       });
@@ -308,13 +373,13 @@ export default class RiskPointEdit extends PureComponent {
         params: { id },
       },
       dispatch,
-      location: {
-        query: { companyId },
-      },
       riskPointManage: { checkCycleData },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
 
-    const { picList, isDisabled } = this.state;
+    const { picList, isDisabled, selectedArea, selectedEquip, selectedCompany } = this.state;
 
     if (isDisabled === true) {
       return message.error('请先保存平面图定位信息！');
@@ -350,8 +415,9 @@ export default class RiskPointEdit extends PureComponent {
           return message.error('自定义检查周期不能为空！');
         }
         let payload = {
+          ...values,
           id,
-          companyId,
+          companyId: selectedCompany.id,
           objectTitle,
           locationCode,
           checkCycle,
@@ -375,6 +441,7 @@ export default class RiskPointEdit extends PureComponent {
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
           message.success(msg, 1, () => setTimeout(this.goBack, 1000));
+          // message.success(msg, 1);
         };
         const error = () => {
           const msg = id ? '修改失败' : '新增失败';
@@ -383,6 +450,8 @@ export default class RiskPointEdit extends PureComponent {
             submitting: false,
           });
         };
+        console.log('payload', payload);
+        // return;
         // 如果id存在的话，为编辑
         if (id) {
           dispatch({
@@ -410,20 +479,17 @@ export default class RiskPointEdit extends PureComponent {
 
   // 获取内容(RFID)
   fetchPointLabel = ({ payload }) => {
-    const {
-      dispatch,
-      location: {
-        query: { companyId },
-      },
-    } = this.props;
-    const { checked } = this.state;
+    const { dispatch } = this.props;
+    const { checked, selectedCompany } = this.state;
+    const pyd = {
+      // noBind: checked === true ? 1 : '',
+      companyId: selectedCompany.id,
+      ...payload,
+    };
+    if (checked) pyd.bindStatus = 0;
     dispatch({
-      type: 'riskPointManage/fetchLabelDict',
-      payload: {
-        noBind: checked === true ? 1 : '',
-        companyId,
-        ...payload,
-      },
+      type: 'riskPointManage/fetchNewLabelDict',
+      payload: pyd,
     });
   };
 
@@ -441,9 +507,12 @@ export default class RiskPointEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({
-      locationCode: value.location_code,
-      qrCode: value.qr_code,
-      nfcCode: value.nfc_code,
+      // locationCode: value.location_code,
+      // qrCode: value.qr_code,
+      // nfcCode: value.nfc_code,
+      locationCode: value.locationCode,
+      qrCode: value.qrCode,
+      nfcCode: value.nfcCode,
     });
     this.handleClose();
   };
@@ -456,21 +525,19 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   onChangeCheckBox = e => {
-    const {
-      dispatch,
-      location: {
-        query: { companyId },
-      },
-    } = this.props;
+    const { dispatch } = this.props;
+    const { selectedCompany } = this.state;
     const isChecked = e.target.checked;
+    const payload = {
+      companyId: selectedCompany.id,
+      // noBind: isChecked === true ? 1 : '',
+      pageNum: 1,
+      pageSize: 10,
+    };
+    if (isChecked) payload.bindStatus = 0;
     dispatch({
-      type: 'riskPointManage/fetchLabelDict',
-      payload: {
-        companyId,
-        noBind: isChecked === true ? 1 : '',
-        pageNum: 1,
-        pageSize: 10,
-      },
+      type: 'riskPointManage/fetchNewLabelDict',
+      payload,
     });
     this.setState({
       checked: isChecked,
@@ -478,17 +545,17 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染模态框(RFID)
-  renderRfidModal () {
+  renderRfidModal() {
     const {
       loading,
-      riskPointManage: { labelModal },
+      riskPointManage: { newLabelModal: labelModal },
     } = this.props;
     const { rfidVisible, checked } = this.state;
 
     const setField = [
       {
         id: 'locationCode',
-        render () {
+        render() {
           return <Input placeholder="请输入标签编号" />;
         },
       },
@@ -514,24 +581,22 @@ export default class RiskPointEdit extends PureComponent {
 
   // 显示模态框(检查内容)
   handleContentModal = e => {
-    const { dispatch } = this.props;
+    const { dispatch, location: { query: { companyId } } } = this.props;
     e.target.blur();
     this.setState({ checkVisible: true });
     // 初始化表格
     dispatch({
       type: 'illegalDatabase/fetchDtoList',
-      payload: {
-        ...defaultPagination,
-      },
+      payload: { ...defaultPagination, companyId },
     });
   };
 
   // 获取内容（检查内容）
   fetchCheckContent = ({ payload }) => {
-    const { dispatch } = this.props;
+    const { dispatch, location: { query: { companyId } } } = this.props;
     dispatch({
       type: 'illegalDatabase/fetchDtoList',
-      payload,
+      payload: { ...payload, companyId },
     });
   };
 
@@ -550,7 +615,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染模态框(检查内容)
-  renderCheckModal () {
+  renderCheckModal() {
     const {
       illegalDatabase: { checkModal, businessTypes },
       loading,
@@ -624,8 +689,8 @@ export default class RiskPointEdit extends PureComponent {
               {flow_id.map(item => item.flow_id_data).indexOf(record.flow_id) >= 0 ? (
                 <span style={{ color: '#ccc' }}> 已添加</span>
               ) : (
-                  '添加'
-                )}
+                '添加'
+              )}
             </a>
           </span>
         ),
@@ -635,7 +700,7 @@ export default class RiskPointEdit extends PureComponent {
     const checkField = [
       {
         id: 'industry',
-        render () {
+        render() {
           return (
             <Select placeholder="请选择所属行业">
               {list.map(item => (
@@ -649,7 +714,7 @@ export default class RiskPointEdit extends PureComponent {
       },
       {
         id: 'business_type',
-        render () {
+        render() {
           return (
             <Select placeholder="请选择业务分类">
               {businessTypes.map(item => (
@@ -663,10 +728,10 @@ export default class RiskPointEdit extends PureComponent {
       },
       {
         id: 'object_title',
-        render () {
+        render() {
           return <Input placeholder="请输入检查项名称" />;
         },
-        transform (value) {
+        transform(value) {
           return value.trim();
         },
       },
@@ -718,7 +783,6 @@ export default class RiskPointEdit extends PureComponent {
     };
 
     const isImgType = id ? imgType || typeIndex : typeIndex;
-    console.log('1111111111111', isImgType);
     if (!id && list.length === 0) return message.error('该单位暂无图片！');
     // 如果没有选择平面图类型
     if (!isImgType) return message.error('请先选择平面图类型!');
@@ -777,7 +841,6 @@ export default class RiskPointEdit extends PureComponent {
 
   // 获取平面图内容
   getImgInfo = key => {
-    console.log('key', key);
     const {
       dispatch,
       location: {
@@ -808,7 +871,6 @@ export default class RiskPointEdit extends PureComponent {
 
   // 清空当前平面图信息
   handleImgIndex = (e, index) => {
-    console.log('select', e);
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -959,7 +1021,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 渲染平面图信息
-  renderPicInfo () {
+  renderPicInfo() {
     const {
       form: { getFieldDecorator, getFieldValue },
       riskPointManage: {
@@ -1095,15 +1157,15 @@ export default class RiskPointEdit extends PureComponent {
                       </span>
                     </span>
                   ) : (
-                      <span
-                        className={styles.picIconSpan}
-                        onClick={() => {
-                          this.handlePicEdit(index);
-                        }}
-                      >
-                        编辑
-                      </span>
-                    )}
+                    <span
+                      className={styles.picIconSpan}
+                      onClick={() => {
+                        this.handlePicEdit(index);
+                      }}
+                    >
+                      编辑
+                    </span>
+                  )}
                 </Col>
               </Row>
             </Col>
@@ -1154,7 +1216,7 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   /* 渲染table(检查内容) */
-  renderCheckTable () {
+  renderCheckTable() {
     const {
       tableLoading,
       match: {
@@ -1232,60 +1294,65 @@ export default class RiskPointEdit extends PureComponent {
 
     return (
       <Card style={{ marginTop: '-25px' }} bordered={false}>
-        {list && list.length ? (
-          <Table
-            loading={tableLoading}
-            rowKey={'flow_id'}
-            columns={COLUMNS}
-            dataSource={list}
-            pagination={false}
-            rowSelection={{
-              selectedRowKeys,
-              onChange: this.handleSelectChange,
-              hideDefaultSelections: true,
-              type: 'checkbox',
-            }}
-            bordered
-            width={500}
-          />
-        ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
+        {list &&
+          list.length > 0 && (
+            <Table
+              loading={tableLoading}
+              rowKey={'flow_id'}
+              columns={COLUMNS}
+              dataSource={list}
+              pagination={false}
+              rowSelection={{
+                selectedRowKeys,
+                onChange: this.handleSelectChange,
+                hideDefaultSelections: true,
+                type: 'checkbox',
+              }}
+              bordered
+              width={500}
+            />
+            // ) : (
+            //   <div style={{ textAlign: 'center' }}>暂无数据</div>
           )}
       </Card>
     );
   }
 
   // 渲染信息
-  renderInfo () {
+  renderInfo() {
     const {
-      location: {
-        query: { companyId },
-      },
-      // form,
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldsValue },
       riskPointManage: {
         checkCycleList,
         cycleTypeList,
         checkCycleData,
         detail: { data = {} },
+        equipmentTypeList = [],
+        companyList,
       },
       chemical: { riskPoint },
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
+      match: {
+        params: { id },
+      },
     } = this.props;
-    // const { isDisabled, groupId, coord } = this.state;
+    const { selectedArea, selectedEquip, selectedCompany } = this.state;
     // const { picList } = this.state;
 
-    const isAdmin = unitType === OPE;
+    // const isAdmin = unitType === OPE;
 
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 2 },
+        sm: { span: 6 },
+        xxl: { span: 3 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 20 },
-        md: { span: 20 },
+        sm: { span: 18 },
+        xxl: { span: 21 },
       },
     };
 
@@ -1301,115 +1368,293 @@ export default class RiskPointEdit extends PureComponent {
       },
     };
 
+    const grid = { xs: { span: 20 }, sm: { span: 20 }, xxl: { span: 10 } };
+    const gridOffset = { xs: { span: 20 }, sm: { span: 20 }, xxl: { span: 10, offset: 2 } };
+
+    const { riskPointType, equipmentType } = getFieldsValue();
+    const companyId = selectedCompany.id;
+    const isAnalyzed = !!data.safeCheck;
+
     return (
       <Card className={styles.card} bordered={false}>
-        <Form layout="vertical">
-          <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
-            <Col span={24}>
-              <Row gutter={12}>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.riskPointName}>
-                    {getFieldDecorator('objectTitle', {
-                      initialValue: data.objectTitle,
-                      getValueFromEvent: this.handleTrim,
-                      rules: [{ required: true, message: '请输入风险点' }],
-                    })(<Input placeholder="请输入风险点" maxLength={30} />)}
-                  </Form.Item>
+        <Form layout={'horizontal'}>
+          {unitType !== 4 && (
+            <Row gutter={12}>
+              <Col {...grid}>
+                <Form.Item label="单位名称" {...formItemLayout1}>
+                  {getFieldDecorator('companyId', {
+                    initialValue: data.companyId,
+                    rules: [{ required: true, message: '请选择单位名称' }],
+                  })(
+                    <Fragment>
+                      <Input disabled value={selectedCompany.name} placeholder="请选择单位名称" />
+                    </Fragment>
+                  )}
+                </Form.Item>
+              </Col>
+              {!id && (
+                <Col span={2} style={{ position: 'relative', marginTop: '4px' }}>
+                  <Button onClick={this.handleViewCompanyModal}>选择</Button>
                 </Col>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.number}>
-                    {getFieldDecorator('itemCode', {
-                      initialValue: data.itemCode,
-                      getValueFromEvent: this.handleTrim,
-                      rules: [{ message: '请输入编号' }],
-                    })(<Input placeholder="请输入编号" maxLength={20} />)}
-                  </Form.Item>
-                </Col>
-              </Row>
+              )}
+            </Row>
+          )}
+          <Row gutter={12} style={{ position: 'relative' }}>
+            <Col {...grid}>
+              <Form.Item label={fieldLabels.riskPointName} {...formItemLayout1}>
+                {getFieldDecorator('objectTitle', {
+                  initialValue: data.objectTitle,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入风险点' }],
+                })(<Input placeholder="请输入风险点" maxLength={50} />)}
+              </Form.Item>
             </Col>
+
+            <Col {...gridOffset}>
+              <Form.Item label={'风险点编号'} {...formItemLayout1}>
+                {getFieldDecorator('itemCode', {
+                  initialValue: data.itemCode,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ message: '请输入风险点编号', required: true }],
+                })(<Input placeholder="请输入风险点编号" maxLength={50} />)}
+              </Form.Item>
+            </Col>
+
+            <Col {...grid}>
+              <Form.Item label={fieldLabels.checkCycle} {...formItemLayout1}>
+                {getFieldDecorator('cycleType', {
+                  initialValue: data.cycleType,
+                  rules: [{ required: true, message: '请选择检查周期方案' }],
+                })(
+                  <Select allowClear placeholder="请选择检查周期方案">
+                    {checkCycleList.map(({ key, value }) => (
+                      <Option value={key} key={key}>
+                        {value}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+
+            <Col {...gridOffset}>
+              <Form.Item label={fieldLabels.RecommendCycle} {...formItemLayout1}>
+                {getFieldDecorator('recommendCycle', {
+                  getValueFromEvent: this.handleTrim,
+                  initialValue: getCycleType(checkCycleData),
+                  rules: [
+                    {
+                      // required: getFieldDecorator('cycleType') === '1' ? true : false,
+                      message: '推荐检查周期',
+                    },
+                  ],
+                })(<Input placeholder="推荐检查周期" disabled />)}
+              </Form.Item>
+            </Col>
+
+            <Col {...grid}>
+              <Form.Item label={fieldLabels.cycleType} {...formItemLayout1}>
+                {getFieldDecorator('checkCycle', {
+                  initialValue: data.checkCycle,
+                  rules: [{ message: '请选择自定义检查周期' }],
+                })(
+                  <Select allowClear placeholder="请选择自定义检查周期">
+                    {cycleTypeList.map(({ key, value }) => (
+                      <Option value={key} key={key}>
+                        {value}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+
+            <Col {...gridOffset}>
+              <Form.Item label={'复评周期(月)'} {...formItemLayout1}>
+                {getFieldDecorator('reviewCycle', {
+                  initialValue: data.reviewCycle,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { message: '请输入复评周期(月)', required: true },
+                    {
+                      message: '只能输入正整数',
+                      pattern: /^[1-9]\d*$/,
+                    },
+                  ],
+                })(<Input placeholder="请输入复评周期(月)" maxLength={20} />)}
+              </Form.Item>
+            </Col>
+
+            {/* <Col span={24}>
+              <Row gutter={12} style={{ display: isAdmin ? 'flex' : 'none' }}> */}
+
+            <Col {...grid}>
+              <Form.Item label={fieldLabels.bindRFID} {...formItemLayout1}>
+                {getFieldDecorator('locationCode', {
+                  initialValue: data.locationCode,
+                  getValueFromEvent: this.handleTrim,
+                  // rules: [{ required: true, message: '请选择RFID' }],
+                })(<Input placeholder="请选择RFID" disabled />)}
+              </Form.Item>
+            </Col>
+
+            <Col span={2} style={{ position: 'relative', marginTop: '4px' }}>
+              {companyId && <Button onClick={this.handleFocus}>选择</Button>}
+            </Col>
+
+            <Col {...grid}>
+              <Form.Item label={fieldLabels.ewm} {...formItemLayout1}>
+                {getFieldDecorator('qrCode', {
+                  initialValue: data.qrCode,
+                  getValueFromEvent: this.handleTrim,
+                  // rules: [{ required: true, message: '请选择二维码' }],
+                })(<Input placeholder="请选择二维码" disabled />)}
+              </Form.Item>
+            </Col>
+            <Col {...grid}>
+              <Form.Item label={fieldLabels.nfc} {...formItemLayout1}>
+                {getFieldDecorator('nfcCode', {
+                  initialValue: data.nfcCode,
+                  getValueFromEvent: this.handleTrim,
+                  // rules: [{ required: true, message: '请选择NFC' }],
+                })(<Input placeholder="请选择NFC" disabled />)}
+              </Form.Item>
+            </Col>
+
             <Col span={24}>
               <Row gutter={12}>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.RecommendCycle}>
-                    {getFieldDecorator('recommendCycle', {
+                <Col {...grid}>
+                  <Form.Item label={'所属区域'} {...formItemLayout1}>
+                    {getFieldDecorator('areaId', {
+                      initialValue: data.areaId,
                       getValueFromEvent: this.handleTrim,
-                      initialValue: getCycleType(checkCycleData),
-                      rules: [
-                        {
-                          // required: getFieldDecorator('cycleType') === '1' ? true : false,
-                          message: '推荐检查周期',
-                        },
-                      ],
-                    })(<Input placeholder="推荐检查周期" disabled />)}
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.cycleType}>
-                    {getFieldDecorator('checkCycle', {
-                      initialValue: data.checkCycle,
-                      rules: [{ message: '请选择自定义检查周期' }],
                     })(
-                      <Select allowClear placeholder="请选择自定义检查周期">
-                        {cycleTypeList.map(({ key, value }) => (
-                          <Option value={key} key={key}>
-                            {value}
-                          </Option>
-                        ))}
-                      </Select>
+                      <Fragment>
+                        <Input
+                          value={selectedArea.areaName}
+                          placeholder="请选择所属区域"
+                          disabled
+                        />
+                      </Fragment>
                     )}
                   </Form.Item>
                 </Col>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.checkCycle}>
-                    {getFieldDecorator('cycleType', {
-                      initialValue: data.cycleType,
-                      rules: [{ required: true, message: '请选择检查周期方案' }],
+                {companyId && (
+                  <Col span={2} style={{ position: 'relative', marginTop: '4px' }}>
+                    <Button onClick={this.handleShowAreaModal}>选择</Button>
+                  </Col>
+                )}
+              </Row>
+
+              <Row gutter={12}>
+                <Col {...grid}>
+                  <Form.Item label={'风险点类型'} {...formItemLayout1}>
+                    {getFieldDecorator('riskPointType', {
+                      initialValue: data.riskPointType || 1,
+                      rules: [{ required: true, message: '请选择风险点类型' }],
                     })(
-                      <Select allowClear placeholder="请选择检查周期方案">
-                        {checkCycleList.map(({ key, value }) => (
-                          <Option value={key} key={key}>
-                            {value}
-                          </Option>
-                        ))}
-                      </Select>
+                      <RadioGroup disabled={isAnalyzed}>
+                        <Radio value={1}>设备设施</Radio>
+                        <Radio value={2}>作业活动</Radio>
+                      </RadioGroup>
                     )}
                   </Form.Item>
                 </Col>
               </Row>
-            </Col>
-            <Col span={24}>
-              <Row gutter={12} style={{ display: isAdmin ? 'flex' : 'none' }}>
-                <Col span={6}>
-                  <Form.Item label={fieldLabels.bindRFID}>
-                    {getFieldDecorator('locationCode', {
-                      initialValue: data.locationCode,
-                      getValueFromEvent: this.handleTrim,
-                      // rules: [{ required: true, message: '请选择RFID' }],
-                    })(<Input placeholder="请选择RFID" disabled />)}
-                  </Form.Item>
-                </Col>
-                <Col span={2} style={{ position: 'relative', marginTop: '30px' }}>
-                  <Button onClick={this.handleFocus}>选择</Button>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.ewm}>
-                    {getFieldDecorator('qrCode', {
-                      initialValue: data.qrCode,
-                      getValueFromEvent: this.handleTrim,
-                      // rules: [{ required: true, message: '请选择二维码' }],
-                    })(<Input placeholder="请选择二维码" disabled />)}
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.nfc}>
-                    {getFieldDecorator('nfcCode', {
-                      initialValue: data.nfcCode,
-                      getValueFromEvent: this.handleTrim,
-                      // rules: [{ required: true, message: '请选择NFC' }],
-                    })(<Input placeholder="请选择NFC" disabled />)}
-                  </Form.Item>
-                </Col>
-              </Row>
+
+              {riskPointType === 1 ? (
+                <Fragment>
+                  <Row gutter={12}>
+                    <Col {...grid}>
+                      <Form.Item label={'设备类型'} {...formItemLayout1}>
+                        {getFieldDecorator('equipmentType', {
+                          initialValue: data.equipmentType || undefined,
+                          rules: [{ required: true, message: '请选择设备类型' }],
+                        })(
+                          <Select
+                            allowClear
+                            placeholder="请选择设备类型"
+                            onChange={this.handleEquipmentTypeChange}
+                            disabled={isAnalyzed}
+                          >
+                            {equipmentTypeList.map(({ key, value }) => (
+                              <Option value={key} key={key}>
+                                {value}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col {...grid}>
+                      <Form.Item label={'设备名称'} {...formItemLayout1}>
+                        {getFieldDecorator('equipmentId', {
+                          initialValue: data.equipmentId,
+                          rules: [{ required: true, message: '请选择设备名称' }],
+                        })(
+                          <Fragment>
+                            <Input
+                              value={selectedEquip.name}
+                              placeholder="请选择设备名称"
+                              disabled
+                            />
+                          </Fragment>
+                        )}
+                      </Form.Item>
+                    </Col>
+                    {companyId &&
+                      !isAnalyzed && (
+                        <Col span={2} style={{ position: 'relative', marginTop: '4px' }}>
+                          <Button onClick={this.handleShowEquipModal} disabled={!equipmentType}>
+                            选择
+                          </Button>
+                        </Col>
+                      )}
+                  </Row>
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <Row gutter={12}>
+                    <Col {...grid}>
+                      <Form.Item label={'活动名称'} {...formItemLayout1}>
+                        {getFieldDecorator('workName', {
+                          initialValue: data.workName,
+                          getValueFromEvent: this.handleTrim,
+                          rules: [{ required: true, message: '请输入活动名称' }],
+                        })(
+                          <Input
+                            placeholder="请输入活动名称"
+                            maxLength={50}
+                            disabled={isAnalyzed}
+                          />
+                        )}
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col {...grid}>
+                      <Form.Item label={'作业内容'} {...formItemLayout1}>
+                        {getFieldDecorator('workContent', {
+                          initialValue: data.workContent,
+                          getValueFromEvent: this.handleTrim,
+                        })(<TextArea placeholder="请输入作业内容" rows={3} maxLength="500" />)}
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col {...grid}>
+                      <Form.Item label={'作业频率'} {...formItemLayout1}>
+                        {getFieldDecorator('workFrequency', {
+                          initialValue: data.workFrequency,
+                          getValueFromEvent: this.handleTrim,
+                        })(<Input placeholder="请输入作业频率" maxLength={50} />)}
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Fragment>
+              )}
             </Col>
           </Row>
         </Form>
@@ -1426,55 +1671,91 @@ export default class RiskPointEdit extends PureComponent {
             </Button>
           </Form.Item>
           {this.renderPicInfo()} */}
-          <Form.Item {...formItemLayout} label={fieldLabels.mapLocation}>
-            {/* <div style={{ display: 'flex' }}>
+          <Row gutter={12}>
+            <Col span={20}>
+              <Form.Item {...formItemLayout} label={fieldLabels.mapLocation}>
+                {/* <div style={{ display: 'flex' }}>
               <div className={styles.mapLocation} id="fengMap"></div>
               <Button type="primary" onClick={this.handleResetMapLocation}>重置</Button>
             </div> */}
-            {getFieldDecorator('mapLocation')(
-              <MapMarkerSelect
-                companyId={companyId}
-                markerList={riskPoint.map(item => ({ ...item, id: item.itemId }))}
-                otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
-                markerOption={{ url: MarkerImg, size: 36 }}
-                markerId={data.itemId}
-                legend={{
-                  label: '其他风险点',
-                  icon: MarkerGrayImg,
-                  activeIcon: MarkerActiveImg,
-                }}
-              />
-            )}
-          </Form.Item>
-          <Form.Item {...formItemLayout1} label={fieldLabels.isShow}>
-            {getFieldDecorator('isShow')(
-              <RadioGroup>
-                <Radio value="1">显示</Radio>
-                <Radio value="0">不显示</Radio>
-              </RadioGroup>
-            )}
-          </Form.Item>
+                {getFieldDecorator('mapLocation')(
+                  <MapMarkerSelect
+                    companyId={companyId}
+                    markerList={riskPoint.map(item => ({ ...item, id: item.itemId }))}
+                    otherMarkersOption={{ url: OtherMarkerImg, size: 36 }}
+                    markerOption={{ url: MarkerImg, size: 36 }}
+                    markerId={data.itemId}
+                    legend={{
+                      label: '其他风险点',
+                      icon: MarkerGrayImg,
+                      activeIcon: MarkerActiveImg,
+                    }}
+                  />
+                )}
+              </Form.Item>
+              <Form.Item label={fieldLabels.isShow}>
+                {getFieldDecorator('isShow')(
+                  <RadioGroup>
+                    <Radio value="1">显示</Radio>
+                    <Radio value="0">不显示</Radio>
+                  </RadioGroup>
+                )}
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
 
         <Form style={{ marginTop: 30 }}>
-          <Form.Item {...formItemLayout} label={fieldLabels.checkContent}>
-            <Button
-              type="primary"
-              style={{ marginBottom: 10, padding: '0 12px' }}
-              onClick={this.handleContentModal}
-            >
-              新增
-            </Button>
-            <Button
-              type="primary"
-              style={{ marginLeft: 10, marginBottom: 10, padding: '0 12px' }}
-              onClick={this.handleDeleteContent}
-            >
-              删除
-            </Button>
-          </Form.Item>
-          <Divider style={{ marginTop: '-20px' }} />
-          {this.renderCheckTable()}
+          <Row gutter={12}>
+            <Col span={20}>
+              <Form.Item {...formItemLayout} label={fieldLabels.checkContent}>
+                <Button
+                  type="primary"
+                  style={{ marginBottom: 10, padding: '0 12px' }}
+                  onClick={this.handleContentModal}
+                >
+                  新增
+                </Button>
+                <Button
+                  type="primary"
+                  style={{ marginLeft: 10, marginBottom: 10, padding: '0 12px' }}
+                  onClick={this.handleDeleteContent}
+                >
+                  删除
+                </Button>
+              </Form.Item>
+              <Divider style={{ marginTop: '-20px' }} />
+              {this.renderCheckTable()}
+            </Col>
+
+            <Col {...grid}>
+              <Form.Item label={'相关资料'} {...formItemLayout1}>
+                {getFieldDecorator('fileList', {
+                  initialValue: (data.fileList || []).map((item, index) => ({
+                    ...item,
+                    url: item.webUrl,
+                    status: 'done',
+                    uid: -index - 1,
+                    name: item.fileName,
+                  })),
+                })(
+                  <Upload mode={'edit'}>
+                    <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+                      <PlusOutlined style={{ fontSize: '32px' }} />
+                      <div style={{ marginTop: '8px' }}>点击上传</div>
+                    </Button>
+                  </Upload>
+                )}
+              </Form.Item>
+
+              <Form.Item label={'备注'} {...formItemLayout1}>
+                {getFieldDecorator('remark', {
+                  initialValue: data.remark,
+                  getValueFromEvent: this.handleTrim,
+                })(<TextArea placeholder="请输入备注" rows={3} maxLength="500" />)}
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
 
         <div style={{ textAlign: 'center' }}>
@@ -1489,14 +1770,259 @@ export default class RiskPointEdit extends PureComponent {
     );
   }
 
+  handleViewCompanyModal = () => {
+    this.setState({ companyModalVisible: true });
+    this.fetchCompany({
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  };
+
+  fetchCompany = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'company/fetchModelList', payload });
+  };
+
+  handleSelectCompany = selectedCompany => {
+    const {
+      form: { setFieldsValue },
+      dispatch,
+    } = this.props;
+    const companyId = selectedCompany.id;
+    this.setState(
+      {
+        selectedCompany,
+        companyModalVisible: false,
+      },
+      () => {
+        // 获取推荐检查周期
+        dispatch({
+          type: 'riskPointManage/fetchCheckCycle',
+          payload: {
+            companyId,
+            type: 2,
+          },
+        });
+      }
+    );
+    setFieldsValue({ companyId });
+  };
+
+  renderCompanyModal = () => {
+    const {
+      companyLoading,
+      company: { companyModal },
+    } = this.props;
+    const { companyModalVisible } = this.state;
+    return (
+      <CompanyModal
+        title="选择单位"
+        buttonSpan={{ xl: 8, md: 12, sm: 24 }}
+        loading={companyLoading}
+        visible={companyModalVisible}
+        modal={companyModal}
+        fetch={this.fetchCompany}
+        onSelect={this.handleSelectCompany}
+        onClose={() => {
+          this.setState({ companyModalVisible: false });
+        }}
+      />
+    );
+  };
+
+  // 显示模态框(所属区域)
+  handleShowAreaModal = e => {
+    const payload = { pageSize: PageSize, pageNum: 1 };
+    e.target.blur();
+    this.setState({ areaModalVisible: true });
+    this.fetchRiskArea({ payload });
+  };
+
+  fetchRiskArea = ({ payload }) => {
+    const { dispatch } = this.props;
+    const { selectedCompany } = this.state;
+    dispatch({ type: 'riskArea/getList', payload: { companyId: selectedCompany.id, ...payload } });
+  };
+
+  handleSelectArea = selected => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ selectedArea: selected, areaModalVisible: false });
+    setFieldsValue({ areaId: selected.id });
+  };
+
+  renderAreaModal = () => {
+    const {
+      areaLoading,
+      riskArea: { list },
+    } = this.props;
+    const { areaModalVisible } = this.state;
+    const columns = [
+      {
+        title: '区域名称',
+        dataIndex: 'areaName',
+        key: 'areaName',
+      },
+      {
+        title: '区域编号',
+        dataIndex: 'areaCode',
+        key: 'areaCode',
+      },
+      {
+        title: '所属部门',
+        dataIndex: 'partName',
+        key: 'partName',
+      },
+      {
+        title: '区域负责人',
+        dataIndex: 'areaHeaderName',
+        key: 'areaHeaderName',
+      },
+      {
+        title: '联系电话',
+        dataIndex: 'tel',
+        key: 'tel',
+      },
+    ];
+    const field = [
+      {
+        id: 'areaName',
+        render() {
+          return <Input placeholder="区域名称" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+      {
+        id: 'areaCode',
+        render() {
+          return <Input placeholder="区域编号" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+    ];
+    return (
+      <CompanyModal
+        title="选择所属区域"
+        columns={columns}
+        field={field}
+        buttonSpan={{ xl: 8, md: 12, sm: 24 }}
+        loading={areaLoading}
+        visible={areaModalVisible}
+        modal={list}
+        fetch={this.fetchRiskArea}
+        onSelect={this.handleSelectArea}
+        onClose={() => {
+          this.setState({ areaModalVisible: false });
+        }}
+      />
+    );
+  };
+
+  handleEquipmentTypeChange = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ equipmentId: undefined });
+    this.setState({ selectedEquip: {} });
+  };
+
+  handleShowEquipModal = e => {
+    const payload = { pageSize: PageSize, pageNum: 1 };
+    e.target.blur();
+    this.setState({ equipModalVisible: true });
+    this.fetchEquipList({ payload });
+  };
+
+  fetchEquipList = ({ payload }) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const { selectedCompany } = this.state;
+    const { equipmentType } = getFieldsValue();
+
+    dispatch({
+      type: `riskPointManage/${EquipTypes[equipmentType]}`,
+      payload: { companyId: selectedCompany.id, ...payload },
+    });
+  };
+
+  handleSelectEquip = selected => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ selectedEquip: selected, equipModalVisible: false });
+    setFieldsValue({ equipmentId: selected.id });
+  };
+
+  renderEquipModal = () => {
+    const {
+      equipLoading,
+      form: { getFieldsValue },
+      riskPointManage: {
+        productEquipList,
+        facilityList,
+        specialEquipList,
+        keyPartList,
+        safeFacilitiesList,
+      },
+    } = this.props;
+    const { equipModalVisible } = this.state;
+    const { equipmentType } = getFieldsValue();
+    const columns = EquipColumns[equipmentType] || [];
+    const field = [
+      {
+        id: (columns[2] || {}).key || 'name',
+        render() {
+          return <Input placeholder="设备名称" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+    ];
+    const datas = {
+      1: productEquipList,
+      2: facilityList,
+      3: specialEquipList,
+      4: keyPartList,
+      5: safeFacilitiesList,
+    };
+    return (
+      <CompanyModal
+        title="选择设备设施"
+        columns={columns}
+        field={field}
+        buttonSpan={{ xl: 8, md: 12, sm: 24 }}
+        loading={equipLoading}
+        visible={equipModalVisible}
+        modal={
+          (datas[equipmentType] || {}).list ? datas[equipmentType] : { list: [], pagination: {} }
+        }
+        fetch={this.fetchEquipList}
+        onSelect={this.handleSelectEquip}
+        onClose={() => {
+          this.setState({ equipModalVisible: false });
+        }}
+      />
+    );
+  };
+
   // 渲染页面所有信息
-  render () {
+  render() {
     const {
       match: {
         params: { id },
       },
       location: {
-        query: { companyId, companyName },
+        query: { type = 'all' },
       },
     } = this.props;
     const title = id ? editTitle : addTitle;
@@ -1505,12 +2031,16 @@ export default class RiskPointEdit extends PureComponent {
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '风险管控', name: '风险管控' },
-      { title: '风险点管理', name: '风险点管理', href: '/risk-control/risk-point-manage/index' },
       {
-        title: '单位风险点',
-        name: '单位风险点',
-        href: `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`,
+        title: '风险点管理',
+        name: '风险点管理',
+        href: `/risk-control/risk-point-manage/list/${type}`,
       },
+      // {
+      //   title: '单位风险点',
+      //   name: '单位风险点',
+      //   href: `/risk-control/risk-point-manage/list`,
+      // },
       {
         title,
         name: title,
@@ -1520,8 +2050,11 @@ export default class RiskPointEdit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
+        {this.renderCompanyModal()}
         {this.renderRfidModal()}
         {this.renderCheckModal()}
+        {this.renderAreaModal()}
+        {this.renderEquipModal()}
       </PageHeaderLayout>
     );
   }

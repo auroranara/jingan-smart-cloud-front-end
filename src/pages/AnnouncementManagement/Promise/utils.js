@@ -35,7 +35,7 @@ export const BREADCRUMBLIST = [
 ];
 
 const DEVICES = ['总：', '运行：', '停产：', '检修：'];
-const SPECIAL = ['二级动火作业：', '一级动火作业：', '特种作业：', '进入受限空间作业：'];
+const SPECIAL = ['二级动火作业：', '一级动火作业：', '特殊动火作业：', '高处作业：', '进入受限空间作业：'];
 const PILOT = ['否', '是'];
 const DRIVING = ['否', '是'];
 
@@ -73,7 +73,7 @@ export const TABLE_COLUMNS = [
     },
   },
   {
-    title: '特种作业',
+    title: '特殊作业',
     dataIndex: 'special',
     key: 'special',
     align: 'center',
@@ -87,6 +87,7 @@ export const TABLE_COLUMNS = [
             allContent.split(',')[5],
             allContent.split(',')[6],
             allContent.split(',')[7],
+            allContent.split(',')[8],
           ].map((n, i) => (
             <p key={i} className={styles1.p}>
               {SPECIAL[i]}

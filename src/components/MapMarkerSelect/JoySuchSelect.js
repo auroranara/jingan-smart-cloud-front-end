@@ -47,6 +47,7 @@ export default class JoySuchSelect extends PureComponent {
   }
 
   componentDidMount() {
+    this.mapDispose();
     this.handleUpdateMap(true);
   }
 
@@ -69,15 +70,18 @@ export default class JoySuchSelect extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
+  mapDispose = () => {
     this.map = null;
     document.getElementById('joySuchMap').innerHTML = '';
   }
 
+  componentWillUnmount() {
+    this.mapDispose();
+  }
+
   initData = () => {
     const { onChange } = this.props;
-    this.map = null;
-    document.getElementById('joySuchMap').innerHTML = '';
+    this.mapDispose();
     this.btnFloorControl = null; // 楼层控件实例
     this.polygonMarkers = []; // 保存区域实例
     this.otherMarkers = []; // 保存区域实例
@@ -88,6 +92,7 @@ export default class JoySuchSelect extends PureComponent {
   renderOtherMarkers = (markerProps = {}) => {
     const { markerList, otherMarkersOption = {}, markerId } = this.props;
     const { otherMarkersVisible } = this.state;
+    console.log('markerList',markerList);
     if (!this.map || !markerList || markerList.length === 0 || !isLoadComplete) return;
     this.removeOtherMarker();
     this.otherMarkers = [];

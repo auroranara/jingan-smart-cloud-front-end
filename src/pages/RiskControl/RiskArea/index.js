@@ -74,7 +74,7 @@ const GET_PAYLOAD_BY_QUERY = ({
   pageSize: pageSize > 0 ? +pageSize : 10,
   areaCode: areaCode ? decodeURIComponent(areaCode) : undefined,
   areaName: areaName ? decodeURIComponent(areaName) : undefined,
-  department: areaHeaderName ? decodeURIComponent(areaHeaderName) : undefined,
+  areaHeaderName: areaHeaderName ? decodeURIComponent(areaHeaderName) : undefined,
   companyName: companyName ? decodeURIComponent(companyName) : undefined,
 });
 const GET_QUERY_BY_PAYLOAD = ({
@@ -142,7 +142,7 @@ export default class App extends PureComponent {
     } = this.props;
     // 重置控件
     setFieldsValue({
-      ...query,
+      ...GET_PAYLOAD_BY_QUERY(query),
     });
 
     // 获取列表
@@ -157,7 +157,7 @@ export default class App extends PureComponent {
     } = this.props;
     dispatch({
       type: LIST_API,
-      payload: { pageNum: 1, pageSize: 10, ...query },
+      payload: { pageNum: 1, pageSize: 10, ...GET_PAYLOAD_BY_QUERY(query) },
     });
   };
 

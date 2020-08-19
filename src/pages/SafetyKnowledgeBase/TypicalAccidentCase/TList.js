@@ -248,37 +248,51 @@ export default class CaseList extends PureComponent {
         render: (val, record) => {
           const { accidProcessList, deriReasonList, inderiReasonList, otherFileList } = record;
           return (
+            // <Fragment>
+            //   {[
+            //     {
+            //       label: '事故经过',
+            //       value: accidProcessList,
+            //     },
+            //     {
+            //       label: '直接原因',
+            //       value: deriReasonList,
+            //     },
+            //     {
+            //       label: '间接原因',
+            //       value: inderiReasonList,
+            //     },
+            //     {
+            //       label: '其他附件',
+            //       value: otherFileList,
+            //     },
+            //   ].map(({ label, value, id }) => {
+            //     return value && value.length ? (
+            //       <p
+            //         onClick={() => {
+            //           this.handleShowModal(value);
+            //         }}
+            //       >
+            //         {label}:<a>查看附件</a>
+            //       </p>
+            //     ) : (
+            //       <p>
+            //         {label}: <span style={{ color: '#aaa' }}>查看附件</span>
+            //       </p>
+            //     );
+            //   })}
+            // </Fragment>
             <Fragment>
               {[
-                {
-                  label: '事故经过',
-                  value: accidProcessList,
-                },
-                {
-                  label: '直接原因',
-                  value: deriReasonList,
-                },
-                {
-                  label: '间接原因',
-                  value: inderiReasonList,
-                },
                 {
                   label: '其他附件',
                   value: otherFileList,
                 },
               ].map(({ label, value, id }) => {
                 return value && value.length ? (
-                  <p
-                    onClick={() => {
-                      this.handleShowModal(value);
-                    }}
-                  >
-                    {label}:<a>查看附件</a>
-                  </p>
+                  <a onClick={() => this.handleShowModal(value)}>查看附件</a>
                 ) : (
-                  <p>
-                    {label}: <span style={{ color: '#aaa' }}>查看附件</span>
-                  </p>
+                  <span style={{ color: '#aaa' }}>查看附件</span>
                 );
               })}
             </Fragment>

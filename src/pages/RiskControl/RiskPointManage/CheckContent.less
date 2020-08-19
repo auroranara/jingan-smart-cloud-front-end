@@ -18,6 +18,28 @@
   }
 }
 
+.table {
+  :global {
+    .ant-table {
+      td,
+      th {
+        white-space: nowrap;
+      }
+    }
+    .ant-table-body {
+      overflow-x: auto !important;
+    }
+  }
+}
+
+.form {
+  :global {
+    .ant-legacy-form-item {
+      margin-bottom: 0;
+    }
+  }
+}
+
 .cardList {
   margin-bottom: -24px;
 

@@ -217,7 +217,7 @@ export default connect(
             if (success) {
               message.success('新增成功！');
             } else {
-              message.error('新增失败，请稍后重试！');
+              message.error(`编辑失败，${data || '请稍后重试'}！`);
             }
             callback && callback(success, data);
           },
@@ -231,7 +231,7 @@ export default connect(
             if (success) {
               message.success('编辑成功！');
             } else {
-              message.error('编辑失败，请稍后重试！');
+              message.error(`编辑失败，${data || '请稍后重试'}！`);
             }
             callback && callback(success, data);
           },

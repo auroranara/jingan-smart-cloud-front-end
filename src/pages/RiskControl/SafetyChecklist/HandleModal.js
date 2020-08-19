@@ -84,6 +84,7 @@ export default class HandleModal extends Component {
         pageNum: 1,
         pageSize: 10,
         companyId: company ? company.value : undefined,
+        riskPointType: 1,
         ...(action.payload || {}),
       },
     });
@@ -101,7 +102,7 @@ export default class HandleModal extends Component {
   onSelectRiskPoint = item => {
     const { form: { setFieldsValue }, onSelectRiskPoint } = this.props;
     this.setState({ riskPoint: item, modalVisible: false });
-    setFieldsValue({ riskPointName: item.objectTitle });
+    setFieldsValue({ riskPointName: item.objectTitle, equip: item.equipmentName });
     onSelectRiskPoint && onSelectRiskPoint(item.itemId);
   }
 
@@ -185,7 +186,7 @@ export default class HandleModal extends Component {
               initialValue: id ? detail.equip : undefined,
               getValueFromEvent: e => e.target.value.trim(),
             })(
-              <Input placeholder="请输入" {...itemProps} />
+              <Input {...itemProps} disabled />
             )}
           </FormItem>
         </Form>

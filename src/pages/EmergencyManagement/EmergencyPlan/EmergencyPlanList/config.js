@@ -120,3 +120,4 @@ export const EDIT_CODE = 'emergencyManagement.emergencyPlan.edit';
 export const DETAIL_CODE = 'emergencyManagement.emergencyPlan.detail';
 export const AUDIT_CODE = 'emergencyManagement.emergencyPlan.audit';
 export const PUBLISH_CODE = 'emergencyManagement.emergencyPlan.publish';
+export const START_CODE = 'emergencyManagement.emergencyPlan.start';

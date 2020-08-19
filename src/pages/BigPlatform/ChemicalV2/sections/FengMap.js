@@ -423,6 +423,7 @@ export default class Map extends PureComponent {
       defaultViewMode: defaultViewMode || fengMap.FMViewMode.MODE_2D,
       //设置主题
       defaultThemeName: theme || '2001',
+      mapThemeURL: './data/theme',
       modelSelectedEffect: false,
       //支持悬停模型高亮，默认为false悬停不高亮
       modelHoverEffect: true,

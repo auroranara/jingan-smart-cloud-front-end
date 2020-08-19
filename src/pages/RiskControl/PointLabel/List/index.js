@@ -25,6 +25,7 @@ import {
   addCode,
   editCode,
   deleteCode,
+  importCode,
   detailPath,
   addPath,
   editPath,
@@ -41,6 +42,7 @@ import {
 } from '@/utils';
 import { isNumber } from '@/utils/utils';
 import styles from './index.less';
+import ImportModal from '@/components/ImportModal';
 
 // 面包屑
 const breadcrumbList = [
@@ -68,7 +70,7 @@ const getSearchByPayload = ({ pageNum, pageSize }) => {
   return search && `?${search}`;
 };
 // 转换payload为接口需要的格式
-const transformPayload = ({  ...payload }) => {
+const transformPayload = ({ ...payload }) => {
   return {
     ...payload,
   };
@@ -84,64 +86,61 @@ const getFields = ({
   search,
   hasAddAuthority,
 }) => [
-  {
-    name: 'companyName',
-    label: '单位名称',
-    children: (
-      <Input placeholder="请输入" maxLength={50} allowClear />
-    ),
-    col: !isUnit ? listPageCol : hiddenCol,
-  },
-  {
-    name: 'itemType',
-    label: '类型',
-    children: (
-      <Select placeholder="请选择" options={typeList} allowClear />
-    ),
-    col: listPageCol,
-  },
-  {
-    name: 'locationCode',
-    label: '标签编号',
-    children: <Input placeholder="请输入" maxLength={50} allowClear />,
-    col: listPageCol,
-  },
-  {
-    name: 'bindStatus',
-    label: '绑定状态',
-    children: (
-      <Select placeholder="请选择" options={statusList} allowClear />
-    ),
-    col: listPageCol,
-  },
-  {
-    children: (
-      <div className={styles.buttonContainer}>
-        <Button type="primary" htmlType="submit">
-          查询
+    {
+      name: 'companyName',
+      label: '单位名称',
+      children: (
+        <Input placeholder="请输入" maxLength={50} allowClear />
+      ),
+      col: !isUnit ? listPageCol : hiddenCol,
+    },
+    {
+      name: 'itemType',
+      label: '类型',
+      children: (
+        <Select placeholder="请选择" options={typeList} allowClear />
+      ),
+      col: listPageCol,
+    },
+    {
+      name: 'locationCode',
+      label: '标签编号',
+      children: <Input placeholder="请输入" maxLength={50} allowClear />,
+      col: listPageCol,
+    },
+    {
+      name: 'bindStatus',
+      label: '绑定状态',
+      children: (
+        <Select placeholder="请选择" options={statusList} allowClear />
+      ),
+      col: listPageCol,
+    },
+    {
+      children: (
+        <div className={styles.buttonContainer}>
+          <Button type="primary" htmlType="submit">
+            查询
         </Button>
-        <Button
-          onClick={() => {
-            form.resetFields();
-            form.submit();
-          }}
-        >
-          重置
+          <Button
+            onClick={() => {
+              form.resetFields();
+              form.submit();
+            }}
+          >
+            重置
         </Button>
-        <Button type="primary" href={`#${addPath}${search}`} disabled={!hasAddAuthority}>
-          新增
-        </Button>
-      </div>
-    ),
-    col: isUnit
-      ? {
-        xxl: 6,
-        xl: 24,
-        lg: 12,
-        md: 12,
-        sm: 24,
-        xs: 24,
-      } : {
+        </div>
+      ),
+      col: isUnit
+        ? {
+          xxl: 6,
+          xl: 24,
+          lg: 12,
+          md: 12,
+          sm: 24,
+          xs: 24,
+        } : {
           xxl: 24,
           xl: 16,
           lg: 24,
@@ -149,8 +148,8 @@ const getFields = ({
           sm: 24,
           xs: 24,
         },
-  },
-];
+    },
+  ];
 // 获取表格配置
 const getColumns = ({
   isUnit,
@@ -164,12 +163,12 @@ const getColumns = ({
   return [
     ...(!isUnit
       ? [
-          {
-            dataIndex: 'companyName',
-            title: '单位名称',
-            render: value => value || <EmptyText />,
-          },
-        ]
+        {
+          dataIndex: 'companyName',
+          title: '单位名称',
+          render: value => value || <EmptyText />,
+        },
+      ]
       : []),
     {
       dataIndex: 'locationCode',
@@ -189,12 +188,12 @@ const getColumns = ({
     {
       dataIndex: 'itemType',
       title: '类型',
-      render: value =>  (value === 1 || value === '1') ? '监督点' : '风险点',
+      render: value => (value === 1 || value === '1') ? '监督点' : '风险点',
     },
     {
       dataIndex: 'bindPointCount',
       title: '绑定状态',
-      render: value => isNumber(value) ? (value > 0 ? '已绑定'  : '未绑定' ) : <EmptyText />,
+      render: value => isNumber(value) ? (value > 0 ? '已绑定' : '未绑定') : <EmptyText />,
     },
     {
       dataIndex: 'bindPointCount',
@@ -269,11 +268,11 @@ export default connect(
       list,
       loading,
       deleting,
-      getList(payload, callback) {
+      getList (payload, callback) {
         dispatch({
           type: listApi,
           payload: transformPayload(payload),
-          callback(success, data) {
+          callback (success, data) {
             if (!success) {
               message.error('获取列表数据失败，请稍后重试！');
             }
@@ -281,11 +280,11 @@ export default connect(
           },
         });
       },
-      deleteList(payload, callback) {
+      deleteList (payload, callback) {
         dispatch({
           type: deleteApi,
           payload,
-          callback(success, data) {
+          callback (success, data) {
             if (success) {
               message.success('删除成功！');
             } else {
@@ -380,16 +379,37 @@ export default connect(
       >
         <Card className={styles.formCard}>
           <Form form={form} onFinish={onFinish}>
-                  <Row gutter={24}>
-                    {fields.map(({ name, col, ...item }, index) => (
-                      <Col key={name || index} {...col}>
-                        <Form.Item name={name} {...item} />
-                      </Col>
-                    ))}
-                  </Row>
+            <Row gutter={24}>
+              {fields.map(({ name, col, ...item }, index) => (
+                <Col key={name || index} {...col}>
+                  <Form.Item name={name} {...item} />
+                </Col>
+              ))}
+            </Row>
           </Form>
         </Card>
         <Card>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <Button
+              style={{ marginRight: '10px' }}
+              type="primary"
+              href={`#${addPath}${search}`}
+              disabled={!hasAddAuthority}>
+              新增
+            </Button>
+            <Button
+              href="http://data.jingan-china.cn/v2/chem/file1/风险研判与承诺公告模板.xls"
+              target="_blank"
+              style={{ marginRight: '10px' }}
+            >
+              模板下载
+            </Button>
+            <ImportModal
+              action={(companyId) => `/acloud_new/v2/label/import/${companyId}`}
+              onUploadSuccess={() => getList({ ...payload, pageNum: 1 })}
+              code={importCode}
+            />
+          </div>
           <Table
             className={styles.table}
             rowKey="id"

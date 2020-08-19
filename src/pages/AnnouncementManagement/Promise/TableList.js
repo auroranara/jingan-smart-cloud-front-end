@@ -3,7 +3,6 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import {
   Button,
-  AutoComplete,
   Card,
   Table,
   DatePicker,
@@ -14,12 +13,12 @@ import {
   Spin,
 } from 'antd';
 import Link from 'umi/link';
-
+import ImportModal from '@/components/ImportModal';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import debounce from 'lodash/debounce';
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 
 import { BREADCRUMBLIST, ROUTER, TABLE_COLUMNS_COMPANY, TABLE_COLUMNS as COLUMNS } from './utils';
@@ -27,7 +26,13 @@ import { BREADCRUMBLIST, ROUTER, TABLE_COLUMNS_COMPANY, TABLE_COLUMNS as COLUMNS
 // 权限
 const {
   announcementManagement: {
-    promise: { view: viewAuth, delete: deleteAuth, edit: editAuth, add: addAuth },
+    promise: {
+      view: viewAuth,
+      delete: deleteAuth,
+      edit: editAuth,
+      add: addAuth,
+      import: importCode,
+    },
   },
 } = codes;
 
@@ -51,7 +56,7 @@ export default class TableList extends PureComponent {
     this.pageSize = 10;
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchList();
     // 获取模糊搜索单位列表
     this.fetchUnitList();
@@ -134,7 +139,7 @@ export default class TableList extends PureComponent {
     });
   };
 
-  render() {
+  render () {
     const {
       loading = false,
       twoInformManagement: {
@@ -201,20 +206,20 @@ export default class TableList extends PureComponent {
     const viewCode = hasAuthority(viewAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
     const editCode = hasAuthority(editAuth, permissionCodes);
-    const addCode = hasAuthority(addAuth, permissionCodes);
+    // const addCode = hasAuthority(addAuth, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
-    const toolBarAction = (
-      <Button
-        type="primary"
-        onClick={this.handleAdd}
-        disabled={!addCode}
-        style={{ marginTop: '8px' }}
-      >
-        新增
-      </Button>
-    );
+    // const toolBarAction = (
+    //   <Button
+    //     type="primary"
+    //     onClick={this.handleAdd}
+    //     disabled={!addCode}
+    //     style={{ marginTop: '8px' }}
+    //   >
+    //     新增
+    //   </Button>
+    // );
 
     const extraColumns = [
       {
@@ -230,14 +235,14 @@ export default class TableList extends PureComponent {
               {viewCode ? (
                 <Link to={`${ROUTER}/view/${text.id}`} target="_blank">查看</Link>
               ) : (
-                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
-              )}
+                  <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
+                )}
               <Divider type="vertical" />
               {editCode ? (
                 <Link to={`${ROUTER}/edit/${text.id}`} target="_blank">编辑</Link>
               ) : (
-                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
-              )}
+                  <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+                )}
               <Divider type="vertical" />
               {deleteCode ? (
                 <Popconfirm
@@ -249,8 +254,8 @@ export default class TableList extends PureComponent {
                   <span className={styles1.delete}>删除</span>
                 </Popconfirm>
               ) : (
-                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
-              )}
+                  <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
+                )}
             </Fragment>
           );
         },
@@ -271,14 +276,36 @@ export default class TableList extends PureComponent {
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
             fields={unitType === 4 ? FIELDS.slice(1, FIELDS.length) : FIELDS}
-            action={toolBarAction}
+            // action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             buttonStyle={{ textAlign: 'right' }}
             buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>
-        <div className={styles1.container}>
+        <Card className={styles1.container}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <AuthButton
+              code={addAuth}
+              type="primary"
+              onClick={this.handleAdd}
+              style={{ marginRight: '10px' }}
+            >
+              新增
+          </AuthButton>
+            <Button
+              href="http://data.jingan-china.cn/v2/chem/file1/风险研判与承诺公告模板.xls"
+              target="_blank"
+              style={{ marginRight: '10px' }}
+            >
+              模板下载
+          </Button>
+            <ImportModal
+              action={(companyId) => `/acloud_new/v2/notice/importCompanyPublic/${companyId}`}
+              onUploadSuccess={() => this.handleSearch({ ...this.state.formData })}
+              code={importCode}
+            />
+          </div>
           {list.length > 0 ? (
             <Table
               rowKey="id"
@@ -305,11 +332,9 @@ export default class TableList extends PureComponent {
               }}
             />
           ) : (
-            <Card bordered={false} style={{ textAlign: 'center' }}>
-              <span>暂无数据</span>
-            </Card>
-          )}
-        </div>
+              <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+            )}
+        </Card>
       </PageHeaderLayout>
     );
   }

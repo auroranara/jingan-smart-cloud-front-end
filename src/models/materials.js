@@ -16,6 +16,7 @@ export default {
   state: {
     // 物料类型选项
     materialTypeOptions: [
+      { value: '4', label: '辅料' },
       { value: '1', label: '生产原料' },
       { value: '2', label: '中间产品' },
       { value: '3', label: '最终产品' },

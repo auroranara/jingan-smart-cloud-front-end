@@ -7,6 +7,7 @@ import {
   audit,
   publish,
   submitReview,
+  start,
 } from '@/services/emergencyPlan';
 
 export default {
@@ -85,6 +86,11 @@ export default {
     *submitReview ({ payload, callback }, { call }) {
       const res = yield call(submitReview, payload)
       if (callback) callback(res)
+    },
+    *startPlan({ payload, callback }, { call }) {
+      const response = yield call(start, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
     },
   },
 
