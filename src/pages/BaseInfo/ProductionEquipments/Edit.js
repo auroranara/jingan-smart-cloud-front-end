@@ -91,7 +91,7 @@ export default class Edit extends PureComponent {
           } = currentList;
           this.setState({
             detailList: currentList,
-            dangerTechnologyId: dangerTechnologyList.map(item => item.id).join(','),
+            dangerTechnologyId: Array.isArray(dangerTechnologyList) ? dangerTechnologyList.map(item => item.id).join(',') : undefined,
             selectedCompany: { key: companyId, label: companyName },
             selectedMaterials: unitChemiclaNumDetail.map(item => ({
               ...item,

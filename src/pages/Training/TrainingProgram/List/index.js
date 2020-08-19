@@ -554,6 +554,7 @@ export default class TrainingProgramList extends Component {
         onOk={this.handleModalConfirm}
         zIndex={1009}
       >
+        <p className={styles.tip}>提示：请仔细查看培训计划内容是否完善，一旦执行后则不能修改</p>
         <CustomForm
           fields={fields}
           searchable={false}

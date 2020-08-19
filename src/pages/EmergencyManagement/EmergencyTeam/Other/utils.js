@@ -116,7 +116,7 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
       align: 'center',
       width: 220,
       render: (val, row) => {
-        const { treamHead, areaCode, telNumber, headPartName, headPhone } = row;
+        const { treamHead, treamHeadName, areaCode, telNumber, headPartName, headPhone } = row;
 
         const isPhone = areaCode || telNumber;
         const isAreaCode = areaCode !== 'null' ? areaCode : '';
@@ -126,7 +126,7 @@ export function getTableColumns(handleConfirmDelete, unitType, handlePesonListCl
           <div className={styles.multi}>
             <div className={styles.item}>
               <span className={styles.label}>姓名:</span>
-              <span>{treamHead}</span>
+              <span>{treamHeadName || treamHead}</span>
             </div>
             <div className={styles.item}>
               <span className={styles.label}>部门:</span>

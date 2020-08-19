@@ -6,7 +6,7 @@ import { CardItem } from '../../components/Components';
 
 import chemicalImg from '../../imgs/drawer/drawer-chemical.png';
 
-const Types = ['生产原料', '中间产品', '最终产品'];
+const Types = ['生产原料', '中间产品', '最终产品', '辅料'];
 const Forms = ['固态', '液态', '气态', '等离子态'];
 const HighRiskChemicals = ['硝酸铵', '硝化棉', '氰化钠'];
 const NO_DATA = '暂无数据';
@@ -65,7 +65,7 @@ export default class ChemicalDetailDrawer extends PureComponent {
     const { visible, onClose, chemicalDetail } = this.props;
     const { safetyMeasures, emergencyMeasure, type } = chemicalDetail;
     const fields = [...basicFields];
-    fields.splice(4, 0, +type === 1 ? Annuals[0] : Annuals[1]);
+    fields.splice(4, 0, +type === 1 || +type === 4 ? Annuals[0] : Annuals[1]);
     if (+chemicalDetail.isDangerChemicals !== 1) fields.splice(fields.length - 1, 1);
 
     return (

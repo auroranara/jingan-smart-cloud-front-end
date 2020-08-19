@@ -11,7 +11,7 @@ import locationImg from '../../imgs/chemical-location.png';
 
 import chemicalImg from '../../imgs/drawer/drawer-chemical.png';
 
-const Types = ['生产原料', '中间产品', '最终产品'];
+const Types = ['生产原料', '中间产品', '最终产品', '辅料'];
 const NO_DATA = '暂无数据';
 
 export default class ChemicalDrawer extends PureComponent {
