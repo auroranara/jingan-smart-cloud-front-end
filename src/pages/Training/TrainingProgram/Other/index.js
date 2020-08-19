@@ -30,6 +30,18 @@ import {
 import styles from './index.less';
 import { genGoBack } from '@/utils/utils';
 
+const Text = ({ value, options }) => {
+  if (!value)
+    return <span>-</span>;
+
+  const map = options.reduce((accum, { key, value }) => {
+    accum[key] = value;
+    return accum;
+  }, {})
+
+  return <span>{value.toString().split(',').map(v => map[v]).join('、')}</span>;
+}
+
 const USER_ID_TYPES = ['', 'userIds', 'userInput'];
 @connect(
   ({ trainingProgram, user, loading }) => ({
@@ -298,7 +310,7 @@ export default class TrainingProgramOther extends Component {
         : { realCompanyId: companyId, realCompanyName: companyName }
       : { realCompanyId: unitId, realCompanyName: unitName };
     const uploading = (values.planFileList || []).some(({ status }) => status === 'uploading');
-
+console.log(trainingType)
     const fields = [
       {
         key: 1,
@@ -366,15 +378,15 @@ export default class TrainingProgramOther extends Component {
             label: '培训类型',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
+            render: () => isNotDetail ? (
               <SelectOrSpan
                 mode="multiple"
                 className={styles.item}
                 placeholder="请选择培训类型"
                 list={TrainingType}
-                type={isNotDetail ? 'select' : 'span'}
+                // type={isNotDetail ? 'select' : 'span'}
               />
-            ),
+            ) : <Text options={TrainingType} />,
             options: {
               // initialValue: trainingType && `${trainingType}`,
               initialValue: trainingType ? trainingType.toString().split(',') : [],
@@ -394,15 +406,15 @@ export default class TrainingProgramOther extends Component {
             label: '培训形式',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => (
+            render: () => isNotDetail ? (
               <SelectOrSpan
                 mode="multiple"
                 className={styles.item}
                 placeholder="请选择培训形式"
                 list={FORMS}
-                type={isNotDetail ? 'select' : 'span'}
+                // type={isNotDetail ? 'select' : 'span'}
               />
-            ),
+            ) : <Text options={FORMS} />,
             options: {
               // initialValue: trainingWay && `${trainingWay}`,
               initialValue: trainingWay ? trainingWay.toString().split(',') : [],

@@ -242,7 +242,7 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
     // if (id) window.close();
-    // else 
+    // else
     dispatch(routerRedux.push(`/risk-control/risk-point-manage/list/${type}`));
   };
 
@@ -740,6 +740,7 @@ export default class RiskPointEdit extends PureComponent {
     return (
       <CheckModal
         title="选择检查内容"
+        rowKey="object_id"
         loading={loading}
         visible={checkVisible}
         columns={checkCOLUMNS}
