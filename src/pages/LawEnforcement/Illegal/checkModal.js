@@ -72,6 +72,7 @@ export default class CompanyModal extends PureComponent {
         ...payload,
       },
     });
+    this.setState({ searchPayload: {} }); // 重置searchPayload
   };
 
   /* 更换页码或显示数量 */

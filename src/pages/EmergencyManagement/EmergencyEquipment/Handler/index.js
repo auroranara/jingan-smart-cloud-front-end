@@ -345,7 +345,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
                   isLeaf: 'isLeaf',
                 }}
                 changeOnSelect
-                placeholder="请选择模拟事故类型"
+                placeholder="请选择装备类型"
                 allowClear
                 getPopupContainer={getRootChild}
                 onChange={this.handleChangeEquipType}

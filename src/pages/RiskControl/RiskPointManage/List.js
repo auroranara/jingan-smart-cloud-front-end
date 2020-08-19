@@ -14,13 +14,15 @@ import {
   Col,
   TreeSelect,
 } from 'antd';
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
+import QRCode from 'qrcode.react';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CheckContent.less';
-import CheckContent from './CheckContent';
+// import CheckContent from './CheckContent';
 import codesMap from '@/utils/codes';
 import { AuthButton, hasAuthority, AuthA, AuthPopConfirm, AuthLink } from '@/utils/customAuth';
 import ImportModal from '@/components/ImportModal';
@@ -79,6 +81,8 @@ export default class riskPointList extends PureComponent {
       activeKey: null,
       visible: false,
       importLoading: false, // 是否上传中
+      showImg: false,
+      qrCode: '',
     };
   }
 
@@ -213,6 +217,14 @@ export default class riskPointList extends PureComponent {
     this.getRiskList();
   };
 
+  handleShowCode = qrCode => {
+    this.setState({ showImg: true, qrCode: qrCode });
+  };
+
+  handleCloseCode = () => {
+    this.setState({ showImg: false });
+  };
+
   renderForm = () => {
     const {
       form: { getFieldDecorator },
@@ -341,7 +353,7 @@ export default class riskPointList extends PureComponent {
       },
     } = this.props;
 
-    const { activeKey, importLoading } = this.state;
+    const { activeKey, importLoading, showImg, qrCode } = this.state;
 
     const count = list.map(item => item.pointCount);
     const importAuth = hasAuthority(codesMap.riskControl.riskPointManage.import, codes);
@@ -548,13 +560,20 @@ export default class riskPointList extends PureComponent {
               风险告知卡
             </AuthLink>
             <Divider type="vertical" />
+            <AuthA
+              code={codesMap.riskControl.riskPointManage.view}
+              onClick={e => this.handleShowCode(record.qrCode)}
+            >
+              二维码
+            </AuthA>
+            <Divider type="vertical" />
             {/* <AuthLink
               code={codesMap.riskControl.riskPointManage.view}
               codes={codes}
               to={`/risk-control/risk-point-manage/detail/${record.itemId}`}
             >
               查看
-            </AuthLink> 
+            </AuthLink>
             <Divider type="vertical" />*/}
             <AuthLink
               code={codesMap.riskControl.riskPointManage.edit}
@@ -652,6 +671,19 @@ export default class riskPointList extends PureComponent {
             </Card>
           </Spin>
         )}
+        <div
+          className={styles.magnify}
+          onClick={this.handleCloseImg}
+          style={{ display: showImg ? 'block' : 'none', pointerEvents: 'auto' }}
+        >
+          <LegacyIcon type="close" onClick={this.handleCloseCode} className={styles.iconClose} />
+          <QRCode
+            className={styles.qrcode}
+            size={200}
+            value={qrCode}
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
       </PageHeaderLayout>
     );
   }
