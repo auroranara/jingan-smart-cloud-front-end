@@ -288,7 +288,7 @@ export default connect(
       params: { id },
     },
     route: { name },
-    location: { pathname, search: unsafeSearch },
+    location: { pathname, search: unsafeSearch, query },
     currentUser,
     detail,
     loading,
@@ -357,14 +357,16 @@ export default connect(
             if (isSuccess) {
               message.success('新增成功！');
               // 新增成功以后返回列表页面的第一页以方便查看新增的数据
-              router.push(LIST_PATH);
+              router.push(
+                `${LIST_PATH}?pageSize=${query.pageSize > 0 ? query.pageSize : PAGE_SIZE}`
+              );
             } else {
               message.error(`新增失败，${dataOrMsg || '请稍后重试'}！`);
             }
             callback && callback(dataOrMsg);
           },
         }),
-      []
+      [search]
     );
     // 新增接口
     const edit = useCallback(
