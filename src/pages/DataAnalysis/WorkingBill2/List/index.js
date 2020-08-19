@@ -12,7 +12,6 @@ import {
   DatePicker,
   Radio,
   Input,
-  Spin,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -348,7 +347,7 @@ export default connect(
         id,
         approveUser: { key: userId, value: userId, label: userName },
         approveTime: moment(),
-        approveStatus: undefined,
+        approveStatus: approveOpinionList[0].key,
         aging: undefined,
         signature: undefined,
       });

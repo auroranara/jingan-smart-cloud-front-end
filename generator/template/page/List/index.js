@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback, Fragment } from 'react';
+import React, { Fragment, useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import {
   message,
@@ -17,45 +17,45 @@ import {
 } from 'antd';
 import PagingSelect from '@/jingan-components/PagingSelect';
 import Link from 'umi/link';
+import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
 import { stringify } from 'qs';
 import {
-  modelName,
-  listName,
-  listApi,
-  deleteApi,
-  detailCode,
-  addCode,
-  editCode,
-  deleteCode,
-  detailPath,
-  addPath,
-  editPath,
-  parentLocale,
-  listLocale,
+  NAMESPACE,
+  DETAIL_CODE,
+  ADD_CODE,
+  EDIT_CODE,
+  DELETE_CODE,
+  LIST_PATH,
+  DETAIL_PATH,
+  ADD_PATH,
+  EDIT_PATH,
+  PARENT_LOCALE,
+  LIST_LOCALE,
 } from '../config';
 import {
+  PAGE_SIZE,
+  listPageCol,
+  hiddenCol,
   dateFormat,
   dateRangePickerPlaceholder,
   getRanges,
   getSelectValueFromEvent,
   showTotal,
   EmptyText,
-  listPageCol,
-  hiddenCol,
 } from '@/utils';
 import styles from './index.less';
 const { RangePicker } = DatePicker;
 
-// 面包屑
-const breadcrumbList = [
+/* 面包屑 */
+const BREADCRUMB_LIST = [
   { title: '首页', name: '首页', href: '/' },
-  { title: parentLocale, name: parentLocale },
-  { title: listLocale, name: listLocale },
+  { title: PARENT_LOCALE, name: PARENT_LOCALE },
+  { title: LIST_LOCALE, name: LIST_LOCALE },
 ];
-// 根据query获取payload（用于初始化）
-const getPayloadByQuery = ({
+/* 根据query获取payload（用于初始化） */
+const GET_PAYLOAD_BY_QUERY = ({
   pageNum,
   pageSize,
   company,
@@ -63,16 +63,23 @@ const getPayloadByQuery = ({
   department,
   startDate,
   endDate,
-}) => ({
-  pageNum: pageNum > 0 ? +pageNum : 1,
-  pageSize: pageSize > 0 ? +pageSize : 10,
-  company: company ? JSON.parse(decodeURIComponent(company)) : undefined,
-  name: name ? decodeURIComponent(name) : undefined,
-  department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
-  range: startDate && endDate ? [moment(+startDate), moment(+endDate)] : undefined,
-});
-// 根据payload获取query（前置）
-const getQueryByPayload = ({ company, name, department, range, ...rest } = {}) => {
+}) => {
+  try {
+    return {
+      pageNum: pageNum > 0 ? +pageNum : 1,
+      pageSize: pageSize > 0 ? +pageSize : PAGE_SIZE,
+      company: company ? JSON.parse(decodeURIComponent(company)) : undefined,
+      name: name ? decodeURIComponent(name) : undefined,
+      department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
+      range: startDate && endDate ? [moment(+startDate), moment(+endDate)] : undefined,
+    };
+  } catch (e) {
+    console.log(e);
+  }
+  return { pageNum: 1, pageSize: PAGE_SIZE };
+};
+/* 根据payload获取query（前置） */
+const GET_QUERY_BY_PAYLOAD = ({ company, name, department, range, ...rest }) => {
   const [startDate, endDate] = range || [];
   return {
     ...rest,
@@ -83,14 +90,14 @@ const getQueryByPayload = ({ company, name, department, range, ...rest } = {}) =
     endDate: endDate ? +endDate : undefined,
   };
 };
-// 根据payload获取search（用于路由跳转）
-const getSearchByPayload = payload => {
-  const query = getQueryByPayload(payload);
+/* 根据payload获取search（用于路由跳转） */
+const GET_SEARCH_BY_PAYLOAD = payload => {
+  const query = GET_QUERY_BY_PAYLOAD(payload || {});
   const search = stringify(query);
   return search && `?${search}`;
 };
-// 转换payload为接口需要的格式
-const transformPayload = ({ company, department, range, ...rest }) => {
+/* 转换payload为接口需要的格式 */
+const TRANSFORM_PAYLOAD = ({ company, department, range, ...rest }) => {
   const [startDate, endDate] = range || [];
   return {
     ...rest,
@@ -100,17 +107,17 @@ const transformPayload = ({ company, department, range, ...rest }) => {
     endDate: endDate && endDate.format(dateFormat),
   };
 };
-// 转换values为payload需要的格式（基本上只对输入框的值进行trim操作）
-const transformValues = ({ name, ...rest }) => ({
+/* 转换values为payload需要的格式（基本上只对输入框的值进行trim操作） */
+const TRANSFORM_VALUES = ({ name, ...rest }) => ({
   ...rest,
   name: name ? name.trim() : undefined,
 });
-// 获取表单配置
-const getFields = ({
-  isUnit,
-  values,
+/* 获取表单配置 */
+const GET_FIELDS = ({
   form,
+  values,
   search,
+  isUnit,
   hasAddAuthority,
   companyList,
   loadingCompanyList,
@@ -127,27 +134,29 @@ const getFields = ({
       <PagingSelect
         options={companyList.list}
         loading={loadingCompanyList}
-        allowClear
-        disabled={isUnit}
         hasMore={
           companyList.pagination &&
           companyList.pagination.total >
             companyList.pagination.pageNum * companyList.pagination.pageSize
         }
-        onSearch={name => setCompanyPayload(payload => ({ ...payload, pageNum: 1, name }))}
         loadMore={() =>
           setCompanyPayload(payload => ({ ...payload, pageNum: payload.pageNum + 1 }))
         }
+        onSearch={name => setCompanyPayload(payload => ({ ...payload, pageNum: 1, name }))}
         onChange={onCompanySelectChange}
+        allowClear
       />
     ),
     getValueFromEvent: getSelectValueFromEvent,
-    col: !isUnit ? listPageCol : hiddenCol,
+    hidden: isUnit,
+    col: isUnit ? hiddenCol : listPageCol,
   },
   {
     name: 'name',
     label: '名称',
-    children: <Input placeholder="请输入" maxLength={50} allowClear />,
+    children: (
+      <Input placeholder="请输入" maxLength={50} onPressEnter={() => form.submit()} allowClear />
+    ),
     col: listPageCol,
   },
   {
@@ -157,10 +166,10 @@ const getFields = ({
       <TreeSelect
         placeholder="请选择"
         treeData={values.company ? departmentTree : []}
-        labelInValue
         notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
-        showSearch
         treeNodeFilterProp="title"
+        labelInValue
+        showSearch
         allowClear
       />
     ),
@@ -175,8 +184,8 @@ const getFields = ({
         className={styles.rangePicker}
         placeholder={dateRangePickerPlaceholder}
         format={dateFormat}
-        separator="~"
         ranges={ranges}
+        separator="~"
         allowClear
       />
     ),
@@ -196,7 +205,7 @@ const getFields = ({
         >
           重置
         </Button>
-        <Button type="primary" href={`#${addPath}${search}`} disabled={!hasAddAuthority}>
+        <Button type="primary" href={`#${ADD_PATH}${search}`} disabled={!hasAddAuthority}>
           新增
         </Button>
       </div>
@@ -220,268 +229,282 @@ const getFields = ({
         },
   },
 ];
-// 获取表格配置
-const getColumns = ({
-  isUnit,
+/* 获取表格配置 */
+const GET_COLUMNS = ({
   search,
+  isUnit,
   hasDetailAuthority,
   hasEditAuthority,
   hasDeleteAuthority,
   deleteList,
-  setPayload,
-}) => {
-  return [
-    ...(!isUnit
-      ? [
-          {
-            dataIndex: 'companyName',
-            title: '单位名称',
-            render: value => value || <EmptyText />,
-          },
-        ]
-      : []),
-    {
-      dataIndex: 'name',
-      title: '名称',
-      render: value => value || <EmptyText />,
-    },
-    {
-      dataIndex: 'departmentName',
-      title: '部门',
-      render: value => value || <EmptyText />,
-    },
-    {
-      dataIndex: 'date',
-      title: '时间',
-      render: value => (value ? moment(value).format(dateFormat) : <EmptyText />),
-    },
-    {
-      dataIndex: 'fileList',
-      title: '附件',
-      render: value =>
-        value && value.length ? (
-          <Fragment>
-            {value.map((item, index) => (
-              <div key={index}>
-                <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
-                  {item.fileName}
-                </a>
-              </div>
-            ))}
-          </Fragment>
-        ) : (
-          <EmptyText />
-        ),
-    },
-    {
-      dataIndex: '操作',
-      title: '操作',
-      render: (_, data) => (
-        <Fragment>
-          <Link to={`${detailPath}/${data.id}${search}`} disabled={!hasDetailAuthority}>
-            查看
-          </Link>
-          <Divider type="vertical" />
-          <Link to={`${editPath}/${data.id}${search}`} disabled={!hasEditAuthority}>
-            编辑
-          </Link>
-          <Divider type="vertical" />
-          <Popconfirm
-            title="您确定要删除这条数据吗？"
-            onConfirm={() => {
-              deleteList(
-                {
-                  id: data.id,
-                },
-                success => {
-                  if (success) {
-                    setPayload(payload => ({ ...payload }));
-                  }
-                }
-              );
-            }}
-            disabled={!hasDeleteAuthority}
-          >
-            <Link to="/" disabled={!hasDeleteAuthority}>
-              删除
-            </Link>
-          </Popconfirm>
-        </Fragment>
-      ),
-    },
-  ];
-};
-
-export default connect(
-  state => state,
-  null,
-  (
-    {
-      user: {
-        currentUser: { unitId, unitName, unitType, permissionCodes },
-      },
-      dict: { companyList, departmentTree },
-      [modelName]: { [listName]: list },
-      loading: {
-        effects: {
-          [listApi]: loading,
-          [deleteApi]: deleting,
-          'dict/getCompanyList': loadingCompanyList,
-          'dict/getDepartmentTree': loadingDepartmentTree,
+}) => [
+  ...(!isUnit
+    ? [
+        {
+          dataIndex: 'companyName',
+          title: '单位名称',
+          render: value => value || <EmptyText />,
         },
-      },
-    },
-    { dispatch },
-    ownProps
-  ) => {
-    return {
-      ...ownProps,
-      unitId,
-      unitName,
-      isUnit: unitType === 4,
-      hasDetailAuthority: permissionCodes.includes(detailCode),
-      hasAddAuthority: permissionCodes.includes(addCode),
-      hasEditAuthority: permissionCodes.includes(editCode),
-      hasDeleteAuthority: permissionCodes.includes(deleteCode),
-      list,
-      loading,
-      deleting,
-      companyList,
-      loadingCompanyList,
-      departmentTree,
-      loadingDepartmentTree,
-      getList(payload, callback) {
-        dispatch({
-          type: listApi,
-          payload: transformPayload(payload),
-          callback(success, data) {
-            if (!success) {
-              message.error('获取列表数据失败，请稍后重试！');
-            }
-            callback && callback(success, data);
-          },
-        });
-      },
-      deleteList(payload, callback) {
-        dispatch({
-          type: deleteApi,
-          payload,
-          callback(success, data) {
-            if (success) {
-              message.success('删除成功！');
-            } else {
-              message.error('删除失败，请稍后重试！');
-            }
-            callback && callback(success, data);
-          },
-        });
-      },
-      getCompanyList(payload, callback) {
-        dispatch({
-          type: 'dict/getCompanyList',
-          payload,
-          callback(success, data) {
-            if (!success) {
-              message.error('获取单位列表数据失败，请稍后重试！');
-            }
-            callback && callback(success, data);
-          },
-        });
-      },
-      getDepartmentTree(payload, callback) {
-        dispatch({
-          type: 'dict/getDepartmentTree',
-          payload,
-          callback(success, data) {
-            if (!success) {
-              message.error('获取部门树数据失败，请稍后重试！');
-            }
-            callback && callback(success, data);
-          },
-        });
-      },
-    };
+      ]
+    : []),
+  {
+    dataIndex: 'name',
+    title: '名称',
+    render: value => value || <EmptyText />,
   },
   {
-    areStatesEqual: () => false,
-    areOwnPropsEqual: () => false,
-    areStatePropsEqual: () => false,
-    areMergedPropsEqual: (nextProps, props) => {
-      return (
-        props.list === nextProps.list &&
-        props.loading === nextProps.loading &&
-        props.deleting === nextProps.deleting &&
-        props.companyList === nextProps.companyList &&
-        props.loadingCompanyList === nextProps.loadingCompanyList &&
-        props.departmentTree === nextProps.departmentTree &&
-        props.loadingDepartmentTree === nextProps.loadingDepartmentTree
-      );
-    },
-  }
-)(
+    dataIndex: 'departmentName',
+    title: '所属部门',
+    render: value => value || <EmptyText />,
+  },
+  {
+    dataIndex: 'date',
+    title: '时间',
+    render: value => (value ? moment(value).format(dateFormat) : <EmptyText />),
+  },
+  {
+    dataIndex: 'fileList',
+    title: '附件',
+    render: value =>
+      value && value.length ? (
+        <Fragment>
+          {value.map((item, index) => (
+            <div key={index}>
+              <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
+                {item.fileName}
+              </a>
+            </div>
+          ))}
+        </Fragment>
+      ) : (
+        <EmptyText />
+      ),
+  },
+  {
+    dataIndex: '操作',
+    title: '操作',
+    render: (_, { id }) => (
+      <Fragment>
+        <Link to={`${DETAIL_PATH}/${id}${search}`} disabled={!hasDetailAuthority}>
+          查看
+        </Link>
+        <Divider type="vertical" />
+        <Link to={`${EDIT_PATH}/${id}${search}`} disabled={!hasEditAuthority}>
+          编辑
+        </Link>
+        <Divider type="vertical" />
+        <Popconfirm
+          title="您确定要删除这条数据吗？"
+          onConfirm={() => {
+            deleteList({
+              id,
+            });
+          }}
+          disabled={!hasDeleteAuthority}
+        >
+          <Link to="/" disabled={!hasDeleteAuthority}>
+            删除
+          </Link>
+        </Popconfirm>
+      </Fragment>
+    ),
+  },
+];
+
+export default connect(
   ({
-    location: { query },
-    unitId,
-    unitName,
-    isUnit,
-    hasDetailAuthority,
-    hasAddAuthority,
-    hasEditAuthority,
-    hasDeleteAuthority,
-    list: { list = [], pagination: { total, pageNum, pageSize } = {} } = {},
+    user: { currentUser },
+    dict: { companyList, departmentTree },
+    [NAMESPACE]: { list },
+    loading: {
+      models: { [NAMESPACE]: loading },
+      effects: {
+        'dict/getCompanyList': loadingCompanyList,
+        'dict/getDepartmentTree': loadingDepartmentTree,
+      },
+    },
+  }) => ({
+    currentUser,
+    list,
     loading,
-    deleting,
     companyList,
     loadingCompanyList,
     departmentTree,
     loadingDepartmentTree,
-    getList,
-    deleteList,
-    getCompanyList,
-    getDepartmentTree,
+  })
+)(
+  ({
+    location: { query },
+    currentUser,
+    list: { list = [], pagination: { total, pageNum, pageSize } = {} },
+    loading,
+    companyList,
+    loadingCompanyList,
+    departmentTree,
+    loadingDepartmentTree,
+    dispatch,
   }) => {
     // 创建表单引用
     const [form] = Form.useForm();
-    // 创建表单初始值
-    const [initialValues] = useState({
-      company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
-    });
     // 创建列表接口对应的payload（通过监听payload的变化来请求接口）
     const [payload, setPayload] = useState(undefined);
     // 创建单位列表接口对应的payload（同上）
     const [companyPayload, setCompanyPayload] = useState(undefined);
-    // 根据payload获取search（用于路由跳转）
-    const search = useMemo(() => getSearchByPayload(payload), [payload]);
+    // 创建部门树接口对应的payload（同上）
+    const [departmentPayload, setDepartmentPayload] = useState(undefined);
+    // 获取路径参数
+    const search = useMemo(() => GET_SEARCH_BY_PAYLOAD(payload), [payload]);
+    // 获取当前账号是否为单位、所属单位、增删改查权限
+    const {
+      isUnit,
+      company,
+      hasDetailAuthority,
+      hasAddAuthority,
+      hasEditAuthority,
+      hasDeleteAuthority,
+    } = useMemo(() => {
+      const { unitType, unitId, unitName, permissionCodes } = currentUser;
+      const isUnit = unitType === 4;
+      return {
+        isUnit,
+        company: isUnit ? { key: unitId, value: unitId, label: unitName } : undefined,
+        hasDetailAuthority: permissionCodes.includes(DETAIL_CODE),
+        hasAddAuthority: permissionCodes.includes(ADD_CODE),
+        hasEditAuthority: permissionCodes.includes(EDIT_CODE),
+        hasDeleteAuthority: permissionCodes.includes(DELETE_CODE),
+      };
+    }, []);
+    // 获取表单初始值
+    const initialValues = useMemo(
+      () => ({
+        company,
+      }),
+      []
+    );
+    // 获取时间范围选择器的快捷选项
+    const ranges = useMemo(() => getRanges(), [+moment().startOf('day')]);
+    // 获取列表接口
+    const getList = useCallback(
+      (payload, callback) =>
+        dispatch({
+          type: `${NAMESPACE}/getList`,
+          payload: TRANSFORM_PAYLOAD(payload),
+          callback(isSuccess, dataOrMsg) {
+            if (!isSuccess) {
+              message.error(`获取列表数据失败，${dataOrMsg || '请稍后重试'}！`);
+            }
+            callback && callback(dataOrMsg);
+          },
+        }),
+      []
+    );
+    // 删除列表接口
+    const deleteList = useCallback(
+      (payload, callback) =>
+        dispatch({
+          type: `${NAMESPACE}/delete`,
+          payload,
+          callback(isSuccess, dataOrMsg) {
+            if (isSuccess) {
+              message.success('删除成功！');
+              // 删除成功以后重新加载当前页的数据
+              setPayload(payload => ({ ...payload }));
+            } else {
+              message.error(`删除失败，${dataOrMsg || '请稍后重试'}！`);
+            }
+            callback && callback(dataOrMsg);
+          },
+        }),
+      []
+    );
+    // 获取单位列表接口
+    const getCompanyList = useCallback(
+      (payload, callback) =>
+        dispatch({
+          type: 'dict/getCompanyList',
+          payload,
+          callback(isSuccess, dataOrMsg) {
+            if (!isSuccess) {
+              message.error(`获取单位列表数据失败，${dataOrMsg || '请稍后重试'}！`);
+            }
+            callback && callback(dataOrMsg);
+          },
+        }),
+      []
+    );
+    // 获取部门树接口
+    const getDepartmentTree = useCallback(
+      (payload, callback) =>
+        dispatch({
+          type: 'dict/getDepartmentTree',
+          payload,
+          callback(isSuccess, dataOrMsg) {
+            if (!isSuccess) {
+              message.error(`获取部门树数据失败，${dataOrMsg || '请稍后重试'}！`);
+            }
+            callback && callback(dataOrMsg);
+          },
+        }),
+      []
+    );
+    // 单位选择器change事件
+    const onCompanySelectChange = useCallback(company => {
+      // 如果已选择单位，则获取部门列表
+      if (company) {
+        setDepartmentPayload({
+          companyId: company.key,
+        });
+      }
+      // 清空部门字段值
+      form.setFieldsValue({ department: undefined });
+    }, []);
+    // 表单finish事件
+    const onFinish = useCallback(
+      values => setPayload(payload => ({ ...payload, ...TRANSFORM_VALUES(values), pageNum: 1 })),
+      []
+    );
+    // 表格change事件
+    const onTableChange = useCallback(
+      ({ current, pageSize }) =>
+        setPayload(payload => ({
+          ...payload,
+          pageNum: pageSize === payload.pageSize ? current : 1,
+          pageSize,
+        })),
+      []
+    );
     // 获取表格配置
     const columns = useMemo(
       () =>
-        getColumns({
-          isUnit,
+        GET_COLUMNS({
           search,
+          isUnit,
           hasDetailAuthority,
           hasEditAuthority,
           hasDeleteAuthority,
           deleteList,
-          setPayload,
         }),
       [search]
     );
-    // 获取时间范围选择器的快捷选项
-    const ranges = useMemo(() => getRanges(), [+moment().startOf('day')]);
     // 初始化
     useEffect(() => {
       // 获取payload
-      const payload = getPayloadByQuery({ ...getQueryByPayload(initialValues), ...query });
+      const initialQuery = GET_QUERY_BY_PAYLOAD(initialValues);
+      const payload = GET_PAYLOAD_BY_QUERY({
+        ...initialQuery,
+        ...query,
+        company: isUnit ? initialQuery.company : query.company,
+      });
       // 获取列表
       setPayload(payload);
       // 如果当前账号不是单位账号，则获取单位列表
       if (!isUnit) {
-        setCompanyPayload({ pageNum: 1, pageSize: 10 });
+        setCompanyPayload({ pageNum: 1, pageSize: PAGE_SIZE });
       }
-      // 如果当前账号是单位账号或者已选择单位，则获取部门列表
-      if (isUnit || payload.company) {
-        getDepartmentTree({
-          companyId: isUnit ? unitId : payload.company.key,
+      // 如果已选择单位，则获取部门列表
+      if (payload.company) {
+        setCompanyPayload({
+          companyId: payload.company.key,
         });
       }
     }, []);
@@ -495,6 +518,8 @@ export default connect(
           const { pageNum, pageSize, ...values } = payload;
           // 设置表单值
           form.setFieldsValue(values);
+          // 设置路径
+          router.replace(`${LIST_PATH}${GET_SEARCH_BY_PAYLOAD(payload)}`);
         }
       },
       [payload]
@@ -508,36 +533,19 @@ export default connect(
       },
       [companyPayload]
     );
-    // 单位选择器change事件
-    const onCompanySelectChange = useCallback(company => {
-      // 如果已选择单位，则获取部门列表
-      if (company) {
-        getDepartmentTree({
-          companyId: company.key,
-        });
-      }
-      // 清空部门字段值
-      form.setFieldsValue({ department: undefined });
-    }, []);
-    // 表单finish事件
-    const onFinish = useCallback(
-      values => setPayload(payload => ({ ...payload, ...transformValues(values), pageNum: 1 })),
-      []
-    );
-    // 表格change事件
-    const onTableChange = useCallback(
-      ({ current: pageNum, pageSize }) =>
-        setPayload(payload => ({
-          ...payload,
-          pageNum: pageSize === payload.pageSize ? pageNum : 1,
-          pageSize,
-        })),
-      []
+    // 当departmentPayload发生变化时获取部门树
+    useEffect(
+      () => {
+        if (departmentPayload) {
+          getDepartmentTree(departmentPayload);
+        }
+      },
+      [departmentPayload]
     );
     return (
       <PageHeaderLayout
-        breadcrumbList={breadcrumbList}
-        title={breadcrumbList[breadcrumbList.length - 1].title}
+        breadcrumbList={BREADCRUMB_LIST}
+        title={BREADCRUMB_LIST[BREADCRUMB_LIST.length - 1].title}
       >
         <Card className={styles.formCard}>
           <Form form={form} initialValues={initialValues} onFinish={onFinish}>
@@ -551,11 +559,11 @@ export default connect(
                 const values = getFieldsValue();
                 return (
                   <Row gutter={24}>
-                    {getFields({
-                      isUnit,
-                      values,
+                    {GET_FIELDS({
                       form,
+                      values,
                       search,
+                      isUnit,
                       hasAddAuthority,
                       companyList,
                       loadingCompanyList,
@@ -581,7 +589,7 @@ export default connect(
             rowKey="id"
             columns={columns}
             dataSource={list}
-            loading={loading || deleting}
+            loading={loading}
             scroll={{
               x: true,
             }}
