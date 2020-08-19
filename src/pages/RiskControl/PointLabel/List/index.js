@@ -398,7 +398,7 @@ export default connect(
               新增
             </Button>
             <Button
-              href="http://data.jingan-china.cn/v2/chem/file1/风险研判与承诺公告模板.xls"
+              href="http://data.jingan-china.cn/v2/chem/file1/点位标签库模板.xls"
               target="_blank"
               style={{ marginRight: '10px' }}
             >

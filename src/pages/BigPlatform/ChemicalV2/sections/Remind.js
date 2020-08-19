@@ -34,7 +34,7 @@ const list = [
     url: 'unit-license/danger-chemicals-permit/list',
   },
   {
-    name: '特种作业操作证人员',
+    name: '特种作业操作人员证',
     key: 'specialworkPerson',
     url: 'operation-safety/special-operation-permit/list',
   },

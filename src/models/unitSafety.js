@@ -178,14 +178,14 @@ function handleSafeList (list) {
           }
         });
         break;
-      case 'special_people': // 特种作业操作证人员
+      case 'special_people': // 特种作业操作人员证
         list.forEach(({ endDate, nextDate, name, id }) => {
           const expiredDays = now.diff(endDate, 'days');
           const expiredDays2 = now.diff(nextDate, 'days');
           if (expiredDays > 0) {
             prev.push({
               id,
-              infoType: '特种作业操作证人员',
+              infoType: '特种作业操作人员证',
               name,
               expiredType: '有效期',
               expireDate: endDate,
@@ -194,7 +194,7 @@ function handleSafeList (list) {
           } else if (expiredDays2 > 0) {
             prev.push({
               id,
-              infoType: '特种作业操作证人员',
+              infoType: '特种作业操作人员证',
               name,
               expiredType: '复审日期',
               expireDate: nextDate,

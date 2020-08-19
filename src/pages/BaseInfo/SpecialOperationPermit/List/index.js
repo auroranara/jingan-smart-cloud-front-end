@@ -45,7 +45,7 @@ const {
   home: homeTitle,
   specialOperationPermit: { menu: menuTitle },
 } = titles;
-const title = "特种作业操作证人员"
+const title = "特种作业操作人员证"
 const breadcrumbList = [
   {
     title: homeTitle,
@@ -391,7 +391,7 @@ export default class specialOperationPermitList extends PureComponent {
             style={{ marginRight: '10px' }}
           >新增</AuthButton>
           <Button
-            href="http://data.jingan-china.cn/import/excel/特种设备操作证人员.xls"
+            href="http://data.jingan-china.cn/v2/chem/file/特种作业操作人员证模板.xls"
             target="_blank"
             style={{ marginRight: '10px' }}
           >
