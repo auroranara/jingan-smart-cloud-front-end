@@ -316,7 +316,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
       //   render: (val, { workProjectName }) => workProjectName ? workProjectName.split('-')[1] : '暂无数据',
       // },
       {
-        title: '作业人员证',
+        title: '操作证',
         dataIndex: 'permit',
         align: 'center',
         width: 300,
@@ -324,7 +324,7 @@ export default class SpecialEquipmentOperatorsList extends PureComponent {
           <div style={{ textAlign: 'left' }}>
             {/* {!isNaN(paststatus) && [1, 2].includes(+paststatus) && (<div style={{ color: 'red' }}>{expirationStatusList[+paststatus].label}</div>)} */}
             <div>证号：{operapersonNumber}</div>
-            <div>初领日期：{this.formateTime(firstDate)}</div>
+            <div>批准日期：{this.formateTime(firstDate)}</div>
             <div>有效日期：{`${this.formateTime(endDate)}`}</div>
             <div>复审日期：{this.formateTime(reviewDate)}</div>
           </div>

@@ -3,7 +3,18 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Card, Table, Upload, Modal, message, Divider } from 'antd';
+import {
+  Button,
+  Card,
+  Table,
+  Upload,
+  Modal,
+  message,
+  Divider,
+  Transfer,
+  Input,
+  Select,
+} from 'antd';
 
 import { getToken } from 'utils/authority';
 import ToolBar from '@/components/ToolBar';
@@ -14,10 +25,11 @@ import codes from '@/utils/codes';
 import {
   BREADCRUMBLIST,
   ROUTER,
-  SEARCH_FIELDS as FIELDS,
   TABLE_COLUMNS as COLUMNS,
   DetailModal,
 } from './utils';
+import debounce from 'lodash/debounce';
+import { lecSettings } from '@/pages/RiskControl/SafetyChecklist/config.js';
 
 // 权限
 const {
@@ -25,14 +37,15 @@ const {
     safetyRiskList: { view: viewAuth, delete: deleteAuth, import: importAuth, export: exportAuth },
   },
 } = codes;
-
+const { riskLevelList } = lecSettings;
 const url =
   'http://data.jingan-china.cn/v2/chem/file1/%E5%AE%89%E5%85%A8%E9%A3%8E%E9%99%A9%E5%88%86%E7%BA%A7%E7%AE%A1%E6%8E%A7%E6%B8%85%E5%8D%95.xls';
 
-@connect(({ twoInformManagement, fourColorImage, user, loading }) => ({
+@connect(({ twoInformManagement, fourColorImage, user, electronicInspection, loading }) => ({
   twoInformManagement,
   fourColorImage,
   user,
+  electronicInspection,
   loading: loading.models.twoInformManagement,
 }))
 @Form.create()
@@ -47,27 +60,72 @@ export default class TableList extends PureComponent {
       detailVisible: false, // 清单弹框是否可见
       currentPage: 1,
       detailId: '', // 查看清单ID
+      personModalVisible: false, // 选择责任人弹窗可见
+      historyModalVisible: false, // 历史记录弹窗可见
+      targetKeys: [], // 责任人穿梭框-右侧key数组
+      selectedKeys: [], // 责任人穿梭框已选择key数组
+      personList: [], // 责任人列表
+      info: {}, // 详情
+      data: { // 列表数据
+        list: [],
+        pagination: {
+          pageNum: 1,
+          pageSize: 10,
+          total: 0,
+        },
+      },
+      history: {
+        list: [],
+        pagination: {
+          pageNum: 1,
+          pageSize: 10,
+          total: 0,
+        },
+      },
+      areaList: [],
     };
     this.pageNum = 1;
     this.pageSize = 10;
+    this.fetchPersonDebounce = debounce(this.fetchReevaluatorList, 300);
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchList();
+    this.fetchAreaList();
   }
 
   // 获取风险分区列表
   fetchList = (pageNum = 1, pageSize = 10, params = {}) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'fourColorImage/fetchList',
+      type: 'twoInformManagement/fetchSafetyListNew',
       payload: {
         ...params,
         pageSize,
         pageNum,
+        historyType: 1, // 1 最新 0 历史
+      },
+      callback: data => {
+        this.setState({ data });
       },
     });
   };
+
+  // 获取历史记录
+  fetchHistory = (pageNum = 1, pageSize = 10) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'twoInformManagement/fetchSafetyListNew',
+      payload: {
+        pageSize,
+        pageNum,
+        historyType: 0, // 1 最新 0 历史
+      },
+      callback: data => {
+        this.setState({ history: data });
+      },
+    });
+  }
 
   // 获取清单列表
   fetchSafetyList = (pageNum = 1, pageSize = 10, params = {}) => {
@@ -81,6 +139,39 @@ export default class TableList extends PureComponent {
       },
     });
   };
+
+  // 获取区域列表
+  fetchAreaList = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'twoInformManagement/fetchAreaList',
+      payload: { pageNum: 1, pageSize: 0 },
+      callback: list => { this.setState({ areaList: list }) },
+    });
+  }
+
+  // 获取负责人员列表
+  fetchReevaluatorList = (payload = {}) => {
+    const { dispatch, user: { isCompany, currentUser } } = this.props;
+    const company = this.form && this.form.getFieldValue('company');
+    dispatch({
+      type: 'electronicInspection/fetchPersonList',
+      payload: {
+        pageNum: 1,
+        pageSize: 0,
+        companyId: isCompany ? currentUser.companyId : company ? company.key : undefined,
+        ...payload,
+      },
+      callback: data => {
+        this.setState({
+          personList: data.list.map(item => ({
+            key: item.studentId,
+            title: item.name,
+          })),
+        });
+      },
+    });
+  }
 
   // 查询
   handleSearch = values => {
@@ -195,32 +286,83 @@ export default class TableList extends PureComponent {
     this.setState({ detailVisible: false });
   };
 
-  render() {
+  // 打开选择责任人弹窗
+  handleViewPersonModal = row => {
+    this.fetchReevaluatorList({ pageSize: 100 });
+    this.setState({
+      personModalVisible: true,
+      info: row,
+      selectedKeys: [], targetKeys: row.principal ? row.principal.split(',') : [],
+    });
+  }
+
+  // 穿梭框两栏间转移
+  handleChange = (nextTargetKeys, direction, moveKeys) => {
+    this.setState({ targetKeys: nextTargetKeys });
+  };
+
+  // 穿梭框选择
+  handleSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
+    this.setState({ selectedKeys: [...sourceSelectedKeys, ...targetSelectedKeys] });
+  };
+
+  // 穿梭框搜索
+  onPersonSearch = (_, value) => {
+    this.fetchPersonDebounce({ name: value });
+  }
+
+  // 选择责任人弹窗点击确认
+  submitPerson = () => {
+    const { dispatch } = this.props;
+    const { targetKeys, formData, info } = this.state;
+    dispatch({
+      type: 'twoInformManagement/editPrincipal',
+      payload: {
+        id: info.id,
+        principal: Array.isArray(targetKeys) && targetKeys.length ? targetKeys.join(',') : '',
+      },
+      callback: (success, res) => {
+        if (success) {
+          message.success('操作成功');
+          this.setState({ personModalVisible: false });
+          this.fetchList(1, this.pageSize, { ...formData });
+        } else {
+          message.error(res.msg || '操作失败');
+        }
+      },
+    });
+  }
+
+  handleViewHistory = () => {
+    this.fetchHistory();
+    this.setState({ historyModalVisible: true });
+  }
+
+  render () {
     const {
       loading = false,
-      twoInformManagement: {
-        safetyData: { list = [], pagination },
-      },
-      fourColorImage: {
-        data: {
-          a: numberUnit,
-          list: riskList = [],
-          pagination: { pageNum, pageSize, total },
-        },
-      },
-      user: {
-        currentUser: { unitType },
-      },
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const {
       fileList,
       modalVisible,
-      currentPage,
+      // currentPage,
       areaId,
       companyId,
-      detailVisible,
+      // detailVisible,
       importLoading,
+      personModalVisible,
+      targetKeys,
+      selectedKeys,
+      personList,
+      data: {
+        list = [],
+        pagination: { pageNum, pageSize, total },
+      },
+      historyModalVisible,
+      history,
+      areaList,
     } = this.state;
 
     const uploadExportButton = <LegacyIcon type={importLoading ? 'loading' : 'upload'} />;
@@ -231,86 +373,143 @@ export default class TableList extends PureComponent {
     };
 
     const extraColumns = [
+      // {
+      //   title: '附件',
+      //   dataIndex: 'file',
+      //   key: 'file',
+      //   align: 'center',
+      //   render: (val, text) => {
+      //     return (
+      //       <AuthA code={viewAuth} onClick={() => this.handleDetailModal(text.id)}>
+      //         查看清单
+      //       </AuthA>
+      //     );
+      //   },
+      // },
       {
-        title: '附件',
-        dataIndex: 'file',
-        key: 'file',
-        align: 'center',
-        render: (val, text) => {
-          return (
-            <AuthA code={viewAuth} onClick={() => this.handleDetailModal(text.id)}>
-              查看清单
-            </AuthA>
-          );
-        },
+        title: '来源分析',
+        key: 'source',
+        align: 'left',
+        fixed: 'right',
+        width: 200,
+        render: (val, { code, riskAnalyze, safeCheckId }) => (
+          <div>
+            <a>{(+riskAnalyze === 1 && 'SCL') || (+riskAnalyze === 2 && 'JHA') || ''}</a><br />
+            <a>编号：{code}</a>
+          </div>
+        ),
       },
       {
         title: '操作',
-        dataIndex: 'operation',
         key: 'operation',
         align: 'center',
-        render: (val, text) => {
-          return (
-            <Fragment>
-              <AuthA
-                code={importAuth}
-                onClick={() => this.handleImportShow(text.id, text.companyId)}
-              >
-                导入数据
-              </AuthA>
-              <Divider type="vertical" />
-              <AuthPopConfirm
-                code={deleteAuth}
-                title="确定删除当前该内容吗？"
-                onConfirm={() => this.handleDeleteClick(text.id)}
-                okText="确定"
-                cancelText="取消"
-              >
-                删除
-              </AuthPopConfirm>
-              <Divider type="vertical" />
-              <AuthA
-                code={exportAuth}
-                onClick={() => this.handleExportShow(text.id, text.companyId)}
-              >
-                导出数据
-              </AuthA>
-            </Fragment>
-          );
-        },
+        fixed: 'right',
+        width: 150,
+        render: (val, row) => (
+          <Fragment>
+            <a onClick={() => this.handleViewPersonModal(row)}>编辑责任人</a>
+          </Fragment>
+        ),
       },
+      // {
+      //   title: '操作',
+      //   dataIndex: 'operation',
+      //   key: 'operation',
+      //   align: 'center',
+      //   render: (val, text) => {
+      //     return (
+      //       <Fragment>
+      //         <AuthA
+      //           code={importAuth}
+      //           onClick={() => this.handleImportShow(text.id, text.companyId)}
+      //         >
+      //           导入数据
+      //         </AuthA>
+      //         <Divider type="vertical" />
+      //         <AuthPopConfirm
+      //           code={deleteAuth}
+      //           title="确定删除当前该内容吗？"
+      //           onConfirm={() => this.handleDeleteClick(text.id)}
+      //           okText="确定"
+      //           cancelText="取消"
+      //         >
+      //           删除
+      //         </AuthPopConfirm>
+      //         <Divider type="vertical" />
+      //         <AuthA
+      //           code={exportAuth}
+      //           onClick={() => this.handleExportShow(text.id, text.companyId)}
+      //         >
+      //           导出数据
+      //         </AuthA>
+      //       </Fragment>
+      //     );
+      //   },
+      // },
     ];
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
 
     const toolBarAction = (
-      <Button type="primary" style={{ marginTop: '8px' }}>
-        <a href={url}>下载模板</a>
-      </Button>
+      // <Button type="primary" style={{ marginTop: '8px' }}>
+      //   <a href={url}>下载模板</a>
+      // </Button>
+      <Fragment>
+        <Button style={{ marginTop: '8px' }} type="primary" onClick={this.handleViewHistory}>历史记录</Button>
+      </Fragment>
     );
-
-    const modalData = {
-      detailVisible,
-      currentPage,
-      list,
-      pagination,
-      modalTitle: '查看清单',
-      handleDetailClose: this.handleDetailClose,
-      handleTableData: this.handleTableData,
-      handleDetailPageChange: this.handleDetailPageChange,
-    };
+    const FIELDS = [
+      {
+        id: 'areaId',
+        label: '区域名称',
+        render: () => (
+          <Select placeholder="请选择" allowClear>
+            {areaList.map(({ id, areaName }) => (
+              <Select.Option key={id} value={id}>{areaName}</Select.Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        id: 'objectTitle',
+        label: '风险点名称',
+        render: () => <Input placeholder="请输入" allowClear />,
+      },
+      {
+        id: 'companyName',
+        label: '单位名称：',
+        render: () => <Input placeholder="请输入" allowClear />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'dangerLevel',
+        label: '风险等级',
+        render: () => (
+          <Select placeholder="请选择" allowClear>
+            {riskLevelList.map(({ level }) => (
+              <Select.Option key={level} value={level}>{level + '级'}</Select.Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        id: 'controlHierarchy',
+        label: '管控层级',
+        render: () => (
+          <Select placeholder="请选择" allowClear>
+            {riskLevelList.map(({ level, controllevel }) => (
+              <Select.Option key={level} value={level}>{controllevel}</Select.Option>
+            ))}
+          </Select>
+        ),
+      },
+    ];
 
     return (
       <PageHeaderLayout
         title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
         breadcrumbList={breadcrumbList}
-        content={
-          <p className={styles1.total}>
-            单位数量：
-            {numberUnit}
-          </p>
-        }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
@@ -321,7 +520,7 @@ export default class TableList extends PureComponent {
           />
         </Card>
         <div className={styles1.container}>
-          {riskList.length > 0 ? (
+          {list.length > 0 ? (
             <Table
               bordered
               rowKey="id"
@@ -331,9 +530,8 @@ export default class TableList extends PureComponent {
                   ? [...COLUMNS.slice(1, COLUMNS.length), ...extraColumns]
                   : [...COLUMNS, ...extraColumns]
               }
-              dataSource={riskList}
-              onChange={this.onTableChange}
-              // scroll={{ x: 'max-content' }}
+              dataSource={list}
+              scroll={{ x: 'max-content' }}
               pagination={{
                 current: pageNum,
                 pageSize,
@@ -348,10 +546,10 @@ export default class TableList extends PureComponent {
               }}
             />
           ) : (
-            <Card bordered={false} style={{ textAlign: 'center' }}>
-              <span>暂无数据</span>
-            </Card>
-          )}
+              <Card bordered={false} style={{ textAlign: 'center' }}>
+                <span>暂无数据</span>
+              </Card>
+            )}
         </div>
         <Modal
           title="导入"
@@ -381,7 +579,70 @@ export default class TableList extends PureComponent {
             </Form.Item>
           </Form>
         </Modal>
-        <DetailModal {...modalData} />
+        <Modal
+          width={750}
+          title="选择责任人"
+          visible={personModalVisible}
+          onOk={this.submitPerson}
+          onCancel={() => { this.setState({ personModalVisible: false }) }}
+        >
+          <Transfer
+            dataSource={personList}
+            titles={['待选择', '已选择']}
+            targetKeys={targetKeys}
+            selectedKeys={selectedKeys}
+            onChange={this.handleChange}
+            onSelectChange={this.handleSelectChange}
+            render={item => item.title}
+            listStyle={{
+              width: 300,
+              height: 400,
+            }}
+            showSearch
+            onSearch={this.onPersonSearch}
+          />
+        </Modal>
+        <Modal
+          width={900}
+          title="历史记录"
+          visible={historyModalVisible}
+          closable={false}
+          footer={[
+            <Button onClick={() => this.setState({ historyModalVisible: false })}>
+              关闭
+            </Button>,
+          ]}
+        >
+          {list.length > 0 ? (
+            <Table
+              bordered
+              rowKey="id"
+              loading={loading}
+              columns={
+                unitType === 4
+                  ? [...COLUMNS.slice(1, COLUMNS.length), ...extraColumns.slice(0, extraColumns.length - 1)]
+                  : [...COLUMNS, ...extraColumns.slice(0, extraColumns.length - 1)]
+              }
+              dataSource={history.list}
+              scroll={{ x: 'max-content' }}
+              pagination={{
+                current: history.pagination.pageNum,
+                pageSize: history.pagination.pageSize,
+                total: history.pagination.total,
+                showQuickJumper: true,
+                showSizeChanger: true,
+                onChange: this.fetchHistory,
+                onShowSizeChange: (num, size) => {
+                  this.fetchHistory(1, size);
+                },
+              }}
+            />
+          ) : (
+              <div bordered={false} style={{ textAlign: 'center' }}>
+                <span>暂无数据</span>
+              </div>
+            )}
+        </Modal>
       </PageHeaderLayout>
     );
   }

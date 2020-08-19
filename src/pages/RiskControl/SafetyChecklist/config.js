@@ -182,6 +182,7 @@ export const lecSettings = {
       colorName: '红色',
       color: 'red',
       degree: '重大风险',
+      controllevel: '公司（厂）级、车间（部室）级、班组、岗位管控',
     },
     {
       range: value => value >= 160 && value <= 319,
@@ -189,6 +190,7 @@ export const lecSettings = {
       colorName: '橙色',
       color: 'orange',
       degree: '较大风险',
+      controllevel: '公司（厂）级、车间（部室）级、班组、岗位管控',
     },
     {
       range: value => value >= 70 && value <= 159,
@@ -196,6 +198,7 @@ export const lecSettings = {
       colorName: '黄色',
       color: '#FFCC33',
       degree: '一般风险',
+      controllevel: '车间（部室）级、班组、岗位管控',
     },
     {
       range: value => value < 70,
@@ -203,6 +206,7 @@ export const lecSettings = {
       colorName: '蓝色',
       color: '#00b0f0',
       degree: '低风险',
+      controllevel: '班组、岗位管控',
     },
   ],
 };
@@ -334,6 +338,7 @@ export const lsSettings = {
       colorName: '红色',
       color: 'red',
       degree: '重大风险',
+      controllevel: '公司（厂）级、车间（部室）级、班组、岗位管控',
     },
     {
       range: value => value >= 15 && value <= 16,
@@ -341,6 +346,7 @@ export const lsSettings = {
       colorName: '橙色',
       color: 'orange',
       degree: '较大风险',
+      controllevel: '公司（厂）级、车间（部室）级、班组、岗位管控',
     },
     {
       range: value => value >= 9 && value <= 12,
@@ -348,6 +354,7 @@ export const lsSettings = {
       colorName: '黄色',
       color: '#FFCC33',
       degree: '一般风险',
+      controllevel: '车间（部室）级、班组、岗位管控',
     },
     {
       range: value => value >= 1 && value <= 8,
@@ -355,6 +362,7 @@ export const lsSettings = {
       colorName: '蓝色',
       color: '#00b0f0',
       degree: '低风险',
+      controllevel: '班组、岗位管控',
     },
   ],
 };
