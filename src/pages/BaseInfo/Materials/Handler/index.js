@@ -134,7 +134,7 @@ export default class MaterialsHandler extends PureComponent {
       compayModalVisible: false,
       // 选中的企业
       selectedCompany: {},
-      isProduct: false, // 物料类型是否是中间产品或最终产品（物料类型 ：type '1' 生产原料, '2' 中间产品 '3' ,最终产品）
+      isProduct: false, // 物料类型是否是中间产品或最终产品（物料类型 ：type '1' 生产原料, '2' 中间产品，'3' 最终产品，'4' 辅料）
       majorHazardVisible: false,
       keySupervisionVisible: false,
       selectedMsds: {},
@@ -662,7 +662,7 @@ export default class MaterialsHandler extends PureComponent {
           </FormItem>
           <FormItem label="物料类型" {...formItemLayout}>
             {getFieldDecorator('type', {
-              initialValue: '1',
+              initialValue: '4',
               rules: [{ required: true, message: '请选择物料类型' }],
             })(
               <RadioGroup {...itemStyles} onChange={this.handleTypeChange} buttonStyle="solid">
