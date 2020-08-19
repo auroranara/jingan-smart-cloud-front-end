@@ -1,23 +1,30 @@
 import locale from '@/locales/zh-CN';
 
-export const modelName = '$namespace';
-export const listName = 'list';
-export const detailName = 'detail';
-export const listApi = '$namespace/getList';
-export const detailApi = '$namespace/getDetail';
-export const addApi = '$namespace/add';
-export const editApi = '$namespace/edit';
-export const deleteApi = '$namespace/delete';
-export const detailCode = '$detailCode';
-export const addCode = '$addCode';
-export const editCode = '$editCode';
-export const deleteCode = '$deleteCode';
-export const listPath = '$listPath';
-export const detailPath = '$detailPath';
-export const addPath = '$addPath';
-export const editPath = '$editPath';
-export const parentLocale = locale['$parentLocale'];
-export const listLocale = locale['$listLocale'];
-export const detailLocale = locale['$detailLocale'];
-export const addLocale = locale['$addLocale'];
-export const editLocale = locale['$editLocale'];
+/* 当前模块的model */
+export const NAMESPACE = '$namespace';
+/* 详情页面的权限 */
+export const DETAIL_CODE = '$detailCode';
+/* 新增页面的权限 */
+export const ADD_CODE = '$addCode';
+/* 编辑页面的权限 */
+export const EDIT_CODE = '$editCode';
+/* 删除页面的权限 */
+export const DELETE_CODE = '$deleteCode';
+/* 列表页面的路径 */
+export const LIST_PATH = '$listPath';
+/* 详情页面的路径 */
+export const DETAIL_PATH = '$detailPath';
+/* 新增页面的路径 */
+export const ADD_PATH = '$addPath';
+/* 编辑页面的路径 */
+export const EDIT_PATH = '$editPath';
+/* 上级菜单的标题 */
+export const PARENT_LOCALE = locale['$parentLocale'];
+/* 列表页面的标题 */
+export const LIST_LOCALE = locale['$listLocale'];
+/* 详情页面的标题 */
+export const DETAIL_LOCALE = locale['$detailLocale'];
+/* 新增页面的标题 */
+export const ADD_LOCALE = locale['$addLocale'];
+/* 编辑页面的标题 */
+export const EDIT_LOCALE = locale['$editLocale'];

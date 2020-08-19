@@ -42,10 +42,12 @@ export const minuteFormat = 'YYYY-MM-DD HH:mm';
 export const dateRangePickerPlaceholder = ['开始日期', '结束日期'];
 // 时间范围选择器提示文字
 export const timeRangePickerPlaceholder = ['开始时间', '结束时间'];
+// 默认每页显示数量
+export const PAGE_SIZE = 10;
 // 分页
 export const pagination = {
   pageNum: 1,
-  pageSize: 10,
+  pageSize: PAGE_SIZE,
 };
 // 空值
 export const EmptyText = () => <span style={{ color: 'rgba(0, 0, 0, 0.45)' }}>---</span>;
