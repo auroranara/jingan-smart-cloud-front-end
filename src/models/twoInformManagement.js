@@ -15,6 +15,9 @@ import {
   querSafetyPromiseAdd,
   querySafetyPromiseEdit,
   querySafetyPromiseDelete,
+  fetchSafetyListNew,
+  editPrincipal,
+  fetchAreaList,
 } from '../services/twoInformManagement';
 
 import fileDownload from 'js-file-download';
@@ -50,7 +53,7 @@ export default {
 
   effects: {
     // 两单信息管理
-    *fetchDagerList({ payload, callback }, { call, put }) {
+    *fetchDagerList ({ payload, callback }, { call, put }) {
       const response = yield call(queryDangerElementList, payload);
       if (response.code === 200) {
         yield put({
@@ -61,19 +64,19 @@ export default {
       }
     },
 
-    *fetchDangerSync({ success, error }, { call }) {
+    *fetchDangerSync ({ success, error }, { call }) {
       const response = yield call(queryDangerElementSync);
       if (response && response.code === 200) {
         if (success) success();
       } else if (error) error();
     },
 
-    *fetchDangerDel({ payload, callback }, { call, put }) {
+    *fetchDangerDel ({ payload, callback }, { call, put }) {
       const response = yield call(queryDangerElementDel, payload);
       if (callback) callback(response);
     },
 
-    *fetchBindDangerCheck({ payload, success, error }, { call, put }) {
+    *fetchBindDangerCheck ({ payload, success, error }, { call, put }) {
       const response = yield call(queryBindDangerCheck, payload);
       if (response.code === 200) {
         yield put({
@@ -88,12 +91,12 @@ export default {
       }
     },
 
-    *fetchDangerExport({ payload }, { call }) {
+    *fetchDangerExport ({ payload }, { call }) {
       const blob = yield call(queryDangerExport, payload);
       fileDownload(blob, `危险（有害）因素排查辨识清单_${moment().format('YYYYMMDD')}.xls`);
     },
 
-    *fetchSafetyList({ payload, callback }, { call, put }) {
+    *fetchSafetyList ({ payload, callback }, { call, put }) {
       const response = yield call(querySafeRiskList, payload);
       if (response.code === 200) {
         yield put({
@@ -104,19 +107,31 @@ export default {
       if (callback) callback(response.data);
     },
 
-    *fetchSafetySync({ success, error }, { call }) {
+    // 新-获取安全风险分级管控清单列表
+    *fetchSafetyListNew ({ payload, callback }, { call, put }) {
+      const response = yield call(fetchSafetyListNew, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveSafetyList',
+          payload: response,
+        });
+      }
+      if (callback) callback(response.data);
+    },
+
+    *fetchSafetySync ({ success, error }, { call }) {
       const response = yield call(querySafeRiskSync);
       if (response && response.code === 200) {
         if (success) success();
       } else if (error) error();
     },
 
-    *fetchSafetyDel({ payload, callback }, { call, put }) {
+    *fetchSafetyDel ({ payload, callback }, { call, put }) {
       const response = yield call(querySafeRiskDel, payload);
       if (callback) callback(response);
     },
 
-    *fetchBindSafetyControl({ payload, success, error }, { call, put }) {
+    *fetchBindSafetyControl ({ payload, success, error }, { call, put }) {
       const response = yield call(queryBindSafetyControl, payload);
       if (response.code === 200) {
         yield put({
@@ -131,13 +146,13 @@ export default {
       }
     },
 
-    *fetchSafetyExport({ payload }, { call }) {
+    *fetchSafetyExport ({ payload }, { call }) {
       const blob = yield call(querySafetyExport, payload);
       fileDownload(blob, `安全风险分级管控清单_${moment().format('YYYYMMDD')}.xls`);
     },
 
     // 安全承诺公告
-    *fetchSafetyPromiseList({ payload, callback }, { call, put }) {
+    *fetchSafetyPromiseList ({ payload, callback }, { call, put }) {
       const response = yield call(querySafetyPromiseList, payload);
       if (response.code === 200) {
         yield put({
@@ -148,7 +163,7 @@ export default {
       }
     },
 
-    *fetchSafetyPromiseAdd({ payload, success, error }, { call, put }) {
+    *fetchSafetyPromiseAdd ({ payload, success, error }, { call, put }) {
       const response = yield call(querSafetyPromiseAdd, payload);
       if (response.code === 200) {
         yield put({
@@ -163,7 +178,7 @@ export default {
       }
     },
 
-    *fetchSafetyPromiseEdit({ payload, success, error }, { call, put }) {
+    *fetchSafetyPromiseEdit ({ payload, success, error }, { call, put }) {
       const response = yield call(querySafetyPromiseEdit, payload);
       if (response.code === 200) {
         yield put({
@@ -178,7 +193,7 @@ export default {
       }
     },
 
-    *fetchSafetyPromiseDel({ payload, success, error }, { call, put }) {
+    *fetchSafetyPromiseDel ({ payload, success, error }, { call, put }) {
       const response = yield call(querySafetyPromiseDelete, payload);
       if (response.code === 200) {
         yield put({ type: 'saveSafetyPromiseDel', payload: payload.id });
@@ -189,11 +204,21 @@ export default {
         error(response.msg);
       }
     },
+    // 编辑负责人
+    *editPrincipal ({ payload, callback }, { call }) {
+      const res = yield call(editPrincipal, payload);
+      callback && callback(res && res.code === 200, res);
+    },
+    // 获取区域列表
+    *fetchAreaList ({ payload, callback }, { call }) {
+      const res = yield call(fetchAreaList, payload);
+      callback && callback(res && res.code === 200 && res.data ? res.data.list : []);
+    },
   },
 
   reducers: {
     // 两单信息管理
-    saveDangerList(state, { payload }) {
+    saveDangerList (state, { payload }) {
       const { data, msg } = payload;
       return {
         ...state,
@@ -202,7 +227,7 @@ export default {
       };
     },
 
-    saveSafetyList(state, { payload }) {
+    saveSafetyList (state, { payload }) {
       const { data, msg } = payload;
       return {
         ...state,
@@ -211,7 +236,7 @@ export default {
       };
     },
 
-    saveBindDangerCheck(state, { payload }) {
+    saveBindDangerCheck (state, { payload }) {
       return {
         ...state,
         dangerBindData: {
@@ -221,7 +246,7 @@ export default {
       };
     },
 
-    saveBindSafetyControl(state, { payload }) {
+    saveBindSafetyControl (state, { payload }) {
       return {
         ...state,
         safetyBindData: {
@@ -232,7 +257,7 @@ export default {
     },
 
     // 安全承诺公告
-    saveSafetyPromiseList(state, { payload }) {
+    saveSafetyPromiseList (state, { payload }) {
       const { data } = payload;
       return {
         ...state,
@@ -240,14 +265,14 @@ export default {
       };
     },
 
-    saveSafetyPromiseAdd(state, { payload }) {
+    saveSafetyPromiseAdd (state, { payload }) {
       return {
         ...state,
         safetyPromiseDetail: payload,
       };
     },
 
-    saveSafetyPromiseEdit(state, { payload }) {
+    saveSafetyPromiseEdit (state, { payload }) {
       return {
         ...state,
         safetyPromiseDetail: {
@@ -257,14 +282,14 @@ export default {
       };
     },
 
-    clearSafetyPromiseDetail(state) {
+    clearSafetyPromiseDetail (state) {
       return {
         ...state,
         safetyPromiseDetail: { data: [] },
       };
     },
 
-    saveSafetyPromiseDel(state, { payload: id }) {
+    saveSafetyPromiseDel (state, { payload: id }) {
       return {
         ...state,
         safetyPromiseData: {

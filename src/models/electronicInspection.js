@@ -62,12 +62,14 @@ export default {
       callback && callback(res && res.code === 200, detail);
     },
     // 获取负责人列表
-    *fetchPersonList ({ payload }, { call, put }) {
+    *fetchPersonList ({ payload, callback }, { call, put }) {
       const res = yield call(fetchPersonList, payload);
+      const data = res && res.code === 200 && res.data ? res.data : defaultData;
       yield put({
         type: 'savePerson',
-        payload: res && res.code === 200 && res.data ? res.data : defaultData,
-      })
+        payload: data,
+      });
+      callback && callback(data);
     },
   },
 

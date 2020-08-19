@@ -5,12 +5,14 @@ import '@ant-design/compatible/assets/index.css';
 import { Input, Modal, Table } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
+import { lecSettings } from '@/pages/RiskControl/SafetyChecklist/config.js';
 
 export const PAGE_SIZE = 1;
 export const ROUTER = '/two-information-management'; // modify
 export const LIST_URL = `${ROUTER}/safety-risk-list/list`;
 
 const WIDTH = 60;
+const { riskLevelList } = lecSettings;
 
 export const LIST = [
   // modify
@@ -50,55 +52,113 @@ export const BREADCRUMBLIST = [
 //   },
 // ];
 
-export const SEARCH_FIELDS = [
-  {
-    id: 'companyName',
-    label: '单位名称：',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'zoneName',
-    label: '风险分区',
-    render: () => <Input placeholder="请输入" allowClear />,
-  },
-];
-
 export const TABLE_COLUMNS = [
   {
     title: '单位名称',
     dataIndex: 'companyName',
     key: 'companyName',
     align: 'center',
-    render: val => (
-      <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
+    width: 200,
+    render: value => (<Ellipsis tooltip lines={1}>{value}</Ellipsis>),
+  },
+  {
+    title: '区域名称',
+    dataIndex: 'areaName',
+    key: 'areaName',
+    align: 'center',
+    width: 150,
+  },
+  {
+    title: '风险点',
+    key: 'riskPoint',
+    align: 'left',
+    width: 200,
+    render: (val, { objectTitle, itemCode, riskPointType }) => (
+      <div>
+        <p>名称：{objectTitle}</p>
+        <p>编号：{itemCode}</p>
+        <p>类型：{(+riskPointType === 1 && '设备设施') || (+riskPointType === 2 && '作业活动') || ''}</p>
+      </div>
     ),
   },
   {
-    title: '风险分区',
-    dataIndex: 'zoneName',
-    key: 'zoneName',
+    title: '主要危险因素（人、物、作业环境、管理）',
+    dataIndex: 'dangerFactor',
+    key: 'dangerFactor',
     align: 'center',
+    width: 200,
+    render: value => (<Ellipsis tooltip lines={1}>{value}</Ellipsis>),
   },
   {
-    title: '经办人',
-    dataIndex: 'zoneChargerName',
-    key: 'zoneChargerName',
+    title: '可能发生的事故类型及后果',
+    dataIndex: 'consequenceName',
+    key: 'consequenceName',
     align: 'center',
-    render: val => (
-      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
-        {val}
-      </Ellipsis>
-    ),
+    width: 150,
   },
   {
-    title: '电话',
-    dataIndex: 'phoneNumber',
-    key: 'phoneNumber',
+    title: '风险等级/风险色度',
+    dataIndex: 'dangerLevel',
+    key: 'dangerLevel',
     align: 'center',
+    width: 150,
+    render: (val) => `${val}级 / ${(riskLevelList.find(item => item.level === val) || { colorName: '' }).colorName.slice(0, 1)}`,
   },
+  {
+    title: '辨识分级时间',
+    dataIndex: 'checkDate',
+    key: 'checkDate',
+    align: 'center',
+    width: 150,
+    render: val => val ? moment(val).format('YYYY-MM-DD') : '',
+  },
+  {
+    title: '风险管控措施',
+    dataIndex: 'dangerMeasure',
+    key: 'dangerMeasure',
+    align: 'center',
+    width: 150,
+    render: value => (<Ellipsis tooltip lines={1}>{value}</Ellipsis>),
+  },
+  {
+    title: '管控层级',
+    dataIndex: 'controlHierarchy',
+    key: 'controlHierarchy',
+    align: 'center',
+    width: 150,
+    render: (val) => (riskLevelList.find(item => item.level === val) || {}).controllevel,
+  },
+  {
+    title: '管控责任人',
+    dataIndex: 'principalName',
+    key: 'principalName',
+    align: 'center',
+    width: 150,
+    render: val => Array.isArray(val) ? val.join('，') : val,
+  },
+  // {
+  //   title: '风险分区',
+  //   dataIndex: 'zoneName',
+  //   key: 'zoneName',
+  //   align: 'center',
+  // },
+  // {
+  //   title: '经办人',
+  //   dataIndex: 'zoneChargerName',
+  //   key: 'zoneChargerName',
+  //   align: 'center',
+  //   render: val => (
+  //     <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+  //       {val}
+  //     </Ellipsis>
+  //   ),
+  // },
+  // {
+  //   title: '电话',
+  //   dataIndex: 'phoneNumber',
+  //   key: 'phoneNumber',
+  //   align: 'center',
+  // },
 ];
 
 const columnsDetail = [
@@ -242,8 +302,8 @@ export const DetailModal = Form.create()(props => {
           }}
         />
       ) : (
-        <div style={{ textAlign: 'center' }}>暂无数据</div>
-      )}
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
     </Modal>
   );
 });
