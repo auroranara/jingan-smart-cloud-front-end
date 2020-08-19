@@ -1521,6 +1521,44 @@ module.exports = env => {
                 },
               ],
             },
+            // {
+            //   name: 'fourColorImage', // 风险四色图管理
+            //   code: 'riskControl.fourColorImage',
+            //   path: '/risk-control/four-color-image',
+            //   // developing: true,
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       name: 'list',
+            //       path: '/risk-control/four-color-image',
+            //       redirect: '/risk-control/four-color-image/list',
+            //     },
+            //     {
+            //       name: 'list',
+            //       code: 'riskControl.fourColorImage.list',
+            //       path: '/risk-control/four-color-image/list',
+            //       component: './RiskControl/FourColorImage/TableList',
+            //     },
+            //     {
+            //       name: 'view',
+            //       code: 'riskControl.fourColorImage.view',
+            //       path: '/risk-control/four-color-image/view/:id',
+            //       component: './RiskControl/FourColorImage/Edit',
+            //     },
+            //     {
+            //       name: 'add',
+            //       code: 'riskControl.fourColorImage.add',
+            //       path: '/risk-control/four-color-image/add',
+            //       component: './RiskControl/FourColorImage/Edit',
+            //     },
+            //     {
+            //       name: 'edit',
+            //       code: 'riskControl.fourColorImage.edit',
+            //       path: '/risk-control/four-color-image/edit/:id',
+            //       component: './RiskControl/FourColorImage/Edit',
+            //     },
+            //   ],
+            // },
             {
               name: 'fourColorImage', // 风险四色图管理
               code: 'riskControl.fourColorImage',
@@ -1537,25 +1575,25 @@ module.exports = env => {
                   name: 'list',
                   code: 'riskControl.fourColorImage.list',
                   path: '/risk-control/four-color-image/list',
-                  component: './RiskControl/FourColorImage/TableList',
+                  component: './RiskControl/FourColors',
                 },
                 {
-                  name: 'view',
+                  name: 'detail',
                   code: 'riskControl.fourColorImage.view',
                   path: '/risk-control/four-color-image/view/:id',
-                  component: './RiskControl/FourColorImage/Edit',
+                  component: './RiskControl/FourColors/Edit',
                 },
                 {
                   name: 'add',
                   code: 'riskControl.fourColorImage.add',
                   path: '/risk-control/four-color-image/add',
-                  component: './RiskControl/FourColorImage/Edit',
+                  component: './RiskControl/FourColors/Edit',
                 },
                 {
                   name: 'edit',
                   code: 'riskControl.fourColorImage.edit',
                   path: '/risk-control/four-color-image/edit/:id',
-                  component: './RiskControl/FourColorImage/Edit',
+                  component: './RiskControl/FourColors/Edit',
                 },
               ],
             },

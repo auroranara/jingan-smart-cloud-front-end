@@ -193,7 +193,7 @@ export default {
   'menu.riskControl.riskPointManage.riskCardPinter': '风险点告知卡打印预览',
   'menu.riskControl.fourColorImage': '风险四色图管理',
   'menu.riskControl.fourColorImage.list': '风险四色图管理列表',
-  'menu.riskControl.fourColorImage.view': '风险四色图管理查看',
+  'menu.riskControl.fourColorImage.detail': '风险四色图管理查看',
   'menu.riskControl.fourColorImage.add': '风险四色图管理新增',
   'menu.riskControl.fourColorImage.edit': '风险四色图管理编辑',
   'menu.riskControl.upgradeWarning': '风险升级预警信息',
