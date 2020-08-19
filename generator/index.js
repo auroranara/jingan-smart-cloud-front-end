@@ -132,6 +132,17 @@ rl.question('模块英文名（必填）：', answer => {
             }
           });
 
+          // 创建config样式文件
+          fs.copyFile('./template/config.less', `../src/pages/${pageDir}/config.less`, err => {
+            if (!err) {
+              console.log(`../src/pages/${pageDir}/config.less创建成功！`);
+            } else {
+              console.log(`../src/pages/${pageDir}/config.less创建失败！`);
+              console.log('错误原因：');
+              console.log(err);
+            }
+          });
+
           // 修改locale
           fs.readFile('../src/locales/zh-CN.js', (err, data) => {
             if (!err) {

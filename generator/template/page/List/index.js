@@ -1,26 +1,9 @@
-import React, { Fragment, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import {
-  message,
-  Card,
-  Form,
-  Row,
-  Col,
-  Spin,
-  Input,
-  TreeSelect,
-  DatePicker,
-  Button,
-  Table,
-  Divider,
-  Popconfirm,
-} from 'antd';
-import PagingSelect from '@/jingan-components/PagingSelect';
-import Link from 'umi/link';
+import { message, Card, Form, Row, Col, Table } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
-import { stringify } from 'qs';
 import {
   NAMESPACE,
   DETAIL_CODE,
@@ -28,288 +11,17 @@ import {
   EDIT_CODE,
   DELETE_CODE,
   LIST_PATH,
-  DETAIL_PATH,
-  ADD_PATH,
-  EDIT_PATH,
-  PARENT_LOCALE,
-  LIST_LOCALE,
+  BREADCRUMB_LIST,
+  GET_PAYLOAD_BY_QUERY,
+  GET_QUERY_BY_PAYLOAD,
+  GET_SEARCH_BY_PAYLOAD,
+  TRANSFORM_PAYLOAD,
+  TRANSFORM_VALUES,
+  GET_LIST_FIELDS,
+  GET_COLUMNS,
 } from '../config';
-import {
-  PAGE_SIZE,
-  listPageCol,
-  hiddenCol,
-  dateFormat,
-  dateRangePickerPlaceholder,
-  getRanges,
-  getSelectValueFromEvent,
-  showTotal,
-  EmptyText,
-} from '@/utils';
+import { PAGE_SIZE, getRanges, showTotal } from '@/utils';
 import styles from './index.less';
-const { RangePicker } = DatePicker;
-
-/* 面包屑 */
-const BREADCRUMB_LIST = [
-  { title: '首页', name: '首页', href: '/' },
-  { title: PARENT_LOCALE, name: PARENT_LOCALE },
-  { title: LIST_LOCALE, name: LIST_LOCALE },
-];
-/* 根据query获取payload（用于初始化） */
-const GET_PAYLOAD_BY_QUERY = ({
-  pageNum,
-  pageSize,
-  company,
-  name,
-  department,
-  startDate,
-  endDate,
-}) => {
-  try {
-    return {
-      pageNum: pageNum > 0 ? +pageNum : 1,
-      pageSize: pageSize > 0 ? +pageSize : PAGE_SIZE,
-      company: company ? JSON.parse(decodeURIComponent(company)) : undefined,
-      name: name ? decodeURIComponent(name) : undefined,
-      department: department ? JSON.parse(decodeURIComponent(department)) : undefined,
-      range: startDate && endDate ? [moment(+startDate), moment(+endDate)] : undefined,
-    };
-  } catch (e) {
-    console.log(e);
-  }
-  return { pageNum: 1, pageSize: PAGE_SIZE };
-};
-/* 根据payload获取query（前置） */
-const GET_QUERY_BY_PAYLOAD = ({ company, name, department, range, ...rest }) => {
-  const [startDate, endDate] = range || [];
-  return {
-    ...rest,
-    company: company ? encodeURIComponent(JSON.stringify(company)) : undefined,
-    name: name ? encodeURIComponent(name) : undefined,
-    department: department ? encodeURIComponent(JSON.stringify(department)) : undefined,
-    startDate: startDate ? +startDate : undefined,
-    endDate: endDate ? +endDate : undefined,
-  };
-};
-/* 根据payload获取search（用于路由跳转） */
-const GET_SEARCH_BY_PAYLOAD = payload => {
-  const query = GET_QUERY_BY_PAYLOAD(payload || {});
-  const search = stringify(query);
-  return search && `?${search}`;
-};
-/* 转换payload为接口需要的格式 */
-const TRANSFORM_PAYLOAD = ({ company, department, range, ...rest }) => {
-  const [startDate, endDate] = range || [];
-  return {
-    ...rest,
-    companyId: company && company.key,
-    departmentId: department && department.key,
-    startDate: startDate && startDate.format(dateFormat),
-    endDate: endDate && endDate.format(dateFormat),
-  };
-};
-/* 转换values为payload需要的格式（基本上只对输入框的值进行trim操作） */
-const TRANSFORM_VALUES = ({ name, ...rest }) => ({
-  ...rest,
-  name: name ? name.trim() : undefined,
-});
-/* 获取表单配置 */
-const GET_FIELDS = ({
-  form,
-  values,
-  search,
-  isUnit,
-  hasAddAuthority,
-  companyList,
-  loadingCompanyList,
-  setCompanyPayload,
-  onCompanySelectChange,
-  departmentTree,
-  loadingDepartmentTree,
-  ranges,
-}) => [
-  {
-    name: 'company',
-    label: '单位名称',
-    children: (
-      <PagingSelect
-        options={companyList.list}
-        loading={loadingCompanyList}
-        hasMore={
-          companyList.pagination &&
-          companyList.pagination.total >
-            companyList.pagination.pageNum * companyList.pagination.pageSize
-        }
-        loadMore={() =>
-          setCompanyPayload(payload => ({ ...payload, pageNum: payload.pageNum + 1 }))
-        }
-        onSearch={name => setCompanyPayload(payload => ({ ...payload, pageNum: 1, name }))}
-        onChange={onCompanySelectChange}
-        allowClear
-      />
-    ),
-    getValueFromEvent: getSelectValueFromEvent,
-    hidden: isUnit,
-    col: isUnit ? hiddenCol : listPageCol,
-  },
-  {
-    name: 'name',
-    label: '名称',
-    children: (
-      <Input placeholder="请输入" maxLength={50} onPressEnter={() => form.submit()} allowClear />
-    ),
-    col: listPageCol,
-  },
-  {
-    name: 'department',
-    label: '所属部门',
-    children: (
-      <TreeSelect
-        placeholder="请选择"
-        treeData={values.company ? departmentTree : []}
-        notFoundContent={loadingDepartmentTree ? <Spin size="small" /> : undefined}
-        treeNodeFilterProp="title"
-        showSearch
-        labelInValue
-        allowClear
-      />
-    ),
-    getValueFromEvent: getSelectValueFromEvent,
-    col: listPageCol,
-  },
-  {
-    name: 'range',
-    label: '时间',
-    children: (
-      <RangePicker
-        className={styles.rangePicker}
-        placeholder={dateRangePickerPlaceholder}
-        format={dateFormat}
-        ranges={ranges}
-        separator="~"
-        allowClear
-      />
-    ),
-    col: listPageCol,
-  },
-  {
-    children: (
-      <div className={styles.buttonContainer}>
-        <Button type="primary" htmlType="submit">
-          查询
-        </Button>
-        <Button
-          onClick={() => {
-            form.resetFields();
-            form.submit();
-          }}
-        >
-          重置
-        </Button>
-        <Button type="primary" href={`#${ADD_PATH}${search}`} disabled={!hasAddAuthority}>
-          新增
-        </Button>
-      </div>
-    ),
-    col: isUnit
-      ? {
-          xxl: 6,
-          xl: 24,
-          lg: 12,
-          md: 12,
-          sm: 24,
-          xs: 24,
-        }
-      : {
-          xxl: 24,
-          xl: 16,
-          lg: 24,
-          md: 24,
-          sm: 24,
-          xs: 24,
-        },
-  },
-];
-/* 获取表格配置 */
-const GET_COLUMNS = ({
-  search,
-  isUnit,
-  hasDetailAuthority,
-  hasEditAuthority,
-  hasDeleteAuthority,
-  deleteList,
-}) => [
-  ...(!isUnit
-    ? [
-        {
-          dataIndex: 'companyName',
-          title: '单位名称',
-          render: value => value || <EmptyText />,
-        },
-      ]
-    : []),
-  {
-    dataIndex: 'name',
-    title: '名称',
-    render: value => value || <EmptyText />,
-  },
-  {
-    dataIndex: 'departmentName',
-    title: '所属部门',
-    render: value => value || <EmptyText />,
-  },
-  {
-    dataIndex: 'date',
-    title: '时间',
-    render: value => (value ? moment(value).format(dateFormat) : <EmptyText />),
-  },
-  {
-    dataIndex: 'fileList',
-    title: '附件',
-    render: value =>
-      value && value.length ? (
-        <Fragment>
-          {value.map((item, index) => (
-            <div key={index}>
-              <a href={item.webUrl} target="_blank" rel="noopener noreferrer">
-                {item.fileName}
-              </a>
-            </div>
-          ))}
-        </Fragment>
-      ) : (
-        <EmptyText />
-      ),
-  },
-  {
-    dataIndex: '操作',
-    title: '操作',
-    render: (_, { id }) => (
-      <Fragment>
-        <Link to={`${DETAIL_PATH}/${id}${search}`} disabled={!hasDetailAuthority}>
-          查看
-        </Link>
-        <Divider type="vertical" />
-        <Link to={`${EDIT_PATH}/${id}${search}`} disabled={!hasEditAuthority}>
-          编辑
-        </Link>
-        <Divider type="vertical" />
-        <Popconfirm
-          title="您确定要删除这条数据吗？"
-          onConfirm={() => {
-            deleteList({
-              id,
-            });
-          }}
-          disabled={!hasDeleteAuthority}
-        >
-          <Link to="/" disabled={!hasDeleteAuthority}>
-            删除
-          </Link>
-        </Popconfirm>
-      </Fragment>
-    ),
-  },
-];
 
 export default connect(
   ({
@@ -559,7 +271,7 @@ export default connect(
                 const values = { ...initialValues, ...getFieldsValue() };
                 return (
                   <Row gutter={24}>
-                    {GET_FIELDS({
+                    {GET_LIST_FIELDS({
                       form,
                       values,
                       search,
