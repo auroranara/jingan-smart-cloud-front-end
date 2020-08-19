@@ -13,7 +13,7 @@ import styles from './index.less';
 
 const NAMESPACE = 'materials';
 const API = `${NAMESPACE}/getMaterialDetail`;
-const TYPES = ['生产原料', '中间产品', '最终产品'];
+const TYPES = ['生产原料', '中间产品', '最终产品', '辅料'];
 const FORMS = ['固态', '液态', '气态', '等离子态'];
 const YES_OR_NO = ['否', '是'];
 
