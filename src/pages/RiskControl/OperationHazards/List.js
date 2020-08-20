@@ -63,7 +63,9 @@ export default class SafetyChecklist extends Component {
   };
 
   componentDidMount () {
-    this.onSearch();
+    const { location: { query } } = this.props;
+    query.code && this.form && this.form.setFieldsValue(query);
+    this.onSearch(query);
   }
 
   onSearch = values => {
@@ -337,7 +339,12 @@ export default class SafetyChecklist extends Component {
         breadcrumbList={BREADCRUMB_LIST}
         title={title}
       >
-        <Form ref={form => this.form = form} fields={fields} onSearch={this.onSearch} onReset={this.onSearch} />
+        <Form
+          ref={form => this.form = form}
+          fields={fields}
+          onSearch={this.onSearch}
+          onReset={this.onSearch}
+        />
         <Table
           list={data}
           loading={loading}
