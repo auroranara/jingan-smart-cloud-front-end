@@ -10,6 +10,7 @@ import {
   getContractorList,
   getSpecialOperatorList,
   getContractorPersonnelQualificationList,
+  getTagList,
 } from '@/services/dict';
 
 export default {
@@ -29,6 +30,7 @@ export default {
     contractorList: {},
     specialOperatorList: {},
     contractorPersonnelQualificationList: {},
+    tagList: [],
   },
 
   effects: {
@@ -325,6 +327,28 @@ export default {
           },
         });
         callback && callback(true, contractorPersonnelQualificationList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    *getTagList({ payload, callback }, { call, put }) {
+      const response = yield call(getTagList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const tagList = data.list.map(item => ({
+          key: item,
+          value: item,
+          label: item,
+          title: item,
+          data: item,
+        }));
+        yield put({
+          type: 'save',
+          payload: {
+            tagList,
+          },
+        });
+        callback && callback(true, tagList);
       } else {
         callback && callback(false, msg);
       }

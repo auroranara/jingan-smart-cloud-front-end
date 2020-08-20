@@ -29,8 +29,9 @@ export default connect(
     dict: { companyList, departmentTree },
     [NAMESPACE]: { list },
     loading: {
-      models: { [NAMESPACE]: loading },
       effects: {
+        [`${NAMESPACE}/getList`]: loading,
+        [`${NAMESPACE}/delete`]: deleting,
         'dict/getCompanyList': loadingCompanyList,
         'dict/getDepartmentTree': loadingDepartmentTree,
       },
@@ -39,6 +40,7 @@ export default connect(
     currentUser,
     list,
     loading,
+    deleting,
     companyList,
     loadingCompanyList,
     departmentTree,
@@ -50,6 +52,7 @@ export default connect(
     currentUser,
     list: { list = [], pagination: { total, pageNum, pageSize } = {} },
     loading,
+    deleting,
     companyList,
     loadingCompanyList,
     departmentTree,
@@ -62,8 +65,6 @@ export default connect(
     const [payload, setPayload] = useState(undefined);
     // 创建单位列表接口对应的payload（同上）
     const [companyPayload, setCompanyPayload] = useState(undefined);
-    // 创建部门树接口对应的payload（同上）
-    const [departmentPayload, setDepartmentPayload] = useState(undefined);
     // 获取路径参数
     const search = useMemo(() => GET_SEARCH_BY_PAYLOAD(payload), [payload]);
     // 获取当前账号是否为单位、所属单位、增删改查权限
@@ -163,7 +164,7 @@ export default connect(
     const onCompanySelectChange = useCallback(company => {
       // 如果已选择单位，则获取部门树
       if (company) {
-        setDepartmentPayload({
+        getDepartmentTree({
           companyId: company.key,
         });
       }
@@ -215,7 +216,7 @@ export default connect(
       }
       // 如果已选择单位，则获取部门树
       if (payload.company) {
-        setCompanyPayload({
+        getDepartmentTree({
           companyId: payload.company.key,
         });
       }
@@ -244,15 +245,6 @@ export default connect(
         }
       },
       [companyPayload]
-    );
-    // 当departmentPayload发生变化时获取部门树
-    useEffect(
-      () => {
-        if (departmentPayload && departmentPayload.companyId) {
-          getDepartmentTree(departmentPayload);
-        }
-      },
-      [departmentPayload]
     );
     return (
       <PageHeaderLayout
@@ -301,7 +293,7 @@ export default connect(
             rowKey="id"
             columns={columns}
             dataSource={list}
-            loading={loading}
+            loading={loading || deleting}
             scroll={{
               x: true,
             }}
