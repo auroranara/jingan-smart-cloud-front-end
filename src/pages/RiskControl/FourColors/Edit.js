@@ -3,6 +3,7 @@ import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { message, Spin, Card, Row, Col, Button, notification } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import { stringify } from 'qs';
 import Select from '@/jingan-components/Form/Select';
 import Input from '@/jingan-components/Form/Input';
 import Radio from '@/jingan-components/Form/Radio';
@@ -91,7 +92,7 @@ const getRiskLvl = (inherentRiskLevel, controlRiskLevel) => {
         params: { id },
       },
       route: { path, name },
-      location: { pathname },
+      location: { pathname, query },
     }
   ) => {
     const title = {
@@ -99,8 +100,9 @@ const getRiskLvl = (inherentRiskLevel, controlRiskLevel) => {
       add: '新增风险区域',
       edit: '编辑风险区域',
     }[name];
+    const queryString = stringify(query);
     const goBack = () => {
-      router.push(LIST_PATH);
+      router.push(`${LIST_PATH}${queryString ? `?${queryString}` : ''}`);
     };
     return {
       ...stateProps,
@@ -109,7 +111,7 @@ const getRiskLvl = (inherentRiskLevel, controlRiskLevel) => {
         {
           title: '风险区域划分',
           name: '风险区域划分',
-          href: path.replace(/:id\?.*/, 'list'),
+          href: `${LIST_PATH}${queryString ? `?${queryString}` : ''}`,
         },
         {
           title,
