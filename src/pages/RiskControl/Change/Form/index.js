@@ -635,7 +635,9 @@ export default connect(
                 success => {
                   if (success) {
                     setTimeout(() => {
-                      window.close();
+                      if (mode !== 'add') {
+                        window.close();
+                      }
                       router.push(LIST_PATH);
                     }, 1000);
                   } else {

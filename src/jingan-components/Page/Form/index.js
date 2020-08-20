@@ -97,7 +97,9 @@ const FormPage = props => {
               success => {
                 if (success) {
                   setTimeout(() => {
-                    window.close();
+                    if (mode !== 'add') {
+                      window.close();
+                    }
                     router.push(listPath);
                   }, 1000);
                 } else {

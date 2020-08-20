@@ -7,6 +7,7 @@ import { connect } from 'dva';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import TruckModal from '../components/TruckModal';
 import { MINUTE_FORMAT, TYPES, WORKING_STATUSES } from '@/pages/DataAnalysis/WorkingBill/config';
+import { MonitorIcons } from '../utils';
 import styles from './Map.less';
 
 import monitor from '../imgs/monitor.png';
@@ -273,16 +274,16 @@ export default class Map extends PureComponent {
       payload: { companyId, pageNum: 1, pageSize: 0 },
       callback: ({ list }) => {
         list.map(polygon => {
-          const { zoneLevel, coordinateList, groupId, modelIds } = polygon;
+          const { riskCorrectLevel, coordinateList, groupId, modelIds } = polygon;
           const points = coordinateList.map(item => ({
             x: +item.x,
             y: +item.y,
             z: +item.z,
           }));
-          const polygonMarker = this.addPolygon(groupId, points, COLORS[zoneLevel - 1], polygon);
+          const polygonMarker = this.addPolygon(groupId, points, COLORS[riskCorrectLevel - 1], polygon);
           this.fourColorPolygons.push(polygonMarker);
-          // this.setModelColor(groupId, polygonMarker, COLORS[zoneLevel - 1]);
-          this.setModelColorByFID(groupId, modelIds.split(','), COLORS[zoneLevel - 1]);
+          // this.setModelColor(groupId, polygonMarker, COLORS[riskCorrectLevel - 1]);
+          this.setModelColorByFID(groupId, modelIds?modelIds.split(','):[], COLORS[riskCorrectLevel - 1]);
           return null;
         });
         // 变更预警管理
@@ -343,7 +344,7 @@ export default class Map extends PureComponent {
     // if (!pointsInfo.length) return;
     const { visibles } = this.state;
     filterMarkerList(pointsInfo).map(item => {
-      const { warnStatus, status, deviceCode, pointCountMap } = item;
+      const { warnStatus, status, deviceCode, pointCountMap, equipmentType  } = item;
       const { groupId, xnum, ynum, znum, isShow } = item.pointFixInfoList[0];
       if (iconType === 1 && +status !== 1) return null; // 筛选掉禁用的视频
       // if (!+isShow) return null;
@@ -517,7 +518,7 @@ export default class Map extends PureComponent {
           const {
             polygonProps: { modelIds, id },
           } = polygon;
-          const FIDs = modelIds.split(',');
+          const FIDs = modelIds ? modelIds.split(',') : [];
           if (
             (groupID === polygon.groupID && this.isPointInPolygon(coord, polygon)) ||
             FIDs.includes(FID)
@@ -1195,7 +1196,7 @@ export default class Map extends PureComponent {
     const layer = new fengmap.FMPolygonMarkerLayer();
     groupLayer.addLayer(layer);
     const polygonMarker = new fengmap.FMPolygonMarker({
-      alpha: 0.5, //设置透明度
+      alpha: 0.8, //设置透明度
       lineWidth: 0, //设置边框线的宽度
       height: 1, //设置高度*/
       points, //多边形坐标点

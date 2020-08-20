@@ -404,15 +404,15 @@ export default class Map extends PureComponent {
       payload: { companyId, pageNum: 1, pageSize: 0 },
       callback: ({ list }) => {
         list.map(polygon => {
-          const { zoneLevel, coordinateList, groupId, modelIds } = polygon;
+          const { riskCorrectLevel, coordinateList, groupId, modelIds } = polygon;
           const points = coordinateList.map(item =>
             tool.MercatorToWGS84(new jsmap.JSPoint(+item.x, +item.y, 0))
           );
           const polygonMarker = this.addPolygon({
             floorId: +groupId,
             position: points,
-            color: COLORS[zoneLevel - 1],
-            strokeColor: StrokeColor[zoneLevel - 1],
+            color: COLORS[riskCorrectLevel - 1],
+            strokeColor: StrokeColor[riskCorrectLevel - 1],
             polygonProps: { ...polygon, polygonType: 1 },
           });
           return null;

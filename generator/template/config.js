@@ -375,7 +375,9 @@ export const GET_FORM_FIELDS = ({
   name,
   search,
   isUnit,
-  submitting,
+  loading,
+  adding,
+  editing,
   companyList,
   loadingCompanyList,
   setCompanyPayload,
@@ -514,7 +516,7 @@ export const GET_FORM_FIELDS = ({
       children: (
         <div className={styles.buttonContainer}>
           {isNotDetail && (
-            <Button type="primary" htmlType="submit" loading={submitting}>
+            <Button type="primary" htmlType="submit" loading={loading || adding || editing}>
               提交
             </Button>
           )}

@@ -30,6 +30,7 @@ let lineMarker = null;
 let drawedPolygon = null;
 let pointMarkers = [];
 let tool = null;
+let isLoadComplete = false;
 
 export default class JoySuchMap extends React.Component {
   constructor(props) {
@@ -56,13 +57,24 @@ export default class JoySuchMap extends React.Component {
       this.initMap(mapInfo);
     }
     if (JSON.stringify(prevValue) !== JSON.stringify(value) || prevLvl !== lvl) {
+      console.log(111111111);
+      console.log('prevProps', prevProps);
+      console.log('this.props', this.props);
+    // if (JSON.stringify(prevValue) !== JSON.stringify(value)) {
       this.getPolygon(value);
     }
+
+    // if (prevLvl !== lvl) {
+    //   console.log(111111111);
+    //   this.getPolygon(value);
+    // }
   }
 
   getPolygon = points => {
     const { lvl } = this.props;
-    if (!map || !points || !points.length) return;
+    console.log('isLoadComplete',isLoadComplete);
+    if (!map || !points || !points.length || !isLoadComplete) return;
+    console.log(3333333);
     map.removeAllMarker();
     points.length > 0 &&
       this.drawPolygon({
@@ -81,6 +93,7 @@ export default class JoySuchMap extends React.Component {
     if (!map) return;
     document.getElementById('joySuchMap').innerHTML = '';
     map = undefined;
+    isLoadComplete = false;
   };
 
   initMap = ({ appName, key, mapId }) => {
@@ -120,7 +133,9 @@ export default class JoySuchMap extends React.Component {
     //地图加载完回调事件
     map.on('loadComplete', () => {
       //加载按钮型楼层切换控件
+      isLoadComplete = true;
       this.loadBtnFloorCtrl();
+      console.log(22222222);
       this.getPolygon(this.props.value);
     });
   };
