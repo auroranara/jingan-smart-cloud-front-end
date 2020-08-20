@@ -307,6 +307,23 @@ export default class EmergencyPlanList extends Component {
     })
   }
 
+  startNumPlus(id) {
+    const {
+      dispatch,
+      emergencyPlan: {
+        list,
+      },
+    } = this.props;
+
+    const lst = Array.isArray(list.list) ? list.list : [];
+    const newLst = lst.map(item => {
+      if (item.id === id) item.startNumber++;
+      return item;
+    });
+
+    dispatch({ type: 'emergencyPlan/save', payload: { list: { ...list, list: newLst } } });
+  }
+
   handleStartClick = id => {
     confirm({
       title: '系统提示',
@@ -321,8 +338,10 @@ export default class EmergencyPlanList extends Component {
       type: 'emergencyPlan/startPlan',
       payload: { id },
       callback: (code, msg) => {
-        if (code === 200) message.success('应急预案启动成功！');
-        else message.error(`${msg}，应急预案启动失败!`);
+        if (code === 200) {
+          message.success('应急预案启动成功！');
+          this.startNumPlus(id);
+        } else message.error(`${msg}，应急预案启动失败!`);
       },
     })
   };
