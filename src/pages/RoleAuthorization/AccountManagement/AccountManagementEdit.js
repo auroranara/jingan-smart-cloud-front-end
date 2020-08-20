@@ -1237,6 +1237,7 @@ export default class AccountManagementEdit extends PureComponent {
               <Form.Item label={fieldLabels.attached}>
                 <Upload
                   name="files"
+                  accept="image/*,.pdf"
                   data={{ folder: FOLDER }}
                   action={UPLOAD_ACTION}
                   fileList={photoList}
