@@ -1,18 +1,18 @@
 import {
   getCompanyList,
-  queryAccountList,
   getList,
   getMap,
   getDetail,
   add,
   edit,
   remove,
-} from '@/services/riskArea';
+  getAreaList,
+} from '@/services/fourColors';
 import moment from 'moment';
 import { isNumber } from '@/utils/utils';
 
 export default {
-  namespace: 'riskArea',
+  namespace: 'fourColors',
 
   state: {
     companyList: [],
@@ -22,7 +22,7 @@ export default {
     },
     map: [],
     detail: {},
-    personList: [],
+    areaList: [],
   },
 
   effects: {
@@ -43,32 +43,24 @@ export default {
         callback && callback(false, msg);
       }
     },
-    // 获取人员列表
-    *getPersonList({ payload, callback }, { call, put }) {
-      const response = yield call(queryAccountList, { pageNum: 1, pageSize: 10, ...payload });
+    // 获取企业列表
+    *getAreaList({ payload, callback }, { call, put }) {
+      const response = yield call(getAreaList, payload);
       const { code, data, msg } = response || {};
-      const { unitId } = payload;
       if (code === 200 && data && data.list) {
-        const personList = data.list.map(item => {
-          const user = item.users.filter(user => user.unitId === unitId)[0] || {};
-          return {
-            ...item,
-            userId: user.id,
-            departmentName: user.departmentName,
-          };
-        });
+        const areaList = data.list;
         yield put({
           type: 'save',
           payload: {
-            personList,
+            areaList,
           },
         });
-        callback && callback(true, personList);
+        callback && callback(true, areaList);
       } else {
         callback && callback(false, msg);
       }
     },
-    // 获取工作票列表
+    // 获取列表
     *getList({ payload, callback }, { call, put }) {
       const response = yield call(getList, payload);
       const { code, data, msg } = response;
@@ -115,7 +107,13 @@ export default {
               ...detail,
               company: { key: detail.companyId, label: detail.companyName },
               coordinate: detail.coordinate ? JSON.parse(detail.coordinate) : [],
-              areaHeader: { key: detail.areaHeader, label: detail.areaHeaderName },
+              riskCorrectFactor: detail.riskCorrectFactor ? [1, detail.riskCorrectFactor] : [0],
+              createTime: data.createTime ? moment(detail.createTime) : undefined,
+              area: { key: detail.areaId, label: detail.zoneName },
+              inherentRiskLevel: detail.inherentRiskLevel ? +detail.inherentRiskLevel : undefined,
+              controlRiskLevel: detail.controlRiskLevel ? +detail.controlRiskLevel : undefined,
+              zoneLevel: detail.zoneLevel ? +detail.zoneLevel : undefined,
+              riskCorrectLevel: detail.riskCorrectLevel ? +detail.riskCorrectLevel : undefined,
             },
           },
         });

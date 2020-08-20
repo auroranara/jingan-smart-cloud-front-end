@@ -49,7 +49,7 @@ const getRiskLevel = {
 const getRiskColor = {
   1: 'rgb(252, 31, 2)',
   2: 'rgb(237, 126, 17)',
-  3: 'rgb(251, 247, 24)',
+  3: '#FFCC33',
   4: 'rgb(30, 96, 255)',
 };
 @Form.create()

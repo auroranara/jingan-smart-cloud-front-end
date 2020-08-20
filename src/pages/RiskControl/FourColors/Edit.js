@@ -1,16 +1,21 @@
 import React, { Component, Fragment } from 'react';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { message, Spin, Card, Row, Col, Button, Checkbox, InputNumber, Tag } from 'antd';
+import { message, Spin, Card, Row, Col, Button, notification } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { stringify } from 'qs';
 import Select from '@/jingan-components/Form/Select';
 import Input from '@/jingan-components/Form/Input';
+import Radio from '@/jingan-components/Form/Radio';
+import TextArea from '@/jingan-components/Form/TextArea';
+import DatePicker from '@/jingan-components/Form/DatePicker';
+import RiskCorrectFactor from './components/RiskCorrectFactor';
 import FengMap from './components/Map/FengMap';
 import JoySuchMap from './components/Map/JoySuchMap';
 import NoData from '@/pages/BigPlatform/ChemicalV2/components/NoData';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { isNumber } from '@/utils/utils';
 import moment from 'moment';
 import {
   NAMESPACE,
@@ -20,11 +25,12 @@ import {
   EDIT_API,
   SAVE_API,
   EDIT_CODE,
-  PERSON_API,
+  AREA_API,
   BREADCRUMB_LIST_PREFIX,
   COMPANY_LIST_MAPPER,
   COMPANY_LIST_FIELDNAMES,
   LIST_PATH,
+  FourLvls,
 } from './utils';
 import styles from './Edit.less';
 
@@ -33,12 +39,36 @@ const formItemLayout = {
   wrapperCol: { span: 19 },
 };
 
+const DefaultFeilds = {
+  phoneNumber: undefined,
+  zoneCode: undefined,
+  zoneChargerName: undefined,
+  inherentRiskLevel: undefined,
+  controlRiskLevel: undefined,
+  zoneLevel: undefined,
+  area: undefined,
+  riskCorrectFactor: [0],
+  riskCorrectLevel: undefined,
+  checkCircle: undefined,
+  createTime: undefined,
+  coordinate: undefined,
+};
+
+const getRiskLvl = (inherentRiskLevel, controlRiskLevel) => {
+  if (!inherentRiskLevel || !controlRiskLevel) return undefined;
+  const score = (inherentRiskLevel || 4) * (controlRiskLevel || 4);
+  if (score <= 4) return 1;
+  else if (score > 4 && score <= 8) return 2;
+  else if (score > 8 && score <= 12) return 3;
+  else return 4;
+};
+
 @connect(
   ({
     user: {
       currentUser: { unitType, unitId, unitName, permissionCodes },
     },
-    [NAMESPACE]: { detail, map, personList },
+    [NAMESPACE]: { detail, map, areaList },
     loading: {
       effects: { [DETAIL_API]: loading, [ADD_API]: adding, [EDIT_API]: editing },
     },
@@ -49,7 +79,7 @@ const formItemLayout = {
     detail,
     loading,
     mapInfo: map,
-    personList,
+    areaList,
     submitting: adding || editing,
     hasEditAuthority: permissionCodes.includes(EDIT_CODE),
   }),
@@ -165,15 +195,18 @@ const formItemLayout = {
           },
         });
       },
-      getPersonList(payload, callback) {
+      getAreaList(payload, callback) {
         dispatch({
-          type: PERSON_API,
+          type: AREA_API,
           payload: {
+            pageNum: 1,
+            pageSize: 10,
+            isSynZone: 0,
             ...payload,
           },
           callback: (success, data) => {
             if (!success) {
-              message.error('获取人员数据失败，请稍后重试！');
+              message.error('获取区域数据失败，请稍后重试！');
             }
             callback && callback(success, data);
           },
@@ -183,11 +216,11 @@ const formItemLayout = {
   }
 )
 @Form.create()
-export default class RiskAreaEdit extends Component {
+export default class FourColorsEdit extends Component {
   state = {};
 
   componentDidMount() {
-    const { getDetail, getMapInfo, isUnit, unitId, getPersonList } = this.props;
+    const { getDetail, getMapInfo, isUnit, unitId, getAreaList } = this.props;
     getDetail({}, (success, detail) => {
       const { companyId } = detail || {};
       setTimeout(() => {
@@ -195,7 +228,7 @@ export default class RiskAreaEdit extends Component {
       });
       const cId = isUnit ? unitId : companyId;
       cId && getMapInfo({ companyId: cId });
-      cId && getPersonList({ unitId: cId });
+      cId && getAreaList({ companyId: cId });
     });
   }
 
@@ -212,15 +245,15 @@ export default class RiskAreaEdit extends Component {
       }
       if (!error) {
         const { unitId, mode, [mode]: submit } = this.props;
-        const { company, areaHeader, coordinate, ...fields } = values;
+        const { company, area, riskCorrectFactor = [], coordinate, ...fields } = values;
         const payload = {
           ...fields,
           companyId: company ? company.key : unitId,
-          areaHeader: areaHeader && areaHeader.key,
+          areaId: area.key,
+          riskCorrectFactor: riskCorrectFactor[1],
           coordinate: JSON.stringify(coordinate),
         };
         console.log('payload', payload);
-        // return;
         submit(payload);
       }
     });
@@ -237,46 +270,88 @@ export default class RiskAreaEdit extends Component {
     const {
       form: { setFieldsValue },
       getMapInfo,
-      getPersonList,
+      getAreaList,
     } = this.props;
-    if (name) {
-      setFieldsValue({
-        applyCompanyName: name,
-      });
-    }
+    setFieldsValue({
+      ...DefaultFeilds,
+    });
     companyId && getMapInfo({ companyId });
-    companyId && getPersonList({ unitId: companyId });
+    companyId && getAreaList({ companyId });
   };
 
-  onRef = ref => {
-    this.childMap = ref;
-  };
-
-  // 模糊搜索个人列表
-  handlePersonSearch = value => {
+  // 搜索区域列表
+  handleAreaSearch = value => {
     const {
-      getPersonList,
+      getAreaList,
       form: { getFieldsValue },
     } = this.props;
     const { company } = getFieldsValue();
     if (!company || !company.key) return;
     // 根据输入值获取列表
-    getPersonList({ userName: value && value.trim(), unitId: company.key });
+    getAreaList({ areaName: value && value.trim(), companyId: company.key });
   };
 
-  handleAreaHeaderChange = (
-    _,
-    select
-  ) => {
-    const {
-      props: {
-        data: { phoneNumber, departmentName },
-      },
-    } = select;
+  handleAreaChange = (_, select) => {
     const {
       form: { setFieldsValue },
     } = this.props;
-    setFieldsValue({ tel: phoneNumber, partName: departmentName });
+    if (!select) {
+      setFieldsValue({
+        ...DefaultFeilds,
+      });
+      return;
+    }
+    const {
+      props: {
+        data: { tel, areaCode, areaHeaderName, inherentRiskLevel, controlRiskLevel, coordinate },
+      },
+    } = select;
+    const zoneLevel = getRiskLvl(inherentRiskLevel, controlRiskLevel);
+    const correctLvlList = zoneLevel ? FourLvls.slice(0, +zoneLevel) : [];
+    setFieldsValue({
+      phoneNumber: tel,
+      zoneCode: areaCode,
+      zoneChargerName: areaHeaderName,
+      inherentRiskLevel: inherentRiskLevel ? +inherentRiskLevel : undefined,
+      controlRiskLevel: controlRiskLevel ? +controlRiskLevel : undefined,
+      zoneLevel,
+      coordinate: JSON.parse(coordinate),
+      riskCorrectLevel: zoneLevel ? correctLvlList[correctLvlList.length - 1].key : undefined,
+    });
+    if (!inherentRiskLevel || !controlRiskLevel) {
+      const risks = [!inherentRiskLevel, !controlRiskLevel];
+      notification.warning({
+        message: '提示',
+        description: (
+          <div>
+            该区域
+            <span style={{ color: '#40a9ff' }}>
+              {['固有风险等级', '控制风险等级'].filter((item, index) => risks[index]).join('、')}
+            </span>
+            暂未评级，请先做评级后再进行操作。
+          </div>
+        ),
+      });
+    }
+  };
+
+  // 验证风险校正因素是否为空
+  validateRiskFactor = (rule, value, callback) => {
+    const [radioValue, textValue] = value || [];
+    if (radioValue === 1 && (!textValue || !textValue.trim())) {
+      callback('风险校正因素不能为空');
+    } else {
+      callback();
+    }
+  };
+
+  handleChangeRiskFactor = (val = []) => {
+    const {
+      form: { setFieldsValue, getFieldsValue },
+    } = this.props;
+    const [radioValue] = val;
+    const { zoneLevel } = getFieldsValue();
+    if (radioValue === 0) setFieldsValue({ riskCorrectLevel: zoneLevel });
   };
 
   render() {
@@ -294,11 +369,14 @@ export default class RiskAreaEdit extends Component {
       goToEdit,
       form: { getFieldDecorator, getFieldsValue },
       mapInfo,
-      personList,
+      areaList,
     } = this.props;
     const isNotDetail = mode !== 'detail';
     const values = getFieldsValue();
     const company = isUnit ? true : detail.company || values.company;
+    const { riskCorrectFactor = [], zoneLevel, riskCorrectLevel } = values;
+    const hasRiskFactor = riskCorrectFactor[0] === 1;
+    const correctLvlList = zoneLevel ? FourLvls.slice(0, +zoneLevel) : [];
     const fields = [
       ...(isUnit
         ? []
@@ -325,48 +403,117 @@ export default class RiskAreaEdit extends Component {
             },
           ]),
       {
-        key: 'areaCode',
+        key: 'area',
+        label: '区域名称',
+        component: (
+          <Select
+            list={company ? areaList : []}
+            fieldNames={{ key: 'id', value: 'areaName' }}
+            disabled={mode !== 'add'}
+            mode={mode}
+            allowClear
+            showSearch
+            labelInValue
+            onSearch={this.handleAreaSearch}
+            onChange={this.handleAreaChange}
+          />
+        ),
+        options: {
+          initialValue: detail.area,
+          rules: [{ type: 'object', required: true, message: '区域名称不能为空' }],
+        },
+      },
+      {
+        key: 'zoneCode',
         label: '区域编号',
-        component: <Input mode={mode} />,
+        component: <Input mode={'detail'} />,
         options: {
           rules: [{ required: true, message: '区域编号不能为空' }],
         },
       },
       {
-        key: 'areaName',
-        label: '风险区域名称',
-        component: <Input mode={mode} />,
-        options: {
-          rules: [{ required: true, message: '风险区域名称不能为空' }],
-        },
-      },
-      {
-        key: 'areaHeader',
+        key: 'zoneChargerName',
         label: '区域负责人',
-        component: (
-          <Select
-            list={company ? personList : []}
-            fieldNames={{ key: 'userId', value: 'userName' }}
-            mode={mode}
-            showSearch
-            labelInValue
-            onSearch={this.handlePersonSearch}
-            onChange={this.handleAreaHeaderChange}
-          />
-        ),
+        component: <Input mode={'detail'} />,
         options: {
           rules: [{ required: true, message: '区域负责人不能为空' }],
         },
       },
       {
-        key: 'partName',
-        label: '所属部门',
-        component: <Input mode={'detail'} />,
-      },
-      {
-        key: 'tel',
+        key: 'phoneNumber',
         label: '联系电话',
         component: <Input mode={'detail'} />,
+        options: {
+          rules: [{ required: true, message: '联系电话不能为空' }],
+        },
+      },
+      {
+        key: 'inherentRiskLevel',
+        label: '固有风险等级',
+        component: <Select list={FourLvls} mode={'detail'} />,
+        options: {
+          rules: [{ required: true, message: '固有风险等级不能为空' }],
+        },
+      },
+      {
+        key: 'controlRiskLevel',
+        label: '控制风险等级',
+        component: <Select list={FourLvls} mode={'detail'} />,
+        options: {
+          rules: [{ required: true, message: '控制风险等级不能为空' }],
+        },
+      },
+      {
+        key: 'zoneLevel',
+        label: '风险等级',
+        component: <Select list={FourLvls} mode={'detail'} />,
+        options: {
+
+          rules: [{ required: true, message: '风险等级不能为空' }],
+        },
+      },
+      {
+        key: 'riskCorrectFactor',
+        label: '风险校正因素',
+        component: <RiskCorrectFactor mode={mode} onChange={this.handleChangeRiskFactor} />,
+        options: {
+          initialValue: detail.riskCorrectFactor || [0],
+          rules: [
+            { required: true, validator: this.validateRiskFactor },
+            // { required: true, message: '风险校正因素不能为空' },
+            // { validator: this.validateRiskFactor },
+          ],
+        },
+      },
+      {
+        key: 'riskCorrectLevel',
+        label: '风险校正等级',
+        component: <Select key={zoneLevel} list={correctLvlList} mode={!hasRiskFactor ? 'detail' : mode} />,
+        options: {
+          rules: [{ required: true, message: '风险校正等级不能为空' }],
+        },
+      },
+      {
+        key: 'checkCircle',
+        label: '复评周期（月）',
+        component: <Input mode={mode} />,
+        options: {
+          rules: [
+            { required: true, message: '复评周期（月）不能为空' },
+            {
+              message: '只能输入正整数',
+              pattern: /^[1-9]\d*$/,
+            },
+          ],
+        },
+      },
+      {
+        key: 'createTime',
+        label: '开始时间',
+        component: <DatePicker format={'YYYY-MM-DD'} mode={mode} />,
+        options: {
+          rules: [{ required: true, message: '开始时间不能为空' }],
+        },
       },
     ];
 
@@ -391,9 +538,9 @@ export default class RiskAreaEdit extends Component {
                           style={{ filter: 'grayscale(1)', opacity: 0.8 }}
                         />
                       ) : +mapInfo.remarks === 1 ? (
-                        <FengMap onRef={this.onRef} mapInfo={mapInfo} mode={mode} />
+                        <FengMap mapInfo={mapInfo} mode={'detail'} lvl={riskCorrectLevel} />
                       ) : (
-                        <JoySuchMap onRef={this.onRef} mapInfo={mapInfo} mode={mode} />
+                        <JoySuchMap mapInfo={mapInfo} mode={'detail'} lvl={riskCorrectLevel} />
                       )
                     )}
                   </Form.Item>

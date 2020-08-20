@@ -9,7 +9,7 @@ const COLORS = {
   1: 'rgba(255, 72, 72, 0.6)',
   2: 'rgba(241, 122, 10, 0.6)',
   3: 'rgba(251, 247, 25, 0.6)',
-  4: 'rgba(0, 0, 0, 0.25)',
+  4: 'rgba(30, 96, 255, 0.6)',
 };
 const selectedColor = 'rgb(245,245,245, 0.5)';
 
@@ -38,10 +38,13 @@ export default class Map extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { mapInfo: prevMapInfo } = prevProps;
-    const { mapInfo } = this.props;
+    const { mapInfo: prevMapInfo, value: prevValue , lvl: prevLvl} = prevProps;
+    const { mapInfo, value, lvl } = this.props;
     if (JSON.stringify(prevMapInfo) !== JSON.stringify(mapInfo)) {
       this.initMap(mapInfo);
+    }
+    if (JSON.stringify(prevValue) !== JSON.stringify(value) ||  prevLvl !== lvl) {
+      this.getPolygon(value);
     }
   }
 
@@ -143,8 +146,14 @@ export default class Map extends React.Component {
 
   getPolygon = points => {
     if (!map || !points || !points.length) return;
+    const { lvl }= this.props;
     const groupId = points.map(item => item.groupID)[0];
-    this.drawPolygon(groupId, points, COLORS[4]);
+    const group = map.getFMGroup(groupId);
+    if(!group) return;
+    const layer = group.getOrCreateLayer('polygonMarker');
+    if(!layer) return;
+    layer.removeAll();
+    this.drawPolygon(groupId, points, COLORS[lvl || 4]);
   };
 
   handleClickModel = clickedObj => {
@@ -212,8 +221,8 @@ export default class Map extends React.Component {
   drawPolygon(groupId, points, color) {
     const groupLayer = map.getFMGroup(groupId);
     //创建PolygonMarkerLayer
-    const layer = new fengMap.FMPolygonMarkerLayer();
-    groupLayer && layer && groupLayer.addLayer(layer);
+    const layer = groupLayer.getOrCreateLayer('polygonMarker');
+
     const polygonMarker = new fengMap.FMPolygonMarker({
       alpha: 0.5, //设置透明度
       lineWidth: 1, //设置边框线的宽度

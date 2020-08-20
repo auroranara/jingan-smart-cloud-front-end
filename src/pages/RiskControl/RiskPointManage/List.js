@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
   Spin,
   Button,
@@ -559,13 +559,17 @@ export default class riskPointList extends PureComponent {
             >
               风险告知卡
             </AuthLink>
-            <Divider type="vertical" />
-            <AuthA
-              code={codesMap.riskControl.riskPointManage.view}
-              onClick={e => this.handleShowCode(record.qrCode)}
-            >
-              二维码
-            </AuthA>
+            {!!record.qrCode && (
+              <Fragment>
+                <Divider type="vertical" />
+                <AuthA
+                  code={codesMap.riskControl.riskPointManage.view}
+                  onClick={e => this.handleShowCode(record.qrCode)}
+                >
+                  二维码
+                </AuthA>
+              </Fragment>
+            )}
             <Divider type="vertical" />
             {/* <AuthLink
               code={codesMap.riskControl.riskPointManage.view}

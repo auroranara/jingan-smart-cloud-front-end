@@ -191,7 +191,7 @@ export default class Edit extends PureComponent {
       },
     } = this.props;
     const { photoUrl, safetyIndexList, dutyStatus, departmentId, personId } = this.state;
-    console.log('personId', personId);
+    // console.log('personId', personId);
 
     const departmentValue = dutyStatus + ',' + departmentId;
     const personValue = personId ? dutyStatus + ',' + personId.key : '';
@@ -470,7 +470,7 @@ export default class Edit extends PureComponent {
       dutyStatus: '',
       departmentId: undefined,
       personId: undefined,
-      selectCompanyId: v.key,
+      selectCompanyId: v && v.key,
     });
   };
 
@@ -726,7 +726,7 @@ export default class Edit extends PureComponent {
                     {...itemStyles}
                     style={{ width: '50%' }}
                     onChange={e => this.handleIdChange(e)}
-                    treeData={getTreeNodes(departmentList)}
+                    treeData={this.state.selectCompanyId || companyId || unitType === 4 ? getTreeNodes(departmentList) : []}
                   />
                 )}
                 {+dutyStatus === 3 && (
@@ -745,14 +745,14 @@ export default class Edit extends PureComponent {
                     {...itemStyles}
                     style={{ width: '50%' }}
                   >
-                    {personList.map(({ users, userName }) => (
+                    {this.state.selectCompanyId || companyId || unitType === 4 ? personList.map(({ users, userName }) => (
                       <Option
                         key={users.map(item => item.id)[0]}
                         value={users.map(item => item.id)[0]}
                       >
                         {userName}
                       </Option>
-                    ))}
+                    )) : []}
                   </Select>
                 )}
                 {+dutyStatus === 0 && (
