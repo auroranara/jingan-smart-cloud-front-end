@@ -295,7 +295,7 @@ export default class RiskAreaEdit extends Component {
     } = this.props;
     const isNotDetail = mode !== 'detail';
     const values = getFieldsValue();
-    const company = detail.company || values.company;
+    const company = isUnit ? true : detail.company || values.company;
     const fields = [
       ...(isUnit
         ? []
@@ -358,12 +358,12 @@ export default class RiskAreaEdit extends Component {
       {
         key: 'partName',
         label: '所属部门',
-        component: <Input mode={mode} disabled />,
+        component: <Input mode={'detail'} />,
       },
       {
         key: 'tel',
         label: '联系电话',
-        component: <Input mode={mode} disabled />,
+        component: <Input mode={'detail'} />,
       },
     ];
 

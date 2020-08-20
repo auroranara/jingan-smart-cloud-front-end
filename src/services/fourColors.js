@@ -43,8 +43,8 @@ export async function edit(body) {
 }
 
 /* 删除风险分区 */
-export async function remove({ ids }) {
-  return request(`/acloud_new/v2/ci/zone/zone/${ids}`, {
+export async function remove({ id }) {
+  return request(`/acloud_new/v2/ci/zone/zone/${id}`, {
     method: 'DELETE',
   });
 }
