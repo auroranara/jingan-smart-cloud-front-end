@@ -48,6 +48,6 @@ export const EDIT_PATH = `/risk-control/${URL}/edit`;
 export const FourLvls = [
   { key: 1, value: '红', color: 'rgb(252, 31, 2)' },
   { key: 2, value: '橙', color: 'rgb(237, 126, 17)' },
-  { key: 3, value: '黄', color: 'rgb(251, 202, 24)' },
+  { key: 3, value: '黄', color: '#FFCC33' },
   { key: 4, value: '蓝', color: 'rgb(30, 96, 255)' },
 ];
