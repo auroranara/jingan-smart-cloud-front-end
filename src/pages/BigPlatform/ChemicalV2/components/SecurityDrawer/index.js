@@ -63,21 +63,7 @@ export default connect(
     visible,
     onClose,
     data,
-    detail: {
-      type,
-      unifiedCode,
-      chineName,
-      casNo,
-      dangerChemcataSn,
-      riskCateg,
-      materialForm,
-      highlyToxicChem,
-      easyMakePoison,
-      easyMakeExplode,
-      safetyMeasures,
-      emergencyMeasure,
-      msds,
-    } = {},
+    detail,
     loading,
     getDetail,
   }) => {
@@ -103,6 +89,29 @@ export default connect(
       },
       [value]
     );
+
+    const {
+      annualConsumption,
+      annualConsumptionUnit,
+      annualThroughput,
+      annualThroughputUnit,
+      type,
+      unifiedCode,
+      chineName,
+      casNo,
+      dangerChemcataSn,
+      riskCateg,
+      materialForm,
+      highlyToxicChem,
+      easyMakePoison,
+      easyMakeExplode,
+      safetyMeasures,
+      emergencyMeasure,
+      msds,
+    } = detail || {};
+
+    const isConsumption = +type === 1 || +type === 4;
+
     return (
       <CustomDrawer
         title={
@@ -171,8 +180,10 @@ export default connect(
               { name: '化学品名称', value: chineName || <EmptyText className={styles.empty} /> },
               { name: 'CAS号', value: casNo || <EmptyText className={styles.empty} /> },
               {
-                name: '年消耗量',
-                value: dangerChemcataSn || <EmptyText className={styles.empty} />,
+                name: isConsumption ? '年消耗量' : '年产量',
+                value: isConsumption ?
+                  (annualConsumption ? `${annualConsumption} ${annualConsumptionUnit === '1' ? 't' : 'm³'}` : <EmptyText className={styles.empty} />)
+                  : (annualThroughput ? `${annualThroughput} ${annualThroughputUnit === '1' ? 't' : 'm³'}` : <EmptyText className={styles.empty} />),
               },
               {
                 name: '危险化学品目录序号',
