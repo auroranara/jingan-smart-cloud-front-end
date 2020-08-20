@@ -42,7 +42,8 @@ const configs = {
     unitName: '无锡晶安智慧科技有限公司',
   },
   demo: {
-    projectKey: 'demo_pro',
+    // projectKey: 'demo_pro',
+    projectKey: 'v2_test',
     code: demoCode,
     ios: 'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/chemicalAppDownload/DemoAPP/official_version/DemoChemicalCloud.plist&ran=',
     android: 'http://demo.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
