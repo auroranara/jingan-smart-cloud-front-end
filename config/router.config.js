@@ -1580,7 +1580,7 @@ module.exports = env => {
                 {
                   name: 'detail',
                   code: 'riskControl.fourColorImage.view',
-                  path: '/risk-control/four-color-image/view/:id',
+                  path: '/risk-control/four-color-image/detail/:id',
                   component: './RiskControl/FourColors/Edit',
                 },
                 {

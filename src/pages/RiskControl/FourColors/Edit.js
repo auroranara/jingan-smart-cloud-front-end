@@ -3,6 +3,7 @@ import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { message, Spin, Card, Row, Col, Button, notification } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import { stringify } from 'qs';
 import Select from '@/jingan-components/Form/Select';
 import Input from '@/jingan-components/Form/Input';
 import Radio from '@/jingan-components/Form/Radio';
@@ -91,7 +92,7 @@ const getRiskLvl = (inherentRiskLevel, controlRiskLevel) => {
         params: { id },
       },
       route: { path, name },
-      location: { pathname },
+      location: { pathname, query },
     }
   ) => {
     const title = {
@@ -99,8 +100,9 @@ const getRiskLvl = (inherentRiskLevel, controlRiskLevel) => {
       add: '新增风险区域',
       edit: '编辑风险区域',
     }[name];
+    const queryString = stringify(query);
     const goBack = () => {
-      router.push(LIST_PATH);
+      router.push(`${LIST_PATH}${queryString ? `?${queryString}` : ''}`);
     };
     return {
       ...stateProps,
@@ -109,7 +111,7 @@ const getRiskLvl = (inherentRiskLevel, controlRiskLevel) => {
         {
           title: '风险区域划分',
           name: '风险区域划分',
-          href: path.replace(/:id\?.*/, 'list'),
+          href: `${LIST_PATH}${queryString ? `?${queryString}` : ''}`,
         },
         {
           title,
@@ -375,10 +377,6 @@ export default class FourColorsEdit extends Component {
     const { riskCorrectFactor = [], zoneLevel, riskCorrectLevel } = values;
     const hasRiskFactor = riskCorrectFactor[0] === 1;
     const correctLvlList = zoneLevel ? FourLvls.slice(0, +zoneLevel) : [];
-    console.log('zoneLevel', zoneLevel);
-    console.log('correctLvlList', correctLvlList);
-    console.log('riskCorrectLevel', detail.riskCorrectLevel);
-    console.log('typeof', typeof(detail.riskCorrectLevel));
     const fields = [
       ...(isUnit
         ? []
@@ -490,8 +488,7 @@ export default class FourColorsEdit extends Component {
       {
         key: 'riskCorrectLevel',
         label: '风险校正等级',
-        component: <Select list={correctLvlList} mode={!hasRiskFactor ? 'detail' : mode} />,
-        // component: <Select list={FourLvls} mode={!hasRiskFactor ? 'detail' : mode} />,
+        component: <Select key={zoneLevel} list={correctLvlList} mode={!hasRiskFactor ? 'detail' : mode} />,
         options: {
           rules: [{ required: true, message: '风险校正等级不能为空' }],
         },

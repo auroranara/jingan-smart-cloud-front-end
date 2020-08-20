@@ -225,6 +225,7 @@ export default class MEdit extends PureComponent {
       type: 'msds/getMSDS',
       payload: id,
       callback: detail => {
+        if (!detail.riskCateg) delete detail.riskCateg;
         if (this.isDetail())
           this.setState(
             ({ sections }) => ({ sections: convertSections(sections, detail) }),

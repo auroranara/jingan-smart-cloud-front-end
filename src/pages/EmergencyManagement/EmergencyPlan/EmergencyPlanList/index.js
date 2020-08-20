@@ -4,6 +4,8 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import classNames from 'classnames';
+import Link from 'umi/link';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import {
@@ -48,6 +50,8 @@ export default class EmergencyPlanList extends Component {
     currentAuditStatus: undefined,
     reviewModalVisible: false, // 审核弹窗是否可见
     planId: undefined, // 计划id
+    startHistoryVisible: false,
+    startHistory: [],
   }
 
   componentDidMount () {
@@ -99,6 +103,19 @@ export default class EmergencyPlanList extends Component {
       historyVisible: false,
     });
   }
+
+  showStartHistory = (history) => {
+    this.setState({
+      startHistoryVisible: true,
+      startHistory: history,
+    });
+  };
+
+  hideStartHistory = () => {
+    this.setState({
+      startHistoryVisible: false,
+    });
+  };
 
   // 查询按钮点击事件
   handleSearch = (values) => {
@@ -290,6 +307,23 @@ export default class EmergencyPlanList extends Component {
     })
   }
 
+  startNumPlus(id) {
+    const {
+      dispatch,
+      emergencyPlan: {
+        list,
+      },
+    } = this.props;
+
+    const lst = Array.isArray(list.list) ? list.list : [];
+    const newLst = lst.map(item => {
+      if (item.id === id) item.startNumber++;
+      return item;
+    });
+
+    dispatch({ type: 'emergencyPlan/save', payload: { list: { ...list, list: newLst } } });
+  }
+
   handleStartClick = id => {
     confirm({
       title: '系统提示',
@@ -304,8 +338,10 @@ export default class EmergencyPlanList extends Component {
       type: 'emergencyPlan/startPlan',
       payload: { id },
       callback: (code, msg) => {
-        if (code === 200) message.success('应急预案启动成功！');
-        else message.error(`${msg}，应急预案启动失败!`);
+        if (code === 200) {
+          message.success('应急预案启动成功！');
+          this.startNumPlus(id);
+        } else message.error(`${msg}，应急预案启动失败!`);
       },
     })
   };
@@ -593,6 +629,16 @@ export default class EmergencyPlanList extends Component {
         ),
       },
       {
+        title: '启动次数',
+        dataIndex: 'startNumber',
+        fixed: list && list.length > 0 ? 'right' : false,
+        width: 88,
+        render: (n, item) => +n > 0 ? (
+          <span className={styles.operation} onClick={() => this.showStartHistory(item.emergencyPlanHistoryList)}>{n}</span>
+        ) : '—',
+        align: 'center',
+      },
+      {
         title: '历史版本',
         dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
@@ -762,6 +808,79 @@ export default class EmergencyPlanList extends Component {
     );
   }
 
+  renderStartHistory() {
+    const { startHistoryVisible, startHistory } = this.state;
+    const columns = [
+      {
+        title: '预案基本信息',
+        dataIndex: 'emergencyPlan',
+        render: ({ id, name, isMajorHazard, applicationArea, editionType, editionCode }) => (
+          <div className={styles.multi}>
+            <Link to={`/emergency-management/emergency-plan/detail/${id}`} target="_blank">预案名称：{name}</Link>
+            <div>重大危险源：{+isMajorHazard ? '是' : '否'}</div>
+            <div>适用领域：{applicationArea}</div>
+            <div>{+editionType !== 2 ? '创建' : '修订'}，{`V${editionCode}`}</div>
+          </div>
+        ),
+      },
+      {
+        title: '启动时间',
+        dataIndex: 'time',
+        render: t => t ? moment(t).format('YYYY-MM-DD HH:mm:ss') : '-',
+        width: 128,
+        align: 'center',
+      },
+      {
+        title: '启动人员',
+        dataIndex: 'person',
+        align: 'center',
+        render: (_, item) => item.user ? item.user.userName : '-',
+      },
+      {
+        title: '联系电话',
+        dataIndex: 'telephone',
+        align: 'center',
+        render: (_, item) => item.user && item.user.phoneNumber ? item.user.phoneNumber : '-',
+      },
+      // {
+      //   title: '详情',
+      //   dataIndex: 'emergencyPlanId',
+      //   fixed: 'right',
+      //   render: id => <a onClick={this.genClickStartDetail(id)}>查看</a>,
+      //   width: 80,
+      //   align: 'center',
+      // },
+    ];
+
+    return (
+      <Modal
+        title="启动历史"
+        visible={startHistoryVisible}
+        onCancel={this.hideStartHistory}
+        footer={null}
+        width="60%"
+        className={styles.modal}
+        zIndex={9999}
+      >
+          <Table
+            className={styles.table}
+            dataSource={startHistory || []}
+            columns={columns}
+            rowKey="id"
+            scroll={{
+              x: true,
+            }}
+            pagination={{
+              // current: pageNum,
+              pageSize: 5,
+              // total,
+              showTotal: total => `共 ${total} 条`,
+            }}
+          />
+      </Modal>
+    );
+  }
+
   render () {
     const {
       emergencyPlan: {
@@ -795,6 +914,7 @@ export default class EmergencyPlanList extends Component {
         {this.renderForm()}
         {this.renderTable()}
         {this.renderHistory()}
+        {this.renderStartHistory()}
         {/* 审核提示弹窗 */}
         <ReviewModal {...reviewModalProps} />
       </PageHeaderLayout>

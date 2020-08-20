@@ -15,7 +15,6 @@ import {
   Input,
   Select,
 } from 'antd';
-
 import { getToken } from 'utils/authority';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -30,6 +29,7 @@ import {
 } from './utils';
 import debounce from 'lodash/debounce';
 import { lecSettings } from '@/pages/RiskControl/SafetyChecklist/config.js';
+import { stringify } from 'qs';
 
 // 权限
 const {
@@ -153,13 +153,14 @@ export default class TableList extends PureComponent {
   // 获取负责人员列表
   fetchReevaluatorList = (payload = {}) => {
     const { dispatch, user: { isCompany, currentUser } } = this.props;
-    const company = this.form && this.form.getFieldValue('company');
+    const { info } = this.state;
+    const comId = isCompany ? currentUser.companyId : info && info.companyId ? info.companyId : undefined;
     dispatch({
       type: 'electronicInspection/fetchPersonList',
       payload: {
         pageNum: 1,
         pageSize: 0,
-        companyId: isCompany ? currentUser.companyId : company ? company.key : undefined,
+        companyId: payload.companyId || comId,
         ...payload,
       },
       callback: data => {
@@ -288,7 +289,7 @@ export default class TableList extends PureComponent {
 
   // 打开选择责任人弹窗
   handleViewPersonModal = row => {
-    this.fetchReevaluatorList({ pageSize: 100 });
+    this.fetchReevaluatorList({ pageSize: 100, companyId: row.companyId });
     this.setState({
       personModalVisible: true,
       info: row,
@@ -333,9 +334,22 @@ export default class TableList extends PureComponent {
     });
   }
 
+  // 点击历史记录
   handleViewHistory = () => {
     this.fetchHistory();
     this.setState({ historyModalVisible: true });
+  }
+
+  // 点击来源分析
+  jumpViewSourceAnalysis = ({ type, code }) => {
+    const query = { code };
+    let path = '';
+    if (+type === 1) { // scl
+      path = '/risk-control/safety-checklist/list';
+    } else if (+type === 2) { // jha
+      path = '/risk-control/operation-hazards/list';
+    }
+    window.open(`${window.publicPath}#${path}?${stringify(query)}`);
   }
 
   render () {
@@ -392,9 +406,9 @@ export default class TableList extends PureComponent {
         align: 'left',
         fixed: 'right',
         width: 200,
-        render: (val, { code, riskAnalyze, safeCheckId }) => (
-          <div>
-            <a>{(+riskAnalyze === 1 && 'SCL') || (+riskAnalyze === 2 && 'JHA') || ''}</a><br />
+        render: (val, { code, type, safeCheckId }) => (
+          <div onClick={() => this.jumpViewSourceAnalysis({ type, code })}>
+            <a>{(+type === 1 && 'SCL') || (+type === 2 && 'JHA') || ''}</a><br />
             <a>编号：{code}</a>
           </div>
         ),
@@ -498,8 +512,10 @@ export default class TableList extends PureComponent {
         label: '管控层级',
         render: () => (
           <Select placeholder="请选择" allowClear>
-            {riskLevelList.map(({ level, controllevel }) => (
-              <Select.Option key={level} value={level}>{controllevel}</Select.Option>
+            {riskLevelList.map(({ level, controllevel, color }) => (
+              <Select.Option key={level} value={level}>
+                <span style={{ border: `0px solid ${color}`, borderLeftWidth: '2px', paddingLeft: '1em', lineHeight: '1em', display: 'inline-block' }}>{controllevel}</span>
+              </Select.Option>
             ))}
           </Select>
         ),
@@ -513,7 +529,7 @@ export default class TableList extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={unitType === 4 ? FIELDS.slice(1, FIELDS.length) : FIELDS}
+            fields={unitType === 4 ? FIELDS.filter(item => item.id !== 'companyName') : FIELDS}
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}

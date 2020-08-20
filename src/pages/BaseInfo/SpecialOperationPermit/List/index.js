@@ -391,7 +391,7 @@ export default class specialOperationPermitList extends PureComponent {
             style={{ marginRight: '10px' }}
           >新增</AuthButton>
           <Button
-            href="http://data.jingan-china.cn/v2/chem/file/特种作业操作人员证模板.xls"
+            href="http://data.jingan-china.cn/v2/chem/file1/特种作业操作人员证模板.xlsx"
             target="_blank"
             style={{ marginRight: '10px' }}
           >
