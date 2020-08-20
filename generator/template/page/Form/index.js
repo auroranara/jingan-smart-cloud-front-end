@@ -20,9 +20,10 @@ export default connect(
     dict: { companyList, personList, departmentTree },
     [NAMESPACE]: { detail },
     loading: {
-      models: { [NAMESPACE]: submitting },
       effects: {
         [`${NAMESPACE}/getDetail`]: loading,
+        [`${NAMESPACE}/add`]: adding,
+        [`${NAMESPACE}/edit`]: editing,
         'dict/getCompanyList': loadingCompanyList,
         'dict/getDepartmentTree': loadingDepartmentTree,
         'dict/getPersonList': loadingPersonList,
@@ -32,7 +33,8 @@ export default connect(
     currentUser,
     detail,
     loading,
-    submitting,
+    adding,
+    editing,
     companyList,
     loadingCompanyList,
     personList,
@@ -50,7 +52,8 @@ export default connect(
     currentUser,
     detail,
     loading,
-    submitting,
+    adding,
+    editing,
     companyList,
     loadingCompanyList,
     personList,
@@ -65,8 +68,6 @@ export default connect(
     const [companyPayload, setCompanyPayload] = useState(undefined);
     // 创建人员列表接口对应的payload（同上）
     const [personPayload, setPersonPayload] = useState(undefined);
-    // 创建部门树接口对应的payload（同上）
-    const [departmentPayload, setDepartmentPayload] = useState(undefined);
     // 获取search（用于路由跳转）
     const search = useMemo(
       () => unsafeSearch && (unsafeSearch.startsWith('?') ? unsafeSearch : `?${unsafeSearch}`),
@@ -195,7 +196,7 @@ export default connect(
       // 如果已选择单位，则获取人员列表、部门树
       if (company) {
         setPersonPayload({ pageNum: 1, pageSize: PAGE_SIZE, companyId: company.key });
-        setDepartmentPayload({
+        getDepartmentTree({
           companyId: company.key,
         });
       }
@@ -242,7 +243,7 @@ export default connect(
                   form.setFieldsValue(GET_VALUES_BY_DETAIL(dataOrMsg));
                   // 获取人员列表、部门树
                   setPersonPayload({ pageNum: 1, pageSize: PAGE_SIZE, companyId });
-                  setDepartmentPayload({ companyId });
+                  getDepartmentTree({ companyId });
                 } else {
                   // 重置初始值
                   form.resetFields();
@@ -259,7 +260,7 @@ export default connect(
           // 如果当前账号是单位账号，则获取人员列表、部门树
           if (isUnit) {
             setPersonPayload({ pageNum: 1, pageSize: PAGE_SIZE, companyId: company.key });
-            setDepartmentPayload({
+            getDepartmentTree({
               companyId: company.key,
             });
           }
@@ -288,15 +289,6 @@ export default connect(
         }
       },
       [personPayload]
-    );
-    // 当departmentPayload发生变化时获取部门树
-    useEffect(
-      () => {
-        if (departmentPayload && departmentPayload.companyId) {
-          getDepartmentTree(departmentPayload);
-        }
-      },
-      [departmentPayload]
     );
     return (
       <PageHeaderLayout
@@ -331,7 +323,9 @@ export default connect(
                         name,
                         search,
                         isUnit,
-                        submitting,
+                        loading,
+                        adding,
+                        editing,
                         companyList,
                         loadingCompanyList,
                         setCompanyPayload,

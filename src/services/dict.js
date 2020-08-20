@@ -55,3 +55,8 @@ export async function getSpecialOperatorList(params) {
 export async function getContractorPersonnelQualificationList(params) {
   return request(`/acloud_new/v2/contractorPerson/contractorPerson/page?${stringify(params)}`);
 }
+
+/* 获取标签列表 */
+export async function getTagList(params) {
+  return request(`/acloud_new/v2/companyTag/allCompanyTag?${stringify(params)}`);
+}

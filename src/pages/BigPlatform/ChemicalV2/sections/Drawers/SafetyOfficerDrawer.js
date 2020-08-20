@@ -11,6 +11,10 @@ import imgNoAvatar from '@/pages/BigPlatform/Gas/imgs/camera-bg.png';
 
 // const borderColorList = ['#FF4848', '#C6C181', '#00A8FF', '#0967D3'];
 
+function isPDF(s) {
+  return /\.pdf$/i.test(s);
+}
+
 /**
  * 安全人员抽屉
  */
@@ -130,9 +134,11 @@ export default class SafetyOfficerDrawer extends PureComponent {
                               background: `url(${EduIcon}) no-repeat center bottom`,
                               backgroundSize: '100% 100%',
                             }}
-                            onClick={() =>
-                              handleClickImgShow(educationFileList.map(item => item.webUrl))
-                            }
+                            onClick={() =>{
+                              const first = educationFileList[0];
+                              if (isPDF(first.webUrl)) window.open(first.webUrl);
+                              else handleClickImgShow(educationFileList.map(item => item.webUrl).filter(url => !isPDF(url)));
+                            }}
                           />
                         </Tooltip>
                       )}

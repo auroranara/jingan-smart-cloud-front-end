@@ -211,7 +211,10 @@ const FormIndex = forwardRef((props, ref) => {
                   </div>
                 )}
                 <div className={styles.operationWrapper}>
-                  <Button href={`#${listPath}`} onClick={() => window.close()}>
+                  <Button
+                    href={`#${listPath}`}
+                    onClick={mode !== 'add' ? () => window.close() : undefined}
+                  >
                     返回
                   </Button>
                 </div>

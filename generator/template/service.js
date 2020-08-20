@@ -1,7 +1,7 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
-const list = [...Array(11).keys()].map(id => ({ id }));
+const list = [{ id: 0 }, ...[...Array(11)].map((_, index) => ({ id: index + 1 }))];
 
 export async function getList(params) {
   // return request(`/acloud_new?${stringify(params)}`);
@@ -10,7 +10,10 @@ export async function getList(params) {
       resolve({
         code: 200,
         data: {
-          list,
+          list: list.slice(
+            (params.pageNum - 1) * params.pageSize,
+            params.pageNum * params.pageSize
+          ),
           pagination: {
             total: list.length,
             ...params,

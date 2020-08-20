@@ -35,8 +35,7 @@ const pageSize = 10;
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '风险管控', name: '风险管控' },
-  { title: '风险点管理', name: '风险点管理', href: '/risk-control/risk-point-manage/list' },
-  { title: '单位风险点', name: '单位风险点' },
+  { title: '风险点管理', name: '风险点管理' },
 ];
 const riskColors = ['#FC1F02', '#ED7E11', '#fbca18', '#1E60FF'];
 const FormItem = Form.Item;
@@ -121,7 +120,6 @@ export default class riskPointList extends PureComponent {
     dispatch({
       type: 'riskPointManage/fetchRiskCount',
       payload: {
-        // companyId: companyId,
         ...payload,
       },
     });
