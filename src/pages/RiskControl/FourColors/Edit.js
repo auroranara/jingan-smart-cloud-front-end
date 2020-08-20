@@ -375,10 +375,6 @@ export default class FourColorsEdit extends Component {
     const { riskCorrectFactor = [], zoneLevel, riskCorrectLevel } = values;
     const hasRiskFactor = riskCorrectFactor[0] === 1;
     const correctLvlList = zoneLevel ? FourLvls.slice(0, +zoneLevel) : [];
-    console.log('zoneLevel', zoneLevel);
-    console.log('correctLvlList', correctLvlList);
-    console.log('riskCorrectLevel', detail.riskCorrectLevel);
-    console.log('typeof', typeof(detail.riskCorrectLevel));
     const fields = [
       ...(isUnit
         ? []
@@ -490,8 +486,7 @@ export default class FourColorsEdit extends Component {
       {
         key: 'riskCorrectLevel',
         label: '风险校正等级',
-        component: <Select list={correctLvlList} mode={!hasRiskFactor ? 'detail' : mode} />,
-        // component: <Select list={FourLvls} mode={!hasRiskFactor ? 'detail' : mode} />,
+        component: <Select key={zoneLevel} list={correctLvlList} mode={!hasRiskFactor ? 'detail' : mode} />,
         options: {
           rules: [{ required: true, message: '风险校正等级不能为空' }],
         },
