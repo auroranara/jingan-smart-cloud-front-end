@@ -46,7 +46,7 @@ const DefaultFeilds = {
   controlRiskLevel: undefined,
   zoneLevel: undefined,
   area: undefined,
-  riskCorrectFactor: undefined,
+  riskCorrectFactor: [0],
   riskCorrectLevel: undefined,
   checkCircle: undefined,
   createTime: undefined,
@@ -333,11 +333,11 @@ export default class FourColorsEdit extends Component {
     }
   };
 
-  // 验证风险矫正因素是否为空
+  // 验证风险校正因素是否为空
   validateRiskFactor = (rule, value, callback) => {
     const [radioValue, textValue] = value || [];
     if (radioValue === 1 && (!textValue || !textValue.trim())) {
-      callback('风险矫正因素不能为空');
+      callback('风险校正因素不能为空');
     } else {
       callback();
     }
@@ -371,13 +371,10 @@ export default class FourColorsEdit extends Component {
     } = this.props;
     const isNotDetail = mode !== 'detail';
     const values = getFieldsValue();
-    const company = detail.company || values.company;
+    const company = isUnit ? true : detail.company || values.company;
     const { riskCorrectFactor = [], zoneLevel, riskCorrectLevel } = values;
     const hasRiskFactor = riskCorrectFactor[0] === 1;
     const correctLvlList = zoneLevel ? FourLvls.slice(0, +zoneLevel) : [];
-    console.log('correctLvlList', correctLvlList);
-    console.log('riskCorrectLevel', detail.riskCorrectLevel);
-    console.log('typeof', typeof(detail.riskCorrectLevel));
     const fields = [
       ...(isUnit
         ? []
@@ -475,23 +472,23 @@ export default class FourColorsEdit extends Component {
       },
       {
         key: 'riskCorrectFactor',
-        label: '风险矫正因素',
+        label: '风险校正因素',
         component: <RiskCorrectFactor mode={mode} onChange={this.handleChangeRiskFactor} />,
         options: {
           initialValue: detail.riskCorrectFactor || [0],
           rules: [
-            { required: true, message: '风险矫正因素不能为空' },
-            { validator: this.validateRiskFactor },
+            { required: true, validator: this.validateRiskFactor },
+            // { required: true, message: '风险校正因素不能为空' },
+            // { validator: this.validateRiskFactor },
           ],
         },
       },
       {
         key: 'riskCorrectLevel',
-        label: '风险矫正等级',
-        component: <Select list={correctLvlList} mode={!hasRiskFactor ? 'detail' : mode} />,
-        // component: <Select list={FourLvls} mode={!hasRiskFactor ? 'detail' : mode} />,
+        label: '风险校正等级',
+        component: <Select key={zoneLevel} list={correctLvlList} mode={!hasRiskFactor ? 'detail' : mode} />,
         options: {
-          rules: [{ required: true, message: '风险矫正等级不能为空' }],
+          rules: [{ required: true, message: '风险校正等级不能为空' }],
         },
       },
       {

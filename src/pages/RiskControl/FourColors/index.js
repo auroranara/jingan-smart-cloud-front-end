@@ -249,7 +249,7 @@ export default class FourColorsList extends PureComponent {
             </Form.Item>
           </Col>
           <Col xl={8} md={12} sm={24} xs={24}>
-            <Form.Item label={'风险矫正等级'}>
+            <Form.Item label={'风险校正等级'}>
               {getFieldDecorator('riskCorrectLevel')(<Select list={FourLvls} mode={'edit'} />)}
             </Form.Item>
           </Col>
@@ -357,7 +357,7 @@ export default class FourColorsList extends PureComponent {
           ),
       },
       {
-        title: '风险矫正等级',
+        title: '风险校正等级',
         dataIndex: 'riskCorrectLevel',
         render: val =>
           val ? (

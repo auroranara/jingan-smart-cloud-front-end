@@ -57,7 +57,7 @@ export default class JoySuchMap extends React.Component {
     if (JSON.stringify(prevValue) !== JSON.stringify(value)) {
       this.getPolygon(value);
     }
-    if (JSON.stringify(prevLvl) !== JSON.stringify(lvl)) {
+    if (prevLvl !== lvl) {
       this.getPolygon(value);
     }
   }

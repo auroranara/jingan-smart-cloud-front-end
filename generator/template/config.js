@@ -231,7 +231,7 @@ export const GET_LIST_FIELDS = ({
   },
 ];
 /* 获取表格配置 */
-const GET_COLUMNS = ({
+export const GET_COLUMNS = ({
   search,
   isUnit,
   hasDetailAuthority,
