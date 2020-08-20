@@ -119,14 +119,10 @@ export default class RiskPointEdit extends PureComponent {
     const {
       dispatch,
       location: {
-        query: { companyId, companyName, itemId },
+        query: { itemId },
       },
     } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/risk-control/risk-point-manage/risk-card-list/${itemId}?companyName=${companyName}&companyId=${companyId}`
-      )
-    );
+    dispatch(routerRedux.push(`/risk-control/risk-point-manage/risk-card-list/${itemId}`));
   };
 
   // 提交
@@ -138,7 +134,7 @@ export default class RiskPointEdit extends PureComponent {
       },
       dispatch,
       location: {
-        query: { companyId, itemId },
+        query: { itemId },
       },
     } = this.props;
 
@@ -161,7 +157,6 @@ export default class RiskPointEdit extends PureComponent {
         const payload = {
           id,
           itemId,
-          companyId,
           letterName,
           areaName,
           dangerFactor,
@@ -679,7 +674,7 @@ export default class RiskPointEdit extends PureComponent {
         params: { id },
       },
       location: {
-        query: { companyId, companyName, itemId },
+        query: { itemId },
       },
     } = this.props;
 
@@ -689,14 +684,18 @@ export default class RiskPointEdit extends PureComponent {
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       {
-        title: '单位风险点',
-        name: '单位风险点',
-        href: `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`,
+        title: '风险管控',
+        name: '风险管控',
+      },
+      {
+        title: '风险点管理',
+        name: '风险点管理',
+        href: `/risk-control/risk-point-manage/list/all`,
       },
       {
         title: '风险告知卡',
         name: '风险告知卡',
-        href: `/risk-control/risk-point-manage/risk-card-list/${itemId}?companyName=${companyName}&companyId=${companyId}`,
+        href: `/risk-control/risk-point-manage/risk-card-list/${itemId}`,
       },
       {
         title,

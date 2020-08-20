@@ -61,25 +61,11 @@ export default class RiskCard extends PureComponent {
   }
 
   goBack = () => {
-    // const {
-    //   location: {
-    //     query: { companyName, companyId },
-    //   },
-    //   dispatch,
-    // } = this.props;
-    // dispatch(
-    //   routerRedux.push(
-    //     `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`
-    //   )
-    // );
     window.close();
   };
 
   goRiskCardEdit = id => {
     const {
-      location: {
-        query: { companyName, companyId },
-      },
       dispatch,
       match: {
         params: { id: itemId },
@@ -87,7 +73,7 @@ export default class RiskCard extends PureComponent {
     } = this.props;
     dispatch(
       routerRedux.push(
-        `/risk-control/risk-point-manage/risk-card-edit/${id}?itemId=${itemId}&&companyId=${companyId}&&companyName=${companyName}`
+        `/risk-control/risk-point-manage/risk-card-edit/${id}?itemId=${itemId}`
       )
     );
   };
@@ -97,9 +83,6 @@ export default class RiskCard extends PureComponent {
       dispatch,
       match: {
         params: { id: itemId },
-      },
-      location: {
-        query: { companyName, companyId },
       },
     } = this.props;
     const { isShowEwm, showEwm } = this.state;
@@ -111,14 +94,14 @@ export default class RiskCard extends PureComponent {
       onOk() {
         dispatch(
           routerRedux.push(
-            `/risk-control/risk-point-manage/risk-card-printer/${id}?itemId=${itemId}&&companyId=${companyId}&&companyName=${companyName}&&isShowEwm=${isShowEwm}`
+            `/risk-control/risk-point-manage/risk-card-printer/${id}?itemId=${itemId}&isShowEwm=${isShowEwm}`
           )
         );
       },
       onCancel() {
         dispatch(
           routerRedux.push(
-            `/risk-control/risk-point-manage/risk-card-printer/${id}?itemId=${itemId}&&companyId=${companyId}&&companyName=${companyName}&&isShowEwm=${showEwm}`
+            `/risk-control/risk-point-manage/risk-card-printer/${id}?itemId=${itemId}&isShowEwm=${showEwm}`
           )
         );
       },
@@ -327,9 +310,9 @@ export default class RiskCard extends PureComponent {
           pagination: { total },
         },
       },
-      location: {
-        query: { companyName, companyId },
-      },
+      // location: {
+      //   query: { companyName },
+      // },
       match: {
         params: { id },
       },
@@ -344,13 +327,13 @@ export default class RiskCard extends PureComponent {
         href: '/',
       },
       {
-        title: '风险点管理',
-        name: '风险点管理',
+        title: '风险管控',
+        name: '风险管控',
       },
       {
-        title: '单位风险点',
-        name: '单位风险点',
-        href: `/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`,
+        title: '风险点管理',
+        name: '风险点管理',
+        href: `/risk-control/risk-point-manage/list/all`,
       },
       {
         title,
@@ -364,7 +347,7 @@ export default class RiskCard extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <span>{companyName}</span>
+            {/* <span>{companyName}</span> */}
             <span style={{ paddingLeft: 15 }}>
               列表总数：
               {total}
@@ -377,7 +360,7 @@ export default class RiskCard extends PureComponent {
                 <Form.Item style={{ float: 'right' }}>
                   <Button
                     type="primary"
-                    href={`#/risk-control/risk-point-manage/risk-card-add?itemId=${id}&companyId=${companyId}&&companyName=${companyName}`}
+                    href={`#/risk-control/risk-point-manage/risk-card-add?itemId=${id}`}
                   >
                     添加
                   </Button>
