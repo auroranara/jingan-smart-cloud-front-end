@@ -83,7 +83,7 @@ export default class Map extends React.Component {
       mapServerURL: './data/' + mapId,
       defaultViewMode: fengMap.FMViewMode.MODE_2D,
       //主题数据位置
-      // mapThemeURL: './data/theme',
+      mapThemeURL: './data/theme',
       //设置主题
       defaultThemeName: '2001',
       modelSelectedEffect: false,

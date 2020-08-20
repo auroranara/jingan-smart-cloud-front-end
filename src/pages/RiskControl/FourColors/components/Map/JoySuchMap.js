@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Button, message } from 'antd';
 import { isPointInPolygon } from '@/utils/map';
+import moment from 'moment';
 import styles from './Map.less';
 
 import dotImg from './img/dot.png';
@@ -54,16 +55,12 @@ export default class JoySuchMap extends React.Component {
       this.handleDispose();
       this.initMap(mapInfo);
     }
-    if (JSON.stringify(prevValue) !== JSON.stringify(value)) {
-      this.getPolygon(value);
-    }
-    if (prevLvl !== lvl) {
+    if (JSON.stringify(prevValue) !== JSON.stringify(value) || prevLvl !== lvl) {
       this.getPolygon(value);
     }
   }
 
   getPolygon = points => {
-    // console.log('points', points);
     const { lvl } = this.props;
     if (!map || !points || !points.length) return;
     map.removeAllMarker();
@@ -71,7 +68,7 @@ export default class JoySuchMap extends React.Component {
       this.drawPolygon({
         floorId: +points[0].floorId,
         points: tool.MercatorToWGS84(points),
-        color: COLORS[lvl-1],
+        color: COLORS[lvl - 1],
       });
     // this.addPoint(+points[0].floorId, tool.MercatorToWGS84(points)[0], {
     //   image: billImg,
@@ -97,6 +94,8 @@ export default class JoySuchMap extends React.Component {
 
     //初始化地图对象
     map = new jsmap.JSMap(mapOptions);
+
+    console.log('map', map);
 
     //打开Fengmap服务器的地图数据和主题
     map.openMapById(mapId);
@@ -193,11 +192,11 @@ export default class JoySuchMap extends React.Component {
       // properties: props,
       strokeWidth: 2, //边线宽度
       depthTest: false, //是否开启深度检测
-      // callback: marker => {
-      //   console.log('marker', marker);
-      // },
+      callback: marker => {
+        console.log('marker', marker);
+      },
     });
-    this.polygonMarkers.push(polygonMarker);
+    // this.polygonMarkers.push(polygonMarker);
     map.addMarker(polygonMarker);
     return polygonMarker;
   };
@@ -334,7 +333,11 @@ export default class JoySuchMap extends React.Component {
     map.removeMarker(lineMarker);
 
     onChange &&
-      onChange(tool.WGS84ToMercator(linePoints).map(item => ({ x: item.x, y: item.y, z: 0, floorId: +groupId })));
+      onChange(
+        tool
+          .WGS84ToMercator(linePoints)
+          .map(item => ({ x: item.x, y: item.y, z: 0, floorId: +groupId }))
+      );
     // handleChangeMapSelect && handleChangeMapSelect(linePoints, []);
   };
 

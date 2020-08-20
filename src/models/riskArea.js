@@ -49,10 +49,14 @@ export default {
       const { code, data, msg } = response || {};
       const { unitId } = payload;
       if (code === 200 && data && data.list) {
-        const personList = data.list.map(item => ({
-          ...item,
-          userId: item.users.filter(user => user.unitId === unitId)[0].id,
-        }));
+        const personList = data.list.map(item => {
+          const user = item.users.filter(user => user.unitId === unitId)[0] || {};
+          return {
+            ...item,
+            userId: user.id,
+            departmentName: user.departmentName,
+          };
+        });
         yield put({
           type: 'save',
           payload: {

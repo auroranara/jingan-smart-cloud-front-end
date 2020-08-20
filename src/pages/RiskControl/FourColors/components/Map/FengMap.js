@@ -38,12 +38,12 @@ export default class Map extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { mapInfo: prevMapInfo, value: prevValue } = prevProps;
-    const { mapInfo, value } = this.props;
+    const { mapInfo: prevMapInfo, value: prevValue , lvl: prevLvl} = prevProps;
+    const { mapInfo, value, lvl } = this.props;
     if (JSON.stringify(prevMapInfo) !== JSON.stringify(mapInfo)) {
       this.initMap(mapInfo);
     }
-    if (JSON.stringify(prevValue) !== JSON.stringify(value)) {
+    if (JSON.stringify(prevValue) !== JSON.stringify(value) ||  prevLvl !== lvl) {
       this.getPolygon(value);
     }
   }
@@ -86,7 +86,7 @@ export default class Map extends React.Component {
       mapServerURL: './data/' + mapId,
       defaultViewMode: fengMap.FMViewMode.MODE_2D,
       //主题数据位置
-      // mapThemeURL: './data/theme',
+      mapThemeURL: './data/theme',
       //设置主题
       defaultThemeName: '2001',
       modelSelectedEffect: false,
@@ -146,11 +146,14 @@ export default class Map extends React.Component {
 
   getPolygon = points => {
     if (!map || !points || !points.length) return;
+    const { lvl }= this.props;
     const groupId = points.map(item => item.groupID)[0];
-    const group = this.map.getFMGroup(groupId);
-    const layer = group.getOrCreateLayer('imageMarker');
+    const group = map.getFMGroup(groupId);
+    if(!group) return;
+    const layer = group.getOrCreateLayer('polygonMarker');
+    if(!layer) return;
     layer.removeAll();
-    this.drawPolygon(groupId, points, COLORS[4]);
+    this.drawPolygon(groupId, points, COLORS[lvl || 4]);
   };
 
   handleClickModel = clickedObj => {

@@ -97,12 +97,17 @@ export const TABLE_COLUMNS = [
     width: 150,
   },
   {
-    title: '风险等级/风险色度',
+    title: '风险等级',
     dataIndex: 'dangerLevel',
     key: 'dangerLevel',
     align: 'center',
-    width: 150,
-    render: (val) => `${val}级 / ${(riskLevelList.find(item => item.level === val) || { colorName: '' }).colorName.slice(0, 1)}`,
+    width: 160,
+    render: (val) => {
+      const target = riskLevelList.find(item => item.level === val);
+      return target ? (
+        <span style={{ color: target.color }}>{target.colorName.slice(0, 1)}</span>
+      ) : '';
+    },
   },
   {
     title: '辨识分级时间',

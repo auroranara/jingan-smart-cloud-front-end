@@ -17,7 +17,6 @@ export default class ImportModal extends Component {
   handleBeforeUpload = file => {
     const { importLoading } = this.state;
     const isExcel = /xls/.test(file.name);
-    console.log('11')
     if (importLoading) {
       message.error('尚未上传结束');
     }
