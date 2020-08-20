@@ -151,7 +151,17 @@ export default class TableList extends PureComponent {
   }
 
   // 获取负责人员列表
-  fetchReevaluatorList = (payload = {}) => {
+  fetchReevaluatorList = (
+    payload = {},
+    callback = data => {
+      this.setState({
+        personList: data.list.map(item => ({
+          key: item.studentId,
+          title: item.name,
+        })),
+      });
+    },
+  ) => {
     const { dispatch, user: { isCompany, currentUser } } = this.props;
     const { info } = this.state;
     const comId = isCompany ? currentUser.companyId : info && info.companyId ? info.companyId : undefined;
@@ -163,14 +173,7 @@ export default class TableList extends PureComponent {
         companyId: payload.companyId || comId,
         ...payload,
       },
-      callback: data => {
-        this.setState({
-          personList: data.list.map(item => ({
-            key: item.studentId,
-            title: item.name,
-          })),
-        });
-      },
+      callback,
     });
   }
 
@@ -308,8 +311,21 @@ export default class TableList extends PureComponent {
   };
 
   // 穿梭框搜索
-  onPersonSearch = (_, value) => {
-    this.fetchPersonDebounce({ name: value });
+  // key: item.studentId,
+  // title: item.name,
+  onPersonSearch = (dir, value) => {
+    if (dir === 'right') return;
+    this.fetchPersonDebounce(
+      { name: value },
+      data => {
+        const { targetKeys, personList } = this.state;
+        const targetItems = personList.filter(item => targetKeys.includes(item.key));
+        const newItems = data.list.reduce((pre, item) => {
+          return targetKeys.includes(item.studentId) ? pre : [...pre, { key: item.studentId, title: item.name }];
+        }, targetItems);
+        this.setState({ personList: newItems });
+      },
+    );
   }
 
   // 选择责任人弹窗点击确认
@@ -501,8 +517,8 @@ export default class TableList extends PureComponent {
         label: '风险等级',
         render: () => (
           <Select placeholder="请选择" allowClear>
-            {riskLevelList.map(({ level }) => (
-              <Select.Option key={level} value={level}>{level + '级'}</Select.Option>
+            {riskLevelList.map(({ level, colorName }) => (
+              <Select.Option key={level} value={level}>{colorName.slice(0, 1)}</Select.Option>
             ))}
           </Select>
         ),
@@ -511,7 +527,7 @@ export default class TableList extends PureComponent {
         id: 'controlHierarchy',
         label: '管控层级',
         render: () => (
-          <Select placeholder="请选择" allowClear>
+          <Select placeholder="请选择" allowClear dropdownMatchSelectWidth={false}>
             {riskLevelList.map(({ level, controllevel, color }) => (
               <Select.Option key={level} value={level}>
                 <span style={{ border: `0px solid ${color}`, borderLeftWidth: '2px', paddingLeft: '1em', lineHeight: '1em', display: 'inline-block' }}>{controllevel}</span>
@@ -616,6 +632,7 @@ export default class TableList extends PureComponent {
             }}
             showSearch
             onSearch={this.onPersonSearch}
+            filterOption={(inputValue, option) => option.title.indexOf(inputValue) > -1}
           />
         </Modal>
         <Modal

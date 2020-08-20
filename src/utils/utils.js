@@ -4,12 +4,12 @@ import CryptoJS from 'crypto-js';
 import { parse, stringify } from 'qs';
 import router from 'umi/router';
 
-export function fixedZero(val) {
+export function fixedZero (val) {
   return val * 1 < 10 ? `0${val}` : val;
 }
 
 // 根据code生成chart 默认26个大写字母
-export function initChars(start = 65, end = 91) {
+export function initChars (start = 65, end = 91) {
   var list = [];
   for (var i = start; i < end; i++) {
     list.push(String.fromCharCode(i));
@@ -17,7 +17,7 @@ export function initChars(start = 65, end = 91) {
   return list;
 }
 
-export function getTimeDistance(type) {
+export function getTimeDistance (type) {
   const now = new Date();
   const oneDay = 1000 * 60 * 60 * 24;
 
@@ -65,7 +65,7 @@ export function getTimeDistance(type) {
   }
 }
 
-export function getPlainNode(nodeList, parentPath = '') {
+export function getPlainNode (nodeList, parentPath = '') {
   const arr = [];
   nodeList.forEach(node => {
     const item = node;
@@ -83,7 +83,7 @@ export function getPlainNode(nodeList, parentPath = '') {
   return arr;
 }
 
-function accMul(arg1, arg2) {
+function accMul (arg1, arg2) {
   let m = 0;
   const s1 = arg1.toString();
   const s2 = arg2.toString();
@@ -92,7 +92,7 @@ function accMul(arg1, arg2) {
   return (Number(s1.replace('.', '')) * Number(s2.replace('.', ''))) / 10 ** m;
 }
 
-export function digitUppercase(n) {
+export function digitUppercase (n) {
   const fraction = ['角', '分'];
   const digit = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
   const unit = [['元', '万', '亿'], ['', '拾', '佰', '仟', '万']];
@@ -118,7 +118,7 @@ export function digitUppercase(n) {
     .replace(/^整$/, '零元整');
 }
 
-function getRelation(str1, str2) {
+function getRelation (str1, str2) {
   if (str1 === str2) {
     console.warn('Two path are equal!'); // eslint-disable-line
   }
@@ -132,7 +132,7 @@ function getRelation(str1, str2) {
   return 3;
 }
 
-function getRenderArr(routes) {
+function getRenderArr (routes) {
   let renderArr = [];
   renderArr.push(routes[0]);
   for (let i = 1; i < routes.length; i += 1) {
@@ -154,7 +154,7 @@ function getRenderArr(routes) {
  * @param {string} path
  * @param {routerData} routerData
  */
-export function getRoutes(path, routerData) {
+export function getRoutes (path, routerData) {
   let routes = Object.keys(routerData).filter(
     routePath => routePath.indexOf(path) === 0 && routePath !== path
   );
@@ -175,13 +175,13 @@ export function getRoutes(path, routerData) {
   return renderRoutes;
 }
 
-export function getPageQuery() {
+export function getPageQuery () {
   return parse(window.location.href.split('?')[1]);
   // const arr = window.location.href.split('?')
   // return parse(arr[arr.length - 1]);
 }
 
-export function getQueryPath(path = '', query = {}) {
+export function getQueryPath (path = '', query = {}) {
   const search = stringify(query);
   if (search.length) {
     return `${path}?${search}`;
@@ -192,11 +192,11 @@ export function getQueryPath(path = '', query = {}) {
 /* eslint no-useless-escape:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/g;
 
-export function isUrl(path) {
+export function isUrl (path) {
   return reg.test(path);
 }
 
-export function formatWan(val) {
+export function formatWan (val) {
   const v = val * 1;
   if (!v || isNaN(v)) return '';
 
@@ -226,7 +226,7 @@ export function formatWan(val) {
 // AES加密
 // http://jser.io/2014/08/19/how-to-use-aes-in-crypto-js-to-encrypt-and-decrypt
 // https://github.com/brix/crypto-js
-export function aesEncrypt(password, key = 'Bar12345Bar87690', iv = 'RandomInitVector') {
+export function aesEncrypt (password, key = 'Bar12345Bar87690', iv = 'RandomInitVector') {
   const C = CryptoJS;
   const ciphertext = C.AES.encrypt(password, C.enc.Utf8.parse(key), {
     mode: C.mode.CBC,
@@ -241,7 +241,7 @@ export function aesEncrypt(password, key = 'Bar12345Bar87690', iv = 'RandomInitV
  * @param {Any} value 要判断的变量
  * @return {Boolean} true是数组，false不是数组
  */
-export function isArray(value) {
+export function isArray (value) {
   return Object.prototype.toString.call(value) === '[object Array]';
 }
 
@@ -250,7 +250,7 @@ export function isArray(value) {
  * @param {Any} value 要判断的变量
  * @return {Boolean} true是对象，false不是对象
  */
-export function isObject(value) {
+export function isObject (value) {
   return Object.prototype.toString.call(value) === '[object Object]';
 }
 
@@ -259,7 +259,7 @@ export function isObject(value) {
  * @param {Any} value 要判断的变量
  * @return {Boolean} true是函数，false不是函数
  */
-export function isFunction(value) {
+export function isFunction (value) {
   return Object.prototype.toString.call(value) === '[object Function]';
 }
 
@@ -268,7 +268,7 @@ export function isFunction(value) {
  * @param {Any} value 要判断的变量
  * @return {Boolean} true是字符串，false不是字符串
  */
-export function isString(value) {
+export function isString (value) {
   return Object.prototype.toString.call(value) === '[object String]';
 }
 
@@ -276,7 +276,7 @@ export function isString(value) {
  * 是否是移动端
  * @return {Boolean} true是移动端，false不是移动端
  */
-export function isMobile() {
+export function isMobile () {
   return /Android|iPhone|SymbianOS|Windows Phone|iPad|iPod/.test(window.navigator.userAgent);
 }
 
@@ -284,7 +284,7 @@ export function isMobile() {
  * 是否是除了ipad以外的移动端
  * @return {Boolean} true是移动端，false不是移动端
  */
-export function isMobileExcludeIpad() {
+export function isMobileExcludeIpad () {
   return /Android|iPhone|SymbianOS|Windows Phone|iPod/.test(window.navigator.userAgent);
 }
 
@@ -292,7 +292,7 @@ export function isMobileExcludeIpad() {
  * 是否是ios
  * @return {Boolean} true是ios，false不是ios
  */
-export function isIOS() {
+export function isIOS () {
   return /iPhone|iPad|iPod/.test(window.navigator.userAgent);
 }
 
@@ -300,14 +300,14 @@ export function isIOS() {
  * 是否是android
  * @return {Boolean} true是android，false不是android
  */
-export function isAndroid() {
+export function isAndroid () {
   return /Android/.test(window.navigator.userAgent);
 }
 
 /**
  * dispatch转换函数
  */
-export function mapMutations(instance, { namespace, types }) {
+export function mapMutations (instance, { namespace, types }) {
   const { dispatch } = instance.props;
   if (isObject(types)) {
     for (const [key, value] of Object.entries(types)) {
@@ -338,7 +338,7 @@ export function mapMutations(instance, { namespace, types }) {
  * 返回列表中第一个视频
  * @param {Array} tree
  */
-export function findFirstVideo(tree) {
+export function findFirstVideo (tree) {
   // type不存在为视频
   if (tree.length === 0) return {};
   const first = tree[0];
@@ -352,7 +352,7 @@ export function findFirstVideo(tree) {
 /**
  * 生成枚举类型
  */
-export function generateEnum(obj) {
+export function generateEnum (obj) {
   return Object.entries(obj).reduce((result, [key, value]) => {
     result[(result[key] = value)] = key;
     return result;
@@ -362,7 +362,7 @@ export function generateEnum(obj) {
 /**
  * 获取映射字段
  */
-export function getMappedFields(values, fieldNames) {
+export function getMappedFields (values, fieldNames) {
   return Object.entries(fieldNames).reduce((result, [key, value]) => {
     if (typeof value === 'function') {
       result = { ...result, ...value(values) };
@@ -376,35 +376,35 @@ export function getMappedFields(values, fieldNames) {
 /**
  * 获取分页数量
  */
-export function getPageSize() {
+export function getPageSize () {
   return JSON.parse(localStorage.getItem('PAGE_SIZE') || '10');
 }
 
 /**
  * 设置分页数量
  */
-export function setPageSize(pageSize) {
+export function setPageSize (pageSize) {
   localStorage.setItem('PAGE_SIZE', JSON.stringify(pageSize));
 }
 
 /**
  * 获取modal中分页数量
  */
-export function getModalPageSize() {
+export function getModalPageSize () {
   return JSON.parse(localStorage.getItem('MODAL_PAGE_SIZE') || '5');
 }
 
 /**
  * 设置modal中分页数量
  */
-export function setModalPageSize(pageSize) {
+export function setModalPageSize (pageSize) {
   localStorage.setItem('MODAL_PAGE_SIZE', JSON.stringify(pageSize));
 }
 
 /**
  * 判断是否为数值类型
  */
-export function isNumber(value) {
+export function isNumber (value) {
   return !Number.isNaN(Number.parseFloat(value));
 }
 
@@ -412,12 +412,12 @@ export function isNumber(value) {
  * 保留2位有效数字
  */
 
-export function toFixed(value, digit = 2) {
+export function toFixed (value, digit = 2) {
   return Number.parseFloat(value.toFixed(digit));
 }
 
-export function genGoBack(props, path) {
-  return function() {
+export function genGoBack (props, path) {
+  return function () {
     const { match: { params: { id } } } = props;
     if (id) // 详情或编辑
       window.close();
@@ -425,3 +425,5 @@ export function genGoBack(props, path) {
       router.push(path);
   };
 }
+
+export function round (num, x = 0) { return Number(`${Math.round(`${num}e${x}`)}e-${x}`) }

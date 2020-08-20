@@ -16,6 +16,7 @@ import router from 'umi/router';
 import moment from 'moment';
 import { lecSettings, lsSettings } from './config';
 import { stringify } from 'qs';
+import { round } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -216,8 +217,8 @@ export default class RecordHandle extends Component {
     validateFieldsAndScroll((error, values) => {
       if (error) return;
       const { l, e, c, s, hiddenTypeResult, evaluateDate, ...resValues } = values;
-      const riskItemLec = l && e && c ? lecSettings.riskLevelList.find(item => item.range(l * e * c)) : undefined;
-      const riskItemLs = l && s ? lsSettings.riskLevelList.find(item => item.range(l * s)) : undefined;
+      const riskItemLec = l && e && c ? lecSettings.riskLevelList.find(item => item.range(round(l * e * c))) : undefined;
+      const riskItemLs = l && s ? lsSettings.riskLevelList.find(item => item.range(round(l * s))) : undefined;
       const riskItem = +riskAnalyze === 1 ? riskItemLec : riskItemLs;
       const payload = {
         ...resValues,
@@ -267,7 +268,7 @@ export default class RecordHandle extends Component {
       form: { getFieldDecorator, setFieldsValue, getFieldsValue },
     } = this.props;
     const { l, e, c } = getFieldsValue();
-    const riskItem = l && e && c ? lecSettings.riskLevelList.find(item => item.range(l * e * c)) : undefined;
+    const riskItem = l && e && c ? lecSettings.riskLevelList.find(item => item.range(round(l * e * c))) : undefined;
     return (
       <div>
         <h2 style={{ display: 'inline-block', transform: 'translateX(-100%)', marginLeft: '31%' }}>风险分析方法： LEC</h2>
@@ -332,7 +333,7 @@ export default class RecordHandle extends Component {
           )}
         </FormItem>
         <FormItem label={(<span>评估风险值（D）：<Tooltip title="备注：D=L×E×C"><InfoCircleOutlined style={{ color: 'gray', cursor: 'pointer', verticalAlign: 'middle' }} /></Tooltip></span>)} {...formItemLayout}>
-          <Input value={l && e && c ? `${l}×${e}×${c}=${l * e * c}` : ''} disabled style={{ width: '300px' }} />
+          <Input value={l && e && c ? `${l}×${e}×${c}=${round(l * e * c)}` : ''} disabled style={{ width: '300px' }} />
         </FormItem>
         <FormItem label="风险级别：" {...formItemLayout}>
           <Input value={riskItem ? riskItem.level + '级' : ''} disabled style={{ width: '300px' }} />
@@ -371,7 +372,7 @@ export default class RecordHandle extends Component {
       form: { getFieldDecorator, setFieldsValue, getFieldsValue },
     } = this.props;
     const { l, s } = getFieldsValue();
-    const riskItem = l && s ? lsSettings.riskLevelList.find(item => item.range(l * s)) : undefined;
+    const riskItem = l && s ? lsSettings.riskLevelList.find(item => item.range(round(l * s))) : undefined;
 
     return (
       <div>
@@ -419,7 +420,7 @@ export default class RecordHandle extends Component {
         <FormItem
           label={(<span>评估风险值（R）：<Tooltip title="备注：R=L×S"><InfoCircleOutlined style={{ color: 'gray', cursor: 'pointer', verticalAlign: 'middle' }} /></Tooltip></span>)}
           {...formItemLayout}>
-          <Input value={l && s ? `${l}×${s}=${l * s}` : ''} disabled style={{ width: '300px' }} />
+          <Input value={l && s ? `${l}×${s}=${round(l * s)}` : ''} disabled style={{ width: '300px' }} />
         </FormItem>
         <FormItem label="风险级别：" {...formItemLayout}>
           <Input value={riskItem ? riskItem.level + '级' : ''} disabled style={{ width: '300px' }} />

@@ -14,6 +14,7 @@ import router from 'umi/router';
 import { stringify } from 'qs';
 import { lecSettings } from './config';
 import Ellipsis from '@/components/Ellipsis';
+import { round } from '@/utils/utils';
 
 export const FORMAT = 'YYYY-MM-DD';
 export const title = '评价项目';
@@ -155,12 +156,12 @@ export default class SafetyChecklist extends Component {
       {
         dataIndex: 'evaluateProject',
         title: '评估项目',
-        render: value => value || <EmptyText />,
+        render: value => value ? (<Ellipsis tooltip length={10}>{value}</Ellipsis>) : <EmptyText />,
       },
       {
         dataIndex: 'majorHidden',
         title: '主要危险因素（人、物、作业环境、管理）',
-        render: value => value || <EmptyText />,
+        render: value => value ? (<Ellipsis tooltip length={20}>{value}</Ellipsis>) : <EmptyText />,
       },
       {
         dataIndex: 'hiddenTypeResultName',
@@ -187,7 +188,7 @@ export default class SafetyChecklist extends Component {
             <p>可能性（L)：{l}</p>
             <p>频次(E)：{e}</p>
             <p>严重性(C)：{c}</p>
-            <p>评估风险值(D)：{l * e * c}</p>
+            <p>评估风险值(D)：{round(l * e * c)}</p>
             <p>评价级别：{riskLevel ? riskLevel + '级' : ''}</p>
             <p>评估人员：{evaluatePer}</p>
             <p>评估日期：{evaluateDate ? moment(evaluateDate).format('YYYY-MM-DD') : ''}</p>
@@ -200,7 +201,7 @@ export default class SafetyChecklist extends Component {
             <div style={{ textAgin: 'left' }}>
               <p>可能性（L)：{l}</p>
               <p>频次(S)：{s}</p>
-              <p>评估风险值(R)：{l * s}</p>
+              <p>评估风险值(R)：{round(l * s)}</p>
               <p>评价级别：{riskLevel ? riskLevel + '级' : ''}</p>
               <p>评估人员：{evaluatePer}</p>
               <p>评估日期：{evaluateDate ? moment(evaluateDate).format('YYYY-MM-DD') : ''}</p>
